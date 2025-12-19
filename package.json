@@ -41,10 +41,12 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@fimbul-works/observable": "2.2.0"
+    "@fimbul-works/observable": "2.2.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
+    "@testing-library/dom": "^10.4.1",
+    "jsdom": "^27.3.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.16"
   }
