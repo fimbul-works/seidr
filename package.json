@@ -1,0 +1,51 @@
+{
+  "name": "@fimbul-works/seidr",
+  "description": "A collection of small functions to build reactive front-ends",
+  "version": "0.1.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/seidr#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/seidr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/seidr/issues"
+  },
+  "keywords": ["frontend", "dom", "reactive", "reactive-programming", "functional", "typescript"],
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./ssr": {
+      "types": "./dist/esm/dom-ssr.d.ts",
+      "import": "./dist/esm/dom-ssr.js",
+      "require": "./dist/cjs/dom-ssr.js"
+    }
+  },
+  "files": ["dist", "README.md", "API.md", "LICENSE"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "rm -rf dist && pnpm build:esm && pnpm build:cjs",
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "format": "npx biome format --write src",
+    "test": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@fimbul-works/observable": "2.2.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.16"
+  }
+}
