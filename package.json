@@ -1,6 +1,6 @@
 {
   "name": "@fimbul-works/seidr",
-  "description": "A collection of small functions to build reactive front-ends",
+  "description": "Reactive primitives and DOM utilities for building UIs",
   "version": "0.1.0",
   "type": "module",
   "private": false,
