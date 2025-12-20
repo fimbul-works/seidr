@@ -12,14 +12,12 @@
       },
       "suspicious": {
         "noDebugger": "off",
-        "noConsoleLog": "off",
         "noAssignInExpressions": "off",
         "noExplicitAny": "off"
       },
       "style": {
         "noShoutyConstants": "warn",
         "useNamingConvention": "off",
-        "noCommaOperator": "off",
         "noParameterAssign": "off"
       }
     }
