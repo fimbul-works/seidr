@@ -9,11 +9,12 @@ Build reactive user interfaces with minimal overhead and maximum control. No vir
 
 ## Features
 
-- 🪄 **Reactive Bindings** - Connect observables to DOM elements with automatic updates
+- 🪄 **Reactive Bindings** - Automatic `ObservableValue` to DOM attribute binding
+- 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 🎯 **Type-Safe** - Full TypeScript support with excellent type inference
-- 📦 **Tiny Footprint** - Minimal bundle size for maximum performance
+- 📦 **Tiny Footprint** - 1.2KB minified + gzipped, no virtual DOM
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
+- ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 
 ## Installation
 
@@ -28,31 +29,41 @@ pnpm install @fimbul-works/seidr
 ## Quick Start
 
 ```typescript
-import { ObservableValue } from '@fimbul-works/observable';
-import { component, bind, DivEl, ButtonEl, SpanEl, mount } from '@fimbul-works/seidr';
+import { component, mount, ObservableValue, DivEl, ButtonEl, SpanEl } from '@fimbul-works/seidr';
 
 function Counter() {
   return component((scope) => {
     const count = new ObservableValue(0);
+    const isDisabled = new ObservableValue(false);
 
-    const container = DivEl({ className: 'counter' }, [
-      SpanEl({ textContent: 'Count: 0' }),
-      ButtonEl({ textContent: 'Increment' }),
-      ButtonEl({ textContent: 'Decrement' })
+    const container = DivEl({
+      className: 'counter',
+      style: 'padding: 20px; border: 1px solid #ccc;'
+    }, [
+      SpanEl({ textContent: `Count: ${count.value}` }), // Static initial text
+      ButtonEl({
+        textContent: 'Increment',
+        disabled: isDisabled, // Reactive boolean binding!
+        onclick: () => {
+          count.value++;
+          isDisabled.value = count.value >= 10; // Disable after 10 clicks
+        }
+      }),
+      ButtonEl({
+        textContent: 'Reset',
+        onclick: () => {
+          count.value = 0;
+          isDisabled.value = false;
+        }
+      })
     ]);
 
-    const [countDisplay, incrementBtn, decrementBtn] = container.children;
-
-    // Reactive binding - automatically updates when count changes
+    // Reactive binding for text content
     scope.track(
-      bind(count, countDisplay, (value, el) => {
+      bind(count, container.children[0] as HTMLSpanElement, (value, el) => {
         el.textContent = `Count: ${value}`;
       })
     );
-
-    // Event handlers
-    incrementBtn.addEventListener('click', () => count.set(count.get() + 1));
-    decrementBtn.addEventListener('click', () => count.set(count.get() - 1));
 
     return container;
   });
@@ -65,34 +76,52 @@ mount(counter, document.body);
 
 ## Core Concepts
 
-### DOM Creation
+## 🪄 Reactive Props - The Magic
 
-Seidr provides type-safe element creators for all HTML elements:
+Seidr's killer feature: **automatically bind ObservableValue<string>, ObservableValue<number>, or ObservableValue<boolean> to any writable DOM attribute**:
 
 ```typescript
-import { DivEl, InputEl, ButtonEl } from '@fimbul-works/seidr';
+import { ObservableValue, InputEl, ButtonEl, DivEl } from '@fimbul-works/seidr';
 
-const form = DivEl({ className: 'form' }, [
-  InputEl({ type: 'text', placeholder: 'Enter name' }),
-  ButtonEl({ textContent: 'Submit', onclick: () => console.log('clicked') })
-]);
+// Create reactive observables
+const disabled = new ObservableValue(false);
+const className = new ObservableValue('btn-primary');
+const maxLength = new ObservableValue(50);
+const placeholder = new ObservableValue('Enter text...');
+
+// Automatic reactive bindings - no manual bind() needed!
+const input = InputEl({
+  type: 'text',
+  className, // ObservableValue<string> → className property
+  disabled, // ObservableValue<boolean> → disabled property
+  maxLength, // ObservableValue<number> → maxLength property
+  placeholder // ObservableValue<string> → placeholder property
+});
+
+// Any change to the observable automatically updates the DOM
+disabled.value = true; // input.disabled becomes true
+className.value = 'btn-disabled'; // input.className becomes 'btn-disabled'
+maxLength.value = 100; // input.maxLength becomes 100
 ```
 
-### Reactive Bindings
+### Manual Reactive Bindings
 
-Connect observables to DOM elements with the `bind` function:
+For complex transformations, use the `bind` function:
 
 ```typescript
-import { ObservableValue } from '@fimbul-works/observable';
-import { bind, InputEl } from '@fimbul-works/seidr';
+import { ObservableValue, bind, DivEl, SpanEl } from '@fimbul-works/seidr';
 
-const text = new ObservableValue('Hello');
-const input = InputEl();
+const count = new ObservableValue(0);
+const container = DivEl();
+const display = SpanEl();
 
-// Update input value when observable changes
-const cleanup = bind(text, input, (value, el) => {
-  el.value = value;
+// Custom transformation function
+const cleanup = bind(count, display, (value, el) => {
+  el.textContent = value > 5 ? 'Many clicks!' : `Count: ${value}`;
 });
+
+count.value = 3; // display shows "Count: 3"
+count.value = 7; // display shows "Many clicks!"
 
 // Later: cleanup() to remove binding
 ```
@@ -102,32 +131,51 @@ const cleanup = bind(text, input, (value, el) => {
 Components automatically manage cleanup of bindings, child components, and resources:
 
 ```typescript
-import { component, mount } from '@fimbul-works/seidr';
+import { component, mount, ObservableValue, DivEl, SpanEl, ButtonEl, bind } from '@fimbul-works/seidr';
 
 function UserProfile() {
   return component((scope) => {
-    const profile = new ObservableValue({ name: 'Alice', age: 30 });
-    const element = DivEl();
+    const name = new ObservableValue('Alice');
+    const age = new ObservableValue(30);
+    const isEditing = new ObservableValue(false);
 
-    // Track binding for automatic cleanup
+    const container = DivEl({ className: 'user-profile' }, [
+      // Reactive name display
+      SpanEl({ textContent: name }),
+
+      // Reactive age display
+      SpanEl({ textContent: `Age: ${age.value}` }),
+
+      // Edit button with reactive disabled state
+      ButtonEl({
+        textContent: 'Edit',
+        disabled: isEditing,
+        onclick: () => isEditing.value = !isEditing.value
+      }),
+
+      // Conditional save button
+      isEditing.value ? ButtonEl({
+        textContent: 'Save',
+        onclick: () => isEditing.value = false
+      }) : null
+    ]);
+
+    // Manual binding for complex transformation
     scope.track(
-      bind(profile, element, (value, el) => {
-        el.textContent = `${value.name}, ${value.age}`;
+      bind(age, container.children[1] as HTMLSpanElement, (value, el) => {
+        el.textContent = `Age: ${value}`;
       })
     );
 
-    // Track child component
-    scope.child(AvatarComponent());
-
-    return element;
+    return container;
   });
 }
 
 const profile = UserProfile();
-mount(profile, container);
+mount(profile, document.body);
 
 // When done:
-profile.destroy(); // Cleans up all bindings and children
+profile.destroy(); // Cleans up all reactive bindings automatically
 ```
 
 ### Conditional Rendering
@@ -135,18 +183,31 @@ profile.destroy(); // Cleans up all bindings and children
 Show/hide components based on observable conditions:
 
 ```typescript
-import { mountConditional, ObservableValue } from '@fimbul-works/seidr';
+import { mountConditional, ObservableValue, DivEl, ButtonEl, component } from '@fimbul-works/seidr';
 
-const showDetails = new ObservableValue(false);
+const isVisible = new ObservableValue(false);
+
+function DetailsPanel() {
+  return component((scope) => {
+    return DivEl({ className: 'details-panel' }, [
+      DivEl({ textContent: 'User Details' }),
+      DivEl({ textContent: 'Some additional information...' }),
+      ButtonEl({
+        textContent: 'Close',
+        onclick: () => isVisible.value = false
+      })
+    ]);
+  });
+}
 
 const conditional = mountConditional(
-  showDetails,
+  isVisible,
   () => DetailsPanel(), // Only created when needed
-  container
+  document.body
 );
 
-showDetails.set(true); // Component automatically mounts
-showDetails.set(false); // Component automatically unmounts and cleans up
+isVisible.value = true; // Component automatically mounts and becomes visible
+isVisible.value = false; // Component automatically unmounts and cleans up
 ```
 
 ### List Rendering
@@ -154,39 +215,109 @@ showDetails.set(false); // Component automatically unmounts and cleans up
 Efficiently render lists from observable arrays:
 
 ```typescript
-import { mountList, ObservableValue } from '@fimbul-works/seidr';
+import { mountList, ObservableValue, DivEl, SpanEl, ButtonEl, component } from '@fimbul-works/seidr';
 
-const items = new ObservableValue([
-  { id: 1, name: 'Apple' },
-  { id: 2, name: 'Banana' }
+const todos = new ObservableValue([
+  { id: 1, text: 'Learn Seidr', completed: false },
+  { id: 2, text: 'Build amazing apps', completed: false }
 ]);
 
+function TodoItem({ todo }: { todo: any }) {
+  return component((scope) => {
+    const isCompleted = new ObservableValue(todo.completed);
+
+    return DivEl({
+      className: 'todo-item',
+      style: 'display: flex; align-items: center; gap: 10px; margin: 5px 0;'
+    }, [
+      // Reactive checkbox
+      ButtonEl({
+        textContent: isCompleted.value ? '✅' : '⭕',
+        onclick: () => {
+          isCompleted.value = !isCompleted.value;
+          todo.completed = isCompleted.value;
+        }
+      }),
+
+      // Reactive text styling
+      SpanEl({
+        textContent: todo.text,
+        style: isCompleted.value ? 'text-decoration: line-through;' : ''
+      })
+    ]);
+  });
+}
+
 const list = mountList(
-  items,
-  (item) => item.id, // Key function
-  (item) => ListItem(item), // Component factory
-  container
+  todos,
+  (item) => item.id, // Key function for efficient updates
+  (item) => TodoItem({ todo }), // Component factory
+  document.body
 );
 
 // Updates efficiently handle additions, removals, and reordering
-items.set([...items.get(), { id: 3, name: 'Cherry' }]);
+todos.value = [...todos.value, { id: 3, text: 'Master reactive programming', completed: false }];
+todos.value = todos.value.filter(todo => todo.id !== 1); // Remove item
 ```
 
-## Utilities
+## Advanced Patterns
 
-Seidr includes helpful utilities for common tasks:
+### Computed Values
+
+Create derived observables that automatically update when dependencies change:
 
 ```typescript
-import { cn, debounce, toggleClass } from '@fimbul-works/seidr';
+import { ObservableValue, computed, DivEl, SpanEl } from '@fimbul-works/seidr';
 
-// Classname builder
-const classes = cn('btn', isActive && 'active', ['btn-primary', 'btn-lg']);
+const firstName = new ObservableValue('John');
+const lastName = new ObservableValue('Doe');
 
-// Debounce function calls
-const handleSearch = debounce((query) => search(query), 300);
+// Computed full name that updates when either first or last name changes
+const fullName = computed(
+  () => `${firstName.value} ${lastName.value}`,
+  [firstName, lastName]
+);
 
-// Toggle classes reactively
-toggleClass(isDarkMode, document.body, 'dark-theme');
+const profile = DivEl([
+  SpanEl({ textContent: 'First Name:' }),
+  SpanEl({ textContent: firstName }),
+  SpanEl({ textContent: 'Last Name:' }),
+  SpanEl({ textContent: lastName }),
+  SpanEl({ textContent: 'Full Name:' }),
+  SpanEl({ textContent: fullName }) // Automatically updates!
+]);
+
+firstName.value = 'Jane'; // fullName becomes "Jane Doe"
+```
+
+### Two-Way Binding
+
+Bind form inputs to observables with automatic synchronization:
+
+```typescript
+import { ObservableValue, InputEl, SpanEl, bind, DivEl } from '@fimbul-works/seidr';
+
+const searchText = new ObservableValue('');
+
+const searchComponent = DivEl([
+  // Input that updates the observable
+  InputEl({
+    type: 'text',
+    placeholder: 'Search...',
+    value: searchText, // Reactive initial value
+    oninput: (e) => searchText.value = e.target.value
+  }),
+
+  // Display that shows the current search text
+  SpanEl({ textContent: searchText }) // Reactive display!
+]);
+
+// Manual binding for bidirectional sync
+const cleanup = bind(searchText, searchComponent.children[0] as HTMLInputElement, (value, el) => {
+  if (el !== document.activeElement) { // Don't update while user is typing
+    el.value = value;
+  }
+});
 ```
 
 ## License
