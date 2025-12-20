@@ -23,11 +23,6 @@
       "types": "./dist/esm/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
-    },
-    "./ssr": {
-      "types": "./dist/esm/dom-ssr.d.ts",
-      "import": "./dist/esm/dom-ssr.js",
-      "require": "./dist/cjs/dom-ssr.js"
     }
   },
   "files": ["dist", "README.md", "API.md", "LICENSE"],

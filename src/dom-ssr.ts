@@ -32,12 +32,28 @@ export class ServerHTMLElement implements ServerElement {
     const openTag = attrs ? `<${this.tagName} ${attrs}>` : `<${this.tagName}>`;
 
     // Self-closing tags
-    const voidElements = ["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"];
+    const voidElements = [
+      "area",
+      "base",
+      "br",
+      "col",
+      "embed",
+      "hr",
+      "img",
+      "input",
+      "link",
+      "meta",
+      "source",
+      "track",
+      "wbr",
+    ];
     if (voidElements.includes(this.tagName)) {
       return openTag.replace(">", " />");
     }
 
-    const childHtml = this.children.map((child) => (typeof child === "string" ? escapeHtml(child) : child.toString())).join("");
+    const childHtml = this.children
+      .map((child) => (typeof child === "string" ? escapeHtml(child) : child.toString()))
+      .join("");
 
     return `${openTag}${childHtml}</${this.tagName}>`;
   }
@@ -62,7 +78,11 @@ function escapeHtml(text: string): string {
 /**
  * Server-side element creator that mirrors the client-side API
  */
-export const makeElServer = <K extends string>(tagName: K, props?: Attributes, children?: (ServerElement | string)[]): ServerElement => new ServerHTMLElement(tagName, { ...props }, children || []);
+export const makeElServer = <K extends string>(
+  tagName: K,
+  props?: Attributes,
+  children?: (ServerElement | string)[],
+): ServerElement => new ServerHTMLElement(tagName, { ...props }, children || []);
 
 /**
  * Higher-order function that creates specialized server element creator functions.
@@ -85,7 +105,8 @@ export const makeElServer = <K extends string>(tagName: K, props?: Attributes, c
  * ]);
  */
 export const elServer = <K extends string>(tagName: K) => {
-  return (props?: Attributes, children?: (ServerElement | string)[]): ServerElement => makeElServer(tagName, props, children);
+  return (props?: Attributes, children?: (ServerElement | string)[]): ServerElement =>
+    makeElServer(tagName, props, children);
 };
 
 export const AEl = elServer("a");

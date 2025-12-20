@@ -76,9 +76,9 @@ mount(counter, document.body);
 
 ## Core Concepts
 
-## 🪄 Reactive Props - The Magic
+## Reactive Props
 
-Seidr's killer feature: **automatically bind ObservableValue<string>, ObservableValue<number>, or ObservableValue<boolean> to any writable DOM attribute**:
+State is stored in `ObservableValue<T>` which can be used as props.
 
 ```typescript
 import { ObservableValue, InputEl, ButtonEl, DivEl } from '@fimbul-works/seidr';
@@ -262,9 +262,23 @@ todos.value = todos.value.filter(todo => todo.id !== 1); // Remove item
 
 ## Advanced Patterns
 
+### Derived Values
+
+Create derived observables that update automatically when the original value changes:
+
+```typescript
+import { ObservableValue } from '@fimbul-works/seidr';
+
+const isActive = new ObservableValue(false);
+const activeClass = isActive.derive((v) => v ? 'active' : '');
+
+isActive.value = true;
+// activeClass.value is now 'active'
+```
+
 ### Computed Values
 
-Create derived observables that automatically update when dependencies change:
+Create aggregating and derived observables that automatically update when dependencies change:
 
 ```typescript
 import { ObservableValue, computed, DivEl, SpanEl } from '@fimbul-works/seidr';
