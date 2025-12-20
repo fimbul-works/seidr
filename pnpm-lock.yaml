@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@fimbul-works/observable':
-        specifier: 2.2.1
-        version: 2.2.1
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.4
@@ -294,9 +290,6 @@ packages:
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
-
-  '@fimbul-works/observable@2.2.1':
-    resolution: {integrity: sha512-xjxstFVrcrVPlPkSDc0gEtev2COM+mFcPZ5SBC2KettOzTCj5SWbn4CYGXNr3YEh8IYvVuUqwtpikBjmDoXntg==}
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
@@ -984,8 +977,6 @@ snapshots:
 
   '@esbuild/win32-x64@0.27.2':
     optional: true
-
-  '@fimbul-works/observable@2.2.1': {}
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 

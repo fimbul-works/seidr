@@ -1,11 +1,19 @@
+import { bind } from "./reactive.js";
+import { ObservableValue } from "./value.js";
+
 /** Allowed child nodes for HTMLElement */
-export type DOMNode = HTMLElement | Text
+export type SeidrNode = SeidrElement | HTMLElement | Text;
 
 /**
  * Additional HTML element extra functionality
  */
-export interface HTMLElementExtras {
-  on<E extends keyof HTMLElementEventMap>(event: E, handler: (ev: HTMLElementEventMap[E]) => any, options?: boolean | AddEventListenerOptions): ReturnType<typeof on>;
+export interface SeidrElement extends HTMLElement {
+  on<E extends keyof HTMLElementEventMap>(
+    event: E,
+    handler: (ev: HTMLElementEventMap[E]) => any,
+    options?: boolean | AddEventListenerOptions,
+  ): ReturnType<typeof on>;
+  destroy(): void;
 }
 
 /**
@@ -17,34 +25,50 @@ export interface HTMLElementExtras {
  * @template K - The HTML tag name (e.g., 'div', 'input', 'span')
  * @param {K} tagName - The HTML tag name to create
  * @param {Partial<HTMLElementTagNameMap[K]>} [props] - Element properties to assign
- * @param {DOMNode[]} [children] - Child elements to append
+ * @param {SeidrNode[]} [children] - Child elements to append
  * @returns {HTMLElementTagNameMap[K]} The created and configured HTML element
  */
-export const makeEl = <K extends keyof HTMLElementTagNameMap>(
+export const makeEl = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
   props?: Partial<HTMLElementTagNameMap[K]>,
-  children?: DOMNode[],
-): HTMLElementTagNameMap[K] & HTMLElementExtras => {
+  children?: (SeidrNode | (() => SeidrNode))[],
+): HTMLElementTagNameMap[K] & SeidrElement => {
   const el = document.createElement(tagName);
-
-  // Add shorter event listeners
-  Object.assign(el, {
-    on<E extends keyof HTMLElementEventMap>(event: E, handler: (ev: HTMLElementEventMap[E]) => any, options?: boolean | AddEventListenerOptions) {
-      return on(el, event, handler, options);
-    }
-  });
+  const cleanups: (() => void)[] = [];
 
   // Assign properties
   if (props) {
-    Object.assign(el, props)
+    for (const [prop, value] of Object.entries(props)) {
+      if (value instanceof ObservableValue) {
+        cleanups.push(bind(value, el, (value, el) => (el[prop as P] = value)));
+      } else {
+        el[prop as P] = value;
+      }
+    }
   }
+
+  // Add extra features
+  Object.assign(el, {
+    on<E extends keyof HTMLElementEventMap>(
+      event: E,
+      handler: (ev: HTMLElementEventMap[E]) => any,
+      options?: boolean | AddEventListenerOptions,
+    ) {
+      return on(el, event, handler, options);
+    },
+    destroy() {
+      Array.from(el.children).forEach((child: any) => child.destroy?.());
+      el.remove();
+      cleanups.forEach((cleanup) => cleanup());
+    },
+  });
 
   // Append children
   if (Array.isArray(children)) {
-    children.forEach((child) => el.appendChild(child));
+    children.forEach((child) => el.appendChild(typeof child === "function" ? child() : child));
   }
 
-  return el as HTMLElementTagNameMap[K] & HTMLElementExtras;
+  return el as HTMLElementTagNameMap[K] & SeidrElement;
 };
 
 /**
@@ -73,8 +97,14 @@ export const makeEl = <K extends keyof HTMLElementTagNameMap>(
  */
 export const el = <K extends keyof HTMLElementTagNameMap>(
   tagName: K,
-): ((options?: Partial<HTMLElementTagNameMap[K]>, children?: DOMNode[]) => HTMLElementTagNameMap[K] & HTMLElementExtras) => {
-  return (options?: Partial<HTMLElementTagNameMap[K]>, children?: DOMNode[]): HTMLElementTagNameMap[K] & HTMLElementExtras => makeEl(tagName, options, children);
+): ((
+  options?: Partial<HTMLElementTagNameMap[K]>,
+  children?: SeidrNode[],
+) => HTMLElementTagNameMap[K] & SeidrElement) => {
+  return (
+    options?: Partial<HTMLElementTagNameMap[K]>,
+    children?: SeidrNode[],
+  ): HTMLElementTagNameMap[K] & SeidrElement => makeEl(tagName, options, children);
 };
 
 /**
@@ -103,7 +133,8 @@ export const on = <K extends keyof HTMLElementEventMap>(
  * @param el - Element to query from (default: document.body)
  * @returns {T | null} First element matching the query string
  */
-export const $ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T | null => el.querySelector(query)
+export const $ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T | null =>
+  el.querySelector(query);
 
 /**
  * Call HTMLElement.querySelectorAll
@@ -112,7 +143,8 @@ export const $ = <T extends HTMLElement>(query: string, el: HTMLElement = docume
  * @param el - Element to query from (default: document.body)
  * @returns {Array<T>} An array of elements matching the query string
  */
-export const $$ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] => Array.from(el.querySelectorAll(query))
+export const $$ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] =>
+  Array.from(el.querySelectorAll(query));
 
 export const AEl = el("a");
 export const AbbrEl = el("abbr");
@@ -227,4 +259,4 @@ export const VarEl = el("var");
 export const VideoEl = el("video");
 export const WbrEl = el("wbr");
 
-export const TextNode = (text: string) => document.createTextNode(text)
+export const TextNode = (text: string) => document.createTextNode(text);

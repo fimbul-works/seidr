@@ -1,28 +1,4 @@
-import { ObservableValue } from "@fimbul-works/observable";
-
-/**
- * A computed observable value that automatically cleans up its dependencies.
- *
- * Call destroy() when the computed value is no longer needed to prevent memory leaks.
- */
-export class ComputedValue<T> extends ObservableValue<T> {
-  private cleanups: (() => void)[] = [];
-
-  /**
-   * Adds a cleanup function to be called when destroy() is invoked
-   */
-  addCleanup(cleanup: () => void) {
-    this.cleanups.push(cleanup);
-  }
-
-  /**
-   * Removes all dependency subscriptions and cleans up resources
-   */
-  destroy() {
-    this.cleanups.forEach((cleanup) => cleanup());
-    this.cleanups = [];
-  }
-}
+import { ObservableValue } from "./value.js";
 
 /**
  * Creates a reactive binding between an ObservableValue and a DOM element.
@@ -44,9 +20,9 @@ export function bind<T, E extends HTMLElement>(
   observable: ObservableValue<T>,
   element: E,
   renderer: (value: T, el: E) => void,
-) {
-  renderer(observable.get(), element);
-  return observable.onChange((value) => renderer(value, element));
+): () => void {
+  renderer(observable.value, element);
+  return observable.observe((value) => renderer(value, element));
 }
 
 /**
@@ -62,13 +38,13 @@ export function bind<T, E extends HTMLElement>(
  *
  * @returns A new ComputedValue containing the computed result
  */
-export function computed<T>(compute: () => T, dependencies: ObservableValue<unknown>[]): ComputedValue<T> {
+export function computed<T>(compute: () => T, dependencies: ObservableValue<any>[]): ObservableValue<T> {
   if (dependencies.length === 0) {
     console.warn("Computed value with zero dependencies");
   }
 
-  const computed = new ComputedValue<T>(compute());
-  dependencies.forEach((dep) => computed.addCleanup(dep.onChange(() => computed.set(compute()))));
+  const computed = new ObservableValue<T>(compute());
+  dependencies.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
   return computed;
 }
 
@@ -84,7 +60,6 @@ export function computed<T>(compute: () => T, dependencies: ObservableValue<unkn
  * @param observable - Boolean ObservableValue that controls the class
  * @param element - The DOM element to toggle the class on
  * @param className - The CSS class name to toggle
- * @param invert - Invert the boolean comparison
  *
  * @returns A cleanup function that removes the binding when called
  */
@@ -92,7 +67,6 @@ export function toggleClass<E extends HTMLElement>(
   observable: ObservableValue<boolean>,
   element: E,
   className: string,
-  invert = false,
 ) {
-  return bind(observable, element, (value, el) => el.classList.toggle(className, invert ? !value : value));
+  return bind(observable, element, (value, el) => el.classList.toggle(className, value));
 }

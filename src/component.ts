@@ -1,6 +1,4 @@
-import type { ObservableValue } from "@fimbul-works/observable";
-
-type CleanupFunction = () => void;
+import type { ObservableValue } from "./value.js";
 
 /**
  * A component is a factory function that returns an element and its cleanup logic.
@@ -41,10 +39,10 @@ export interface ComponentScope {
  * @returns ComponentScope instance
  */
 export function createScope(): ComponentScope {
-  let cleanups: CleanupFunction[] = [];
+  let cleanups: (() => void)[] = [];
   let destroyed = false;
 
-  const track: ComponentScope["track"] = (cleanup: CleanupFunction): void => {
+  const track: ComponentScope["track"] = (cleanup: () => void): void => {
     if (destroyed) {
       console.warn("Tracking cleanup on already destroyed scope");
       cleanup();
@@ -116,7 +114,7 @@ export function component<E extends HTMLElement>(factory: (scope: ComponentScope
  * @param container - Container component to mount to
  * @return Returns a function to unmount the component
  */
-export function mount<E extends HTMLElement>(component: Component<E>, container: HTMLElement): CleanupFunction {
+export function mount<E extends HTMLElement>(component: Component<E>, container: HTMLElement): () => void {
   container.appendChild(component.element);
 
   return () => {
@@ -149,7 +147,7 @@ export function mountConditional<E extends HTMLElement>(
   condition: ObservableValue<boolean>,
   componentFactory: () => Component<E>,
   container: HTMLElement,
-): { destroy: CleanupFunction } {
+): { destroy: () => void } {
   let currentComponent: Component<E> | null = null;
 
   const update = (shouldShow: boolean) => {
@@ -164,10 +162,10 @@ export function mountConditional<E extends HTMLElement>(
   };
 
   // Initial render
-  update(condition.get());
+  update(condition.value);
 
   // Track changes
-  const unsubscribe = condition.onChange(update);
+  const unsubscribe = condition.observe(update);
 
   return {
     destroy: () => {
@@ -213,7 +211,7 @@ export function mountList<T, K extends string | number, E extends HTMLElement>(
   getKey: (item: T) => K,
   componentFactory: (item: T) => Component<E>,
   container: HTMLElement,
-): { destroy: CleanupFunction } {
+): { destroy: () => void } {
   const componentMap = new Map<K, Component<E>>();
 
   const update = (items: T[]) => {
@@ -251,10 +249,10 @@ export function mountList<T, K extends string | number, E extends HTMLElement>(
   };
 
   // Initial render
-  update(observable.get());
+  update(observable.value);
 
   // Track changes
-  const unsubscribe = observable.onChange(update);
+  const unsubscribe = observable.observe(update);
 
   return {
     destroy: () => {
@@ -294,7 +292,7 @@ export function mountSwitch<K extends string, E extends HTMLElement>(
   observable: ObservableValue<K>,
   componentMap: Record<K, () => Component<E>>,
   container: HTMLElement,
-): { destroy: CleanupFunction } {
+): { destroy: () => void } {
   let currentComponent: Component<E> | null = null;
 
   const update = (key: K) => {
@@ -314,10 +312,10 @@ export function mountSwitch<K extends string, E extends HTMLElement>(
   };
 
   // Initial render
-  update(observable.get());
+  update(observable.value);
 
   // Track changes
-  const unsubscribe = observable.onChange(update);
+  const unsubscribe = observable.observe(update);
 
   return {
     destroy: () => {
