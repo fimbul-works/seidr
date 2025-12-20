@@ -14,7 +14,14 @@
   "bugs": {
     "url": "https://github.com/fimbul-works/seidr/issues"
   },
-  "keywords": ["frontend", "dom", "reactive", "reactive-programming", "functional", "typescript"],
+  "keywords": [
+    "frontend",
+    "dom",
+    "reactive",
+    "reactive-programming",
+    "functional",
+    "typescript"
+  ],
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",
   "types": "./dist/esm/index.d.ts",
@@ -25,7 +32,12 @@
       "require": "./dist/cjs/index.js"
     }
   },
-  "files": ["dist", "README.md", "API.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "API.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "rm -rf dist && pnpm build:esm && pnpm build:cjs",
