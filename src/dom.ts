@@ -1,6 +1,25 @@
 import { bind } from "./reactive.js";
 import { ObservableValue } from "./value.js";
 
+/** Accepted types for an ObservableValue attribute */
+type Scalar = string | number | boolean;
+
+/** Check if a type T exends X or Y, which maps it to A and B */
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+
+/** Find all the non-readonly keys */
+type WritableKeys<T> = {
+  [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
+}[keyof T];
+
+/** Scalar or an observable scalar? */
+type ReactiveValue<T> = T extends Scalar ? T | ObservableValue<T> : T;
+
+/** We have a tag, and thus our HTML element - turn all writable scalar keys into ReactiveValue */
+type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends HTMLElementTagNameMap[K]> = {
+  [K in WritableKeys<T>]?: ReactiveValue<T[K]>;
+};
+
 /** Allowed child nodes for HTMLElement */
 export type SeidrNode = SeidrElement | HTMLElement | Text;
 
@@ -23,14 +42,14 @@ export interface SeidrElement extends HTMLElement {
  * If `options` is an array and `children` is undefined, `options` will be treated as children.
  *
  * @template K - The HTML tag name (e.g., 'div', 'input', 'span')
- * @param {K} tagName - The HTML tag name to create
- * @param {Partial<HTMLElementTagNameMap[K]>} [props] - Element properties to assign
- * @param {SeidrNode[]} [children] - Child elements to append
- * @returns {HTMLElementTagNameMap[K]} The created and configured HTML element
+ * @param tagName - The HTML tag name to create
+ * @param props - Element properties to assign
+ * @param children - Child elements to append
+ * @returns The created and configured HTML element
  */
 export const makeEl = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
-  props?: Partial<HTMLElementTagNameMap[K]>,
+  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): HTMLElementTagNameMap[K] & SeidrElement => {
   const el = document.createElement(tagName);
@@ -42,7 +61,7 @@ export const makeEl = <K extends keyof HTMLElementTagNameMap, P extends keyof HT
       if (value instanceof ObservableValue) {
         cleanups.push(bind(value, el, (value, el) => (el[prop as P] = value)));
       } else {
-        el[prop as P] = value;
+        el[prop as P] = value as HTMLElementTagNameMap[K][P];
       }
     }
   }
@@ -98,11 +117,11 @@ export const makeEl = <K extends keyof HTMLElementTagNameMap, P extends keyof HT
 export const el = <K extends keyof HTMLElementTagNameMap>(
   tagName: K,
 ): ((
-  options?: Partial<HTMLElementTagNameMap[K]>,
+  options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
   children?: SeidrNode[],
 ) => HTMLElementTagNameMap[K] & SeidrElement) => {
   return (
-    options?: Partial<HTMLElementTagNameMap[K]>,
+    options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
     children?: SeidrNode[],
   ): HTMLElementTagNameMap[K] & SeidrElement => makeEl(tagName, options, children);
 };
