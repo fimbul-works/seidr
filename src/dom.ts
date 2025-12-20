@@ -13,7 +13,7 @@ type WritableKeys<T> = {
 }[keyof T];
 
 /** Scalar or an observable scalar? */
-type ReactiveValue<T> = T extends Scalar ? T | ObservableValue<T> : T;
+type ReactiveValue<T> = [T] extends [Scalar] ? T | ObservableValue<T> : T;
 
 /** We have a tag, and thus our HTML element - turn all writable scalar keys into ReactiveValue */
 type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends HTMLElementTagNameMap[K]> = {

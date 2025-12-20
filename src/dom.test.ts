@@ -610,7 +610,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
         id: "static-id",
         className,
         type: "button",
-        disabled: false
+        disabled: false,
       });
 
       // Static properties should be set immediately
@@ -637,7 +637,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
         className,
         disabled,
         tabIndex,
-        textContent: "Test Button"
+        textContent: "Test Button",
       });
 
       expect(button.className).toBe("class1");
@@ -686,7 +686,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       const button = ButtonEl({
         className,
         disabled,
-        tabIndex
+        tabIndex,
       });
 
       // Verify initial state
@@ -765,6 +765,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
 
     it("should handle null and undefined values for string observables", () => {
       const text = new ObservableValue<string | null>("initial");
+      // @ts-expect-error
       const span = SpanEl({ textContent: text });
 
       expect(span.textContent).toBe("initial");
@@ -772,6 +773,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       text.value = null;
       expect(span.textContent).toBe(""); // DOM converts null to empty string
 
+      // @ts-expect-error
       text.value = undefined;
       expect(span.textContent).toBe(""); // DOM converts undefined to empty string
 
