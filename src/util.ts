@@ -1,4 +1,4 @@
-import { ObservableValue } from "./value.js";
+import { Seidr } from "./seidr.js";
 
 /**
  * Call HTMLElement.querySelector
@@ -43,7 +43,7 @@ export const cn = (...classes: unknown[]): string =>
   classes
     .filter(Boolean)
     .flatMap((c: unknown): string =>
-      c instanceof ObservableValue
+      c instanceof Seidr
         ? cn(c.value)
         : Array.isArray(c)
           ? (cn(...c) as string)

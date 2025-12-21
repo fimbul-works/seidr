@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { Seidr } from "./seidr.js";
 import { toggleClass } from "./toggle-class.js";
-import { ObservableValue } from "./value.js";
 
 describe("toggleClass", () => {
   let element: HTMLElement;
-  let observable: ObservableValue<boolean>;
+  let observable: Seidr<boolean>;
 
   beforeEach(() => {
     element = document.createElement("div");
-    observable = new ObservableValue(false);
+    observable = new Seidr(false);
   });
 
   it("should add class when observable is true", () => {

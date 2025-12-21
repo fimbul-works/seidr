@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { component } from "./component.js";
 import { createElement } from "./element.js";
 import { mount, mountConditional, mountList, mountSwitch } from "./mount.js";
-import { ObservableValue } from "./value.js";
+import { Seidr } from "./seidr.js";
 
 describe("mount", () => {
   let container: HTMLElement;
@@ -43,7 +43,7 @@ describe("mountConditional", () => {
   });
 
   it("should mount component when condition is true", () => {
-    const condition = new ObservableValue(true);
+    const condition = new Seidr(true);
     const mockElement = createElement("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
@@ -52,7 +52,7 @@ describe("mountConditional", () => {
   });
 
   it("should not mount component when condition is false", () => {
-    const condition = new ObservableValue(false);
+    const condition = new Seidr(false);
     const mockElement = createElement("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
@@ -61,7 +61,7 @@ describe("mountConditional", () => {
   });
 
   it("should toggle component based on condition changes", () => {
-    const condition = new ObservableValue(false);
+    const condition = new Seidr(false);
     const mockElement = createElement("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
@@ -78,7 +78,7 @@ describe("mountConditional", () => {
   });
 
   it("should clean up when destroyed", () => {
-    const condition = new ObservableValue(true);
+    const condition = new Seidr(true);
     const mockElement = createElement("div");
     let componentDestroyed = false;
 
@@ -115,7 +115,7 @@ describe("mountList", () => {
   });
 
   it("should render initial list of items", () => {
-    const items = new ObservableValue([
+    const items = new Seidr([
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ]);
@@ -138,7 +138,7 @@ describe("mountList", () => {
   });
 
   it("should add new items when array grows", () => {
-    const items = new ObservableValue([{ id: 1, name: "Item 1" }]);
+    const items = new Seidr([{ id: 1, name: "Item 1" }]);
 
     mountList(
       items,
@@ -164,7 +164,7 @@ describe("mountList", () => {
   });
 
   it("should remove items when array shrinks", () => {
-    const items = new ObservableValue([
+    const items = new Seidr([
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
       { id: 3, name: "Item 3" },
@@ -195,7 +195,7 @@ describe("mountList", () => {
   });
 
   it("should reorder items when order changes", () => {
-    const items = new ObservableValue([
+    const items = new Seidr([
       { id: 1, name: "Item 1" },
       { id: 2, name: "Item 2" },
     ]);
@@ -225,7 +225,7 @@ describe("mountList", () => {
   });
 
   it("should clean up when destroyed", () => {
-    const items = new ObservableValue([{ id: 1, name: "Item 1" }]);
+    const items = new Seidr([{ id: 1, name: "Item 1" }]);
     let componentDestroyed = false;
 
     const cleanup = mountList(
@@ -265,7 +265,7 @@ describe("mountSwitch", () => {
   });
 
   it("should render component based on initial value", () => {
-    const mode = new ObservableValue<"list" | "grid">("list");
+    const mode = new Seidr<"list" | "grid">("list");
     const listElement = createElement("div");
     const gridElement = createElement("div");
 
@@ -283,7 +283,7 @@ describe("mountSwitch", () => {
   });
 
   it("should switch components when observable value changes", () => {
-    const mode = new ObservableValue<"list" | "grid">("list");
+    const mode = new Seidr<"list" | "grid">("list");
     const listElement = createElement("div");
     const gridElement = createElement("div");
 
@@ -306,13 +306,13 @@ describe("mountSwitch", () => {
   });
 
   it("should handle missing component factories gracefully", () => {
-    const mode = new ObservableValue<"list" | "grid" | "unknown">("unknown" as const);
+    const mode = new Seidr<"list" | "grid" | "unknown">("unknown" as const);
     const listElement = createElement("div");
     const gridElement = createElement("div");
 
     // Use type assertion to allow 'unknown' key
     mountSwitch(
-      mode as ObservableValue<"list" | "grid">,
+      mode as Seidr<"list" | "grid">,
       {
         list: () => component(() => listElement),
         grid: () => component(() => gridElement),
@@ -326,7 +326,7 @@ describe("mountSwitch", () => {
   });
 
   it("should clean up when destroyed", () => {
-    const mode = new ObservableValue<"list" | "grid">("list");
+    const mode = new Seidr<"list" | "grid">("list");
     const listElement = createElement("div");
     let componentDestroyed = false;
 

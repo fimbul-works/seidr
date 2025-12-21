@@ -1,7 +1,6 @@
-import { bind } from "./bind.js";
-import { type CleanupFunction, ObservableValue } from "./value.js";
+import { type CleanupFunction, Seidr } from "./seidr.js";
 
-/** Accepted types for an ObservableValue attribute */
+/** Accepted types for an Seidr attribute */
 type Scalar = string | number | boolean;
 
 /** Check if a type T exends X or Y, which maps it to A and B */
@@ -13,7 +12,7 @@ type WritableKeys<T> = {
 }[keyof T];
 
 /** Scalar or an observable scalar? */
-type ReactiveValue<T> = [T] extends [Scalar] ? T | ObservableValue<T> : T;
+type ReactiveValue<T> = [T] extends [Scalar] ? T | Seidr<T> : T;
 
 /** We have a tag, and thus our HTML element - turn all writable scalar keys into ReactiveValue */
 export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends HTMLElementTagNameMap[K]> = {
@@ -78,8 +77,8 @@ export const createElement = <K extends keyof HTMLElementTagNameMap, P extends k
         throw new Error(`Unallowed property "${prop}"`);
       }
 
-      if (value instanceof ObservableValue) {
-        cleanups.push(bind(value, el, (value, el) => (el[prop as P] = value)));
+      if (value instanceof Seidr) {
+        cleanups.push(value.bind(el, (value, el) => (el[prop as P] = value)));
       } else {
         el[prop as P] = value as HTMLElementTagNameMap[K][P];
       }

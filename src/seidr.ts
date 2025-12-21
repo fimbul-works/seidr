@@ -3,7 +3,7 @@
  * @template T The data type for the event
  * @param data - Data to handle
  */
-export type EventHandler<T = unknown> = (data: T) => void | Promise<void>;
+export type EventHandler<T> = (data: T) => void | Promise<void>;
 
 /**
  * Type for cleanup functions.
@@ -23,7 +23,7 @@ export interface Observable<T> {
  *
  * @template T The type of value being stored and observed
  */
-export class ObservableValue<T> implements Observable<T> {
+export class Seidr<T> implements Observable<T> {
   /** The current value being stored */
   private v: T;
 
@@ -34,7 +34,7 @@ export class ObservableValue<T> implements Observable<T> {
   private cleanups: CleanupFunction[] = [];
 
   /**
-   * Creates a new ObservableValue instance.
+   * Creates a new Seidr instance.
    * @param initial - The initial value to store
    */
   constructor(initial: T) {
@@ -71,6 +71,25 @@ export class ObservableValue<T> implements Observable<T> {
   }
 
   /**
+   * Creates a reactive binding between an Seidr and a target.
+   *
+   * The onChange function is called immediately with the current value, and then
+   * automatically called whenever the observable changes. Returns a cleanup function
+   * that removes the binding when called.
+   *
+   * @template E - The type being bound to
+   *
+   * @param target - The value to apply changes to
+   * @param onChange - Function that applies the observable's value to the value
+   *
+   * @returns A cleanup function that removes the binding when called
+   */
+  bind<E>(target: E, onChange: (value: T, target: E) => void): CleanupFunction {
+    onChange(this.value, target);
+    return this.observe((value) => onChange(value, target));
+  }
+
+  /**
    * Returns the number of active observers.
    * @returns The number of active observers
    */
@@ -79,13 +98,13 @@ export class ObservableValue<T> implements Observable<T> {
   }
 
   /**
-   * Creates a derived ObservableValue that updates whenever this one changes.
+   * Creates a derived Seidr that updates whenever this one changes.
    * @template U The type of the derived value
    * @param transform - Function to transform the value
-   * @returns {ObservableValue<U>} A new ObservableValue instance
+   * @returns {Seidr<U>} A new Seidr instance
    */
-  derive<U>(transform: (value: T) => U): ObservableValue<U> {
-    const derived = new ObservableValue<U>(transform(this.v));
+  derive<U>(transform: (value: T) => U): Seidr<U> {
+    const derived = new Seidr<U>(transform(this.v));
     this.addCleanup(this.observe((value) => (derived.value = transform(value))));
     return derived;
   }
@@ -99,16 +118,16 @@ export class ObservableValue<T> implements Observable<T> {
    * @template T - The return type of the computed value
    *
    * @param compute - Function that computes the derived value
-   * @param dependencies - Array of ObservableValues that trigger recomputation when changed
+   * @param dependencies - Array of Seidrs that trigger recomputation when changed
    *
    * @returns A new ComputedValue containing the computed result
    */
-  static computed<T>(compute: () => T, dependencies: ObservableValue<any>[]): ObservableValue<T> {
+  static computed<T>(compute: () => T, dependencies: Seidr<any>[]): Seidr<T> {
     if (dependencies.length === 0) {
       console.warn("Computed value with zero dependencies");
     }
 
-    const computed = new ObservableValue<T>(compute());
+    const computed = new Seidr<T>(compute());
     dependencies.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
     return computed;
   }

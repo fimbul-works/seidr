@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createElement } from "./element.js";
 import { $a, $button, $div, $input, $span } from "./elements.js";
+import { Seidr } from "./seidr.js";
 import { $ } from "./util.js";
-import { ObservableValue } from "./value.js";
 
 describe("integration tests", () => {
   beforeEach(() => {
@@ -71,10 +71,10 @@ describe("integration tests", () => {
   });
 });
 
-describe("ReactiveProps - ObservableValue bindings", () => {
+describe("ReactiveProps - Seidr bindings", () => {
   describe("string observable bindings", () => {
-    it("should update textContent when ObservableValue<string> changes", () => {
-      const text = new ObservableValue("initial");
+    it("should update textContent when Seidr<string> changes", () => {
+      const text = new Seidr("initial");
       const span = $span({ textContent: text });
 
       expect(span.textContent).toBe("initial");
@@ -86,8 +86,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(span.textContent).toBe("final update");
     });
 
-    it("should update className when ObservableValue<string> changes", () => {
-      const className = new ObservableValue("initial-class");
+    it("should update className when Seidr<string> changes", () => {
+      const className = new Seidr("initial-class");
       const div = $div({ className });
 
       expect(div.className).toBe("initial-class");
@@ -96,8 +96,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(div.className).toBe("updated-class");
     });
 
-    it("should update id when ObservableValue<string> changes", () => {
-      const id = new ObservableValue("element-1");
+    it("should update id when Seidr<string> changes", () => {
+      const id = new Seidr("element-1");
       const button = $button({ id });
 
       expect(button.id).toBe("element-1");
@@ -106,8 +106,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(button.id).toBe("element-2");
     });
 
-    it("should update href when ObservableValue<string> changes", () => {
-      const href = new ObservableValue("/initial-path");
+    it("should update href when Seidr<string> changes", () => {
+      const href = new Seidr("/initial-path");
       const link = $a({ href });
 
       expect(link.href).toContain("/initial-path");
@@ -116,8 +116,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(link.href).toContain("/updated-path");
     });
 
-    it("should update input placeholder when ObservableValue<string> changes", () => {
-      const placeholder = new ObservableValue("Enter name");
+    it("should update input placeholder when Seidr<string> changes", () => {
+      const placeholder = new Seidr("Enter name");
       const input = $input({ type: "text", placeholder });
 
       expect(input.placeholder).toBe("Enter name");
@@ -126,8 +126,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(input.placeholder).toBe("Enter your name");
     });
 
-    it("should update input value when ObservableValue<string> changes", () => {
-      const value = new ObservableValue("initial value");
+    it("should update input value when Seidr<string> changes", () => {
+      const value = new Seidr("initial value");
       const input = $input({ type: "text", value });
 
       expect(input.value).toBe("initial value");
@@ -138,8 +138,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
   });
 
   describe("boolean observable bindings", () => {
-    it("should update disabled when ObservableValue<boolean> changes", () => {
-      const disabled = new ObservableValue(false);
+    it("should update disabled when Seidr<boolean> changes", () => {
+      const disabled = new Seidr(false);
       const button = $button({ disabled });
 
       expect(button.disabled).toBe(false);
@@ -151,8 +151,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(button.disabled).toBe(false);
     });
 
-    it("should update hidden when ObservableValue<boolean> changes", () => {
-      const hidden = new ObservableValue(false);
+    it("should update hidden when Seidr<boolean> changes", () => {
+      const hidden = new Seidr(false);
       const div = $div({ hidden });
 
       expect(div.hidden).toBe(false);
@@ -164,8 +164,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(div.hidden).toBe(false);
     });
 
-    it("should update input readonly when ObservableValue<boolean> changes", () => {
-      const readonly = new ObservableValue(false);
+    it("should update input readonly when Seidr<boolean> changes", () => {
+      const readonly = new Seidr(false);
       const input = $input({ type: "text", readOnly: readonly }); // Note: readOnly, not readonly
 
       expect(input.readOnly).toBe(false);
@@ -177,8 +177,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(input.readOnly).toBe(false);
     });
 
-    it("should update input required when ObservableValue<boolean> changes", () => {
-      const required = new ObservableValue(false);
+    it("should update input required when Seidr<boolean> changes", () => {
+      const required = new Seidr(false);
       const input = $input({ type: "text", required });
 
       expect(input.required).toBe(false);
@@ -192,8 +192,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
   });
 
   describe("number observable bindings", () => {
-    it("should update tabIndex when ObservableValue<number> changes", () => {
-      const tabIndex = new ObservableValue(1);
+    it("should update tabIndex when Seidr<number> changes", () => {
+      const tabIndex = new Seidr(1);
       const button = $button({ tabIndex });
 
       expect(button.tabIndex).toBe(1);
@@ -205,8 +205,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(button.tabIndex).toBe(0);
     });
 
-    it("should update input maxLength when ObservableValue<number> changes", () => {
-      const maxLength = new ObservableValue(10);
+    it("should update input maxLength when Seidr<number> changes", () => {
+      const maxLength = new Seidr(10);
       const input = $input({ type: "text", maxLength });
 
       expect(input.maxLength).toBe(10);
@@ -218,8 +218,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(input.maxLength).toBe(50);
     });
 
-    it("should update input size when ObservableValue<number> changes", () => {
-      const size = new ObservableValue(20);
+    it("should update input size when Seidr<number> changes", () => {
+      const size = new Seidr(20);
       const input = $input({ type: "text", size });
 
       expect(input.size).toBe(20);
@@ -228,8 +228,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(input.size).toBe(30);
     });
 
-    it("should update textarea cols when ObservableValue<number> changes", () => {
-      const cols = new ObservableValue(40);
+    it("should update textarea cols when Seidr<number> changes", () => {
+      const cols = new Seidr(40);
       const textarea = createElement("textarea", { cols });
 
       expect(textarea.cols).toBe(40);
@@ -241,7 +241,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
 
   describe("mixed static and reactive properties", () => {
     it("should handle static and reactive properties together", () => {
-      const className = new ObservableValue("dynamic-class");
+      const className = new Seidr("dynamic-class");
       const button = $button({
         id: "static-id",
         className,
@@ -265,9 +265,9 @@ describe("ReactiveProps - ObservableValue bindings", () => {
     });
 
     it("should handle multiple reactive properties on same element", () => {
-      const className = new ObservableValue("class1");
-      const disabled = new ObservableValue(false);
-      const tabIndex = new ObservableValue(1);
+      const className = new Seidr("class1");
+      const disabled = new Seidr(false);
+      const tabIndex = new Seidr(1);
 
       const button = $button({
         className,
@@ -295,7 +295,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
 
   describe("reactive binding cleanup", () => {
     it("should stop updating DOM element after destroy", () => {
-      const className = new ObservableValue("initial");
+      const className = new Seidr("initial");
       const div = $div({ className });
 
       expect(div.className).toBe("initial");
@@ -315,9 +315,9 @@ describe("ReactiveProps - ObservableValue bindings", () => {
     });
 
     it("should cleanup all reactive bindings on element destroy", () => {
-      const className = new ObservableValue("class1");
-      const disabled = new ObservableValue(false);
-      const tabIndex = new ObservableValue(1);
+      const className = new Seidr("class1");
+      const disabled = new Seidr(false);
+      const tabIndex = new Seidr(1);
 
       const button = $button({
         className,
@@ -354,8 +354,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
     });
 
     it("should handle child cleanup in parent destroy", () => {
-      const childText = new ObservableValue("child");
-      const parentClass = new ObservableValue("parent");
+      const childText = new Seidr("child");
+      const parentClass = new Seidr("parent");
 
       const child = $span({ textContent: childText });
       const parent = $div({ className: parentClass }, [child]);
@@ -385,7 +385,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
 
   describe("edge cases", () => {
     it("should handle rapid successive updates", () => {
-      const text = new ObservableValue("initial");
+      const text = new Seidr("initial");
       const span = $span({ textContent: text });
 
       expect(span.textContent).toBe("initial");
@@ -400,7 +400,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
     });
 
     it("should handle null and undefined values for string observables", () => {
-      const text = new ObservableValue<string | null>("initial");
+      const text = new Seidr<string | null>("initial");
       // @ts-expect-error
       const span = $span({ textContent: text });
 
@@ -418,7 +418,7 @@ describe("ReactiveProps - ObservableValue bindings", () => {
     });
 
     it("should handle zero values for number observables", () => {
-      const tabIndex = new ObservableValue(5);
+      const tabIndex = new Seidr(5);
       const button = $button({ tabIndex });
 
       expect(button.tabIndex).toBe(5);
@@ -430,8 +430,8 @@ describe("ReactiveProps - ObservableValue bindings", () => {
       expect(button.tabIndex).toBe(-1);
     });
 
-    it("should handle ObservableValue with same value updates efficiently", () => {
-      const text = new ObservableValue("initial");
+    it("should handle Seidr with same value updates efficiently", () => {
+      const text = new Seidr("initial");
       const span = $span({ textContent: text });
 
       expect(span.textContent).toBe("initial");

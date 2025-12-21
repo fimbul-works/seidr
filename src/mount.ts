@@ -1,6 +1,6 @@
 import type { Component } from "./component.js";
 import type { SeidrElement } from "./element.js";
-import type { CleanupFunction, ObservableValue } from "./value.js";
+import type { CleanupFunction, Seidr } from "./seidr.js";
 
 /**
  * Mount a component into a container element.
@@ -26,13 +26,13 @@ export function mount<E extends SeidrElement>(component: Component<E>, container
  *
  * @template E - The type of HTML element being mounted
  *
- * @param condition - ObservableValue boolean
+ * @param condition - Seidr boolean
  * @param componentFactory - Component factory function
  * @param container - Container component to mount to
  * @return Returns an interface to clean up
  *
  * @example
- * const showDetails = new ObservableValue(false);
+ * const showDetails = new Seidr(false);
  * const conditional = mountConditional(
  *   showDetails,
  *   () => DetailsPanel(),
@@ -41,7 +41,7 @@ export function mount<E extends SeidrElement>(component: Component<E>, container
  * // Later: conditional.destroy() to cleanup
  */
 export function mountConditional<E extends SeidrElement>(
-  condition: ObservableValue<boolean>,
+  condition: Seidr<boolean>,
   componentFactory: () => Component<E>,
   container: HTMLElement,
 ): CleanupFunction {
@@ -82,14 +82,14 @@ export function mountConditional<E extends SeidrElement>(
  * @template K - List item key type
  * @template E - The type of HTML element being mounted
  *
- * @param observable - ObservableValue that contains an array
+ * @param observable - Seidr that contains an array
  * @param getKey - Get unique key from a list item
  * @param componentFactory - Component factory function
  * @param container - Container component to mount to
  * @return Returns an interface to clean up
  *
  * @example
- * const items = new ObservableValue([
+ * const items = new Seidr([
  *   { id: 1, name: 'Item 1' },
  *   { id: 2, name: 'Item 2' }
  * ]);
@@ -102,7 +102,7 @@ export function mountConditional<E extends SeidrElement>(
  * );
  */
 export function mountList<T, K extends string | number, E extends SeidrElement>(
-  observable: ObservableValue<T[]>,
+  observable: Seidr<T[]>,
   getKey: (item: T) => K,
   componentFactory: (item: T) => Component<E>,
   container: HTMLElement,
@@ -165,13 +165,13 @@ export function mountList<T, K extends string | number, E extends SeidrElement>(
  * @template K - Key to switch between
  * @template E - The type of HTML element being mounted
  *
- * @param observable - ObservableValue that stores the key
+ * @param observable - Seidr that stores the key
  * @param componentMap - A map of key to Component
  * @param container - Container component to mount to
  * @return Returns an interface to clean up
  *
  * @example
- * const view = new ObservableValue<'list' | 'grid'>('list');
+ * const view = new Seidr<'list' | 'grid'>('list');
  * const switcher = mountSwitch(
  *   view,
  *   {
@@ -182,7 +182,7 @@ export function mountList<T, K extends string | number, E extends SeidrElement>(
  * );
  */
 export function mountSwitch<K extends string, E extends SeidrElement>(
-  observable: ObservableValue<K>,
+  observable: Seidr<K>,
   componentMap: Record<K, () => Component<E>>,
   container: HTMLElement,
 ): CleanupFunction {

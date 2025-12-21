@@ -9,7 +9,7 @@ Build reactive user interfaces with minimal overhead and maximum control. No vir
 
 ## ✨ Features
 
-- 🪄 **Reactive Bindings** - Automatic `ObservableValue` to DOM attribute binding
+- 🪄 **Reactive Bindings** - Automatic `Seidr` to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
 - 📦 **Tiny Footprint** - 1.5KB core, 2.3KB full (minified + gzipped)
@@ -40,11 +40,11 @@ pnpm install @fimbul-works/seidr
 ## 🚀 Quick Start
 
 ```typescript
-import { component, mount, ObservableValue, $div, $button, $span } from '@fimbul-works/seidr';
+import { component, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
 
 function Counter() {
   return component((scope) => {
-    const count = new ObservableValue(0);
+    const count = new Seidr(0);
     const isDisabled = count.derive(value => value >= 10);
 
     return $div({
@@ -73,24 +73,24 @@ mount(Counter(), document.body);
 
 ### Reactive Props
 
-State is stored in `ObservableValue<T>` which can be used directly as props - no manual binding required!
+State is stored in `Seidr<T>` which can be used directly as props - no manual binding required!
 
 ```typescript
-import { ObservableValue, $input, $button, $div } from '@fimbul-works/seidr';
+import { Seidr, $input, $button, $div } from '@fimbul-works/seidr';
 
 // Create reactive observables
-const disabled = new ObservableValue(false);
-const className = new ObservableValue('btn-primary');
-const maxLength = new ObservableValue(50);
-const placeholder = new ObservableValue('Enter text...');
+const disabled = new Seidr(false);
+const className = new Seidr('btn-primary');
+const maxLength = new Seidr(50);
+const placeholder = new Seidr('Enter text...');
 
 // Automatic reactive bindings - TypeScript handles everything!
 const input = $input({
   type: 'text',
-  className, // ObservableValue<string> → className property
-  disabled, // ObservableValue<boolean> → disabled property
-  maxLength, // ObservableValue<number> → maxLength property
-  placeholder // ObservableValue<string> → placeholder property
+  className, // Seidr<string> → className property
+  disabled, // Seidr<boolean> → disabled property
+  maxLength, // Seidr<number> → maxLength property
+  placeholder // Seidr<string> → placeholder property
 });
 
 // Any change to the observable automatically updates the DOM
@@ -101,16 +101,16 @@ maxLength.value = 100; // input.maxLength becomes 100
 
 ### Manual Reactive Bindings
 
-For complex transformations, use the `bind` function:
+For complex transformations, use the `bind` method on Seidr:
 
 ```typescript
-import { ObservableValue, bind, $div, $span } from '@fimbul-works/seidr';
+import { Seidr, $div, $span } from '@fimbul-works/seidr';
 
-const count = new ObservableValue(0);
+const count = new Seidr(0);
 const display = $span();
 
 // Custom transformation function
-const cleanup = bind(count, display, (value, el) => {
+const cleanup = count.bind(display, (value, el) => {
   el.textContent = value > 5 ? 'Many clicks!' : `Count: ${value}`;
 });
 
@@ -125,38 +125,32 @@ count.value = 7; // display shows "Many clicks!"
 Components automatically manage cleanup of bindings, child components, and resources:
 
 ```typescript
-import { component, mount, ObservableValue, $div, $span, $button, bind } from '@fimbul-works/seidr';
+import { component, mount, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
 
 function UserProfile() {
   return component((scope) => {
-    const name = new ObservableValue('Alice');
-    const age = new ObservableValue(30);
-    const isEditing = new ObservableValue(false);
+    const name = new Seidr('Alice');
+    const age = new Seidr(30);
+    const isEditing = new Seidr(false);
+
+    const ageSpan = $span({ textContent: `Age: ${age.value}` });
+
+    // Reactive age display with manual binding
+    scope.track(age.bind(ageSpan, (value, el) => {
+      el.textContent = `Age: ${value}`;
+    }));
 
     return $div({ className: 'user-profile' }, [
       // Reactive name display
       $span({ textContent: name }),
-
-      // Reactive age display with manual binding
-      scope.track(bind(age, $span(), (value, el) => {
-        el.textContent = `Age: ${value}`;
-      })),
+      ageSpan,
 
       // Edit button with reactive disabled state
       $button({
         textContent: 'Edit',
         disabled: isEditing,
         onclick: () => isEditing.value = !isEditing.value
-      }),
-
-      // Conditional save button (reactive!)
-      isEditing.derive(editing => editing
-        ? $button({
-            textContent: 'Save',
-            onclick: () => isEditing.value = false
-          })
-        : null
-      )
+      })
     ]);
   });
 }
@@ -173,9 +167,9 @@ profile.destroy(); // Cleans up all reactive bindings automatically
 Show/hide components based on observable conditions:
 
 ```typescript
-import { mountConditional, ObservableValue, $div, $button, component } from '@fimbul-works/seidr';
+import { mountConditional, Seidr, $div, $button, component } from '@fimbul-works/seidr';
 
-const isVisible = new ObservableValue(false);
+const isVisible = new Seidr(false);
 
 function DetailsPanel() {
   return component((scope) => {
@@ -205,16 +199,16 @@ isVisible.value = false; // Component automatically unmounts and cleans up
 Efficiently render lists from observable arrays with key-based diffing:
 
 ```typescript
-import { mountList, ObservableValue, $div, $span, $button, component } from '@fimbul-works/seidr';
+import { mountList, Seidr, $div, $span, $button, component } from '@fimbul-works/seidr';
 
-const todos = new ObservableValue([
+const todos = new Seidr([
   { id: 1, text: 'Learn Seidr', completed: false },
   { id: 2, text: 'Build amazing apps', completed: false }
 ]);
 
 function TodoItem({ todo }: { todo: any }) {
   return component((scope) => {
-    const isCompleted = new ObservableValue(todo.completed);
+    const isCompleted = new Seidr(todo.completed);
 
     return $div({
       className: 'todo-item',
@@ -259,9 +253,9 @@ todos.value = todos.value.filter(todo => todo.id !== 1); // Remove item
 Create derived observables that update automatically when the original value changes:
 
 ```typescript
-import { ObservableValue } from '@fimbul-works/seidr';
+import { Seidr } from '@fimbul-works/seidr';
 
-const isActive = new ObservableValue(false);
+const isActive = new Seidr(false);
 const activeClass = isActive.derive((v) => v ? 'active' : '');
 
 isActive.value = true;
@@ -273,13 +267,13 @@ isActive.value = true;
 Create aggregating observables that automatically update when dependencies change:
 
 ```typescript
-import { ObservableValue, $div, $span } from '@fimbul-works/seidr';
+import { Seidr, $div, $span } from '@fimbul-works/seidr';
 
-const firstName = new ObservableValue('John');
-const lastName = new ObservableValue('Doe');
+const firstName = new Seidr('John');
+const lastName = new Seidr('Doe');
 
 // Computed full name that updates when either first or last name changes
-const fullName = ObservableValue.computed(
+const fullName = Seidr.computed(
   () => `${firstName.value} ${lastName.value}`,
   [firstName, lastName]
 );
@@ -302,9 +296,9 @@ firstName.value = 'Jane'; // fullName becomes "Jane Doe"
 Switch between different components based on observable state:
 
 ```typescript
-import { mountSwitch, ObservableValue, $div, $button, component } from '@fimbul-works/seidr';
+import { mountSwitch, Seidr, $div, $button, component } from '@fimbul-works/seidr';
 
-const viewMode = new ObservableValue<'list' | 'grid'>('list');
+const viewMode = new Seidr<'list' | 'grid'>('list');
 
 const ListView = () => component(() => $div({ textContent: 'List View' }));
 const GridView = () => component(() => $div({ textContent: 'Grid View' }));
@@ -326,9 +320,9 @@ viewMode.value = 'grid'; // Automatically switches to GridView
 Bind form inputs to observables with automatic synchronization:
 
 ```typescript
-import { ObservableValue, $input, $span, bind, $div } from '@fimbul-works/seidr';
+import { Seidr, $input, $span, $div } from '@fimbul-works/seidr';
 
-const searchText = new ObservableValue('');
+const searchText = new Seidr('');
 
 const input = $input({
   type: 'text',
@@ -347,7 +341,7 @@ searchComponent.appendChild(input);
 searchComponent.appendChild(span);
 
 // Manual binding for bidirectional sync (if needed)
-const cleanup = bind(searchText, input, (value, el) => {
+const cleanup = searchText.bind(input, (value, el) => {
   if (el !== document.activeElement) { // Don't update while user is typing
     el.value = value;
   }
@@ -359,11 +353,11 @@ const cleanup = bind(searchText, input, (value, el) => {
 Use the `cn` utility for dynamic class management:
 
 ```typescript
-import { ObservableValue, cn, toggleClass, $div } from '@fimbul-works/seidr';
+import { Seidr, cn, toggleClass, $div } from '@fimbul-works/seidr';
 
-const isActive = new ObservableValue(false);
-const size = new ObservableValue('large');
-const error = new ObservableValue(false);
+const isActive = new Seidr(false);
+const size = new Seidr('large');
+const error = new Seidr(false);
 
 // Using cn utility with reactive values
 const className = cn(
@@ -408,13 +402,13 @@ $form, $label, $fieldset, $legend
 
 ## 📚 API Reference
 
-- **`ObservableValue<T>`** - Core reactive primitive
+- **`Seidr<T>`** - Core reactive primitive
 - **`component()`** - Create components with lifecycle management
 - **`mount()`** - Mount components to DOM containers
 - **`mountConditional()`** - Conditional component rendering
 - **`mountList()`** - Efficient list rendering with diffing
 - **`mountSwitch()`** - Component switching based on state
-- **`bind()`** - Manual reactive bindings
+- **`observable.bind()`** - Manual reactive bindings
 - **`$elementName`** - Element creators ($div, $button, etc.)
 - **`cn()`** - Class name utility with reactive support
 - **`toggleClass()`** - Reactive class toggling

@@ -1,5 +1,5 @@
 import type { SeidrElement } from "./element.js";
-import type { CleanupFunction } from "./value.js";
+import type { CleanupFunction } from "./seidr.js";
 
 /**
  * A component is a factory function that returns an element and its cleanup logic.
@@ -84,7 +84,7 @@ export function createScope(): ComponentScope {
  * @example
  * export function Counter() {
  *   return component((scope) => {
- *     const count = new ObservableValue(0);
+ *     const count = new Seidr(0);
  *     const button = ButtonEl({ textContent: 'Count: 0' });
  *
  *     scope.track(bind(count, button, (val, el) => {
