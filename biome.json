@@ -8,17 +8,13 @@
   "linter": {
     "rules": {
       "complexity": {
-        "noForEach": "off"
+        "noForEach": "off",
+        "noCommaOperator": "off"
       },
       "suspicious": {
-        "noDebugger": "off",
         "noAssignInExpressions": "off",
-        "noExplicitAny": "off"
-      },
-      "style": {
-        "noShoutyConstants": "warn",
-        "useNamingConvention": "off",
-        "noParameterAssign": "off"
+        "noExplicitAny": "off",
+        "useIterableCallbackReturn": "off"
       }
     }
   }

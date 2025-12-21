@@ -1,7 +1,7 @@
 {
   "name": "@fimbul-works/seidr",
   "description": "Reactive primitives and DOM utilities for building UIs",
-  "version": "0.3.1",
+  "version": "1.0.0",
   "type": "module",
   "private": false,
   "license": "MIT",

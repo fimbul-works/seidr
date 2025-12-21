@@ -1,9 +1,14 @@
 /**
- * Type for event handlers that can be synchronous or asynchronous
+ * Type for event handlers that can be synchronous or asynchronous.
  * @template T The data type for the event
  * @param data - Data to handle
  */
-export type EventHandler<T = unknown> = (data: T) => void;
+export type EventHandler<T = unknown> = (data: T) => void | Promise<void>;
+
+/**
+ * Type for cleanup functions.
+ */
+export type CleanupFunction = () => void;
 
 /**
  * Base interface for all observable types
@@ -26,7 +31,7 @@ export class ObservableValue<T> implements Observable<T> {
   private handlers = new Set<EventHandler<T>>();
 
   /** Cleanup functions */
-  private cleanups: (() => void)[] = [];
+  private cleanups: CleanupFunction[] = [];
 
   /**
    * Creates a new ObservableValue instance.
@@ -60,7 +65,7 @@ export class ObservableValue<T> implements Observable<T> {
    * @param fn - Function to be called with the current value and subsequent changes
    * @returns A cleanup function that removes the event handler
    */
-  observe(fn: (value: T) => void): () => void {
+  observe(fn: (value: T) => void): CleanupFunction {
     this.handlers.add(fn);
     return () => this.handlers.delete(fn);
   }
@@ -86,14 +91,38 @@ export class ObservableValue<T> implements Observable<T> {
   }
 
   /**
-   * Adds a cleanup function to be called when destroy() is invoked
+   * Creates a computed observable value that automatically updates when its dependencies change.
+   *
+   * The compute function is called immediately and whenever any dependency changes.
+   * Returns a new ComputedValue that can be used like any other observable.
+   *
+   * @template T - The return type of the computed value
+   *
+   * @param compute - Function that computes the derived value
+   * @param dependencies - Array of ObservableValues that trigger recomputation when changed
+   *
+   * @returns A new ComputedValue containing the computed result
    */
-  addCleanup(cleanup: () => void) {
-    this.cleanups.push(cleanup);
+  static computed<T>(compute: () => T, dependencies: ObservableValue<any>[]): ObservableValue<T> {
+    if (dependencies.length === 0) {
+      console.warn("Computed value with zero dependencies");
+    }
+
+    const computed = new ObservableValue<T>(compute());
+    dependencies.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
+    return computed;
   }
 
   /**
-   * Removes all dependency subscriptions and cleans up resources
+   * Add a cleanup function.
+   * @param fn - The cleanup function to call on destroy().
+   */
+  addCleanup(fn: CleanupFunction): void {
+    this.cleanups.push(fn);
+  }
+
+  /**
+   * Removes all dependency subscriptions and cleans up resources.
    */
   destroy() {
     this.handlers.clear();

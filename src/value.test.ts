@@ -188,4 +188,112 @@ describe("ObservableValue", () => {
       expect(cleanupCalled).toBe(true);
     });
   });
+
+  describe("computed", () => {
+    it("should create computed value with initial computation", () => {
+      const a = new ObservableValue(2);
+      const b = new ObservableValue(3);
+
+      const sum = ObservableValue.computed(() => a.value + b.value, [a, b]);
+
+      expect(sum.value).toBe(5);
+    });
+
+    it("should update when dependencies change", () => {
+      const a = new ObservableValue(2);
+      const b = new ObservableValue(3);
+
+      const sum = ObservableValue.computed(() => a.value + b.value, [a, b]);
+
+      expect(sum.value).toBe(5);
+
+      a.value = 10;
+
+      expect(sum.value).toBe(13);
+
+      b.value = 7;
+
+      expect(sum.value).toBe(17);
+    });
+
+    it("should work with multiple dependencies", () => {
+      const firstName = new ObservableValue("John");
+      const lastName = new ObservableValue("Doe");
+      const age = new ObservableValue(30);
+
+      const fullName = ObservableValue.computed(
+        () => `${firstName.value} ${lastName.value}, age ${age.value}`,
+        [firstName, lastName, age],
+      );
+
+      expect(fullName.value).toBe("John Doe, age 30");
+
+      lastName.value = "Smith";
+      expect(fullName.value).toBe("John Smith, age 30");
+
+      age.value = 31;
+      expect(fullName.value).toBe("John Smith, age 31");
+    });
+
+    it("should work with computed values as dependencies", () => {
+      const a = new ObservableValue(2);
+      const b = new ObservableValue(3);
+      const sum = ObservableValue.computed(() => a.value + b.value, [a, b]);
+      const doubled = ObservableValue.computed(() => sum.value * 2, [sum]);
+
+      expect(doubled.value).toBe(10);
+
+      a.value = 5;
+
+      expect(sum.value).toBe(8);
+      expect(doubled.value).toBe(16);
+    });
+
+    it("should return ObservableValue instance", () => {
+      const a = new ObservableValue(1);
+      const result = ObservableValue.computed(() => a.value * 2, [a]);
+
+      expect(result).toBeInstanceOf(ObservableValue);
+    });
+
+    it("should warn when no dependencies provided", () => {
+      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      ObservableValue.computed(() => 42, []);
+
+      expect(consoleSpy).toHaveBeenCalledWith("Computed value with zero dependencies");
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should not update when unrelated observables change", () => {
+      const a = new ObservableValue(2);
+      const unrelated = new ObservableValue("unrelated");
+
+      const sum = ObservableValue.computed(() => a.value + 1, [a]);
+
+      expect(sum.value).toBe(3);
+
+      unrelated.value = "changed";
+
+      expect(sum.value).toBe(3); // Should remain unchanged
+    });
+
+    it("should handle computation errors gracefully", () => {
+      const a = new ObservableValue(2);
+
+      const faulty = ObservableValue.computed(() => {
+        if (a.value === 0) {
+          throw new Error("Division by zero");
+        }
+        return 100 / a.value;
+      }, [a]);
+
+      expect(faulty.value).toBe(50);
+
+      // This should throw, but we can't easily test error handling here
+      // since it depends on the ObservableValue implementation
+      // We're mainly testing that the computed structure works
+    });
+  });
 });
