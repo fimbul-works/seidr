@@ -12,7 +12,7 @@ type WritableKeys<T> = {
 }[keyof T];
 
 /** Scalar or an observable scalar? */
-type ReactiveValue<T> = [T] extends [Scalar] ? T | Seidr<T> : T;
+export type ReactiveValue<T> = [T] extends [Scalar] ? T | Seidr<T> : T;
 
 /** We have a tag, and thus our HTML element - turn all writable scalar keys into ReactiveValue */
 export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends HTMLElementTagNameMap[K]> = {
@@ -48,6 +48,22 @@ export interface SeidrElement extends HTMLElement {
    * Remove the element and call all cleanup functions.
    */
   destroy(): void;
+
+  /**
+   * Toggles a CSS class on an element based on a boolean observable.
+   *
+   * When the observable is true, the class is added to the element.
+   * When false, the class is removed. The binding is reactive and updates
+   * automatically when the observable changes.
+   *
+   * @template E - The type of HTML element being bound to
+   *
+   * @param className - The CSS class name to toggle
+   * @param observable - Boolean Seidr that controls the class
+   *
+   * @returns A cleanup function that removes the binding when called
+   */
+  toggleClass(className: string, observable: Seidr<boolean>): CleanupFunction;
 }
 
 /**
@@ -102,6 +118,9 @@ export const createElement = <K extends keyof HTMLElementTagNameMap, P extends k
       Array.from(el.children).forEach((child: any) => child.destroy?.());
       cleanups.forEach((cleanup) => cleanup());
       el.remove();
+    },
+    toggleClass(className: string, observable: Seidr<boolean>) {
+      return observable.bind(el, (value, el) => el.classList.toggle(className, value));
     },
   });
 

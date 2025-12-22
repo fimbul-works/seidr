@@ -422,7 +422,7 @@ const searchComponent = $div({}, [
 Use the `cn` utility for dynamic class management:
 
 ```typescript
-import { Seidr, cn, toggleClass, $div } from '@fimbul-works/seidr';
+import { Seidr, cn, $div } from '@fimbul-works/seidr';
 
 const isActive = new Seidr(false);
 const size = new Seidr('large');
@@ -438,9 +438,9 @@ const className = cn(
 
 const element = $div({ className });
 
-// Or toggle classes reactively
+// Or toggle classes reactively using the element method
 const highlight = new Seidr(false);
-toggleClass(element, 'highlight', highlight);
+element.toggleClass('highlight', highlight);
 
 highlight.value = true; // Adds 'highlight' class
 ```
@@ -694,11 +694,16 @@ const className = cn(
 );
 ```
 
-#### `toggleClass(element, className, observable)`
-Reactively toggle a class based on observable value.
+#### `element.toggleClass(className, observable)`
+Reactively toggle a class on an element based on observable value.
 
 ```typescript
-toggleClass(element, 'active', isActive);
+const isActive = new Seidr(false);
+const button = $button({ textContent: 'Click me' });
+button.toggleClass('active', isActive);
+
+isActive.value = true; // Adds 'active' class
+isActive.value = false; // Removes 'active' class
 ```
 
 #### `$(selector)` / `$$(selector)`

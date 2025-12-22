@@ -1,5 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createElement, type SeidrElement } from "./element.js";
+import { Seidr } from "./seidr.js";
 
 describe("createElement", () => {
   it("should create basic HTML element", () => {
@@ -79,5 +80,87 @@ describe("element on method", () => {
     div.click();
 
     expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  describe("toggleClass", () => {
+    let element: SeidrElement;
+    let observable: Seidr<boolean>;
+
+    beforeEach(() => {
+      element = createElement("div");
+      observable = new Seidr(false);
+    });
+
+    it("should add class when observable is true", () => {
+      observable.value = true;
+
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(element.classList.contains("active")).toBe(true);
+
+      cleanup();
+    });
+
+    it("should remove class when observable is false", () => {
+      observable.value = false;
+
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(element.classList.contains("active")).toBe(false);
+
+      cleanup();
+    });
+
+    it("should toggle class when observable changes", () => {
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(element.classList.contains("active")).toBe(false);
+
+      observable.value = true;
+
+      expect(element.classList.contains("active")).toBe(true);
+
+      observable.value = false;
+
+      expect(element.classList.contains("active")).toBe(false);
+
+      cleanup();
+    });
+
+    it("should return cleanup function", () => {
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(typeof cleanup).toBe("function");
+      expect(() => cleanup()).not.toThrow();
+    });
+
+    it("should stop updating after cleanup", () => {
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(element.classList.contains("active")).toBe(false);
+
+      cleanup();
+
+      observable.value = true;
+
+      // Class should not be added after cleanup
+      expect(element.classList.contains("active")).toBe(false);
+    });
+
+    it("should work with existing classes on element", () => {
+      element.classList.add("existing");
+      observable.value = true;
+
+      const cleanup = element.toggleClass("active", observable);
+
+      expect(element.classList.contains("existing")).toBe(true);
+      expect(element.classList.contains("active")).toBe(true);
+
+      cleanup();
+
+      expect(element.classList.contains("existing")).toBe(true);
+      // toggleClass cleanup doesn't remove the class, it just stops observing changes
+      expect(element.classList.contains("active")).toBe(true);
+    });
   });
 });

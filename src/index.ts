@@ -4,5 +4,4 @@ export * from "./element-factory.js";
 export * from "./elements.js";
 export * from "./mount.js";
 export * from "./seidr.js";
-export * from "./toggle-class.js";
 export * from "./util.js";
