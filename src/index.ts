@@ -1,4 +1,4 @@
-export * from "./dom";
+export * from "./dom/index.js";
 export * from "./seidr.js";
-export * from "./util";
+export * from "./util/index.js";
 export * from "./with-storage.js";

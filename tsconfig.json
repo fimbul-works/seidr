@@ -12,6 +12,6 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist/esm/"
   },
-  "include": ["src"],
-  "exclude": ["src/**/*.test.ts", "src/test-setup.ts", "node_modules"]
+  "include": ["src", "examples"],
+  "exclude": ["src/**/*.test.ts", "src/test-setup.ts", "examples/**/*.test.ts", "node_modules"]
 }

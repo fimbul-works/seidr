@@ -319,6 +319,12 @@ export const $img = elementFactory("img");
 export const $input = elementFactory("input");
 
 /**
+ * Creates a new INPUT checkbox element with type="checkbox" preset.
+ * @returns SeidrElement
+ */
+export const $checkbox = (options?: any, children?: any[]) => elementFactory("input")({ ...options, type: "checkbox" }, children);
+
+/**
  * Creates a new INS SeidrElement.
  * @returns SeidrElement
  */

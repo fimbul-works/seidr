@@ -55,7 +55,7 @@ export type ReactiveValue<T> = [T] extends string ? T | Seidr<Scalar> : [T] exte
  * @template K - The HTML tag name from HTMLElementTagNameMap
  * @template T - The corresponding HTML element type
  */
-export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends HTMLElementTagNameMap[K]> = {
+export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends Omit<HTMLElementTagNameMap[K], "style">> = {
   [K in WritableKeys<T>]?: ReactiveValue<T[K]>;
 };
 
