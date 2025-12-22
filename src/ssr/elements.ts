@@ -1,4 +1,4 @@
-import { elementFactory } from "../element-factory.js";
+import { elementFactory } from "../dom/element-factory.js";
 
 /**
  * Creates a new A SeidrElement.
@@ -460,7 +460,7 @@ export const $progress = elementFactory("progress");
  * Creates a new Q SeidrElement.
  * @returns SeidrElement
  */
-export const $q = elementFactory("q");
+export const $query = elementFactory("q");
 
 /**
  * Creates a new RP SeidrElement.

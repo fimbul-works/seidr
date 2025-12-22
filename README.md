@@ -705,12 +705,12 @@ isActive.value = true; // Adds 'active' class
 isActive.value = false; // Removes 'active' class
 ```
 
-#### `$(selector)` / `$all(selector)`
+#### `$(selector)` / `$queryAll(selector)`
 DOM query utilities.
 
 ```typescript
 const el = $('#my-id');
-const all = $all('.my-class');
+const all = $queryAll('.my-class');
 ```
 
 ## ⚡ Performance

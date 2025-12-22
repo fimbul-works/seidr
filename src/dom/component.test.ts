@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
+import { Seidr } from "../seidr.js";
 import type { Component } from "./component.js";
 import { component, createScope } from "./component.js";
 import { createElement } from "./element.js";
-import { Seidr } from "./seidr.js";
 
 describe("createScope", () => {
   it("should create a scope with track, child, and destroy methods", () => {
@@ -164,7 +164,9 @@ describe("Documentation Examples", () => {
 
       // Cleanup
       comp.destroy();
-      document.body.removeChild(comp.element);
+      if (document.body.contains(comp.element)) {
+        document.body.removeChild(comp.element);
+      }
     });
   });
 
@@ -202,14 +204,17 @@ describe("Documentation Examples", () => {
 
       // Verify structure
       expect(comp.element.className).toBe("profile");
-      expect(comp.element.children.length).toBe(2);
+      expect(comp.element.children.length).toBe(3);
       expect(comp.element.children[0].textContent).toBe("Header Component");
       expect(comp.element.children[1].textContent).toBe("Avatar Component");
+      expect(comp.element.children[2].textContent).toBe("John");
       expect(comp.element.textContent).toContain("John");
 
       // Cleanup
       comp.destroy();
-      document.body.removeChild(comp.element);
+      if (document.body.contains(comp.element)) {
+        document.body.removeChild(comp.element);
+      }
     });
   });
 
@@ -342,7 +347,12 @@ describe("Documentation Examples", () => {
 
       // Destroy should not throw
       expect(() => comp.destroy()).not.toThrow();
-      expect(consoleSpy).toHaveBeenCalledWith("Test cleanup error");
+      expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
+      expect(consoleSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: "Test cleanup error",
+        }),
+      );
 
       consoleSpy.mockRestore();
     });

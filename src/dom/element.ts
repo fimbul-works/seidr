@@ -1,4 +1,4 @@
-import { type CleanupFunction, Seidr } from "./seidr.js";
+import { type CleanupFunction, Seidr } from "../seidr.js";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.

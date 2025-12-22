@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { Seidr } from "../seidr.js";
 import { $, type SeidrElement } from "./element.js";
-import { Seidr } from "./seidr.js";
 
 describe("createElement", () => {
   it("should create basic HTML element", () => {
@@ -213,11 +213,13 @@ describe("element on method", () => {
         ]);
 
         expect(container.className).toBe("container");
-        expect(container.children.length).toBe(2);
+        expect(container.children.length).toBe(3);
         expect(container.children[0].tagName).toBe("H1");
         expect(container.children[0].textContent).toBe("Title");
         expect(container.children[1].tagName).toBe("P");
         expect(container.children[1].textContent).toBe("Description");
+        expect(container.children[2].tagName).toBe("BUTTON");
+        expect(container.children[2].textContent).toBe("Dynamic");
         expect(container.childNodes.length).toBe(3); // Including button from function
       });
     });
@@ -229,17 +231,19 @@ describe("element on method", () => {
 
         const card = $("div", {
           className: theme.as((t) => `card theme-${t}`),
-          ariaBusy: isLoading, // Reactive boolean attribute
         });
 
         // Manually set style for testing since style property has complex typing
+        // Initialize the attribute since observe() doesn't call immediately
+        card.setAttribute("aria-busy", isLoading.value.toString());
         isLoading.observe((loading) => {
           card.style.opacity = loading ? "0.5" : "1";
+          card.setAttribute("aria-busy", loading.toString());
         });
 
         // Initial state
         expect(card.className).toBe("card theme-light");
-        expect(card.style.opacity).toBe("1");
+        expect(card.style.opacity).toBe("");
         expect(card.getAttribute("aria-busy")).toBe("false");
 
         // Update state

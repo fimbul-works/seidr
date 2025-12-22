@@ -1,5 +1,5 @@
+import type { CleanupFunction } from "../seidr.js";
 import type { SeidrElement } from "./element.js";
-import type { CleanupFunction } from "./seidr.js";
 
 /**
  * Represents a Seidr component with automatic lifecycle management.
@@ -167,7 +167,13 @@ export function createScope(): ComponentScope {
       return;
     }
     destroyed = true;
-    cleanups.forEach((fn) => fn());
+    cleanups.forEach((fn) => {
+      try {
+        fn();
+      } catch (error) {
+        console.error(error);
+      }
+    });
     cleanups = [];
   };
 

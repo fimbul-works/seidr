@@ -457,7 +457,7 @@ export const $pre = elementFactory("pre");
 export const $progress = elementFactory("progress");
 
 /**
- * Creates a new Q SeidrElement.
+ * Creates a new HTMLQuoteElement SeidrElement.
  * @returns SeidrElement
  */
 export const $q = elementFactory("q");

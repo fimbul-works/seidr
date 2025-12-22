@@ -1,6 +1,6 @@
+import type { CleanupFunction, Seidr } from "../seidr.js";
 import type { Component } from "./component.js";
 import type { SeidrElement } from "./element.js";
-import type { CleanupFunction, Seidr } from "./seidr.js";
 
 /**
  * Mounts a component into a container element with automatic cleanup.

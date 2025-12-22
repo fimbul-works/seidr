@@ -45,7 +45,7 @@ import type { Seidr } from "./seidr.js";
  * );
  *
  * // Form data persists across page reloads but clears when tab closes
- * formData.value.name = 'John Doe';
+ * formData.value = { name: 'John Doe', email: formData.value.email };
  * ```
  *
  * @example

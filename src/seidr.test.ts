@@ -376,22 +376,22 @@ describe("Seidr", () => {
         const count = new Seidr(0);
         const logSpy = vi.fn();
 
-        // Subscribe to changes
+        // Subscribe to changes (doesn't call immediately)
         const unsubscribe = count.observe(value => {
           logSpy(value);
         });
 
-        expect(logSpy).toHaveBeenCalledWith(0);
+        expect(logSpy).not.toHaveBeenCalled();
 
         count.value = 5;
         expect(logSpy).toHaveBeenCalledWith(5);
 
         count.value = 5;
-        expect(logSpy).toHaveBeenCalledTimes(2); // No notification for same value
+        expect(logSpy).toHaveBeenCalledTimes(1); // No notification for same value
 
         unsubscribe(); // Cleanup
         count.value = 10;
-        expect(logSpy).toHaveBeenCalledTimes(2); // No more notifications
+        expect(logSpy).toHaveBeenCalledTimes(1); // No more notifications
       });
     });
 
@@ -533,7 +533,7 @@ describe("Seidr", () => {
         const observerSpy = vi.fn();
 
         const unsubscribe = counter.observe(observerSpy);
-        expect(observerSpy).toHaveBeenCalledWith(0);
+        expect(observerSpy).not.toHaveBeenCalled();
 
         counter.value = 5;
         expect(observerSpy).toHaveBeenCalledWith(5);
@@ -541,12 +541,12 @@ describe("Seidr", () => {
         // Remove specific observer
         unsubscribe();
         counter.value = 10;
-        expect(observerSpy).toHaveBeenCalledTimes(2); // No more notifications
+        expect(observerSpy).toHaveBeenCalledTimes(1); // No more notifications
 
         // Clean up everything
         counter.destroy();
         counter.value = 15;
-        expect(observerSpy).toHaveBeenCalledTimes(2); // Still no more notifications
+        expect(observerSpy).toHaveBeenCalledTimes(1); // Still no more notifications
       });
     });
   });

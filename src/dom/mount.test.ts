@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { Seidr } from "../seidr.js";
 import { component } from "./component.js";
 import { createElement } from "./element.js";
 import { mount, mountConditional, mountList, mountSwitch } from "./mount.js";
-import { Seidr } from "./seidr.js";
 
 describe("mount", () => {
   let container: HTMLElement;
