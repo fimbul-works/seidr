@@ -1,17 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createElement, type SeidrElement } from "./element.js";
+import { $, type SeidrElement } from "./element.js";
 import { Seidr } from "./seidr.js";
 
 describe("createElement", () => {
   it("should create basic HTML element", () => {
-    const div = createElement("div");
+    const div = $("div");
 
     expect(div.tagName).toBe("DIV");
     expect(div instanceof HTMLElement).toBe(true);
   });
 
   it("should assign properties to element", () => {
-    const div = createElement("div", {
+    const div = $("div", {
       id: "test-id",
       className: "test-class",
       textContent: "Hello World",
@@ -25,7 +25,7 @@ describe("createElement", () => {
   it("should append children to element", () => {
     const child1 = document.createElement("span");
     const child2 = document.createTextNode("text");
-    const div = createElement("div", {}, [child1, child2]);
+    const div = $("div", {}, [child1, child2]);
 
     expect(div.children.length).toBe(1);
     expect(div.children[0]).toBe(child1);
@@ -34,16 +34,16 @@ describe("createElement", () => {
   });
 
   it("should add on method to element", () => {
-    const div = createElement("div");
+    const div = $("div");
 
     expect("on" in div).toBe(true);
     expect(typeof (div as any).on).toBe("function");
   });
 
   it("should work with different HTML elements", () => {
-    const button = createElement("button", { type: "button", textContent: "Click me" });
-    const input = createElement("input", { type: "text", placeholder: "Enter text" });
-    const anchor = createElement("a", { href: "#", textContent: "Link" });
+    const button = $("button", { type: "button", textContent: "Click me" });
+    const input = $("input", { type: "text", placeholder: "Enter text" });
+    const anchor = $("a", { href: "#", textContent: "Link" });
 
     expect(button.tagName).toBe("BUTTON");
     expect(button.type).toBe("button");
@@ -61,7 +61,7 @@ describe("createElement", () => {
 
 describe("element on method", () => {
   it("should provide on method on created elements", () => {
-    const div = createElement("div");
+    const div = $("div");
     const handler = vi.fn();
 
     expect("on" in div).toBe(true);
@@ -87,7 +87,7 @@ describe("element on method", () => {
     let observable: Seidr<boolean>;
 
     beforeEach(() => {
-      element = createElement("div");
+      element = $("div");
       observable = new Seidr(false);
     });
 
@@ -161,6 +161,160 @@ describe("element on method", () => {
       expect(element.classList.contains("existing")).toBe(true);
       // toggleClass cleanup doesn't remove the class, it just stops observing changes
       expect(element.classList.contains("active")).toBe(true);
+    });
+  });
+
+  describe("Documentation Examples", () => {
+    describe("Basic element creation example", () => {
+      it("should create elements with basic properties", () => {
+        const button = $("button", {
+          textContent: "Click me",
+          className: "btn btn-primary",
+        });
+
+        expect(button.tagName).toBe("BUTTON");
+        expect(button.textContent).toBe("Click me");
+        expect(button.className).toBe("btn btn-primary");
+        expect(button.type).toBe("submit"); // Default button type
+      });
+    });
+
+    describe("Reactive property binding example", () => {
+      it("should demonstrate reactive binding with multiple observables", () => {
+        const isActive = new Seidr(false);
+        const count = new Seidr(0);
+
+        const button = $("button", {
+          disabled: isActive, // Reactive disabled property
+          textContent: count.as((c) => `Count: ${c}`), // Reactive text content
+          className: "btn", // Static property
+          onclick: () => count.value++, // Event handler
+        });
+
+        // Initial state
+        expect(button.disabled).toBe(false);
+        expect(button.textContent).toBe("Count: 0");
+
+        // Update observables
+        isActive.value = true;
+        expect(button.disabled).toBe(true);
+
+        count.value = 5;
+        expect(button.textContent).toBe("Count: 5");
+      });
+    });
+
+    describe("With children elements example", () => {
+      it("should create nested element structures", () => {
+        const container = $("div", { className: "container" }, [
+          $("h1", { textContent: "Title" }),
+          $("p", { textContent: "Description" }),
+          () => $("button", { textContent: "Dynamic" }), // Function child
+        ]);
+
+        expect(container.className).toBe("container");
+        expect(container.children.length).toBe(2);
+        expect(container.children[0].tagName).toBe("H1");
+        expect(container.children[0].textContent).toBe("Title");
+        expect(container.children[1].tagName).toBe("P");
+        expect(container.children[1].textContent).toBe("Description");
+        expect(container.childNodes.length).toBe(3); // Including button from function
+      });
+    });
+
+    describe("Complex reactive bindings example", () => {
+      it("should handle complex reactive transformations", () => {
+        const theme = new Seidr<"light" | "dark">("light");
+        const isLoading = new Seidr(false);
+
+        const card = $("div", {
+          className: theme.as((t) => `card theme-${t}`),
+          ariaBusy: isLoading, // Reactive boolean attribute
+        });
+
+        // Manually set style for testing since style property has complex typing
+        isLoading.observe((loading) => {
+          card.style.opacity = loading ? "0.5" : "1";
+        });
+
+        // Initial state
+        expect(card.className).toBe("card theme-light");
+        expect(card.style.opacity).toBe("1");
+        expect(card.getAttribute("aria-busy")).toBe("false");
+
+        // Update state
+        theme.value = "dark";
+        isLoading.value = true;
+
+        expect(card.className).toBe("card theme-dark");
+        expect(card.style.opacity).toBe("0.5");
+        expect(card.getAttribute("aria-busy")).toBe("true");
+      });
+    });
+
+    describe("Event handling with cleanup example", () => {
+      it("should demonstrate proper event listener cleanup", () => {
+        const element = $("button", { textContent: "Click me" });
+        const clickSpy = vi.fn();
+
+        const cleanup = element.on("click", (e) => {
+          clickSpy(e.type);
+        });
+
+        // Simulate click
+        element.click();
+        expect(clickSpy).toHaveBeenCalledWith("click");
+
+        // Cleanup and try again
+        cleanup();
+        clickSpy.mockClear();
+        element.click();
+        expect(clickSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe("Multiple class bindings example", () => {
+      it("should handle multiple reactive class toggles", () => {
+        const isVisible = new Seidr(true);
+        const hasError = new Seidr(false);
+        const isLoading = new Seidr(false);
+
+        const element = $("div");
+
+        // Multiple reactive class bindings
+        element.toggleClass("visible", isVisible);
+        element.toggleClass("error", hasError);
+        element.toggleClass("loading", isLoading);
+
+        expect(element.classList.contains("visible")).toBe(true);
+        expect(element.classList.contains("error")).toBe(false);
+        expect(element.classList.contains("loading")).toBe(false);
+
+        // Update states
+        hasError.value = true;
+        isLoading.value = true;
+        isVisible.value = false;
+
+        expect(element.classList.contains("visible")).toBe(false);
+        expect(element.classList.contains("error")).toBe(true);
+        expect(element.classList.contains("loading")).toBe(true);
+      });
+    });
+
+    describe("Reserved properties error handling", () => {
+      it("should throw error when using reserved properties", () => {
+        expect(() => {
+          $("div", { on: () => {} } as any);
+        }).toThrow('Unallowed property "on"');
+
+        expect(() => {
+          $("div", { destroy: () => {} } as any);
+        }).toThrow('Unallowed property "destroy"');
+
+        expect(() => {
+          $("div", { toggleClass: () => {} } as any);
+        }).toThrow('Unallowed property "toggleClass"');
+      });
     });
   });
 });

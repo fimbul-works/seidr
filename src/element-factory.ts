@@ -137,27 +137,13 @@ import { createElement, type ReactiveProps, type SeidrElement, type SeidrNode } 
  *   ]);
  * };
  * ```
- *
- * @since 1.0.0
- *
- * @see createElement - The underlying element creation function
- * @see ReactiveProps - Type definitions for reactive properties
- * @see SeidrElement - Enhanced HTMLElement interface
- *
- * @returns A function with signature:
- * ```typescript
- * (
- *   options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
- *   children?: SeidrNode[]
- * ) => HTMLElementTagNameMap[K] & SeidrElement
- * ```
  */
 export const elementFactory = <K extends keyof HTMLElementTagNameMap>(
   tagName: K,
-): (
+): ((
   options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
   children?: SeidrNode[],
-) => HTMLElementTagNameMap[K] & SeidrElement => {
+) => HTMLElementTagNameMap[K] & SeidrElement) => {
   return (
     options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
     children?: SeidrNode[],

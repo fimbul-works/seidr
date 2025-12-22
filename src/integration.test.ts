@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { createElement } from "./element.js";
 import { $a, $button, $div, $input, $span } from "./elements.js";
 import { Seidr } from "./seidr.js";
-import { $ } from "./util.js";
+import { $q } from "./util.js";
 
 describe("integration tests", () => {
   beforeEach(() => {
@@ -24,12 +24,12 @@ describe("integration tests", () => {
 
     document.body.appendChild(form);
 
-    expect($("form#contact-form")).toBe(form);
-    expect($("input#name")).toBeTruthy();
-    expect($("input#email")).toBeTruthy();
-    expect($('button[type="submit"]')).toBeTruthy();
+    expect($q("form#contact-form")).toBe(form);
+    expect($q("input#name")).toBeTruthy();
+    expect($q("input#email")).toBeTruthy();
+    expect($q('button[type="submit"]')).toBeTruthy();
 
-    const nameLabel = $('label[for="name"]'); // Use 'for' instead of 'htmlFor' in CSS selector
+    const nameLabel = $q('label[for="name"]'); // Use 'for' instead of 'htmlFor' in CSS selector
     expect(nameLabel).toBeTruthy();
     expect(nameLabel?.textContent).toBe("Name:");
   });
@@ -50,8 +50,8 @@ describe("integration tests", () => {
 
     document.body.appendChild(container);
 
-    const button = $(".increment-btn") as HTMLButtonElement;
-    const span = $(".counter") as HTMLSpanElement;
+    const button = $q(".increment-btn") as HTMLButtonElement;
+    const span = $q(".counter") as HTMLSpanElement;
 
     const cleanup = (button as any).on("click", () => {
       clickCount++;

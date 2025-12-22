@@ -15,6 +15,9 @@ import type { Seidr } from "./seidr.js";
  *
  * @returns The same Seidr instance, now with storage synchronization enabled
  *
+ * @throws {JSONError} If the stored value cannot be parsed as JSON
+ * @throws {QuotaExceededError} If storage quota is exceeded
+ *
  * @example
  * Basic usage with localStorage
  * ```typescript
@@ -82,16 +85,6 @@ import type { Seidr } from "./seidr.js";
  *   { id: 2, text: 'Build amazing apps', completed: false }
  * ];
  * ```
- *
- * @since 1.0.0
- *
- * @throws {JSONError} If the stored value cannot be parsed as JSON
- * @throws {QuotaExceededError} If storage quota is exceeded
- *
- * @see localStorage
- * @see sessionStorage
- * @see JSON.stringify
- * @see JSON.parse
  */
 export const withStorage = <T extends Seidr<any>>(key: string, seidr: T, storage: Storage = localStorage): T => {
   const initial = storage.getItem(key);

@@ -44,13 +44,8 @@ import { Seidr } from "./seidr.js";
  *   // Work with canvas context
  * }
  * ```
- *
- * @see document.querySelector
- * @see $$ - For querying multiple elements
- *
- * @since 1.0.0
  */
-export const $ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T | null =>
+export const $q = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T | null =>
   el.querySelector(query);
 
 /**
@@ -70,38 +65,33 @@ export const $ = <T extends HTMLElement>(query: string, el: HTMLElement = docume
  * @example
  * Basic usage
  * ```typescript
- * import { $$ } from '@fimbul-works/seidr';
+ * import { $all } from '@fimbul-works/seidr';
  *
- * const buttons = $$('button'); // Returns HTMLButtonElement[]
- * const items = $$('.list-item'); // Returns HTMLElement[]
- * const inputs = $$('input[type="text"]'); // Returns HTMLInputElement[]
+ * const buttons = $all('button'); // Returns HTMLButtonElement[]
+ * const items = $all('.list-item'); // Returns HTMLElement[]
+ * const inputs = $all('input[type="text"]'); // Returns HTMLInputElement[]
  * ```
  *
  * @example
  * With custom container
  * ```typescript
- * import { $$ } from '@fimbul-works/seidr';
+ * import { $all } from '@fimbul-works/seidr';
  *
  * const form = $('form.user-form');
- * const formInputs = $$('input', form);
+ * const formInputs = $all('input', form);
  * ```
  *
  * @example
  * Array manipulation
  * ```typescript
- * import { $$ } from '@fimbul-works/seidr';
+ * import { $all } from '@fimbul-works/seidr';
  *
- * const checkboxes = $$('input[type="checkbox"]');
+ * const checkboxes = $all('input[type="checkbox"]');
  * const checkedCount = checkboxes.filter(cb => cb.checked).length;
  * checkboxes.forEach(cb => cb.addEventListener('change', handleChange));
  * ```
- *
- * @see document.querySelectorAll
- * @see $ - For querying a single element
- *
- * @since 1.0.0
  */
-export const $$ = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] =>
+export const $all = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] =>
   Array.from(el.querySelectorAll(query));
 
 /**
@@ -165,10 +155,6 @@ export const $$ = <T extends HTMLElement>(query: string, el: HTMLElement = docum
  * saveDraft('Updated draft');
  * saveDraft('Final draft');
  * ```
- *
- * @since 1.0.0
- *
- * @see setTimeout
  */
 export function debounce<Args extends unknown[]>(
   callback: (...args: Args) => void,
@@ -187,15 +173,6 @@ export function debounce<Args extends unknown[]>(
  * This utility handles flexible class name construction from strings, objects,
  * arrays, functions, and Seidr observables. It's designed to work seamlessly
  * with conditional classes, reactive class bindings, and complex class logic.
- *
- * Features:
- * - **String concatenation**: Combines multiple class names
- * - **Object conditional classes**: Uses object keys where values are truthy
- * - **Array flattening**: Processes nested arrays recursively
- * - **Function evaluation**: Calls functions to get dynamic class names
- * - **Reactive support**: Automatically resolves Seidr observables
- * - **Deduplication**: Removes duplicate class names
- * - **Automatic trimming**: Cleans up whitespace
  *
  * @param classes - Variable arguments of different types for class construction
  *
@@ -264,17 +241,12 @@ export function debounce<Args extends unknown[]>(
  *
  * const className = cn(
  *   'component',
- *   `theme-${theme.value}`,
+ *   theme.as(theme => `theme-${theme.value}`),
  *   ['base-class', { 'loading': isLoading.value }],
  *   () => hasError.value && 'error'
  * );
  * // Returns: "component theme-dark base-class"
  * ```
- *
- * @since 1.0.0
- *
- * @see Seidr - For reactive class bindings
- * @see element.toggleClass - For individual class toggling
  */
 export const cn = (...classes: unknown[]): string =>
   classes

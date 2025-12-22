@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $, $$, cn, debounce } from "./util.js";
+import { Seidr } from "./seidr.js";
+import { $all, $q, cn, debounce } from "./util.js";
 
 describe("$ (query selector)", () => {
   beforeEach(() => {
@@ -11,14 +12,14 @@ describe("$ (query selector)", () => {
     testDiv.id = "test-element";
     document.body.appendChild(testDiv);
 
-    const found = $("div#test-element");
+    const found = $q("div#test-element");
 
     expect(found).toBe(testDiv);
     expect(found?.id).toBe("test-element");
   });
 
   it("should return null when element not found", () => {
-    const found = $(".non-existent");
+    const found = $q(".non-existent");
 
     expect(found).toBeNull();
   });
@@ -31,7 +32,7 @@ describe("$ (query selector)", () => {
     container.appendChild(inner);
     document.body.appendChild(container);
 
-    const found = $(".inner", container);
+    const found = $q(".inner", container);
 
     expect(found).toBe(inner);
   });
@@ -41,13 +42,13 @@ describe("$ (query selector)", () => {
     testDiv.className = "body-element";
     document.body.appendChild(testDiv);
 
-    const found = $(".body-element");
+    const found = $q(".body-element");
 
     expect(found).toBe(testDiv);
   });
 });
 
-describe("$$ (query selector all)", () => {
+describe("$all (query selector all)", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
@@ -65,7 +66,7 @@ describe("$$ (query selector all)", () => {
     document.body.appendChild(div2);
     document.body.appendChild(span);
 
-    const found = $$(".item");
+    const found = $all(".item");
 
     expect(found.length).toBe(3);
     expect(found).toContain(div1);
@@ -74,7 +75,7 @@ describe("$$ (query selector all)", () => {
   });
 
   it("should return empty array when no elements found", () => {
-    const found = $$(".non-existent");
+    const found = $all(".non-existent");
 
     expect(found).toEqual([]);
   });
@@ -94,7 +95,7 @@ describe("$$ (query selector all)", () => {
     document.body.appendChild(container);
     document.body.appendChild(outer);
 
-    const found = $$(".inner-item", container);
+    const found = $all(".inner-item", container);
 
     expect(found.length).toBe(2);
     expect(found).toContain(inner1);
@@ -330,5 +331,315 @@ describe("cn (className utility)", () => {
 
     expect(cn("base", counter, counter, counter)).toBe("base count-1 count-2 count-3");
     expect(count).toBe(3); // Function should be called multiple times
+  });
+});
+
+describe("Documentation Examples", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
+
+  describe("$ (query selector) examples", () => {
+    it("should demonstrate basic usage", () => {
+      // Set up test DOM
+      const button = document.createElement("button");
+      const container = document.createElement("div");
+      container.className = "container";
+      const input = document.createElement("input");
+      input.type = "text";
+
+      document.body.appendChild(button);
+      document.body.appendChild(container);
+      document.body.appendChild(input);
+
+      // Test basic queries
+      const foundButton = $q("button");
+      const foundContainer = $q(".container");
+      const foundInput = $q('input[type="text"]');
+
+      expect(foundButton).toBe(button);
+      expect(foundContainer).toBe(container);
+      expect(foundInput).toBe(input);
+    });
+
+    it("should demonstrate custom container usage", () => {
+      const form = document.createElement("form");
+      form.className = "user-form";
+      const submitButton = document.createElement("button");
+      submitButton.type = "submit";
+      const textInput = document.createElement("input");
+
+      form.appendChild(textInput);
+      form.appendChild(submitButton);
+      document.body.appendChild(form);
+
+      const foundForm = $q(".user-form");
+      const foundSubmitButton = foundForm ? $q('button[type="submit"]', foundForm) : null;
+
+      expect(foundForm).toBe(form);
+      expect(foundSubmitButton).toBe(submitButton);
+    });
+
+    it("should demonstrate type-safe element access", () => {
+      const canvas = document.createElement("canvas");
+      document.body.appendChild(canvas);
+
+      const foundCanvas = $q("canvas") as HTMLCanvasElement;
+
+      expect(foundCanvas).toBe(canvas);
+      expect(foundCanvas?.getContext).toBeDefined();
+    });
+  });
+
+  describe("$all (query selector all) examples", () => {
+    it("should demonstrate basic usage", () => {
+      // Set up multiple elements
+      const button1 = document.createElement("button");
+      const button2 = document.createElement("button");
+      const listItem1 = document.createElement("div");
+      listItem1.className = "list-item";
+      const listItem2 = document.createElement("div");
+      listItem2.className = "list-item";
+      const textInput = document.createElement("input");
+      textInput.type = "text";
+
+      document.body.appendChild(button1);
+      document.body.appendChild(button2);
+      document.body.appendChild(listItem1);
+      document.body.appendChild(listItem2);
+      document.body.appendChild(textInput);
+
+      const buttons = $all("button");
+      const listItems = $all(".list-item");
+      const textInputs = $all('input[type="text"]');
+
+      expect(buttons.length).toBe(2);
+      expect(buttons).toContain(button1);
+      expect(buttons).toContain(button2);
+
+      expect(listItems.length).toBe(2);
+      expect(listItems).toContain(listItem1);
+      expect(listItems).toContain(listItem2);
+
+      expect(textInputs).toHaveLength(1);
+      expect(textInputs[0]).toBe(textInput);
+    });
+
+    it("should demonstrate custom container usage", () => {
+      const form = document.createElement("form");
+      form.className = "user-form";
+      const emailInput = document.createElement("input");
+      emailInput.type = "email";
+      const passwordInput = document.createElement("input");
+      passwordInput.type = "password";
+      const submitButton = document.createElement("button");
+
+      form.appendChild(emailInput);
+      form.appendChild(passwordInput);
+      form.appendChild(submitButton);
+      document.body.appendChild(form);
+
+      const foundForm = $q(".user-form");
+      const formInputs = foundForm ? $all("input", foundForm) : [];
+
+      expect(formInputs.length).toBe(2);
+      expect(formInputs).toContain(emailInput);
+      expect(formInputs).toContain(passwordInput);
+    });
+
+    it("should demonstrate array manipulation", () => {
+      const checkbox1 = document.createElement("input");
+      checkbox1.type = "checkbox";
+      checkbox1.checked = true;
+      const checkbox2 = document.createElement("input");
+      checkbox2.type = "checkbox";
+      checkbox2.checked = false;
+      const checkbox3 = document.createElement("input");
+      checkbox3.type = "checkbox";
+      checkbox3.checked = true;
+
+      document.body.appendChild(checkbox1);
+      document.body.appendChild(checkbox2);
+      document.body.appendChild(checkbox3);
+
+      const checkboxes = $all('input[type="checkbox"]') as HTMLInputElement[];
+      const checkedCount = checkboxes.filter((cb) => cb.checked).length;
+
+      expect(checkboxes.length).toBe(3);
+      expect(checkedCount).toBe(2);
+    });
+  });
+
+  describe("debounce examples", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("should demonstrate search input debouncing", () => {
+      const mockFetch = vi.fn().mockResolvedValue([]);
+      const displayResults = vi.fn();
+
+      const handleSearch = debounce((query: string) => {
+        mockFetch(`/api/search?q=${query}`)
+          .then((res: any) => res.json())
+          .then((results: any) => displayResults(results));
+      }, 300);
+
+      // Simulate rapid typing
+      handleSearch("a");
+      handleSearch("ap");
+      handleSearch("app");
+      handleSearch("apple");
+
+      expect(mockFetch).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(300);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledWith("/api/search?q=apple");
+    });
+
+    it("should demonstrate resize event debouncing", () => {
+      const consoleSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+      const updateLayout = vi.fn();
+
+      const handleResize = debounce(() => {
+        console.log("Window resized:", window.innerWidth);
+        updateLayout();
+      }, 250);
+
+      // Simulate multiple resize events
+      for (let i = 0; i < 5; i++) {
+        window.dispatchEvent(new Event("resize"));
+        handleResize();
+      }
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(updateLayout).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(250);
+
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+      expect(updateLayout).toHaveBeenCalledTimes(1);
+
+      consoleSpy.mockRestore();
+    });
+
+    it("should demonstrate API call debouncing", () => {
+      const mockFetch = vi.fn().mockResolvedValue({});
+
+      const saveDraft = debounce((content: string) => {
+        return mockFetch("/api/drafts", {
+          method: "POST",
+          body: JSON.stringify({ content }),
+        });
+      }, 1000);
+
+      // Multiple rapid saves should only result in one API call
+      saveDraft("First draft");
+      saveDraft("Updated draft");
+      saveDraft("Final draft");
+
+      expect(mockFetch).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(1000);
+
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(mockFetch).toHaveBeenCalledWith("/api/drafts", {
+        method: "POST",
+        body: JSON.stringify({ content: "Final draft" }),
+      });
+    });
+  });
+
+  describe("cn (className utility) examples", () => {
+    it("should demonstrate basic string concatenation", () => {
+      const className = cn("btn", "btn-primary", "large");
+      expect(className).toBe("btn btn-primary large");
+    });
+
+    it("should demonstrate conditional classes with objects", () => {
+      const isActive = true;
+      const isDisabled = false;
+      const isLoading = true;
+
+      const className = cn("btn", {
+        "btn-primary": isActive,
+        "btn-disabled": isDisabled,
+        loading: isLoading,
+      });
+
+      expect(className).toBe("btn btn-primary loading");
+    });
+
+    it("should demonstrate arrays and nested structures", () => {
+      const isLarge = true;
+
+      const className = cn("btn", ["btn-primary", { large: isLarge }]);
+      expect(className).toBe("btn btn-primary large");
+    });
+
+    it("should demonstrate dynamic classes with functions", () => {
+      const isDisabled = true;
+
+      const className = cn(
+        "btn",
+        () => "btn-primary",
+        () => isDisabled && "disabled",
+      );
+      expect(className).toBe("btn btn-primary disabled");
+    });
+
+    it("should demonstrate reactive classes with Seidr observables", () => {
+      const isActive = new Seidr(true);
+      const size = new Seidr("large");
+
+      const className = cn(
+        "btn",
+        isActive.as((active: any) => active && "active"),
+        size,
+      );
+      expect(className).toBe("btn active large");
+
+      // Test reactivity
+      isActive.value = false;
+      // Note: cn creates a static snapshot, so we test the current value
+      const newClassName = cn(
+        "btn",
+        isActive.as((active: any) => active && "active"),
+        size,
+      );
+      expect(newClassName).toBe("btn large");
+    });
+
+    it("should demonstrate complex combinations", () => {
+      const theme = new Seidr("dark");
+      const isLoading = new Seidr(false);
+      const hasError = new Seidr(false);
+      const themeClass = theme.as((theme) => `theme-${theme}`);
+
+      const className = cn(
+        "component",
+        themeClass,
+        ["base-class", { loading: isLoading.value }],
+        () => hasError.value && "error",
+      );
+
+      expect(className).toBe("component theme-dark base-class");
+
+      // Test with different states
+      hasError.value = true;
+      const errorClassName = cn(
+        "component",
+        themeClass,
+        ["base-class", { loading: isLoading.value }],
+        () => hasError.value && "error",
+      );
+      expect(errorClassName).toBe("component theme-dark base-class error");
+    });
   });
 });

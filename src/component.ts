@@ -2,42 +2,145 @@ import type { SeidrElement } from "./element.js";
 import type { CleanupFunction } from "./seidr.js";
 
 /**
- * A component is a factory function that returns an element and its cleanup logic.
+ * Represents a Seidr component with automatic lifecycle management.
+ *
+ * Components are the primary building blocks of Seidr applications, encapsulating
+ * both the visual element and the cleanup logic needed for proper resource
+ * management. Each component tracks its own reactive bindings, event listeners,
+ * and child components.
+ *
+ * @template E - The type of SeidrElement this component contains
+ *
+ * @example
+ * Component usage
+ * ```typescript
+ * import { component, mount } from '@fimbul-works/seidr';
+ *
+ * const counterComponent = createCounter();
+ * document.body.appendChild(counterComponent.element);
+ *
+ * // Later cleanup
+ * counterComponent.destroy();
+ * ```
  */
-export interface Component<E extends SeidrElement = SeidrElement> {
+export interface Component<
+  K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
+  E extends SeidrElement<K> = any,
+> {
+  /**
+   * The root element of the component.
+   *
+   * This element is enhanced with SeidrElement functionality including
+   * reactive bindings, event handling, and cleanup capabilities.
+   */
   element: E;
+
+  /**
+   * Destroys the component and all its resources.
+   *
+   * This method performs comprehensive cleanup:
+   * - Destroys the root element and all children
+   * - Removes all event listeners
+   * - Cleans up all reactive bindings
+   * - Executes all tracked cleanup functions
+   */
   destroy(): void;
 }
 
 /**
- * Manages cleanup functions for a component's lifecycle.
- * Automatically tracks bindings, child components, and event listeners.
+ * Manages cleanup functions and child components within a component's lifecycle.
+ *
+ * The ComponentScope provides a centralized way to track all resources that
+ * need to be cleaned up when a component is destroyed. This prevents memory
+ * leaks and ensures proper resource management throughout the application.
  */
 export interface ComponentScope {
   /**
-   * Track a cleanup function to be called on destroy.
-   * @param cleanup - Cleanup function
+   * Tracks a cleanup function to be executed when the component is destroyed.
+   *
+   * Use this method to register any cleanup logic that should run when
+   * the component is no longer needed, such as removing event listeners,
+   * cleaning up reactive bindings, or clearing timeouts.
+   *
+   * @param cleanup - The cleanup function to execute
+   *
+   * @example
+   * Tracking various cleanup functions
+   * ```typescript
+   * const timeoutId = setTimeout(() => {}, 1000);
+   * const cleanup = () => clearTimeout(timeoutId);
+   *
+   * scope.track(cleanup);
+   * scope.track(() => console.log('Component destroyed'));
+   * ```
    */
   track(cleanup: CleanupFunction): void;
 
   /**
-   * Track a child component to be destroyed when this component is destroyed.
-   * @template E - The type of HTML element the child is
+   * Tracks a child component for automatic cleanup when this component is destroyed.
    *
-   * @param component - Child component to track
-   * @return The child Component
+   * Child components are automatically destroyed when their parent component
+   * is destroyed, creating a proper cleanup hierarchy. This method ensures
+   * that child components are properly managed and cleaned up.
+   *
+   * @template E - The type of SeidrElement the child component contains
+   *
+   * @param component - The child component to track
+   *
+   * @returns The same child component (for chaining or convenience)
+   *
+   * @example
+   * Managing child components
+   * ```typescript
+   * const headerComponent = createHeader();
+   * const footerComponent = createFooter();
+   *
+   // Track children for automatic cleanup
+   * scope.child(headerComponent);
+   * scope.child(footerComponent);
+   * ```
    */
-  child<E extends SeidrElement>(component: Component<E>): Component<E>;
+  child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(component: Component<K, E>): Component<K, E>;
 
   /**
-   * Destroy all tracked resources.
+   * Destroys all tracked resources and marks the scope as destroyed.
+   *
+   * This method executes all registered cleanup functions in the order
+   * they were added. Once destroyed, the scope can no longer be used
+   * to track new cleanup functions.
+   *
+   * @example
+   * Manual scope destruction
+   * ```typescript
+   * const scope = createScope();
+   *
+   * // Track some resources
+   * scope.track(() => console.log('Cleanup 1'));
+   * scope.track(() => console.log('Cleanup 2'));
+   *
+   * // Destroy everything
+   * scope.destroy(); // Logs "Cleanup 1", then "Cleanup 2"
+   * ```
    */
   destroy(): void;
 }
 
 /**
- * Create a new ComponentScope instance to track Component cleanup logic.
- * @returns ComponentScope instance
+ * Creates a new ComponentScope instance for tracking component cleanup logic.
+ *
+ * ComponentScope instances are typically created internally by the component()
+ * function, but can also be created directly for advanced use cases or testing.
+ *
+ * @returns A new ComponentScope instance with cleanup tracking capabilities
+ *
+ * @example
+ * Manual scope creation
+ * ```typescript
+ * const scope = createScope();
+ *
+ * scope.track(() => console.log('Cleaned up'));
+ * scope.destroy(); // Executes cleanup
+ * ```
  */
 export function createScope(): ComponentScope {
   let cleanups: CleanupFunction[] = [];
@@ -52,7 +155,9 @@ export function createScope(): ComponentScope {
     cleanups.push(cleanup);
   };
 
-  const child: ComponentScope["child"] = <E extends SeidrElement>(component: Component<E>): Component<E> => {
+  const child: ComponentScope["child"] = <K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+    component: Component<K, E>,
+  ): Component<K, E> => {
     track(() => component.destroy());
     return component;
   };
@@ -74,30 +179,66 @@ export function createScope(): ComponentScope {
 }
 
 /**
- * Creates a component with automatic cleanup management.
+ * Creates a component with automatic lifecycle and resource management.
  *
- * @template E - The type of HTML element being bound to
+ * Components are the primary building blocks in Seidr applications. They encapsulate
+ * both UI elements and the reactive logic needed to manage them. The component
+ * function automatically tracks cleanup functions, reactive bindings, and child
+ * components to prevent memory leaks.
  *
- * @param factory - Component factory function
- * @return Component with an element and a cleanup function
+ * @template E - The type of SeidrElement the component returns
+ *
+ * @param factory - Function that creates the component element and tracks resources
+ *
+ * @returns A Component instance with the created element and destroy method
  *
  * @example
- * export function Counter() {
+ * Basic counter component
+ * ```typescript
+ * import { component, Seidr, createElement } from '@fimbul-works/seidr';
+ *
+ * function Counter() {
  *   return component((scope) => {
  *     const count = new Seidr(0);
- *     const button = ButtonEl({ textContent: 'Count: 0' });
+ *     const button = createElement('button', { textContent: 'Count: 0' });
  *
- *     scope.track(bind(count, button, (val, el) => {
- *       el.textContent = `Count: ${val}`;
+ *     // Track reactive binding
+ *     scope.track(count.bind(button, (value, el) => {
+ *       el.textContent = `Count: ${value}`;
  *     }));
  *
- *     button.on('click', () => count.set(count.get() + 1));
+ *     // Track event listener
+ *     scope.track(button.on('click', () => count.value++));
  *
  *     return button;
  *   });
  * }
+ * ```
+ *
+ * @example
+ * Component with child components
+ * ```typescript
+ * function UserProfile() {
+ *   return component((scope) => {
+ *     const user = new Seidr({ name: 'John', email: 'john@example.com' });
+ *
+ *     const header = scope.child(createHeader());
+ *     const avatar = scope.child(createAvatar());
+ *
+ *     const container = createElement('div', { className: 'profile' }, [
+ *       header.element,
+ *       avatar.element,
+ *       createElement('span', { textContent: user.as(u => u.name) })
+ *     ]);
+ *
+ *     return container;
+ *   });
+ * }
+ * ```
  */
-export function component<E extends SeidrElement>(factory: (scope: ComponentScope) => E): Component<E> {
+export function component<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+  factory: (scope: ComponentScope) => E,
+): Component<K, E> {
   const scope = createScope();
   const element = factory(scope);
   return {

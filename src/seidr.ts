@@ -3,10 +3,6 @@
  *
  * @template T - The data type for the event
  * @param data - Data to handle
- *
- * @since 1.0.0
- *
- * @see Seidr.observe - For subscribing to observable changes
  */
 export type EventHandler<T> = (data: T) => void | Promise<void>;
 
@@ -16,12 +12,6 @@ export type EventHandler<T> = (data: T) => void | Promise<void>;
  * Cleanup functions are returned by various Seidr APIs to allow for proper
  * resource cleanup and memory management when subscriptions, bindings, or
  * components are no longer needed.
- *
- * @since 1.0.0
- *
- * @see Seidr.destroy - For cleaning up observable resources
- * @see Seidr.bind - For reactive binding cleanup
- * @see mount - For component unmounting
  */
 export type CleanupFunction = () => void;
 
@@ -33,11 +23,6 @@ export type CleanupFunction = () => void;
  * that enable reactive programming patterns.
  *
  * @template T - The type of value being observed
- *
- * @since 1.0.0
- *
- * @see Seidr - The main observable implementation
- * @see EventHandler - For event handler type definitions
  */
 export interface Observable<T> {
   /**
@@ -46,11 +31,6 @@ export interface Observable<T> {
    * @param handler - Function to be called with the current value and subsequent changes
    *
    * @returns A cleanup function that removes the event handler
-   *
-   * @since 1.0.0
-   *
-   * @see Seidr.observe - Implementation details
-   * @see CleanupFunction - For understanding the return type
    */
   observe(handler: EventHandler<T>): CleanupFunction;
 
@@ -67,11 +47,6 @@ export interface Observable<T> {
    * @param handler - Function that applies the observable's value to the value
    *
    * @returns A cleanup function that removes the binding when called
-   *
-   * @since 1.0.0
-   *
-   * @see Seidr.bind - Implementation details
-   * @see ReactiveProps - For automatic DOM property binding
    */
   bind<E>(target: E, handler: (value: T, target: E) => void): CleanupFunction;
 }
@@ -83,21 +58,7 @@ export interface Observable<T> {
  * state management throughout Seidr applications. It maintains an internal
  * value and notifies all observers whenever that value changes.
  *
- * Key Features:
- * - **Type Safety**: Full TypeScript support with generic type parameters
- * - **Efficient Updates**: Uses Object.is() comparison to prevent unnecessary notifications
- * - **Memory Management**: Automatic cleanup and resource management
- * - **Composable**: Supports derived values and computed observables
- * - **Bind Ready**: Integrates seamlessly with DOM element properties
- *
  * @template T - The type of value being stored and observed
- *
- * @since 1.0.0
- *
- * @see Observable - Base interface this class implements
- * @see Seidr.computed - For multi-dependency computed values
- * @see mount - For integrating with component lifecycle
- * @see ReactiveProps - For automatic DOM binding
  *
  * @example
  * Basic reactive value
@@ -122,17 +83,15 @@ export class Seidr<T> implements Observable<T> {
   private v: T;
 
   /** Event handlers */
-  private handlers = new Set<EventHandler<T>>();
+  private f = new Set<EventHandler<T>>();
 
   /** Cleanup functions */
-  private cleanups: CleanupFunction[] = [];
+  private c: CleanupFunction[] = [];
 
   /**
    * Creates a new Seidr instance with an initial value.
    *
    * @param initial - The initial value to store
-   *
-   * @since 1.0.0
    */
   constructor(initial: T) {
     this.v = initial;
@@ -142,8 +101,6 @@ export class Seidr<T> implements Observable<T> {
    * Gets the current stored value.
    *
    * @returns The current stored value
-   *
-   * @since 1.0.0
    */
   get value(): T {
     return this.v;
@@ -156,15 +113,11 @@ export class Seidr<T> implements Observable<T> {
    * when the value is the same (including special cases like NaN).
    *
    * @param v - The new value to store
-   *
-   * @since 1.0.0
-   *
-   * @see Object.is - For understanding the equality comparison
    */
   set value(v: T) {
     if (!Object.is(this.v, v)) {
       this.v = v;
-      this.handlers.forEach((fn) => fn(v));
+      for (const fn of this.f) fn(v);
     }
   }
 
@@ -178,16 +131,10 @@ export class Seidr<T> implements Observable<T> {
    * @param fn - Function to be called with the current value and subsequent changes
    *
    * @returns A cleanup function that removes the event handler
-   *
-   * @since 1.0.0
-   *
-   * @see CleanupFunction - For understanding the return type
-   * @see bind - For reactive binding to DOM elements
-   * @see as - For creating derived observables
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    this.handlers.add(fn);
-    return () => this.handlers.delete(fn);
+    this.f.add(fn);
+    return () => this.f.delete(fn);
   }
 
   /**
@@ -200,19 +147,13 @@ export class Seidr<T> implements Observable<T> {
    * @template E - The type being bound to
    *
    * @param target - The value to apply changes to
-   * @param onChange - Function that applies the observable's value to the target
+   * @param fn - Function that applies the observable's value to the target
    *
    * @returns A cleanup function that removes the binding when called
-   *
-   * @since 1.0.0
-   *
-   * @see SeidrElement.toggleClass - For reactive class binding
-   * @see ReactiveProps - For automatic DOM property binding
-   * @see observe - For manual observation patterns
    */
-  bind<E>(target: E, onChange: (value: T, target: E) => void): CleanupFunction {
-    onChange(this.value, target);
-    return this.observe((value) => onChange(value, target));
+  bind<E>(target: E, fn: (value: T, target: E) => void): CleanupFunction {
+    fn(this.value, target);
+    return this.observe((value) => fn(value, target));
   }
 
   /**
@@ -324,11 +265,6 @@ export class Seidr<T> implements Observable<T> {
    * console.log(temperatureStatus.value); // "Warm"
    * console.log(temperatureColor.value); // "orange"
    * ```
-   *
-   * @since 1.0.0
-   *
-   * @see Seidr.computed - For multi-dependency computed values
-   * @see observe - For manual reaction to value changes
    */
   as<U>(transform: (value: T) => U): Seidr<U> {
     const derived = new Seidr<U>(transform(this.v));
@@ -386,12 +322,6 @@ export class Seidr<T> implements Observable<T> {
    *   [width, height]
    * );
    * ```
-   *
-   * @since 1.0.0
-   *
-   * @see as - For single-dependency derived values
-   * @see observe - For manual dependency tracking
-   * @see CleanupFunction - For understanding resource management
    */
   static computed<T>(compute: () => T, dependencies: Seidr<any>[]): Seidr<T> {
     if (dependencies.length === 0) {
@@ -411,16 +341,9 @@ export class Seidr<T> implements Observable<T> {
    * is invoked on this observable.
    *
    * @param fn - The cleanup function to register
-   *
-   * @since 1.0.0
-   *
-   * @see destroy - For triggering cleanup functions
-   * @see CleanupFunction - For understanding cleanup function types
-   * @see as - For automatic derived value cleanup
-   * @see bind - For reactive binding cleanup
    */
   addCleanup(fn: CleanupFunction): void {
-    this.cleanups.push(fn);
+    this.c.push(fn);
   }
 
   /**
@@ -430,14 +353,9 @@ export class Seidr<T> implements Observable<T> {
    * components or parts of your application are listening to changes.
    *
    * @returns The number of active observers
-   *
-   * @since 1.0.0
-   *
-   * @see observe - For adding observers
-   * @see destroy - For removing all observers
    */
   observerCount(): number {
-    return this.handlers.size;
+    return this.f.size;
   }
 
   /**
@@ -449,13 +367,6 @@ export class Seidr<T> implements Observable<T> {
    *
    * Cleanup functions are executed in a try-catch block to ensure that
    * errors in one cleanup function don't prevent others from running.
-   *
-   * @since 1.0.0
-   *
-   * @see addCleanup - For registering cleanup functions
-   * @see CleanupFunction - For understanding cleanup behavior
-   * @see observerCount - For checking active observers
-   * @see observe - For understanding observer management
    *
    * @example
    * Manual cleanup
@@ -470,15 +381,15 @@ export class Seidr<T> implements Observable<T> {
    * counter.destroy(); // Clean up everything
    * ```
    */
-  destroy() {
-    this.handlers.clear();
-    this.cleanups.forEach((cleanup) => {
+  destroy(): void {
+    this.f.clear();
+    this.c.forEach((cleanup) => {
       try {
         cleanup();
       } catch (error) {
         console.error(error);
       }
     });
-    this.cleanups = [];
+    this.c = [];
   }
 }
