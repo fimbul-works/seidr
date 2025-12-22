@@ -33,7 +33,8 @@
     }
   },
   "files": [
-    "dist",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
     "README.md",
     "API.md",
     "LICENSE"
@@ -46,7 +47,7 @@
     "build": "pnpm clean:dist && pnpm build:esm && pnpm build:cjs && pnpm build:bundles",
     "build:esm": "NODE_OPTIONS=\"--max-old-space-size=4096\" tsc -p tsconfig.json",
     "build:cjs": "NODE_OPTIONS=\"--max-old-space-size=4096\" tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "build:bundles": "rollup -c && LIBRARY=core rollup -c && gzip -f -k dist/seidr.full.js dist/seidr.core.js",
+    "build:bundles": "rollup -c && LIBRARY=core rollup -c && gzip -f -k dist/seidr.full.js dist/seidr.core.js && echo 'Bundle sizes:' && ls -lh dist/seidr.*.js.gz | awk '{print $5, $9}'",
     "build:examples": "pnpm clean:examples && pnpm build && ./build-examples.sh",
     "dev:examples": "vite --config vite.examples.config.ts",
     "format": "npx biome format --write src *.json",

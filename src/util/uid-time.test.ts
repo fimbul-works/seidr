@@ -20,16 +20,8 @@ describe("uidTime", () => {
     const createdAt = uidTime(id);
 
     // Extracted time should be within 1 second of current time
-    expect(createdAt.getTime()).toBeGreaterThanOrEqual(now);
-    expect(createdAt.getTime()).toBeLessThanOrEqual(now + 1000);
-  });
-
-  it("should return a valid Date object", () => {
-    const id = uid();
-    const createdAt = uidTime(id);
-
-    expect(createdAt).toBeInstanceOf(Date);
-    expect(Number.isNaN(createdAt.getTime())).toBe(false);
+    expect(createdAt).toBeGreaterThanOrEqual(now);
+    expect(createdAt).toBeLessThanOrEqual(now + 1000);
   });
 
   it("should extract timestamp from first component", () => {
@@ -40,7 +32,7 @@ describe("uidTime", () => {
     const id = uid();
     const createdAt = uidTime(id);
 
-    expect(createdAt.getTime()).toBe(testTimestamp);
+    expect(createdAt).toBe(testTimestamp);
   });
 
   it("should be consistent for the same UID", () => {
@@ -48,12 +40,12 @@ describe("uidTime", () => {
     const time1 = uidTime(id);
     const time2 = uidTime(id);
 
-    expect(time1.getTime()).toBe(time2.getTime());
+    expect(time1).toBe(time2);
   });
 
   it("should handle different UIDs correctly", () => {
     const ids = Array.from({ length: 10 }, () => uid());
-    const times = ids.map((id) => uidTime(id).getTime());
+    const times = ids.map((id) => uidTime(id));
 
     // Times should be non-decreasing (since UIDs are time-sorted)
     for (let i = 1; i < times.length; i++) {
@@ -76,7 +68,7 @@ describe("uidTime", () => {
       const id = uid();
       const createdAt = uidTime(id);
 
-      expect(createdAt.getTime()).toBe(ts);
+      expect(createdAt).toBe(ts);
     });
   });
 });
@@ -87,8 +79,7 @@ describe("uidTime - Documentation Examples", () => {
     const id = uid();
     const createdAt = uidTime(id);
 
-    expect(createdAt).toBeInstanceOf(Date);
-    expect(typeof createdAt.toISOString()).toBe("string");
+    expect(typeof createdAt).toBe("number");
   });
 
   it("should support sorting by creation time", () => {
@@ -101,12 +92,12 @@ describe("uidTime - Documentation Examples", () => {
     ];
 
     // Sort by creation time (ascending)
-    items.sort((a, b) => uidTime(a.id).getTime() - uidTime(b.id).getTime());
+    items.sort((a, b) => uidTime(a.id) - uidTime(b.id));
 
     // Verify items are sorted
     for (let i = 1; i < items.length; i++) {
-      const timeA = uidTime(items[i - 1].id).getTime();
-      const timeB = uidTime(items[i].id).getTime();
+      const timeA = uidTime(items[i - 1].id);
+      const timeB = uidTime(items[i].id);
       expect(timeB).toBeGreaterThanOrEqual(timeA);
     }
   });
@@ -123,7 +114,7 @@ describe("uidTime - Documentation Examples", () => {
     ];
 
     // Filter items created in the last hour
-    const recentItems = items.filter((item) => uidTime(item.id).getTime() >= oneHourAgo);
+    const recentItems = items.filter((item) => uidTime(item.id) >= oneHourAgo);
 
     expect(recentItems.length).toBe(2);
   });
@@ -135,7 +126,7 @@ describe("uidTime - Documentation Examples", () => {
     ];
 
     // Get the age of each item in milliseconds
-    const ages = items.map((item) => Date.now() - uidTime(item.id).getTime());
+    const ages = items.map((item) => Date.now() - uidTime(item.id));
 
     expect(ages[0]).toBeGreaterThanOrEqual(0);
     expect(ages[1]).toBeGreaterThanOrEqual(0);
