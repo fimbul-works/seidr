@@ -1,6 +1,6 @@
 # Seidr
 
-Build reactive user interfaces with **zero build step** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript — no compilation required.
+Build reactive user interfaces with **zero build step** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript.
 
 **Seiðr** - Old Norse for "magic of influence and causality"
 
@@ -28,7 +28,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 1.4KB core, 2.3KB full (minified + gzipped)
+- 📦 **Tiny Footprint** - 1.8KB core, 3.1KB full (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -682,6 +682,54 @@ $img, $video, $audio, $canvas, $svg
 
 ### Utilities
 
+#### `uid()`
+Generate a unique, time-sorted identifier (UID).
+
+```typescript
+const id = uid(); // "v67JXa8-2Mj-Ukd7o93r"
+const todo = { id, text: "Learn Seidr" };
+```
+
+**Features:**
+- ✅ **Time-Sorted**: IDs can be sorted chronologically
+- ✅ **URL-Safe**: Only contains alphanumeric characters and hyphens
+- ✅ **Collision-Resistant**: Timestamp + process ID + random components
+- ✅ **Compact**: Approximately 20 characters
+
+**Use Cases:**
+- List item keys for `mountList()`
+- Temporary record identifiers
+- Client-side entity tracking
+- Session identifiers
+
+#### `uidTime(uid)`
+Extract the creation timestamp from a UID.
+
+```typescript
+const id = uid();
+const createdAt = uidTime(id); // Date object
+console.log(createdAt.toISOString()); // "2024-12-22T..."
+```
+
+**Examples:**
+
+```typescript
+// Sort by creation time
+const items = [
+  { id: uid(), text: "First" },
+  { id: uid(), text: "Second" }
+];
+items.sort((a, b) => uidTime(a.id).getTime() - uidTime(b.id).getTime());
+
+// Filter by time range
+const recentItems = items.filter(
+  (item) => uidTime(item.id).getTime() > Date.now() - 3600000
+);
+
+// Calculate age
+const age = Date.now() - uidTime(item.id).getTime();
+```
+
 #### `cn(...classes)`
 Utility for conditional class names with reactive support.
 
@@ -764,6 +812,35 @@ Seidr works in all modern browsers:
 **Requires:**
 - ES6 Class support
 - ES6 Map/Set support
+- ES Modules support
+
+### Browser Bundles
+
+Pre-built ESM bundles are available for direct browser use:
+
+```html
+<!-- Use the full bundle (recommended) -->
+<script type="module">
+  import { Seidr, $div, $button } from './dist/seidr.full.js';
+
+  const count = new Seidr(0);
+  // Your code here
+</script>
+
+<!-- Or use the core bundle (without predefined element creators) -->
+<script type="module">
+  import { Seidr, $ } from './dist/seidr.core.js';
+
+  const div = $('div', {}, []);
+  // Your code here
+</script>
+```
+
+**Bundle sizes (minified):**
+- `seidr.full.js` - 7.0KB (3.1KB gzipped)
+- `seidr.core.js` - 4.1KB (1.9KB gzipped)
+
+For library consumers, use the package through npm and let your bundler handle the imports.
 
 ## 📄 License
 

@@ -1,7 +1,7 @@
 // Base-62 alphabet for compact, URL-safe unique IDs
-const ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+export const BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-const RADIX = ALPHABET.length;
+export const RADIX = BASE62_ALPHABET.length;
 
 // Process ID (if available in Node.js environment)
 const PID = typeof process?.pid === "number" ? process.pid : null;
@@ -13,7 +13,7 @@ const encodeBase62 = (num: number): string => {
   let result = "",
     n = num;
   while (n > 0) {
-    result = ALPHABET[n % RADIX] + result;
+    result = BASE62_ALPHABET[n % RADIX] + result;
     n = Math.floor(n / RADIX);
   }
   return result || "0";
@@ -25,7 +25,7 @@ const encodeBase62 = (num: number): string => {
 const randomString = (length: number): string => {
   let result = "";
   for (let i = 0; i < length; i++) {
-    result += ALPHABET[Math.floor(Math.random() * RADIX)];
+    result += BASE62_ALPHABET[Math.floor(Math.random() * RADIX)];
   }
   return result;
 };
