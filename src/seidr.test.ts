@@ -157,7 +157,7 @@ describe("Seidr", () => {
   describe("derive", () => {
     it("should create derived observable with transformed values", () => {
       const observable = new Seidr(5);
-      const derived = observable.derive((x) => x * 2);
+      const derived = observable.as((x) => x * 2);
 
       expect(derived.value).toBe(10);
 
@@ -167,7 +167,7 @@ describe("Seidr", () => {
 
     it("should handle type transformations", () => {
       const observable = new Seidr(42);
-      const derived = observable.derive((x) => x.toString());
+      const derived = observable.as((x) => x.toString());
 
       expect(derived.value).toBe("42");
 
@@ -177,8 +177,8 @@ describe("Seidr", () => {
 
     it("should propagate updates to multiple derived observables", () => {
       const observable = new Seidr(1);
-      const doubled = observable.derive((x) => x * 2);
-      const squared = observable.derive((x) => x * x);
+      const doubled = observable.as((x) => x * 2);
+      const squared = observable.as((x) => x * x);
       const doubledHandler = vi.fn();
       const squaredHandler = vi.fn();
 

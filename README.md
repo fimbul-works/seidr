@@ -22,7 +22,6 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - [API Reference](#-api-reference)
 - [Performance](#-performance)
 - [Browser Support](#-browser-support)
-- [Community & Support](#-community--support)
 
 ## ✨ Features
 
@@ -55,7 +54,7 @@ import { component, mount, Seidr, $div, $button, $span } from '@fimbul-works/sei
 function Counter() {
   return component((scope) => {
     const count = new Seidr(0);
-    const disabled = count.derive(value => value >= 10);
+    const disabled = count.as(value => value >= 10);
 
     return $div({
       className: 'counter',
@@ -102,7 +101,7 @@ If a prop value is a `Seidr`, it stays live. If it is a plain value, it is assig
 import { Seidr, $input, $button, $div } from '@fimbul-works/seidr';
 
 const disabled = new Seidr(false);
-const className = disabled.derive((isDisabled) => isDisabled ? 'input-disabled' : 'input-primary');
+const className = disabled.as((isDisabled) => isDisabled ? 'input-disabled' : 'input-primary');
 const placeholder = new Seidr('Enter text...');
 
 const input = $input({
@@ -246,7 +245,7 @@ function TodoItem({ todo }: { todo: any }) {
       style: 'display: flex; align-items: center; gap: 10px; margin: 5px 0;'
     }, [
       $button({
-        textContent: isCompleted.derive(c => c ? '✓' : '○'),
+        textContent: isCompleted.as(c => c ? '✓' : '○'),
         onclick: () => {
           isCompleted.value = !isCompleted.value;
           todo.completed = isCompleted.value;
@@ -254,7 +253,7 @@ function TodoItem({ todo }: { todo: any }) {
       }),
       $span({
         textContent: todo.text,
-        style: isCompleted.derive(completed =>
+        style: isCompleted.as(completed =>
           completed ? 'text-decoration: line-through; opacity: 0.6;' : ''
         )
       })
@@ -348,10 +347,10 @@ Create derived observables that update automatically:
 import { Seidr, $div } from '@fimbul-works/seidr';
 
 const celsius = new Seidr(0);
-const fahrenheit = celsius.derive(c => (c * 9/5) + 32);
+const fahrenheit = celsius.as(c => (c * 9/5) + 32);
 
 const display = $div({
-  textContent: fahrenheit.derive(f => `${f}°F`)
+  textContent: fahrenheit.as(f => `${f}°F`)
 });
 
 celsius.value = 100; // display shows "212°F"
@@ -411,7 +410,7 @@ const searchComponent = $div({}, [
     placeholder: 'Search...',
     ...bindInput(searchText)
   }),
-  $span({ textContent: searchText.derive(t => `Searching: ${t}`) })
+  $span({ textContent: searchText.as(t => `Searching: ${t}`) })
 ]);
 
 // Typing in input automatically updates the span
@@ -431,9 +430,9 @@ const hasError = new Seidr(false);
 // Conditional classes with cn utility
 const className = cn(
   'base-component',
-  isActive.derive(active => active && 'active'),
-  size.derive(s => `size-${s}`),
-  hasError.derive(error => error && 'has-error')
+  isActive.as(active => active && 'active'),
+  size.as(s => `size-${s}`),
+  hasError.as(error => error && 'has-error')
 );
 
 const element = $div({ className });
@@ -509,7 +508,7 @@ const count = new Seidr(0);
 
 const Counter = () => component(() =>
   $div({}, [
-    $span({ textContent: count.derive(c => `Count: ${c}`) }),
+    $span({ textContent: count.as(c => `Count: ${c}`) }),
     $button({
       textContent: '+',
       onclick: () => count.value++
@@ -519,7 +518,7 @@ const Counter = () => component(() =>
 
 const Doubler = () => component(() =>
   $div({
-    textContent: count.derive(c => `Double: ${c * 2}`)
+    textContent: count.as(c => `Double: ${c * 2}`)
   })
 );
 
@@ -552,12 +551,12 @@ count.value = 5;      // Set value
 console.log(count.value); // Get value
 ```
 
-#### `seidr.derive(fn)`
+#### `seidr.as(fn)`
 Create a derived observable that transforms the source value.
 
 ```typescript
-const doubled = count.derive(n => n * 2);
-const isEven = count.derive(n => n % 2 === 0);
+const doubled = count.as(n => n * 2);
+const isEven = count.as(n => n % 2 === 0);
 ```
 
 #### `Seidr.computed(fn, dependencies)`
