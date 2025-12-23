@@ -4,7 +4,7 @@ export const BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKL
 export const RADIX = BASE62_ALPHABET.length;
 
 // Process ID (if available in Node.js environment)
-const PID = typeof process?.pid === "number" ? process.pid : null;
+const PID = typeof process !== "undefined" && typeof process.pid === "number" ? process.pid : null;
 
 /**
  * Encodes a number to base-62 string.
