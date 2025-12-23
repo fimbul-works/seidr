@@ -13,11 +13,6 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
 - [Core Concepts](#-core-concepts)
-  - [Reactive Props](#reactive-props)
-  - [Manual Reactive Bindings](#manual-reactive-bindings)
-  - [Components with Lifecycle](#components-with-lifecycle)
-  - [Conditional Rendering](#conditional-rendering)
-  - [List Rendering](#list-rendering)
 - [Advanced Patterns](#-advanced-patterns)
 - [API Reference](#-api-reference)
 - [Performance](#-performance)
@@ -80,9 +75,11 @@ mount(Counter(), document.body);
 
 ## 🎯 Core Concepts
 
-### Reactive Props
+Seidr has a simple philosophy: **one class, everything else is utility functions**. The only class is `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements.
 
-State is stored in `Seidr<T>` observables. Pass them directly to element props and Seidr handles the rest!
+### Reactive State
+
+State is stored in `Seidr<T>` observables. Create them, pass them to element props, and Seidr handles the rest.
 
 ```typescript
 import { Seidr, $input } from '@fimbul-works/seidr';
@@ -93,299 +90,61 @@ const input = $input({ disabled }); // That's it!
 disabled.value = true; // Input instantly becomes disabled
 ```
 
-If a prop value is a `Seidr`, it stays live. If it is a plain value, it is assigned once.
+**Learn more:** [Seidr\<T\>](API.md#seidrt) | [Reactive props](API.md#---create-dom-elements)
 
-**Full example with multiple reactive props:**
+### Derived Values
 
-```typescript
-import { Seidr, $input, $button, $div } from '@fimbul-works/seidr';
-
-const disabled = new Seidr(false);
-const className = disabled.as((isDisabled) => isDisabled ? 'input-disabled' : 'input-primary');
-const placeholder = new Seidr('Enter text...');
-
-const input = $input({
-  type: 'text',
-  disabled,       // Seidr<boolean> → disabled property
-  className,      // Seidr<string> → className property
-  placeholder     // Seidr<string> → placeholder property
-});
-
-// Any change automatically updates the DOM
-disabled.value = true;
-// className.value = 'input-disabled';
-placeholder.value = 'Disabled...';
-```
-
-### Manual Reactive Bindings
-
-For complex transformations, use the `bind` method:
+Transform observables with `.as()` for computed values that update automatically.
 
 ```typescript
-import { Seidr, $div, $span } from '@fimbul-works/seidr';
-
 const count = new Seidr(0);
-const display = $span();
-
-// Custom transformation function
-const cleanup = count.bind(display, (value, el) => {
-  el.textContent = value > 5 ? 'Many clicks!' : `Count: ${value}`;
-  el.style.color = value > 5 ? 'red' : 'black';
-});
-
-count.value = 3; // display shows "Count: 3" in black
-count.value = 7; // display shows "Many clicks!" in red
-
-// When done:
-cleanup();
+const doubled = count.as(n => n * 2);
+const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 ```
 
-**When to use manual binding:**
-- Complex DOM updates (multiple properties, style changes)
-- Conditional transformations (different outputs for different values)
-- Performance optimization (batch multiple updates)
-- Non-standard property updates
+**Learn more:** [seidr.as()](API.md#seidras) | [Seidr.computed()](API.md#seidrcomputed)
 
-### Components with Lifecycle
+### Components
 
-Components automatically manage cleanup of bindings, child components, and resources:
+Components are functions, not classes. Use `component()` for automatic cleanup of reactive bindings.
 
 ```typescript
-import { component, mount, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
-
 function UserProfile() {
   return component((scope) => {
     const name = new Seidr('Alice');
-    const age = new Seidr(30);
 
-    // Manual binding for complex age display with formatting
-    const ageSpan = $span();
-    scope.track(age.bind(ageSpan, (value, el) => {
-      el.textContent = `Age: ${value} years`;
-      el.style.fontWeight = value >= 18 ? 'bold' : 'normal';
+    // scope.track() registers cleanup functions
+    scope.track(name.bind(element, (value) => {
+      element.textContent = value;
     }));
 
-    return $div({ className: 'user-profile' }, [
-      // Simple reactive binding for name
-      $span({ textContent: name }),
-      ageSpan,
-      $button({
-        textContent: 'Birthday',
-        onclick: () => age.value++
-      })
-    ]);
+    return $div({ textContent: name });
   });
 }
-
-const profile = UserProfile();
-mount(profile, document.body);
-
-// When done:
-profile.destroy(); // Cleans up all reactive bindings automatically
 ```
 
-### Conditional Rendering
+**Learn more:** [component()](API.md#component) | [Manual bindings](API.md#seidrbind)
 
-Show/hide components based on observable conditions:
+### Mounting
+
+Mount components conditionally, as lists, or switch between them.
 
 ```typescript
-import { mountConditional, Seidr, $div, $button, component } from '@fimbul-works/seidr';
+// Conditional rendering
+mountConditional(isVisible, () => DetailsPanel(), container);
 
-const isVisible = new Seidr(false);
+// List rendering with key-based diffing
+mountList(todos, item => item.id, item => TodoItem({ item }), container);
 
-function DetailsPanel() {
-  return component((scope) => {
-    return $div({ className: 'details-panel' }, [
-      $div({ textContent: 'User Details' }),
-      $div({ textContent: 'Some additional information...' }),
-      $button({
-        textContent: 'Close',
-        onclick: () => isVisible.value = false
-      })
-    ]);
-  });
-}
-
-// Toggle button
-document.body.appendChild(
-  $button({
-    textContent: 'Toggle Details',
-    onclick: () => isVisible.value = !isVisible.value
-  })
-);
-
-// Conditionally mounted panel
-mountConditional(
-  isVisible,
-  () => DetailsPanel(), // Only created when needed
-  document.body
-);
-
-// Component automatically mounts/unmounts with full cleanup
+// Switch between components
+mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
 ```
 
-### List Rendering
-
-Efficiently render lists from observable arrays with key-based diffing:
-
-```typescript
-import { mountList, Seidr, $div, $span, $button, component } from '@fimbul-works/seidr';
-
-const todos = new Seidr([
-  { id: 1, text: 'Learn Seidr', completed: false },
-  { id: 2, text: 'Build amazing apps', completed: false }
-]);
-
-function TodoItem({ todo }: { todo: any }) {
-  return component((scope) => {
-    const isCompleted = new Seidr(todo.completed);
-
-    return $div({
-      className: 'todo-item',
-      style: 'display: flex; align-items: center; gap: 10px; margin: 5px 0;'
-    }, [
-      $button({
-        textContent: isCompleted.as(c => c ? '✓' : '○'),
-        onclick: () => {
-          isCompleted.value = !isCompleted.value;
-          todo.completed = isCompleted.value;
-        }
-      }),
-      $span({
-        textContent: todo.text,
-        style: isCompleted.as(completed =>
-          completed ? 'text-decoration: line-through; opacity: 0.6;' : ''
-        )
-      })
-    ]);
-  });
-}
-
-mountList(
-  todos,
-  (item) => item.id,                  // Key function for efficient updates
-  (item) => TodoItem({ todo: item }), // Component factory
-  document.body
-);
-
-// Updates efficiently handle additions, removals, and reordering
-todos.value = [...todos.value, { id: 3, text: 'Master reactive programming', completed: false }];
-todos.value = todos.value.filter(todo => todo.id !== 1); // Remove item
-```
-
-### Component Switching
-
-Switch between different components based on observable state with automatic cleanup:
-
-```typescript
-import { mountSwitch, Seidr, $div, $button, component } from '@fimbul-works/seidr';
-
-type ViewMode = 'list' | 'grid' | 'table';
-const viewMode = new Seidr<ViewMode>('list');
-
-const ListView = () => component(() =>
-  $div({ textContent: '📋 List View', className: 'list-view' })
-);
-
-const GridView = () => component(() =>
-  $div({ textContent: '📊 Grid View', className: 'grid-view' })
-);
-
-const TableView = () => component(() =>
-  $div({ textContent: '📈 Table View', className: 'table-view' })
-);
-
-// Control buttons
-const controls = $div({ className: 'view-controls' }, [
-  $button({
-    textContent: 'List',
-    onclick: () => viewMode.value = 'list'
-  }),
-  $button({
-    textContent: 'Grid',
-    onclick: () => viewMode.value = 'grid'
-  }),
-  $button({
-    textContent: 'Table',
-    onclick: () => viewMode.value = 'table'
-  })
-]);
-
-document.body.appendChild(controls);
-
-// Automatically switches components with full cleanup
-mountSwitch(
-  viewMode,
-  {
-    list: ListView,
-    grid: GridView,
-    table: TableView
-  },
-  document.body
-);
-```
-
-**Key Features:**
-- ✅ **Automatic Cleanup**: Previous component is destroyed when switching
-- ✅ **Type Safety**: TypeScript ensures all component factories return compatible types
-- ✅ **Reactive**: Changes to `viewMode` automatically update the displayed component
-- ✅ **Error Handling**: Graceful handling of missing component factories
-
-**Perfect for:**
-- Navigation systems with different view modes
-- Tab-based interfaces
-- State-dependent component selection
-- Multi-step wizards with different screens
+**Learn more:** [Mounting](API.md#mounting)
 
 ## 🚀 Advanced Patterns
 
-### 🟢 Basic: Derived Values
-
-Create derived observables that update automatically:
-
-```typescript
-import { Seidr, $div } from '@fimbul-works/seidr';
-
-const celsius = new Seidr(0);
-const fahrenheit = celsius.as(c => (c * 9/5) + 32);
-
-const display = $div({
-  textContent: fahrenheit.as(f => `${f}°F`)
-});
-
-celsius.value = 100; // display shows "212°F"
-```
-
-### 🟡 Intermediate: Computed Values
-
-Create observables that depend on multiple sources:
-
-```typescript
-import { Seidr, $div, $span } from '@fimbul-works/seidr';
-
-const firstName = new Seidr('John');
-const lastName = new Seidr('Doe');
-
-// Computed full name updates when either name changes
-const fullName = Seidr.computed(
-  () => `${firstName.value} ${lastName.value}`,
-  [firstName, lastName]
-);
-
-const profile = $div({}, [
-  $span({ textContent: 'First: ' }),
-  $span({ textContent: firstName }),
-  $span({ textContent: ' Last: ' }),
-  $span({ textContent: lastName }),
-  $span({ textContent: ' Full: ' }),
-  $span({ textContent: fullName }) // Automatically updates!
-]);
-
-firstName.value = 'Jane'; // fullName becomes "Jane Doe"
-lastName.value = 'Smith';  // fullName becomes "Jane Smith"
-```
-
-### 🟡 Intermediate: Two-Way Data Binding
+### Two-Way Form Binding
 
 Bind form inputs to observables with automatic synchronization:
 
@@ -412,357 +171,81 @@ const searchComponent = $div({}, [
   }),
   $span({ textContent: searchText.as(t => `Searching: ${t}`) })
 ]);
-
-// Typing in input automatically updates the span
 ```
 
-### 🟡 Intermediate: Reactive Class Names
+### Dynamic Classes
 
-Use the `cn` utility for dynamic class management:
+Use the `cn` utility for conditional class management:
 
 ```typescript
 import { Seidr, cn, $div } from '@fimbul-works/seidr';
 
 const isActive = new Seidr(false);
 const size = new Seidr('large');
-const hasError = new Seidr(false);
 
 // Conditional classes with cn utility
 const className = cn(
   'base-component',
   isActive.as(active => active && 'active'),
-  size.as(s => `size-${s}`),
-  hasError.as(error => error && 'has-error')
+  size.as(s => `size-${s}`)
 );
 
 const element = $div({ className });
-
-// Or toggle classes reactively using the elementClassToggle utility
-const highlight = new Seidr(false);
-elementClassToggle(element, 'highlight', highlight);
-
-highlight.value = true; // Adds 'highlight' class
 ```
 
-### 🔴 Advanced: Component Switching
+**Learn more:** [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle)
 
-Switch between different components based on observable state:
+### Persistent State
+
+Automatically persist observables to localStorage/sessionStorage:
 
 ```typescript
-import { mountSwitch, Seidr, $div, $button, component } from '@fimbul-works/seidr';
+import { withStorage, Seidr } from '@fimbul-works/seidr';
 
-type ViewMode = 'list' | 'grid' | 'table';
-const viewMode = new Seidr<ViewMode>('list');
-
-const ListView = () => component(() =>
-  $div({ textContent: 'List View 📋' })
+// Create observable that persists to localStorage
+const todos = withStorage(
+  'todo-list',
+  new Seidr<TodoItem[]>([])
 );
 
-const GridView = () => component(() =>
-  $div({ textContent: 'Grid View 📊' })
-);
+// Automatically saved to localStorage
+todos.value = [{ id: 1, text: 'Learn Seidr', completed: true }];
 
-const TableView = () => component(() =>
-  $div({ textContent: 'Table View 📈' })
-);
-
-// Control buttons
-const controls = $div({}, [
-  $button({
-    textContent: 'List',
-    onclick: () => viewMode.value = 'list'
-  }),
-  $button({
-    textContent: 'Grid',
-    onclick: () => viewMode.value = 'grid'
-  }),
-  $button({
-    textContent: 'Table',
-    onclick: () => viewMode.value = 'table'
-  })
-]);
-
-document.body.appendChild(controls);
-
-// Automatically switches components with full cleanup
-mountSwitch(
-  viewMode,
-  {
-    list: ListView,
-    grid: GridView,
-    table: TableView
-  },
-  document.body
-);
+// On page reload, value is restored from localStorage
 ```
 
-### 🔴 Advanced: Nested Components with Shared State
+**Learn more:** [withStorage()](API.md#withstorage)
 
-Build complex component hierarchies:
+### Custom Element Factories
+
+Create reusable element creators with default props:
 
 ```typescript
-import { component, Seidr, $div, $button, $input } from '@fimbul-works/seidr';
+import { $factory } from '@fimbul-works/seidr';
 
-// Shared observable
-const count = new Seidr(0);
+// Create custom factories
+const $checkbox = $factory('input', { type: 'checkbox' });
+const $primaryButton = $factory('button', { className: 'btn btn-primary' });
 
-const Counter = () => component(() =>
-  $div({}, [
-    $span({ textContent: count.as(c => `Count: ${c}`) }),
-    $button({
-      textContent: '+',
-      onclick: () => count.value++
-    })
-  ])
-);
-
-const Doubler = () => component(() =>
-  $div({
-    textContent: count.as(c => `Double: ${c * 2}`)
-  })
-);
-
-const App = () => component(() =>
-  $div({}, [
-    Counter(),
-    Counter(), // Two counters share the same state!
-    Doubler()
-  ])
-);
+// Use them throughout your app
+const agreeCheckbox = $checkbox({ id: 'agree' });
+const submitButton = $primaryButton({ textContent: 'Submit' });
 ```
+
+**Learn more:** [$factory()](API.md#-factory----create-custom-element-creators)
 
 ## 📚 API Reference
 
-### Core Reactive
+For complete API documentation with all methods, parameters, and examples, see **[API.md](API.md)**.
 
-#### `new Seidr<T>(initialValue)`
-Creates a reactive observable that automatically updates bound DOM elements.
+Quick links:
 
-```typescript
-const count = new Seidr(0);
-const name = new Seidr('Alice');
-```
-
-#### `seidr.value`
-Get or set the current value. Setting triggers all bindings.
-
-```typescript
-count.value = 5;      // Set value
-console.log(count.value); // Get value
-```
-
-#### `seidr.as(fn)`
-Create a derived observable that transforms the source value.
-
-```typescript
-const doubled = count.as(n => n * 2);
-const isEven = count.as(n => n % 2 === 0);
-```
-
-#### `Seidr.computed(fn, dependencies)`
-Create a computed observable that depends on multiple sources.
-
-```typescript
-const fullName = Seidr.computed(
-  () => `${first.value} ${last.value}`,
-  [first, last]
-);
-```
-
-#### `seidr.bind(element, updateFn)`
-Manually bind an observable to an element with custom update logic. Returns cleanup function.
-
-```typescript
-const cleanup = count.bind(element, (value, el) => {
-  el.textContent = `Count: ${value}`;
-});
-// Later: cleanup();
-```
-
-### Components & Lifecycle
-
-#### `component(fn)`
-Create a component with automatic cleanup. Function receives a `scope` object.
-
-```typescript
-const MyComponent = () => component((scope) => {
-  // Component logic
-  return element;
-});
-```
-
-#### `scope.track(cleanup)`
-Register a cleanup function to be called when component is destroyed.
-
-```typescript
-scope.track(() => {
-  console.log('Cleaning up!');
-});
-```
-
-#### `component.destroy()`
-Manually trigger component cleanup and removal.
-
-```typescript
-const comp = MyComponent();
-comp.destroy();
-```
-
-### Mounting & Rendering
-
-#### `mount(component, container)`
-Mount a component to a DOM container.
-
-```typescript
-mount(MyComponent(), document.body);
-```
-
-#### `mountConditional(observable, factory, container)`
-Conditionally mount/unmount a component based on observable value.
-
-```typescript
-mountConditional(
-  isVisible,
-  () => Panel(),
-  container
-);
-```
-
-#### `mountList(observable, keyFn, factory, container)`
-Render a list with efficient key-based diffing.
-
-```typescript
-mountList(
-  items,
-  item => item.id,
-  item => ItemComponent({ item }),
-  container
-);
-```
-
-#### `mountSwitch(observable, components, container)`
-Switch between multiple components based on observable value.
-
-```typescript
-mountSwitch(
-  viewMode,
-  { list: ListView, grid: GridView },
-  container
-);
-```
-
-### Element Creators
-
-All HTML elements available with `$` prefix:
-
-```typescript
-// Structure
-$div, $span, $p, $section, $article, $header, $footer, $main, $aside, $nav
-
-// Headings
-$h1, $h2, $h3, $h4, $h5, $h6
-
-// Text
-$a, $strong, $em, $small, $mark, $abbr, $code, $pre
-
-// Forms
-$form, $input, $textarea, $button, $select, $option, $label, $fieldset, $legend
-
-// Lists
-$ul, $ol, $li, $dl, $dt, $dd
-
-// Tables
-$table, $thead, $tbody, $tfoot, $tr, $td, $th, $caption
-
-// Media
-$img, $video, $audio, $canvas, $svg
-
-// And 40+ more...
-```
-
-### Utilities
-
-#### `uid()`
-Generate a unique, time-sorted identifier (UID).
-
-```typescript
-const id = uid(); // "v67JXa8-2Mj-Ukd7o93r"
-const todo = { id, text: "Learn Seidr" };
-```
-
-**Features:**
-- ✅ **Time-Sorted**: IDs can be sorted chronologically
-- ✅ **URL-Safe**: Only contains alphanumeric characters and hyphens
-- ✅ **Collision-Resistant**: Timestamp + process ID + random components
-- ✅ **Compact**: Approximately 20 characters
-
-**Use Cases:**
-- List item keys for `mountList()`
-- Temporary record identifiers
-- Client-side entity tracking
-- Session identifiers
-
-#### `uidTime(uid)`
-Extract the creation timestamp from a UID.
-
-```typescript
-const id = uid();
-const createdAt = uidTime(id); // Date object
-console.log(createdAt.toISOString()); // "2024-12-22T..."
-```
-
-**Examples:**
-
-```typescript
-// Sort by creation time
-const items = [
-  { id: uid(), text: "First" },
-  { id: uid(), text: "Second" }
-];
-items.sort((a, b) => uidTime(a.id).getTime() - uidTime(b.id).getTime());
-
-// Filter by time range
-const recentItems = items.filter(
-  (item) => uidTime(item.id).getTime() > Date.now() - 3600000
-);
-
-// Calculate age
-const age = Date.now() - uidTime(item.id).getTime();
-```
-
-#### `cn(...classes)`
-Utility for conditional class names with reactive support.
-
-```typescript
-const className = cn(
-  'base',
-  isActive && 'active',
-  { 'large': size === 'large' }
-);
-```
-
-#### `elementClassToggle(element, className, observable)`
-Reactively toggle a class on an element based on observable value.
-
-```typescript
-const isActive = new Seidr(false);
-const button = $button({ textContent: 'Click me' });
-elementClassToggle(button, 'active', isActive);
-
-isActive.value = true; // Adds 'active' class
-isActive.value = false; // Removes 'active' class
-```
-
-#### `$query(selector)` / `$queryAll(selector)` / `$getById(id)`
-DOM query utilities (all DOM operations use `$` prefix).
-
-```typescript
-import { $query, $queryAll, $getById } from '@fimbul-works/seidr';
-
-const button = $query('button.submit');
-const items = $queryAll('.item');
-const header = $getById('header');
-```
+- **Core:** [Seidr\<T\>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidroobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
+- **Components:** [component()](API.md#component) | [createScope()](API.md#createscope)
+- **Mounting:** [mount()](API.md#mount) | [mountConditional()](API.md#mountconditional) | [mountList()](API.md#mountlist) | [mountSwitch()](API.md#mountswitch)
+- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#-factory----create-custom-element-creators) | [Predefined elements](API.md#predefined-element-creators)
+- **Utilities:** [uid()](API.md#uid) | [uidTime()](API.md#uidtime) | [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle) | [debounce()](API.md#debounce)
+- **Persistence:** [withStorage()](API.md#withstorage)
 
 ## ⚡ Performance
 
