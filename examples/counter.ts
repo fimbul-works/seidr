@@ -26,7 +26,12 @@ function Counter() {
   });
 }
 
-// Mount component
-mount(Counter(), $getById("app")!);
+// Mount component only in browser environment (not in tests)
+if (typeof document !== "undefined") {
+  const app = $getById("app");
+  if (app) {
+    mount(Counter(), app);
+  }
+}
 
 export { Counter };

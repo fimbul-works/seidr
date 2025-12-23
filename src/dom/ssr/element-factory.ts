@@ -1,4 +1,5 @@
-import { type Attributes, createElement, type ServerElement } from "./element.js";
+import { $ } from "./element.js";
+import type { Attributes, ServerHTMLElement } from "./server-element.js";
 
 /**
  * Higher-order function that creates specialized server element creator functions.
@@ -20,7 +21,7 @@ import { type Attributes, createElement, type ServerElement } from "./element.js
  *   button({ textContent: 'Submit', onclick: () => console.log('clicked') })
  * ]);
  */
-export const elementFactory = <K extends string>(tagName: K) => {
-  return (props?: Attributes, children?: (ServerElement | string)[]): ServerElement =>
-    createElement(tagName, props, children);
+export const $factory = <K extends string>(tagName: K) => {
+  return (props?: Attributes, children?: (ServerHTMLElement | string)[]): ServerHTMLElement =>
+    $(tagName, props, children);
 };

@@ -1,6 +1,6 @@
-import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
-import type { SeidrElement } from "../element.js";
+import type { CleanupFunction } from "../../../types.js";
+import type { ServerComponent } from "../component.js";
+import type { ServerHTMLElement } from "../server-element.js";
 
 /**
  * Mounts a component into a container element with automatic cleanup.
@@ -29,10 +29,7 @@ import type { SeidrElement } from "../element.js";
  * unmount(); // Removes component and cleans up all resources
  * ```
  */
-export function mount<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
-  component: Component<K, E>,
-  container: HTMLElement,
-): CleanupFunction {
+export function mount<C>(component: ServerComponent<C>, container: ServerHTMLElement): CleanupFunction {
   container.appendChild(component.element);
 
   return () => {

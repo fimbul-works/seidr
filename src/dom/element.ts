@@ -1,4 +1,5 @@
-import { type CleanupFunction, Seidr } from "../seidr.js";
+import { Seidr } from "../seidr.js";
+import type { CleanupFunction } from "../types.js";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -105,7 +106,7 @@ export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Te
  * button.destroy(); // Removes event listeners and bindings
  * ```
  */
-export interface SeidrElementInterface extends Omit<Element, "style"> {
+export interface SeidrElementInterface {
   /**
    * Read-only identifier for Seidr-enhanced elements.
    *
@@ -150,6 +151,11 @@ export interface SeidrElementInterface extends Omit<Element, "style"> {
   ): CleanupFunction;
 
   /**
+   * Remove all child elements.
+   */
+  clear(): void;
+
+  /**
    * Removes the element from the DOM and cleans up all resources.
    *
    * This method performs comprehensive cleanup:
@@ -178,6 +184,9 @@ export interface SeidrElementInterface extends Omit<Element, "style"> {
   style: CSSStyleDeclaration | string;
 }
 
+/**
+ * TODO: describe the type
+ */
 export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
   HTMLElementTagNameMap[K];
 
@@ -261,7 +270,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> => {
   const el = document.createElement(tagName);
-  const cleanups: (() => void)[] = [];
+  let cleanups: (() => void)[] = [];
 
   // Assign properties
   if (props) {
@@ -291,12 +300,16 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       el.addEventListener(event, handler as EventListener, options);
       return () => el.removeEventListener(event, handler as EventListener, options);
     },
+    clear(): void {
+      Array.from(el.children).forEach((child: any) => (child.isSeidrElement ? child.destroy() : child.remove()));
+    },
     destroy(): void {
-      Array.from(el.children).forEach((child: any) => child.destroy?.());
+      this.clear();
       cleanups.forEach((cleanup) => cleanup());
+      cleanups = [];
       el.remove();
     },
-  });
+  } as SeidrElementInterface);
 
   // Append children
   if (Array.isArray(children)) {

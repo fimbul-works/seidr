@@ -1,7 +1,7 @@
-import type { Seidr } from "../../seidr.js";
-import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
-import type { SeidrElement } from "../element.js";
+import type { Seidr } from "../../../seidr.js";
+import type { CleanupFunction } from "../../../types.js";
+import type { ServerComponent } from "../component.js";
+import type { ServerHTMLElement } from "../server-element.js";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -62,18 +62,13 @@ import type { SeidrElement } from "../element.js";
  * todos.value = todos.value.filter(todo => todo.id !== 1);
  * ```
  */
-export function mountList<
-  T,
-  I extends string | number,
-  K extends keyof HTMLElementTagNameMap,
-  E extends SeidrElement<K>,
->(
+export function mountList<T, I extends keyof T, C>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  componentFactory: (item: T) => Component<K, E>,
-  container: HTMLElement,
+  componentFactory: (item: T) => ServerComponent<C>,
+  container: ServerHTMLElement,
 ): CleanupFunction {
-  const componentMap = new Map<I, Component<K, E>>();
+  const componentMap = new Map<I, ServerComponent<C>>();
 
   const update = (items: T[]) => {
     const newKeys = new Set(items.map(getKey));

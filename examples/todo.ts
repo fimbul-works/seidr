@@ -66,7 +66,7 @@ function TodoApp(initialTodos: TodoItem[] = []) {
       mountList(
         todos,
         (item) => item.id,
-        (item) => () =>
+        (item) =>
           TodoItem({
             todo: item,
             onDelete: () => {
@@ -97,6 +97,9 @@ function TodoApp(initialTodos: TodoItem[] = []) {
   });
 }
 
-mount(TodoApp(), document.body);
+// Mount component only in browser environment (not in tests)
+if (typeof document !== "undefined") {
+  mount(TodoApp(), document.body);
+}
 
 export { TodoApp };

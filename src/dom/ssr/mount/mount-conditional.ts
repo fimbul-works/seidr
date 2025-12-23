@@ -1,7 +1,7 @@
-import type { Seidr } from "../../seidr.js";
-import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
-import type { SeidrElement } from "../element.js";
+import type { Seidr } from "../../../seidr.js";
+import type { CleanupFunction } from "../../../types.js";
+import type { ServerComponent } from "../component.js";
+import type { ServerHTMLElement } from "../server-element.js";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -47,12 +47,12 @@ import type { SeidrElement } from "../element.js";
  * isVisible.value = false; // Destroys and removes DetailsPanel
  * ```
  */
-export function mountConditional<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+export function mountConditional<T>(
   condition: Seidr<boolean>,
-  componentFactory: () => Component<K, E>,
-  container: HTMLElement,
+  componentFactory: () => ServerComponent<T>,
+  container: ServerHTMLElement,
 ): CleanupFunction {
-  let currentComponent: Component<K, E> | null = null;
+  let currentComponent: ServerComponent<T> | null = null;
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {

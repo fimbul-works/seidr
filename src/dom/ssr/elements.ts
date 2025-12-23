@@ -1,4 +1,4 @@
-import { elementFactory } from "../dom/element-factory.js";
+import { $factory as elementFactory } from "./element-factory.js";
 
 /**
  * Creates a new A SeidrElement.

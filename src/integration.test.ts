@@ -304,7 +304,7 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(div.className).toBe("updated");
 
       // Destroy the element
-      div.destroy();
+      div.remove();
 
       // Update the observable again
       className.value = "should-not-update";
@@ -339,7 +339,7 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(button.tabIndex).toBe(-1);
 
       // Destroy element
-      button.destroy();
+      button.remove();
 
       // Update observables again
       className.value = "class3";
@@ -370,7 +370,7 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(parent.className).toBe("updated parent");
 
       // Destroy parent (should also destroy child)
-      parent.destroy();
+      parent.remove();
 
       // Update observables again
       childText.value = "final child";

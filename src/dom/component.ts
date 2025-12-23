@@ -1,4 +1,4 @@
-import type { CleanupFunction } from "../seidr.js";
+import type { CleanupFunction } from "../types.js";
 import type { SeidrElement } from "./element.js";
 
 /**
@@ -249,6 +249,6 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   const element = factory(scope);
   return {
     element,
-    destroy: () => (scope.destroy(), element.destroy()),
+    destroy: () => (scope.destroy(), element.remove()),
   };
 }

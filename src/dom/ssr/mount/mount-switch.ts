@@ -1,7 +1,7 @@
-import type { Seidr } from "../../seidr.js";
-import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
-import type { SeidrElement } from "../element.js";
+import type { Seidr } from "../../../seidr.js";
+import type { CleanupFunction } from "../../../types.js";
+import type { ServerComponent } from "../component.js";
+import type { ServerHTMLElement } from "../server-element.js";
 
 /**
  * Switches between different components based on an observable value.
@@ -73,12 +73,12 @@ import type { SeidrElement } from "../element.js";
  * viewMode.value = 'table'; // Automatically switches to TableView
  * ```
  */
-export function mountSwitch<T extends string, K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+export function mountSwitch<T extends string, C>(
   observable: Seidr<T>,
-  componentMap: Record<T, () => Component<K, E>>,
-  container: HTMLElement,
+  componentMap: Record<T, () => ServerComponent<C>>,
+  container: ServerHTMLElement,
 ): CleanupFunction {
-  let currentComponent: Component<K, E> | null = null;
+  let currentComponent: ServerComponent<C> | null = null;
 
   const update = (key: T) => {
     if (currentComponent) {
