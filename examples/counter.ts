@@ -8,9 +8,9 @@ function Counter() {
     return $div(
       {
         className: "counter",
-        style: "padding: 20px; border: 1px solid #ccc;",
       },
       [
+        // @ts-expect-error
         $span({ textContent: count }), // Automatic reactive binding!
         $button({
           textContent: "Increment",
@@ -28,10 +28,7 @@ function Counter() {
 
 // Mount component only in browser environment (not in tests)
 if (typeof document !== "undefined") {
-  const app = $getById("app");
-  if (app) {
-    mount(Counter(), app);
-  }
+  mount(Counter(), document.body);
 }
 
 export { Counter };

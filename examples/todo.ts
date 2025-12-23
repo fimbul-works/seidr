@@ -15,9 +15,9 @@ import {
   Seidr,
 } from "../src";
 
-type TodoItem = { id: string; text: string; completed: boolean };
+type TodoEntry = { id: number; text: string; completed: boolean };
 
-function TodoItem({ todo, onDelete }: { todo: TodoItem; onDelete: () => void }) {
+function TodoEntry({ todo, onDelete }: { todo: TodoEntry; onDelete: () => void }) {
   return component((_scope) => {
     const isCompleted = new Seidr(todo.completed);
 
@@ -35,7 +35,6 @@ function TodoItem({ todo, onDelete }: { todo: TodoItem; onDelete: () => void }) 
         }),
         $span({
           textContent: todo.text,
-          style: isCompleted.as((completed) => (completed ? "text-decoration: line-through;" : "")),
         }),
         $button({
           textContent: "Delete",
@@ -46,9 +45,9 @@ function TodoItem({ todo, onDelete }: { todo: TodoItem; onDelete: () => void }) 
   });
 }
 
-function TodoApp(initialTodos: TodoItem[] = []) {
+function TodoApp(initialTodos: TodoEntry[] = []) {
   return component((scope) => {
-    const todos = new Seidr<TodoItem[]>(initialTodos);
+    const todos = new Seidr<TodoEntry[]>(initialTodos);
     const newTodoText = new Seidr("");
     const todoList = $ul({ className: "todo-list" });
 
@@ -56,7 +55,7 @@ function TodoApp(initialTodos: TodoItem[] = []) {
       e.preventDefault();
       const text = newTodoText.value.trim();
       if (text) {
-        todos.value = [...todos.value, { id: Date.now().toString(), text, completed: false }];
+        todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
         newTodoText.value = "";
       }
     };
@@ -67,7 +66,7 @@ function TodoApp(initialTodos: TodoItem[] = []) {
         todos,
         (item) => item.id,
         (item) =>
-          TodoItem({
+          TodoEntry({
             todo: item,
             onDelete: () => {
               todos.value = todos.value.filter((t) => t.id !== item.id);
@@ -78,16 +77,16 @@ function TodoApp(initialTodos: TodoItem[] = []) {
     );
 
     return $div({ className: "todo-app" }, [
-      $h1el({ textContent: "Seidr TODO App" }),
-      $form({ onsubmit: addTodo, className: "todo-form" }, [
+      $h1el({ textContent: "TODO App" }),
+      $form({ className: "todo-form" }, [
         $input({
           type: "text",
           placeholder: "What needs to be done?",
-          value: newTodoText,
-          oninput: (e: Event) => {
-            newTodoText.value = (e.target as HTMLInputElement).value;
-          },
           className: "todo-input",
+          value: newTodoText, // Bind value with Seidr
+          oninput: (e: Event) => {
+            newTodoText.value = (e.target as HTMLInputElement).value; // And update value to complete two-way binding!
+          },
         }),
         $button({
           type: "submit",

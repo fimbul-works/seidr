@@ -1,14 +1,14 @@
-import { describe, it, expect, beforeEach } from "vitest";
 import { JSDOM } from "jsdom";
+import { beforeEach, describe, expect, it } from "vitest";
+import { TodoApp } from "./todo.ts";
 
 describe("TODO Example", () => {
   let dom: JSDOM;
   let document: Document;
 
   beforeEach(() => {
-    dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
     document = dom.window.document;
-    // @ts-ignore - provide document for the example
     global.document = document;
     global.HTMLInputElement = dom.window.HTMLInputElement;
     global.HTMLButtonElement = dom.window.HTMLButtonElement;
@@ -21,11 +21,10 @@ describe("TODO Example", () => {
     document.body.appendChild(todoComponent.element);
 
     const h1 = document.querySelector(".todo-app h1");
-    expect(h1?.textContent).toBe("Seidr TODO App");
+    expect(h1?.textContent).toBe("TODO App");
   });
 
   it("should render form with input and button", async () => {
-    const { TodoApp } = await import("./todo.ts");
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
@@ -39,7 +38,6 @@ describe("TODO Example", () => {
   });
 
   it("should render with empty todo list", async () => {
-    const { TodoApp } = await import("./todo.ts");
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
@@ -48,10 +46,9 @@ describe("TODO Example", () => {
   });
 
   it("should render with initial todos", async () => {
-    const { TodoApp } = await import("./todo.ts");
     const initialTodos = [
-      { id: "1", text: "Learn Seidr", completed: false },
-      { id: "2", text: "Build apps", completed: false },
+      { id: 1, text: "Learn Seidr", completed: false },
+      { id: 2, text: "Build apps", completed: false },
     ];
     const todoComponent = TodoApp(initialTodos);
     document.body.appendChild(todoComponent.element);
@@ -61,7 +58,6 @@ describe("TODO Example", () => {
   });
 
   it("should cleanup properly when destroyed", async () => {
-    const { TodoApp } = await import("./todo.ts");
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
