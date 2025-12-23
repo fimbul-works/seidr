@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $a, $button, $div, $input, $span, createElement } from "./dom";
+import { $, $a, $button, $div, $input, $span } from "./dom";
 import { Seidr } from "./seidr.js";
 import { $query } from "./util";
 
@@ -9,16 +9,16 @@ describe("integration tests", () => {
   });
 
   it("should create complex DOM structures", () => {
-    const form = createElement("form", { id: "contact-form" }, [
-      createElement("div", { className: "form-group" }, [
-        createElement("label", { htmlFor: "name", textContent: "Name:" }),
+    const form = $("form", { id: "contact-form" }, [
+      $("div", { className: "form-group" }, [
+        $("label", { htmlFor: "name", textContent: "Name:" }),
         $input({ type: "text", id: "name", name: "name" }),
       ]),
-      createElement("div", { className: "form-group" }, [
-        createElement("label", { htmlFor: "email", textContent: "Email:" }),
+      $("div", { className: "form-group" }, [
+        $("label", { htmlFor: "email", textContent: "Email:" }),
         $input({ type: "email", id: "email", name: "email" }),
       ]),
-      createElement("div", { className: "form-group" }, [$button({ type: "submit", textContent: "Submit" })]),
+      $("div", { className: "form-group" }, [$button({ type: "submit", textContent: "Submit" })]),
     ]);
 
     document.body.appendChild(form);
@@ -229,7 +229,7 @@ describe("ReactiveProps - Seidr bindings", () => {
 
     it("should update textarea cols when Seidr<number> changes", () => {
       const cols = new Seidr(40);
-      const textarea = createElement("textarea", { cols });
+      const textarea = $("textarea", { cols });
 
       expect(textarea.cols).toBe(40);
 

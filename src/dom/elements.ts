@@ -1,682 +1,682 @@
-import { elementFactory } from "./element-factory.js";
+import { $factory } from "./element-factory.js";
 
 /**
  * Creates a new A SeidrElement.
  * @returns SeidrElement
  */
-export const $a = elementFactory("a");
+export const $a = $factory("a");
 
 /**
  * Creates a new ABBR SeidrElement.
  * @returns SeidrElement
  */
-export const $abbr = elementFactory("abbr");
+export const $abbr = $factory("abbr");
 
 /**
  * Creates a new ADDRESS SeidrElement.
  * @returns SeidrElement
  */
-export const $address = elementFactory("address");
+export const $address = $factory("address");
 
 /**
  * Creates a new AREA SeidrElement.
  * @returns SeidrElement
  */
-export const $area = elementFactory("area");
+export const $area = $factory("area");
 
 /**
  * Creates a new ARTICLE SeidrElement.
  * @returns SeidrElement
  */
-export const $article = elementFactory("article");
+export const $article = $factory("article");
 
 /**
  * Creates a new ASIDE SeidrElement.
  * @returns SeidrElement
  */
-export const $aside = elementFactory("aside");
+export const $aside = $factory("aside");
 
 /**
  * Creates a new AUDIO SeidrElement.
  * @returns SeidrElement
  */
-export const $audio = elementFactory("audio");
+export const $audio = $factory("audio");
 
 /**
  * Creates a new B SeidrElement.
  * @returns SeidrElement
  */
-export const $b = elementFactory("b");
+export const $b = $factory("b");
 
 /**
  * Creates a new BASE SeidrElement.
  * @returns SeidrElement
  */
-export const $base = elementFactory("base");
+export const $base = $factory("base");
 
 /**
  * Creates a new BDI SeidrElement.
  * @returns SeidrElement
  */
-export const $bdi = elementFactory("bdi");
+export const $bdi = $factory("bdi");
 
 /**
  * Creates a new BDO SeidrElement.
  * @returns SeidrElement
  */
-export const $bdo = elementFactory("bdo");
+export const $bdo = $factory("bdo");
 
 /**
  * Creates a new BLOCKQUOTE SeidrElement.
  * @returns SeidrElement
  */
-export const $blockquote = elementFactory("blockquote");
+export const $blockquote = $factory("blockquote");
 
 /**
  * Creates a new BODY SeidrElement.
  * @returns SeidrElement
  */
-export const $body = elementFactory("body");
+export const $body = $factory("body");
 
 /**
  * Creates a new BR SeidrElement.
  * @returns SeidrElement
  */
-export const $br = elementFactory("br");
+export const $br = $factory("br");
 
 /**
  * Creates a new BUTTON SeidrElement.
  * @returns SeidrElement
  */
-export const $button = elementFactory("button");
+export const $button = $factory("button");
 
 /**
  * Creates a new CANVAS SeidrElement.
  * @returns SeidrElement
  */
-export const $canvas = elementFactory("canvas");
+export const $canvas = $factory("canvas");
 
 /**
  * Creates a new CAPTION SeidrElement.
  * @returns SeidrElement
  */
-export const $caption = elementFactory("caption");
+export const $caption = $factory("caption");
 
 /**
  * Creates a new CITE SeidrElement.
  * @returns SeidrElement
  */
-export const $cite = elementFactory("cite");
+export const $cite = $factory("cite");
 
 /**
  * Creates a new CODE SeidrElement.
  * @returns SeidrElement
  */
-export const $code = elementFactory("code");
+export const $code = $factory("code");
 
 /**
  * Creates a new COL SeidrElement.
  * @returns SeidrElement
  */
-export const $col = elementFactory("col");
+export const $col = $factory("col");
 
 /**
  * Creates a new COLGROUP SeidrElement.
  * @returns SeidrElement
  */
-export const $colgroup = elementFactory("colgroup");
+export const $colgroup = $factory("colgroup");
 
 /**
  * Creates a new DATA SeidrElement.
  * @returns SeidrElement
  */
-export const $data = elementFactory("data");
+export const $data = $factory("data");
 
 /**
  * Creates a new DATALIST SeidrElement.
  * @returns SeidrElement
  */
-export const $datalist = elementFactory("datalist");
+export const $datalist = $factory("datalist");
 
 /**
  * Creates a new DD SeidrElement.
  * @returns SeidrElement
  */
-export const $dd = elementFactory("dd");
+export const $dd = $factory("dd");
 
 /**
  * Creates a new DEL SeidrElement.
  * @returns SeidrElement
  */
-export const $del = elementFactory("del");
+export const $del = $factory("del");
 
 /**
  * Creates a new DETAILS SeidrElement.
  * @returns SeidrElement
  */
-export const $details = elementFactory("details");
+export const $details = $factory("details");
 
 /**
  * Creates a new DFN SeidrElement.
  * @returns SeidrElement
  */
-export const $dfn = elementFactory("dfn");
+export const $dfn = $factory("dfn");
 
 /**
  * Creates a new DIALOG SeidrElement.
  * @returns SeidrElement
  */
-export const $dialog = elementFactory("dialog");
+export const $dialog = $factory("dialog");
 
 /**
  * Creates a new DIV SeidrElement.
  * @returns SeidrElement
  */
-export const $div = elementFactory("div");
+export const $div = $factory("div");
 
 /**
  * Creates a new DL SeidrElement.
  * @returns SeidrElement
  */
-export const $dl = elementFactory("dl");
+export const $dl = $factory("dl");
 
 /**
  * Creates a new DT SeidrElement.
  * @returns SeidrElement
  */
-export const $dt = elementFactory("dt");
+export const $dt = $factory("dt");
 
 /**
  * Creates a new EM SeidrElement.
  * @returns SeidrElement
  */
-export const $em = elementFactory("em");
+export const $em = $factory("em");
 
 /**
  * Creates a new EMBED SeidrElement.
  * @returns SeidrElement
  */
-export const $embed = elementFactory("embed");
+export const $embed = $factory("embed");
 
 /**
  * Creates a new FIELDSET SeidrElement.
  * @returns SeidrElement
  */
-export const $fieldset = elementFactory("fieldset");
+export const $fieldset = $factory("fieldset");
 
 /**
  * Creates a new FIGCAPTION SeidrElement.
  * @returns SeidrElement
  */
-export const $figcaption = elementFactory("figcaption");
+export const $figcaption = $factory("figcaption");
 
 /**
  * Creates a new FIGURE SeidrElement.
  * @returns SeidrElement
  */
-export const $figure = elementFactory("figure");
+export const $figure = $factory("figure");
 
 /**
  * Creates a new FOOTER SeidrElement.
  * @returns SeidrElement
  */
-export const $footer = elementFactory("footer");
+export const $footer = $factory("footer");
 
 /**
  * Creates a new FORM SeidrElement.
  * @returns SeidrElement
  */
-export const $form = elementFactory("form");
+export const $form = $factory("form");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h1el = elementFactory("h1");
+export const $h1el = $factory("h1");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h2el = elementFactory("h2");
+export const $h2el = $factory("h2");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h3el = elementFactory("h3");
+export const $h3el = $factory("h3");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h4el = elementFactory("h4");
+export const $h4el = $factory("h4");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h5el = elementFactory("h5");
+export const $h5el = $factory("h5");
 
 /**
  * Creates a new H SeidrElement.
  * @returns SeidrElement
  */
-export const $h6el = elementFactory("h6");
+export const $h6el = $factory("h6");
 
 /**
  * Creates a new HEAD SeidrElement.
  * @returns SeidrElement
  */
-export const $head = elementFactory("head");
+export const $head = $factory("head");
 
 /**
  * Creates a new HEADER SeidrElement.
  * @returns SeidrElement
  */
-export const $header = elementFactory("header");
+export const $header = $factory("header");
 
 /**
  * Creates a new HGROUP SeidrElement.
  * @returns SeidrElement
  */
-export const $hgroup = elementFactory("hgroup");
+export const $hgroup = $factory("hgroup");
 
 /**
  * Creates a new HR SeidrElement.
  * @returns SeidrElement
  */
-export const $hr = elementFactory("hr");
+export const $hr = $factory("hr");
 
 /**
  * Creates a new HTML SeidrElement.
  * @returns SeidrElement
  */
-export const $html = elementFactory("html");
+export const $html = $factory("html");
 
 /**
  * Creates a new I SeidrElement.
  * @returns SeidrElement
  */
-export const $i = elementFactory("i");
+export const $i = $factory("i");
 
 /**
  * Creates a new IFRAME SeidrElement.
  * @returns SeidrElement
  */
-export const $iframe = elementFactory("iframe");
+export const $iframe = $factory("iframe");
 
 /**
  * Creates a new IMG SeidrElement.
  * @returns SeidrElement
  */
-export const $img = elementFactory("img");
+export const $img = $factory("img");
 
 /**
  * Creates a new INPUT SeidrElement.
  * @returns SeidrElement
  */
-export const $input = elementFactory("input");
+export const $input = $factory("input");
 
 /**
  * Creates a new INPUT checkbox element with type="checkbox" preset.
  * @returns SeidrElement
  */
-export const $checkbox = (options?: any, children?: any[]) => elementFactory("input")({ ...options, type: "checkbox" }, children);
+export const $checkbox = $factory("input", { type: "checkbox" });
 
 /**
  * Creates a new INS SeidrElement.
  * @returns SeidrElement
  */
-export const $ins = elementFactory("ins");
+export const $ins = $factory("ins");
 
 /**
  * Creates a new KBD SeidrElement.
  * @returns SeidrElement
  */
-export const $kbd = elementFactory("kbd");
+export const $kbd = $factory("kbd");
 
 /**
  * Creates a new LABEL SeidrElement.
  * @returns SeidrElement
  */
-export const $label = elementFactory("label");
+export const $label = $factory("label");
 
 /**
  * Creates a new LEGEND SeidrElement.
  * @returns SeidrElement
  */
-export const $legend = elementFactory("legend");
+export const $legend = $factory("legend");
 
 /**
  * Creates a new LI SeidrElement.
  * @returns SeidrElement
  */
-export const $li = elementFactory("li");
+export const $li = $factory("li");
 
 /**
  * Creates a new LINK SeidrElement.
  * @returns SeidrElement
  */
-export const $link = elementFactory("link");
+export const $link = $factory("link");
 
 /**
  * Creates a new MAIN SeidrElement.
  * @returns SeidrElement
  */
-export const $main = elementFactory("main");
+export const $main = $factory("main");
 
 /**
  * Creates a new MAP SeidrElement.
  * @returns SeidrElement
  */
-export const $map = elementFactory("map");
+export const $map = $factory("map");
 
 /**
  * Creates a new MARK SeidrElement.
  * @returns SeidrElement
  */
-export const $mark = elementFactory("mark");
+export const $mark = $factory("mark");
 
 /**
  * Creates a new MENU SeidrElement.
  * @returns SeidrElement
  */
-export const $menu = elementFactory("menu");
+export const $menu = $factory("menu");
 
 /**
  * Creates a new META SeidrElement.
  * @returns SeidrElement
  */
-export const $meta = elementFactory("meta");
+export const $meta = $factory("meta");
 
 /**
  * Creates a new METER SeidrElement.
  * @returns SeidrElement
  */
-export const $meter = elementFactory("meter");
+export const $meter = $factory("meter");
 
 /**
  * Creates a new NAV SeidrElement.
  * @returns SeidrElement
  */
-export const $nav = elementFactory("nav");
+export const $nav = $factory("nav");
 
 /**
  * Creates a new NOSCRIPT SeidrElement.
  * @returns SeidrElement
  */
-export const $noscript = elementFactory("noscript");
+export const $noscript = $factory("noscript");
 
 /**
  * Creates a new OBJECT SeidrElement.
  * @returns SeidrElement
  */
-export const $object = elementFactory("object");
+export const $object = $factory("object");
 
 /**
  * Creates a new OL SeidrElement.
  * @returns SeidrElement
  */
-export const $ol = elementFactory("ol");
+export const $ol = $factory("ol");
 
 /**
  * Creates a new OPTGROUP SeidrElement.
  * @returns SeidrElement
  */
-export const $optgroup = elementFactory("optgroup");
+export const $optgroup = $factory("optgroup");
 
 /**
  * Creates a new OPTION SeidrElement.
  * @returns SeidrElement
  */
-export const $option = elementFactory("option");
+export const $option = $factory("option");
 
 /**
  * Creates a new OUTPUT SeidrElement.
  * @returns SeidrElement
  */
-export const $output = elementFactory("output");
+export const $output = $factory("output");
 
 /**
  * Creates a new P SeidrElement.
  * @returns SeidrElement
  */
-export const $p = elementFactory("p");
+export const $p = $factory("p");
 
 /**
  * Creates a new PICTURE SeidrElement.
  * @returns SeidrElement
  */
-export const $picture = elementFactory("picture");
+export const $picture = $factory("picture");
 
 /**
  * Creates a new PRE SeidrElement.
  * @returns SeidrElement
  */
-export const $pre = elementFactory("pre");
+export const $pre = $factory("pre");
 
 /**
  * Creates a new PROGRESS SeidrElement.
  * @returns SeidrElement
  */
-export const $progress = elementFactory("progress");
+export const $progress = $factory("progress");
 
 /**
  * Creates a new HTMLQuoteElement SeidrElement.
  * @returns SeidrElement
  */
-export const $q = elementFactory("q");
+export const $q = $factory("q");
 
 /**
  * Creates a new RP SeidrElement.
  * @returns SeidrElement
  */
-export const $rp = elementFactory("rp");
+export const $rp = $factory("rp");
 
 /**
  * Creates a new RT SeidrElement.
  * @returns SeidrElement
  */
-export const $rt = elementFactory("rt");
+export const $rt = $factory("rt");
 
 /**
  * Creates a new RUBY SeidrElement.
  * @returns SeidrElement
  */
-export const $ruby = elementFactory("ruby");
+export const $ruby = $factory("ruby");
 
 /**
  * Creates a new S SeidrElement.
  * @returns SeidrElement
  */
-export const $s = elementFactory("s");
+export const $s = $factory("s");
 
 /**
  * Creates a new SAMP SeidrElement.
  * @returns SeidrElement
  */
-export const $samp = elementFactory("samp");
+export const $samp = $factory("samp");
 
 /**
  * Creates a new SCRIPT SeidrElement.
  * @returns SeidrElement
  */
-export const $script = elementFactory("script");
+export const $script = $factory("script");
 
 /**
  * Creates a new SEARCH SeidrElement.
  * @returns SeidrElement
  */
-export const $search = elementFactory("search");
+export const $search = $factory("search");
 
 /**
  * Creates a new SECTION SeidrElement.
  * @returns SeidrElement
  */
-export const $section = elementFactory("section");
+export const $section = $factory("section");
 
 /**
  * Creates a new SELECT SeidrElement.
  * @returns SeidrElement
  */
-export const $select = elementFactory("select");
+export const $select = $factory("select");
 
 /**
  * Creates a new SLOT SeidrElement.
  * @returns SeidrElement
  */
-export const $slot = elementFactory("slot");
+export const $slot = $factory("slot");
 
 /**
  * Creates a new SMALL SeidrElement.
  * @returns SeidrElement
  */
-export const $small = elementFactory("small");
+export const $small = $factory("small");
 
 /**
  * Creates a new SOURCE SeidrElement.
  * @returns SeidrElement
  */
-export const $source = elementFactory("source");
+export const $source = $factory("source");
 
 /**
  * Creates a new SPAN SeidrElement.
  * @returns SeidrElement
  */
-export const $span = elementFactory("span");
+export const $span = $factory("span");
 
 /**
  * Creates a new STRONG SeidrElement.
  * @returns SeidrElement
  */
-export const $strong = elementFactory("strong");
+export const $strong = $factory("strong");
 
 /**
  * Creates a new STYLE SeidrElement.
  * @returns SeidrElement
  */
-export const $style = elementFactory("style");
+export const $style = $factory("style");
 
 /**
  * Creates a new SUB SeidrElement.
  * @returns SeidrElement
  */
-export const $sub = elementFactory("sub");
+export const $sub = $factory("sub");
 
 /**
  * Creates a new SUMMARY SeidrElement.
  * @returns SeidrElement
  */
-export const $summary = elementFactory("summary");
+export const $summary = $factory("summary");
 
 /**
  * Creates a new SUP SeidrElement.
  * @returns SeidrElement
  */
-export const $sup = elementFactory("sup");
+export const $sup = $factory("sup");
 
 /**
  * Creates a new TABLE SeidrElement.
  * @returns SeidrElement
  */
-export const $table = elementFactory("table");
+export const $table = $factory("table");
 
 /**
  * Creates a new TBODY SeidrElement.
  * @returns SeidrElement
  */
-export const $tbody = elementFactory("tbody");
+export const $tbody = $factory("tbody");
 
 /**
  * Creates a new TD SeidrElement.
  * @returns SeidrElement
  */
-export const $td = elementFactory("td");
+export const $td = $factory("td");
 
 /**
  * Creates a new TEMPLATE SeidrElement.
  * @returns SeidrElement
  */
-export const $template = elementFactory("template");
+export const $template = $factory("template");
 
 /**
  * Creates a new TEXTAREA SeidrElement.
  * @returns SeidrElement
  */
-export const $textarea = elementFactory("textarea");
+export const $textarea = $factory("textarea");
 
 /**
  * Creates a new TFOOT SeidrElement.
  * @returns SeidrElement
  */
-export const $tfoot = elementFactory("tfoot");
+export const $tfoot = $factory("tfoot");
 
 /**
  * Creates a new TH SeidrElement.
  * @returns SeidrElement
  */
-export const $th = elementFactory("th");
+export const $th = $factory("th");
 
 /**
  * Creates a new THEAD SeidrElement.
  * @returns SeidrElement
  */
-export const $thead = elementFactory("thead");
+export const $thead = $factory("thead");
 
 /**
  * Creates a new TIME SeidrElement.
  * @returns SeidrElement
  */
-export const $time = elementFactory("time");
+export const $time = $factory("time");
 
 /**
  * Creates a new TITLE SeidrElement.
  * @returns SeidrElement
  */
-export const $title = elementFactory("title");
+export const $title = $factory("title");
 
 /**
  * Creates a new TR SeidrElement.
  * @returns SeidrElement
  */
-export const $tr = elementFactory("tr");
+export const $tr = $factory("tr");
 
 /**
  * Creates a new TRACK SeidrElement.
  * @returns SeidrElement
  */
-export const $track = elementFactory("track");
+export const $track = $factory("track");
 
 /**
  * Creates a new U SeidrElement.
  * @returns SeidrElement
  */
-export const $u = elementFactory("u");
+export const $u = $factory("u");
 
 /**
  * Creates a new UL SeidrElement.
  * @returns SeidrElement
  */
-export const $ul = elementFactory("ul");
+export const $ul = $factory("ul");
 
 /**
  * Creates a new VAR SeidrElement.
  * @returns SeidrElement
  */
-export const $var = elementFactory("var");
+export const $var = $factory("var");
 
 /**
  * Creates a new VIDEO SeidrElement.
  * @returns SeidrElement
  */
-export const $video = elementFactory("video");
+export const $video = $factory("video");
 
 /**
  * Creates a new WBR SeidrElement.
  * @returns SeidrElement
  */
-export const $wbr = elementFactory("wbr");
+export const $wbr = $factory("wbr");
 
 /**
  * Creates a new DOM text node.

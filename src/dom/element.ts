@@ -90,7 +90,7 @@ export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Te
  * @example
  * Using SeidrElement methods
  * ```typescript
- * import { createElement, Seidr } from '@fimbul-works/seidr';
+ * import { createElement, Seidr, elementClassToggle } from '@fimbul-works/seidr';
  *
  * const isActive = new Seidr(false);
  * const button = createElement('button', { textContent: 'Click me' });
@@ -98,11 +98,11 @@ export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Te
  * // Event handling with cleanup
  * const cleanup = button.on('click', () => console.log('clicked'));
  *
- * // Reactive class binding
- * button.toggleClass('active', isActive);
+ * // Reactive class binding (utility function)
+ * elementClassToggle(button, 'active', isActive);
  *
  * // Cleanup when done
- * button.destroy(); // Removes event listeners and class bindings
+ * button.destroy(); // Removes event listeners and bindings
  * ```
  */
 export interface SeidrElementInterface extends Omit<Element, "style"> {
@@ -162,60 +162,18 @@ export interface SeidrElementInterface extends Omit<Element, "style"> {
    * @example
    * Manual cleanup
    * ```typescript
+   * import { toggleClass } from '@fimbul-works/seidr';
+   *
    * // Create element with event listeners and reactive bindings
    * const button = createElement('button');
    * button.on('click', handleClick);
-   * button.toggleClass('active', isActive);
+   * toggleClass(button, 'active', isActive);
    *
    * // Clean up everything when done
    * button.destroy();
    * ```
    */
   destroy(): void;
-
-  /**
-   * Reactively toggles a CSS class based on a boolean observable.
-   *
-   * Creates a reactive binding between a Seidr boolean and a CSS class.
-   * When the observable is true, the class is added; when false, it's removed.
-   * The binding is automatically cleaned up when the element is destroyed.
-   *
-   * @param className - The CSS class name to toggle
-   * @param observable - Boolean Seidr that controls the class
-   *
-   * @returns A cleanup function that removes the binding when called
-   *
-   * @example
-   * Basic reactive class toggling
-   * ```typescript
-   * import { createElement, Seidr } from '@fimbul-works/seidr';
-   *
-   * const isActive = new Seidr(false);
-   * const button = createElement('button', { textContent: 'Toggle Me' });
-   *
-   * // Bind class to observable
-   * button.toggleClass('active', isActive);
-   *
-   * isActive.value = true; // Adds 'active' class
-   * isActive.value = false; // Removes 'active' class
-   * ```
-   *
-   * @example
-   * Multiple class bindings
-   * ```typescript
-   * const isVisible = new Seidr(true);
-   * const hasError = new Seidr(false);
-   * const isLoading = new Seidr(false);
-   *
-   * const element = createElement('div');
-   *
-   * // Multiple reactive class bindings
-   * element.toggleClass('visible', isVisible);
-   * element.toggleClass('error', hasError);
-   * element.toggleClass('loading', isLoading);
-   * ```
-   */
-  toggleClass(className: string, observable: Seidr<boolean>): CleanupFunction;
 
   style: CSSStyleDeclaration | string;
 }
@@ -295,9 +253,9 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * });
  * ```
  *
- * @throws {Error} When attempting to use reserved properties ('on', 'destroy', 'toggleClass')
+ * @throws {Error} When attempting to use reserved properties ('on', 'destroy')
  */
-export const createElement = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
+export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
   props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
@@ -308,7 +266,7 @@ export const createElement = <K extends keyof HTMLElementTagNameMap, P extends k
   // Assign properties
   if (props) {
     for (const [prop, value] of Object.entries(props)) {
-      if (["on", "destroy", "toggleClass"].includes(prop)) {
+      if (["on", "destroy"].includes(prop)) {
         throw new Error(`Unallowed property "${prop}"`);
       }
 
@@ -338,9 +296,6 @@ export const createElement = <K extends keyof HTMLElementTagNameMap, P extends k
       cleanups.forEach((cleanup) => cleanup());
       el.remove();
     },
-    toggleClass(className: string, observable: Seidr<boolean>) {
-      return observable.bind(el, (value, el) => el.classList.toggle(className, value));
-    },
   });
 
   // Append children
@@ -350,5 +305,3 @@ export const createElement = <K extends keyof HTMLElementTagNameMap, P extends k
 
   return el as SeidrElement<K>;
 };
-
-export const $ = createElement;

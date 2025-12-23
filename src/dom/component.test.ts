@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr.js";
 import type { Component } from "./component.js";
 import { component, createScope } from "./component.js";
-import { createElement } from "./element.js";
+import { $ } from "./element.js";
 
 describe("createScope", () => {
   it("should create a scope with track, child, and destroy methods", () => {
@@ -81,7 +81,7 @@ describe("createScope", () => {
     let childDestroyed = false;
 
     const mockChild: Component = {
-      element: createElement("div"),
+      element: $("div"),
       destroy: () => {
         childDestroyed = true;
       },
@@ -96,7 +96,7 @@ describe("createScope", () => {
 
 describe("component", () => {
   it("should create a component with element and destroy method", () => {
-    const mockElement = createElement("div");
+    const mockElement = $("div");
     const comp = component(() => {
       return mockElement;
     });
@@ -117,7 +117,7 @@ describe("component", () => {
         scopeDestroyed = true;
         originalDestroy();
       };
-      return createElement("div");
+      return $("div");
     });
 
     expect(scopeDestroyed).toBe(false);
@@ -133,7 +133,7 @@ describe("Documentation Examples", () => {
     it("should demonstrate basic component creation with reactive bindings", () => {
       const comp = component((scope) => {
         const count = new Seidr(0);
-        const button = createElement("button", { textContent: "Count: 0" });
+        const button = $("button", { textContent: "Count: 0" });
 
         // Track reactive binding
         scope.track(
@@ -174,13 +174,13 @@ describe("Documentation Examples", () => {
     it("should demonstrate child component management", () => {
       function createHeader() {
         return component(() => {
-          return createElement("div", { textContent: "Header Component" });
+          return $("div", { textContent: "Header Component" });
         });
       }
 
       function createAvatar() {
         return component(() => {
-          return createElement("div", { textContent: "Avatar Component" });
+          return $("div", { textContent: "Avatar Component" });
         });
       }
 
@@ -190,10 +190,10 @@ describe("Documentation Examples", () => {
         const header = scope.child(createHeader());
         const avatar = scope.child(createAvatar());
 
-        const container = createElement("div", { className: "profile" }, [
+        const container = $("div", { className: "profile" }, [
           header.element,
           avatar.element,
-          createElement("span", { textContent: user.as((u) => u.name) }),
+          $("span", { textContent: user.as((u) => u.name) }),
         ]);
 
         return container;
@@ -261,7 +261,7 @@ describe("Documentation Examples", () => {
       const customCleanup = vi.fn();
 
       const comp = component((scope) => {
-        const element = createElement("div");
+        const element = $("div");
 
         // Track event listener cleanup
         scope.track(element.on("click", () => {}));
@@ -293,12 +293,12 @@ describe("Documentation Examples", () => {
 
       const createHeader = () =>
         component(() => {
-          return createElement("header", { textContent: "Header" });
+          return $("header", { textContent: "Header" });
         });
 
       const createFooter = () =>
         component(() => {
-          return createElement("footer", { textContent: "Footer" });
+          return $("footer", { textContent: "Footer" });
         });
 
       const comp = component((scope) => {
@@ -316,7 +316,7 @@ describe("Documentation Examples", () => {
         scope.child(header);
         scope.child(footer);
 
-        return createElement("main", {}, [header.element, footer.element]);
+        return $("main", {}, [header.element, footer.element]);
       });
 
       expect(headerDestroyed).toBe(false);
@@ -342,7 +342,7 @@ describe("Documentation Examples", () => {
           // This should still execute even if previous one fails
         });
 
-        return createElement("div");
+        return $("div");
       });
 
       // Destroy should not throw

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createElement } from "./dom/element.js";
+import { $ } from "./dom/element.js";
 import { Seidr } from "./seidr.js";
 import { withStorage } from "./with-storage.js";
 
@@ -419,12 +419,12 @@ describe("withStorage", () => {
       it("should demonstrate persistent counter", () => {
         const counter = withStorage("visit-counter", new Seidr(0));
 
-        // Create UI elements using createElement instead of the mentioned shortcuts
-        const counterDisplay = createElement("div", {}, [
-          createElement("span", {
+        // Create UI elements using $ instead of the mentioned shortcuts
+        const counterDisplay = $("div", {}, [
+          $("span", {
             textContent: counter.as((c) => `Visits: ${c}`),
           }),
-          createElement("button", {
+          $("button", {
             textContent: "Reset",
             onclick: () => (counter.value = 0),
           }),

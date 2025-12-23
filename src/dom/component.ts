@@ -201,12 +201,12 @@ export function createScope(): ComponentScope {
  * @example
  * Basic counter component
  * ```typescript
- * import { component, Seidr, createElement } from '@fimbul-works/seidr';
+ * import { component, Seidr, $ } from '@fimbul-works/seidr';
  *
  * function Counter() {
  *   return component((scope) => {
  *     const count = new Seidr(0);
- *     const button = createElement('button', { textContent: 'Count: 0' });
+ *     const button = $('button', { textContent: 'Count: 0' });
  *
  *     // Track reactive binding
  *     scope.track(count.bind(button, (value, el) => {
@@ -231,10 +231,10 @@ export function createScope(): ComponentScope {
  *     const header = scope.child(createHeader());
  *     const avatar = scope.child(createAvatar());
  *
- *     const container = createElement('div', { className: 'profile' }, [
+ *     const container = $('div', { className: 'profile' }, [
  *       header.element,
  *       avatar.element,
- *       createElement('span', { textContent: user.as(u => u.name) })
+ *       $('span', { textContent: user.as(u => u.name) })
  *     ]);
  *
  *     return container;

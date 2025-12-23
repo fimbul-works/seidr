@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "./seidr.js";
+import { $ } from "./dom/index.js";
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -86,7 +87,7 @@ describe("Seidr", () => {
     let observable: Seidr<string>;
 
     beforeEach(() => {
-      element = document.createElement("div");
+      element = $("div");
       observable = new Seidr("initial");
     });
 
@@ -377,7 +378,7 @@ describe("Seidr", () => {
         const logSpy = vi.fn();
 
         // Subscribe to changes (doesn't call immediately)
-        const unsubscribe = count.observe(value => {
+        const unsubscribe = count.observe((value) => {
           logSpy(value);
         });
 
@@ -398,8 +399,8 @@ describe("Seidr", () => {
     describe("Simple numeric transformation example", () => {
       it("should create derived observables with numeric transformations", () => {
         const count = new Seidr(5);
-        const doubled = count.as(n => n * 2);
-        const isEven = count.as(n => n % 2 === 0);
+        const doubled = count.as((n) => n * 2);
+        const isEven = count.as((n) => n % 2 === 0);
 
         expect(doubled.value).toBe(10);
         expect(isEven.value).toBe(false);
@@ -412,16 +413,16 @@ describe("Seidr", () => {
 
     describe("String formatting and concatenation example", () => {
       it("should demonstrate string-based transformations", () => {
-        const firstName = new Seidr('John');
-        const lastName = new Seidr('Doe');
+        const firstName = new Seidr("John");
+        const lastName = new Seidr("Doe");
 
-        const fullName = firstName.as(name => `${name} ${lastName.value}`);
-        const displayName = firstName.as(name => name.toUpperCase());
+        const fullName = firstName.as((name) => `${name} ${lastName.value}`);
+        const displayName = firstName.as((name) => name.toUpperCase());
 
         expect(fullName.value).toBe("John Doe");
         expect(displayName.value).toBe("JOHN");
 
-        firstName.value = 'Jane';
+        firstName.value = "Jane";
         expect(fullName.value).toBe("Jane Doe");
         expect(displayName.value).toBe("JANE");
       });
@@ -429,11 +430,11 @@ describe("Seidr", () => {
 
     describe("Complex object transformations example", () => {
       it("should handle object property extraction and formatting", () => {
-        const user = new Seidr({ id: 1, name: 'John', age: 30 });
+        const user = new Seidr({ id: 1, name: "John", age: 30 });
 
-        const userName = user.as(u => u.name);
-        const userDescription = user.as(u => `${u.name} (${u.age} years old)`);
-        const isAdult = user.as(u => u.age >= 18);
+        const userName = user.as((u) => u.name);
+        const userDescription = user.as((u) => `${u.name} (${u.age} years old)`);
+        const isAdult = user.as((u) => u.age >= 18);
 
         expect(userName.value).toBe("John");
         expect(userDescription.value).toBe("John (30 years old)");
@@ -445,9 +446,9 @@ describe("Seidr", () => {
       it("should demonstrate array transformation patterns", () => {
         const numbers = new Seidr([1, 2, 3, 4, 5]);
 
-        const evenNumbers = numbers.as(nums => nums.filter(n => n % 2 === 0));
-        const squaredNumbers = numbers.as(nums => nums.map(n => n * n));
-        const count = numbers.as(nums => nums.length);
+        const evenNumbers = numbers.as((nums) => nums.filter((n) => n % 2 === 0));
+        const squaredNumbers = numbers.as((nums) => nums.map((n) => n * n));
+        const count = numbers.as((nums) => nums.length);
 
         expect(evenNumbers.value).toEqual([2, 4]);
         expect(squaredNumbers.value).toEqual([1, 4, 9, 16, 25]);
@@ -459,19 +460,19 @@ describe("Seidr", () => {
       it("should handle conditional logic in transformations", () => {
         const temperature = new Seidr(25);
 
-        const temperatureStatus = temperature.as(temp => {
-          if (temp < 0) return 'Freezing';
-          if (temp < 10) return 'Cold';
-          if (temp < 20) return 'Cool';
-          if (temp < 30) return 'Warm';
-          return 'Hot';
+        const temperatureStatus = temperature.as((temp) => {
+          if (temp < 0) return "Freezing";
+          if (temp < 10) return "Cold";
+          if (temp < 20) return "Cool";
+          if (temp < 30) return "Warm";
+          return "Hot";
         });
 
-        const temperatureColor = temperature.as(temp => {
-          if (temp < 10) return 'blue';
-          if (temp < 20) return 'green';
-          if (temp < 30) return 'orange';
-          return 'red';
+        const temperatureColor = temperature.as((temp) => {
+          if (temp < 10) return "blue";
+          if (temp < 20) return "green";
+          if (temp < 30) return "orange";
+          return "red";
         });
 
         expect(temperatureStatus.value).toBe("Warm");
@@ -485,20 +486,17 @@ describe("Seidr", () => {
 
     describe("Computed value - Full name example", () => {
       it("should create computed values that depend on multiple sources", () => {
-        const firstName = new Seidr('John');
-        const lastName = new Seidr('Doe');
+        const firstName = new Seidr("John");
+        const lastName = new Seidr("Doe");
 
-        const fullName = Seidr.computed(
-          () => `${firstName.value} ${lastName.value}`,
-          [firstName, lastName]
-        );
+        const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
         expect(fullName.value).toBe("John Doe");
 
-        firstName.value = 'Jane';
+        firstName.value = "Jane";
         expect(fullName.value).toBe("Jane Doe");
 
-        lastName.value = 'Smith';
+        lastName.value = "Smith";
         expect(fullName.value).toBe("Jane Smith");
       });
     });
@@ -508,15 +506,9 @@ describe("Seidr", () => {
         const width = new Seidr(100);
         const height = new Seidr(200);
 
-        const area = Seidr.computed(
-          () => width.value * height.value,
-          [width, height]
-        );
+        const area = Seidr.computed(() => width.value * height.value, [width, height]);
 
-        const perimeter = Seidr.computed(
-          () => 2 * (width.value + height.value),
-          [width, height]
-        );
+        const perimeter = Seidr.computed(() => 2 * (width.value + height.value), [width, height]);
 
         expect(area.value).toBe(20000);
         expect(perimeter.value).toBe(600);

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr.js";
 import { $, type SeidrElement } from "./element.js";
+import { elementClassToggle } from "./element-class-toggle.js";
 
 describe("createElement", () => {
   it("should create basic HTML element", () => {
@@ -94,7 +95,7 @@ describe("element on method", () => {
     it("should add class when observable is true", () => {
       observable.value = true;
 
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(element.classList.contains("active")).toBe(true);
 
@@ -104,7 +105,7 @@ describe("element on method", () => {
     it("should remove class when observable is false", () => {
       observable.value = false;
 
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(element.classList.contains("active")).toBe(false);
 
@@ -112,7 +113,7 @@ describe("element on method", () => {
     });
 
     it("should toggle class when observable changes", () => {
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(element.classList.contains("active")).toBe(false);
 
@@ -128,14 +129,14 @@ describe("element on method", () => {
     });
 
     it("should return cleanup function", () => {
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(typeof cleanup).toBe("function");
       expect(() => cleanup()).not.toThrow();
     });
 
     it("should stop updating after cleanup", () => {
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(element.classList.contains("active")).toBe(false);
 
@@ -151,7 +152,7 @@ describe("element on method", () => {
       element.classList.add("existing");
       observable.value = true;
 
-      const cleanup = element.toggleClass("active", observable);
+      const cleanup = elementClassToggle(element, "active", observable);
 
       expect(element.classList.contains("existing")).toBe(true);
       expect(element.classList.contains("active")).toBe(true);
@@ -159,7 +160,7 @@ describe("element on method", () => {
       cleanup();
 
       expect(element.classList.contains("existing")).toBe(true);
-      // toggleClass cleanup doesn't remove the class, it just stops observing changes
+      // elementClassToggle cleanup doesn't remove the class, it just stops observing changes
       expect(element.classList.contains("active")).toBe(true);
     });
   });
@@ -286,9 +287,9 @@ describe("element on method", () => {
         const element = $("div");
 
         // Multiple reactive class bindings
-        element.toggleClass("visible", isVisible);
-        element.toggleClass("error", hasError);
-        element.toggleClass("loading", isLoading);
+        elementClassToggle(element, "visible", isVisible);
+        elementClassToggle(element, "error", hasError);
+        elementClassToggle(element, "loading", isLoading);
 
         expect(element.classList.contains("visible")).toBe(true);
         expect(element.classList.contains("error")).toBe(false);
@@ -314,10 +315,6 @@ describe("element on method", () => {
         expect(() => {
           $("div", { destroy: () => {} } as any);
         }).toThrow('Unallowed property "destroy"');
-
-        expect(() => {
-          $("div", { toggleClass: () => {} } as any);
-        }).toThrow('Unallowed property "toggleClass"');
       });
     });
   });

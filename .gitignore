@@ -3,4 +3,3 @@ dist/
 CLAUDE.md
 bundle.*.js
 bundle.*.gz
-*.sh

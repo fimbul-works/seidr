@@ -1,18 +1,18 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../seidr.js";
 import { component } from "./component.js";
-import { createElement } from "./element.js";
+import { $ } from "./element.js";
 import { mount, mountConditional, mountList, mountSwitch } from "./mount.js";
 
 describe("mount", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    container = createElement("div");
+    container = $("div");
   });
 
   it("should mount component into container", () => {
-    const mockElement = createElement("div");
+    const mockElement = $("div");
     const comp = component(() => mockElement);
 
     mount(comp, container);
@@ -21,7 +21,7 @@ describe("mount", () => {
   });
 
   it("should return unmount function", () => {
-    const mockElement = createElement("div");
+    const mockElement = $("div");
     const comp = component(() => mockElement);
 
     const unmount = mount(comp, container);
@@ -39,12 +39,12 @@ describe("mountConditional", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    container = createElement("div");
+    container = $("div");
   });
 
   it("should mount component when condition is true", () => {
     const condition = new Seidr(true);
-    const mockElement = createElement("div");
+    const mockElement = $("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
 
@@ -53,7 +53,7 @@ describe("mountConditional", () => {
 
   it("should not mount component when condition is false", () => {
     const condition = new Seidr(false);
-    const mockElement = createElement("div");
+    const mockElement = $("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
 
@@ -62,7 +62,7 @@ describe("mountConditional", () => {
 
   it("should toggle component based on condition changes", () => {
     const condition = new Seidr(false);
-    const mockElement = createElement("div");
+    const mockElement = $("div");
 
     mountConditional(condition, () => component(() => mockElement), container);
 
@@ -79,7 +79,7 @@ describe("mountConditional", () => {
 
   it("should clean up when destroyed", () => {
     const condition = new Seidr(true);
-    const mockElement = createElement("div");
+    const mockElement = $("div");
     let componentDestroyed = false;
 
     const cleanup = mountConditional(
@@ -111,7 +111,7 @@ describe("mountList", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    container = createElement("div");
+    container = $("div");
   });
 
   it("should render initial list of items", () => {
@@ -125,7 +125,7 @@ describe("mountList", () => {
       (item) => item.id,
       (item) =>
         component(() => {
-          const el = createElement("li");
+          const el = $("li");
           el.textContent = item.name;
           return el;
         }),
@@ -145,7 +145,7 @@ describe("mountList", () => {
       (item) => item.id,
       (item) =>
         component(() => {
-          const el = createElement("li");
+          const el = $("li");
           el.textContent = item.name;
           return el;
         }),
@@ -175,7 +175,7 @@ describe("mountList", () => {
       (item) => item.id,
       (item) =>
         component(() => {
-          const el = createElement("li");
+          const el = $("li");
           el.textContent = item.name;
           return el;
         }),
@@ -205,7 +205,7 @@ describe("mountList", () => {
       (item) => item.id,
       (item) =>
         component(() => {
-          const el = createElement("li");
+          const el = $("li");
           el.textContent = item.name;
           return el;
         }),
@@ -233,7 +233,7 @@ describe("mountList", () => {
       (item) => item.id,
       (item) => {
         const comp = component(() => {
-          const el = createElement("li");
+          const el = $("li");
           el.textContent = item.name;
           return el;
         });
@@ -261,13 +261,13 @@ describe("mountSwitch", () => {
   let container: HTMLElement;
 
   beforeEach(() => {
-    container = createElement("div");
+    container = $("div");
   });
 
   it("should render component based on initial value", () => {
     const mode = new Seidr<"list" | "grid">("list");
-    const listElement = createElement("div");
-    const gridElement = createElement("div");
+    const listElement = $("div");
+    const gridElement = $("div");
 
     mountSwitch(
       mode,
@@ -284,8 +284,8 @@ describe("mountSwitch", () => {
 
   it("should switch components when observable value changes", () => {
     const mode = new Seidr<"list" | "grid">("list");
-    const listElement = createElement("div");
-    const gridElement = createElement("div");
+    const listElement = $("div");
+    const gridElement = $("div");
 
     mountSwitch(
       mode,
@@ -307,8 +307,8 @@ describe("mountSwitch", () => {
 
   it("should handle missing component factories gracefully", () => {
     const mode = new Seidr<"list" | "grid" | "unknown">("unknown" as const);
-    const listElement = createElement("div");
-    const gridElement = createElement("div");
+    const listElement = $("div");
+    const gridElement = $("div");
 
     // Use type assertion to allow 'unknown' key
     mountSwitch(
@@ -327,7 +327,7 @@ describe("mountSwitch", () => {
 
   it("should clean up when destroyed", () => {
     const mode = new Seidr<"list" | "grid">("list");
-    const listElement = createElement("div");
+    const listElement = $("div");
     let componentDestroyed = false;
 
     const cleanup = mountSwitch(
@@ -342,7 +342,7 @@ describe("mountSwitch", () => {
           };
           return comp;
         },
-        grid: () => component(() => createElement("div")),
+        grid: () => component(() => $("div")),
       },
       container,
     );

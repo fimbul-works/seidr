@@ -5,7 +5,6 @@
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
-  $,
   $a,
   $button,
   $div,
@@ -17,6 +16,7 @@ import {
   $span,
   cn,
   component,
+  elementClassToggle,
   mount,
   mountConditional,
   mountList,
@@ -38,16 +38,18 @@ describe("README.md Examples Validation", () => {
   describe("Quick Start Example", () => {
     it("should create a working counter component", () => {
       function Counter() {
-        return component((scope) => {
+        return component((_scope) => {
           const count = new Seidr(0);
           const isDisabled = count.as((value) => value >= 10);
 
           return $div(
             {
               className: "counter",
+              // @ts-expect-error
               style: "padding: 20px; border: 1px solid #ccc;",
             },
             [
+              // @ts-expect-error
               $span({ textContent: count }),
               $button({
                 textContent: "Increment",
@@ -207,7 +209,7 @@ describe("README.md Examples Validation", () => {
       const isVisible = new Seidr(false);
 
       function DetailsPanel() {
-        return component((scope) => {
+        return component((_scope) => {
           return $div({ className: "details-panel" }, [
             $div({ textContent: "User Details" }),
             $div({ textContent: "Some additional information..." }),
@@ -243,7 +245,7 @@ describe("README.md Examples Validation", () => {
       ]);
 
       function TodoItem({ todo }: { todo: any }) {
-        return component((scope) => {
+        return component((_scope) => {
           const isCompleted = new Seidr(todo.completed);
 
           return $div(
@@ -409,7 +411,7 @@ describe("README.md Examples Validation", () => {
 
       document.body.appendChild(element);
 
-      element.toggleClass("highlight", isActive);
+      elementClassToggle(element, "highlight", isActive);
       expect(element.className).toBe("base-element");
 
       isActive.value = true;

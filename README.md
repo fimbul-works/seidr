@@ -437,9 +437,9 @@ const className = cn(
 
 const element = $div({ className });
 
-// Or toggle classes reactively using the element method
+// Or toggle classes reactively using the elementClassToggle utility
 const highlight = new Seidr(false);
-element.toggleClass('highlight', highlight);
+elementClassToggle(element, 'highlight', highlight);
 
 highlight.value = true; // Adds 'highlight' class
 ```
@@ -741,24 +741,27 @@ const className = cn(
 );
 ```
 
-#### `element.toggleClass(className, observable)`
+#### `elementClassToggle(element, className, observable)`
 Reactively toggle a class on an element based on observable value.
 
 ```typescript
 const isActive = new Seidr(false);
 const button = $button({ textContent: 'Click me' });
-button.toggleClass('active', isActive);
+elementClassToggle(button, 'active', isActive);
 
 isActive.value = true; // Adds 'active' class
 isActive.value = false; // Removes 'active' class
 ```
 
-#### `$(selector)` / `$queryAll(selector)`
-DOM query utilities.
+#### `$query(selector)` / `$queryAll(selector)` / `$getById(id)`
+DOM query utilities (all DOM operations use `$` prefix).
 
 ```typescript
-const el = $('#my-id');
-const all = $queryAll('.my-class');
+import { $query, $queryAll, $getById } from '@fimbul-works/seidr';
+
+const button = $query('button.submit');
+const items = $queryAll('.item');
+const header = $getById('header');
 ```
 
 ## ⚡ Performance
