@@ -1,6 +1,8 @@
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrElementInterface } from "../element.js";
 
+export const ServerElementMap = new Map<string, ServerHTMLElement>();
+
 /**
  * Server-side DOM utilities that mirror the client-side API
  * but generate HTML strings instead of actual DOM elements.
@@ -10,6 +12,7 @@ export type Attributes = Record<string, string | number | boolean | null | undef
 export class ServerHTMLElement implements SeidrElementInterface {
   public style: string = "";
   public parentElement?: ServerHTMLElement;
+  private _id?: string;
 
   constructor(
     public tagName: string,
@@ -19,6 +22,20 @@ export class ServerHTMLElement implements SeidrElementInterface {
 
   get isSeidrElement(): true {
     return true;
+  }
+
+  get id(): string | undefined {
+    return this._id;
+  }
+
+  set id(id: string | undefined) {
+    if (this._id) {
+      ServerElementMap.delete(this._id);
+    }
+    this._id = id;
+    if (this._id) {
+      ServerElementMap.set(this._id, this);
+    }
   }
 
   on(_event: string, _handler: (ev: any) => any, _options?: any): CleanupFunction {
