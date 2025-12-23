@@ -84,12 +84,16 @@ function TodoApp(initialTodos: TodoItem[] = []) {
           type: "text",
           placeholder: "What needs to be done?",
           value: newTodoText,
+          oninput: (e: Event) => {
+            newTodoText.value = (e.target as HTMLInputElement).value;
+          },
           className: "todo-input",
         }),
         $button({
           type: "submit",
           textContent: "Add",
           className: "todo-add-button",
+          onclick: addTodo,
         }),
       ]),
       todoList,
