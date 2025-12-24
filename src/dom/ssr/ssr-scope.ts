@@ -35,6 +35,10 @@ export class SSRScope {
    * Only captures root observables (isDerived = false), not derived or
    * computed observables, since those will be recreated on the client.
    *
+   * After capturing state, this method clears the observables map to prevent
+   * memory leaks. This ensures that references to Seidr instances are released
+   * after the render pass is complete.
+   *
    * @returns The captured state with observable IDs mapped to their values
    */
   captureState(): SSRState {
@@ -48,6 +52,9 @@ export class SSRScope {
         state.observables[id] = observable.value;
       }
     }
+
+    // Clear observables map to prevent memory leaks
+    this.observables.clear();
 
     return state;
   }

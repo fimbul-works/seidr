@@ -3,7 +3,8 @@ import type { CleanupFunction } from "../types.js";
 import { ServerHTMLElement } from "./ssr/server-html-element.js";
 
 // SSR detection function: true if window is undefined (Node.js) or if test flag is set
-const isServerSide = () => typeof window === "undefined" || process.env.SEIDR_TEST_SSR === "true";
+const isServerSide = () =>
+  typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR === "true");
 
 /**
  * Accepted types for reactive binding to HTML element attributes.

@@ -23,7 +23,7 @@ import type { SeidrElement } from "./element.js";
  * counterComponent.destroy();
  * ```
  */
-export interface Component<
+export interface SeidrComponent<
   K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
   E extends SeidrElement<K> = any,
 > {
@@ -100,7 +100,9 @@ export interface ComponentScope {
    * scope.child(footerComponent);
    * ```
    */
-  child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(component: Component<K, E>): Component<K, E>;
+  child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+    component: SeidrComponent<K, E>,
+  ): SeidrComponent<K, E>;
 
   /**
    * Destroys all tracked resources and marks the scope as destroyed.
@@ -156,8 +158,8 @@ export function createScope(): ComponentScope {
   };
 
   const child: ComponentScope["child"] = <K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
-    component: Component<K, E>,
-  ): Component<K, E> => {
+    component: SeidrComponent<K, E>,
+  ): SeidrComponent<K, E> => {
     track(() => component.destroy());
     return component;
   };
@@ -244,7 +246,7 @@ export function createScope(): ComponentScope {
  */
 export function component<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
   factory: (scope: ComponentScope) => E,
-): Component<K, E> {
+): SeidrComponent<K, E> {
   const scope = createScope();
   const element = factory(scope);
   return {

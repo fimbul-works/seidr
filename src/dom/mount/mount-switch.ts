@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
+import type { SeidrComponent } from "../component.js";
 import type { SeidrElement } from "../element.js";
 
 /**
@@ -75,10 +75,10 @@ import type { SeidrElement } from "../element.js";
  */
 export function mountSwitch<T extends string, K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
   observable: Seidr<T>,
-  componentMap: Record<T, () => Component<K, E>>,
+  componentMap: Record<T, () => SeidrComponent<K, E>>,
   container: HTMLElement,
 ): CleanupFunction {
-  let currentComponent: Component<K, E> | null = null;
+  let currentComponent: SeidrComponent<K, E> | null = null;
 
   const update = (key: T) => {
     if (currentComponent) {

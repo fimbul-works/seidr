@@ -30,6 +30,11 @@
       "types": "./dist/esm/index.d.ts",
       "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js"
+    },
+    "./ssr": {
+      "types": "./dist/esm/dom/ssr/index.d.ts",
+      "import": "./dist/esm/dom/ssr/index.js",
+      "require": "./dist/cjs/dom/ssr/index.js"
     }
   },
   "files": [

@@ -1,5 +1,5 @@
 import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
+import type { SeidrComponent } from "../component.js";
 import type { SeidrElement } from "../element.js";
 
 /**
@@ -30,7 +30,7 @@ import type { SeidrElement } from "../element.js";
  * ```
  */
 export function mount<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
-  component: Component<K, E>,
+  component: SeidrComponent<K, E>,
   container: HTMLElement,
 ): CleanupFunction {
   container.appendChild(component.element);

@@ -39,11 +39,6 @@ A simple counter demonstrating:
 - Automatic DOM binding
 - Conditional properties (disabled state)
 
-**Key Concepts:**
-- Creating observables
-- Reactive props
-- Component lifecycle
-
 ### ✅ Todo App
 
 **File:** `todo.html`
@@ -53,44 +48,3 @@ A complete todo application showcasing:
 - List rendering and updates
 - Two-way data binding
 - State transformations
-
-**Key Concepts:**
-- Form inputs
-- Array operations
-- Conditional rendering
-- Manual DOM updates
-
-## Development
-
-### Adding New Examples
-
-1. Create the example file (e.g., `myexample.ts`)
-2. Create the corresponding HTML file (e.g., `myexample.html`)
-3. Add a link to `index.html`
-4. Build using: `EXAMPLE=myexample pnpm build:examples`
-
-### Example Template
-
-```typescript
-import { $div, component, mount, Seidr } from "../src";
-
-function MyExample() {
-  return component((scope) => {
-    const state = new Seidr(0);
-
-    return $div({}, [
-      // Your component here
-    ]);
-  });
-}
-
-mount(MyExample(), document.body);
-```
-
-## Testing
-
-Examples are tested alongside the library:
-- `counter.test.ts` - Tests for counter example
-- `todo.test.ts` - Tests for todo app
-
-This ensures all examples remain functional as the library evolves.

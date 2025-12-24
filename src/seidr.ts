@@ -99,7 +99,7 @@ export class Seidr<T> implements Observable<T> {
     this.v = initial;
 
     // Auto-register with active SSR scope if in SSR mode
-    if (typeof window === "undefined" || process.env.SEIDR_TEST_SSR === "true") {
+    if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR === "true")) {
       const register = getSSRRegister();
       if (register) {
         register(this);

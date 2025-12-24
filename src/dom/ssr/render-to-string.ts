@@ -1,3 +1,4 @@
+import type { SeidrComponent } from "../component.js";
 import type { SeidrElementInterface } from "../element.js";
 import { popSSRScope, pushSSRScope } from "./render-stack.js";
 import { SSRScope } from "./ssr-scope.js";
@@ -38,7 +39,7 @@ import type { SSRRenderResult } from "./types.js";
  * // The HTML can be sent to the client, and the state used for hydration
  * ```
  */
-export function renderToString(component: () => SeidrElementInterface | string, scope?: SSRScope): SSRRenderResult {
+export function renderToString(componentFactory: (...args: any) => SeidrComponent, scope?: SSRScope): SSRRenderResult {
   // Create new scope if not provided
   const activeScope = scope || new SSRScope();
 
@@ -46,21 +47,24 @@ export function renderToString(component: () => SeidrElementInterface | string, 
   pushSSRScope(activeScope);
 
   try {
-    // Execute component - Seidr instances will auto-register
-    const element = component();
+    // Create component (Seidr instances will auto-register during creation)
+    const component = componentFactory();
 
     // Convert to HTML string
-    const html = String(element);
+    const html = String(component.element);
 
-    // Capture state (only root observables)
+    // Capture state (only root observables) BEFORE destroying component
     const state = activeScope.captureState();
+
+    // Destroy component to clean up scope bindings
+    component.destroy();
 
     return { html, state };
   } finally {
     // Always pop scope, even if component throws
     popSSRScope();
 
-    // Clear scope if we created it
+    // Clear scope if we created it (captureState already cleared observables)
     if (!scope) {
       activeScope.clear();
     }

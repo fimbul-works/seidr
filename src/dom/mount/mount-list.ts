@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
+import type { SeidrComponent } from "../component.js";
 import type { SeidrElement } from "../element.js";
 
 /**
@@ -70,10 +70,10 @@ export function mountList<
 >(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  componentFactory: (item: T) => Component<K, E>,
+  componentFactory: (item: T) => SeidrComponent<K, E>,
   container: HTMLElement,
 ): CleanupFunction {
-  const componentMap = new Map<I, Component<K, E>>();
+  const componentMap = new Map<I, SeidrComponent<K, E>>();
 
   const update = (items: T[]) => {
     const newKeys = new Set(items.map(getKey));

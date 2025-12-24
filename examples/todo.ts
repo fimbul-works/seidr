@@ -101,7 +101,7 @@ function TodoApp(initialTodos: Todo[] = []) {
 }
 
 // Mount component only in browser environment (not in tests)
-if (typeof document !== "undefined") {
+if (typeof window !== "undefined") {
   mount(TodoApp(), document.body);
 }
 

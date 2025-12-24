@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
-import type { Component } from "../component.js";
+import type { SeidrComponent } from "../component.js";
 import type { SeidrElement } from "../element.js";
 
 /**
@@ -49,10 +49,10 @@ import type { SeidrElement } from "../element.js";
  */
 export function mountConditional<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
   condition: Seidr<boolean>,
-  componentFactory: () => Component<K, E>,
+  componentFactory: () => SeidrComponent<K, E>,
   container: HTMLElement,
 ): CleanupFunction {
-  let currentComponent: Component<K, E> | null = null;
+  let currentComponent: SeidrComponent<K, E> | null = null;
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {

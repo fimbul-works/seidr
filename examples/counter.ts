@@ -27,7 +27,7 @@ function Counter() {
 }
 
 // Mount component only in browser environment (not in tests)
-if (typeof document !== "undefined") {
+if (typeof window !== "undefined") {
   mount(Counter(), document.body);
 }
 
