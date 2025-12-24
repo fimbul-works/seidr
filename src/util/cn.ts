@@ -1,4 +1,5 @@
 import { Seidr } from "../seidr.js";
+import { isFn, isObj, isSeidr } from "./is.js";
 
 /**
  * Builds a concatenated className string from various input types.
@@ -85,13 +86,13 @@ export const cn = (...classes: unknown[]): string =>
   classes
     .filter(Boolean)
     .flatMap((c: unknown): string =>
-      c instanceof Seidr
-        ? cn(c.value)
+      isSeidr(c)
+        ? cn([c.value])
         : Array.isArray(c)
-          ? (cn(...c) as string)
-          : typeof c === "function"
-            ? (cn(c()) as string)
-            : typeof c === "object"
+          ? cn(...c)
+          : isFn(c)
+            ? cn([c()])
+            : isObj(c)
               ? Object.entries(c as object)
                   .filter(([, value]) => !!value)
                   .map(([key]) => key)

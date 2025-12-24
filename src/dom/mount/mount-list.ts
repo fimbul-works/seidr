@@ -1,7 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
-import type { SeidrElement } from "../element.js";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -24,7 +23,7 @@ import type { SeidrElement } from "../element.js";
  * @example
  * Todo list rendering
  * ```typescript
- * import { mountList, Seidr, component, createElement } from '@fimbul-works/seidr';
+ * import { $, component, mountList, Seidr } from '@fimbul-works/seidr';
  *
  * type Todo = { id: number; text: string; completed: boolean };
  *
@@ -37,8 +36,8 @@ import type { SeidrElement } from "../element.js";
  *   return component((scope) => {
  *     const isCompleted = new Seidr(todo.completed);
  *
- *     return createElement('div', { className: 'todo-item' }, [
- *       createElement('span', {
+ *     return $('div', { className: 'todo-item' }, [
+ *       $('span', {
  *         textContent: todo.text,
  *         style: isCompleted.as(completed =>
  *           completed ? 'text-decoration: line-through' : ''

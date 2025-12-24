@@ -12,7 +12,9 @@ describe("SSRScope", () => {
 
   beforeEach(() => {
     // Enable SSR mode for all tests
-    process.env.SEIDR_TEST_SSR = "true";
+    // @ts-expect-error
+    process.env.SEIDR_TEST_SSR = true;
+
     scope = new SSRScope();
   });
 
@@ -69,11 +71,9 @@ describe("SSRScope", () => {
 
     const state = scope.captureState();
 
-    // Should only contain root observables
     expect(Object.keys(state.observables)).toHaveLength(2);
     expect(state.observables[root1.id]).toBe(10);
     expect(state.observables[root2.id]).toBe("hello");
-    // derived should not be in state
     expect(state.observables[derived.id]).toBeUndefined();
   });
 
@@ -134,7 +134,7 @@ describe("SSRScope", () => {
       const scope = new SSRScope();
 
       // Don't push scope
-      const obs = new Seidr(42);
+      const _obs = new Seidr(42);
 
       expect(scope.size).toBe(0);
     });

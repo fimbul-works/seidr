@@ -9,7 +9,12 @@ import type { SSRState } from "./types.js";
  * rendering and captures their state for hydration.
  */
 export class SSRScope {
+  // id -> instance
   private observables = new Map<string, Seidr<any>>();
+  // child -> parents[]
+  private parents = new Map<string, string[]>();
+  // observale -> [elementId, prop]
+  private bindings = new Map<string, [string, string]>();
 
   /**
    * Returns the number of observables registered in this scope.
@@ -23,10 +28,34 @@ export class SSRScope {
    * Registers an observable with this scope.
    * Called automatically by Seidr constructor during SSR rendering.
    *
-   * @param observable - The Seidr instance to register
+   * @param seidr - The Seidr instance to register
    */
-  register(observable: Seidr<any>): void {
-    this.observables.set(observable.id, observable);
+  register(seidr: Seidr<any>): void {
+    console.log("Registering Seidr", seidr.id);
+    this.observables.set(seidr.id, seidr);
+  }
+
+  /**
+   * Registers an observable with this scope
+   * to build a dependency graph.
+   *
+   * @param seidr - The Seidr instance to register
+   */
+  registerDerived(seidr: Seidr<any>, parents: Seidr<any>[]): void {
+    const ids = parents.map((s) => s.id);
+    console.log("Registering derived Seidr", seidr.id, "with parents", ids);
+    this.parents.set(seidr.id, ids);
+  }
+
+  /**
+   * Registers binding between SeidrElement and a Seidr class instance.
+   * Called during SSR rendering of an element to keep track.
+   *
+   * @param seidr - The Seidr instance to register
+   */
+  registerBindings(observableId: string, elementId: string, property: string): void {
+    console.log("Registering bindings", observableId, "for element", elementId, "prop", property);
+    this.bindings.set(observableId, [elementId, property]);
   }
 
   /**
@@ -45,6 +74,9 @@ export class SSRScope {
     const state: SSRState = {
       observables: {},
     };
+
+    console.log("BINDINGS", Object.entries(this.bindings));
+    console.log("DERIVED", Object.entries(this.parents));
 
     for (const [id, observable] of this.observables) {
       // Only capture root observables, not derived/computed ones

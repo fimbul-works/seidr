@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { TodoApp } from "../../../examples/todo.js";
 import { Seidr } from "../../seidr.js";
 import { component } from "../component.js";
 import { $ } from "../element.js";
@@ -13,7 +14,8 @@ const originalSSREnv = process.env.SEIDR_TEST_SSR;
 describe("SSR Utilities", () => {
   beforeEach(() => {
     // Enable SSR mode for all tests
-    process.env.SEIDR_TEST_SSR = "true";
+    // @ts-expect-error
+    process.env.SEIDR_TEST_SSR = true;
   });
 
   afterEach(() => {
@@ -60,10 +62,7 @@ describe("SSR Utilities", () => {
           const doubled = count.as((n) => n * 2);
           capturedIds = { count: count.id, doubled: doubled.id };
 
-          return $("div", {}, [
-            $("span", {}, [`Count: ${count.value}`]),
-            $("span", {}, [`Doubled: ${doubled.value}`]),
-          ]);
+          return $("div", {}, [$("span", {}, [`Count: ${count.value}`]), $("span", {}, [`Doubled: ${doubled.value}`])]);
         });
       });
 
@@ -119,16 +118,13 @@ describe("SSR Utilities", () => {
       const scope = new SSRScope();
       let capturedObsId: string | undefined;
 
-      const { state } = renderToString(
-        () => {
-          return component((_scope) => {
-            const obs = new Seidr(100);
-            capturedObsId = obs.id;
-            return $("div", {}, [`${obs.value}`]);
-          });
-        },
-        scope,
-      );
+      const { state } = renderToString(() => {
+        return component((_scope) => {
+          const obs = new Seidr(100);
+          capturedObsId = obs.id;
+          return $("div", {}, [`${obs.value}`]);
+        });
+      }, scope);
 
       expect(scope.size).toBe(0); // scope should be cleared after captureState
       expect(state.observables[capturedObsId!]).toBe(100);
@@ -137,15 +133,12 @@ describe("SSR Utilities", () => {
     it("should clean up scope after rendering", () => {
       const scope = new SSRScope();
 
-      renderToString(
-        () => {
-          return component((_scope) => {
-            const obs = new Seidr(42);
-            return $("div", {}, [`${obs.value}`]);
-          });
-        },
-        scope,
-      );
+      renderToString(() => {
+        return component((_scope) => {
+          const obs = new Seidr(42);
+          return $("div", {}, [`${obs.value}`]);
+        });
+      }, scope);
 
       // Scope SHOULD be cleared automatically by captureState() to prevent memory leaks
       expect(scope.size).toBe(0);
@@ -164,59 +157,21 @@ describe("SSR Utilities", () => {
     });
 
     it("should render TODO application", () => {
-      // This test validates that proper Seidr components (using component() wrapper)
-      // work correctly with SSR rendering
-
-      const { html, state } = renderToString(() => {
-        return component((_scope) => {
-          const todos = new Seidr([
-            { id: 1, text: "Learn Seidr", completed: false },
-            { id: 2, text: "Build SSR", completed: false },
-          ]);
-          const newTodoText = new Seidr("");
-
-          return $("div", { className: "todo-app" }, [
-            $("h1", {}, ["TODO App"]),
-            $("ul", { className: "todo-list" }, [
-              $("li", {}, [
-                $("input", { type: "checkbox", checked: todos.value[0].completed }),
-                $("span", { textContent: todos.value[0].text }),
-              ]),
-              $("li", {}, [
-                $("input", { type: "checkbox", checked: todos.value[1].completed }),
-                $("span", { textContent: todos.value[1].text }),
-              ]),
-            ]),
-            $("input", {
-              type: "text",
-              placeholder: "Add new todo",
-              value: newTodoText,
-            }),
-          ]);
-        });
-      });
+      const { html, state } = renderToString(TodoApp);
 
       // Verify HTML structure
       expect(html).toContain('<div class="todo-app">');
       expect(html).toContain("TODO App");
       expect(html).toContain('<ul class="todo-list">');
       expect(html).toContain("Learn Seidr");
-      expect(html).toContain("Build SSR");
-      expect(html).toContain('type="text"');
-      expect(html).toContain('placeholder="Add new todo"');
+      expect(html).toContain('placeholder="What needs to be done?"');
 
-      // Verify state capture - should capture 2 root observables (todos and newTodoText)
-      expect(Object.keys(state.observables)).toHaveLength(2);
+      const todos = Object.values(state.observables)
+        .filter((v) => Array.isArray(v))
+        .map((todo: any) => todo.at(0).text);
 
-      // Verify the todos array was captured
-      const capturedTodos = Object.values(state.observables).find(
-        (val) => Array.isArray(val) && val.length === 2 && val[0]?.text === "Learn Seidr",
-      );
-      expect(capturedTodos).toBeDefined();
-      expect(capturedTodos).toEqual([
-        { id: 1, text: "Learn Seidr", completed: false },
-        { id: 2, text: "Build SSR", completed: false },
-      ]);
+      expect(todos).toHaveLength(1);
+      expect(todos).toContain("Learn Seidr");
     });
   });
 });

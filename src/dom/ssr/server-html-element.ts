@@ -1,5 +1,5 @@
-import { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
+import { isObj, isSeidr, isStr } from "../../util/is.js";
 import type { SeidrElementInterface } from "../element.js";
 
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
@@ -143,7 +143,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
   private _innerHTML: string = "";
 
   // Public properties matching HTMLElement interface
-  // @ts-expect-error
+  public readonly tagName: string;
   public style: ServerCSSStyleDeclaration;
   public parentElement?: ServerHTMLElement;
   private _id?: string;
@@ -157,12 +157,15 @@ export class ServerHTMLElement implements SeidrElementInterface {
   private _src?: string;
 
   public classList: ServerDOMTokenList;
+  public dataset: Record<string, string> = {};
 
   constructor(
-    public tagName: string,
+    tag: string,
     attrs: Attributes = {},
     public children: (ServerHTMLElement | string)[] = [],
   ) {
+    this.tagName = tag.toUpperCase();
+
     // Initialize style with custom CSSStyleDeclaration
     this.style = new ServerCSSStyleDeclaration(
       () => this._style,
@@ -180,8 +183,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
     // Process all attributes
     for (const [key, value] of Object.entries(attrs)) {
       // Handle Seidr observables - evaluate them to get the value
-      // @ts-expect-error
-      const resolvedValue = value instanceof Seidr ? value.value : value;
+      const resolvedValue = isSeidr(value) ? value.value : value;
 
       // Handle special properties that shouldn't be attributes
       if (key === "className") {
@@ -342,7 +344,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
 
   appendChild(child: ServerHTMLElement | string) {
     this.children.push(child);
-    if (typeof child === "object" && child !== null) {
+    if (isObj(child) && child !== null) {
       child.parentElement = this;
     }
   }
@@ -353,7 +355,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
       throw new Error("Cannot insert before non-existing child");
     }
     this.children.splice(index, 0, child);
-    if (typeof child === "object" && child !== null) {
+    if (isObj(child) && child !== null) {
       child.parentElement = this;
     }
   }
@@ -362,7 +364,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
     const index = this.children.indexOf(child);
     if (index !== -1) {
       this.children.splice(index, 1);
-      if (typeof child === "object" && child !== null) {
+      if (isObj(child) && child !== null) {
         child.parentElement = undefined;
       }
     }
@@ -370,7 +372,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
 
   clear() {
     this.children.forEach((child) => {
-      if (typeof child === "object" && child !== null) {
+      if (isObj(child) && child !== null) {
         child.remove();
       }
     });
@@ -383,10 +385,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
     this.clear();
     this.parentElement = undefined;
-  }
-
-  destroy(): void {
-    this.remove();
   }
 
   getAttribute(name: string): string | null {
@@ -456,6 +454,8 @@ export class ServerHTMLElement implements SeidrElementInterface {
     return [];
   }
 
+  click(..._args: unknown[]) {}
+
   toString(): string {
     // Build attributes string
     const attrEntries: string[] = [];
@@ -498,7 +498,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
     if (this._src !== undefined) attrEntries.push(`src="${this.escapeHtml(this._src)}"`);
 
     const attrs = attrEntries.filter(Boolean).join(" ");
-    const openTag = attrs ? `<${this.tagName} ${attrs}>` : `<${this.tagName}>`;
+    const openTag = attrs ? `<${this.tagName.toLocaleLowerCase()} ${attrs}>` : `<${this.tagName.toLowerCase()}>`;
 
     // Self-closing tags
     const voidElements = [
@@ -517,7 +517,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
       "wbr",
     ];
 
-    if (voidElements.includes(this.tagName)) {
+    if (voidElements.includes(this.tagName.toLocaleLowerCase())) {
       return openTag.replace(">", " />");
     }
 
@@ -533,16 +533,14 @@ export class ServerHTMLElement implements SeidrElementInterface {
       }
 
       if (this.children.length > 0) {
-        parts.push(
-          ...this.children.map((child) => (typeof child === "string" ? this.escapeHtml(child) : child.toString())),
-        );
+        parts.push(...this.children.map((child) => (isStr(child) ? this.escapeHtml(child) : child.toString())));
       }
 
       innerHtml = parts.join("");
     }
 
     // Always return closing tag for non-void elements
-    return `${openTag}${innerHtml}</${this.tagName}>`;
+    return `${openTag}${innerHtml}</${this.tagName.toLocaleLowerCase()}>`;
   }
 
   /**

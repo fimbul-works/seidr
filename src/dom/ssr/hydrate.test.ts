@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr.js";
+import { component } from "../component.js";
 import { $ } from "../element.js";
 import { hydrate } from "./hydrate.js";
 import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context.js";
@@ -14,7 +15,8 @@ const originalSSREnv = process.env.SEIDR_TEST_SSR;
 describe("SSR Utilities", () => {
   beforeEach(() => {
     // Enable SSR mode for all tests
-    process.env.SEIDR_TEST_SSR = "true";
+    // @ts-expect-error
+    process.env.SEIDR_TEST_SSR = true;
   });
 
   afterEach(() => {
@@ -41,16 +43,16 @@ describe("SSR Utilities", () => {
       const scope = new SSRScope();
       pushSSRScope(scope);
 
-      const component = () => {
-        // @ts-expect-error
-        return $("div", {}, [`Count: ${count.value}`]);
-      };
+      const TestComponent = () =>
+        component(() => {
+          return $("div", {}, [`Count: ${count.value}`]);
+        });
 
-      const { state } = renderToString(component, scope);
+      const { state } = renderToString(TestComponent, scope);
       popSSRScope();
 
-      // Client-side hydration
-      const hydratedElement = hydrate(component, state);
+      // Client-side hydration (same signature as renderToString!)
+      const hydratedElement = hydrate(TestComponent, state);
 
       expect(hydratedElement).toBeDefined();
       // The hydrated element should have the server-side value
@@ -60,14 +62,14 @@ describe("SSR Utilities", () => {
     it("should clear hydration context after hydration", () => {
       const state: SSRState = { observables: {} };
 
-      const component = () => {
-        // @ts-expect-error
-        return $("div", {}, ["test"]);
-      };
+      const TestComponent = () =>
+        component(() => {
+          return $("div", {}, ["test"]);
+        });
 
       expect(isHydrating()).toBe(false);
 
-      hydrate(component, state);
+      hydrate(TestComponent, state);
 
       expect(isHydrating()).toBe(false);
     });
@@ -83,10 +85,12 @@ describe("SSR Utilities", () => {
 
       setHydrationContext({ state: originalState });
 
-      // @ts-expect-error
-      const component = () => $("div", {}, ["test"]);
+      const TestComponent = () =>
+        component(() => {
+          return $("div", {}, ["test"]);
+        });
 
-      hydrate(component, hydrateState);
+      hydrate(TestComponent, hydrateState);
 
       // Should restore original context
       expect(getHydrationContext().state).toBe(originalState);

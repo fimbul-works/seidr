@@ -3,7 +3,7 @@ import { Seidr } from "../seidr.js";
 import { $, type SeidrElement } from "./element.js";
 import { elementClassToggle } from "./element-class-toggle.js";
 
-describe("createElement", () => {
+describe("$ (createElement)", () => {
   it("should create basic HTML element", () => {
     const div = $("div");
 

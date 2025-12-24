@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $, $a, $button, $div, $input, $span } from "./dom";
+import { $, $a, $button, $div, $input, $query, $span } from "./dom";
 import { Seidr } from "./seidr.js";
-import { $query } from "./util";
 
 describe("integration tests", () => {
   beforeEach(() => {
@@ -304,7 +303,7 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(div.className).toBe("updated");
 
       // Destroy the element
-      div.destroy();
+      div.remove();
 
       // Update the observable again
       className.value = "should-not-update";
@@ -339,7 +338,7 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(button.tabIndex).toBe(-1);
 
       // Destroy element
-      button.destroy();
+      button.remove();
 
       // Update observables again
       className.value = "class3";
@@ -369,8 +368,8 @@ describe("ReactiveProps - Seidr bindings", () => {
       expect(child.textContent).toBe("updated child");
       expect(parent.className).toBe("updated parent");
 
-      // Destroy parent (should also destroy child)
-      parent.destroy();
+      // Destroy parent
+      parent.remove();
 
       // Update observables again
       childText.value = "final child";

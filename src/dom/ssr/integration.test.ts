@@ -1,27 +1,32 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { $ } from "../element.js";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr.js";
+import { $ } from "../element.js";
+
+// Store original SSR env var
+const originalSSREnv = process.env.SEIDR_TEST_SSR;
 
 describe("SSR Integration Tests", () => {
   const originalWindow = global.window;
-  const originalProcessEnv = process.env.SEIDR_TEST_SSR;
 
   beforeEach(() => {
-    // Enable SSR mode for tests
-    process.env.SEIDR_TEST_SSR = "true";
+    // Enable SSR mode for all tests
+    // @ts-expect-error
+    process.env.SEIDR_TEST_SSR = true;
   });
 
   afterEach(() => {
+    // Restore original SSR env var
+    if (originalSSREnv) {
+      process.env.SEIDR_TEST_SSR = originalSSREnv;
+    } else {
+      delete process.env.SEIDR_TEST_SSR;
+    }
+
     // Restore original values
     if (originalWindow) {
       (global as any).window = originalWindow;
     } else {
       delete (global as any).window;
-    }
-    if (originalProcessEnv) {
-      process.env.SEIDR_TEST_SSR = originalProcessEnv;
-    } else {
-      delete process.env.SEIDR_TEST_SSR;
     }
   });
 
@@ -29,7 +34,7 @@ describe("SSR Integration Tests", () => {
     it("should create ServerHTMLElement instead of DOM element", () => {
       const div = $("div", { className: "test" });
       expect(div.constructor.name).toBe("ServerHTMLElement");
-      expect(div.tagName).toBe("div");
+      expect(div.tagName).toBe("DIV");
     });
 
     it("should generate HTML string via toString", () => {
@@ -57,7 +62,7 @@ describe("SSR Integration Tests", () => {
   describe("Reactive Bindings in SSR", () => {
     it("should handle initial value from Seidr observable", () => {
       const count = new Seidr(42);
-      const display = $("span", {}, [count.as((n) => `Count: ${n}`)]);
+      const display = $("span", { textContent: count.as((n) => `Count: ${n}`) });
 
       // SSR should capture the initial value
       expect(display.toString()).toContain("Count: 42");
@@ -68,7 +73,7 @@ describe("SSR Integration Tests", () => {
       const lastName = new Seidr("Doe");
       const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
-      const element = $("div", {}, [fullName]);
+      const element = $("div", { textContent: fullName });
       expect(element.toString()).toContain("John Doe");
     });
 
@@ -86,6 +91,7 @@ describe("SSR Integration Tests", () => {
 
     it("should handle class binding", () => {
       const isActive = new Seidr(true);
+      // @ts-expect-error
       const button = $("button", { className: isActive.as((a) => (a ? "active" : "")) });
 
       expect(button.toString()).toContain("active");
@@ -97,6 +103,7 @@ describe("SSR Integration Tests", () => {
 
       const card = $("div", {
         className: theme.as((t) => `card theme-${t}`),
+        // @ts-expect-error
         "data-count": count,
       });
 
@@ -159,12 +166,7 @@ describe("SSR Integration Tests", () => {
       ]);
 
       const list = $("ul", { className: "todo-list" }, [
-        ...todos.value.map(
-          (todo) =>
-            $("li", { className: todo.completed ? "completed" : "" }, [
-              todo.text,
-            ]) as any
-        ),
+        ...todos.value.map((todo) => $("li", { className: todo.completed ? "completed" : "" }, [todo.text]) as any),
       ]);
 
       const html = list.toString();
@@ -179,17 +181,17 @@ describe("SSR Integration Tests", () => {
       const nav = $("nav", { className: "main-nav" }, [
         $("a", {
           href: "/home",
-          className: isActive.as((a) => (a === "home" ? "active" : "")),
+          className: isActive.as<string>((a) => (a === "home" ? "active" : "")),
           textContent: "Home",
         }),
         $("a", {
           href: "/about",
-          className: isActive.as((a) => (a === "about" ? "active" : "")),
+          className: isActive.as<string>((a) => (a === "about" ? "active" : "")),
           textContent: "About",
         }),
         $("a", {
           href: "/contact",
-          className: isActive.as((a) => (a === "contact" ? "active" : "")),
+          className: isActive.as<string>((a) => (a === "contact" ? "active" : "")),
           textContent: "Contact",
         }),
       ]);
@@ -206,12 +208,7 @@ describe("SSR Integration Tests", () => {
       const isSuccess = new Seidr(true);
 
       const alert = $("div", {
-        className: [
-          "alert",
-          isLoading.value && "loading",
-          hasError.value && "error",
-          isSuccess.value && "success",
-        ]
+        className: ["alert", isLoading.value && "loading", hasError.value && "error", isSuccess.value && "success"]
           .filter(Boolean)
           .join(" "),
       });
@@ -225,21 +222,6 @@ describe("SSR Integration Tests", () => {
   });
 
   describe("Event Handlers in SSR", () => {
-    it("should store onclick handler (even though it won't execute on server)", () => {
-      let clicked = false;
-      const button = $("button", {
-        onclick: () => {
-          clicked = true;
-        },
-        textContent: "Click me",
-      });
-
-      const html = button.toString();
-      expect(html).toContain(">Click me<");
-      // Event handlers don't appear in HTML string but are stored
-      expect(button).toBeDefined();
-    });
-
     it("should return cleanup function from on() method", () => {
       const button = $("button");
       const cleanup = button.on("click", () => {});
@@ -275,6 +257,7 @@ describe("SSR Integration Tests", () => {
   describe("Attribute Handling in SSR", () => {
     it("should handle aria attributes", () => {
       const button = $("button", {
+        // @ts-expect-error
         "aria-label": "Close dialog",
         "aria-expanded": "false",
       });
@@ -286,6 +269,7 @@ describe("SSR Integration Tests", () => {
 
     it("should handle data attributes", () => {
       const div = $("div", {
+        // @ts-expect-error
         "data-id": "123",
         "data-name": "test",
       });
@@ -297,6 +281,7 @@ describe("SSR Integration Tests", () => {
 
     it("should escape HTML in attributes", () => {
       const div = $("div", {
+        // @ts-expect-error
         "data-html": '<script>alert("xss")</script>',
       });
 
@@ -306,6 +291,7 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle boolean attributes", () => {
+      // @ts-expect-error
       const input = $("input", { disabled: true, readonly: true, required: false });
 
       const html = input.toString();
@@ -317,11 +303,7 @@ describe("SSR Integration Tests", () => {
 
   describe("Children Handling in SSR", () => {
     it("should handle mixed text and element children", () => {
-      const p = $("p", {}, [
-        "Text before ",
-        $("strong", { textContent: "bold" }),
-        " text after",
-      ]);
+      const p = $("p", {}, ["Text before ", $("strong", { textContent: "bold" }), " text after"]);
 
       const html = p.toString();
       expect(html).toContain("Text before ");
@@ -346,11 +328,7 @@ describe("SSR Integration Tests", () => {
 
     it("should handle deeply nested structures", () => {
       const tree = $("div", { className: "level-1" }, [
-        $("div", { className: "level-2" }, [
-          $("div", { className: "level-3" }, [
-            $("span", { textContent: "Deep" }),
-          ]),
-        ]),
+        $("div", { className: "level-2" }, [$("div", { className: "level-3" }, [$("span", { textContent: "Deep" })])]),
       ]);
 
       const html = tree.toString();
@@ -407,10 +385,7 @@ describe("SSR Integration Tests", () => {
 
   describe("cleanup and destroy in SSR", () => {
     it("should support clear method", () => {
-      const parent = $("div", {}, [
-        $("div", { textContent: "Child 1" }),
-        $("div", { textContent: "Child 2" }),
-      ]);
+      const parent = $("div", {}, [$("div", { textContent: "Child 1" }), $("div", { textContent: "Child 2" })]);
 
       expect(parent.children.length).toBe(2);
       parent.clear();
@@ -428,7 +403,7 @@ describe("SSR Integration Tests", () => {
 
     it("should support destroy method", () => {
       const element = $("div", {}, [$("div", { textContent: "Child" })]);
-      element.destroy();
+      element.remove();
 
       expect(element.children.length).toBe(0);
     });

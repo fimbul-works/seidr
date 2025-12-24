@@ -1,15 +1,6 @@
+import { getActiveSSRScope } from "./dom/ssr/render-stack.js";
 import type { CleanupFunction, EventHandler } from "./types.js";
 import { uid } from "./util/uid.js";
-
-// Global SSR registration function - set by SSR utilities
-// This avoids circular dependency between seidr.ts and ssr-utils.ts
-declare global {
-  var __seidr_ssr_register: ((observable: any) => void) | undefined;
-}
-
-function getSSRRegister() {
-  return globalThis.__seidr_ssr_register;
-}
 
 /**
  * Base interface for all observable types in Seidr.
@@ -79,7 +70,7 @@ export class Seidr<T> implements Observable<T> {
   private v: T;
 
   /** Unique identifier for this observable */
-  private _id: string = uid();
+  private i: string = uid();
 
   /** Whether this is a derived/computed observable */
   private d: boolean = false;
@@ -98,13 +89,23 @@ export class Seidr<T> implements Observable<T> {
   constructor(initial: T) {
     this.v = initial;
 
-    // Auto-register with active SSR scope if in SSR mode
-    if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR === "true")) {
-      const register = getSSRRegister();
-      if (register) {
-        register(this);
-      }
+    // Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
+    if (
+      typeof window === "undefined" ||
+      (typeof process !== "undefined" && (process.env.SEIDR_TEST_SSR || process.env.VITEST))
+    ) {
+      const scope = getActiveSSRScope();
+      if (scope) scope.register(this);
     }
+  }
+
+  /**
+   * Gets the unique identifier for this observable.
+   *
+   * @returns The unique ID for this observable instance
+   */
+  get id(): string {
+    return this.i;
   }
 
   /**
@@ -114,38 +115,6 @@ export class Seidr<T> implements Observable<T> {
    */
   get value(): T {
     return this.v;
-  }
-
-  /**
-   * Gets the unique identifier for this observable.
-   *
-   * @returns The unique ID for this observable instance
-   */
-  get id(): string {
-    return this._id;
-  }
-
-  /**
-   * Gets whether this observable is derived/computed.
-   *
-   * Derived observables are created via `.as()` or `Seidr.computed()`
-   * and depend on other observables. Root observables return false.
-   *
-   * @returns true if this is a derived observable, false otherwise
-   */
-  get isDerived(): boolean {
-    return this.d;
-  }
-
-  /**
-   * Protected method to mark this observable as derived.
-   *
-   * This method is called internally by `.as()` and `Seidr.computed()`.
-   *
-   * @param value - Whether this observable is derived
-   */
-  protected setIsDerived(value: boolean): void {
-    this.d = value;
   }
 
   /**
@@ -161,6 +130,15 @@ export class Seidr<T> implements Observable<T> {
       this.v = v;
       this.f.forEach((fn) => fn(v));
     }
+  }
+
+  /**
+   * Gets whether this observable is derived/computed.
+   *
+   * @returns true if this is a derived observable, false otherwise
+   */
+  get isDerived(): boolean {
+    return this.d;
   }
 
   /**
@@ -310,7 +288,7 @@ export class Seidr<T> implements Observable<T> {
    */
   as<U>(transform: (value: T) => U): Seidr<U> {
     const derived = new Seidr<U>(transform(this.v));
-    derived.setIsDerived(true);
+    derived.setIsDerived(true, [this]);
     this.addCleanup(this.observe((value) => (derived.value = transform(value))));
     return derived;
   }
@@ -372,7 +350,7 @@ export class Seidr<T> implements Observable<T> {
     }
 
     const computed = new Seidr<T>(compute());
-    computed.setIsDerived(true);
+    computed.setIsDerived(true, dependencies);
     dependencies.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
     return computed;
   }
@@ -435,5 +413,18 @@ export class Seidr<T> implements Observable<T> {
       }
     });
     this.c = [];
+  }
+
+  /**
+   * Protected method to mark this observable as derived.
+   *
+   * This method is called internally by `.as()` and `Seidr.computed()`.
+   *
+   * @param value - Whether this observable is derived
+   */
+  protected setIsDerived(value: boolean, parents: Seidr<any>[]): void {
+    this.d = value;
+    const scope = getActiveSSRScope();
+    if (scope) scope.registerDerived(this, parents);
   }
 }

@@ -677,9 +677,3 @@ export const $video = $factory("video");
  * @returns SeidrElement
  */
 export const $wbr = $factory("wbr");
-
-/**
- * Creates a new DOM text node.
- * @returns Text
- */
-export const $text = (text: string) => document.createTextNode(text);

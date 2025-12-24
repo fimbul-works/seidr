@@ -1,7 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
-import type { SeidrElement } from "../element.js";
 
 /**
  * Switches between different components based on an observable value.
@@ -22,34 +21,34 @@ import type { SeidrElement } from "../element.js";
  * @example
  * View mode switching
  * ```typescript
- * import { mountSwitch, Seidr, component, createElement } from '@fimbul-works/seidr';
+ * import { component, mountSwitch, Seidr } from '@fimbul-works/seidr';
  *
  * type ViewMode = 'list' | 'grid' | 'table';
  * const viewMode = new Seidr<ViewMode>('list');
  *
  * const ListView = () => component(() =>
- *   createElement('div', { textContent: '📋 List View', className: 'view-list' })
+ *   $('div', { textContent: '📋 List View', className: 'view-list' })
  * );
  *
  * const GridView = () => component(() =>
- *   createElement('div', { textContent: '📊 Grid View', className: 'view-grid' })
+ *   $('div', { textContent: '📊 Grid View', className: 'view-grid' })
  * );
  *
  * const TableView = () => component(() =>
- *   createElement('div', { textContent: '📈 Table View', className: 'view-table' })
+ *   $('div', { textContent: '📈 Table View', className: 'view-table' })
  * );
  *
  * // Control buttons
- * const controls = createElement('div', { className: 'view-controls' }, [
- *   createElement('button', {
+ * const controls = $('div', { className: 'view-controls' }, [
+ *   $('button', {
  *     textContent: 'List',
  *     onclick: () => viewMode.value = 'list'
  *   }),
- *   createElement('button', {
+ *   $('button', {
  *     textContent: 'Grid',
  *     onclick: () => viewMode.value = 'grid'
  *   }),
- *   createElement('button', {
+ *   $('button', {
  *     textContent: 'Table',
  *     onclick: () => viewMode.value = 'table'
  *   })

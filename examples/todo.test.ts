@@ -61,7 +61,7 @@ describe("TODO Example", () => {
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
-    todoComponent.element.destroy();
+    todoComponent.element.remove();
 
     expect(document.body.children.length).toBe(0);
   });

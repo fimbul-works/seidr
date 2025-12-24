@@ -1,7 +1,6 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
-import type { SeidrElement } from "../element.js";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -21,15 +20,15 @@ import type { SeidrElement } from "../element.js";
  * @example
  * Conditional panel display
  * ```typescript
- * import { mountConditional, Seidr, component } from '@fimbul-works/seidr';
+ * import { $, mountConditional, Seidr, component } from '@fimbul-works/seidr';
  *
  * const isVisible = new Seidr(false);
  *
  * function DetailsPanel() {
  *   return component((scope) => {
- *     return createElement('div', { className: 'details-panel' }, [
- *       createElement('h2', { textContent: 'Details' }),
- *       createElement('p', { textContent: 'Additional information...' })
+ *     return $('div', { className: 'details-panel' }, [
+ *       $('h2', { textContent: 'Details' }),
+ *       $('p', { textContent: 'Additional information...' })
  *     ]);
  *   });
  * }

@@ -10,7 +10,8 @@ const originalSSREnv = process.env.SEIDR_TEST_SSR;
 describe("SSR Render Stack", () => {
   beforeEach(() => {
     // Enable SSR mode for all tests
-    process.env.SEIDR_TEST_SSR = "true";
+    // @ts-expect-error
+    process.env.SEIDR_TEST_SSR = true;
   });
 
   afterEach(() => {

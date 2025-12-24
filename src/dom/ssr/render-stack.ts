@@ -1,3 +1,4 @@
+import type { Seidr } from "../../seidr";
 import type { SSRScope } from "./ssr-scope";
 
 /**
@@ -14,14 +15,6 @@ const renderStack: SSRScope[] = [];
  */
 export function pushSSRScope(scope: SSRScope): void {
   renderStack.push(scope);
-
-  // Set global registration function for auto-registration in Seidr constructor
-  globalThis.__seidr_ssr_register = (observable: any) => {
-    const activeScope = renderStack[renderStack.length - 1];
-    if (activeScope) {
-      activeScope.register(observable);
-    }
-  };
 }
 
 /**

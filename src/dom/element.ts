@@ -1,10 +1,9 @@
-import { Seidr } from "../seidr.js";
+import type { Seidr } from "../seidr.js";
 import type { CleanupFunction } from "../types.js";
+import { isFn, isSeidr, isStr } from "../util/is.js";
+import { uid } from "../util/uid.js";
+import { getActiveSSRScope } from "./ssr/render-stack.js";
 import { ServerHTMLElement } from "./ssr/server-html-element.js";
-
-// SSR detection function: true if window is undefined (Node.js) or if test flag is set
-const isServerSide = () =>
-  typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR === "true");
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -84,22 +83,22 @@ export type ReactiveARIAMixin = {
  * Children can be regular DOM elements, Seidr-enhanced elements, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Text;
+export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
  *
  * SeidrElement extends the standard HTMLElement with additional methods for
  * reactive programming, event handling, and lifecycle management. All elements
- * created with createElement() automatically implement this interface.
+ * created with $() automatically implement this interface.
  *
  * @example
  * Using SeidrElement methods
  * ```typescript
- * import { createElement, Seidr, elementClassToggle } from '@fimbul-works/seidr';
+ * import { $, Seidr, elementClassToggle } from '@fimbul-works/seidr';
  *
  * const isActive = new Seidr(false);
- * const button = createElement('button', { textContent: 'Click me' });
+ * const button = $('button', { textContent: 'Click me' });
  *
  * // Event handling with cleanup
  * const cleanup = button.on('click', () => console.log('clicked'));
@@ -108,7 +107,7 @@ export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Te
  * elementClassToggle(button, 'active', isActive);
  *
  * // Cleanup when done
- * button.destroy(); // Removes event listeners and bindings
+ * button.remove(); // Removes event listeners and bindings
  * ```
  */
 export interface SeidrElementInterface {
@@ -145,8 +144,8 @@ export interface SeidrElementInterface {
    * // Later, clean up the event listener
    * cleanup();
    *
-   * // Or let destroy() handle it automatically
-   * element.destroy();
+   * // Or let remove() handle it automatically
+   * element.remove();
    * ```
    */
   on<E extends keyof HTMLElementEventMap>(
@@ -161,14 +160,7 @@ export interface SeidrElementInterface {
   clear(): void;
 
   /**
-   * Removes the element from the DOM and cleans up all resources.
-   *
-   * This method performs comprehensive cleanup:
-   * - Removes the element from its parent
-   * - Destroys all child elements (recursively)
-   * - Removes all event listeners
-   * - Cleans up all reactive bindings
-   * - Executes all registered cleanup functions
+   * Removes the element from the DOM and cleans up all bindings.
    *
    * @example
    * Manual cleanup
@@ -176,17 +168,15 @@ export interface SeidrElementInterface {
    * import { toggleClass } from '@fimbul-works/seidr';
    *
    * // Create element with event listeners and reactive bindings
-   * const button = createElement('button');
+   * const button = $('button');
    * button.on('click', handleClick);
    * toggleClass(button, 'active', isActive);
    *
    * // Clean up everything when done
-   * button.destroy();
+   * button.remove();
    * ```
    */
-  destroy(): void;
-
-  style: CSSStyleDeclaration | string;
+  remove(): void;
 }
 
 /**
@@ -214,9 +204,9 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @example
  * Basic element creation
  * ```typescript
- * import { createElement } from '@fimbul-works/seidr';
+ * import { $ } from '@fimbul-works/seidr';
  *
- * const button = createElement('button', {
+ * const button = $('button', {
  *   textContent: 'Click me',
  *   className: 'btn btn-primary'
  * });
@@ -225,12 +215,12 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @example
  * Reactive property binding
  * ```typescript
- * import { createElement, Seidr } from '@fimbul-works/seidr';
+ * import { $, Seidr } from '@fimbul-works/seidr';
  *
  * const isActive = new Seidr(false);
  * const count = new Seidr(0);
  *
- * const button = createElement('button', {
+ * const button = $('button', {
  *   disabled: isActive, // Reactive disabled property
  *   textContent: count.as(c => `Count: ${c}`), // Reactive text content
  *   className: 'btn', // Static property
@@ -245,22 +235,24 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @example
  * With children elements
  * ```typescript
- * const container = createElement('div', { className: 'container' }, [
- *   createElement('h1', { textContent: 'Title' }),
- *   createElement('p', { textContent: 'Description' }),
- *   () => createElement('button', { textContent: 'Dynamic' }) // Function child
+ * import { $, Seidr } from '@fimbul-works/seidr';
+ *
+ * const container = $('div', { className: 'container' }, [
+ *   $('h1', { textContent: 'Title' }),
+ *   $('p', { textContent: 'Description' }),
+ *   () => $('button', { textContent: 'Dynamic' }) // Function child
  * ]);
  * ```
  *
  * @example
  * Complex reactive bindings
  * ```typescript
- * import { createElement, Seidr } from '@fimbul-works/seidr';
+ * import { $, Seidr } from '@fimbul-works/seidr';
  *
  * const theme = new Seidr<'light' | 'dark'>('light');
  * const isLoading = new Seidr(false);
  *
- * const card = createElement('div', {
+ * const card = $('div', {
  *   className: theme.as(t => `card theme-${t}`),
  *   style: isLoading.as(loading => `opacity: ${loading ? 0.5 : 1}`),
  *   'aria-busy': isLoading // Reactive boolean attribute
@@ -274,20 +266,23 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> => {
-  // Handle SSR element
-  if (isServerSide()) {
-    const el = new ServerHTMLElement(tagName, {}, []);
+  // Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
+  const isServerSide = typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR);
 
-    // Process props with reactive bindings
+  // Handle SSR element
+  if (isServerSide) {
+    const el = new ServerHTMLElement(tagName, {}, []);
     let cleanups: (() => void)[] = [];
+
+    // Process props
     if (props) {
       for (const [prop, value] of Object.entries(props)) {
-        if (["on", "destroy"].includes(prop)) {
+        if (["on", "clean", "destroy"].includes(prop)) {
           throw new Error(`Unallowed property "${prop}"`);
         }
 
         // Properties that should be set directly on the element
-        const directProps: Set<string> = new Set([
+        const directProps = new Set<string>([
           "id",
           "className",
           "textContent",
@@ -303,26 +298,23 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           "style",
         ]);
 
-        if (value instanceof Seidr) {
-          // Set up reactive binding
-          const propKey = prop as string;
-          cleanups.push(
-            value.bind(el, (value, element) => {
-              if (directProps.has(propKey)) {
-                (element as any)[propKey] = value;
-              } else {
-                (element as ServerHTMLElement).setAttribute(propKey, String(value));
-              }
-            }),
-          );
-          // Set initial value
-          if (directProps.has(prop)) {
-            (el as any)[prop] = value.value;
-          } else {
-            el.setAttribute(prop, String(value.value));
+        // Set up reactive binding
+        if (isSeidr(value)) {
+          // Mark the SeidrElement with a "seidr-id" for hydration
+          if (!el.dataset["seidr-id"]) {
+            el.dataset["seidr-id"] = uid();
           }
+
+          // Register bindings - Seidr -> element.prop
+          const scope = getActiveSSRScope();
+          if (scope) scope.registerBindings(value.id, el.dataset["seidr-id"], prop);
+
+          cleanups.push(
+            value.bind(el, (value, element) =>
+              directProps.has(prop) ? ((element as any)[prop] = value) : element.setAttribute(prop, String(value)),
+            ),
+          );
         } else {
-          // Non-reactive value
           if (directProps.has(prop)) {
             (el as any)[prop] = value;
           } else {
@@ -332,46 +324,26 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       }
     }
 
-    // Process children - evaluate Seidr objects and call functions
+    // Process children
     if (Array.isArray(children)) {
       children.forEach((child) => {
-        if (typeof child === "function") {
-          const result = child();
-          if (result instanceof Seidr) {
-            // For Seidr children, we need to create a text node and bind to it
-            const textSpan = new ServerHTMLElement("span", {}, []);
-            cleanups.push(
-              result.bind(textSpan, (value) => {
-                textSpan.textContent = String(value);
-              }),
-            );
-            textSpan.textContent = String(result.value);
-            el.appendChild(textSpan);
-          } else {
-            el.appendChild(result as any);
-          }
-        } else if (child instanceof Seidr) {
-          // Seidr child - create a text node with binding
-          const textSpan = new ServerHTMLElement("span", {}, []);
-          cleanups.push(
-            child.bind(textSpan, (value) => {
-              textSpan.textContent = String(value);
-            }),
-          );
-          textSpan.textContent = String(child.value);
-          el.appendChild(textSpan);
-        } else {
-          el.appendChild(child as any);
+        if (isFn(child)) {
+          child = child();
         }
+        // Seidr in the wrong place!
+        if (isSeidr(child)) {
+          return;
+        }
+        el.appendChild(child as any);
       });
     }
 
     // Store cleanup method
-    const originalDestroy = el.destroy.bind(el);
-    el.destroy = () => {
+    const originalRemove = el.remove.bind(el);
+    el.remove = () => {
       cleanups.forEach((cleanup) => cleanup());
       cleanups = [];
-      originalDestroy();
+      originalRemove();
     };
 
     // @ts-expect-error
@@ -380,6 +352,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   const el = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
+  const domRemove = el.remove.bind(el);
 
   // Assign properties
   if (props) {
@@ -388,7 +361,8 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         throw new Error(`Unallowed property "${prop}"`);
       }
 
-      if (value instanceof Seidr) {
+      // Set up reactive binding
+      if (isSeidr(value)) {
         cleanups.push(value.bind(el, (value, el) => (el[prop as P] = value)));
       } else {
         el[prop as P] = value as HTMLElementTagNameMap[K][P];
@@ -410,20 +384,29 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       return () => el.removeEventListener(event, handler as EventListener, options);
     },
     clear(): void {
-      Array.from(el.children).forEach((child: any) => (child.isSeidrElement ? child.destroy() : child.remove()));
+      Array.from(el.children).forEach((child: any) => child.remove());
     },
-    destroy(): void {
+    remove(): void {
       this.clear();
       cleanups.forEach((cleanup) => cleanup());
       cleanups = [];
-      el.remove();
+      domRemove();
     },
   } as SeidrElementInterface);
 
   // Append children
   if (Array.isArray(children)) {
-    children.forEach((child) => el.appendChild(typeof child === "function" ? child() : child));
+    children.forEach((child) => {
+      const item = isFn(child) ? child() : child;
+      el.appendChild(isStr(item) ? $text(item) : item);
+    });
   }
 
   return el as SeidrElement<K>;
 };
+
+/**
+ * Creates a new DOM text node.
+ * @returns Text
+ */
+export const $text = (text: string) => document.createTextNode(text);

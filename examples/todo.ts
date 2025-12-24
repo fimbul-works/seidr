@@ -45,7 +45,7 @@ function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
   });
 }
 
-function TodoApp(initialTodos: Todo[] = []) {
+function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) {
   return component((scope) => {
     const todos = new Seidr<Todo[]>(initialTodos);
     const newTodoText = new Seidr("");

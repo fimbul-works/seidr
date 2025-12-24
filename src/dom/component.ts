@@ -1,5 +1,9 @@
 import type { CleanupFunction } from "../types.js";
+import { uid } from "../util/uid.js";
 import type { SeidrElement } from "./element.js";
+
+// Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
+const IS_SSR_OR_TEST = typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR);
 
 /**
  * Represents a Seidr component with automatic lifecycle management.
@@ -249,6 +253,13 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
 ): SeidrComponent<K, E> {
   const scope = createScope();
   const element = factory(scope);
+
+  if (IS_SSR_OR_TEST) {
+    if (!element.dataset["seidr-id"]) {
+      element.dataset["seidr-id"] = uid();
+    }
+  }
+
   return {
     element,
     destroy: () => (scope.destroy(), element.remove()),

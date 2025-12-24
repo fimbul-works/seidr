@@ -15,8 +15,8 @@ export default {
   plugins: [
     replace({
       preventAssignment: true,
-      "process.env.NODE_ENV": "production",
-      "process.env.SEIDR_TEST_SSR": '"false"', // Always false in browser builds
+      "process.env.NODE_ENV": '"production"',
+      "process.env.SEIDR_TEST_SSR": "false", // Always false in browser builds
       window: "true", // Disable SSR code
     }),
     terser({

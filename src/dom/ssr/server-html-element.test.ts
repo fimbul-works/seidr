@@ -11,7 +11,7 @@ describe("ServerHTMLElement", () => {
 
   describe("Constructor and Basic Properties", () => {
     it("should create element with tagName", () => {
-      expect(element.tagName).toBe("div");
+      expect(element.tagName).toBe("DIV");
     });
 
     it("should have isSeidrElement flag", () => {
@@ -442,7 +442,7 @@ describe("ServerHTMLElement", () => {
   describe("Seidr Methods", () => {
     it("should have destroy method", () => {
       element.appendChild(new ServerHTMLElement("span"));
-      element.destroy();
+      element.remove();
       expect(element.children).toEqual([]);
       expect(element.parentElement).toBeUndefined();
     });
@@ -670,7 +670,7 @@ describe("ServerHTMLElement", () => {
       expect(element.isSeidrElement).toBe(true);
       expect(typeof element.on).toBe("function");
       expect(typeof element.clear).toBe("function");
-      expect(typeof element.destroy).toBe("function");
+      expect(typeof element.remove).toBe("function");
       expect(typeof element.style).toBe("object");
     });
   });
@@ -689,7 +689,7 @@ describe("ServerHTMLElement", () => {
 
     it("should handle no constructor arguments", () => {
       const el = new ServerHTMLElement("div");
-      expect(el.tagName).toBe("div");
+      expect(el.tagName).toBe("DIV");
       expect(el.children).toEqual([]);
     });
 

@@ -1,7 +1,7 @@
-import { $button, $div, $getById, $span, component, mount, Seidr } from "../src";
+import { $button, $div, $span, component, mount, Seidr } from "../src";
 
 function Counter() {
-  return component((scope) => {
+  return component((_scope) => {
     const count = new Seidr(0);
     const disabled = count.as((value) => value >= 10);
 

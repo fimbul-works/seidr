@@ -1,5 +1,4 @@
 import type { SeidrComponent } from "../component.js";
-import type { SeidrElementInterface } from "../element.js";
 import { popSSRScope, pushSSRScope } from "./render-stack.js";
 import { SSRScope } from "./ssr-scope.js";
 import type { SSRRenderResult } from "./types.js";

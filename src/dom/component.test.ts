@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr.js";
-import type { Component } from "./component.js";
+import type { SeidrComponent } from "./component.js";
 import { component, createScope } from "./component.js";
 import { $ } from "./element.js";
 
@@ -80,7 +80,7 @@ describe("createScope", () => {
     const scope = createScope();
     let childDestroyed = false;
 
-    const mockChild: Component = {
+    const mockChild: SeidrComponent = {
       element: $("div"),
       destroy: () => {
         childDestroyed = true;
