@@ -1,5 +1,33 @@
 import type { Seidr } from "../../seidr.js";
-import type { SSRState } from "./types.js";
+import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index.js";
+import type { DependencyGraph } from "./dependency-graph/types.js";
+import type { ElementBinding, HydrationData } from "./types.js";
+
+/**
+ * The currently active SSR scope.
+ * Set before rendering and cleared after rendering.
+ */
+let activeScope: SSRScope | undefined = undefined;
+
+/**
+ * Sets the active SSR scope.
+ * Call this before starting a render pass.
+ *
+ * @param scope - The scope to activate
+ */
+export function setActiveSSRScope(scope: SSRScope | undefined): void {
+  activeScope = scope;
+}
+
+/**
+ * Gets the currently active SSR scope.
+ * Returns undefined if not in SSR mode or no scope is active.
+ *
+ * @returns The active SSR scope or undefined
+ */
+export function getActiveSSRScope(): SSRScope | undefined {
+  return activeScope;
+}
 
 /**
  * SSRScope manages observables created during a single server-side render pass.
@@ -13,7 +41,7 @@ export class SSRScope {
   private observables = new Map<string, Seidr<any>>();
   // child -> parents[]
   private parents = new Map<string, string[]>();
-  // observale -> [elementId, prop]
+  // observable -> [elementId, prop]
   private bindings = new Map<string, [string, string]>();
 
   /**
@@ -31,7 +59,7 @@ export class SSRScope {
    * @param seidr - The Seidr instance to register
    */
   register(seidr: Seidr<any>): void {
-    console.log("Registering Seidr", seidr.id);
+    // console.log("Registering Seidr", seidr.id);
     this.observables.set(seidr.id, seidr);
   }
 
@@ -43,7 +71,7 @@ export class SSRScope {
    */
   registerDerived(seidr: Seidr<any>, parents: Seidr<any>[]): void {
     const ids = parents.map((s) => s.id);
-    console.log("Registering derived Seidr", seidr.id, "with parents", ids);
+    // console.log("Registering derived Seidr", seidr.id, "with parents", ids);
     this.parents.set(seidr.id, ids);
   }
 
@@ -51,44 +79,129 @@ export class SSRScope {
    * Registers binding between SeidrElement and a Seidr class instance.
    * Called during SSR rendering of an element to keep track.
    *
-   * @param seidr - The Seidr instance to register
+   * @param observableId - The ID of the Seidr instance
+   * @param elementId - The data-seidr-id of the element
+   * @param property - The property name on the element
    */
   registerBindings(observableId: string, elementId: string, property: string): void {
-    console.log("Registering bindings", observableId, "for element", elementId, "prop", property);
+    // console.log("Registering bindings", observableId, "for element", elementId, "prop", property);
     this.bindings.set(observableId, [elementId, property]);
   }
 
   /**
-   * Captures the current state of all root observables in this scope.
+   * Captures the current state for hydration.
    *
-   * Only captures root observables (isDerived = false), not derived or
-   * computed observables, since those will be recreated on the client.
+   * This method builds complete hydration data including:
+   * 1. Dependency graph of all observables
+   * 2. Element bindings with traversal paths
+   * 3. Root observable values
+   *
+   * If there are no bindings registered, captures ALL root observables.
+   * If there are bindings, only captures observables with bindings and their
+   * transitive dependencies. This keeps the hydration data compact.
    *
    * After capturing state, this method clears the observables map to prevent
    * memory leaks. This ensures that references to Seidr instances are released
    * after the render pass is complete.
    *
-   * @returns The captured state with observable IDs mapped to their values
+   * @returns The complete hydration data
    */
-  captureState(): SSRState {
-    const state: SSRState = {
-      observables: {},
-    };
+  captureHydrationData(): HydrationData {
+    // Step 1: Build dependency graph from all registered observables
+    const entries = Array.from(this.observables.entries());
+    const graph = buildDependencyGraph(entries);
 
-    console.log("BINDINGS", Object.entries(this.bindings));
-    console.log("DERIVED", Object.entries(this.parents));
+    // Step 2: Build ID mapping (string ID -> numeric ID)
+    const idToNumeric = new Map<string, number>();
+    entries.forEach(([stringId, _], index) => {
+      idToNumeric.set(stringId, index);
+    });
 
-    for (const [id, observable] of this.observables) {
-      // Only capture root observables, not derived/computed ones
-      if (!observable.isDerived) {
-        state.observables[id] = observable.value;
+    // Step 3: Determine which observables to include
+    const neededIds = new Set<number>();
+
+    if (this.bindings.size === 0) {
+      // No bindings - capture ALL root observables (for simple SSR)
+      for (let i = 0; i < entries.length; i++) {
+        const seidr = entries[i][1];
+        if (!seidr.isDerived) {
+          neededIds.add(i);
+        }
+      }
+    } else {
+      // Have bindings - only capture observables with bindings and dependencies
+      const boundObservableIds = new Set(this.bindings.keys());
+
+      for (const observableId of boundObservableIds) {
+        const numericId = idToNumeric.get(observableId);
+        if (numericId === undefined) {
+          console.warn(`Bound observable ${observableId} not found in registered observables`);
+          continue;
+        }
+        neededIds.add(numericId);
+
+        // Add all transitive dependencies
+        this.addTransitiveDependencies(numericId, graph, neededIds);
+      }
+    }
+
+    // Step 4: Build element bindings with paths
+    const bindings: Record<string, ElementBinding[]> = {};
+
+    for (const [observableId, [elementId, property]] of this.bindings) {
+      const numericId = idToNumeric.get(observableId);
+      if (numericId === undefined) continue;
+
+      // Find paths from this observable to all roots
+      const paths = findPathsToRoots(graph, numericId);
+
+      if (!bindings[elementId]) {
+        bindings[elementId] = [];
+      }
+
+      bindings[elementId].push({
+        seidrId: numericId,
+        prop: property,
+        paths,
+      });
+    }
+
+    // Step 5: Capture root observable values
+    const observables: Record<number, any> = {};
+
+    for (const numericId of neededIds) {
+      const seidr = entries[numericId][1];
+      if (!seidr.isDerived) {
+        observables[numericId] = seidr.value;
       }
     }
 
     // Clear observables map to prevent memory leaks
     this.observables.clear();
 
-    return state;
+    return {
+      observables,
+      bindings,
+      graph,
+    };
+  }
+
+  /**
+   * Recursively adds all transitive dependencies of a node to the set.
+   *
+   * @param nodeId - The numeric ID to start from
+   * @param graph - The dependency graph
+   * @param neededIds - Set to populate with needed IDs
+   */
+  private addTransitiveDependencies(nodeId: number, graph: DependencyGraph, neededIds: Set<number>): void {
+    const node = graph.nodes[nodeId];
+
+    for (const parentId of node.parents) {
+      if (!neededIds.has(parentId)) {
+        neededIds.add(parentId);
+        this.addTransitiveDependencies(parentId, graph, neededIds);
+      }
+    }
   }
 
   /**

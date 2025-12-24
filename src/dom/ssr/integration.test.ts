@@ -166,7 +166,12 @@ describe("SSR Integration Tests", () => {
       ]);
 
       const list = $("ul", { className: "todo-list" }, [
-        ...todos.value.map((todo) => $("li", { className: todo.completed ? "completed" : "" }, [todo.text]) as any),
+        ...(todos.value.map((todo) =>
+          $("li", {
+            className: todo.completed ? "completed" : "",
+            textContent: todo.text,
+          }),
+        ) as any),
       ]);
 
       const html = list.toString();
@@ -207,10 +212,17 @@ describe("SSR Integration Tests", () => {
       const hasError = new Seidr(false);
       const isSuccess = new Seidr(true);
 
+      // Create a computed observable for the className
+      const alertClass = Seidr.computed(
+        () =>
+          ["alert", isLoading.value && "loading", hasError.value && "error", isSuccess.value && "success"]
+            .filter(Boolean)
+            .join(" "),
+        [isLoading, hasError, isSuccess],
+      );
+
       const alert = $("div", {
-        className: ["alert", isLoading.value && "loading", hasError.value && "error", isSuccess.value && "success"]
-          .filter(Boolean)
-          .join(" "),
+        className: alertClass,
       });
 
       const html = alert.toString();

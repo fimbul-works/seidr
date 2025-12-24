@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr.js";
 import { clearHydrationContext } from "./hydration-context.js";
-import { isInSSRMode, popSSRScope, pushSSRScope } from "./render-stack.js";
-import { SSRScope } from "./ssr-scope.js";
+import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -26,10 +25,8 @@ describe("SSRScope", () => {
       delete process.env.SEIDR_TEST_SSR;
     }
 
-    // Clear any remaining scopes
-    while (isInSSRMode()) {
-      popSSRScope();
-    }
+    // Clear active scope
+    setActiveSSRScope(undefined);
 
     // Clear hydration context
     clearHydrationContext();
@@ -69,12 +66,12 @@ describe("SSRScope", () => {
     scope.register(root2);
     scope.register(derived);
 
-    const state = scope.captureState();
+    const hydrationData = scope.captureHydrationData();
 
-    expect(Object.keys(state.observables)).toHaveLength(2);
-    expect(state.observables[root1.id]).toBe(10);
-    expect(state.observables[root2.id]).toBe("hello");
-    expect(state.observables[derived.id]).toBeUndefined();
+    expect(Object.keys(hydrationData.observables)).toHaveLength(2);
+    // root1 is registered first (index 0), root2 is second (index 1)
+    expect(hydrationData.observables[0]).toBe(10);
+    expect(hydrationData.observables[1]).toBe("hello");
   });
 
   it("should capture complex types", () => {
@@ -84,10 +81,10 @@ describe("SSRScope", () => {
     scope.register(objObs);
     scope.register(arrayObs);
 
-    const state = scope.captureState();
+    const hydrationData = scope.captureHydrationData();
 
-    expect(state.observables[objObs.id]).toEqual({ foo: "bar", nested: { value: 42 } });
-    expect(state.observables[arrayObs.id]).toEqual([1, 2, 3]);
+    expect(hydrationData.observables[0]).toEqual({ foo: "bar", nested: { value: 42 } });
+    expect(hydrationData.observables[1]).toEqual([1, 2, 3]);
   });
 
   it("should clear all observables", () => {
@@ -118,7 +115,7 @@ describe("SSRScope", () => {
   describe("Auto-registration", () => {
     it("should auto-register Seidr instances created in scope", () => {
       const scope = new SSRScope();
-      pushSSRScope(scope);
+      setActiveSSRScope(scope);
 
       const obs1 = new Seidr(42);
       const obs2 = new Seidr("test");
@@ -127,7 +124,7 @@ describe("SSRScope", () => {
       expect(scope.has(obs1.id)).toBe(true);
       expect(scope.has(obs2.id)).toBe(true);
 
-      popSSRScope();
+      setActiveSSRScope(undefined);
     });
 
     it("should not auto-register when no active scope", () => {
@@ -141,7 +138,7 @@ describe("SSRScope", () => {
 
     it("should auto-register derived observables", () => {
       const scope = new SSRScope();
-      pushSSRScope(scope);
+      setActiveSSRScope(scope);
 
       const root = new Seidr(10);
       const derived = root.as((x) => x * 2);
@@ -150,12 +147,12 @@ describe("SSRScope", () => {
       expect(scope.has(root.id)).toBe(true);
       expect(scope.has(derived.id)).toBe(true);
 
-      popSSRScope();
+      setActiveSSRScope(undefined);
     });
 
     it("should auto-register computed observables", () => {
       const scope = new SSRScope();
-      pushSSRScope(scope);
+      setActiveSSRScope(scope);
 
       const a = new Seidr(2);
       const b = new Seidr(3);
@@ -166,7 +163,7 @@ describe("SSRScope", () => {
       expect(scope.has(b.id)).toBe(true);
       expect(scope.has(computed.id)).toBe(true);
 
-      popSSRScope();
+      setActiveSSRScope(undefined);
     });
   });
 });

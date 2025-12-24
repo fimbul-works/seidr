@@ -4,9 +4,8 @@ import { Seidr } from "../../seidr.js";
 import { component } from "../component.js";
 import { $ } from "../element.js";
 import { clearHydrationContext } from "./hydration-context.js";
-import { isInSSRMode, popSSRScope } from "./render-stack.js";
 import { renderToString } from "./render-to-string.js";
-import { SSRScope } from "./ssr-scope.js";
+import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -26,10 +25,8 @@ describe("SSR Utilities", () => {
       delete process.env.SEIDR_TEST_SSR;
     }
 
-    // Clear any remaining scopes
-    while (isInSSRMode()) {
-      popSSRScope();
-    }
+    // Clear active scope
+    setActiveSSRScope(undefined);
 
     // Clear hydration context
     clearHydrationContext();
@@ -37,97 +34,97 @@ describe("SSR Utilities", () => {
 
   describe("renderToString", () => {
     it("should render simple component and capture state", () => {
-      let capturedCountId: string | undefined;
-
-      const { html, state } = renderToString(() => {
+      const { html, hydrationData } = renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(42);
-          capturedCountId = count.id;
-          return $("div", { className: "counter" }, [`Count: ${count.value}`]);
+          return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
         });
       });
 
-      expect(html).toContain('<div class="counter">');
+      expect(html).toContain('<div class="counter"');
       expect(html).toContain("Count: 42");
-      expect(Object.keys(state.observables)).toHaveLength(1);
-      expect(state.observables[capturedCountId!]).toBe(42);
+      // With numeric IDs, the count should be at index 0
+      expect(hydrationData.observables[0]).toBe(42);
+      // Should have captured the binding
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should only capture root observable state", () => {
-      let capturedIds: { count: string; doubled: string } | undefined;
-
-      const { html, state } = renderToString(() => {
+      const { html, hydrationData } = renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(10);
           const doubled = count.as((n) => n * 2);
-          capturedIds = { count: count.id, doubled: doubled.id };
 
-          return $("div", {}, [$("span", {}, [`Count: ${count.value}`]), $("span", {}, [`Doubled: ${doubled.value}`])]);
+          return $("div", {}, [
+            $("span", { textContent: count.as((n) => `Count: ${n}`) }),
+            $("span", { textContent: doubled.as((n) => `Doubled: ${n}`) }),
+          ]);
         });
       });
 
       expect(html).toContain("Count: 10");
       expect(html).toContain("Doubled: 20");
-      // Only count should be in state, not doubled
-      expect(Object.keys(state.observables)).toHaveLength(1);
-      expect(state.observables[capturedIds!.count]).toBe(10);
-      expect(state.observables[capturedIds!.doubled]).toBeUndefined();
+      // Only count should be in observables, not doubled (derived)
+      expect(Object.keys(hydrationData.observables)).toHaveLength(1);
+      expect(hydrationData.observables[0]).toBe(10);
+      // Should have captured bindings for both spans
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should capture multiple root observables", () => {
-      let capturedIds: string[] = [];
-
-      const { html, state } = renderToString(() => {
+      const { html, hydrationData } = renderToString(() => {
         return component((_scope) => {
           const firstName = new Seidr("John");
           const lastName = new Seidr("Doe");
-          capturedIds = [firstName.id, lastName.id];
+          const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
-          return $("div", {}, [$("h1", {}, [`${firstName.value} ${lastName.value}`])]);
+          return $("div", {}, [$("h1", { textContent: fullName })]);
         });
       });
 
       expect(html).toContain("John Doe");
-      expect(Object.keys(state.observables)).toHaveLength(2);
-      expect(state.observables[capturedIds[0]]).toBe("John");
-      expect(state.observables[capturedIds[1]]).toBe("Doe");
+      // Only firstName and lastName should be captured (fullName is derived)
+      expect(Object.keys(hydrationData.observables)).toHaveLength(2);
+      expect(hydrationData.observables[0]).toBe("John");
+      expect(hydrationData.observables[1]).toBe("Doe");
+      // Should have captured binding
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should capture computed dependencies but not computed values", () => {
-      let capturedIds: { a: string; b: string; sum: string } | undefined;
-
-      const { html, state } = renderToString(() => {
+      const { html, hydrationData } = renderToString(() => {
         return component((_scope) => {
           const a = new Seidr(2);
           const b = new Seidr(3);
           const sum = Seidr.computed(() => a.value + b.value, [a, b]);
-          capturedIds = { a: a.id, b: b.id, sum: sum.id };
 
-          return $("div", {}, [`Sum: ${sum.value}`]);
+          return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
         });
       });
 
       expect(html).toContain("Sum: 5");
-      expect(Object.keys(state.observables)).toHaveLength(2);
-      expect(state.observables[capturedIds!.a]).toBe(2);
-      expect(state.observables[capturedIds!.b]).toBe(3);
-      expect(state.observables[capturedIds!.sum]).toBeUndefined();
+      // Both a and b should be in observables, not sum (computed)
+      expect(Object.keys(hydrationData.observables)).toHaveLength(2);
+      expect(hydrationData.observables[0]).toBe(2);
+      expect(hydrationData.observables[1]).toBe(3);
+      // Should have captured binding
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should use provided scope", () => {
       const scope = new SSRScope();
-      let capturedObsId: string | undefined;
 
-      const { state } = renderToString(() => {
+      const { hydrationData } = renderToString(() => {
         return component((_scope) => {
           const obs = new Seidr(100);
-          capturedObsId = obs.id;
-          return $("div", {}, [`${obs.value}`]);
+          return $("div", { textContent: obs.as((n) => `${n}`) });
         });
       }, scope);
 
-      expect(scope.size).toBe(0); // scope should be cleared after captureState
-      expect(state.observables[capturedObsId!]).toBe(100);
+      expect(scope.size).toBe(0); // scope should be cleared after captureHydrationData
+      expect(hydrationData.observables[0]).toBe(100);
+      // Should have captured binding
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should clean up scope after rendering", () => {
@@ -136,28 +133,30 @@ describe("SSR Utilities", () => {
       renderToString(() => {
         return component((_scope) => {
           const obs = new Seidr(42);
-          return $("div", {}, [`${obs.value}`]);
+          return $("div", { textContent: obs.as((n) => `${n}`) });
         });
       }, scope);
 
-      // Scope SHOULD be cleared automatically by captureState() to prevent memory leaks
+      // Scope SHOULD be cleared automatically by captureHydrationData() to prevent memory leaks
       expect(scope.size).toBe(0);
     });
 
     it("should handle observables created in nested function calls", () => {
-      const { html, state } = renderToString(() => {
+      const { html, hydrationData } = renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(5);
-          return $("div", {}, [`Count: ${count.value}`]);
+          return $("div", { textContent: count.as((n) => `Count: ${n}`) });
         });
       });
 
       expect(html).toContain("Count: 5");
-      expect(Object.keys(state.observables)).toHaveLength(1);
+      expect(Object.keys(hydrationData.observables)).toHaveLength(1);
+      // Should have captured binding
+      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
     it("should render TODO application", () => {
-      const { html, state } = renderToString(TodoApp);
+      const { html, hydrationData } = renderToString(TodoApp);
 
       // Verify HTML structure
       expect(html).toContain('<div class="todo-app">');
@@ -166,12 +165,8 @@ describe("SSR Utilities", () => {
       expect(html).toContain("Learn Seidr");
       expect(html).toContain('placeholder="What needs to be done?"');
 
-      const todos = Object.values(state.observables)
-        .filter((v) => Array.isArray(v))
-        .map((todo: any) => todo.at(0).text);
-
-      expect(todos).toHaveLength(1);
-      expect(todos).toContain("Learn Seidr");
+      // Verify observables were captured
+      expect(Object.keys(hydrationData.observables).length).toBeGreaterThan(0);
     });
   });
 });

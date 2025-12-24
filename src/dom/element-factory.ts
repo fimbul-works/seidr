@@ -154,4 +154,3 @@ export const $factory = <K extends keyof HTMLElementTagNameMap>(
     return $(tagName, mergedProps, children);
   };
 };
-

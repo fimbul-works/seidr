@@ -4,10 +4,9 @@ import { component } from "../component.js";
 import { $ } from "../element.js";
 import { hydrate } from "./hydrate.js";
 import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context.js";
-import { isInSSRMode, popSSRScope, pushSSRScope } from "./render-stack.js";
 import { renderToString } from "./render-to-string.js";
-import { SSRScope } from "./ssr-scope.js";
-import type { SSRState } from "./types.js";
+import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
+import type { HydrationData } from "./types.js";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -27,10 +26,8 @@ describe("SSR Utilities", () => {
       delete process.env.SEIDR_TEST_SSR;
     }
 
-    // Clear any remaining scopes
-    while (isInSSRMode()) {
-      popSSRScope();
-    }
+    // Clear active scope
+    setActiveSSRScope(undefined);
 
     // Clear hydration context
     clearHydrationContext();
@@ -39,20 +36,21 @@ describe("SSR Utilities", () => {
   describe("hydrate", () => {
     it("should restore observable values during hydration", () => {
       // Server-side capture
-      const count = new Seidr(42);
       const scope = new SSRScope();
-      pushSSRScope(scope);
+      setActiveSSRScope(scope);
+
+      const count = new Seidr(42); // Create AFTER pushing scope so it gets registered
 
       const TestComponent = () =>
         component(() => {
-          return $("div", {}, [`Count: ${count.value}`]);
+          return $("div", { textContent: count.as((n) => `Count: ${n}`) });
         });
 
-      const { state } = renderToString(TestComponent, scope);
-      popSSRScope();
+      const { hydrationData } = renderToString(TestComponent, scope);
+      setActiveSSRScope(undefined);
 
       // Client-side hydration (same signature as renderToString!)
-      const hydratedElement = hydrate(TestComponent, state);
+      const hydratedElement = hydrate(TestComponent, hydrationData);
 
       expect(hydratedElement).toBeDefined();
       // The hydrated element should have the server-side value
@@ -60,7 +58,11 @@ describe("SSR Utilities", () => {
     });
 
     it("should clear hydration context after hydration", () => {
-      const state: SSRState = { observables: {} };
+      const hydrationData: HydrationData = {
+        observables: {},
+        bindings: {},
+        graph: { nodes: [], rootIds: [] },
+      };
 
       const TestComponent = () =>
         component(() => {
@@ -69,31 +71,37 @@ describe("SSR Utilities", () => {
 
       expect(isHydrating()).toBe(false);
 
-      hydrate(TestComponent, state);
+      hydrate(TestComponent, hydrationData);
 
       expect(isHydrating()).toBe(false);
     });
 
     it("should restore nested context after hydration", () => {
-      const originalState: SSRState = {
-        observables: { original: 1 },
+      const originalData: HydrationData = {
+        observables: { 0: 1 },
+        bindings: {},
+        graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      const hydrateState: SSRState = {
-        observables: { hydrate: 2 },
+      const hydrateData: HydrationData = {
+        observables: { 0: 2 },
+        bindings: {},
+        graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      setHydrationContext({ state: originalState });
+      setHydrationContext(originalData);
 
       const TestComponent = () =>
         component(() => {
           return $("div", {}, ["test"]);
         });
 
-      hydrate(TestComponent, hydrateState);
+      hydrate(TestComponent, hydrateData);
 
       // Should restore original context
-      expect(getHydrationContext().state).toBe(originalState);
+      const context = getHydrationContext();
+      expect(context).not.toBeNull();
+      expect(context!.observables[0]).toBe(1);
     });
   });
 });

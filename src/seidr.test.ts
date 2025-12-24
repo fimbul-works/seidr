@@ -214,10 +214,7 @@ describe("Seidr", () => {
     it("should return parents for computed observable", () => {
       const firstName = new Seidr("John");
       const lastName = new Seidr("Doe");
-      const fullName = Seidr.computed(
-        () => `${firstName.value} ${lastName.value}`,
-        [firstName, lastName],
-      );
+      const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
       expect(fullName.parents).toEqual([firstName, lastName]);
       expect(fullName.parents.length).toBe(2);
@@ -587,10 +584,7 @@ describe("Seidr", () => {
         const lastName = new Seidr("Doe");
         const age = new Seidr(30);
 
-        const fullName = Seidr.computed(
-          () => `${firstName.value} ${lastName.value}`,
-          [firstName, lastName]
-        );
+        const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
         const description = fullName.as((name) => `${name} is ${age.value} years old`);
 

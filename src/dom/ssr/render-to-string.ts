@@ -1,23 +1,22 @@
 import type { SeidrComponent } from "../component.js";
-import { popSSRScope, pushSSRScope } from "./render-stack.js";
-import { SSRScope } from "./ssr-scope.js";
+import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
 import type { SSRRenderResult } from "./types.js";
 
 /**
- * Renders a component to an HTML string with automatic state capture.
+ * Renders a component to an HTML string with automatic hydration data capture.
  *
  * This function:
  * 1. Creates or uses the provided SSR scope
- * 2. Pushes the scope onto the render stack (enables auto-registration)
+ * 2. Sets the scope as active (enables auto-registration)
  * 3. Executes the component function (Seidr instances auto-register)
- * 4. Captures state from root observables
- * 5. Returns HTML string with embedded state
+ * 4. Captures hydration data (observables, bindings, and dependency graph)
+ * 5. Returns HTML string with hydration data
  * 6. Cleans up the scope
  *
  * @param component - Function that returns the root HTMLElement or ServerHTMLElement
  * @param scope - Optional existing SSR scope (creates new one if not provided)
  *
- * @returns Object containing HTML string and captured state
+ * @returns Object containing HTML string and hydration data
  *
  * @example
  * ```typescript
@@ -31,11 +30,13 @@ import type { SSRRenderResult } from "./types.js";
  *   ]);
  * };
  *
- * const { html, state } = renderToString(App);
- * // state.observables contains only { [count.id]: 42 }
- * // doubled is not included because isDerived = true
+ * const { html, hydrationData } = renderToString(App);
+ * // hydrationData.observables contains only { 0: 42 }
+ * // hydrationData.bindings maps element IDs to their reactive bindings
+ * // hydrationData.graph contains the dependency graph
+ * // doubled is not included in observables because isDerived = true
  *
- * // The HTML can be sent to the client, and the state used for hydration
+ * // The HTML and hydrationData can be sent to the client for hydration
  * ```
  */
 export function renderToString<C extends SeidrComponent<any, any>>(
@@ -45,8 +46,8 @@ export function renderToString<C extends SeidrComponent<any, any>>(
   // Create new scope if not provided
   const activeScope = scope ?? new SSRScope();
 
-  // Push scope to enable auto-registration in Seidr constructor
-  pushSSRScope(activeScope);
+  // Set scope as active to enable auto-registration in Seidr constructor
+  setActiveSSRScope(activeScope);
 
   try {
     // Create component (Seidr instances will auto-register during creation)
@@ -55,16 +56,16 @@ export function renderToString<C extends SeidrComponent<any, any>>(
     // Convert to HTML string
     const html = String(component.element);
 
-    // Capture state (only root observables) BEFORE destroying component
-    const state = activeScope.captureState();
+    // Capture hydration data (observables, bindings, graph) BEFORE destroying component
+    const hydrationData = activeScope.captureHydrationData();
 
     // Destroy component to clean up scope bindings
     component.destroy();
 
-    return { html, state };
+    return { html, hydrationData };
   } finally {
-    // Always pop scope, even if component throws
-    popSSRScope();
+    // Always clear active scope, even if component throws
+    setActiveSSRScope(undefined);
 
     // Clear scope if we created it (captureState already cleared observables)
     if (!scope) {

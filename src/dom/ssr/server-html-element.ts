@@ -1,5 +1,5 @@
 import type { CleanupFunction } from "../../types.js";
-import { isObj, isSeidr, isStr } from "../../util/is.js";
+import { isFn, isObj, isSeidr, isStr } from "../../util/is.js";
 import type { SeidrElementInterface } from "../element.js";
 
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
@@ -425,7 +425,10 @@ export class ServerHTMLElement implements SeidrElementInterface {
     return value != null ? String(value) : null;
   }
 
-  setAttribute(name: string, value: string): void {
+  setAttribute(name: string, value: any): void {
+    // Reject undefined values
+    if (value === undefined) return;
+
     const attrName = name === "class" ? "className" : name;
     this._attributes[attrName] = value;
     if (attrName === "className") {
@@ -477,13 +480,17 @@ export class ServerHTMLElement implements SeidrElementInterface {
 
     // Add other attributes
     for (const [key, value] of Object.entries(this._attributes)) {
-      if (value != null && value !== false && key !== "className") {
-        if (value === true) {
-          attrEntries.push(key);
-        } else {
-          const attrName = key === "className" ? "class" : key;
-          attrEntries.push(`${attrName}="${this.escapeHtml(String(value))}"`);
-        }
+      // Skip functions
+      if (isFn(value)) continue;
+
+      // Skip empty - and className
+      if (value === null || value === false || key === "className") continue;
+
+      if (value === true) {
+        attrEntries.push(key);
+      } else {
+        const attrName = key === "className" ? "class" : key;
+        attrEntries.push(`${attrName}="${this.escapeHtml(String(value))}"`);
       }
     }
 
@@ -496,6 +503,14 @@ export class ServerHTMLElement implements SeidrElementInterface {
     if (this._type !== undefined) attrEntries.push(`type="${this.escapeHtml(this._type)}"`);
     if (this._href !== undefined) attrEntries.push(`href="${this.escapeHtml(this._href)}"`);
     if (this._src !== undefined) attrEntries.push(`src="${this.escapeHtml(this._src)}"`);
+
+    // Add dataset attributes (data-*)
+    for (const [key, value] of Object.entries(this.dataset)) {
+      if (value != null) {
+        const dataAttrName = key.startsWith("data-") ? key : `data-${key}`;
+        attrEntries.push(`${dataAttrName}="${this.escapeHtml(String(value))}"`);
+      }
+    }
 
     const attrs = attrEntries.filter(Boolean).join(" ");
     const openTag = attrs ? `<${this.tagName.toLocaleLowerCase()} ${attrs}>` : `<${this.tagName.toLowerCase()}>`;

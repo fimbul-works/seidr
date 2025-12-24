@@ -1,4 +1,5 @@
-import { getActiveSSRScope } from "./dom/ssr/render-stack.js";
+import { registerHydratedSeidr } from "./dom/ssr/hydration-context.js";
+import { getActiveSSRScope } from "./dom/ssr/ssr-scope.js";
 import type { CleanupFunction, EventHandler } from "./types.js";
 import { uid } from "./util/uid.js";
 
@@ -99,6 +100,9 @@ export class Seidr<T> implements Observable<T> {
     ) {
       const scope = getActiveSSRScope();
       if (scope) scope.register(this);
+    } else {
+      // Client-side hydration check
+      registerHydratedSeidr(this);
     }
   }
 
