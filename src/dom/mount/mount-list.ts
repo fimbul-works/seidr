@@ -62,18 +62,13 @@ import type { SeidrElement } from "../element.js";
  * todos.value = todos.value.filter(todo => todo.id !== 1);
  * ```
  */
-export function mountList<
-  T,
-  I extends string | number,
-  K extends keyof HTMLElementTagNameMap,
-  E extends SeidrElement<K>,
->(
+export function mountList<T, I extends string | number, C extends SeidrComponent<any, any>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  componentFactory: (item: T) => SeidrComponent<K, E>,
+  componentFactory: (item: T) => C,
   container: HTMLElement,
 ): CleanupFunction {
-  const componentMap = new Map<I, SeidrComponent<K, E>>();
+  const componentMap = new Map<I, C>();
 
   const update = (items: T[]) => {
     const newKeys = new Set(items.map(getKey));

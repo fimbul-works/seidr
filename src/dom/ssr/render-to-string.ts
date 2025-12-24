@@ -39,9 +39,12 @@ import type { SSRRenderResult } from "./types.js";
  * // The HTML can be sent to the client, and the state used for hydration
  * ```
  */
-export function renderToString(componentFactory: (...args: any) => SeidrComponent, scope?: SSRScope): SSRRenderResult {
+export function renderToString<C extends SeidrComponent<any, any>>(
+  componentFactory: (...args: any) => C,
+  scope?: SSRScope,
+): SSRRenderResult {
   // Create new scope if not provided
-  const activeScope = scope || new SSRScope();
+  const activeScope = scope ?? new SSRScope();
 
   // Push scope to enable auto-registration in Seidr constructor
   pushSSRScope(activeScope);

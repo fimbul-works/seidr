@@ -29,10 +29,7 @@ import type { SeidrElement } from "../element.js";
  * unmount(); // Removes component and cleans up all resources
  * ```
  */
-export function mount<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
-  component: SeidrComponent<K, E>,
-  container: HTMLElement,
-): CleanupFunction {
+export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): CleanupFunction {
   container.appendChild(component.element);
 
   return () => {

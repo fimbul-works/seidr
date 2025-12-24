@@ -47,12 +47,12 @@ import type { SeidrElement } from "../element.js";
  * isVisible.value = false; // Destroys and removes DetailsPanel
  * ```
  */
-export function mountConditional<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+export function mountConditional<C extends SeidrComponent<any, any>>(
   condition: Seidr<boolean>,
-  componentFactory: () => SeidrComponent<K, E>,
+  componentFactory: () => C,
   container: HTMLElement,
 ): CleanupFunction {
-  let currentComponent: SeidrComponent<K, E> | null = null;
+  let currentComponent: C | null = null;
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {

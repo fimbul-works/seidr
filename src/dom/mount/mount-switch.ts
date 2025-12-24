@@ -73,12 +73,12 @@ import type { SeidrElement } from "../element.js";
  * viewMode.value = 'table'; // Automatically switches to TableView
  * ```
  */
-export function mountSwitch<T extends string, K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+export function mountSwitch<T extends string, C extends SeidrComponent<any, any>>(
   observable: Seidr<T>,
-  componentMap: Record<T, () => SeidrComponent<K, E>>,
+  componentMap: Record<T, () => C>,
   container: HTMLElement,
 ): CleanupFunction {
-  let currentComponent: SeidrComponent<K, E> | null = null;
+  let currentComponent: C | null = null;
 
   const update = (key: T) => {
     if (currentComponent) {
