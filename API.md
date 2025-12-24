@@ -6,7 +6,7 @@
   - [Seidr\<T\>](#seidrt)
   - [seidr.value](#seidrvalue)
   - [seidr.as()](#seidras)
-  - [seidr.observe()](#seidroobserve)
+  - [seidr.observe()](#seidrobserve)
   - [seidr.bind()](#seidrbind)
   - [seidr.destroy()](#seidrdestroy)
   - [Seidr.computed()](#seidrcomputed)
@@ -20,7 +20,7 @@
   - [mountSwitch()](#mountswitch)
 - [DOM Elements](#dom-elements)
   - [`$` - Create DOM elements](#---create-dom-elements)
-  - [`$factory()` - Create custom element creators](#-factory----create-custom-element-creators)
+  - [`$factory()` - Create custom element creators](#factory---create-custom-element-creators)
   - [Predefined Element Creators](#predefined-element-creators)
 - [Utilities](#utilities)
   - [uid()](#uid)
@@ -664,16 +664,3 @@ const sessionData = withStorage(
   sessionStorage
 );
 ```
-
----
-
-## Documentation-Test Guarantee
-
-All examples in this API documentation are tested automatically. Changes to examples must update tests, preventing documentation drift.
-
-**Test files:**
-- `src/seidr.test.ts` - Core reactive tests with documentation examples
-- `src/util/*.test.ts` - Utility tests with documentation examples
-- `src/dom/*.test.ts` - DOM and component tests with documentation examples
-
-Every example you see here is verified to work correctly ✅

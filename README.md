@@ -75,7 +75,7 @@ mount(Counter(), document.body);
 
 ## 🎯 Core Concepts
 
-Seidr has a simple philosophy: **one class, everything else is utility functions**. The only class is `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements.
+Seidr has a simple philosophy: **one class**, everything else is *utility functions*. The only class is `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements.
 
 ### Reactive State
 
@@ -90,7 +90,7 @@ const input = $input({ disabled }); // That's it!
 disabled.value = true; // Input instantly becomes disabled
 ```
 
-**Learn more:** [Seidr\<T\>](API.md#seidrt) | [Reactive props](API.md#---create-dom-elements)
+**Learn more:** [Seidr\<T\>](API.md#seidrt)
 
 ### Derived Values
 
@@ -141,8 +141,6 @@ mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
 ```
 
 **Learn more:** [Mounting](API.md#mounting)
-
-## 🚀 Advanced Patterns
 
 ### Two-Way Form Binding
 
@@ -232,7 +230,7 @@ const agreeCheckbox = $checkbox({ id: 'agree' });
 const submitButton = $primaryButton({ textContent: 'Submit' });
 ```
 
-**Learn more:** [$factory()](API.md#-factory----create-custom-element-creators)
+**Learn more:** [$factory()](API.md#factory---create-custom-element-creators)
 
 ## 📚 API Reference
 
@@ -240,10 +238,10 @@ For complete API documentation with all methods, parameters, and examples, see *
 
 Quick links:
 
-- **Core:** [Seidr\<T\>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidroobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
+- **Core:** [Seidr\<T\>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidrobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
 - **Components:** [component()](API.md#component) | [createScope()](API.md#createscope)
 - **Mounting:** [mount()](API.md#mount) | [mountConditional()](API.md#mountconditional) | [mountList()](API.md#mountlist) | [mountSwitch()](API.md#mountswitch)
-- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#-factory----create-custom-element-creators) | [Predefined elements](API.md#predefined-element-creators)
+- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined elements](API.md#predefined-element-creators)
 - **Utilities:** [uid()](API.md#uid) | [uidTime()](API.md#uidtime) | [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle) | [debounce()](API.md#debounce)
 - **Persistence:** [withStorage()](API.md#withstorage)
 
