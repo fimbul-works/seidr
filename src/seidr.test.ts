@@ -371,6 +371,186 @@ describe("Seidr", () => {
     });
   });
 
+  describe("id and isDerived properties", () => {
+    describe("id property", () => {
+      it("should assign a unique ID to each Seidr instance", () => {
+        const observable1 = new Seidr(42);
+        const observable2 = new Seidr("test");
+
+        expect(observable1.id).toBeDefined();
+        expect(observable2.id).toBeDefined();
+        expect(typeof observable1.id).toBe("string");
+        expect(typeof observable2.id).toBe("string");
+      });
+
+      it("should generate different IDs for different instances", () => {
+        const observable1 = new Seidr(1);
+        const observable2 = new Seidr(2);
+        const observable3 = new Seidr(3);
+
+        expect(observable1.id).not.toBe(observable2.id);
+        expect(observable2.id).not.toBe(observable3.id);
+        expect(observable1.id).not.toBe(observable3.id);
+      });
+
+      it("should maintain the same ID throughout the instance lifecycle", () => {
+        const observable = new Seidr(100);
+        const originalId = observable.id;
+
+        observable.value = 200;
+        observable.value = 300;
+
+        expect(observable.id).toBe(originalId);
+      });
+
+      it("should not allow external modification of id", () => {
+        const observable = new Seidr("test");
+        const originalId = observable.id;
+
+        // Attempting to set id will throw in strict mode or silently fail in non-strict mode
+        try {
+          // @ts-expect-error - Testing that id is read-only
+          observable.id = "different-id";
+        } catch {
+          // Expected to throw in strict mode
+        }
+
+        // The property should remain unchanged regardless
+        expect(observable.id).toBe(originalId);
+      });
+    });
+
+    describe("isDerived property", () => {
+      it("should be false for root observables created with new Seidr()", () => {
+        const rootObservable = new Seidr(42);
+
+        expect(rootObservable.isDerived).toBe(false);
+      });
+
+      it("should be true for observables created via .as()", () => {
+        const root = new Seidr(10);
+        const derived = root.as((x) => x * 2);
+
+        expect(root.isDerived).toBe(false);
+        expect(derived.isDerived).toBe(true);
+      });
+
+      it("should be true for observables created via Seidr.computed()", () => {
+        const a = new Seidr(2);
+        const b = new Seidr(3);
+        const computed = Seidr.computed(() => a.value + b.value, [a, b]);
+
+        expect(a.isDerived).toBe(false);
+        expect(b.isDerived).toBe(false);
+        expect(computed.isDerived).toBe(true);
+      });
+
+      it("should not allow external modification of isDerived", () => {
+        const observable = new Seidr("test");
+        const originalIsDerived = observable.isDerived;
+
+        // Attempting to set isDerived will throw in strict mode or silently fail in non-strict mode
+        try {
+          // @ts-expect-error - Testing that isDerived is read-only
+          observable.isDerived = true;
+        } catch {
+          // Expected to throw in strict mode
+        }
+
+        // The property should remain unchanged regardless
+        expect(observable.isDerived).toBe(originalIsDerived);
+      });
+
+      it("should correctly mark multiple levels of derived observables", () => {
+        const root = new Seidr(5);
+        const level1 = root.as((x) => x * 2);
+        const level2 = level1.as((x) => x + 10);
+        const level3 = level2.as((x) => x / 2);
+
+        expect(root.isDerived).toBe(false);
+        expect(level1.isDerived).toBe(true);
+        expect(level2.isDerived).toBe(true);
+        expect(level3.isDerived).toBe(true);
+      });
+
+      it("should correctly mark nested computed observables", () => {
+        const a = new Seidr(2);
+        const b = new Seidr(3);
+        const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+        const doubled = Seidr.computed(() => sum.value * 2, [sum]);
+
+        expect(a.isDerived).toBe(false);
+        expect(b.isDerived).toBe(false);
+        expect(sum.isDerived).toBe(true);
+        expect(doubled.isDerived).toBe(true);
+      });
+
+      it("should correctly mark mixed derived and computed observables", () => {
+        const root = new Seidr(10);
+        const derived = root.as((x) => x * 2);
+
+        const a = new Seidr(5);
+        const computed = Seidr.computed(() => a.value + derived.value, [a, derived]);
+
+        expect(root.isDerived).toBe(false);
+        expect(a.isDerived).toBe(false);
+        expect(derived.isDerived).toBe(true);
+        expect(computed.isDerived).toBe(true);
+      });
+
+      it("should maintain isDerived flag through value updates", () => {
+        const root = new Seidr(5);
+        const derived = root.as((x) => x * 2);
+
+        expect(derived.isDerived).toBe(true);
+
+        root.value = 10;
+        root.value = 20;
+
+        expect(derived.isDerived).toBe(true);
+      });
+    });
+
+    describe("ID and isDerived integration", () => {
+      it("should assign unique IDs to all types of observables", () => {
+        const root = new Seidr(10);
+        const derived = root.as((x) => x * 2);
+        const a = new Seidr(5);
+        const computed = Seidr.computed(() => a.value + derived.value, [a, derived]);
+
+        const ids = [root.id, derived.id, a.id, computed.id];
+        const uniqueIds = new Set(ids);
+
+        expect(uniqueIds.size).toBe(4);
+      });
+
+      it("should track both id and isDerived for complex observable graphs", () => {
+        const firstName = new Seidr("John");
+        const lastName = new Seidr("Doe");
+        const age = new Seidr(30);
+
+        const fullName = Seidr.computed(
+          () => `${firstName.value} ${lastName.value}`,
+          [firstName, lastName]
+        );
+
+        const description = fullName.as((name) => `${name} is ${age.value} years old`);
+
+        expect(firstName.id).toBeDefined();
+        expect(lastName.id).toBeDefined();
+        expect(age.id).toBeDefined();
+        expect(fullName.id).toBeDefined();
+        expect(description.id).toBeDefined();
+
+        expect(firstName.isDerived).toBe(false);
+        expect(lastName.isDerived).toBe(false);
+        expect(age.isDerived).toBe(false);
+        expect(fullName.isDerived).toBe(true);
+        expect(description.isDerived).toBe(true);
+      });
+    });
+  });
+
   describe("Documentation Examples", () => {
     describe("Basic reactive value example", () => {
       it("should demonstrate basic Seidr usage with observe and cleanup", () => {

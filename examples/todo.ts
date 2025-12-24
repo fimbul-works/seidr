@@ -15,9 +15,9 @@ import {
   Seidr,
 } from "../src";
 
-type TodoEntry = { id: number; text: string; completed: boolean };
+type Todo = { id: number; text: string; completed: boolean };
 
-function TodoEntry({ todo, onDelete }: { todo: TodoEntry; onDelete: () => void }) {
+function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
   return component((_scope) => {
     const isCompleted = new Seidr(todo.completed);
 
@@ -45,9 +45,9 @@ function TodoEntry({ todo, onDelete }: { todo: TodoEntry; onDelete: () => void }
   });
 }
 
-function TodoApp(initialTodos: TodoEntry[] = []) {
+function TodoApp(initialTodos: Todo[] = []) {
   return component((scope) => {
-    const todos = new Seidr<TodoEntry[]>(initialTodos);
+    const todos = new Seidr<Todo[]>(initialTodos);
     const newTodoText = new Seidr("");
     const todoList = $ul({ className: "todo-list" });
 
@@ -66,7 +66,7 @@ function TodoApp(initialTodos: TodoEntry[] = []) {
         todos,
         (item) => item.id,
         (item) =>
-          TodoEntry({
+          TodoItem({
             todo: item,
             onDelete: () => {
               todos.value = todos.value.filter((t) => t.id !== item.id);

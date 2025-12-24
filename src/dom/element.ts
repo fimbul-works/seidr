@@ -1,5 +1,9 @@
 import { Seidr } from "../seidr.js";
 import type { CleanupFunction } from "../types.js";
+import { ServerHTMLElement } from "./ssr/server-html-element.js";
+
+// SSR detection function: true if window is undefined (Node.js) or if test flag is set
+const isServerSide = () => typeof window === "undefined" || process.env.SEIDR_TEST_SSR === "true";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -269,13 +273,117 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> => {
+  // Handle SSR element
+  if (isServerSide()) {
+    const el = new ServerHTMLElement(tagName, {}, []);
+
+    // Process props with reactive bindings
+    let cleanups: (() => void)[] = [];
+    if (props) {
+      for (const [prop, value] of Object.entries(props)) {
+        if (["on", "destroy"].includes(prop)) {
+          throw new Error(`Unallowed property "${prop}"`);
+        }
+
+        // Properties that should be set directly on the element
+        const directProps: Set<string> = new Set([
+          "id",
+          "className",
+          "textContent",
+          "innerHTML",
+          "value",
+          "checked",
+          "disabled",
+          "readonly",
+          "required",
+          "type",
+          "href",
+          "src",
+          "style",
+        ]);
+
+        if (value instanceof Seidr) {
+          // Set up reactive binding
+          const propKey = prop as string;
+          cleanups.push(
+            value.bind(el, (value, element) => {
+              if (directProps.has(propKey)) {
+                (element as any)[propKey] = value;
+              } else {
+                (element as ServerHTMLElement).setAttribute(propKey, String(value));
+              }
+            }),
+          );
+          // Set initial value
+          if (directProps.has(prop)) {
+            (el as any)[prop] = value.value;
+          } else {
+            el.setAttribute(prop, String(value.value));
+          }
+        } else {
+          // Non-reactive value
+          if (directProps.has(prop)) {
+            (el as any)[prop] = value;
+          } else {
+            el.setAttribute(prop, String(value));
+          }
+        }
+      }
+    }
+
+    // Process children - evaluate Seidr objects and call functions
+    if (Array.isArray(children)) {
+      children.forEach((child) => {
+        if (typeof child === "function") {
+          const result = child();
+          if (result instanceof Seidr) {
+            // For Seidr children, we need to create a text node and bind to it
+            const textSpan = new ServerHTMLElement("span", {}, []);
+            cleanups.push(
+              result.bind(textSpan, (value) => {
+                textSpan.textContent = String(value);
+              }),
+            );
+            textSpan.textContent = String(result.value);
+            el.appendChild(textSpan);
+          } else {
+            el.appendChild(result as any);
+          }
+        } else if (child instanceof Seidr) {
+          // Seidr child - create a text node with binding
+          const textSpan = new ServerHTMLElement("span", {}, []);
+          cleanups.push(
+            child.bind(textSpan, (value) => {
+              textSpan.textContent = String(value);
+            }),
+          );
+          textSpan.textContent = String(child.value);
+          el.appendChild(textSpan);
+        } else {
+          el.appendChild(child as any);
+        }
+      });
+    }
+
+    // Store cleanup method
+    const originalDestroy = el.destroy.bind(el);
+    el.destroy = () => {
+      cleanups.forEach((cleanup) => cleanup());
+      cleanups = [];
+      originalDestroy();
+    };
+
+    // @ts-expect-error
+    return el;
+  }
+
   const el = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
 
   // Assign properties
   if (props) {
     for (const [prop, value] of Object.entries(props)) {
-      if (["on", "destroy"].includes(prop)) {
+      if (["on", "clear", "destroy"].includes(prop)) {
         throw new Error(`Unallowed property "${prop}"`);
       }
 
