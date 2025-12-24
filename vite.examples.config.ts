@@ -6,6 +6,11 @@ export default defineConfig(({ command, mode }) => {
 
   return {
     root: "examples",
+    define: {
+      "process.env.NODE_ENV": '"production"',
+      "process.env.SEIDR_TEST_SSR": "false", // Always false in browser builds
+      window: "true", // Disable SSR code
+    },
     build: {
       outDir: "examples/dist",
       emptyOutDir: true,

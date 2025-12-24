@@ -23,11 +23,6 @@ export function pushSSRScope(scope: SSRScope): void {
  */
 export function popSSRScope(): void {
   renderStack.pop();
-
-  // Clear global registration if no more scopes
-  if (renderStack.length === 0) {
-    globalThis.__seidr_ssr_register = undefined;
-  }
 }
 
 /**

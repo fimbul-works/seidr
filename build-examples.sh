@@ -8,6 +8,9 @@ pnpm clean:examples
 # Build library first (creates proper Rollup bundles)
 pnpm build
 
+# Build seidr.full.js and seidr.core.js
+./build-bundles.sh
+
 # Create temp directory for individual builds
 mkdir -p examples/temp
 

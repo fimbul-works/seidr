@@ -1,5 +1,7 @@
 // Export the library for convenience
 export * from "../../index.js";
+// Dependency graph
+export * from "./dependency-graph/index.js";
 // SSR utilities
 export * from "./hydrate.js";
 export * from "./hydration-context.js";

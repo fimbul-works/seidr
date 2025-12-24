@@ -1,0 +1,57 @@
+import type { DependencyGraph } from "./types.js";
+
+/**
+ * Traverses the dependency graph from a given node to find root values.
+ *
+ * This function follows the parent chain from any node to find all root
+ * observables it depends on. The traversal keeps track of the dependency
+ * indices at each level, allowing precise reconstruction of the value path.
+ *
+ * @param graph - The dependency graph
+ * @param startId - The numeric ID of the node to start traversal from
+ *
+ * @returns Array of paths, where each path is an array of indices leading from startId to a root
+ *
+ * @example
+ * ```typescript
+ * // Given graph:
+ * // count (0) -> doubled (1) -> quadrupled (2)
+ * const graph = {
+ *   nodes: [
+ *     { id: 0, parents: [] },      // count (root)
+ *     { id: 1, parents: [0] },     // doubled (depends on count)
+ *     { id: 2, parents: [1] }      // quadrupled (depends on doubled)
+ *   ],
+ *   rootIds: [0]
+ * };
+ *
+ * // Find paths from quadrupled (id: 2) to roots
+ * const paths = findPathsToRoots(graph, 2);
+ * // Result: [[1, 0]]
+ * // Meaning: quadrupled.parents[1].parents[0] = count
+ * ```
+ */
+export function findPathsToRoots(graph: DependencyGraph, startId: number): number[][] {
+  const paths: number[][] = [];
+  const currentPath: number[] = [];
+
+  function traverse(nodeId: number): void {
+    const node = graph.nodes[nodeId];
+
+    if (node.parents.length === 0) {
+      // Found a root - save the path
+      paths.push([...currentPath]);
+      return;
+    }
+
+    // Traverse each parent
+    for (let i = 0; i < node.parents.length; i++) {
+      currentPath.push(i);
+      traverse(node.parents[i]);
+      currentPath.pop();
+    }
+  }
+
+  traverse(startId);
+  return paths;
+}

@@ -1,6 +1,8 @@
 import { Seidr } from "../seidr.js";
 import { isFn, isObj, isSeidr } from "./is.js";
 
+const B = Boolean;
+
 /**
  * Builds a concatenated className string from various input types.
  *
@@ -83,23 +85,26 @@ import { isFn, isObj, isSeidr } from "./is.js";
  * ```
  */
 export const cn = (...classes: unknown[]): string =>
-  classes
-    .filter(Boolean)
-    .flatMap((c: unknown): string =>
-      isSeidr(c)
-        ? cn([c.value])
-        : Array.isArray(c)
-          ? cn(...c)
-          : isFn(c)
-            ? cn([c()])
-            : isObj(c)
-              ? Object.entries(c as object)
-                  .filter(([, value]) => !!value)
-                  .map(([key]) => key)
-                  .join(" ")
-              : String(c),
-    )
-    .map((c) => c.trim())
-    .filter((value: string, index: number, self: string[]): boolean => self.indexOf(value) === index)
-    .filter(Boolean)
-    .join(" ");
+  Array.from(
+    new Set(
+      classes
+        .filter(B)
+        .flatMap((c: unknown): string =>
+          isSeidr(c)
+            ? cn([c.value])
+            : Array.isArray(c)
+              ? cn(...c)
+              : isFn(c)
+                ? cn([c()])
+                : isObj(c)
+                  ? cn(
+                      Object.entries(c as object)
+                        .filter(([, value]) => !!value)
+                        .map(([key]) => key),
+                    )
+                  : String(c),
+        )
+        .map((c) => c.trim())
+        .filter(B),
+    ),
+  ).join(" ");

@@ -195,6 +195,64 @@ describe("Seidr", () => {
     });
   });
 
+  describe("parents", () => {
+    it("should return empty array for root observables", () => {
+      const observable = new Seidr(42);
+      expect(observable.parents).toEqual([]);
+      expect(observable.parents.length).toBe(0);
+    });
+
+    it("should return parent for derived observable created with .as()", () => {
+      const parent = new Seidr(5);
+      const derived = parent.as((x) => x * 2);
+
+      expect(derived.parents).toEqual([parent]);
+      expect(derived.parents.length).toBe(1);
+      expect(derived.parents[0]).toBe(parent);
+    });
+
+    it("should return parents for computed observable", () => {
+      const firstName = new Seidr("John");
+      const lastName = new Seidr("Doe");
+      const fullName = Seidr.computed(
+        () => `${firstName.value} ${lastName.value}`,
+        [firstName, lastName],
+      );
+
+      expect(fullName.parents).toEqual([firstName, lastName]);
+      expect(fullName.parents.length).toBe(2);
+      expect(fullName.parents[0]).toBe(firstName);
+      expect(fullName.parents[1]).toBe(lastName);
+    });
+
+    it("should maintain parent chain for multiple levels of derivation", () => {
+      const root = new Seidr(1);
+      const level1 = root.as((x) => x * 2);
+      const level2 = level1.as((x) => x * 2);
+      const level3 = level2.as((x) => x * 2);
+
+      expect(level1.parents).toEqual([root]);
+      expect(level2.parents).toEqual([level1]);
+      expect(level3.parents).toEqual([level2]);
+
+      // Verify the full chain
+      expect(level3.parents[0]).toBe(level2);
+      expect(level3.parents[0].parents[0]).toBe(level1);
+      expect(level3.parents[0].parents[0].parents[0]).toBe(root);
+    });
+
+    it("should preserve parent references even after parent changes", () => {
+      const parent = new Seidr(5);
+      const derived = parent.as((x) => x * 2);
+
+      expect(derived.parents[0]).toBe(parent);
+
+      parent.value = 10;
+      expect(derived.parents[0]).toBe(parent);
+      expect(derived.parents[0].value).toBe(10);
+    });
+  });
+
   describe("observer management", () => {
     it("should report correct observer count", () => {
       const observable = new Seidr("test");

@@ -75,6 +75,9 @@ export class Seidr<T> implements Observable<T> {
   /** Whether this is a derived/computed observable */
   private d: boolean = false;
 
+  /** Parent dependencies (for derived/computed observables) */
+  private p: Seidr<any>[] = [];
+
   /** Event handlers */
   private f = new Set<EventHandler<T>>();
 
@@ -139,6 +142,49 @@ export class Seidr<T> implements Observable<T> {
    */
   get isDerived(): boolean {
     return this.d;
+  }
+
+  /**
+   * Gets the parent dependencies of this observable.
+   *
+   * For derived/computed observables, this returns the array of parent
+   * observables that this observable depends on. For root observables,
+   * this returns an empty array.
+   *
+   * @returns Array of parent Seidr instances (empty for root observables)
+   *
+   * @example
+   * Inspecting derived observable parents
+   * ```typescript
+   * import { Seidr } from '@fimbul-works/seidr';
+   *
+   * const firstName = new Seidr('John');
+   * const lastName = new Seidr('Doe');
+   *
+   * const fullName = Seidr.computed(
+   *   () => `${firstName.value} ${lastName.value}`,
+   *   [firstName, lastName]
+   * );
+   *
+   * console.log(fullName.parents); // [Seidr<string>, Seidr<string>]
+   * console.log(fullName.parents[0] === firstName); // true
+   * console.log(firstName.parents); // [] (root observable)
+   * ```
+   *
+   * @example
+   * Chained derived values
+   * ```typescript
+   * const count = new Seidr(5);
+   * const doubled = count.as(n => n * 2);
+   * const quadrupled = doubled.as(n => n * 2);
+   *
+   * console.log(doubled.parents); // [count]
+   * console.log(quadrupled.parents); // [doubled]
+   * console.log(quadrupled.parents[0].parents[0] === count); // true
+   * ```
+   */
+  get parents(): ReadonlyArray<Seidr<any>> {
+    return this.p;
   }
 
   /**
@@ -421,9 +467,11 @@ export class Seidr<T> implements Observable<T> {
    * This method is called internally by `.as()` and `Seidr.computed()`.
    *
    * @param value - Whether this observable is derived
+   * @param parents - Array of parent Seidr instances this observable depends on
    */
   protected setIsDerived(value: boolean, parents: Seidr<any>[]): void {
     this.d = value;
+    this.p = parents;
     const scope = getActiveSSRScope();
     if (scope) scope.registerDerived(this, parents);
   }
