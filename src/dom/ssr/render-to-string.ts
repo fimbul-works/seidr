@@ -1,4 +1,6 @@
+import { clearRenderContextState } from "../../state.js";
 import type { SeidrComponent } from "../component.js";
+import { getRenderContext } from "./render-context.js";
 import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
 import type { SSRRenderResult } from "./types.js";
 
@@ -23,26 +25,33 @@ import type { SSRRenderResult } from "./types.js";
  * const count = new Seidr(42);
  * const doubled = count.as(n => n * 2);
  *
- * const App = () => {
- *   return $('div', {}, [
- *     $('span', {}, [`Count: ${count.value}`]),
- *     $('span', {}, [`Doubled: ${doubled.value}`]),
- *   ]);
+ * function App() {
+ *   return component((state) => {
+ *     return $('div', {}, [
+ *       $('span', {}, [`Count: ${count.value}`]),
+ *       $('span', {}, [`Doubled: ${doubled.value}`]),
+ *     ]);
+ *   });
  * };
  *
- * const { html, hydrationData } = renderToString(App);
- * // hydrationData.observables contains only { 0: 42 }
- * // hydrationData.bindings maps element IDs to their reactive bindings
- * // hydrationData.graph contains the dependency graph
- * // doubled is not included in observables because isDerived = true
- *
- * // The HTML and hydrationData can be sent to the client for hydration
+ * app.get('*', async (req, res) => {
+ *   // The HTML and hydrationData can be sent to the client for hydration
+ *   const { html, hydrationData } = await runWithRenderContext(async () => {
+ *     return await renderToString(App);
+ *   });
+ *   res.send(html);
+ * });
  * ```
  */
-export function renderToString<C extends SeidrComponent<any, any>>(
+export async function renderToString<C extends SeidrComponent<any, any>>(
   componentFactory: (...args: any) => C,
   scope?: SSRScope,
-): SSRRenderResult {
+): Promise<SSRRenderResult> {
+  const ctx = getRenderContext();
+  if (typeof ctx?.renderContextID === 'undefined') {
+    throw new Error('Invalid RenderContext')
+  }
+
   // Create new scope if not provided
   const activeScope = scope ?? new SSRScope();
 
@@ -61,6 +70,9 @@ export function renderToString<C extends SeidrComponent<any, any>>(
 
     // Destroy component to clean up scope bindings
     component.destroy();
+
+    // Clear the render context state
+    clearRenderContextState(ctx.renderContextID);
 
     return { html, hydrationData };
   } finally {

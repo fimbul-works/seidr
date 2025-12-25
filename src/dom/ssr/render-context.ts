@@ -31,13 +31,15 @@ export const getRenderContext = (): RenderContext | undefined => {
  * This is called internally by runWithRenderContext
  * and runWithRenderContextSync.
  */
-const initRenderContext = (): void => {
+const initRenderContext = (): number => {
   const store = getRenderContext();
   if (!store) {
     throw new Error("initRenderContext must be called within runWithRenderContext");
   }
+
   // The meaning of life, the Universe, and everything
   store.renderContextID = idCounter++ % 2 ** 42;
+  return store.renderContextID;
 };
 
 /**
@@ -45,10 +47,23 @@ const initRenderContext = (): void => {
  * This must be used to wrap your SSR render function.
  *
  * @example
- * ```ts
+ * ```typescript
+ * const count = new Seidr(42);
+ * const doubled = count.as(n => n * 2);
+ *
+ * function App() {
+ *   return component((state) => {
+ *     return $('div', {}, [
+ *       $('span', {}, [`Count: ${count.value}`]),
+ *       $('span', {}, [`Doubled: ${doubled.value}`]),
+ *     ]);
+ *   });
+ * };
+ *
  * app.get('*', async (req, res) => {
- *   const html = await runWithRenderContext(async () => {
- *     return await renderToString(MyComponent);
+ *   // The HTML and hydrationData can be sent to the client for hydration
+ *   const { html, hydrationData } = await runWithRenderContext(async () => {
+ *     return await renderToString(App);
  *   });
  *   res.send(html);
  * });

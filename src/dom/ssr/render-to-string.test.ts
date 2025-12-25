@@ -33,8 +33,8 @@ describe("SSR Utilities", () => {
   });
 
   describe("renderToString", () => {
-    it("should render simple component and capture state", () => {
-      const { html, hydrationData } = renderToString(() => {
+    it("should render simple component and capture state", async () => {
+      const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(42);
           return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
@@ -49,8 +49,8 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should only capture root observable state", () => {
-      const { html, hydrationData } = renderToString(() => {
+    it("should only capture root observable state", async () => {
+      const { html, hydrationData } =await renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(10);
           const doubled = count.as((n) => n * 2);
@@ -71,8 +71,8 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should capture multiple root observables", () => {
-      const { html, hydrationData } = renderToString(() => {
+    it("should capture multiple root observables", async () => {
+      const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const firstName = new Seidr("John");
           const lastName = new Seidr("Doe");
@@ -91,8 +91,8 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should capture computed dependencies but not computed values", () => {
-      const { html, hydrationData } = renderToString(() => {
+    it("should capture computed dependencies but not computed values", async () => {
+      const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const a = new Seidr(2);
           const b = new Seidr(3);
@@ -111,10 +111,10 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should use provided scope", () => {
+    it("should use provided scope", async () => {
       const scope = new SSRScope();
 
-      const { hydrationData } = renderToString(() => {
+      const { hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const obs = new Seidr(100);
           return $("div", { textContent: obs.as((n) => `${n}`) });
@@ -127,10 +127,10 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should clean up scope after rendering", () => {
+    it("should clean up scope after rendering", async () => {
       const scope = new SSRScope();
 
-      renderToString(() => {
+      await renderToString(() => {
         return component((_scope) => {
           const obs = new Seidr(42);
           return $("div", { textContent: obs.as((n) => `${n}`) });
@@ -141,8 +141,8 @@ describe("SSR Utilities", () => {
       expect(scope.size).toBe(0);
     });
 
-    it("should handle observables created in nested function calls", () => {
-      const { html, hydrationData } = renderToString(() => {
+    it("should handle observables created in nested function calls", async () => {
+      const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(5);
           return $("div", { textContent: count.as((n) => `Count: ${n}`) });
@@ -155,8 +155,8 @@ describe("SSR Utilities", () => {
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
     });
 
-    it("should render TODO application", () => {
-      const { html, hydrationData } = renderToString(TodoApp);
+    it("should render TODO application", async () => {
+      const { html, hydrationData } = await renderToString(TodoApp);
 
       // Verify HTML structure
       expect(html).toContain('<div class="todo-app">');

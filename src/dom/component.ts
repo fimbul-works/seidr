@@ -1,4 +1,4 @@
-import { getRenderContext } from "../render-context.js";
+import { getRenderContext } from "./render-context.js";
 import type { CleanupFunction } from "../types.js";
 import type { SeidrElement } from "./element.js";
 
@@ -293,6 +293,11 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
     scope.destroy();
   } finally {
     stack.pop();
+  }
+
+  // Root component must clear out component stack
+  if (component.isRootComponent && stack.length > 0) {
+    while (stack.length) stack.pop();
   }
 
   return component as SeidrComponent;

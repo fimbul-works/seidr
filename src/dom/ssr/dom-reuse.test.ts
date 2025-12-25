@@ -3,7 +3,7 @@ import { Seidr } from "../../seidr.js";
 import { enableClientMode, enableSSRMode } from "../../test-setup.js";
 import { component } from "../component.js";
 import { $ } from "../element.js";
-import { hydrate } from "./hydrate.js";
+import { hydrate } from "../hydrate.js";
 import { clearHydrationContext } from "./hydration-context.js";
 import { renderToString } from "./render-to-string.js";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";

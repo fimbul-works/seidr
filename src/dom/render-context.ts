@@ -1,4 +1,4 @@
-import type { RenderContext } from "./dom/ssr/render-context.js";
+import type { RenderContext } from "./ssr/render-context.js";
 
 /** Lazy-loaded SSR module */
 let ssrModule: any;
@@ -16,7 +16,7 @@ export const getRenderContext = (): RenderContext | undefined => {
   // Lazy-load the SSR module
   if (!ssrModule) {
     try {
-      ssrModule = require("./dom/ssr/render-context");
+      ssrModule = require("./dom/ssr/render-context.js");
     } catch (_) {
       return undefined;
     }

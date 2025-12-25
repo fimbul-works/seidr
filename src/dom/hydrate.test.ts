@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr.js";
-import { component } from "../component.js";
-import { $ } from "../element.js";
+import { Seidr } from "../seidr.js";
+import { component } from "./component.js";
+import { $ } from "./element.js";
 import { hydrate } from "./hydrate.js";
-import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context.js";
-import { renderToString } from "./render-to-string.js";
-import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
-import type { HydrationData } from "./types.js";
+import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./ssr/hydration-context.js";
+import { renderToString } from "./ssr/render-to-string.js";
+import { setActiveSSRScope, SSRScope } from "./ssr/ssr-scope.js";
+import type { HydrationData } from "./ssr/types.js";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -34,7 +34,7 @@ describe("SSR Utilities", () => {
   });
 
   describe("hydrate", () => {
-    it("should restore observable values during hydration", () => {
+    it("should restore observable values during hydration", async () => {
       // Server-side capture
       const scope = new SSRScope();
       setActiveSSRScope(scope);
@@ -46,7 +46,7 @@ describe("SSR Utilities", () => {
           return $("div", { textContent: count.as((n) => `Count: ${n}`) });
         });
 
-      const { hydrationData } = renderToString(TestComponent, scope);
+      const { hydrationData } = await renderToString(TestComponent, scope);
       setActiveSSRScope(undefined);
 
       // Client-side hydration (same signature as renderToString!)

@@ -1,4 +1,4 @@
-import { getRenderContext } from "./render-context.js";
+import { getRenderContext } from "./dom/render-context.js";
 
 /**
  * Type-safe state key that carries its type

@@ -1,7 +1,8 @@
-import type { SeidrComponent } from "../component.js";
-import type { SeidrElement, SeidrElementInterface } from "../element.js";
-import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context.js";
-import type { HydrationData } from "./types.js";
+import { mount } from './mount/mount.js';
+import type { SeidrComponent } from "./component.js";
+import type { SeidrElement } from "./element.js";
+import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./ssr/hydration-context.js";
+import type { HydrationData } from "./ssr/types.js";
 
 /**
  * Hydrates a component with previously captured SSR hydration data.
@@ -47,8 +48,9 @@ import type { HydrationData } from "./types.js";
  */
 export function hydrate<C extends SeidrComponent<any, any>>(
   componentFactory: (...args: any) => C,
+  container: HTMLElement,
   hydrationData: HydrationData,
-): SeidrElement {
+): SeidrComponent {
   const originalContext = getHydrationContext();
 
   try {
@@ -56,7 +58,8 @@ export function hydrate<C extends SeidrComponent<any, any>>(
     const component = componentFactory();
     // Return the element without destroying the component
     // The component is live and should remain active for client-side interactivity
-    return component.element;
+    mount(component, container);
+    return component;
   } finally {
     // Always restore original context
     if (originalContext) {
