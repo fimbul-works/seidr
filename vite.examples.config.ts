@@ -9,6 +9,7 @@ export default defineConfig(({ command, mode }) => {
     define: {
       "process.env.NODE_ENV": '"production"',
       "process.env.SEIDR_TEST_SSR": "false", // Always false in browser builds
+      process: "undefined",
       window: "true", // Disable SSR code
     },
     build: {
