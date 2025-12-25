@@ -13,7 +13,7 @@ import {
   mount,
   mountList,
   Seidr,
-} from "../src";
+} from "../src/index.browser.js";
 
 type Todo = { id: number; text: string; completed: boolean };
 

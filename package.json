@@ -22,19 +22,21 @@
     "functional",
     "typescript"
   ],
-  "main": "./dist/cjs/index.js",
-  "module": "./dist/esm/index.js",
-  "types": "./dist/esm/index.d.ts",
+  "main": "./dist/node/index.cjs",
+  "module": "./dist/node/index.js",
+  "browser": "./dist/browser/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
-    },
-    "./ssr": {
-      "types": "./dist/esm/dom/ssr/index.d.ts",
-      "import": "./dist/esm/dom/ssr/index.js",
-      "require": "./dist/cjs/dom/ssr/index.js"
+      "browser": {
+        "import": "./dist/browser/index.js",
+        "require": "./dist/browser/index.cjs"
+      },
+      "node": {
+        "import": "./dist/node/index.js",
+        "require": "./dist/node/index.cjs"
+      },
+      "default": "./dist/browser/index.js"
     }
   },
   "files": [
@@ -49,11 +51,15 @@
     "clean:dist": "rm -rf dist",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm clean:dist && pnpm build:esm && pnpm build:cjs && pnpm build:bundles",
-    "build:esm": "NODE_OPTIONS=\"--max-old-space-size=4096\" tsc -p tsconfig.json",
-    "build:cjs": "NODE_OPTIONS=\"--max-old-space-size=4096\" tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
-    "build:bundles": "./build-bundles.sh",
-    "build:examples": "./build-examples.sh",
+    "build": "pnpm clean:dist && pnpm build:javascript && pnpm build:types && pnpm bundlesizes",
+    "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c",
+    "build:types": "pnpm build:types:browser:full && pnpm build:types:browser:core && pnpm build:types:node",
+    "build:types:browser:full": "dts-bundle-generator -o dist/browser/index.d.ts src/index.browser.ts",
+    "build:types:browser:core": "dts-bundle-generator -o dist/browser/index.core.d.ts src/index.browser.core.ts",
+    "build:types:node": "dts-bundle-generator -o dist/node/index.d.ts src/index.node.ts",
+    "build:examples": "pnpm clean:examples && ./build-examples.sh",
+    "build:all": "pnpm build && pnpm build:examples && pnpm bundlesizes",
+    "buildsizes": "./calculate-bundle-sizes.sh",
     "dev:examples": "vite --config vite.examples.config.ts",
     "format": "npx biome format --write src *.json",
     "test": "vitest",
@@ -61,13 +67,18 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@testing-library/dom": "^10.4.1",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^25.0.3",
+    "dts-bundle-generator": "^9.5.1",
     "jsdom": "^27.3.0",
     "rollup": "^4.54.0",
+    "tslib": "^2.8.1",
     "typescript": "^5.9.3",
     "vite": "^7.3.0",
     "vitest": "^4.0.16"

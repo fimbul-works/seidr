@@ -1,4 +1,4 @@
-import { $button, $div, $span, component, mount, Seidr } from "../src";
+import { $button, $div, $span, component, mount, Seidr } from "../src/index.browser.js";
 
 function Counter() {
   return component((_scope) => {

@@ -4,14 +4,16 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
     "moduleResolution": "Bundler",
-    "declaration": true,
+    "declaration": false,
     "allowJs": true,
     "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
+    "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist/esm/"
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": "."
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts", "src/test-setup.ts", "node_modules"]
 }

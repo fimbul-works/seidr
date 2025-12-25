@@ -3,7 +3,9 @@
   "compilerOptions": {
     "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "dist/cjs",
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "baseUrl": ".",
     "verbatimModuleSyntax": false
   }
 }
