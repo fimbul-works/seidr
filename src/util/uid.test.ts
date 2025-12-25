@@ -1,6 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { describe, expect, it } from "vitest";
 import { uid } from "./uid.js";
-import { uidTime } from "./uid-time.js";
 
 describe("uid", () => {
   it("should generate unique IDs", () => {

@@ -5,7 +5,7 @@ import { component } from "../component.js";
 import { $ } from "../element.js";
 import { clearHydrationContext } from "./hydration-context.js";
 import { renderToString } from "./render-to-string.js";
-import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -50,7 +50,7 @@ describe("SSR Utilities", () => {
     });
 
     it("should only capture root observable state", async () => {
-      const { html, hydrationData } =await renderToString(() => {
+      const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
           const count = new Seidr(10);
           const doubled = count.as((n) => n * 2);
@@ -160,7 +160,7 @@ describe("SSR Utilities", () => {
 
       // Verify HTML structure (data-seidr-id is added automatically)
       expect(html).toContain('class="todo-app"');
-      expect(html).toContain('data-seidr-id=');
+      expect(html).toContain("data-seidr-id=");
       expect(html).toContain("TODO App");
       expect(html).toContain('<ul class="todo-list">');
       expect(html).toContain("Learn Seidr");

@@ -1,4 +1,3 @@
-import { Seidr } from "../seidr.js";
 import { isFn, isObj, isSeidr } from "./is.js";
 
 const B = Boolean;

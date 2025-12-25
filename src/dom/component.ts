@@ -17,7 +17,7 @@ export const getComponentStack = (): SeidrComponent[] => {
   if (!renderScopeComponentStacks.has(renderScopeID)) {
     renderScopeComponentStacks.set(renderScopeID, []);
   }
-  return renderScopeComponentStacks.get(renderScopeID)!;
+  return renderScopeComponentStacks.get(renderScopeID) as SeidrComponent[];
 };
 
 /**

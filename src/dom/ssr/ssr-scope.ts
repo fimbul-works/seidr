@@ -7,7 +7,7 @@ import type { ElementBinding, SSRScopeCapture } from "./types.js";
  * The currently active SSR scope.
  * Set before rendering and cleared after rendering.
  */
-let activeScope: SSRScope | undefined = undefined;
+let activeScope: SSRScope | undefined;
 
 /**
  * Sets the active SSR scope.
@@ -44,7 +44,7 @@ export class SSRScope {
   // observable -> [elementId, prop]
   private bindings = new Map<string, [string, string]>();
   // Track element IDs in order of first binding
-  private elementIds = new Array<string>();
+  private elementIds = [] as string[];
 
   /**
    * Returns the number of observables registered in this scope.

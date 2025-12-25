@@ -1,9 +1,22 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr.js";
-import { $ } from "../element.js";
-import { applyElementBindings, setHydrationContext, clearHydrationContext, isHydrating } from "./hydration-context.js";
-import type { HydrationData } from "./types.js";
 import { enableClientMode } from "../../test-setup.js";
+import { component } from "../component.js";
+import { $ } from "../element.js";
+import { hydrate } from "./hydrate.js";
+import {
+  applyElementBindings,
+  clearHydrationContext,
+  getHydrationContext,
+  isHydrating,
+  setHydrationContext,
+} from "./hydration-context.js";
+import { renderToString } from "./render-to-string.js";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
+import type { HydrationData } from "./types.js";
+
+// Store original SSR env var
+const originalSSREnv = process.env.SEIDR_TEST_SSR;
 
 describe("Client-Side Hydration", () => {
   let cleanupClientMode: () => void;
@@ -17,6 +30,16 @@ describe("Client-Side Hydration", () => {
     clearHydrationContext();
     // Restore original environment state
     cleanupClientMode();
+
+    // Restore original SSR env var
+    if (originalSSREnv) {
+      process.env.SEIDR_TEST_SSR = originalSSREnv;
+    } else {
+      delete process.env.SEIDR_TEST_SSR;
+    }
+
+    // Clear active scope
+    setActiveSSRScope(undefined);
   });
 
   describe("Hydration Context", () => {
@@ -181,7 +204,7 @@ describe("Client-Side Hydration", () => {
       element.setAttribute("data-seidr-id", "test-element");
 
       // Apply bindings manually (normally done by element creation)
-      applyElementBindings("test-element", element);
+      applyElementBindings("test-element");
 
       expect(seidr.value).toBe(true);
     });
@@ -213,7 +236,7 @@ describe("Client-Side Hydration", () => {
       const derived = root.as((s) => s.toUpperCase());
 
       // Apply bindings
-      applyElementBindings("test-element", null);
+      applyElementBindings("test-element");
 
       expect(root.value).toBe("hydrated");
       expect(derived.value).toBe("HYDRATED");
@@ -254,7 +277,7 @@ describe("Client-Side Hydration", () => {
       const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
       // Apply bindings
-      applyElementBindings("test-element", null);
+      applyElementBindings("test-element");
 
       expect(firstName.value).toBe("John");
       expect(lastName.value).toBe("Doe");
@@ -290,7 +313,7 @@ describe("Client-Side Hydration", () => {
       const level2 = level1.as((n) => n * 2);
 
       // Apply bindings
-      applyElementBindings("test-element", null);
+      applyElementBindings("test-element");
 
       expect(root.value).toBe(10);
       expect(level1.value).toBe(20);
@@ -346,12 +369,118 @@ describe("Client-Side Hydration", () => {
       button.setAttribute("data-seidr-id", "abc123");
 
       // Manually trigger binding application (normally done in element creation)
-      applyElementBindings("abc123", button);
+      applyElementBindings("abc123");
 
       expect(name.value).toBe("hydrated-name");
       expect(disabled.value).toBe(true);
       expect(button.textContent).toBe("hydrated-name");
       expect(button.disabled).toBe(true);
+    });
+  });
+
+  describe("hydrate() function", () => {
+    beforeEach(() => {
+      // Enable SSR mode for these tests
+      // @ts-expect-error
+      process.env.SEIDR_TEST_SSR = true;
+    });
+
+    it("should restore observable values during hydration", async () => {
+      const TestComponent = () =>
+        component(() => {
+          // CRITICAL: State MUST be created inside the component for SSR!
+          const count = new Seidr(42);
+          return $("div", { textContent: count.as((n) => `Count: ${n}`) });
+        });
+
+      // Server-side capture
+      const scope = new SSRScope();
+      setActiveSSRScope(scope);
+
+      const { hydrationData } = await renderToString(TestComponent, scope);
+      setActiveSSRScope(undefined);
+
+      // Switch to client mode for hydration
+      const cleanupClientMode2 = enableClientMode();
+
+      // Client-side hydration
+      const container = document.createElement("div");
+      const hydratedComponent = hydrate(TestComponent, container, hydrationData);
+
+      expect(hydratedComponent).toBeDefined();
+      // The hydrated element should have the server-side value
+      expect(String(container.textContent)).toContain("Count: 42");
+
+      // Cleanup client mode
+      cleanupClientMode2();
+    });
+
+    it("should clear hydration context after hydration", () => {
+      const hydrationData: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
+        observables: {},
+        bindings: {},
+        graph: { nodes: [], rootIds: [] },
+      };
+
+      const TestComponent = () =>
+        component(() => {
+          return $("div", {}, ["test"]);
+        });
+
+      expect(isHydrating()).toBe(false);
+
+      // Switch to client mode for hydration
+      const cleanupClientMode2 = enableClientMode();
+
+      const container = document.createElement("div");
+      hydrate(TestComponent, container, hydrationData);
+
+      expect(isHydrating()).toBe(false);
+
+      // Cleanup client mode
+      cleanupClientMode2();
+    });
+
+    it("should restore nested context after hydration", () => {
+      const originalData: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
+        observables: { 0: 1 },
+        bindings: {},
+        graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
+      };
+
+      const hydrateData: HydrationData = {
+        renderContextID: 1,
+        elementIds: [],
+        observables: { 0: 2 },
+        bindings: {},
+        graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
+      };
+
+      setHydrationContext(originalData);
+
+      const TestComponent = () =>
+        component(() => {
+          return $("div", {}, ["test"]);
+        });
+
+      // Switch to client mode for hydration
+      const cleanupClientMode2 = enableClientMode();
+
+      const container = document.createElement("div");
+      hydrate(TestComponent, container, hydrateData);
+
+      // Should restore original context
+      const context = getHydrationContext();
+      expect(context).not.toBeNull();
+      // @ts-expect-error
+      expect(context.observables[0]).toBe(1);
+
+      // Cleanup client mode
+      cleanupClientMode2();
     });
   });
 });

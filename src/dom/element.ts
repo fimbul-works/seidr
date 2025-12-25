@@ -453,7 +453,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // Check for hydration bindings (element has data-seidr-id from server)
   if (elementId) {
-    applyElementBindings(elementId, el);
+    applyElementBindings(elementId);
   }
 
   return el as SeidrElement<K>;

@@ -1,8 +1,9 @@
-import type { SeidrComponent } from "./component.js";
-import { mount } from "./mount/mount.js";
-import { resetClientRenderContext, setClientRenderContext } from "./render-context.js";
-import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./ssr/hydration-context.js";
-import type { HydrationData } from "./ssr/types.js";
+import { restoreRenderContextState } from "../../state.js";
+import type { SeidrComponent } from "../component.js";
+import { mount } from "../mount/mount.js";
+import { resetClientRenderContext, setClientRenderContext } from "../render-context.js";
+import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context.js";
+import type { HydrationData } from "./types.js";
 
 /**
  * Hydrates a component with previously captured SSR hydration data.
@@ -58,11 +59,14 @@ export function hydrate<C extends SeidrComponent<any, any>>(
 ): SeidrComponent {
   const originalHydrationContext = getHydrationContext();
 
-  console.log("hydrating", hydrationData);
-
   try {
     // Set the client render context so State lookups use the correct context ID
     setClientRenderContext(hydrationData.renderContextID);
+
+    // Restore State values from the server
+    if (hydrationData.state) {
+      restoreRenderContextState(hydrationData.renderContextID, hydrationData.state);
+    }
 
     // Set the hydration context so Seidr instances get their server values
     setHydrationContext(hydrationData);

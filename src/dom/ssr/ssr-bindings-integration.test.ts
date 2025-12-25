@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr.js";
+import { enableClientMode, enableSSRMode } from "../../test-setup.js";
 import { component } from "../component.js";
 import { $ } from "../element.js";
-import { enableSSRMode, enableClientMode } from "../../test-setup.js";
+import { hydrate } from "./hydrate.js";
 import { clearHydrationContext } from "./hydration-context.js";
 import { renderToString } from "./render-to-string.js";
-import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
-import { hydrate } from "../hydrate.js";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: () => void;
@@ -27,7 +27,7 @@ describe("SSR Reactive Bindings Integration", () => {
       setActiveSSRScope(scope);
 
       const isActive = new Seidr(false);
-      const button = $("button", { disabled: isActive });
+      $("button", { disabled: isActive });
 
       const hydrationData = scope.captureHydrationData();
       setActiveSSRScope(undefined);
@@ -66,7 +66,7 @@ describe("SSR Reactive Bindings Integration", () => {
 
       const count = new Seidr(5);
       const isActive = new Seidr(true);
-      const button = $("button", {
+      $("button", {
         disabled: isActive,
         textContent: count.as((n) => `Count: ${n}`),
       });
@@ -110,7 +110,7 @@ describe("SSR Reactive Bindings Integration", () => {
 
       // Client-side
       cleanupMode = enableClientMode();
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       const hydratedComponent = hydrate(App, container, hydrationData);
 
       expect(hydratedComponent).toBeDefined();
@@ -163,8 +163,8 @@ describe("SSR Reactive Bindings Integration", () => {
           });
         });
 
-      const container = document.createElement('div');
-      const hydratedComp = hydrate(App, container, hydrationData);
+      const container = document.createElement("div");
+      hydrate(App, container, hydrationData);
 
       // Should have server values
       expect(String(container.textContent)).toContain("Count: 42");

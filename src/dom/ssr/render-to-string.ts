@@ -1,4 +1,4 @@
-import { clearRenderContextState } from "../../state.js";
+import { captureRenderContextState, clearRenderContextState } from "../../state.js";
 import type { SeidrComponent } from "../component.js";
 import { getRenderContext, runWithRenderContextSync } from "./render-context.js";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
@@ -84,6 +84,8 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
     const hydrationData = {
       renderContextID: ctx.renderContextID,
       ...activeScope.captureHydrationData(),
+      // Capture State values for this render context
+      state: captureRenderContextState(ctx.renderContextID),
     };
 
     // Destroy component to clean up scope bindings

@@ -1,70 +1,88 @@
 import type { Seidr } from "../../seidr.js";
+import { getRenderContext } from "../render-context.js";
 import type { DependencyGraph } from "./dependency-graph/types.js";
 import type { ElementBinding, HydrationData } from "./types.js";
 
 /**
- * Global hydration context for client-side hydration.
- * Used during element creation to restore observable values.
- */
-let hydrationContext: HydrationData | null = null;
-
-/**
  * Global map of hydration contexts for client-side hydration.
- * Mapping render scope ID to HydrationData.
+ * Mapping render context ID to HydrationData.
  * Used during element creation to restore observable values.
  */
 const hydrationContexts = new Map<number, HydrationData>();
 
 /**
  * Registry to track Seidr instances during hydration in creation order.
- * This ensures numeric IDs match the server-side order.
- */
-const hydrationRegistry: Seidr<any>[] = [];
-
-/**
- * Registry to track Seidr instances during hydration in creation order.
- * Mapping render scope ID to array of Seidr instances.
+ * Mapping render context ID to array of Seidr instances.
  * This ensures numeric IDs match the server-side order.
  */
 const hydrationRegistries = new Map<number, Seidr<any>[]>();
 
 /**
- * Sets the current hydration context.
+ * Gets the current hydration context for the active render context.
+ *
+ * @returns The current hydration data, or undefined if not hydrating
+ */
+function getCurrentHydrationContext(): HydrationData | undefined {
+  const ctx = getRenderContext();
+  return hydrationContexts.get(ctx.renderContextID);
+}
+
+/**
+ * Gets the current hydration registry for the active render context.
+ *
+ * @returns The current registry, or creates a new one if needed
+ */
+function getCurrentRegistry(): Seidr<any>[] {
+  const ctx = getRenderContext();
+  const renderContextID = ctx.renderContextID;
+
+  if (!hydrationRegistries.has(renderContextID)) {
+    hydrationRegistries.set(renderContextID, []);
+  }
+
+  return hydrationRegistries.get(renderContextID) as Seidr<any>[];
+}
+
+/**
+ * Sets the hydration context for the current render context.
  * Call this on the client before creating components with hydrated observables.
  *
  * @param data - The hydration data containing observables, bindings, and graph
  */
 export function setHydrationContext(data: HydrationData): void {
-  hydrationContext = data;
+  const ctx = getRenderContext();
+  hydrationContexts.set(ctx.renderContextID, data);
   // Clear registry when setting new context
-  hydrationRegistry.length = 0;
+  hydrationRegistries.delete(ctx.renderContextID);
 }
 
 /**
- * Gets the current hydration context.
+ * Gets the hydration context for the current render context.
  *
- * @returns The current hydration data
+ * @returns The current hydration data, or null if not hydrating
  */
 export function getHydrationContext(): HydrationData | null {
-  return hydrationContext;
+  const context = getCurrentHydrationContext();
+  return context ?? null;
 }
 
 /**
- * Clears the current hydration context.
+ * Clears the hydration context for the current render context.
  * Call this after hydration is complete.
  */
 export function clearHydrationContext(): void {
-  hydrationContext = null;
-  hydrationRegistry.length = 0;
+  const ctx = getRenderContext();
+  hydrationContexts.delete(ctx.renderContextID);
+  hydrationRegistries.delete(ctx.renderContextID);
 }
 
 /**
- * Checks if hydration is currently active.
+ * Checks if hydration is currently active for the current render context.
  *
  * @returns true if in hydration mode with data available
  */
 export function isHydrating(): boolean {
-  return hydrationContext !== null;
+  return getCurrentHydrationContext() !== undefined;
 }
 
 /**
@@ -78,8 +96,11 @@ export function isHydrating(): boolean {
 export function registerHydratedSeidr(seidr: Seidr<any>): void {
   if (!isHydrating()) return;
 
-  const numericId = hydrationRegistry.length;
-  hydrationRegistry.push(seidr);
+  const registry = getCurrentRegistry();
+  const hydrationContext = getCurrentHydrationContext();
+
+  const numericId = registry.length;
+  registry.push(seidr);
 
   // Set hydrated value if this is a root observable with a value
   // This ensures roots are hydrated even before bindings are applied
@@ -98,7 +119,10 @@ export function registerHydratedSeidr(seidr: Seidr<any>): void {
  * @param elementId - The data-seidr-id value from the element
  * @param element - The element being hydrated (for debugging)
  */
-export function applyElementBindings(elementId: string, element: Element): void {
+export function applyElementBindings(elementId: string): void {
+  const hydrationContext = getCurrentHydrationContext();
+  const registry = getCurrentRegistry();
+
   if (!hydrationContext) {
     console.warn("Hydration: No context available");
     return;
@@ -111,7 +135,7 @@ export function applyElementBindings(elementId: string, element: Element): void 
   }
 
   for (const binding of bindings) {
-    applyBinding(binding, elementId);
+    applyBinding(binding, hydrationContext, registry);
   }
 }
 
@@ -120,13 +144,15 @@ export function applyElementBindings(elementId: string, element: Element): void 
  *
  * @param binding - The binding to apply
  * @param elementId - The element ID (for debugging)
+ * @param hydrationContext - The current hydration context
+ * @param registry - The current Seidr registry
  */
-function applyBinding(binding: ElementBinding, elementId: string): void {
-  const { seidrId, prop, paths } = binding;
-  const graph = hydrationContext!.graph;
+function applyBinding(binding: ElementBinding, hydrationContext: HydrationData, registry: Seidr<any>[]): void {
+  const { seidrId, paths } = binding;
+  const graph = hydrationContext.graph;
 
   // Get the Seidr instance that this binding references
-  const boundSeidr = hydrationRegistry[seidrId];
+  const boundSeidr = registry[seidrId];
   if (!boundSeidr) {
     console.error(`Hydration: Seidr #${seidrId} not found in registry`);
     return;
@@ -136,10 +162,10 @@ function applyBinding(binding: ElementBinding, elementId: string): void {
   for (const path of paths) {
     const rootNumericId = traversePathToRoot(seidrId, path, graph);
 
-    if (rootNumericId !== null && hydrationContext!.observables[rootNumericId] !== undefined) {
-      const rootSeidr = hydrationRegistry[rootNumericId];
+    if (rootNumericId !== null && hydrationContext.observables[rootNumericId] !== undefined) {
+      const rootSeidr = registry[rootNumericId];
       if (rootSeidr && !rootSeidr.isDerived) {
-        const hydratedValue = hydrationContext!.observables[rootNumericId];
+        const hydratedValue = hydrationContext.observables[rootNumericId];
         rootSeidr.value = hydratedValue;
       }
     }
@@ -187,5 +213,6 @@ function traversePathToRoot(startId: number, path: number[], graph: DependencyGr
  * @deprecated Use registerHydratedSeidr() instead - values are auto-applied
  */
 export function getHydratedValue(numericId: number): any {
+  const hydrationContext = getCurrentHydrationContext();
   return hydrationContext?.observables[numericId];
 }
