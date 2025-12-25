@@ -1,6 +1,8 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
+import type { SeidrElement } from "../element.js";
+import { incrIdCounter } from "../render-context.js";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -67,6 +69,8 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
   componentFactory: (item: T) => C,
   container: HTMLElement,
 ): CleanupFunction {
+  const isRootComponent = !(container as SeidrElement).isSeidrElement;
+
   const componentMap = new Map<I, C>();
 
   const update = (items: T[]) => {
@@ -97,6 +101,10 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
         if (currentChild) {
           container.insertBefore(component.element, currentChild);
         } else {
+          // Increment ID counter for HTMLElement containers
+          if (!isRootComponent) {
+            incrIdCounter();
+          }
           container.appendChild(component.element);
         }
       }

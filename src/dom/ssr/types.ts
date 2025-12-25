@@ -32,13 +32,18 @@ export interface ElementBinding {
 }
 
 /**
- * Complete hydration data for client-side restoration.
- *
- * This structure contains everything needed to restore reactive state
- * on the client, including root observable values, element bindings,
- * and the dependency graph for traversal.
+ * Internal hydration data captured by SSRScope.
+ * This is combined with renderContextID to form the complete HydrationData.
  */
-export interface HydrationData {
+export interface SSRScopeCapture {
+  /**
+   * Element IDs in order of first binding.
+   *
+   * Tracks the order in which elements received their first Seidr binding.
+   * Used to ensure deterministic ID assignment between SSR and hydration.
+   */
+  elementIds: string[];
+
   /**
    * Numeric ID -> value mapping for root observables.
    *
@@ -64,4 +69,21 @@ export interface HydrationData {
    * the relationships between observables.
    */
   graph: DependencyGraph;
+}
+
+/**
+ * Complete hydration data for client-side restoration.
+ *
+ * This structure contains everything needed to restore reactive state
+ * on the client, including root observable values, element bindings,
+ * and the dependency graph for traversal.
+ */
+export interface HydrationData extends SSRScopeCapture {
+  /**
+   * Render context ID from the server.
+   *
+   * This ID is used to ensure State lookups use the correct context
+   * during hydration, maintaining proper request-scoped isolation.
+   */
+  renderContextID: number;
 }

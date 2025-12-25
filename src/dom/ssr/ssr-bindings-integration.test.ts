@@ -6,7 +6,7 @@ import { enableSSRMode, enableClientMode } from "../../test-setup.js";
 import { clearHydrationContext } from "./hydration-context.js";
 import { renderToString } from "./render-to-string.js";
 import { setActiveSSRScope, SSRScope } from "./ssr-scope.js";
-import { hydrate } from "./hydrate.js";
+import { hydrate } from "../hydrate.js";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: () => void;
@@ -89,7 +89,7 @@ describe("SSR Reactive Bindings Integration", () => {
       expect(textBinding).toBeDefined();
     });
 
-    it("should work with renderToString and hydrate", () => {
+    it("should work with renderToString and hydrate", async () => {
       const App = () =>
         component(() => {
           const count = new Seidr(42);
@@ -100,7 +100,7 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
       // Server-side
-      const { html, hydrationData } = renderToString(App);
+      const { html, hydrationData } = await renderToString(App);
 
       expect(html).toContain("Count: 42");
       expect(html).not.toContain("disabled"); // 42 is not > 100
@@ -110,10 +110,11 @@ describe("SSR Reactive Bindings Integration", () => {
 
       // Client-side
       cleanupMode = enableClientMode();
-      const hydratedElement = hydrate(App, hydrationData);
+      const container = document.createElement('div');
+      const hydratedComponent = hydrate(App, container, hydrationData);
 
-      expect(hydratedElement).toBeDefined();
-      expect(String(hydratedElement.textContent)).toContain("Count: 42");
+      expect(hydratedComponent).toBeDefined();
+      expect(String(container.textContent)).toContain("Count: 42");
     });
   });
 
@@ -127,7 +128,7 @@ describe("SSR Reactive Bindings Integration", () => {
       clearHydrationContext();
     });
 
-    it("should apply bindings during hydration", () => {
+    it("should apply bindings during hydration", async () => {
       // First, create SSR data
       let hydrationData: any;
 
@@ -146,8 +147,8 @@ describe("SSR Reactive Bindings Integration", () => {
             });
           });
 
-        const result = renderToString(App, scope);
-        hydrationData = result.hydrationData;
+        const { hydrationData: data } = await renderToString(App, scope);
+        hydrationData = data;
         setActiveSSRScope(undefined);
         ssrMode();
       }
@@ -162,10 +163,11 @@ describe("SSR Reactive Bindings Integration", () => {
           });
         });
 
-      const element = hydrate(App, hydrationData);
+      const container = document.createElement('div');
+      const hydratedComp = hydrate(App, container, hydrationData);
 
       // Should have server values
-      expect(String(element.textContent)).toContain("Count: 42");
+      expect(String(container.textContent)).toContain("Count: 42");
     });
   });
 });

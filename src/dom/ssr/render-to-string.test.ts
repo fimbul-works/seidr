@@ -158,8 +158,9 @@ describe("SSR Utilities", () => {
     it("should render TODO application", async () => {
       const { html, hydrationData } = await renderToString(TodoApp);
 
-      // Verify HTML structure
-      expect(html).toContain('<div class="todo-app">');
+      // Verify HTML structure (data-seidr-id is added automatically)
+      expect(html).toContain('class="todo-app"');
+      expect(html).toContain('data-seidr-id=');
       expect(html).toContain("TODO App");
       expect(html).toContain('<ul class="todo-list">');
       expect(html).toContain("Learn Seidr");
@@ -167,6 +168,9 @@ describe("SSR Utilities", () => {
 
       // Verify observables were captured
       expect(Object.keys(hydrationData.observables).length).toBeGreaterThan(0);
+
+      // Verify renderContextID is included in hydration data
+      expect(typeof hydrationData.renderContextID).toBe("number");
     });
   });
 });

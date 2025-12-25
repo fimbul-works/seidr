@@ -1,7 +1,7 @@
 import type { Seidr } from "../../seidr.js";
 import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index.js";
 import type { DependencyGraph } from "./dependency-graph/types.js";
-import type { ElementBinding, HydrationData } from "./types.js";
+import type { ElementBinding, SSRScopeCapture } from "./types.js";
 
 /**
  * The currently active SSR scope.
@@ -43,6 +43,8 @@ export class SSRScope {
   private parents = new Map<string, string[]>();
   // observable -> [elementId, prop]
   private bindings = new Map<string, [string, string]>();
+  // Track element IDs in order of first binding
+  private elementIds = new Array<string>();
 
   /**
    * Returns the number of observables registered in this scope.
@@ -84,7 +86,11 @@ export class SSRScope {
    * @param property - The property name on the element
    */
   registerBindings(observableId: string, elementId: string, property: string): void {
-    // console.log("Registering bindings", observableId, "for element", elementId, "prop", property);
+    // Track element IDs in order of first binding
+    if (!this.elementIds.includes(elementId)) {
+      this.elementIds.push(elementId);
+    }
+
     this.bindings.set(observableId, [elementId, property]);
   }
 
@@ -106,7 +112,7 @@ export class SSRScope {
    *
    * @returns The complete hydration data
    */
-  captureHydrationData(): HydrationData {
+  captureHydrationData(): SSRScopeCapture {
     // Step 1: Build dependency graph from all registered observables
     const entries = Array.from(this.observables.entries());
     const graph = buildDependencyGraph(entries);
@@ -180,6 +186,7 @@ export class SSRScope {
     this.observables.clear();
 
     return {
+      elementIds: this.elementIds,
       observables,
       bindings,
       graph,

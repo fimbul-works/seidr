@@ -1,6 +1,8 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
+import type { SeidrElement } from "../element.js";
+import { incrIdCounter } from "../render-context.js";
 
 /**
  * Switches between different components based on an observable value.
@@ -77,12 +79,19 @@ export function mountSwitch<T extends string, C extends SeidrComponent<any, any>
   componentMap: Record<T, () => C>,
   container: HTMLElement,
 ): CleanupFunction {
+  const isRootComponent = !(container as SeidrElement).isSeidrElement;
+
   let currentComponent: C | null = null;
 
   const update = (key: T) => {
     if (currentComponent) {
       currentComponent.element.remove();
       currentComponent.destroy();
+    }
+
+    // Increment ID counter for HTMLElement containers
+    if (!isRootComponent) {
+      incrIdCounter();
     }
 
     const factory = componentMap[key];

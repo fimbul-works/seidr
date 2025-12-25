@@ -1,8 +1,8 @@
-import { $query } from "../index.core.js";
 import type { Seidr } from "../seidr.js";
 import type { CleanupFunction } from "../types.js";
-import { isFn, isSeidr, isStr } from "../util/is.js";
-import { uid } from "../util/uid.js";
+import { isFn, isSeidr, isStr, isUndef } from "../util/is.js";
+import { $query } from "./query/query.js";
+import { getRenderContext, incrIdCounter } from "./render-context.js";
 import { applyElementBindings } from "./ssr/hydration-context.js";
 import { ServerHTMLElement } from "./ssr/server-html-element.js";
 import { getActiveSSRScope } from "./ssr/ssr-scope.js";
@@ -268,48 +268,85 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> => {
+  // Helper function to check props for a Seidr instance
+  const hasSeidrBindings = () => {
+    // No props passed
+    if (!props) {
+      return false;
+    }
+
+    // Iterate
+    for (const [prop, value] of Object.entries(props)) {
+      if (isSeidr(value)) {
+        return true;
+      }
+
+      // Check for SeidrElement properties
+      if (["on", "clean", "remove"].includes(prop)) {
+        throw new Error(`Unallowed property "${prop}"`);
+      }
+    }
+
+    return false;
+  };
+
   // Server-side rendering check: window === undefined || process.env.SEIDR_TEST_SSR === true
   const isServerSide = typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR);
+
+  // Reuse the string
+  const SEIDR_ID = "seidr-id";
+  const SEIDR_ID_CAME_CASE = "seidrId"; // HTMLElement expects camelCase
+  const DATA_SEIDR_ID = `data-${SEIDR_ID}`;
+
+  // RenderContext for data-seidr-id
+  const ctx = getRenderContext();
 
   // Handle SSR element
   if (isServerSide) {
     const el = new ServerHTMLElement(tagName, {}, []);
     let cleanups: (() => void)[] = [];
 
-    // Process props
+    // Properties that should be set directly on the element
+    const directProps = new Set<string>([
+      "id",
+      "className",
+      "textContent",
+      "innerHTML",
+      "value",
+      "checked",
+      "disabled",
+      "readonly",
+      "required",
+      "type",
+      "href",
+      "src",
+      "style",
+    ]);
+
+    // If element has Seidr bindings, assign ID
+    let elementId: string | undefined;
+    if (hasSeidrBindings()) {
+      // Use numeric ID: renderContextID + idCounter
+      elementId = String(ctx.renderContextID + ctx.idCounter);
+      incrIdCounter();
+      el.dataset[SEIDR_ID] = elementId;
+    }
+
+    // Process props and register bindings
     if (props) {
       for (const [prop, value] of Object.entries(props)) {
-        if (["on", "clean", "remove"].includes(prop)) {
-          throw new Error(`Unallowed property "${prop}"`);
+        if (prop === DATA_SEIDR_ID) {
+          // Skip the data-seidr-id prop itself
+          continue;
         }
-
-        // Properties that should be set directly on the element
-        const directProps = new Set<string>([
-          "id",
-          "className",
-          "textContent",
-          "innerHTML",
-          "value",
-          "checked",
-          "disabled",
-          "readonly",
-          "required",
-          "type",
-          "href",
-          "src",
-          "style",
-        ]);
 
         // Set up reactive binding
         if (isSeidr(value)) {
-          // Mark the SeidrElement with a "seidr-id" for hydration
-          // if (!el.dataset["seidr-id"]) {
-          //   el.dataset["seidr-id"] = uid();
-          // }
-
           // Register bindings - Seidr -> element.prop
           const scope = getActiveSSRScope();
-          if (scope) scope.registerBindings(value.id, el.dataset["seidr-id"], prop);
+          if (scope && elementId) {
+            scope.registerBindings(value.id, elementId, prop);
+          }
 
           cleanups.push(
             value.bind(el, (value, element) =>
@@ -328,16 +365,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
     // Process children
     if (Array.isArray(children)) {
-      children.forEach((child) => {
-        if (isFn(child)) {
-          child = child();
-        }
-        // Seidr in the wrong place!
-        if (isSeidr(child)) {
-          return;
-        }
-        el.appendChild(child as any);
-      });
+      children.forEach((child) => el.appendChild(isFn(child) ? (child as any)() : child));
     }
 
     // Store cleanup method
@@ -352,20 +380,36 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     return el;
   }
 
-  // Client-side element creation
+  // Client-side handling
+
+  // If element has Seidr bindings and we have a render context, assign ID
+  let elementId: string | undefined;
+  if (hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
+    // Use numeric ID: renderContextID + idCounter
+    elementId = String(ctx.renderContextID + ctx.idCounter);
+    incrIdCounter();
+
+    // Try to find existing DOM element with this SeidrID
+    const ssrEl = $query(`[${DATA_SEIDR_ID}="${elementId}"]`);
+    if (ssrEl) {
+      // Mark SSR element for removal (will be cleaned up at end of hydration)
+      ssrEl.dataset.seidrRemove = "1";
+    }
+  }
+
+  // Create a new HTMLElement if not found
   const el: HTMLElementTagNameMap[K] = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
+  if (elementId) {
+    el.dataset[SEIDR_ID_CAME_CASE] = elementId;
+  }
 
-  // Store original DOM element
+  // Store original HTMLElement.remove function
   const domRemove = el.remove.bind(el);
 
   // Assign properties
   if (props) {
     for (const [prop, value] of Object.entries(props)) {
-      if (["on", "clear", "remove"].includes(prop)) {
-        throw new Error(`Unallowed property "${prop}"`);
-      }
-
       // Set up reactive binding
       if (isSeidr(value)) {
         cleanups.push(value.bind(el, (value, el) => (el[prop as P] = value)));
@@ -407,21 +451,17 @@ export const $ = <K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     });
   }
 
-  // Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
-  if (typeof window !== "undefined") {
-    // Check for hydration bindings (element has data-seidr-id from server)
-    const seidrId = el.getAttribute("data-seidr-id");
-    if (seidrId) {
-      console.log("seidr-id found", seidrId, "applying element bindings...");
-      applyElementBindings(seidrId, el);
-    }
+  // Check for hydration bindings (element has data-seidr-id from server)
+  if (elementId) {
+    applyElementBindings(elementId, el);
   }
 
   return el as SeidrElement<K>;
 };
 
 /**
- * Creates a new DOM text node.
- * @returns Text
+ * Creates a new DOM Text node.
+ * @param text - String to convert into Dom Text node
+ * @returns DOM Text node
  */
 export const $text = (text: string) => document.createTextNode(text);

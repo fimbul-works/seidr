@@ -1,6 +1,6 @@
-import { getRenderContext } from "./render-context.js";
 import type { CleanupFunction } from "../types.js";
 import type { SeidrElement } from "./element.js";
+import { getRenderContext } from "./render-context.js";
 
 /** Map of SeidrComponent stack by render context ID */
 const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
@@ -9,7 +9,7 @@ const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
  * Get the component stack for a render context.
  * @returns SeidrComponent stack
  */
-const getComponentStack = (): SeidrComponent[] => {
+export const getComponentStack = (): SeidrComponent[] => {
   const ctx = getRenderContext();
   const renderScopeID = ctx ? ctx.renderContextID : 0;
 

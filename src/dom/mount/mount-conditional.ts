@@ -2,6 +2,7 @@ import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
 import type { SeidrElement } from "../element.js";
+import { getRenderContext, incrIdCounter } from "../render-context.js";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -54,6 +55,11 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
 ): CleanupFunction {
   const isRootComponent = !(container as SeidrElement).isSeidrElement;
   let currentComponent: C | null = null;
+
+  // Increment ID counter for HTMLElement containers
+  if (!isRootComponent) {
+    incrIdCounter();
+  }
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {

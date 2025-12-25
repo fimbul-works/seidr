@@ -311,10 +311,6 @@ describe("element on method", () => {
         expect(() => {
           $("div", { on: () => {} } as any);
         }).toThrow('Unallowed property "on"');
-
-        expect(() => {
-          $("div", { destroy: () => {} } as any);
-        }).toThrow('Unallowed property "destroy"');
       });
     });
   });

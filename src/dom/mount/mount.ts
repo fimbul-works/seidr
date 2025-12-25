@@ -1,5 +1,7 @@
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
+import type { SeidrElement } from "../element.js";
+import { incrIdCounter } from "../render-context.js";
 
 /**
  * Mounts a component into a container element with automatic cleanup.
@@ -29,7 +31,19 @@ import type { SeidrComponent } from "../component.js";
  * ```
  */
 export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): CleanupFunction {
-  container.appendChild(component.element);
+  const isRootComponent = !(container as SeidrElement).isSeidrElement;
+
+  // Check if element is already in the container (happens during hydration with DOM reuse)
+  const isAlreadyMounted = container.contains(component.element);
+
+  if (!isAlreadyMounted) {
+    // Increment ID counter for HTMLElement containers
+    if (!isRootComponent) {
+      incrIdCounter();
+    }
+
+    container.appendChild(component.element);
+  }
 
   return () => {
     component.element.remove();
