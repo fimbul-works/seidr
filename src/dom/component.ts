@@ -1,6 +1,24 @@
+import { getRenderContext } from "../render-context.js";
 import type { CleanupFunction } from "../types.js";
-import { uid } from "../util/uid.js";
 import type { SeidrElement } from "./element.js";
+
+/** Map of SeidrComponent stack by render context ID */
+const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
+
+/**
+ * Get the component stack for a render context.
+ * @returns SeidrComponent stack
+ */
+const getComponentStack = (): SeidrComponent[] => {
+  const ctx = getRenderContext();
+  const renderScopeID = ctx ? ctx.renderContextID : 0;
+
+  // Initialize component stack if needed
+  if (!renderScopeComponentStacks.has(renderScopeID)) {
+    renderScopeComponentStacks.set(renderScopeID, []);
+  }
+  return renderScopeComponentStacks.get(renderScopeID)!;
+};
 
 /**
  * Represents a Seidr component with automatic lifecycle management.
@@ -28,6 +46,11 @@ export interface SeidrComponent<
   K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
   E extends SeidrElement<K> = any,
 > {
+  /**
+   * Whether this SeidrComponent is rendered at root
+   */
+  readonly isRootComponent: boolean;
+
   /**
    * The root element of the component.
    *
@@ -248,11 +271,29 @@ export function createScope(): ComponentScope {
 export function component<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
   factory: (scope: ComponentScope) => E,
 ): SeidrComponent<K, E> {
-  const scope = createScope();
-  const element = factory(scope);
+  const stack = getComponentStack();
+  const isRootComponent = stack.length === 0;
 
-  return {
-    element,
-    destroy: () => (scope.destroy(), element.remove()),
-  };
+  // Create the scope and partial SeidrComponent
+  const scope = createScope();
+  const component = {
+    isRootComponent,
+    destroy: () => scope.destroy(),
+  } as SeidrComponent;
+
+  // Add the object to the stack to the stack
+  stack.push(component as SeidrComponent);
+
+  // Render the component via factory
+  try {
+    component.element = factory(scope);
+    component.destroy = () => (scope.destroy(), component.element.remove());
+  } catch (err) {
+    console.error(`Component error`, err);
+    scope.destroy();
+  } finally {
+    stack.pop();
+  }
+
+  return component as SeidrComponent;
 }

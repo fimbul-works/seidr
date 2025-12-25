@@ -81,6 +81,7 @@ describe("createScope", () => {
     let childDestroyed = false;
 
     const mockChild: SeidrComponent = {
+      isRootComponent: true,
       element: $("div"),
       destroy: () => {
         childDestroyed = true;

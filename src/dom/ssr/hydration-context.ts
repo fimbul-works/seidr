@@ -9,10 +9,24 @@ import type { ElementBinding, HydrationData } from "./types.js";
 let hydrationContext: HydrationData | null = null;
 
 /**
+ * Global map of hydration contexts for client-side hydration.
+ * Mapping render scope ID to HydrationData.
+ * Used during element creation to restore observable values.
+ */
+const hydrationContexts = new Map<number, HydrationData>();
+
+/**
  * Registry to track Seidr instances during hydration in creation order.
  * This ensures numeric IDs match the server-side order.
  */
 const hydrationRegistry: Seidr<any>[] = [];
+
+/**
+ * Registry to track Seidr instances during hydration in creation order.
+ * Mapping render scope ID to array of Seidr instances.
+ * This ensures numeric IDs match the server-side order.
+ */
+const hydrationRegistries = new Map<number, Seidr<any>[]>();
 
 /**
  * Sets the current hydration context.

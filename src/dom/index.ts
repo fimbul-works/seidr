@@ -1,3 +1,4 @@
+export * from "../render-context.js";
 export * from "./component.js";
 export * from "./element.js";
 export * from "./element-class-toggle.js";

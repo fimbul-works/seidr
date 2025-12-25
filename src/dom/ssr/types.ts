@@ -1,4 +1,4 @@
-import { DependencyGraph } from "./dependency-graph/types.js";
+import type { DependencyGraph } from "./dependency-graph/types.js";
 
 /**
  * Result of SSR rendering containing HTML and hydration data.

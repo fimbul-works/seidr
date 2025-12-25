@@ -1,6 +1,7 @@
 import type { Seidr } from "../../seidr.js";
 import type { CleanupFunction } from "../../types.js";
 import type { SeidrComponent } from "../component.js";
+import type { SeidrElement } from "../element.js";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -51,6 +52,7 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
   componentFactory: () => C,
   container: HTMLElement,
 ): CleanupFunction {
+  const isRootComponent = !(container as SeidrElement).isSeidrElement;
   let currentComponent: C | null = null;
 
   const update = (shouldShow: boolean) => {
