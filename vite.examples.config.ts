@@ -1,16 +1,20 @@
-import { join } from "path";
 import { defineConfig } from "vite";
 
-export default defineConfig(({ command, mode }) => {
+export default defineConfig((_config) => {
   const example = process.env.EXAMPLE || "counter";
 
   return {
     root: "examples",
     define: {
+      // Production build
       "process.env.NODE_ENV": '"production"',
-      "process.env.SEIDR_TEST_SSR": "false", // Always false in browser builds
+      // Disable SSR code
       process: "undefined",
-      window: "true", // Disable SSR code
+      window: "true",
+      // Always false in browser builds
+      "process.env.SEIDR_TEST_SSR": "false",
+      // Strip away SSR
+      "process.env.CLIENT_BUNDLE": "true",
     },
     build: {
       outDir: "examples/dist",
@@ -22,7 +26,7 @@ export default defineConfig(({ command, mode }) => {
         input: `examples/${example}.ts`,
         output: {
           dir: "examples/dist",
-          format: "iife",
+          format: "es",
           entryFileNames: `${example}.js`,
           inlineDynamicImports: true,
           compact: true,

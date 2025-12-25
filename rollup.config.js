@@ -14,11 +14,15 @@ export default {
   },
   plugins: [
     replace({
-      preventAssignment: true,
+      // Production build
       "process.env.NODE_ENV": '"production"',
-      "process.env.SEIDR_TEST_SSR": "false", // Always false in browser builds
+      // Disable SSR code
       process: "undefined",
-      window: "true", // Disable SSR code
+      window: "true",
+      // Always false in browser builds
+      "process.env.SEIDR_TEST_SSR": "false",
+      // Strip away SSR
+      "process.env.CLIENT_BUNDLE": "true",
     }),
     terser({
       module: true,

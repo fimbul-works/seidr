@@ -2,13 +2,21 @@ import type { RenderContext } from "./ssr/render-context.js";
 
 /** Lazy-loaded SSR module */
 let ssrModule: any;
+try {
+  // This will only execute on server
+  if (typeof window === "undefined") {
+    ssrModule = await import("./ssr/render-context.js");
+  }
+} catch {}
 
 /** Client-side render context */
 let clientRenderContext: RenderContext = { renderContextID: 0, idCounter: 0 };
 
 /**
  * Get the current render context.
- * Returns undefined in browser or if not initialized.
+ * Returns the client context in browser, or the SSR context on the server.
+ *
+ * @throws {Error} If called on the server but SSR module failed to load
  */
 export const getRenderContext = (): RenderContext => {
   // Browser: return the client render context
@@ -16,19 +24,18 @@ export const getRenderContext = (): RenderContext => {
     return clientRenderContext;
   }
 
-  // Server: Lazy-load the SSR module
   if (!ssrModule) {
-    try {
-      ssrModule = require("./ssr/render-context.js");
-    } catch (_) {}
+    throw new Error("Error loading AsyncSessionStorage SSR module");
   }
 
-  // Fallback to cleint render context
-  if (!ssrModule) {
-    return clientRenderContext;
+  const ctx = ssrModule?.getRenderContext();
+  if (!ctx) {
+    throw new Error(
+      "SSR render context is undefined. Make sure you're calling this within runWithRenderContext() or runWithRenderContextSync().",
+    );
   }
 
-  return ssrModule?.getRenderContext();
+  return ctx;
 };
 
 /**

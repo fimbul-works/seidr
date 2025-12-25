@@ -1,7 +1,7 @@
 import { restoreRenderContextState } from "../../state.js";
 import type { SeidrComponent } from "../component.js";
 import { mount } from "../mount/mount.js";
-import { resetClientRenderContext, setClientRenderContext } from "../render-context.js";
+import { setClientRenderContext } from "../render-context.js";
 import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context.js";
 import type { HydrationData } from "./types.js";
 
@@ -59,35 +59,36 @@ export function hydrate<C extends SeidrComponent<any, any>>(
 ): SeidrComponent {
   const originalHydrationContext = getHydrationContext();
 
-  try {
-    // Set the client render context so State lookups use the correct context ID
-    setClientRenderContext(hydrationData.renderContextID);
+  // Set the client render context so State lookups use the correct context ID
+  // NOTE: We DON'T reset this in the finally block because it needs to persist
+  // for the lifetime of the component. The render context ID should match the
+  // server's ID for all reactive updates to work correctly.
+  setClientRenderContext(hydrationData.renderContextID);
 
-    // Restore State values from the server
-    if (hydrationData.state) {
-      restoreRenderContextState(hydrationData.renderContextID, hydrationData.state);
-    }
-
-    // Set the hydration context so Seidr instances get their server values
-    setHydrationContext(hydrationData);
-
-    // Create the component (Seidr instances will auto-hydrate)
-    const component = componentFactory();
-
-    // Mount the component in the container
-    mount(component, container);
-
-    // Clean up old SSR elements marked for removal
-    container.querySelectorAll('[data-seidr-remove="1"]').forEach((el) => el.remove());
-    return component;
-  } finally {
-    // Always restore original contexts
-    resetClientRenderContext();
-
-    if (originalHydrationContext) {
-      setHydrationContext(originalHydrationContext);
-    } else {
-      clearHydrationContext();
-    }
+  // Restore State values from the server
+  if (hydrationData.state) {
+    restoreRenderContextState(hydrationData.renderContextID, hydrationData.state);
   }
+
+  // Set the hydration context so Seidr instances get their server values
+  setHydrationContext(hydrationData);
+
+  // Create the component (Seidr instances will auto-hydrate)
+  const component = componentFactory();
+
+  // Mount the component in the container
+  mount(component, container);
+
+  // Clean up old SSR elements marked for removal
+  container.querySelectorAll('[data-seidr-remove="1"]').forEach((el) => el.remove());
+
+  // Clear the hydration context (but keep the render context!)
+  // We restore the original hydration context if there was one
+  if (originalHydrationContext) {
+    setHydrationContext(originalHydrationContext);
+  } else {
+    clearHydrationContext();
+  }
+
+  return component;
 }
