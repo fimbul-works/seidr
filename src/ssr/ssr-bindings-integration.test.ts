@@ -103,7 +103,9 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
       // Server-side
-      const { html, hydrationData } = await renderToString(App);
+      const { html, hydrationData } = await runWithRenderContextSync(async () => {
+        return await renderToString(App);
+      });
 
       expect(html).toContain("Count: 42");
       expect(html).not.toContain("disabled"); // 42 is not > 100
@@ -150,7 +152,9 @@ describe("SSR Reactive Bindings Integration", () => {
             });
           });
 
-        const { hydrationData: data } = await renderToString(App, scope);
+        const { hydrationData: data } = await runWithRenderContextSync(async () => {
+          return await renderToString(App, scope);
+        });
         hydrationData = data;
         setActiveSSRScope(undefined);
         ssrMode();

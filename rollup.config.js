@@ -44,6 +44,18 @@ const treeshake = {
 };
 
 export default [
+  // Node/SSR Builds
+  {
+    input: "src/index.node.ts",
+    output: [
+      { file: "dist/node/index.js", format: "esm" },
+      { file: "dist/node/index.cjs", format: "cjs" },
+    ],
+    // Mark Node built-ins as external so they aren't bundled
+    external: ["node:async_hooks", "node:module"],
+    plugins: [...plugins, nodeReplace, terserPlugin],
+    treeshake,
+  },
   // Browser Builds: Full
   {
     input: "src/index.browser.ts",
@@ -64,16 +76,6 @@ export default [
     plugins: [...plugins, browserReplace],
     treeshake,
   },
-  // Browser Builds: Full (min)
-  {
-    input: "src/index.browser.ts",
-    output: [
-      { file: "dist/browser/index.min.js", format: "esm", compact: true, sourcemap: true },
-      { file: "dist/browser/index.min.cjs", format: "cjs", compact: true, sourcemap: true },
-    ],
-    plugins: [...plugins, browserReplace, terserPlugin],
-    treeshake,
-  },
   // Browser Builds: Core (min)
   {
     input: "src/index.browser.core.ts",
@@ -82,18 +84,6 @@ export default [
       { file: "dist/browser/index.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
     plugins: [...plugins, browserReplace, terserPlugin],
-    treeshake,
-  },
-  // Node/SSR Builds
-  {
-    input: "src/index.node.ts",
-    output: [
-      { file: "dist/node/index.js", format: "esm", compact: true },
-      { file: "dist/node/index.cjs", format: "cjs", compact: true },
-    ],
-    // Mark Node built-ins as external so they aren't bundled
-    external: ["node:async_hooks", "node:module"],
-    plugins: [...plugins, nodeReplace, terserPlugin],
     treeshake,
   },
 ];

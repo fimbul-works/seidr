@@ -1,32 +1,68 @@
 import type { Seidr } from "../core/index";
+import { getRenderContext } from "../core/render-context-contract";
 import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index";
 import type { DependencyGraph } from "./dependency-graph/types";
 import type { ElementBinding, SSRScopeCapture } from "./types";
 
 /**
- * The currently active SSR scope.
- * Set before rendering and cleared after rendering.
+ * SSR scopes indexed by render context ID.
+ * This ensures concurrent SSR requests have isolated scopes.
  */
-let activeScope: SSRScope | undefined;
+const scopes = new Map<number, SSRScope>();
 
 /**
- * Sets the active SSR scope.
+ * Sets the active SSR scope for the current render context.
  * Call this before starting a render pass.
  *
- * @param {(SSRScope | undefined)} scope - The scope to activate
+ * @param {(SSRScope | undefined)} scope - The scope to activate for the current render context
  */
 export function setActiveSSRScope(scope: SSRScope | undefined): void {
-  activeScope = scope;
+  const ctx = getRenderContext();
+
+  // If no render context but setting undefined, allow for cleanup
+  if (!ctx) {
+    if (scope === undefined) {
+      return;
+    }
+
+    // If no render context but setting a scope, use a temporary key
+    // This supports the manual scope pattern where scope is set before renderToString
+    scopes.set(-1, scope);
+    return;
+  }
+
+  // Normal case: use render context ID
+  if (scope) {
+    scopes.set(ctx.renderContextID, scope);
+  } else {
+    scopes.delete(ctx.renderContextID);
+  }
 }
 
 /**
- * Gets the currently active SSR scope.
- * Returns undefined if not in SSR mode or no scope is active.
+ * Gets the SSR scope for the current render context.
+ * Returns undefined if not in SSR mode or no scope is active for this context.
  *
- * @returns {(SSRScope | undefined)} The active SSR scope or undefined
+ * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
 export function getActiveSSRScope(): SSRScope | undefined {
-  return activeScope;
+  const ctx = getRenderContext();
+  if (!ctx) {
+    // Check for temporary scope (manual scope pattern)
+    return scopes.get(-1);
+  }
+
+  return scopes.get(ctx.renderContextID);
+}
+
+/**
+ * Removes the SSR scope for a specific render context ID.
+ * Called after rendering to prevent memory leaks.
+ *
+ * @param {number} renderContextID - The render context ID to clear
+ */
+export function clearSSRScope(renderContextID: number): void {
+  scopes.delete(renderContextID);
 }
 
 /**

@@ -1,12 +1,14 @@
 import type { SeidrComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
-import { runWithRenderContextSync } from "../render-context.node";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope";
+import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
 
 /**
- * Renders a component to an HTML string with automatic hydration data capture.
+ * Renders a component to an HTML string with hydration data capture.
+ *
+ * IMPORTANT: This function must be called inside `runWithRenderContext()` or `runWithRenderContextSync()`.
+ * The render context is needed for proper AsyncLocalStorage isolation and State management.
  *
  * This function:
  * 1. Creates or uses the provided SSR scope
@@ -25,21 +27,25 @@ import type { SSRRenderResult } from "./types";
  *
  * @example
  * ```typescript
- * const count = new Seidr(42);
- * const doubled = count.as(n => n * 2);
+ * import { renderToString, runWithRenderContextSync } from '@fimbul-works/seidr/node';
+ * import { $, component, Seidr, setState, createStateKey } from '@fimbul-works/seidr/node';
  *
  * function App() {
  *   return component((state) => {
+ *     const count = new Seidr(0);
  *     return $('div', {}, [
- *       $('span', {}, [`Count: ${count.value}`]),
- *       $('span', {}, [`Doubled: ${doubled.value}`]),
+ *       $('span', { textContent: count.as(n => `Count: ${n}`) })
  *     ]);
  *   });
  * };
  *
  * app.get('*', async (req, res) => {
- *   // The HTML and hydrationData can be sent to the client for hydration
- *   const { html, hydrationData } = await runWithRenderContext(async () => {
+ *   // Must wrap in runWithRenderContext for State to work!
+ *   const { html, hydrationData } = await runWithRenderContextSync(async () => {
+ *     // Set up state BEFORE calling renderToString
+ *     const todosKey = createStateKey("todos");
+ *     setState(todosKey, new Seidr([]));
+ *
  *     return await renderToString(App);
  *   });
  *   res.send(html);
@@ -52,16 +58,8 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
 ): Promise<SSRRenderResult> {
   const ctx = getRenderContext();
 
-  // Bubblegum patch for test convenience: Auto-create RenderContext in test mode
-  const isTestMode = process.env.SEIDR_TEST_SSR === "true";
-  const hasValidContext = typeof ctx?.renderContextID !== "undefined";
-
-  if (!hasValidContext) {
-    if (isTestMode) {
-      // In test mode, auto-wrap with a RenderContext for convenience
-      return runWithRenderContextSync(() => renderToString(componentFactory, scope));
-    }
-    throw new Error("Invalid RenderContext");
+  if (!ctx) {
+    throw new Error("No render context available. This should not happen - please report this bug.");
   }
 
   // Create new scope if not provided
@@ -101,6 +99,9 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
   } finally {
     // Always clear active scope, even if component throws
     setActiveSSRScope(undefined);
+
+    // Always clean up scope from global map to prevent memory leaks
+    clearSSRScope(ctx.renderContextID);
 
     // Clear scope if we created it (captureState already cleared observables)
     if (!scope) {
