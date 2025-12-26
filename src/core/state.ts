@@ -1,5 +1,5 @@
 import { getRenderContext } from "./render-context-contract";
-import type { Seidr } from "./seidr";
+import { Seidr } from "./seidr";
 
 /**
  * Type-safe state key that carries its type
@@ -16,23 +16,26 @@ export class State<T> {
   /**
    * @param key - Value to store in this State
    */
-  constructor(private value: T) {}
+  constructor(private v: T) {}
 
   /**
    * Get the stored value.
    * @returns Stored application state
    */
-  get(): T {
-    return this.value;
+  get value(): T {
+    return this.v;
   }
 }
 
 // Extract generic from instance
 export type InferStateType<C> = C extends State<infer T> ? T : never;
 
-export type UnwrappedState<T> = {
-  [K in keyof T]: T[K] extends Seidr<infer V> ? V : T[K];
-};
+const s = new State({
+  firstName: new Seidr("John"),
+  lasstName: new Seidr("Wick"),
+  age: new Seidr(42),
+});
+type User = InferStateType<typeof s>;
 
 /** Storage: Map<renderScopeID, Map<symbol, any>> */
 export const renderContextStates = new Map<number, Map<symbol, unknown>>();

@@ -1,5 +1,5 @@
 /**
- * Call HTMLElement.querySelector to find the first matching element.
+ * Call Document.getElementId to find an element.
  *
  * This utility provides a type-safe way to query the DOM with CSS selectors.
  * It's more concise than document.querySelector() and provides better TypeScript
@@ -7,8 +7,7 @@
  *
  * @template T extends HTMLElement - The expected HTMLElement type
  *
- * @param query - The CSS selector string to query for
- * @param el - The element to query within (defaults to document.body)
+ * @param id - The CSS selector string to query for
  *
  * @returns The first element matching the selector, or null if not found
  *

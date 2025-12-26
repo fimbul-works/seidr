@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { Seidr } from "./seidr";
 import {
   createStateKey,
   getState,
@@ -27,53 +28,51 @@ describe("State", () => {
   describe("State Class", () => {
     it("should create a State instance with a value", () => {
       const state = new State(42);
-      expect(state.get()).toBe(42);
+      expect(state.value).toBe(42);
     });
 
     it("should store complex objects", () => {
       const obj = { name: "test", value: 100 };
       const state = new State(obj);
-      expect(state.get()).toEqual(obj);
+      expect(state.value).toEqual(obj);
     });
 
     it("should store null values", () => {
       const state = new State<string | null>(null);
-      expect(state.get()).toBeNull();
+      expect(state.value).toBeNull();
     });
 
     it("should store undefined values", () => {
       const state = new State<string | undefined>(undefined);
-      expect(state.get()).toBeUndefined();
+      expect(state.value).toBeUndefined();
     });
 
     it("should type-check correctly with TypeScript", () => {
       const state = new State<number>(42);
-      const value: number = state.get();
+      const value: number = state.value;
       expect(typeof value).toBe("number");
     });
 
     describe("Documentation Examples", () => {
       it("should demonstrate basic State usage", () => {
         const counterState = new State(0);
-        expect(counterState.get()).toBe(0);
+        expect(counterState.value).toBe(0);
 
-        counterState.get(); // Type: number
+        counterState.value; // Type: number
       });
 
       it("should demonstrate State with complex object", () => {
-        interface User {
-          name: string;
-          age: number;
-        }
-
-        const userState = new State<User>({
+        // Works with complex types
+        const userState = new State({
           name: "Alice",
-          age: 30,
+          age: new Seidr(30),
         });
 
-        const user = userState.get();
+        type UserType = InferStateType<typeof userState>;
+
+        const user = userState.value;
         expect(user.name).toBe("Alice");
-        expect(user.age).toBe(30);
+        expect(user.age.value).toBe(30);
       });
     });
   });
