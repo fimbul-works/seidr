@@ -1,4 +1,11 @@
 import { afterEach } from "vitest";
+import { setInternalContext } from "./core/render-context-contract";
+import type { RenderContext } from "./core/types";
+
+// Initialize browser render context for all tests
+// Set up a simple browser render context that returns a valid context object
+const browserContext: RenderContext = { renderContextID: 0, idCounter: 0 };
+setInternalContext(() => browserContext);
 
 afterEach(() => {
   // Clean up DOM after each test

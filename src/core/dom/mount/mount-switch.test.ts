@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr.js";
-import { component } from "../component.js";
-import { $ } from "../element.js";
-import { mountSwitch } from "./mount-switch.js";
+import { Seidr } from "../../seidr";
+import { component } from "../component";
+import { $ } from "../element";
+import { mountSwitch } from "./mount-switch";
 
 describe("mountSwitch", () => {
   let container: HTMLElement;

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Seidr } from "../../core/index.js";
-import { buildDependencyGraph } from "./build-dependency-graph.js";
+import { Seidr } from "../../core/index";
+import { buildDependencyGraph } from "./build-dependency-graph";
 
 describe("buildDependencyGraph", () => {
   it("should build graph from root observables only", () => {

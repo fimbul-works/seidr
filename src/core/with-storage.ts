@@ -1,4 +1,4 @@
-import type { Seidr } from "./seidr.js";
+import type { Seidr } from "./seidr";
 
 /**
  * Synchronizes a Seidr observable with browser storage (localStorage or sessionStorage).

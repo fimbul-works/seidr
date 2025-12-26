@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { component } from "../component.js";
-import { $ } from "../element.js";
-import { mount } from "./mount.js";
+import { component } from "../component";
+import { $ } from "../element";
+import { mount } from "./mount";
 
 describe("mount", () => {
   let container: HTMLElement;

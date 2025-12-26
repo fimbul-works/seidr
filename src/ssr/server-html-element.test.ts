@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { ServerElementMap, ServerHTMLElement } from "./server-html-element.js";
+import { ServerElementMap, ServerHTMLElement } from "./server-html-element";
 
 describe("ServerHTMLElement", () => {
   let element: ServerHTMLElement;

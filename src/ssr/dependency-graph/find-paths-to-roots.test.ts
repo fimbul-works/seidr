@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { findPathsToRoots } from "./find-paths-to-roots.js";
-import type { DependencyGraph } from "./types.js";
+import { findPathsToRoots } from "./find-paths-to-roots";
+import type { DependencyGraph } from "./types";
 
 describe("findPathsToRoots", () => {
   it("should return empty path for root observable", () => {

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $getById } from "./get-by-id.js";
+import { $getById } from "./get-by-id";
 
 describe("$getById", () => {
   beforeEach(() => {

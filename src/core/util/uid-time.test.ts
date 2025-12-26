@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { uid } from "./uid.js";
-import { uidTime } from "./uid-time.js";
+import { uid } from "./uid";
+import { uidTime } from "./uid-time";
 
 describe("uidTime", () => {
   // Store original Date.now to restore after tests

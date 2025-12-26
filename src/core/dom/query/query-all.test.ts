@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $queryAll } from "./query-all.js";
+import { $queryAll } from "./query-all";
 
 describe("$queryAll (query selector all)", () => {
   beforeEach(() => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { $ } from "./element.js";
-import { $factory } from "./element-factory.js";
+import { $ } from "./element";
+import { $factory } from "./element-factory";
 
 describe("elementFactory", () => {
   it("should return a function that creates elements", () => {

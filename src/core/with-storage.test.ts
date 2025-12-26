@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $ } from "./dom/element.js";
-import { Seidr } from "./seidr.js";
-import { withStorage } from "./with-storage.js";
+import { $ } from "./dom/element";
+import { Seidr } from "./seidr";
+import { withStorage } from "./with-storage";
 
 // Use globalThis for better compatibility
 declare global {

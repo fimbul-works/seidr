@@ -1,7 +1,7 @@
-import type { Seidr } from "../core/index.js";
-import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index.js";
-import type { DependencyGraph } from "./dependency-graph/types.js";
-import type { ElementBinding, SSRScopeCapture } from "./types.js";
+import type { Seidr } from "../core/index";
+import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index";
+import type { DependencyGraph } from "./dependency-graph/types";
+import type { ElementBinding, SSRScopeCapture } from "./types";
 
 /**
  * The currently active SSR scope.

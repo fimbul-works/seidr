@@ -1,11 +1,11 @@
-import { applyElementBindings } from "../../ssr/hydration-context.js";
-import { ServerHTMLElement } from "../../ssr/server-html-element.js";
-import { getActiveSSRScope } from "../../ssr/ssr-scope.js";
-import { getRenderContext } from "../render-context-contract.js";
-import type { Seidr } from "../seidr.js";
-import type { CleanupFunction } from "../types.js";
-import { isFn, isSeidr, isStr, isUndef } from "../util/is.js";
-import { $query } from "./query/query.js";
+import { applyElementBindings } from "../../ssr/hydration-context";
+import { ServerHTMLElement } from "../../ssr/server-html-element";
+import { getActiveSSRScope } from "../../ssr/ssr-scope";
+import { getRenderContext } from "../render-context-contract";
+import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
+import { isFn, isSeidr, isStr, isUndef } from "../util/is";
+import { $query } from "./query/query";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.

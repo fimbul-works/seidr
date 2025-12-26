@@ -1,6 +1,6 @@
-import type { Seidr } from "../../seidr.js";
-import type { CleanupFunction } from "../../types.js";
-import type { SeidrComponent } from "../component.js";
+import type { Seidr } from "../../seidr";
+import type { CleanupFunction } from "../../types";
+import type { SeidrComponent } from "../component";
 
 /**
  * Renders an efficient list of components from an observable array.

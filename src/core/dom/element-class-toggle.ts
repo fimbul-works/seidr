@@ -1,5 +1,5 @@
-import type { Seidr } from "../seidr.js";
-import { CleanupFunction } from "../types.js";
+import type { Seidr } from "../seidr";
+import { CleanupFunction } from "../types";
 
 /**
  * Reactively toggles a CSS class on an element based on a boolean observable.

@@ -1,4 +1,4 @@
-import type { DependencyGraph } from "./types.js";
+import type { DependencyGraph } from "./types";
 
 /**
  * Finds all root observable IDs that a given node depends on.

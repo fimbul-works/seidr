@@ -1,2 +1,2 @@
-export * from "./core/index.js";
-export * from "./render-context.browser.js";
+export * from "./core/index";
+export * from "./render-context.browser";

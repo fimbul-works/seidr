@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { $text, type SeidrElement } from "./element.js";
-import { $a, $button, $div, $input, $span } from "./elements.js";
+import { $text, type SeidrElement } from "./element";
+import { $a, $button, $div, $input, $span } from "./elements";
 
 describe("predefined element creators", () => {
   it("should create elements with correct types", () => {

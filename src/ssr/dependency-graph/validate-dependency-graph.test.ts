@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { DependencyGraph } from "./types.js";
-import { validateDependencyGraph } from "./validate-dependency-graph.js";
+import type { DependencyGraph } from "./types";
+import { validateDependencyGraph } from "./validate-dependency-graph";
 
 describe("validateDependencyGraph", () => {
   it("should validate correct graph", () => {

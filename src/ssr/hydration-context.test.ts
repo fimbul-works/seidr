@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRenderContext } from "../core/render-context-contract.js";
-import { enableSSRMode } from "../test-setup.js";
-import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context.js";
-import type { HydrationData } from "./types.js";
+import { getRenderContext } from "../core/render-context-contract";
+import { enableSSRMode } from "../test-setup";
+import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context";
+import type { HydrationData } from "./types";
 
 describe("Hydration Context", () => {
   let cleanupSSRMode: () => void;

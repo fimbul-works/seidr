@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
-import { Seidr } from "../seidr.js";
-import type { SeidrComponent } from "./component.js";
-import { component, createScope } from "./component.js";
-import { $ } from "./element.js";
+import { Seidr } from "../seidr";
+import type { SeidrComponent } from "./component";
+import { component, createScope } from "./component";
+import { $ } from "./element";
 
 describe("createScope", () => {
   it("should create a scope with track, child, and destroy methods", () => {

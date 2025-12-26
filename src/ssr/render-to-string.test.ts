@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { TodoApp } from "../../../examples/todo.js";
-import { Seidr } from "../../seidr.js";
-import { component } from "../component.js";
-import { $ } from "../element.js";
-import { clearHydrationContext } from "./hydration-context.js";
-import { renderToString } from "./render-to-string.js";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
+import { TodoApp } from "../../examples/todo.js";
+import { component } from "../core/dom/component";
+import { $ } from "../core/dom/element";
+import { Seidr } from "../core/seidr";
+import { clearHydrationContext } from "./hydration-context";
+import { renderToString } from "./render-to-string";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;

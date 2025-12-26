@@ -1,4 +1,4 @@
-import { isFn, isObj, isSeidr } from "./is.js";
+import { isFn, isObj, isSeidr } from "./is";
 
 const B = Boolean;
 

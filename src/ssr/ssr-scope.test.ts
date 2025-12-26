@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr.js";
-import { clearHydrationContext } from "./hydration-context.js";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
+import { Seidr } from "../core/seidr";
+import { clearHydrationContext } from "./hydration-context";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;

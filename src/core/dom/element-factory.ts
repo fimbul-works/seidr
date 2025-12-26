@@ -1,4 +1,4 @@
-import { $, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type SeidrNode } from "./element.js";
+import { $, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type SeidrNode } from "./element";
 
 /**
  * Creates a specialized HTML element creator function for a specific tag type.

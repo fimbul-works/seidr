@@ -22,7 +22,7 @@ import {
   mountList,
   mountSwitch,
   Seidr,
-} from "./index.js";
+} from "./index";
 
 describe("README.md Examples Validation", () => {
   beforeEach(() => {

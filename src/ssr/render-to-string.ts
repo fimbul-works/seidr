@@ -1,9 +1,9 @@
-import type { SeidrComponent } from "../core/index.js";
-import { getRenderContext } from "../core/render-context-contract.js";
-import { runWithRenderContextSync } from "../render-context.node.js";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
-import { captureRenderContextState, clearRenderContextState } from "./state.js";
-import type { SSRRenderResult } from "./types.js";
+import type { SeidrComponent } from "../core/index";
+import { getRenderContext } from "../core/render-context-contract";
+import { runWithRenderContextSync } from "../render-context.node";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope";
+import { captureRenderContextState, clearRenderContextState } from "./state";
+import type { SSRRenderResult } from "./types";
 
 /**
  * Renders a component to an HTML string with automatic hydration data capture.

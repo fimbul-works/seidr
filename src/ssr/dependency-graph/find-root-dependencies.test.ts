@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { findRootDependencies } from "./find-root-dependencies.js";
-import type { DependencyGraph } from "./types.js";
+import { findRootDependencies } from "./find-root-dependencies";
+import type { DependencyGraph } from "./types";
 
 describe("findRootDependencies", () => {
   it("should return single root for root observable", () => {

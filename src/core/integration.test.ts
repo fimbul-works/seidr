@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $, $a, $button, $div, $input, $query, $span } from "./dom/index.js";
-import { Seidr } from "./seidr.js";
+import { $, $a, $button, $div, $input, $query, $span } from "./dom/index";
+import { Seidr } from "./seidr";
 
 describe("integration tests", () => {
   beforeEach(() => {

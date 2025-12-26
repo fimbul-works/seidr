@@ -1,4 +1,4 @@
-import { BASE62_ALPHABET, RADIX } from "./uid.js";
+import { BASE62_ALPHABET, RADIX } from "./uid";
 
 /**
  * Decodes a base-62 string to a number.

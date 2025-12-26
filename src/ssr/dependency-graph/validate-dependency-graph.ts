@@ -1,4 +1,4 @@
-import type { DependencyGraph } from "./types.js";
+import type { DependencyGraph } from "./types";
 
 /**
  * Validates that the dependency graph is well-formed.

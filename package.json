@@ -59,7 +59,7 @@
     "build:types:node": "dts-bundle-generator -o dist/node/index.d.ts src/index.node.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm build && pnpm build:examples && pnpm bundlesizes",
-    "buildsizes": "./calculate-bundle-sizes.sh",
+    "bundlesizes": "./calculate-bundle-sizes.sh",
     "dev:examples": "vite --config vite.examples.config.ts",
     "format": "npx biome format --write src *.json",
     "test": "vitest",

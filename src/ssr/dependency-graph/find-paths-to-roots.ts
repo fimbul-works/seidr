@@ -1,4 +1,4 @@
-import type { DependencyGraph } from "./types.js";
+import type { DependencyGraph } from "./types";
 
 /**
  * Traverses the dependency graph from a given node to find root values.

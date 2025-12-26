@@ -1,3 +1,3 @@
-export * from "./get-by-id.js";
-export * from "./query.js";
-export * from "./query-all.js";
+export * from "./get-by-id";
+export * from "./query";
+export * from "./query-all";

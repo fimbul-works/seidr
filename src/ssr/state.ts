@@ -1,6 +1,6 @@
-import { Seidr } from "../core/seidr.js";
-import { renderContextStates, symbolNames } from "../core/state.js";
-import { isSeidr } from "../core/util/is.js";
+import { Seidr } from "../core/seidr";
+import { renderContextStates, symbolNames } from "../core/state";
+import { isSeidr } from "../core/util/is";
 
 /**
  * Clear all States for a render context.

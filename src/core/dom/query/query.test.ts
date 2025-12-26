@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { $query } from "./query.js";
+import { $query } from "./query";
 
 describe("$query (query selector)", () => {
   beforeEach(() => {

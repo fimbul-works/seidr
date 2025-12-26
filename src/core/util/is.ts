@@ -1,4 +1,4 @@
-import { Seidr } from "../seidr.js";
+import { Seidr } from "../seidr";
 
 /**
  * Check if a value is undefined.

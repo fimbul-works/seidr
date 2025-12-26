@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $ } from "./dom/index.js";
-import { Seidr } from "./seidr.js";
+import { $ } from "./dom/index";
+import { Seidr } from "./seidr";
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;

@@ -1,9 +1,9 @@
-import type { SeidrComponent } from "../core/dom/component.js";
-import { mount } from "../core/dom/mount/mount.js";
-import { setClientRenderContext } from "../render-context.browser.js";
-import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context.js";
-import { restoreRenderContextState } from "./state.js";
-import type { HydrationData } from "./types.js";
+import type { SeidrComponent } from "../core/dom/component";
+import { mount } from "../core/dom/mount/mount";
+import { setClientRenderContext } from "../render-context.browser";
+import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context";
+import { restoreRenderContextState } from "./state";
+import type { HydrationData } from "./types";
 
 /**
  * Hydrates a component with previously captured SSR hydration data.

@@ -1,5 +1,5 @@
-import { getRenderContext } from "./render-context-contract.js";
-import type { Seidr } from "./seidr.js";
+import { getRenderContext } from "./render-context-contract";
+import type { Seidr } from "./seidr";
 
 /**
  * Type-safe state key that carries its type

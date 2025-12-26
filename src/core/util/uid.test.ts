@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { uid } from "./uid.js";
+import { uid } from "./uid";
 
 describe("uid", () => {
   it("should generate unique IDs", () => {

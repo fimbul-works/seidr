@@ -1,5 +1,5 @@
-import type { Seidr } from "../../core/index.js";
-import type { DependencyGraph, DependencyNode } from "./types.js";
+import type { Seidr } from "../../core/index";
+import type { DependencyGraph, DependencyNode } from "./types";
 
 /**
  * Builds a numeric dependency graph from registered Seidr instances.

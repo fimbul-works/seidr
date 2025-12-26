@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../seidr.js";
-import { $ } from "./element.js";
-import { elementClassToggle } from "./element-class-toggle.js";
-import { $div } from "./elements.js";
+import { Seidr } from "../seidr";
+import { $ } from "./element";
+import { elementClassToggle } from "./element-class-toggle";
+import { $div } from "./elements";
 
 describe("elementClassToggle", () => {
   let element: HTMLElement;

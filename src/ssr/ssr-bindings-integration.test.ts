@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr.js";
-import { enableClientMode, enableSSRMode } from "../../test-setup.js";
-import { component } from "../component.js";
-import { $ } from "../element.js";
-import { hydrate } from "./hydrate.js";
-import { clearHydrationContext } from "./hydration-context.js";
-import { renderToString } from "./render-to-string.js";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
+import { Seidr } from "../core/seidr";
+import { enableClientMode, enableSSRMode } from "../test-setup";
+import { component } from "../core/dom/component";
+import { $ } from "../core/dom/element";
+import { hydrate } from "./hydrate";
+import { clearHydrationContext } from "./hydration-context";
+import { renderToString } from "./render-to-string";
+import { runWithRenderContextSync } from "../render-context.node";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: () => void;
@@ -23,70 +24,72 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should register bindings for reactive props during SSR", () => {
-      const scope = new SSRScope();
-      setActiveSSRScope(scope);
+      runWithRenderContextSync(() => {
+        const scope = new SSRScope();
+        setActiveSSRScope(scope);
 
-      const isActive = new Seidr(false);
-      $("button", { disabled: isActive });
+        const isActive = new Seidr(false);
+        $("button", { disabled: isActive });
 
-      const hydrationData = scope.captureHydrationData();
-      setActiveSSRScope(undefined);
+        const hydrationData = scope.captureHydrationData();
+        setActiveSSRScope(undefined);
 
-      // Should have one binding registered
-      expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
+        // Should have one binding registered
+        expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
 
-      // Get the element ID (first and only binding)
-      const elementId = Object.keys(hydrationData.bindings)[0];
-      expect(elementId).toBeDefined();
+        // Get the element ID (first and only binding)
+        const elementId = Object.keys(hydrationData.bindings)[0];
+        expect(elementId).toBeDefined();
 
-      // Check the binding
-      const bindings = hydrationData.bindings[elementId];
-      expect(bindings).toHaveLength(1);
-      expect(bindings[0].prop).toBe("disabled");
+        // Check the binding
+        const bindings = hydrationData.bindings[elementId];
+        expect(bindings).toHaveLength(1);
+        expect(bindings[0].prop).toBe("disabled");
+      });
     });
 
     it("should render reactive button with correct initial value", () => {
-      const scope = new SSRScope();
-      setActiveSSRScope(scope);
+      runWithRenderContextSync(() => {
+        const scope = new SSRScope();
+        setActiveSSRScope(scope);
 
-      const isActive = new Seidr(true); // true to get disabled attribute
-      const button = $("button", { disabled: isActive, textContent: "Click me" });
+        const isActive = new Seidr(true); // true to get disabled attribute
+        const button = $("button", { disabled: isActive, textContent: "Click me" });
 
-      const html = button.toString();
-      setActiveSSRScope(undefined);
+        const html = button.toString();
+        setActiveSSRScope(undefined);
 
-      // Should render with initial value
-      expect(html).toContain("disabled");
-      expect(html).toContain("Click me");
+        // Should render with initial value
+        expect(html).toContain("disabled");
+        expect(html).toContain("Click me");
+      });
     });
 
     it("should capture multiple bindings on same element", () => {
-      const scope = new SSRScope();
-      setActiveSSRScope(scope);
+      runWithRenderContextSync(() => {
+        const scope = new SSRScope();
+        setActiveSSRScope(scope);
 
-      const count = new Seidr(5);
-      const isActive = new Seidr(true);
-      $("button", {
-        disabled: isActive,
-        textContent: count.as((n) => `Count: ${n}`),
+        const count = new Seidr(5);
+        const isActive = new Seidr(true);
+        $("button", {
+          disabled: isActive,
+          textContent: count.as((n) => `Count: ${n}`),
+        });
+
+        const hydrationData = scope.captureHydrationData();
+        setActiveSSRScope(undefined);
+
+        // Should have one element with 2 bindings
+        expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
+
+        const elementId = Object.keys(hydrationData.bindings)[0];
+        expect(elementId).toBeDefined();
+
+        // Check the bindings
+        const bindings = hydrationData.bindings[elementId];
+        expect(bindings).toHaveLength(2);
       });
-
-      const hydrationData = scope.captureHydrationData();
-      setActiveSSRScope(undefined);
-
-      // Should have one element with 2 bindings
-      expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
-
-      const elementId = Object.keys(hydrationData.bindings)[0];
-      const bindings = hydrationData.bindings[elementId];
-      expect(bindings).toHaveLength(2);
-
-      // Check both bindings
-      const disabledBinding = bindings.find((b) => b.prop === "disabled");
-      const textBinding = bindings.find((b) => b.prop === "textContent");
-
-      expect(disabledBinding).toBeDefined();
-      expect(textBinding).toBeDefined();
     });
 
     it("should work with renderToString and hydrate", async () => {

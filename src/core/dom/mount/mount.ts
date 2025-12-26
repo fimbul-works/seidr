@@ -1,5 +1,5 @@
-import type { CleanupFunction } from "../../types.js";
-import type { SeidrComponent } from "../component.js";
+import type { CleanupFunction } from "../../types";
+import type { SeidrComponent } from "../component";
 
 /**
  * Mounts a component into a container element with automatic cleanup.

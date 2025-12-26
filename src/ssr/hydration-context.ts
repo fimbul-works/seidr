@@ -1,59 +1,47 @@
-import { getRenderContext } from "../core/render-context-contract.js";
-import type { Seidr } from "../core/seidr.js";
-import type { DependencyGraph } from "./dependency-graph/types.js";
-import type { ElementBinding, HydrationData } from "./types.js";
+import type { Seidr } from "../core/seidr";
+import type { DependencyGraph } from "./dependency-graph/types";
+import type { ElementBinding, HydrationData } from "./types";
 
 /**
- * Global map of hydration contexts for client-side hydration.
- * Mapping render context ID to HydrationData.
- * Used during element creation to restore observable values.
+ * Global hydration context for client-side hydration.
+ * Since hydration is purely client-side, we only need one global context.
  */
-const hydrationContexts = new Map<number, HydrationData>();
+let currentHydrationContext: HydrationData | undefined = undefined;
 
 /**
  * Registry to track Seidr instances during hydration in creation order.
- * Mapping render context ID to array of Seidr instances.
  * This ensures numeric IDs match the server-side order.
  */
-const hydrationRegistries = new Map<number, Seidr<any>[]>();
+let hydrationRegistry: Seidr<any>[] = [];
 
 /**
- * Gets the current hydration context for the active render context.
+ * Gets the current hydration context.
  *
  * @returns The current hydration data, or undefined if not hydrating
  */
 function getCurrentHydrationContext(): HydrationData | undefined {
-  const ctx = getRenderContext();
-  return hydrationContexts.get(ctx!.renderContextID);
+  return currentHydrationContext;
 }
 
 /**
- * Gets the current hydration registry for the active render context.
+ * Gets the current hydration registry.
  *
- * @returns The current registry, or creates a new one if needed
+ * @returns The current registry
  */
 function getCurrentRegistry(): Seidr<any>[] {
-  const ctx = getRenderContext();
-  const renderContextID = ctx!.renderContextID;
-
-  if (!hydrationRegistries.has(renderContextID)) {
-    hydrationRegistries.set(renderContextID, []);
-  }
-
-  return hydrationRegistries.get(renderContextID) as Seidr<any>[];
+  return hydrationRegistry;
 }
 
 /**
- * Sets the hydration context for the current render context.
+ * Sets the hydration context for client-side hydration.
  * Call this on the client before creating components with hydrated observables.
  *
  * @param data - The hydration data containing observables, bindings, and graph
  */
 export function setHydrationContext(data: HydrationData): void {
-  const ctx = getRenderContext();
-  hydrationContexts.set(ctx!.renderContextID, data);
+  currentHydrationContext = data;
   // Clear registry when setting new context
-  hydrationRegistries.delete(ctx!.renderContextID);
+  hydrationRegistry = [];
 }
 
 /**
@@ -67,12 +55,14 @@ export function getHydrationContext(): HydrationData | null {
 }
 
 /**
- * Clears the hydration context for the current render context.
+ * Clears the hydration context.
  * Call this after hydration is complete.
+ *
+ * @param _renderContextID - Ignored, kept for backwards compatibility
  */
-export function clearHydrationContext(renderContextID: number): void {
-  hydrationContexts.delete(renderContextID);
-  hydrationRegistries.delete(renderContextID);
+export function clearHydrationContext(_renderContextID?: number): void {
+  currentHydrationContext = undefined;
+  hydrationRegistry = [];
 }
 
 /**

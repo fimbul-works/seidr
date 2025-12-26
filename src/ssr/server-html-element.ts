@@ -1,5 +1,5 @@
-import type { CleanupFunction, SeidrElementInterface } from "../core/index.js";
-import { isFn, isObj, isSeidr, isStr } from "../core/util/is.js";
+import type { CleanupFunction, SeidrElementInterface } from "../core/index";
+import { isFn, isObj, isSeidr, isStr } from "../core/util/is";
 
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
 

@@ -1,19 +1,19 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr.js";
-import { enableClientMode } from "../../test-setup.js";
-import { component } from "../component.js";
-import { $ } from "../element.js";
-import { hydrate } from "./hydrate.js";
+import { Seidr } from "../core/seidr";
+import { enableClientMode } from "../test-setup";
+import { component } from "../core/dom/component";
+import { $ } from "../core/dom/element";
+import { hydrate } from "./hydrate";
 import {
   applyElementBindings,
   clearHydrationContext,
   getHydrationContext,
   isHydrating,
   setHydrationContext,
-} from "./hydration-context.js";
-import { renderToString } from "./render-to-string.js";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope.js";
-import type { HydrationData } from "./types.js";
+} from "./hydration-context";
+import { renderToString } from "./render-to-string";
+import { SSRScope, setActiveSSRScope } from "./ssr-scope";
+import type { HydrationData } from "./types";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;

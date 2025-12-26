@@ -1,7 +1,7 @@
-import { registerHydratedSeidr } from "../ssr/hydration-context.js";
-import { getActiveSSRScope } from "../ssr/ssr-scope.js";
-import type { CleanupFunction, EventHandler } from "./types.js";
-import { uid } from "./util/uid.js";
+import { registerHydratedSeidr } from "../ssr/hydration-context";
+import { getActiveSSRScope } from "../ssr/ssr-scope";
+import type { CleanupFunction, EventHandler } from "./types";
+import { uid } from "./util/uid";
 
 /**
  * Base interface for all observable types in Seidr.
