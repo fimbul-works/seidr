@@ -22,21 +22,21 @@
     "functional",
     "typescript"
   ],
-  "main": "./dist/node/index.cjs",
-  "module": "./dist/node/index.js",
-  "browser": "./dist/browser/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/node/seidr.cjs",
+  "module": "./dist/node/seidr.js",
+  "browser": "./dist/browser/seidr.js",
+  "types": "./dist/seidr.d.ts",
   "exports": {
     ".": {
       "browser": {
-        "import": "./dist/browser/index.js",
-        "require": "./dist/browser/index.cjs"
+        "import": "./dist/browser/seidr.js",
+        "require": "./dist/browser/seidr.cjs"
       },
       "node": {
-        "import": "./dist/node/index.js",
-        "require": "./dist/node/index.cjs"
+        "import": "./dist/node/seidr.js",
+        "require": "./dist/node/seidr.cjs"
       },
-      "default": "./dist/browser/index.js"
+      "default": "./dist/browser/seidr.js"
     }
   },
   "files": [
@@ -44,6 +44,7 @@
     "dist/**/*.d.ts",
     "README.md",
     "API.md",
+    "SSR.md",
     "LICENSE"
   ],
   "sideEffects": false,
@@ -54,9 +55,9 @@
     "build": "pnpm clean:dist && pnpm build:javascript && pnpm build:types && pnpm bundlesizes",
     "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c",
     "build:types": "pnpm build:types:browser:full && pnpm build:types:browser:core && pnpm build:types:node",
-    "build:types:browser:full": "dts-bundle-generator -o dist/browser/index.d.ts src/index.browser.ts",
-    "build:types:browser:core": "dts-bundle-generator -o dist/browser/index.core.d.ts src/index.browser.core.ts",
-    "build:types:node": "dts-bundle-generator -o dist/node/index.d.ts src/index.node.ts",
+    "build:types:browser:full": "dts-bundle-generator -o dist/browser/seidr.d.ts src/index.browser.ts",
+    "build:types:browser:core": "dts-bundle-generator -o dist/browser/seidr.core.d.ts src/index.browser.core.ts",
+    "build:types:node": "dts-bundle-generator -o dist/node/seidr.d.ts src/index.node.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm build && pnpm build:examples && pnpm bundlesizes",
     "bundlesizes": "./calculate-bundle-sizes.sh",

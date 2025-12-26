@@ -48,8 +48,8 @@ export default [
   {
     input: "src/index.node.ts",
     output: [
-      { file: "dist/node/index.js", format: "esm" },
-      { file: "dist/node/index.cjs", format: "cjs" },
+      { file: "dist/node/seidr.js", format: "esm" },
+      { file: "dist/node/seidr.cjs", format: "cjs" },
     ],
     // Mark Node built-ins as external so they aren't bundled
     external: ["node:async_hooks", "node:module"],
@@ -60,18 +60,28 @@ export default [
   {
     input: "src/index.browser.ts",
     output: [
-      { file: "dist/browser/index.js", format: "esm" },
-      { file: "dist/browser/index.cjs", format: "cjs" },
+      { file: "dist/browser/seidr.js", format: "esm" },
+      { file: "dist/browser/seidr.cjs", format: "cjs" },
     ],
     plugins: [...plugins, browserReplace],
+    treeshake,
+  },
+  // Browser Builds: Full (min)
+  {
+    input: "src/index.browser.ts",
+    output: [
+      { file: "dist/browser/seidr.min.js", format: "esm", compact: true, sourcemap: true },
+      { file: "dist/browser/seidr.min.cjs", format: "cjs", compact: true, sourcemap: true },
+    ],
+    plugins: [...plugins, browserReplace, terserPlugin],
     treeshake,
   },
   // Browser Builds: Core
   {
     input: "src/index.browser.core.ts",
     output: [
-      { file: "dist/browser/index.core.js", format: "esm" },
-      { file: "dist/browser/index.core.cjs", format: "cjs" },
+      { file: "dist/browser/seidr.core.js", format: "esm" },
+      { file: "dist/browser/seidr.core.cjs", format: "cjs" },
     ],
     plugins: [...plugins, browserReplace],
     treeshake,
@@ -80,8 +90,8 @@ export default [
   {
     input: "src/index.browser.core.ts",
     output: [
-      { file: "dist/browser/index.core.min.js", format: "esm", compact: true, sourcemap: true },
-      { file: "dist/browser/index.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
+      { file: "dist/browser/seidr.core.min.js", format: "esm", compact: true, sourcemap: true },
+      { file: "dist/browser/seidr.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
     plugins: [...plugins, browserReplace, terserPlugin],
     treeshake,

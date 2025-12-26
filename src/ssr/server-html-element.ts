@@ -570,6 +570,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
       '"': "&quot;",
       "'": "&#039;",
     };
-    return text.replace(/[&<>"']/g, (m) => map[m]);
+    return String(text).replace(/[&<>"']/g, (m) => map[m]);
   }
 }
