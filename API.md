@@ -3,7 +3,7 @@
 ## Table of Contents
 
 - [Core Reactive](#core-reactive)
-  - [`Seidr\<T\>` class](#seidrt-class)
+  - [`Seidr<T>` class](#seidrt-class)
   - [`withStorage()`](#withstorage)
 - [DOM Elements](#dom-elements)
   - [`SeidrElement` type](#seidrelement-type)
@@ -19,7 +19,7 @@
   - [`mountList()`](#mountlist)
   - [`mountSwitch()`](#mountswitch)
 - [State Management](#state-management)
-  - [`Stete<T>` class](#statet-class)
+  - [`State<T>` class](#statet-class)
   - [`createStateKey()`](#createstatekey)
   - [`hasState()`](#hasstate)
   - [`setState()`](#setstate)
@@ -152,7 +152,7 @@ textContent.value = 'Hello!';
 
 - `destroy():` - Cleanup all observers and derived computations.
 
-#### Static Methodds
+#### Static Methods
 
 - `Seidr.computed<C>()` - Create a computed observable that depends on multiple sources.
 

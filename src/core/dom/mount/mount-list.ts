@@ -68,7 +68,7 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
 ): CleanupFunction {
   const componentMap = new Map<I, C>();
 
-  const update = (items: T[]) => {
+  function update(items: T[]) {
     const newKeys = new Set(items.map(getKey));
 
     // Remove components that are no longer in the list
@@ -100,7 +100,7 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
         }
       }
     });
-  };
+  }
 
   // Initial render
   update(observable.value);

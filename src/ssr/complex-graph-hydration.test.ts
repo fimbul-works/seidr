@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
-import { runWithRenderContextSync } from "../render-context.node";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
 import { clearHydrationContext } from "./hydration-context";
@@ -55,9 +54,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     }
 
     // Server-side rendering
-    const { html, hydrationData } = await runWithRenderContextSync(async () => {
-      return await renderToString(App);
-    });
+    const { html, hydrationData } = await await renderToString(App);
 
     // Verify HTML contains all values
     expect(html).toContain(">1<");
@@ -127,9 +124,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     }
 
     // Server-side
-    const { html, hydrationData } = await runWithRenderContextSync(async () => {
-      return await renderToString(App);
-    });
+    const { html, hydrationData } = await renderToString(App);
 
     expect(html).toContain(">15<"); // ab
     expect(html).toContain(">13<"); // ac
@@ -184,9 +179,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     }
 
     // Server-side
-    const { html, hydrationData } = await runWithRenderContextSync(async () => {
-      return await renderToString(App);
-    });
+    const { html, hydrationData } = await renderToString(App);
 
     expect(html).toContain(">2<"); // l1_a
     expect(html).toContain(">2<"); // l1_b

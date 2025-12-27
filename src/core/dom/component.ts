@@ -172,23 +172,23 @@ export function createScope(): ComponentScope {
   let cleanups: CleanupFunction[] = [];
   let destroyed = false;
 
-  const track: ComponentScope["track"] = (cleanup: CleanupFunction): void => {
+  function track(cleanup: CleanupFunction): void {
     if (destroyed) {
       console.warn("Tracking cleanup on already destroyed scope");
       cleanup();
       return;
     }
     cleanups.push(cleanup);
-  };
+  }
 
-  const child: ComponentScope["child"] = <K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+  function child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
     component: SeidrComponent<K, E>,
-  ): SeidrComponent<K, E> => {
+  ): SeidrComponent<K, E> {
     track(() => component.destroy());
     return component;
-  };
+  }
 
-  const destroy: ComponentScope["destroy"] = () => {
+  function destroy() {
     if (destroyed) {
       return;
     }
@@ -201,7 +201,7 @@ export function createScope(): ComponentScope {
       }
     });
     cleanups = [];
-  };
+  }
 
   return {
     track,

@@ -52,7 +52,7 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
 ): CleanupFunction {
   let currentComponent: C | null = null;
 
-  const update = (shouldShow: boolean) => {
+  function update(shouldShow: boolean) {
     if (shouldShow && !currentComponent) {
       currentComponent = componentFactory();
       container.appendChild(currentComponent.element);
@@ -61,7 +61,7 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
       currentComponent.destroy();
       currentComponent = null;
     }
-  };
+  }
 
   // Initial render
   update(condition.value);

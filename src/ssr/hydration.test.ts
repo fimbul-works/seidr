@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
-import { enableClientMode } from "../test-setup";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
+import { Seidr } from "../core/seidr";
+import { enableClientMode } from "../test-setup";
 import { hydrate } from "./hydrate";
 import {
   applyElementBindings,
@@ -397,7 +397,7 @@ describe("Client-Side Hydration", () => {
       const scope = new SSRScope();
       setActiveSSRScope(scope);
 
-      const { hydrationData } = await renderToString(TestComponent, scope);
+      const { hydrationData } = await renderToString(TestComponent, undefined, scope);
       setActiveSSRScope(undefined);
 
       // Switch to client mode for hydration

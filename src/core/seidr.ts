@@ -4,42 +4,6 @@ import type { CleanupFunction, EventHandler } from "./types";
 import { uid } from "./util/uid";
 
 /**
- * Base interface for all observable types in Seidr.
- *
- * This interface defines the core contract that all observable implementations
- * must follow, providing the fundamental observation and binding capabilities
- * that enable reactive programming patterns.
- *
- * @template T - The type of value being observed
- */
-export interface Observable<T> {
-  /**
-   * Subscribes to value changes with an event handler.
-   *
-   * @param handler - Function to be called with the current value and subsequent changes
-   *
-   * @returns A cleanup function that removes the event handler
-   */
-  observe(handler: EventHandler<T>): CleanupFunction;
-
-  /**
-   * Creates a reactive binding between this observable and a target.
-   *
-   * The onChange function is called immediately with the current value, and then
-   * automatically called whenever the observable changes. Should return a cleanup function
-   * that removes the binding when called.
-   *
-   * @template E - The type being bound to
-   *
-   * @param target - The value to apply changes to
-   * @param handler - Function that applies the observable's value to the value
-   *
-   * @returns A cleanup function that removes the binding when called
-   */
-  bind<E>(target: E, handler: (value: T, target: E) => void): CleanupFunction;
-}
-
-/**
  * Represents a reactive value that can be observed for changes.
  *
  * Seidr is the core reactive primitive that enables automatic UI updates and
@@ -66,7 +30,7 @@ export interface Observable<T> {
  * unsubscribe(); // Cleanup
  * ```
  */
-export class Seidr<T> implements Observable<T> {
+export class Seidr<T> {
   /** The current value being stored */
   private v: T;
 

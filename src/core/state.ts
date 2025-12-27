@@ -1,5 +1,4 @@
 import { getRenderContext } from "./render-context-contract";
-import { Seidr } from "./seidr";
 
 /**
  * Type-safe state key that carries its type
@@ -30,13 +29,6 @@ export class State<T> {
 // Extract generic from instance
 export type InferStateType<C> = C extends State<infer T> ? T : never;
 
-const s = new State({
-  firstName: new Seidr("John"),
-  lasstName: new Seidr("Wick"),
-  age: new Seidr(42),
-});
-type User = InferStateType<typeof s>;
-
 /** Storage: Map<renderScopeID, Map<symbol, any>> */
 export const renderContextStates = new Map<number, Map<symbol, unknown>>();
 
@@ -53,11 +45,11 @@ export const symbolNames = new Map<string, symbol>();
  * @param {string} key - Key for the State object
  * @returns {StateKey<T>} Symbol that contains the key for the State
  */
-export const createStateKey = <T>(key: string): StateKey<T> => {
+export function createStateKey<T>(key: string): StateKey<T> {
   const symbol = Symbol(key) as StateKey<T>;
   symbolNames.set(key, symbol);
   return symbol;
-};
+}
 
 /**
  * Check if application State exists for the given key.

@@ -14,6 +14,6 @@ export let getRenderContext: () => RenderContext | undefined = () => {
  *
  * @param {(() => RenderContext | undefined)} fn
  */
-export const setInternalContext = (fn: () => RenderContext | undefined) => {
+export function setInternalContext(fn: () => RenderContext | undefined) {
   getRenderContext = fn;
-};
+}

@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
-import { enableClientMode, enableSSRMode } from "../test-setup";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
+import { Seidr } from "../core/seidr";
+import { runWithRenderContextSync } from "../render-context.node";
+import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
 import { clearHydrationContext } from "./hydration-context";
 import { renderToString } from "./render-to-string";
-import { runWithRenderContextSync } from "../render-context.node";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 describe("SSR Reactive Bindings Integration", () => {
@@ -103,9 +103,7 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
       // Server-side
-      const { html, hydrationData } = await runWithRenderContextSync(async () => {
-        return await renderToString(App);
-      });
+      const { html, hydrationData } = await renderToString(App);
 
       expect(html).toContain("Count: 42");
       expect(html).not.toContain("disabled"); // 42 is not > 100
@@ -152,9 +150,7 @@ describe("SSR Reactive Bindings Integration", () => {
             });
           });
 
-        const { hydrationData: data } = await runWithRenderContextSync(async () => {
-          return await renderToString(App, scope);
-        });
+        const { hydrationData: data } = await renderToString(App, undefined, scope);
         hydrationData = data;
         setActiveSSRScope(undefined);
         ssrMode();

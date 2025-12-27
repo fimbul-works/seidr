@@ -9,7 +9,7 @@ const PID = typeof process !== "undefined" && typeof process.pid === "number" ? 
 /**
  * Encodes a number to base-62 string.
  */
-const encodeBase62 = (num: number): string => {
+function encodeBase62(num: number): string {
   let result = "",
     n = num;
   while (n > 0) {
@@ -17,18 +17,18 @@ const encodeBase62 = (num: number): string => {
     n = Math.floor(n / RADIX);
   }
   return result || "0";
-};
+}
 
 /**
  * Generates a random base-62 string of specified length.
  */
-const randomString = (length: number): string => {
+function randomString(length: number): string {
   let result = "";
   for (let i = 0; i < length; i++) {
     result += BASE62_ALPHABET[Math.floor(Math.random() * RADIX)];
   }
   return result;
-};
+}
 
 /**
  * Generates a timestamp component in base-62.

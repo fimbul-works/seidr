@@ -78,7 +78,7 @@ export function mountSwitch<T extends string, C extends SeidrComponent<any, any>
 ): CleanupFunction {
   let currentComponent: C | null = null;
 
-  const update = (key: T) => {
+  function update(key: T) {
     if (currentComponent) {
       currentComponent.element.remove();
       currentComponent.destroy();
@@ -92,7 +92,7 @@ export function mountSwitch<T extends string, C extends SeidrComponent<any, any>
       currentComponent = null;
       console.warn(`No component found for key: ${key}`);
     }
-  };
+  }
 
   // Initial render
   update(observable.value);

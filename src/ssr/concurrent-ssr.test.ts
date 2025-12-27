@@ -1,10 +1,9 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
-import { enableSSRMode } from "../test-setup";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
+import { Seidr } from "../core/seidr";
+import { enableSSRMode } from "../test-setup";
 import { renderToString } from "./render-to-string";
-import { runWithRenderContextSync } from "../render-context.node";
 
 describe("Concurrent SSR Request Isolation", () => {
   let cleanupMode: () => void;
@@ -14,10 +13,7 @@ describe("Concurrent SSR Request Isolation", () => {
   });
 
   afterAll(() => {
-    // Clean up any remaining scopes
-    expect(() => {
-      // All scopes should be cleaned up after tests
-    }).not.toThrow();
+    cleanupMode();
   });
 
   it("should isolate SSR scopes between concurrent render contexts", async () => {
@@ -25,39 +21,25 @@ describe("Concurrent SSR Request Isolation", () => {
     const makeComponent = (initialCount: number) =>
       component(() => {
         const count = new Seidr(initialCount);
-        return $(
-          "div",
-          {},
-          [$("span", { textContent: count.as((n) => `Count: ${n}`) })],
-        );
+        return $("div", {}, [$("span", { textContent: count.as((n) => `Count: ${n}`) })]);
       });
 
     // Simulate concurrent SSR requests
-    const result1 = await runWithRenderContextSync(async () => {
-      return await renderToString(() => makeComponent(42));
-    });
-    const result2 = await runWithRenderContextSync(async () => {
-      return await renderToString(() => makeComponent(100));
-    });
-    const result3 = await runWithRenderContextSync(async () => {
-      return await renderToString(() => makeComponent(0));
-    });
+    const [result1, result2, result3] = await Promise.all([
+      renderToString(() => makeComponent(42)),
+      renderToString(() => makeComponent(100)),
+      renderToString(() => makeComponent(0)),
+    ]);
 
     // Each render should have its own isolated scope
-    expect(result1.html).toContain("<span");
-    expect(result2.html).toContain("<span");
-    expect(result3.html).toContain("<span");
+    expect(result1.html).toContain("Count: 42");
+    expect(result2.html).toContain("Count: 100");
+    expect(result3.html).toContain("Count: 0");
 
     // Each should have its own hydration data
-    expect(result1.hydrationData.renderContextID).not.toBe(
-      result2.hydrationData.renderContextID,
-    );
-    expect(result2.hydrationData.renderContextID).not.toBe(
-      result3.hydrationData.renderContextID,
-    );
-    expect(result3.hydrationData.renderContextID).not.toBe(
-      result1.hydrationData.renderContextID,
-    );
+    expect(result1.hydrationData.renderContextID).not.toBe(result2.hydrationData.renderContextID);
+    expect(result2.hydrationData.renderContextID).not.toBe(result3.hydrationData.renderContextID);
+    expect(result3.hydrationData.renderContextID).not.toBe(result1.hydrationData.renderContextID);
 
     // Each should have captured the correct observable value
     const obs1 = Object.values(result1.hydrationData.observables);
@@ -76,21 +58,17 @@ describe("Concurrent SSR Request Isolation", () => {
         const doubled = base.as((n) => n * 2);
         const tripled = base.as((n) => n * 3);
 
-        return $(
-          "div",
-          {},
-          [
-            $("span", { textContent: doubled.as((n) => String(n)) }),
-            $("span", { textContent: tripled.as((n) => String(n)) }),
-          ],
-        );
+        return $("div", {}, [
+          $("span", { textContent: doubled.as((n) => String(n)) }),
+          $("span", { textContent: tripled.as((n) => String(n)) }),
+        ]);
       });
 
     // Concurrent renders
     const [r1, r2, r3] = await Promise.all([
-      runWithRenderContextSync(async () => renderToString(() => makeComponent(5))),
-      runWithRenderContextSync(async () => renderToString(() => makeComponent(10))),
-      runWithRenderContextSync(async () => renderToString(() => makeComponent(15))),
+      renderToString(() => makeComponent(5)),
+      renderToString(() => makeComponent(10)),
+      renderToString(() => makeComponent(15)),
     ]);
 
     // Verify isolation
@@ -130,11 +108,7 @@ describe("Concurrent SSR Request Isolation", () => {
       });
 
     // Run multiple renders
-    const results = await Promise.all(
-      Array.from({ length: 10 }, () =>
-        runWithRenderContextSync(async () => renderToString(makeComponent)),
-      ),
-    );
+    const results = await Promise.all(Array.from({ length: 10 }, () => renderToString(makeComponent)));
 
     // All should succeed
     expect(results).toHaveLength(10);
@@ -165,22 +139,15 @@ describe("Concurrent SSR Request Isolation", () => {
         const bc = b.as((n) => n + c.value);
         const sum = ab.as((n) => n + c.value);
 
-        return $(
-          "div",
-          {},
-          [
-            $("span", { textContent: ab.as((n) => String(n)) }),
-            $("span", { textContent: bc.as((n) => String(n)) }),
-            $("span", { textContent: sum.as((n) => String(n)) }),
-          ],
-        );
+        return $("div", {}, [
+          $("span", { textContent: ab.as((n) => String(n)) }),
+          $("span", { textContent: bc.as((n) => String(n)) }),
+          $("span", { textContent: sum.as((n) => String(n)) }),
+        ]);
       });
 
     // Run simple and complex components concurrently
-    const [simple, complex] = await Promise.all([
-      runWithRenderContextSync(async () => renderToString(simpleComponent)),
-      runWithRenderContextSync(async () => renderToString(complexComponent)),
-    ]);
+    const [simple, complex] = await Promise.all([renderToString(simpleComponent), renderToString(complexComponent)]);
 
     // Verify simple component
     expect(simple.html).toContain("1");
@@ -195,64 +162,6 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(Object.values(complex.hydrationData.observables)).toEqual([1, 2]);
 
     // Verify different render contexts
-    expect(simple.hydrationData.renderContextID).not.toBe(
-      complex.hydrationData.renderContextID,
-    );
-  });
-
-  it("should isolate scopes when using manual scope pattern", () => {
-    runWithRenderContextSync(() => {
-      // Create multiple scopes in same render context
-      // (advanced pattern for testing)
-
-      const scope1 = new (class {
-        private observables = new Map<string, Seidr<any>>();
-        get size() {
-          return this.observables.size;
-        }
-        register(seidr: Seidr<any>) {
-          this.observables.set(seidr.id, seidr);
-        }
-        get(id: string) {
-          return this.observables.get(id);
-        }
-        clear() {
-          this.observables.clear();
-        }
-      })();
-
-      const scope2 = new (class {
-        private observables = new Map<string, Seidr<any>>();
-        get size() {
-          return this.observables.size;
-        }
-        register(seidr: Seidr<any>) {
-          this.observables.set(seidr.id, seidr);
-        }
-        get(id: string) {
-          return this.observables.get(id);
-        }
-        clear() {
-          this.observables.clear();
-        }
-      })();
-
-      // Register different observables in each scope
-      const obs1 = new Seidr(42);
-      const obs2 = new Seidr(100);
-
-      scope1.register(obs1);
-      scope2.register(obs2);
-
-      // Each scope should only have its own observable
-      expect(scope1.size).toBe(1);
-      expect(scope2.size).toBe(1);
-      expect(scope1.get(obs1.id)).toBe(obs1);
-      expect(scope2.get(obs2.id)).toBe(obs2);
-
-      // Cleanup
-      scope1.clear();
-      scope2.clear();
-    });
+    expect(simple.hydrationData.renderContextID).not.toBe(complex.hydrationData.renderContextID);
   });
 });

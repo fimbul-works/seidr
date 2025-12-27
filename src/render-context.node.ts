@@ -49,29 +49,6 @@ const initRenderContext = (): RenderContext => {
  *
  * @param {() => Promise<T>} callback - Callback to invoke inside AsyncLocalStorage closure
  * @return {Promise<T>}
- *
- * @example
- * ```typescript
- * const count = new Seidr(42);
- * const doubled = count.as(n => n * 2);
- *
- * function App() {
- *   return component((state) => {
- *     return $('div', {}, [
- *       $('span', {}, [`Count: ${count.value}`]),
- *       $('span', {}, [`Doubled: ${doubled.value}`]),
- *     ]);
- *   });
- * };
- *
- * app.get('*', async (req, res) => {
- *   // The HTML and hydrationData can be sent to the client for hydration
- *   const { html, hydrationData } = await runWithRenderContext(async () => {
- *     return await renderToString(App);
- *   });
- *   res.send(html);
- * });
- * ```
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
   // Run with new context on the server

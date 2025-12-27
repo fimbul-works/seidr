@@ -37,9 +37,7 @@ import type { HydrationData } from "./types";
  *   return $('div', {}, [`Count: ${count.value}`]);
  * });
  *
- * const { html, hydrationData } = await runWithRenderContext(async () => {
- *   return await renderToString(AppFactory);
- * });
+ * const { html, hydrationData } = await await renderToString(AppFactory);
  * sendToClient({ html, hydrationData });
  *
  * // Client-side:

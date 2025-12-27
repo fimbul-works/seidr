@@ -53,7 +53,7 @@ export default [
     ],
     // Mark Node built-ins as external so they aren't bundled
     external: ["node:async_hooks", "node:module"],
-    plugins: [...plugins, nodeReplace, terserPlugin],
+    plugins: [...plugins, nodeReplace],
     treeshake,
   },
   // Browser Builds: Full

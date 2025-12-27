@@ -86,11 +86,11 @@ import type { Seidr } from "./seidr";
  * ];
  * ```
  */
-export const withStorage = <T extends Seidr<any>>(key: string, seidr: T, storage: Storage = localStorage): T => {
+export function withStorage<T extends Seidr<any>>(key: string, seidr: T, storage: Storage = localStorage): T {
   const initial = storage.getItem(key);
   if (initial) {
     seidr.value = JSON.parse(initial);
   }
   seidr.observe((value) => storage.setItem(key, JSON.stringify(value)));
   return seidr;
-};
+}

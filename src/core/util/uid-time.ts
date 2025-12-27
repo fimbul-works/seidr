@@ -3,7 +3,7 @@ import { BASE62_ALPHABET, RADIX } from "./uid";
 /**
  * Decodes a base-62 string to a number.
  */
-const decodeBase62 = (str: string): number => {
+function decodeBase62(str: string): number {
   let result = 0;
   for (let i = 0; i < str.length; i++) {
     const digit = BASE62_ALPHABET.indexOf(str[i]);
@@ -11,7 +11,7 @@ const decodeBase62 = (str: string): number => {
     result = result * RADIX + digit;
   }
   return result;
-};
+}
 
 /**
  * Extracts the creation timestamp from a UID.
