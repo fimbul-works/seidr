@@ -23,7 +23,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 1.8KB core, 3.1KB full (minified + gzipped)
+- 📦 **Tiny Footprint** - 2.1KB core, 10.0KB full bundle (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -90,7 +90,7 @@ const input = $input({ disabled }); // That's it!
 disabled.value = true; // Input instantly becomes disabled
 ```
 
-**Learn more:** [Seidr\<T\>](API.md#seidrt)
+**Learn more:** [Seidr<T>](API.md#seidrt)
 
 ### Derived Values
 
@@ -171,28 +171,6 @@ const searchComponent = $div({}, [
 ]);
 ```
 
-### Dynamic Classes
-
-Use the `cn` utility for conditional class management:
-
-```typescript
-import { Seidr, cn, $div } from '@fimbul-works/seidr';
-
-const isActive = new Seidr(false);
-const size = new Seidr('large');
-
-// Conditional classes with cn utility
-const className = cn(
-  'base-component',
-  isActive.as(active => active && 'active'),
-  size.as(s => `size-${s}`)
-);
-
-const element = $div({ className });
-```
-
-**Learn more:** [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle)
-
 ### Persistent State
 
 Automatically persist observables to localStorage/sessionStorage:
@@ -222,11 +200,7 @@ Create reusable element creators with default props:
 import { $factory } from '@fimbul-works/seidr';
 
 // Create custom factories
-const $checkbox = $factory('input', { type: 'checkbox' });
 const $primaryButton = $factory('button', { className: 'btn btn-primary' });
-
-// Use them throughout your app
-const agreeCheckbox = $checkbox({ id: 'agree' });
 const submitButton = $primaryButton({ textContent: 'Submit' });
 ```
 
@@ -238,7 +212,7 @@ For complete API documentation with all methods, parameters, and examples, see *
 
 Quick links:
 
-- **Core:** [Seidr\<T\>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidrobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
+- **Core:** [Seidr<T>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidrobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
 - **Components:** [component()](API.md#component) | [createScope()](API.md#createscope)
 - **Mounting:** [mount()](API.md#mount) | [mountConditional()](API.md#mountconditional) | [mountList()](API.md#mountlist) | [mountSwitch()](API.md#mountswitch)
 - **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined elements](API.md#predefined-element-creators)
@@ -266,7 +240,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.1KB (minified + gzipped)
+- **Seidr counter app**: ~1.7KB (minified + gzipped)
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
@@ -305,24 +279,30 @@ Pre-built ESM bundles are available for direct browser use:
 ```html
 <!-- Use the full bundle (recommended) -->
 <script type="module">
-  import { Seidr, $div, $button } from './dist/seidr.full.js';
+  import { Seidr, $div, $button } from './dist/seidr.js';
 
-  const count = new Seidr(0);
   // Your code here
+  const count = new Seidr(0);
+  const div = $div({ textContent: count.as((count) => `Count: ${count}`) }, [
+    $button({ textContent: 'OK' })
+  ]);
 </script>
 
-<!-- Or use the core bundle (without predefined element creators) -->
+<!-- Or use the core bundle (without predefined element creators or SSR hydration) -->
 <script type="module">
   import { Seidr, $ } from './dist/seidr.core.js';
 
-  const div = $('div', {}, []);
   // Your code here
+  const count = new Seidr(0);
+  const div = $d('div', { textContent: count.as((count) => `Count: ${count}`) }, [
+    $('button', { textContent: 'OK' })
+  ]);
 </script>
 ```
 
 **Bundle sizes (minified):**
-- `seidr.full.js` - 7.0KB (3.1KB gzipped)
-- `seidr.core.js` - 4.1KB (1.9KB gzipped)
+- `seidr.js` - 10.0KB (4.1KB gzipped)
+- `seidr.core.js` - 4.9KB (2.1KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 

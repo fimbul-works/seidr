@@ -18,7 +18,7 @@ import {
 type Todo = { id: number; text: string; completed: boolean };
 
 function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
-  return component((_scope) => {
+  return component(() => {
     const isCompleted = new Seidr(todo.completed);
 
     return $li(

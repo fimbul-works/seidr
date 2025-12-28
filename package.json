@@ -25,14 +25,16 @@
   "main": "./dist/node/seidr.cjs",
   "module": "./dist/node/seidr.js",
   "browser": "./dist/browser/seidr.js",
-  "types": "./dist/seidr.d.ts",
+  "types": "./dist/node/seidr.d.ts",
   "exports": {
     ".": {
       "browser": {
+        "types": "./dist/browser/seidr.d.ts",
         "import": "./dist/browser/seidr.js",
         "require": "./dist/browser/seidr.cjs"
       },
       "node": {
+        "types": "./dist/node/seidr.d.ts",
         "import": "./dist/node/seidr.js",
         "require": "./dist/node/seidr.cjs"
       },

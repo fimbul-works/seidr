@@ -29,7 +29,7 @@ const terserPlugin = terser({
   module: false,
   mangle: {
     module: true,
-    properties: false,
+    properties: true,
     // Preserve class names for instanceof checks
     reserved: ["Seidr"],
   },

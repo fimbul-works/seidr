@@ -10,7 +10,7 @@ const clientRenderContext: RenderContext = { renderContextID: 0, idCounter: 0 };
  *
  * @returns {RenderContext} The client-side RenderContext
  */
-export const getRenderContext = () => clientRenderContext;
+export const getRenderContext = (): RenderContext => clientRenderContext;
 
 // Pass the client-side getRenderContext to contract
 setInternalContext(getRenderContext);

@@ -6,6 +6,7 @@ import type { RenderContext } from "./core/types";
 let idCounter: number = 0;
 
 const asyncLocalStorage = new AsyncLocalStorage<RenderContext>();
+
 /**
  * Get the current render context.
  * Returns undefined in browser or if not initialized.
