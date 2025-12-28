@@ -1,5 +1,6 @@
 import type { SeidrComponent } from "../core/dom/component";
 import { mount } from "../core/dom/mount/mount";
+import { $queryAll } from "../core/dom/query/query-all";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
@@ -74,7 +75,7 @@ export function hydrate<C extends SeidrComponent<any, any>>(
   mount(component, container);
 
   // Clean up old SSR elements marked for removal
-  container.querySelectorAll('[data-seidr-remove="1"]').forEach((el) => el.remove());
+  $queryAll('[data-seidr-remove="1"]', container).forEach((el) => el.remove());
 
   // Clear the hydration context
   clearHydrationData();

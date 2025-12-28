@@ -1,6 +1,5 @@
 // Base-62 alphabet for compact, URL-safe unique IDs
 const BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-
 const RADIX = BASE62_ALPHABET.length;
 
 /**

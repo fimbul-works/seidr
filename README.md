@@ -23,7 +23,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 2.1KB core, 10.0KB full bundle (minified + gzipped)
+- 📦 **Tiny Footprint** - 2.0KB core, 10.0KB full bundle (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -240,7 +240,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.7KB (minified + gzipped)
+- **Seidr counter app**: ~1.4KB (minified + gzipped)
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
@@ -301,8 +301,8 @@ Pre-built ESM bundles are available for direct browser use:
 ```
 
 **Bundle sizes (minified):**
-- `seidr.js` - 10.0KB (4.1KB gzipped)
-- `seidr.core.js` - 4.9KB (2.1KB gzipped)
+- `seidr.js` - 10.1KB (4.2KB gzipped)
+- `seidr.core.js` - 4.7KB (2.0KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 

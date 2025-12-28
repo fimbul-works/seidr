@@ -8,11 +8,10 @@ import type { SeidrComponent } from "../component";
  * from observable values to component factories. Only one component is active at
  * a time, with proper cleanup of the previous component before switching.
  *
- * @template {string} T - The key type for switching (typically string literals)
- * @template {SeidrComponent} C - The type of SeidrElement for all components
+ * @template {string} T - The key type for switching
  *
  * @param {Seidr<T>} observable - Observable containing the current switch key
- * @param {Record<T, () => C>} componentMap - Object mapping keys to component factory functions
+ * @param {Record<T, () => SeidrComponent>} componentMap - Object mapping keys to component factory functions
  * @param {HTMLElement} container - The DOM container for the active component
  * @returns {() => void} A cleanup function that removes the reactive binding and active component
  *
@@ -70,12 +69,12 @@ import type { SeidrComponent } from "../component";
  * viewMode.value = 'table'; // Automatically switches to TableView
  * ```
  */
-export function mountSwitch<T extends string, C extends SeidrComponent<any, any>>(
+export function mountSwitch<T extends string>(
   observable: Seidr<T>,
-  componentMap: Record<T, () => C>,
+  componentMap: Record<T, () => SeidrComponent>,
   container: HTMLElement,
 ): () => void {
-  let currentComponent: C | null = null;
+  let currentComponent: SeidrComponent | null = null;
 
   function update(key: T) {
     if (currentComponent) {

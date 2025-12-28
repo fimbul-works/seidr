@@ -4,9 +4,7 @@ import replace from "@rollup/plugin-replace";
 import terser from "@rollup/plugin-terser";
 import typescript from "@rollup/plugin-typescript";
 
-const plugins = [typescript({ tsconfig: "./tsconfig.json", declaration: false }), resolve(), commonjs()];
-
-const browserReplace = replace({
+const browserReplace = {
   preventAssignment: true,
   // Production build
   "process.env.NODE_ENV": '"production"',
@@ -17,19 +15,28 @@ const browserReplace = replace({
   // Disable SSR code
   process: "undefined",
   window: "true",
-});
+};
 
-const nodeReplace = replace({
+const nodeReplace = {
   preventAssignment: true,
   // Production build
   "process.env.NODE_ENV": '"production"',
-});
+  // Disable client bundle guards
+  "process.env.CLIENT_BUNDLE": "false",
+  "process.env.CORE_BUNDLE": "false",
+  window: "undefined",
+};
+
+const pluginsCommon = [typescript({ tsconfig: "./tsconfig.json", declaration: false }), resolve(), commonjs()];
+const pluginsNode = [...pluginsCommon, replace(nodeReplace)];
+const pluginsFull = [...pluginsCommon, replace({ ...browserReplace, "process.env.CORE_BUNDLE": "false" })];
+const pluginsCore = [...pluginsCommon, replace({ ...browserReplace, "process.env.CORE_BUNDLE": "true" })];
 
 const terserPlugin = terser({
   module: false,
   mangle: {
     module: true,
-    properties: true,
+    properties: false,
     // Preserve class names for instanceof checks
     reserved: ["Seidr"],
   },
@@ -54,7 +61,7 @@ export default [
     ],
     // Mark Node built-ins as external so they aren't bundled
     external: ["node:async_hooks", "node:module"],
-    plugins: [...plugins, nodeReplace],
+    plugins: pluginsNode,
     treeshake,
   },
   // Browser Builds: Full
@@ -64,7 +71,7 @@ export default [
       { file: "dist/browser/seidr.js", format: "esm" },
       { file: "dist/browser/seidr.cjs", format: "cjs" },
     ],
-    plugins: [...plugins, browserReplace],
+    plugins: pluginsFull,
     treeshake,
   },
   // Browser Builds: Full (min)
@@ -74,7 +81,7 @@ export default [
       { file: "dist/browser/seidr.min.js", format: "esm", compact: true, sourcemap: true },
       { file: "dist/browser/seidr.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
-    plugins: [...plugins, browserReplace, terserPlugin],
+    plugins: [...pluginsFull, terserPlugin],
     treeshake,
   },
   // Browser Builds: Core
@@ -84,7 +91,7 @@ export default [
       { file: "dist/browser/seidr.core.js", format: "esm" },
       { file: "dist/browser/seidr.core.cjs", format: "cjs" },
     ],
-    plugins: [...plugins, browserReplace],
+    plugins: pluginsCore,
     treeshake,
   },
   // Browser Builds: Core (min)
@@ -94,7 +101,7 @@ export default [
       { file: "dist/browser/seidr.core.min.js", format: "esm", compact: true, sourcemap: true },
       { file: "dist/browser/seidr.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
-    plugins: [...plugins, browserReplace, terserPlugin],
+    plugins: [...pluginsCore, terserPlugin],
     treeshake,
   },
 ];

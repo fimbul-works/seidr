@@ -49,8 +49,10 @@ export function captureRenderContextState(renderContextID: number): Record<strin
     const key = reverseSymbolNames.get(symbol);
 
     // Only include non-derived Seidr instances
-    if (key && isSeidr(value) && !value.isDerived) {
-      captured[key] = value.value;
+    if (key) {
+      // Skip derived Seidr instances
+      if (isSeidr(value) && value.isDerived) continue;
+      captured[key] = isSeidr(value) ? value.value : value;
     }
   }
 

@@ -335,7 +335,6 @@ Create a component with automatic cleanup. Function receives a [`scope`](#create
 
 ```typescript
 {
-  readonly isRootComponent; // Is this the root component
   element: HTMLElement;     // The root element
   destroy: () => void;      // Cleanup function
 }

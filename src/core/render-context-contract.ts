@@ -5,7 +5,8 @@ import type { RenderContext } from "./types";
  *
  * @returns {RenderContext | undefined} RenderContext object or undefined.
  */
-export let getRenderContext: () => RenderContext | undefined = () => {
+export let getRenderContext: () => RenderContext | undefined = (): RenderContext | undefined => {
+  if (process.env.CLIENT_BUNDLE) return undefined;
   throw new Error("Context not initialized");
 };
 

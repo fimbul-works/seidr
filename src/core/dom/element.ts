@@ -379,7 +379,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // If element has Seidr bindings and we have a render context, assign ID
   let elementId: string | undefined;
-  if (hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
+  if (!process.env.CORE_BUNDLE && hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
     elementId = String(ctx.idCounter++);
 
     // Try to find existing DOM element with this SeidrID
@@ -393,7 +393,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // Create a new HTMLElement if not found
   const el: HTMLElementTagNameMap[K] = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
-  if (elementId) {
+  if (!process.env.CORE_BUNDLE && elementId) {
     el.dataset[SEIDR_ID_CAME_CASE] = elementId;
   }
 
@@ -445,7 +445,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   }
 
   // Check for hydration bindings (element has data-seidr-id from server)
-  if (elementId) {
+  if (!process.env.CORE_BUNDLE && elementId) {
     applyElementBindings(elementId);
   }
 

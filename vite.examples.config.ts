@@ -6,15 +6,17 @@ export default defineConfig((_config) => {
   return {
     root: "examples",
     define: {
+      preventAssignment: true,
       // Production build
       "process.env.NODE_ENV": '"production"',
-      // Disable SSR code
-      process: "undefined",
-      window: "true",
       // Always false in browser builds
       "process.env.SEIDR_TEST_SSR": "false",
       // Strip away SSR
       "process.env.CLIENT_BUNDLE": "true",
+      "process.env.CORE_BUNDLE": "true",
+      // Disable SSR code
+      process: "undefined",
+      window: "true",
     },
     build: {
       outDir: "examples/dist",
