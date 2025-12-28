@@ -3,7 +3,6 @@ import { ServerHTMLElement } from "../../ssr/server-html-element";
 import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction } from "../types";
 import { isFn, isSeidr, isStr, isUndef } from "../util/is";
 import { $query } from "./query/query";
 
@@ -72,8 +71,6 @@ export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends Omit<
  * Maps all writable scalar properties of an HTML element to accept either
  * the original type or a Seidr observable of that type. This enables automatic
  * reactive binding without additional API calls.
- *
- * @template K - The key for ARIAMixin attribute
  */
 export type ReactiveARIAMixin = {
   [K in keyof WritableKeys<ARIAMixin>]?: ReactiveValue<WritableKeys<ARIAMixin>[K]>;
@@ -118,6 +115,7 @@ export interface SeidrElementInterface {
    *
    * This property can be used to quickly identify if an element was created
    * by Seidr and has the enhanced functionality available.
+   * @type {true}
    */
   readonly isSeidrElement: true;
 
@@ -128,11 +126,11 @@ export interface SeidrElementInterface {
    * that removes the event listener. This integrates with Seidr's
    * component lifecycle and resource management system.
    *
-   * @template E - The event type from HTMLElementEventMap
+   * @template {keyof HTMLElementEventMap} E - The event type from HTMLElementEventMap
    *
-   * @param event - The event type to listen for
-   * @param handler - The event handler function
-   * @param options - Optional event listener options
+   * @param {E} event - The event type to listen for
+   * @param {(ev: HTMLElementEventMap[E]) => void} handler - The event handler function
+   * @param {boolean | AddEventListenerOptions} [options] - Optional event listener options
    *
    * @returns A cleanup function that removes the event listener
    *
@@ -152,9 +150,9 @@ export interface SeidrElementInterface {
    */
   on<E extends keyof HTMLElementEventMap>(
     event: E,
-    handler: (ev: HTMLElementEventMap[E]) => any,
+    handler: (ev: HTMLElementEventMap[E]) => void,
     options?: boolean | AddEventListenerOptions,
-  ): CleanupFunction;
+  ): () => void;
 
   /**
    * Remove all child elements.
@@ -182,7 +180,8 @@ export interface SeidrElementInterface {
 }
 
 /**
- * TODO: describe the type
+ * SeidrElement is an enhanced HTMLElement.
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  */
 export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
   HTMLElementTagNameMap[K];
@@ -194,14 +193,14 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * binding that updates the DOM property whenever the observable changes. Plain
  * values are assigned once without creating bindings.
  *
- * @template K - The HTML tag name from HTMLElementTagNameMap
- * @template P - Property type inference (internal use)
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ * @template {keyof HTMLElementTagNameMap[K]} P - Property type inference (internal use)
  *
- * @param tagName - The HTML tag name to create
- * @param props - Element properties supporting reactive bindings
- * @param children - Child elements or functions returning elements
- *
- * @returns A Seidr-enhanced HTML element with additional methods
+ * @param {K} tagName - The HTML tag name to create
+ * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>} [props] - Element properties supporting reactive bindings
+ * @param {K} [children] - Child elements or functions returning elements
+ * @returns {(SeidrNode | (() => SeidrNode))[]} A Seidr-enhanced HTML element with additional methods
+ * @throws {Error} When attempting to use reserved properties ('on', 'clear', 'destroy')
  *
  * @example
  * Basic element creation
@@ -260,8 +259,6 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  *   'aria-busy': isLoading // Reactive boolean attribute
  * });
  * ```
- *
- * @throws {Error} When attempting to use reserved properties ('on', 'destroy')
  */
 export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
@@ -326,8 +323,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     // If element has Seidr bindings, assign ID
     let elementId: string | undefined;
     if (hasSeidrBindings()) {
-      // Use numeric ID: renderContextID + idCounter
-      elementId = String(ctx!.renderContextID + ctx!.idCounter++);
+      elementId = String(ctx!.idCounter++);
       el.dataset[SEIDR_ID] = elementId;
     }
 
@@ -384,8 +380,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // If element has Seidr bindings and we have a render context, assign ID
   let elementId: string | undefined;
   if (hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
-    // Use numeric ID: renderContextID + idCounter
-    elementId = String(ctx.renderContextID + ctx.idCounter++);
+    elementId = String(ctx.idCounter++);
 
     // Try to find existing DOM element with this SeidrID
     const ssrEl = $query(`[${DATA_SEIDR_ID}="${elementId}"]`);
@@ -426,7 +421,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       event: E,
       handler: (ev: HTMLElementEventMap[E]) => any,
       options?: boolean | AddEventListenerOptions,
-    ): CleanupFunction {
+    ): () => void {
       el.addEventListener(event, handler as EventListener, options);
       return () => el.removeEventListener(event, handler as EventListener, options);
     },

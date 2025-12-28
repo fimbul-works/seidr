@@ -5,12 +5,11 @@
  * with CSS selectors. Returns an array instead of a NodeList for easier
  * manipulation and better TypeScript support.
  *
- * @template T extends HTMLElement - The expected HTMLElement type
+ * @template {HTMLElement} T - The expected HTMLElement type
  *
- * @param query - The CSS selector string to query for
- * @param el - The element to query within (defaults to document.body)
- *
- * @returns An array of all elements matching the selector
+ * @param {string} query - The CSS selector string to query for
+ * @param {HTMLElement} [el] - The element to query within (defaults: document.body)
+ * @returns {T[]} An array of all elements matching the selector
  *
  * @example
  * Basic usage
@@ -42,4 +41,4 @@
  * ```
  */
 export const $queryAll = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] =>
-  Array.from(el.querySelectorAll(query));
+  Array.from(el.querySelectorAll(query)) as T[];

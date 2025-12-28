@@ -10,7 +10,7 @@ import { $, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type 
  * The resulting function supports reactive props, children elements, and maintains
  * the same API as $ but with tag-specific type safety.
  *
- * @template K extends keyof HTMLElementTagNameMap - The HTML tag name
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  *
  * @param {K} tagName - The HTML tag name to create a specialized factory for
  * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>} [initialProps] - Optional default props to apply to all created elements

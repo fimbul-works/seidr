@@ -6,12 +6,11 @@
  * This is particularly useful for event handlers, API calls, and search
  * functionality to prevent excessive execution.
  *
- * @template Args extends unknown[] - The argument types for the callback function
+ * @template {unknown[]} Args - The argument types for the callback function
  *
- * @param callback - The function to debounce
- * @param waitMs - The delay in milliseconds before executing the callback
- *
- * @returns A debounced version of the callback function
+ * @param {(...args: Args) => void} callback - The function to debounce
+ * @param {number} waitMs - The delay in milliseconds before executing the callback
+ * @returns {(...args: Args) => void} A debounced version of the callback function
  *
  * @example
  * Basic debouncing for search input

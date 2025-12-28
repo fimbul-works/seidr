@@ -1,5 +1,4 @@
 import type { Seidr } from "../../seidr";
-import type { CleanupFunction } from "../../types";
 import type { SeidrComponent } from "../component";
 
 /**
@@ -9,12 +8,12 @@ import type { SeidrComponent } from "../component";
  * is only called when the condition becomes true. When the condition becomes false,
  * the component is properly destroyed and removed from the DOM.
  *
- * @template C - The type of SeidrElement being conditionally mounted
+ * @template {SeidrComponent} C - The type of SeidrComponent being conditionally mounted
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls component visibility
  * @param {() => C} componentFactory - Function that creates the component when needed
  * @param {HTMLElement} container - The DOM container element
- * @returns {CleanupFunction} A cleanup function that removes the reactive binding and any active component
+ * @returns {(() => void)} A cleanup function that removes the reactive binding and any active component
  *
  * @example
  * Conditional panel display
@@ -49,7 +48,7 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
   condition: Seidr<boolean>,
   componentFactory: () => C,
   container: HTMLElement,
-): CleanupFunction {
+): () => void {
   let currentComponent: C | null = null;
 
   function update(shouldShow: boolean) {

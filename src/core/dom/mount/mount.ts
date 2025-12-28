@@ -1,4 +1,3 @@
-import type { CleanupFunction } from "../../types";
 import type { SeidrComponent } from "../component";
 
 /**
@@ -9,11 +8,11 @@ import type { SeidrComponent } from "../component";
  * destroying all child components, removing event listeners, and cleaning up
  * reactive bindings.
  *
- * @template C - The type of SaidrElement being mounted
+ * @template {SeidrComponent} C - The type of SeidrComponent being mounted
  *
  * @param {C} component - The component to mount
  * @param {HTMLElement} container - The DOM container element to mount the component into
- * @returns {CleanupFunction} A cleanup function that unmounts the component when called
+ * @returns {() => void} A cleanup function that unmounts the component when called
  *
  * @example
  * Basic component mounting
@@ -27,7 +26,7 @@ import type { SeidrComponent } from "../component";
  * unmount(); // Removes component and cleans up all resources
  * ```
  */
-export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): CleanupFunction {
+export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): () => void {
   // Check if element is already in the container (happens during hydration with DOM reuse)
   const isAlreadyMounted = container.contains(component.element);
 

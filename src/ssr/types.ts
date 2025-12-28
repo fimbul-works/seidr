@@ -82,7 +82,7 @@ export interface HydrationData extends SSRScopeCapture {
   /**
    * Render context ID from the server.
    *
-   * This ID is used to ensure State lookups use the correct context
+   * This ID is used to ensure state lookups use the correct context
    * during hydration, maintaining proper request-scoped isolation.
    */
   renderContextID: number;
@@ -91,10 +91,10 @@ export interface HydrationData extends SSRScopeCapture {
    * State values from the server.
    *
    * This record contains all non-derived Seidr instances that were stored
-   * in the State system during SSR. The keys are the string names from
-   * the State symbols, and the values are the Seidr values.
+   * in the state system during SSR. The keys are the string names from
+   * the state symbols, and the values are the Seidr values.
    *
-   * During hydration, these values are restored to the State storage
+   * During hydration, these values are restored to the statae storage
    * for the render context, so that getState() calls return the same
    * values that were used on the server.
    */

@@ -1,6 +1,6 @@
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
-import type { CleanupFunction, EventHandler } from "./types";
+import type { EventHandler } from "./types";
 import { uid } from "./util/uid";
 
 /**
@@ -31,23 +31,23 @@ import { uid } from "./util/uid";
  * ```
  */
 export class Seidr<T> {
-  /** The current value being stored */
+  /** @type {T} The current value being stored */
   private v: T;
 
-  /** Unique identifier for this observable */
+  /** @type {string} Unique identifier for this observable */
   private i: string = uid();
 
-  /** Whether this is a derived/computed observable */
+  /** @type {boolean} Whether this is a derived/computed observable */
   private d: boolean = false;
 
-  /** Parent dependencies (for derived/computed observables) */
+  /** @type {Seidr<any>[]} Parent dependencies (for derived/computed observables) */
   private p: Seidr<any>[] = [];
 
-  /** Event handlers */
+  /** @type {Set<EventHandler<T>>} Event handlers */
   private f = new Set<EventHandler<T>>();
 
-  /** Cleanup functions */
-  private c: CleanupFunction[] = [];
+  /** @type {(() => void)[]} Cleanup functions */
+  private c: (() => void)[] = [];
 
   /**
    * Creates an instance of Seidr.
@@ -153,7 +153,7 @@ export class Seidr<T> {
    * ```
    */
   get parents(): ReadonlyArray<Seidr<any>> {
-    return this.p;
+    return this.p.slice(0);
   }
 
   /**
@@ -165,9 +165,9 @@ export class Seidr<T> {
    *
    * @param {(value: T) => void} fn - Function to be called with the current value and subsequent changes
    *
-   * @returns {CleanupFunction} A cleanup function that removes the event handler
+   * @returns {() => void} A cleanup function that removes the event handler
    */
-  observe(fn: (value: T) => void): CleanupFunction {
+  observe(fn: (value: T) => void): () => void {
     this.f.add(fn);
     return () => this.f.delete(fn);
   }
@@ -184,9 +184,9 @@ export class Seidr<T> {
    * @param {E} target - The value to apply changes to
    * @param {(value: T, target: E) => void} fn - Function that applies the observable's value to the target
    *
-   * @returns {CleanupFunction} A cleanup function that removes the binding when called
+   * @returns {() => void} A cleanup function that removes the binding when called
    */
-  bind<E>(target: E, fn: (value: T, target: E) => void): CleanupFunction {
+  bind<E>(target: E, fn: (value: T, target: E) => void): () => void {
     fn(this.value, target);
     return this.observe((value) => fn(value, target));
   }
@@ -375,9 +375,9 @@ export class Seidr<T> {
    * proper resource management. They are automatically called when destroy()
    * is invoked on this observable.
    *
-   * @param {CleanupFunction} fn - The cleanup function to register
+   * @param {() => void} fn - The cleanup function to register
    */
-  addCleanup(fn: CleanupFunction): void {
+  addCleanup(fn: () => void): void {
     this.c.push(fn);
   }
 
@@ -441,7 +441,7 @@ export class Seidr<T> {
     this.p = parents;
 
     // Server-side rendering check: window === undefined || process.env.SEIDR_TEST_SSR === true
-    if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) return;
+    if (typeof window !== "undefined" && (typeof process === "undefined" || !process.env.SEIDR_TEST_SSR)) return;
 
     const scope = getActiveSSRScope();
     if (scope) scope.registerDerived(this, parents);

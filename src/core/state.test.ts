@@ -1,80 +1,26 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "./seidr";
 import {
   createStateKey,
   getState,
+  globalStates,
   hasState,
   type InferStateType,
-  renderContextStates,
-  State,
   type StateKey,
   setState,
   symbolNames,
 } from "./state";
 
-describe("State", () => {
+describe("Global state", () => {
   beforeEach(() => {
     // Clear all render context states before each test
-    renderContextStates.clear();
+    globalStates.clear();
     symbolNames.clear();
   });
 
   afterEach(() => {
     // Clean up after each test
-    renderContextStates.clear();
+    globalStates.clear();
     symbolNames.clear();
-  });
-
-  describe("State Class", () => {
-    it("should create a State instance with a value", () => {
-      const state = new State(42);
-      expect(state.value).toBe(42);
-    });
-
-    it("should store complex objects", () => {
-      const obj = { name: "test", value: 100 };
-      const state = new State(obj);
-      expect(state.value).toEqual(obj);
-    });
-
-    it("should store null values", () => {
-      const state = new State<string | null>(null);
-      expect(state.value).toBeNull();
-    });
-
-    it("should store undefined values", () => {
-      const state = new State<string | undefined>(undefined);
-      expect(state.value).toBeUndefined();
-    });
-
-    it("should type-check correctly with TypeScript", () => {
-      const state = new State<number>(42);
-      const value: number = state.value;
-      expect(typeof value).toBe("number");
-    });
-
-    describe("Documentation Examples", () => {
-      it("should demonstrate basic State usage", () => {
-        const counterState = new State(0);
-        expect(counterState.value).toBe(0);
-
-        counterState.value; // Type: number
-      });
-
-      it("should demonstrate State with complex object", () => {
-        // Works with complex types
-        const userState = new State({
-          name: "Alice",
-          age: new Seidr(30),
-        });
-
-        type UserType = InferStateType<typeof userState>;
-
-        const user = userState.value;
-        expect(user.name).toBe("Alice");
-        expect(user.age.value).toBe(30);
-      });
-    });
   });
 
   describe("createStateKey", () => {
@@ -247,7 +193,7 @@ describe("State", () => {
 
       expect(hasState(key)).toBe(true);
 
-      renderContextStates.clear();
+      globalStates.clear();
       expect(hasState(key)).toBe(false);
     });
 
@@ -265,8 +211,8 @@ describe("State", () => {
 
   describe("TypeScript Type Inference", () => {
     it("should correctly infer InferStateType", () => {
-      const state = new State<number>(42);
-      type Inferred = InferStateType<typeof state>;
+      const numberKey = createStateKey<number>("number");
+      type Inferred = InferStateType<typeof numberKey>;
 
       const value: Inferred = 42;
       expect(typeof value).toBe("number");
@@ -278,8 +224,8 @@ describe("State", () => {
         age: number;
       }
 
-      const userState = new State<User>({ name: "Alice", age: 30 });
-      type InferredUser = InferStateType<typeof userState>;
+      const userKey = createStateKey<User>("user");
+      type InferredUser = InferStateType<typeof userKey>;
 
       const user: InferredUser = { name: "Bob", age: 25 };
       expect(user.name).toBe("Bob");

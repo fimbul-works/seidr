@@ -1,6 +1,6 @@
 import { $button, $div, $span, component, mount, Seidr } from "../src/index.browser.js";
 
-function Counter() {
+export function Counter() {
   return component((_scope) => {
     const count = new Seidr(0);
     const disabled = count.as((value) => value >= 10);
@@ -30,5 +30,3 @@ function Counter() {
 if (typeof window !== "undefined") {
   mount(Counter(), document.body);
 }
-
-export { Counter };

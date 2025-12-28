@@ -1,12 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRenderContext } from "../core/render-context-contract";
 import { enableSSRMode } from "../test-setup";
-import { clearHydrationContext, getHydrationContext, isHydrating, setHydrationContext } from "./hydration-context";
-import type { HydrationData } from "./types";
+import { clearHydrationData, isHydrating, setHydrationData } from "./hydration-context";
 
 describe("Hydration Context", () => {
   let cleanupSSRMode: () => void;
-  const ctx = getRenderContext();
 
   beforeEach(() => {
     // Enable SSR mode for all tests
@@ -18,27 +15,15 @@ describe("Hydration Context", () => {
     cleanupSSRMode();
 
     // Clear hydration context
-    clearHydrationContext(ctx!.renderContextID);
-  });
-
-  it("should set and get hydration context", () => {
-    const data: HydrationData = {
-      observables: { 0: 42 },
-      bindings: {},
-      graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
-    };
-
-    setHydrationContext(data);
-    const context = getHydrationContext();
-
-    expect(context).toBe(data);
-    expect(context!.observables[0]).toBe(42);
+    clearHydrationData();
   });
 
   it("should detect hydration mode", () => {
     expect(isHydrating()).toBe(false);
 
-    setHydrationContext({
+    setHydrationData({
+      renderContextID: 0,
+      elementIds: [],
       observables: {},
       bindings: {},
       graph: { nodes: [], rootIds: [] },
@@ -46,23 +31,8 @@ describe("Hydration Context", () => {
 
     expect(isHydrating()).toBe(true);
 
-    clearHydrationContext(ctx!.renderContextID);
+    clearHydrationData();
 
     expect(isHydrating()).toBe(false);
-  });
-
-  it("should clear hydration context", () => {
-    setHydrationContext({
-      observables: { 0: 1 },
-      bindings: {},
-      graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
-    });
-
-    expect(isHydrating()).toBe(true);
-
-    clearHydrationContext(ctx!.renderContextID);
-
-    expect(isHydrating()).toBe(false);
-    expect(getHydrationContext()).toBeNull();
   });
 });

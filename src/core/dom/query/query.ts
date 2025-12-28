@@ -5,12 +5,11 @@
  * It's more concise than document.querySelector() and provides better TypeScript
  * support with generic typing.
  *
- * @template T extends HTMLElement - The expected HTMLElement type
+ * @template {HTMLElement} T - The expected HTMLElement type
  *
- * @param query - The CSS selector string to query for
- * @param el - The element to query within (defaults to document.body)
- *
- * @returns The first element matching the selector, or null if not found
+ * @param {string} query - The CSS selector string to query for
+ * @param {HTMLElement} [el] - The element to query within (defaults: document.body)
+ * @returns {T | null} The first element matching the selector, or null if not found
  *
  * @example
  * Basic usage
@@ -44,4 +43,4 @@
  * ```
  */
 export const $query = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T | null =>
-  el.querySelector(query);
+  el.querySelector(query) as T;

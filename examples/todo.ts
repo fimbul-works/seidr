@@ -3,7 +3,7 @@ import {
   $checkbox,
   $div,
   $form,
-  $h1el,
+  $h1,
   $input,
   $li,
   $span,
@@ -45,7 +45,7 @@ function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
   });
 }
 
-function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) {
+export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) {
   return component((scope) => {
     const todos = new Seidr<Todo[]>(initialTodos);
     const newTodoText = new Seidr("");
@@ -77,7 +77,7 @@ function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", 
     );
 
     return $div({ className: "todo-app" }, [
-      $h1el({ textContent: "TODO App" }),
+      $h1({ textContent: "TODO App" }),
       $form({ className: "todo-form" }, [
         $input({
           type: "text",
@@ -104,5 +104,3 @@ function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", 
 if (typeof window !== "undefined") {
   mount(TodoApp(), document.body);
 }
-
-export { TodoApp };

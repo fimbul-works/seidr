@@ -1,5 +1,4 @@
 import type { Seidr } from "../../seidr";
-import type { CleanupFunction } from "../../types";
 import type { SeidrComponent } from "../component";
 
 /**
@@ -9,15 +8,15 @@ import type { SeidrComponent } from "../component";
  * minimal DOM operations when the list changes. Components are reused when
  * possible, and only the necessary additions, removals, and reordering occur.
  *
- * @template T - The type of list items
- * @template I - The type of unique item keys (string or number)
- * @template C - The type of SeidrElement for list items
+ * @template {any} T - The type of list items
+ * @template {string | number} I - The type of unique item keys (string or number)
+ * @template {SeidrComponent} C - The type of SeidrComponent for list items
  *
  * @param {Seidr<T[]>} observable - Array observable containing the list data
  * @param {(item: T) => I} getKey - Function to extract unique keys from list items
  * @param {(item: T) => C} componentFactory - Function that creates components for individual items
  * @param {HTMLElement} container - The DOM container for the list
- * @returns {CleanupFunction} A cleanup function that removes all components and reactive bindings
+ * @returns {(() => void)} A cleanup function that removes all components and reactive bindings
  *
  * @example
  * Todo list rendering
@@ -65,7 +64,7 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
   container: HTMLElement,
-): CleanupFunction {
+): () => void {
   const componentMap = new Map<I, C>();
 
   function update(items: T[]) {

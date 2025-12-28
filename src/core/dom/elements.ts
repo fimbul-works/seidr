@@ -1,3 +1,4 @@
+import type { SeidrElement } from "./element";
 import { $factory } from "./element-factory";
 
 /**
@@ -229,40 +230,40 @@ export const $footer = $factory("footer");
 export const $form = $factory("form");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H1 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h1el = $factory("h1");
+export const $h1 = $factory("h1");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H2 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h2el = $factory("h2");
+export const $h2 = $factory("h2");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H3 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h3el = $factory("h3");
+export const $h3 = $factory("h3");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H4 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h4el = $factory("h4");
+export const $h4 = $factory("h4");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H5 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h5el = $factory("h5");
+export const $h5 = $factory("h5");
 
 /**
- * Creates a new H SeidrElement.
+ * Creates a new H6 SeidrElement.
  * @returns  {SeidrElement}
  */
-export const $h6el = $factory("h6");
+export const $h6 = $factory("h6");
 
 /**
  * Creates a new HEAD SeidrElement.
@@ -323,6 +324,12 @@ export const $input = $factory("input");
  * @returns  {SeidrElement}
  */
 export const $checkbox = $factory("input", { type: "checkbox" });
+
+/**
+ * Creates a new INPUT radio element with type="radio" preset.
+ * @returns  {SeidrElement}
+ */
+export const $radio = $factory("input", { type: "radio" });
 
 /**
  * Creates a new INS SeidrElement.

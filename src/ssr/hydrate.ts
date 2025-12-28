@@ -1,8 +1,7 @@
 import type { SeidrComponent } from "../core/dom/component";
 import { mount } from "../core/dom/mount/mount";
-import { setClientRenderContext } from "../render-context.browser";
-import { clearHydrationContext, getHydrationContext, setHydrationContext } from "./hydration-context";
-import { restoreRenderContextState } from "./state";
+import { clearHydrationData, setHydrationData } from "./hydration-context";
+import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
 
 /**
@@ -55,23 +54,18 @@ export function hydrate<C extends SeidrComponent<any, any>>(
   container: HTMLElement,
   hydrationData: HydrationData,
 ): SeidrComponent {
-  const originalHydrationContext = getHydrationContext();
-
-  // Set the client render context so State lookups use the correct context ID
+  // Set the client render context so state lookups use the correct context ID
   // NOTE: We DON'T reset this in the finally block because it needs to persist
   // for the lifetime of the component. The render context ID should match the
   // server's ID for all reactive updates to work correctly.
 
-  // FIXME
-  setClientRenderContext(hydrationData.renderContextID);
-
-  // Restore State values from the server
+  // Restore state values from the server
   if (hydrationData.state) {
-    restoreRenderContextState(hydrationData.renderContextID, hydrationData.state);
+    restoreGlobalState(hydrationData.state);
   }
 
   // Set the hydration context so Seidr instances get their server values
-  setHydrationContext(hydrationData);
+  setHydrationData(hydrationData);
 
   // Create the component (Seidr instances will auto-hydrate)
   const component = componentFactory();
@@ -82,13 +76,8 @@ export function hydrate<C extends SeidrComponent<any, any>>(
   // Clean up old SSR elements marked for removal
   container.querySelectorAll('[data-seidr-remove="1"]').forEach((el) => el.remove());
 
-  // Clear the hydration context (but keep the render context!)
-  // We restore the original hydration context if there was one
-  if (originalHydrationContext) {
-    setHydrationContext(originalHydrationContext);
-  } else {
-    clearHydrationContext(hydrationData.renderContextID);
-  }
+  // Clear the hydration context
+  clearHydrationData();
 
   return component;
 }

@@ -79,7 +79,7 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       const hydrationData = {
         renderContextID: ctx.renderContextID,
         ...activeScope.captureHydrationData(),
-        // Capture State values for this render context
+        // Capture state values for this render context
         state: captureRenderContextState(ctx.renderContextID),
       };
 

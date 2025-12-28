@@ -8,7 +8,7 @@ import {
   $a,
   $button,
   $div,
-  $h1el as $h1,
+  $h1,
   $input,
   $p,
   $query,

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../core/seidr";
-import { clearHydrationContext } from "./hydration-context";
+import { clearHydrationData } from "./hydration-context";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 // Store original SSR env var
@@ -29,7 +29,7 @@ describe("SSRScope", () => {
     setActiveSSRScope(undefined);
 
     // Clear hydration context
-    clearHydrationContext();
+    clearHydrationData();
   });
 
   it("should register observables", () => {

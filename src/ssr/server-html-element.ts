@@ -1,4 +1,4 @@
-import type { CleanupFunction, SeidrElementInterface } from "../core/index";
+import type { SeidrElementInterface } from "../core/index";
 import { isFn, isObj, isSeidr, isStr } from "../core/util/is";
 
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
@@ -329,7 +329,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
   // Internal attributes storage
   private _attributes: Attributes = {};
 
-  on(_event: string, _handler: (ev: any) => any, _options?: any): CleanupFunction {
+  on(_event: string, _handler: (ev: any) => any, _options?: any): () => void {
     return () => {};
   }
 

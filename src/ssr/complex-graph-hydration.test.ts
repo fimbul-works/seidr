@@ -4,7 +4,7 @@ import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
-import { clearHydrationContext } from "./hydration-context";
+import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 
 describe("Complex Graph Hydration (4+ levels)", () => {
@@ -16,7 +16,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
   afterEach(() => {
     cleanupMode();
-    clearHydrationContext();
+    clearHydrationData();
   });
 
   it("should capture and hydrate a 4-level derivation chain", async () => {

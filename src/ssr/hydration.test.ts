@@ -4,13 +4,7 @@ import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
 import { enableClientMode } from "../test-setup";
 import { hydrate } from "./hydrate";
-import {
-  applyElementBindings,
-  clearHydrationContext,
-  getHydrationContext,
-  isHydrating,
-  setHydrationContext,
-} from "./hydration-context";
+import { applyElementBindings, clearHydrationData, isHydrating, setHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 import type { HydrationData } from "./types";
@@ -27,7 +21,7 @@ describe("Client-Side Hydration", () => {
   });
 
   afterEach(() => {
-    clearHydrationContext();
+    clearHydrationData();
     // Restore original environment state
     cleanupClientMode();
 
@@ -54,26 +48,30 @@ describe("Client-Side Hydration", () => {
       expect(isHydrating()).toBe(false);
 
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: 42 },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
       expect(isHydrating()).toBe(true);
 
-      clearHydrationContext();
+      clearHydrationData();
       expect(isHydrating()).toBe(false);
     });
 
     it("should clear registry when setting new context", () => {
       const data1: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: "first" },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      setHydrationContext(data1);
+      setHydrationData(data1);
 
       // Create Seidr instances
       const seidr1 = new Seidr(0);
@@ -81,12 +79,14 @@ describe("Client-Side Hydration", () => {
 
       // Clear and set new context
       const data2: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: "second" },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      setHydrationContext(data2);
+      setHydrationData(data2);
 
       // New instances should get numeric ID 0 again
       const seidr3 = new Seidr(0);
@@ -99,6 +99,8 @@ describe("Client-Side Hydration", () => {
   describe("Seidr Registration", () => {
     it("should register Seidr instances in creation order", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: 100, 1: 200 },
         bindings: {},
         graph: {
@@ -110,7 +112,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const seidr1 = new Seidr(0);
       const seidr2 = new Seidr(0);
@@ -124,6 +126,8 @@ describe("Client-Side Hydration", () => {
 
     it("should only hydrate root observables", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: "root" },
         bindings: {},
         graph: {
@@ -135,7 +139,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const root = new Seidr("");
       const derived = root.as((s) => s.toUpperCase());
@@ -146,6 +150,8 @@ describe("Client-Side Hydration", () => {
 
     it("should work with computed observables", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: {
           0: "John",
           1: "Doe",
@@ -161,7 +167,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const firstName = new Seidr("");
       const lastName = new Seidr("");
@@ -181,6 +187,8 @@ describe("Client-Side Hydration", () => {
   describe("Element Binding Application", () => {
     it("should apply bindings for elements with data-seidr-id", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: true },
         bindings: {
           "test-element": [
@@ -197,7 +205,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const seidr = new Seidr(false);
       const element = document.createElement("button");
@@ -211,6 +219,8 @@ describe("Client-Side Hydration", () => {
 
     it("should traverse paths to find root values", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: "hydrated" },
         bindings: {
           "test-element": [
@@ -230,7 +240,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const root = new Seidr("");
       const derived = root.as((s) => s.toUpperCase());
@@ -244,6 +254,8 @@ describe("Client-Side Hydration", () => {
 
     it("should handle multiple paths to different roots", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: {
           0: "John",
           1: "Doe",
@@ -270,7 +282,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const firstName = new Seidr("");
       const lastName = new Seidr("");
@@ -286,6 +298,8 @@ describe("Client-Side Hydration", () => {
 
     it("should handle nested path traversal", () => {
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: { 0: 10 },
         bindings: {
           "test-element": [
@@ -306,7 +320,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       const root = new Seidr(0);
       const level1 = root.as((n) => n * 2);
@@ -325,6 +339,8 @@ describe("Client-Side Hydration", () => {
     it("should hydrate complete component with bindings", () => {
       // Server-side data
       const data: HydrationData = {
+        renderContextID: 0,
+        elementIds: [],
         observables: {
           0: "hydrated-name",
           1: true,
@@ -352,7 +368,7 @@ describe("Client-Side Hydration", () => {
         },
       };
 
-      setHydrationContext(data);
+      setHydrationData(data);
 
       // Create component (normally would mount to DOM)
       const name = new Seidr("");
@@ -388,7 +404,6 @@ describe("Client-Side Hydration", () => {
     it("should restore observable values during hydration", async () => {
       const TestComponent = () =>
         component(() => {
-          // CRITICAL: State MUST be created inside the component for SSR!
           const count = new Seidr(42);
           return $("div", { textContent: count.as((n) => `Count: ${n}`) });
         });
@@ -396,7 +411,6 @@ describe("Client-Side Hydration", () => {
       // Server-side capture
       const scope = new SSRScope();
       setActiveSSRScope(scope);
-
       const { hydrationData } = await renderToString(TestComponent, undefined, scope);
       setActiveSSRScope(undefined);
 
@@ -460,7 +474,7 @@ describe("Client-Side Hydration", () => {
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
-      setHydrationContext(originalData);
+      setHydrationData(originalData);
 
       const TestComponent = () =>
         component(() => {
@@ -472,12 +486,6 @@ describe("Client-Side Hydration", () => {
 
       const container = document.createElement("div");
       hydrate(TestComponent, container, hydrateData);
-
-      // Should restore original context
-      const context = getHydrationContext();
-      expect(context).not.toBeNull();
-      // @ts-expect-error
-      expect(context.observables[0]).toBe(1);
 
       // Cleanup client mode
       cleanupClientMode2();

@@ -28,9 +28,10 @@ const nodeReplace = replace({
 const terserPlugin = terser({
   module: false,
   mangle: {
+    module: true,
     properties: false,
     // Preserve class names for instanceof checks
-    reserved: ["Seidr", "state"],
+    reserved: ["Seidr"],
   },
   compress: {
     passes: 2,

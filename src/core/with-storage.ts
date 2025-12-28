@@ -7,12 +7,11 @@ import type { Seidr } from "./seidr";
  * enabling automatic persistence and restoration of reactive state across page reloads
  * and browser sessions.
  *
- * @template T - The Seidr instance type (inferred from the provided seidr parameter)
+ * @template {Seidr} T - The Seidr instance type (inferred from the provided seidr parameter)
  *
  * @param {string} key - The storage key to use for persisting the observable value
  * @param {T} seidr - The Seidr observable to bind to storage
  * @param {Storage} [storage=localStorage] - The storage API to use (defaults to localStorage)
- *
  * @returns {T} The same Seidr instance, now with storage synchronization enabled
  *
  * @throws {JSONError} If the stored value cannot be parsed as JSON

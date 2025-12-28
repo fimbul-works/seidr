@@ -9,9 +9,8 @@ const B = Boolean;
  * arrays, functions, and Seidr observables. It's designed to work seamlessly
  * with conditional classes, reactive class bindings, and complex class logic.
  *
- * @param classes - Variable arguments of different types for class construction
- *
- * @returns A clean, space-separated string of unique class names
+ * @param {string | Record<string, boolean> | any[] | () => (string | Record<string, boolean> | any[])} classes - Variable arguments of different types for class construction
+ * @returns {string} A clean, space-separated string of unique class names
  *
  * @example
  * Basic string concatenation

@@ -19,7 +19,6 @@
   - [`mountList()`](#mountlist)
   - [`mountSwitch()`](#mountswitch)
 - [State Management](#state-management)
-  - [`State<T>` class](#statet-class)
   - [`createStateKey()`](#createstatekey)
   - [`hasState()`](#hasstate)
   - [`setState()`](#setstate)
@@ -556,37 +555,6 @@ unmount();
 
 ---
 ## State Management
-
-### State Class
-
-Type-safe container for storing application state values.
-
-**Generic Type:** `T` - Type of value being stored
-
-**Fields:**
-- `value` - Get the stored value
-
-```typescript
-import { State } from '@fimbul-works/seidr';
-
-const counterState = new State(0);
-console.log(counterState.value); // 0
-
-// Works with complex types
-const userState = new State({
-  name: 'Alice',
-  age: new Seidr(30),
-});
-
-// use InferStateType to extract the type
-type UserType =  InferStateType<typeof userState>;
-
-const user = userState.value;
-console.log(user.name);      // 'Alice'
-console.log(user.age.value); // 30
-```
-
----
 
 ### createStateKey()
 

@@ -1,34 +1,7 @@
-// Base-62 alphabet for compact, URL-safe unique IDs
-export const BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+import { encodeBase62, randomString } from "./base62";
 
-export const RADIX = BASE62_ALPHABET.length;
-
-// Process ID (if available in Node.js environment)
+/** Process ID (if available in Node.js environment) */
 const PID = typeof process !== "undefined" && typeof process.pid === "number" ? process.pid : null;
-
-/**
- * Encodes a number to base-62 string.
- */
-function encodeBase62(num: number): string {
-  let result = "",
-    n = num;
-  while (n > 0) {
-    result = BASE62_ALPHABET[n % RADIX] + result;
-    n = Math.floor(n / RADIX);
-  }
-  return result || "0";
-}
-
-/**
- * Generates a random base-62 string of specified length.
- */
-function randomString(length: number): string {
-  let result = "";
-  for (let i = 0; i < length; i++) {
-    result += BASE62_ALPHABET[Math.floor(Math.random() * RADIX)];
-  }
-  return result;
-}
 
 /**
  * Generates a timestamp component in base-62.
@@ -48,7 +21,7 @@ const pid = () => (PID ? encodeBase62(PID) : randomString(3));
  * - Process ID: Process identifier (or random if not available)
  * - Random: High-entropy random component
  *
- * @returns A unique identifier string (approximately 20 characters)
+ * @returns {string} A unique identifier string (approximately 20 characters)
  *
  * @example
  * Basic usage

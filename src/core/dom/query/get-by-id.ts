@@ -5,11 +5,10 @@
  * It's more concise than document.querySelector() and provides better TypeScript
  * support with generic typing.
  *
- * @template T extends HTMLElement - The expected HTMLElement type
+ * @template {HTMLElement} T - The expected HTMLElement type
  *
- * @param id - The CSS selector string to query for
- *
- * @returns The first element matching the selector, or null if not found
+ * @param {string} id - The element ID
+ * @returns {T | null} The element matching the ID, or null if not found
  *
  * @example
  * Basic usage

@@ -1,5 +1,4 @@
 import { getRenderContext } from "../render-context-contract";
-import type { CleanupFunction } from "../types";
 import type { SeidrElement } from "./element";
 
 /** Map of SeidrComponent stack by render context ID */
@@ -7,7 +6,7 @@ const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
 
 /**
  * Get the component stack for a render context.
- * @returns SeidrComponent stack
+ * @returns {SeidrComponent[]} SeidrComponent stack
  */
 export const getComponentStack = (): SeidrComponent[] => {
   const ctx = getRenderContext();
@@ -28,7 +27,8 @@ export const getComponentStack = (): SeidrComponent[] => {
  * management. Each component tracks its own reactive bindings, event listeners,
  * and child components.
  *
- * @template E - The type of SeidrElement this component contains
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ * @template {SeidrElement<K>} E - The type of SeidrElement this component contains
  *
  * @example
  * Component usage
@@ -47,7 +47,7 @@ export interface SeidrComponent<
   E extends SeidrElement<K> = any,
 > {
   /**
-   * Whether this SeidrComponent is rendered at root
+   * @type {boolean} Whether this SeidrComponent is rendered at root
    */
   readonly isRootComponent: boolean;
 
@@ -56,6 +56,7 @@ export interface SeidrComponent<
    *
    * This element is enhanced with SeidrElement functionality including
    * reactive bindings, event handling, and cleanup capabilities.
+   * @type {E}
    */
   element: E;
 
@@ -67,6 +68,7 @@ export interface SeidrComponent<
    * - Removes all event listeners
    * - Cleans up all reactive bindings
    * - Executes all tracked cleanup functions
+   * @type {() => void}
    */
   destroy(): void;
 }
@@ -86,7 +88,7 @@ export interface ComponentScope {
    * the component is no longer needed, such as removing event listeners,
    * cleaning up reactive bindings, or clearing timeouts.
    *
-   * @param cleanup - The cleanup function to execute
+   * @param {() => void} cleanup - The cleanup function to execute
    *
    * @example
    * Tracking various cleanup functions
@@ -98,7 +100,7 @@ export interface ComponentScope {
    * scope.track(() => console.log('Component destroyed'));
    * ```
    */
-  track(cleanup: CleanupFunction): void;
+  track(cleanup: () => void): void;
 
   /**
    * Tracks a child component for automatic cleanup when this component is destroyed.
@@ -107,11 +109,11 @@ export interface ComponentScope {
    * is destroyed, creating a proper cleanup hierarchy. This method ensures
    * that child components are properly managed and cleaned up.
    *
-   * @template E - The type of SeidrElement the child component contains
+   * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+   * @template {SeidrElement<K>} E - The type of SeidrElement the child component contains
    *
-   * @param component - The child component to track
-   *
-   * @returns The same child component (for chaining or convenience)
+   * @param {SeidrComponent<K, E>} component - The child component to track
+   * @returns {SeidrComponent<K, E>} The same child SeidrComponent
    *
    * @example
    * Managing child components
@@ -157,7 +159,7 @@ export interface ComponentScope {
  * ComponentScope instances are typically created internally by the component()
  * function, but can also be created directly for advanced use cases or testing.
  *
- * @returns A new ComponentScope instance with cleanup tracking capabilities
+ * @returns {ComponentScope} A new ComponentScope instance with cleanup tracking capabilities
  *
  * @example
  * Manual scope creation
@@ -169,10 +171,10 @@ export interface ComponentScope {
  * ```
  */
 export function createScope(): ComponentScope {
-  let cleanups: CleanupFunction[] = [];
+  let cleanups: (() => void)[] = [];
   let destroyed = false;
 
-  function track(cleanup: CleanupFunction): void {
+  function track(cleanup: () => void): void {
     if (destroyed) {
       console.warn("Tracking cleanup on already destroyed scope");
       cleanup();
@@ -218,7 +220,8 @@ export function createScope(): ComponentScope {
  * function automatically tracks cleanup functions, reactive bindings, and child
  * components to prevent memory leaks.
  *
- * @template E - The type of SeidrElement the component returns
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ * @template {SeidrElement<K>} E - The type of SeidrElement the component returns
  *
  * @param {(scope: ComponentScope) => E} factory - Function that creates the component element and tracks resources
  * @returns {SeidrComponent<K, E>} A Component instance with the created element and destroy method
@@ -278,7 +281,7 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   const component = {
     isRootComponent,
     destroy: () => scope.destroy(),
-  } as SeidrComponent;
+  } as SeidrComponent<K, E>;
 
   // Add the object to the stack to the stack
   stack.push(component as SeidrComponent);
@@ -299,5 +302,5 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
     while (stack.length) stack.pop();
   }
 
-  return component as SeidrComponent;
+  return component as SeidrComponent<K, E>;
 }

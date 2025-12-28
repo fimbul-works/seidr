@@ -5,7 +5,7 @@ import { Seidr } from "../core/seidr";
 import { runWithRenderContextSync } from "../render-context.node";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
-import { clearHydrationContext } from "./hydration-context";
+import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
@@ -20,7 +20,7 @@ describe("SSR Reactive Bindings Integration", () => {
     afterEach(() => {
       cleanupMode();
       setActiveSSRScope(undefined);
-      clearHydrationContext();
+      clearHydrationData();
     });
 
     it("should register bindings for reactive props during SSR", () => {
@@ -128,7 +128,7 @@ describe("SSR Reactive Bindings Integration", () => {
 
     afterEach(() => {
       cleanupMode();
-      clearHydrationContext();
+      clearHydrationData();
     });
 
     it("should apply bindings during hydration", async () => {

@@ -1,5 +1,6 @@
+import { getRenderContext } from "../core/render-context-contract";
 import { Seidr } from "../core/seidr";
-import { renderContextStates, symbolNames } from "../core/state";
+import { globalStates, symbolNames } from "../core/state";
 import { isSeidr } from "../core/util/is";
 
 /**
@@ -9,12 +10,12 @@ import { isSeidr } from "../core/util/is";
  * @param {number} renderContextID - Render context ID
  * @returns {boolean} true if the renderScopeState existed, false otherwise
  */
-export const clearRenderContextState = (renderContextID: number) => renderContextStates.delete(renderContextID);
+export const clearRenderContextState = (renderContextID: number) => globalStates.delete(renderContextID);
 
 /**
- * Captures all State values for a render context during SSR.
+ * Captures all state values for a render context during SSR.
  *
- * This function iterates through all State values stored for the given render context,
+ * This function iterates through all state values stored for the given render context,
  * and captures only the non-derived Seidr instances. The result is a record mapping
  * string keys (from the symbol names) to the Seidr values.
  *
@@ -32,7 +33,7 @@ export const clearRenderContextState = (renderContextID: number) => renderContex
  * ```
  */
 export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
-  const ctxStates = renderContextStates.get(renderContextID);
+  const ctxStates = globalStates.get(renderContextID);
   if (!ctxStates) {
     return {};
   }
@@ -43,7 +44,7 @@ export function captureRenderContextState(renderContextID: number): Record<strin
   const reverseSymbolNames = new Map<symbol, string>();
   symbolNames.entries().forEach(([key, symbol]) => reverseSymbolNames.set(symbol, key));
 
-  // Iterate through all State values
+  // Iterate through all state values
   for (const [symbol, value] of ctxStates.entries()) {
     const key = reverseSymbolNames.get(symbol);
 
@@ -57,13 +58,12 @@ export function captureRenderContextState(renderContextID: number): Record<strin
 }
 
 /**
- * Restores State values for a render context during hydration.
+ * Restores state values for a render context during hydration.
  *
  * This function takes the captured state from SSR and restores it to the
- * render context's State storage. It uses the symbol name registry to
+ * render context's state storage. It uses the symbol name registry to
  * map string keys back to their original symbols.
  *
- * @param {number} renderContextID - Render context ID
  * @param {Record<string, unknown>} state - Record of string keys to values from SSR
  *
  * @example
@@ -77,13 +77,16 @@ export function captureRenderContextState(renderContextID: number): Record<strin
  * // user.value is now "Alice"
  * ```
  */
-export function restoreRenderContextState(renderContextID: number, state: Record<string, unknown>): void {
-  // Ensure the render context has a State storage
-  if (!renderContextStates.has(renderContextID)) {
-    renderContextStates.set(renderContextID, new Map());
+export function restoreGlobalState(state: Record<string, unknown>): void {
+  const ctx = getRenderContext();
+  const { renderContextID = 0 } = ctx ?? {};
+
+  // Ensure the render context has a state storage
+  if (!globalStates.has(renderContextID)) {
+    globalStates.set(renderContextID, new Map());
   }
 
-  const ctxStates = renderContextStates.get(renderContextID)!;
+  const ctxStates = globalStates.get(renderContextID)!;
 
   // Iterate through the captured state
   for (const [name, value] of Object.entries(state)) {
@@ -102,7 +105,7 @@ export function restoreRenderContextState(renderContextID: number, state: Record
       continue;
     }
 
-    // Check if there's already a State value for this symbol
+    // Check if there's already a state value for this symbol
     const existingValue = ctxStates.get(targetSymbol);
 
     // If it's a Seidr instance, update its value
