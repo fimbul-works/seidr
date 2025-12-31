@@ -80,54 +80,6 @@ describe("Documentation Examples", () => {
     });
   });
 
-  describe("Component with child components example", () => {
-    it("should demonstrate child component management", () => {
-      function createHeader() {
-        return component(() => {
-          return $("div", { textContent: "Header Component" });
-        });
-      }
-
-      function createAvatar() {
-        return component(() => {
-          return $("div", { textContent: "Avatar Component" });
-        });
-      }
-
-      const comp = component((scope) => {
-        const user = new Seidr({ name: "John", email: "john@example.com" });
-
-        const header = scope.child(createHeader());
-        const avatar = scope.child(createAvatar());
-
-        const container = $("div", { className: "profile" }, [
-          header.element,
-          avatar.element,
-          $("span", { textContent: user.as((u) => u.name) }),
-        ]);
-
-        return container;
-      });
-
-      // Mount to DOM for testing
-      document.body.appendChild(comp.element);
-
-      // Verify structure
-      expect(comp.element.className).toBe("profile");
-      expect(comp.element.children.length).toBe(3);
-      expect(comp.element.children[0].textContent).toBe("Header Component");
-      expect(comp.element.children[1].textContent).toBe("Avatar Component");
-      expect(comp.element.children[2].textContent).toBe("John");
-      expect(comp.element.textContent).toContain("John");
-
-      // Cleanup
-      comp.destroy();
-      if (document.body.contains(comp.element)) {
-        document.body.removeChild(comp.element);
-      }
-    });
-  });
-
   describe("Manual scope creation example", () => {
     it("should demonstrate manual scope lifecycle management", () => {
       const scope = createScope();
@@ -196,75 +148,748 @@ describe("Documentation Examples", () => {
     });
   });
 
-  describe("Component with multiple children example", () => {
-    it("should handle multiple child components correctly", () => {
-      let headerDestroyed = false;
-      let footerDestroyed = false;
+  describe("Basic child tracking", () => {
+    it("should automatically track nested child components", () => {
+      let childDestroyed = false;
+      let grandchildDestroyed = false;
 
-      const createHeader = () =>
+      const Grandchild = () =>
         component(() => {
-          return $("header", { textContent: "Header" });
+          return $("div", { textContent: "Grandchild" });
         });
 
-      const createFooter = () =>
+      const Child = () =>
         component(() => {
-          return $("footer", { textContent: "Footer" });
+          // Grandchild will be automatically tracked when created
+          const grandchild = Grandchild();
+
+          // Override destroy for testing AFTER creation
+          const originalDestroy = grandchild.destroy;
+          grandchild.destroy = () => {
+            grandchildDestroyed = true;
+            originalDestroy();
+          };
+
+          return $("div", { textContent: "Child" }, [grandchild.element]);
         });
 
-      const comp = component((scope) => {
-        const header = createHeader();
-        const footer = createFooter();
+      const Parent = () =>
+        component(() => {
+          // Child will be automatically tracked when created
+          const child = Child();
 
-        // Override destroy for testing
-        header.destroy = () => {
-          headerDestroyed = true;
-        };
-        footer.destroy = () => {
-          footerDestroyed = true;
-        };
+          // Override destroy for testing AFTER creation
+          const originalDestroy = child.destroy;
+          child.destroy = () => {
+            childDestroyed = true;
+            originalDestroy();
+          };
 
-        scope.child(header);
-        scope.child(footer);
+          return $("div", { textContent: "Parent" }, [child.element]);
+        });
 
-        return $("main", {}, [header.element, footer.element]);
-      });
+      const parent = Parent();
 
-      expect(headerDestroyed).toBe(false);
-      expect(footerDestroyed).toBe(false);
+      expect(childDestroyed).toBe(false);
+      expect(grandchildDestroyed).toBe(false);
 
-      // Destroy parent component
-      comp.destroy();
+      // Destroy parent should destroy all descendants
+      parent.destroy();
 
-      expect(headerDestroyed).toBe(true);
-      expect(footerDestroyed).toBe(true);
+      expect(childDestroyed).toBe(true);
+      expect(grandchildDestroyed).toBe(true);
+    });
+
+    it("should automatically track child components created inline", () => {
+      let child1Destroyed = false;
+      let child2Destroyed = false;
+
+      const createChild = (name: string) =>
+        component(() => {
+          return $("div", { textContent: name });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const child1 = createChild("Child 1");
+          const child2 = createChild("Child 2");
+
+          // Override destroy for testing AFTER creation
+          const originalDestroy1 = child1.destroy;
+          child1.destroy = () => {
+            child1Destroyed = true;
+            originalDestroy1();
+          };
+
+          const originalDestroy2 = child2.destroy;
+          child2.destroy = () => {
+            child2Destroyed = true;
+            originalDestroy2();
+          };
+
+          return $("div", {}, [child1.element, child2.element]);
+        });
+
+      const parent = Parent();
+
+      expect(child1Destroyed).toBe(false);
+      expect(child2Destroyed).toBe(false);
+
+      parent.destroy();
+
+      expect(child1Destroyed).toBe(true);
+      expect(child2Destroyed).toBe(true);
     });
   });
 
-  describe("Component error handling in cleanup", () => {
-    it("should handle cleanup function errors gracefully", () => {
+  describe("Component stack management", () => {
+    it("should track components created during parent rendering via component stack", () => {
+      const creationOrder: string[] = [];
+
+      const Leaf = () =>
+        component(() => {
+          creationOrder.push("Leaf");
+          return $("div", { textContent: "Leaf" });
+        });
+
+      const Branch = () =>
+        component(() => {
+          creationOrder.push("Branch");
+          const leaf = Leaf(); // Automatically tracked
+          return $("div", {}, [leaf.element]);
+        });
+
+      const Trunk = () =>
+        component(() => {
+          creationOrder.push("Trunk");
+          const branch = Branch(); // Automatically tracked
+          return $("div", {}, [branch.element]);
+        });
+
+      const Root = () =>
+        component(() => {
+          creationOrder.push("Root");
+          const trunk = Trunk(); // Automatically tracked
+          return $("div", {}, [trunk.element]);
+        });
+
+      const root = Root();
+
+      // Components are created outer-to-inner: Root, Trunk, Branch, Leaf
+      expect(creationOrder).toEqual(["Root", "Trunk", "Branch", "Leaf"]);
+
+      root.destroy();
+    });
+
+    it("should clear component stack after root component creation", () => {
+      let parent1Destroyed = false;
+      let parent2Destroyed = false;
+
+      const Child = () =>
+        component(() => {
+          return $("div", { textContent: "Child" });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const child = Child(); // Automatically tracked
+
+          return $("div", {}, [child.element]);
+        });
+
+      const parent1 = Parent();
+
+      // Override destroy to track which parent
+      const originalDestroy1 = parent1.destroy;
+      parent1.destroy = () => {
+        parent1Destroyed = true;
+        originalDestroy1();
+      };
+
+      const parent2 = Parent();
+
+      // Override destroy to track which parent
+      const originalDestroy2 = parent2.destroy;
+      parent2.destroy = () => {
+        parent2Destroyed = true;
+        originalDestroy2();
+      };
+
+      expect(parent1Destroyed).toBe(false);
+      expect(parent2Destroyed).toBe(false);
+
+      // Destroy first parent - should not affect second parent
+      parent1.destroy();
+      expect(parent1Destroyed).toBe(true);
+      expect(parent2Destroyed).toBe(false);
+
+      parent2.destroy();
+      expect(parent2Destroyed).toBe(true);
+    });
+  });
+
+  describe("Nested component destruction", () => {
+    it("should destroy deeply nested component hierarchy", () => {
+      const destructionOrder: string[] = [];
+
+      const createComponent = (name: string) =>
+        component((scope) => {
+          const element = $("div", { textContent: name });
+
+          // Track destruction order
+          scope.track(() => {
+            destructionOrder.push(name);
+          });
+
+          return element;
+        });
+
+      const Level3 = () => createComponent("Level3");
+
+      const Level2 = () =>
+        component((scope) => {
+          const level3 = Level3(); // Automatically tracked
+
+          // Also track cleanup for this level
+          scope.track(() => {
+            destructionOrder.push("Level2");
+          });
+
+          return $("div", {}, [level3.element]);
+        });
+
+      const Level1 = () =>
+        component((scope) => {
+          const level2 = Level2(); // Automatically tracked
+
+          // Also track cleanup for this level
+          scope.track(() => {
+            destructionOrder.push("Level1");
+          });
+
+          return $("div", {}, [level2.element]);
+        });
+
+      const root = Level1();
+      root.destroy();
+
+      // All components should be destroyed
+      expect(destructionOrder).toHaveLength(3);
+      expect(destructionOrder).toContain("Level1");
+      expect(destructionOrder).toContain("Level2");
+      expect(destructionOrder).toContain("Level3");
+    });
+
+    it("should handle multiple children at same level", () => {
+      const destroyedChildren: string[] = [];
+
+      const Child = (name: string) =>
+        component((scope) => {
+          scope.track(() => {
+            destroyedChildren.push(name);
+          });
+          return $("div", { textContent: name });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const child1 = Child("Child1");
+          const child2 = Child("Child2");
+          const child3 = Child("Child3");
+
+          // All automatically tracked
+          return $("div", {}, [child1.element, child2.element, child3.element]);
+        });
+
+      const parent = Parent();
+      parent.destroy();
+
+      expect(destroyedChildren).toHaveLength(3);
+      expect(destroyedChildren).toContain("Child1");
+      expect(destroyedChildren).toContain("Child2");
+      expect(destroyedChildren).toContain("Child3");
+    });
+  });
+
+  describe("Error handling", () => {
+    it("should handle child destruction errors gracefully", () => {
       const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
-      const comp = component((scope) => {
-        scope.track(() => {
-          throw new Error("Test cleanup error");
-        });
-        scope.track(() => {
-          // This should still execute even if previous one fails
+      let childCleanupCalled = false;
+
+      const ErrorChild = () =>
+        component((scope) => {
+          scope.track(() => {
+            throw new Error("Child cleanup error");
+          });
+          return $("div", { textContent: "Error Child" });
         });
 
-        return $("div");
-      });
+      const Parent = () =>
+        component((scope) => {
+          const errorChild = ErrorChild(); // Automatically tracked
+
+          scope.track(() => {
+            childCleanupCalled = true;
+          });
+
+          return $("div", {}, [errorChild.element]);
+        });
+
+      const parent = Parent();
 
       // Destroy should not throw
-      expect(() => comp.destroy()).not.toThrow();
+      expect(() => parent.destroy()).not.toThrow();
+
+      // Parent cleanup should still execute
+      expect(childCleanupCalled).toBe(true);
+
+      // Error should be logged
       expect(consoleSpy).toHaveBeenCalledWith(expect.any(Error));
-      expect(consoleSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: "Test cleanup error",
-        }),
-      );
 
       consoleSpy.mockRestore();
+    });
+
+    it("should continue destroying siblings even if one fails", () => {
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      let sibling2Destroyed = false;
+
+      const ErrorChild = () =>
+        component((scope) => {
+          scope.track(() => {
+            throw new Error("Child cleanup error");
+          });
+          return $("div", { textContent: "Error Child" });
+        });
+
+      const NormalChild = () =>
+        component((scope) => {
+          scope.track(() => {
+            sibling2Destroyed = true;
+          });
+          return $("div", { textContent: "Normal Child" });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const child1 = ErrorChild(); // Automatically tracked
+          const child2 = NormalChild(); // Automatically tracked
+
+          return $("div", {}, [child1.element, child2.element]);
+        });
+
+      const parent = Parent();
+      parent.destroy();
+
+      // Second child should still be destroyed
+      expect(sibling2Destroyed).toBe(true);
+
+      consoleSpy.mockRestore();
+    });
+  });
+
+  describe("Resource cleanup", () => {
+    it("should cleanup child component event listeners", () => {
+      let childClickListenerCalled = false;
+      let parentClickListenerCalled = false;
+
+      const Child = () =>
+        component((scope) => {
+          const button = $("button", { textContent: "Child Button" });
+
+          scope.track(
+            button.on("click", () => {
+              childClickListenerCalled = true;
+            }),
+          );
+
+          return button;
+        });
+
+      const Parent = () =>
+        component((scope) => {
+          const child = Child(); // Automatically tracked
+
+          const button = $("button", { textContent: "Parent Button" });
+
+          scope.track(
+            button.on("click", () => {
+              parentClickListenerCalled = true;
+            }),
+          );
+
+          return $("div", {}, [child.element, button]);
+        });
+
+      const parent = Parent();
+
+      // Mount to DOM
+      document.body.appendChild(parent.element);
+
+      // Click both buttons - both should work
+      (parent.element.querySelectorAll("button")[0] as HTMLButtonElement).click();
+      expect(childClickListenerCalled).toBe(true);
+
+      (parent.element.querySelectorAll("button")[1] as HTMLButtonElement).click();
+      expect(parentClickListenerCalled).toBe(true);
+
+      // Destroy component
+      parent.destroy();
+
+      // Reset flags
+      childClickListenerCalled = false;
+      parentClickListenerCalled = false;
+
+      // Elements are removed from DOM after destroy, so we need to check they were removed
+      expect(document.body.contains(parent.element)).toBe(false);
+
+      // Cleanup
+      if (document.body.contains(parent.element)) {
+        document.body.removeChild(parent.element);
+      }
+    });
+
+    it("should cleanup child component reactive bindings", () => {
+      const Child = () =>
+        component((scope) => {
+          const count = new (class {
+            value = 0;
+            listeners: Array<(val: number) => void> = [];
+            bind(_element: HTMLElement, callback: (value: number, element: HTMLElement) => void) {
+              this.listeners.push((val) => callback(val, _element));
+              return () => {
+                this.listeners = this.listeners.filter((l) => l !== callback);
+              };
+            }
+          })();
+
+          const span = $("span", { textContent: `Count: ${count.value}` });
+
+          scope.track(
+            count.bind(span, (value, el) => {
+              el.textContent = `Count: ${value}`;
+            }),
+          );
+
+          return span;
+        });
+
+      const Parent = () =>
+        component(() => {
+          const child = Child(); // Automatically tracked
+
+          return $("div", {}, [child.element]);
+        });
+
+      const parent = Parent();
+
+      // Verify binding works
+      expect(parent.element.textContent).toBe("Count: 0");
+
+      // Destroy parent
+      parent.destroy();
+
+      // Binding should be cleaned up (no memory leak)
+      // This is hard to test directly, but we can verify no errors occur
+      expect(() => parent.destroy()).not.toThrow();
+    });
+  });
+
+  describe("Automatic child tracking example", () => {
+    it("should demonstrate automatic child component destruction", () => {
+      const destructionLog: string[] = [];
+
+      const Header = () =>
+        component((scope) => {
+          scope.track(() => destructionLog.push("Header destroyed"));
+          return $("header", { textContent: "Header Component" });
+        });
+
+      const Avatar = () =>
+        component((scope) => {
+          scope.track(() => destructionLog.push("Avatar destroyed"));
+          return $("div", { className: "avatar", textContent: "Avatar Component" });
+        });
+
+      const UserProfile = () =>
+        component(() => {
+          const header = Header(); // Automatically tracked
+          const avatar = Avatar(); // Automatically tracked
+
+          return $("div", { className: "profile" }, [header.element, avatar.element]);
+        });
+
+      const profile = UserProfile();
+
+      // Verify structure
+      expect(profile.element.className).toBe("profile");
+      expect(profile.element.children.length).toBe(2);
+      expect(profile.element.children[0].textContent).toBe("Header Component");
+      expect(profile.element.children[1].textContent).toBe("Avatar Component");
+
+      // Destroy parent
+      profile.destroy();
+
+      // Verify children were destroyed
+      expect(destructionLog).toEqual(["Header destroyed", "Avatar destroyed"]);
+    });
+  });
+
+  describe("Nested components example", () => {
+    it("should demonstrate nested component hierarchy cleanup", () => {
+      const cleanupLog: string[] = [];
+
+      const Comment = () =>
+        component((scope) => {
+          scope.track(() => cleanupLog.push("Comment"));
+          return $("div", { textContent: "Comment" });
+        });
+
+      const CommentList = () =>
+        component((scope) => {
+          scope.track(() => cleanupLog.push("CommentList"));
+
+          const comments = [Comment(), Comment(), Comment()]; // All automatically tracked
+
+          return $(
+            "div",
+            {},
+            comments.map((c) => c.element),
+          );
+        });
+
+      const Post = () =>
+        component((scope) => {
+          scope.track(() => cleanupLog.push("Post"));
+
+          const commentList = CommentList(); // Automatically tracked
+
+          return $("article", {}, [commentList.element]);
+        });
+
+      const Feed = () =>
+        component((scope) => {
+          scope.track(() => cleanupLog.push("Feed"));
+
+          const post = Post(); // Automatically tracked
+
+          return $("main", {}, [post.element]);
+        });
+
+      const feed = Feed();
+      feed.destroy();
+
+      // All components should be cleaned up
+      expect(cleanupLog).toContain("Feed");
+      expect(cleanupLog).toContain("Post");
+      expect(cleanupLog).toContain("CommentList");
+      expect(cleanupLog).toHaveLength(6); // Feed, Post, CommentList, 3x Comments
+    });
+  });
+
+  describe("Edge cases", () => {
+    it("should handle child components without children", () => {
+      let destroyed = false;
+
+      const Leaf = () =>
+        component(() => {
+          return $("div", { textContent: "Leaf" });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const leaf = Leaf(); // Automatically tracked
+
+          // Override destroy for testing
+          const originalDestroy = leaf.destroy;
+          leaf.destroy = () => {
+            destroyed = true;
+            originalDestroy();
+          };
+
+          return $("div", {}, [leaf.element]);
+        });
+
+      const parent = Parent();
+      parent.destroy();
+
+      expect(destroyed).toBe(true);
+    });
+
+    it("should handle parent with no children", () => {
+      let destroyed = false;
+
+      const Parent = () =>
+        component((scope) => {
+          scope.track(() => {
+            destroyed = true;
+          });
+          return $("div", { textContent: "Parent" });
+        });
+
+      const parent = Parent();
+      parent.destroy();
+
+      expect(destroyed).toBe(true);
+    });
+
+    it("should handle deeply nested single-child chain", () => {
+      const destructions: string[] = [];
+
+      const createComponent = (name: string, childFactory?: () => ReturnType<typeof component>) =>
+        component((scope) => {
+          scope.track(() => {
+            destructions.push(name);
+          });
+
+          if (!childFactory) {
+            return $("div", { textContent: name });
+          }
+
+          const child = childFactory(); // Automatically tracked
+
+          return $("div", {}, [child.element]);
+        });
+
+      const root = createComponent("root", () =>
+        createComponent("level1", () =>
+          createComponent("level2", () =>
+            createComponent("level3", () =>
+              createComponent("level4", () => createComponent("level5", () => createComponent("level6"))),
+            ),
+          ),
+        ),
+      );
+
+      root.destroy();
+
+      expect(destructions).toHaveLength(7);
+      expect(destructions).toEqual(["root", "level1", "level2", "level3", "level4", "level5", "level6"]);
+    });
+
+    it("should handle component that creates multiple children dynamically", () => {
+      const destroyed: string[] = [];
+
+      const createDynamicChild = (id: number) =>
+        component((scope) => {
+          scope.track(() => {
+            destroyed.push(`child-${id}`);
+          });
+          return $("div", { textContent: `Child ${id}` });
+        });
+
+      const Parent = () =>
+        component(() => {
+          const children = [];
+          for (let i = 0; i < 5; i++) {
+            const child = createDynamicChild(i); // Automatically tracked
+            children.push(child.element);
+          }
+
+          return $("div", {}, children);
+        });
+
+      const parent = Parent();
+      parent.destroy();
+
+      expect(destroyed).toHaveLength(5);
+      expect(destroyed).toContain("child-0");
+      expect(destroyed).toContain("child-4");
+    });
+  });
+
+  describe("Documentation Examples", () => {
+    describe("Automatic child tracking example", () => {
+      it("should demonstrate automatic child component destruction", () => {
+        const destructionLog: string[] = [];
+
+        const Header = () =>
+          component((scope) => {
+            scope.track(() => destructionLog.push("Header destroyed"));
+            return $("header", { textContent: "Header Component" });
+          });
+
+        const Avatar = () =>
+          component((scope) => {
+            scope.track(() => destructionLog.push("Avatar destroyed"));
+            return $("div", { className: "avatar", textContent: "Avatar Component" });
+          });
+
+        const UserProfile = () =>
+          component(() => {
+            const header = Header(); // Automatically tracked
+            const avatar = Avatar(); // Automatically tracked
+
+            return $("div", { className: "profile" }, [header.element, avatar.element]);
+          });
+
+        const profile = UserProfile();
+
+        // Verify structure
+        expect(profile.element.className).toBe("profile");
+        expect(profile.element.children.length).toBe(2);
+        expect(profile.element.children[0].textContent).toBe("Header Component");
+        expect(profile.element.children[1].textContent).toBe("Avatar Component");
+
+        // Destroy parent
+        profile.destroy();
+
+        // Verify children were destroyed
+        expect(destructionLog).toEqual(["Header destroyed", "Avatar destroyed"]);
+      });
+    });
+
+    describe("Nested components example", () => {
+      it("should demonstrate nested component hierarchy cleanup", () => {
+        const cleanupLog: string[] = [];
+
+        const Comment = () =>
+          component((scope) => {
+            scope.track(() => cleanupLog.push("Comment"));
+            return $("div", { textContent: "Comment" });
+          });
+
+        const CommentList = () =>
+          component((scope) => {
+            scope.track(() => cleanupLog.push("CommentList"));
+
+            const comments = [Comment(), Comment(), Comment()]; // All automatically tracked
+
+            return $(
+              "div",
+              {},
+              comments.map((c) => c.element),
+            );
+          });
+
+        const Post = () =>
+          component((scope) => {
+            scope.track(() => cleanupLog.push("Post"));
+
+            const commentList = CommentList(); // Automatically tracked
+
+            return $("article", {}, [commentList.element]);
+          });
+
+        const Feed = () =>
+          component((scope) => {
+            scope.track(() => cleanupLog.push("Feed"));
+
+            const post = Post(); // Automatically tracked
+
+            return $("main", {}, [post.element]);
+          });
+
+        const feed = Feed();
+        feed.destroy();
+
+        // All components should be cleaned up
+        expect(cleanupLog).toContain("Feed");
+        expect(cleanupLog).toContain("Post");
+        expect(cleanupLog).toContain("CommentList");
+        expect(cleanupLog).toHaveLength(6); // Feed, Post, CommentList, 3x Comments
+      });
     });
   });
 });

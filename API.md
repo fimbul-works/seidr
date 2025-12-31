@@ -324,7 +324,7 @@ const app = $div({ className: 'app' }, [
 
 ### component()
 
-Create a component with automatic cleanup. Function receives a [`scope`](#createscope) object.
+Create a component with automatic cleanup and automatic child component tracking. Function receives a [`scope`](#createscope) object.
 
 **Parameters:**
 - `factory` - Factory function (signature `(scope) => SeidrElement`)
@@ -335,10 +335,13 @@ Create a component with automatic cleanup. Function receives a [`scope`](#create
 
 ```typescript
 {
-  element: HTMLElement;     // The root element
-  destroy: () => void;      // Cleanup function
+  scope: ComponentScope; // ComponentScope of the element
+  element: HTMLElement;  // The element
+  destroy: () => void;   // Cleanup function
 }
 ```
+
+**Automatic Child Tracking**: Child components created during parent component rendering are automatically tracked and destroyed when the parent is destroyed.
 
 ```typescript
 import { component, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
@@ -370,6 +373,42 @@ document.body.appendChild(profile.element);
 profile.destroy(); // Cleans up all reactive bindings automatically
 ```
 
+**Component Hierarchy with Automatic Tracking**:
+
+```typescript
+import { component, $div, $header, $img } from '@fimbul-works/seidr';
+
+function Header() {
+  return component(() => {
+    return $header({ textContent: 'User Profile' });
+  });
+}
+
+function Avatar() {
+  return component(() => {
+    return $img({ src: '/avatar.png', alt: 'User Avatar' });
+  });
+}
+
+function UserProfile() {
+  return component((scope) => {
+    // Child components are automatically tracked
+    const header = Header();
+    const avatar = Avatar();
+
+    return $div({ className: 'profile' }, [
+      header.element,
+      avatar.element
+    ]);
+  });
+}
+
+const profile = UserProfile();
+
+// Destroying profile automatically destroys header and avatar
+profile.destroy();
+```
+
 ---
 
 ### createScope()
@@ -380,7 +419,7 @@ Creates a cleanup scope for tracking resources.
 
 **Scope methods:**
 - `scope.track(cleanupFn)` - Register a cleanup function
-- `scope.child(component)` - Register a child [component](#component)
+- `scope.child(component)` - Register a child [component](#component) (usually automatic)
 - `scope.destroy()` - Run all cleanup functions
 
 ```typescript

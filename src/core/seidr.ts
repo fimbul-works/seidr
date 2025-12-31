@@ -37,9 +37,6 @@ export class Seidr<T> {
   /** @type {string} Unique identifier for this observable */
   private i: string = uid();
 
-  /** @type {boolean} Whether this is a derived/computed observable */
-  private d: boolean = false;
-
   /** @type {Seidr<any>[]} Parent dependencies (for derived/computed observables) */
   private p: Seidr<any>[] = [];
 
@@ -65,7 +62,7 @@ export class Seidr<T> {
     ) {
       const scope = getActiveSSRScope();
       if (scope) scope.register(this);
-    } else {
+    } else if (!process.env.CORE_BUNDLE) {
       // Client-side hydration check
       registerHydratedSeidr(this);
     }
@@ -110,7 +107,7 @@ export class Seidr<T> {
    * @type {boolean} true if this is a derived observable, false otherwise
    */
   get isDerived(): boolean {
-    return this.d;
+    return this.p.length > 0;
   }
 
   /**
@@ -302,7 +299,7 @@ export class Seidr<T> {
    */
   as<U>(transform: (value: T) => U): Seidr<U> {
     const derived = new Seidr<U>(transform(this.v));
-    derived.setIsDerived(true, [this]);
+    derived.setParents([this]);
     this.addCleanup(this.observe((value) => (derived.value = transform(value))));
     return derived;
   }
@@ -317,7 +314,7 @@ export class Seidr<T> {
    * @template C - The return type of the computed value
    *
    * @param {() => C} compute - Function that computes the derived value
-   * @param {Seidr<any>} dependencies - Array of Seidrs that trigger recomputation when changed
+   * @param {Seidr<any>} parents - Array of Seidrs that trigger recomputation when changed
    * @returns {Seidr<C>} A new Seidr instance containing the computed result
    *
    * @example
@@ -357,14 +354,14 @@ export class Seidr<T> {
    * );
    * ```
    */
-  static computed<C>(compute: () => C, dependencies: Seidr<any>[]): Seidr<C> {
-    if (dependencies.length === 0) {
+  static computed<C>(compute: () => C, parents: Seidr<any>[]): Seidr<C> {
+    if (parents.length === 0) {
       console.warn("Computed value with zero dependencies");
     }
 
     const computed = new Seidr<C>(compute());
-    computed.setIsDerived(true, dependencies);
-    dependencies.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
+    computed.setParents(parents);
+    parents.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
     return computed;
   }
 
@@ -433,11 +430,9 @@ export class Seidr<T> {
    *
    * This method is called internally by `.as()` and `Seidr.computed()`.
    *
-   * @param {boolean} value - Whether this observable is derived
    * @param {Seidr<any>[]} parents - Array of parent Seidr instances this observable depends on
    */
-  protected setIsDerived(value: boolean, parents: Seidr<any>[]): void {
-    this.d = value;
+  protected setParents(parents: Seidr<any>[]): void {
     this.p = parents;
 
     // Server-side rendering check: window === undefined || process.env.SEIDR_TEST_SSR === true

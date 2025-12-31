@@ -80,6 +80,7 @@ describe("createScope", () => {
     let childDestroyed = false;
 
     const mockChild: SeidrComponent = {
+      scope: createScope(),
       element: $("div"),
       destroy: () => {
         childDestroyed = true;

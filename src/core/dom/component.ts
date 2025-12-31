@@ -30,18 +30,6 @@ export const getComponentStack = (): SeidrComponent[] => {
  *
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  * @template {SeidrElement<K>} E - The type of SeidrElement this component contains
- *
- * @example
- * Component usage
- * ```typescript
- * import { component, mount } from '@fimbul-works/seidr';
- *
- * const counterComponent = createCounter();
- * document.body.appendChild(counterComponent.element);
- *
- * // Later cleanup
- * counterComponent.destroy();
- * ```
  */
 export interface SeidrComponent<
   K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
@@ -55,6 +43,12 @@ export interface SeidrComponent<
    * @type {E}
    */
   element: E;
+
+  /**
+   * The ComponentScope of this element.
+   * @type {ComponentScope}
+   */
+  scope: ComponentScope;
 
   /**
    * Destroys the component and all its resources.
@@ -136,8 +130,14 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   // Create the scope and partial SeidrComponent
   const scope = createScope();
   const component = {
+    scope,
     destroy: () => scope.destroy(),
   } as SeidrComponent<K, E>;
+
+  // Register as child component
+  if (stack.length > 0) {
+    stack[stack.length - 1].scope.child(component);
+  }
 
   // Add the object to the stack to the stack
   stack.push(component);
