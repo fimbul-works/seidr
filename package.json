@@ -22,28 +22,29 @@
     "functional",
     "typescript"
   ],
-  "main": "./dist/node/seidr.cjs",
-  "module": "./dist/node/seidr.js",
-  "browser": "./dist/browser/seidr.js",
-  "types": "./dist/node/seidr.d.ts",
+  "main": "./dist/seidr.node.cjs",
+  "module": "./dist/seidr.node.js",
+  "browser": "./dist/seidr.js",
+  "types": "./dist/seidr.node.d.ts",
   "exports": {
     ".": {
       "browser": {
-        "types": "./dist/browser/seidr.d.ts",
-        "import": "./dist/browser/seidr.js",
-        "require": "./dist/browser/seidr.cjs"
+        "types": "./dist/seidr.d.ts",
+        "import": "./dist/seidr.js",
+        "require": "./dist/seidr.cjs"
       },
       "node": {
-        "types": "./dist/node/seidr.d.ts",
-        "import": "./dist/node/seidr.js",
-        "require": "./dist/node/seidr.cjs"
+        "types": "./dist/seidr.node.d.ts",
+        "import": "./dist/seidr.node.js",
+        "require": "./dist/seidr.node.cjs"
       },
-      "default": "./dist/browser/seidr.js"
+      "default": "./dist/seidr.js"
     }
   },
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",
+    "dist/**/*.map",
     "README.md",
     "API.md",
     "SSR.md",
@@ -54,12 +55,13 @@
     "clean:dist": "rm -rf dist",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm clean:dist && pnpm build:javascript && pnpm build:types && pnpm bundlesizes",
+    "build": "pnpm clean:dist && pnpm build:javascript && pnpm build:types && pnpm copy:types && pnpm bundlesizes",
     "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c",
     "build:types": "pnpm build:types:browser:full && pnpm build:types:browser:core && pnpm build:types:node",
-    "build:types:browser:full": "dts-bundle-generator -o dist/browser/seidr.d.ts src/index.browser.ts",
-    "build:types:browser:core": "dts-bundle-generator -o dist/browser/seidr.core.d.ts src/index.browser.core.ts",
-    "build:types:node": "dts-bundle-generator -o dist/node/seidr.d.ts src/index.node.ts",
+    "build:types:browser:full": "dts-bundle-generator -o dist/seidr.d.ts src/index.browser.ts",
+    "build:types:browser:core": "dts-bundle-generator -o dist/seidr.core.d.ts src/index.browser.core.ts",
+    "build:types:node": "dts-bundle-generator -o dist/seidr.node.d.ts src/index.node.ts",
+    "copy:types": "cp dist/seidr.d.ts dist/seidr.min.d.ts && cp dist/seidr.core.d.ts dist/seidr.core.min.d.ts && cp dist/seidr.node.d.ts dist/seidr.node.min.d.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm build && pnpm build:examples && pnpm bundlesizes",
     "bundlesizes": "./calculate-bundle-sizes.sh",

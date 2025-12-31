@@ -61,19 +61,17 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
     };
 
     // Use mountList for proper reactive list rendering with cleanup
-    scope.track(
-      mountList(
-        todos,
-        (item) => item.id,
-        (item) =>
-          TodoItem({
-            todo: item,
-            onDelete: () => {
-              todos.value = todos.value.filter((t) => t.id !== item.id);
-            },
-          }),
-        todoList,
-      ),
+    mountList(
+      todos,
+      (item) => item.id,
+      (item) =>
+        TodoItem({
+          todo: item,
+          onDelete: () => {
+            todos.value = todos.value.filter((t) => t.id !== item.id);
+          },
+        }),
+      todoList,
     );
 
     return $div({ className: "todo-app" }, [

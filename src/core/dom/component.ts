@@ -21,6 +21,18 @@ export const getComponentStack = (): SeidrComponent[] => {
 };
 
 /**
+ * Get the current component from the component stack
+ * @returns {SeidrComponent | null} Current SeidrComponent, or null if stack is empty
+ */
+export const getCurrentComponent = (): SeidrComponent | null => {
+  const stack = getComponentStack();
+  if (stack.length > 0) {
+    return stack[stack.length - 1];
+  }
+  return null;
+};
+
+/**
  * Represents a Seidr component with automatic lifecycle management.
  *
  * Components are the primary building blocks of Seidr applications, encapsulating

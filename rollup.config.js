@@ -56,11 +56,11 @@ export default [
   {
     input: "src/index.node.ts",
     output: [
-      { file: "dist/node/seidr.js", format: "esm" },
-      { file: "dist/node/seidr.cjs", format: "cjs" },
+      { file: "dist/seidr.node.js", format: "esm" },
+      { file: "dist/seidr.node.cjs", format: "cjs" },
     ],
     // Mark Node built-ins as external so they aren't bundled
-    external: ["node:async_hooks", "node:module"],
+    external: ["node:async_hooks"],
     plugins: pluginsNode,
     treeshake,
   },
@@ -68,8 +68,8 @@ export default [
   {
     input: "src/index.browser.ts",
     output: [
-      { file: "dist/browser/seidr.js", format: "esm" },
-      { file: "dist/browser/seidr.cjs", format: "cjs" },
+      { file: "dist/seidr.js", format: "esm" },
+      { file: "dist/seidr.cjs", format: "cjs" },
     ],
     plugins: pluginsFull,
     treeshake,
@@ -78,8 +78,8 @@ export default [
   {
     input: "src/index.browser.ts",
     output: [
-      { file: "dist/browser/seidr.min.js", format: "esm", compact: true, sourcemap: true },
-      { file: "dist/browser/seidr.min.cjs", format: "cjs", compact: true, sourcemap: true },
+      { file: "dist/seidr.min.js", format: "esm", compact: true, sourcemap: true },
+      { file: "dist/seidr.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
     plugins: [...pluginsFull, terserPlugin],
     treeshake,
@@ -88,8 +88,8 @@ export default [
   {
     input: "src/index.browser.core.ts",
     output: [
-      { file: "dist/browser/seidr.core.js", format: "esm" },
-      { file: "dist/browser/seidr.core.cjs", format: "cjs" },
+      { file: "dist/seidr.core.js", format: "esm" },
+      { file: "dist/seidr.core.cjs", format: "cjs" },
     ],
     plugins: pluginsCore,
     treeshake,
@@ -98,8 +98,8 @@ export default [
   {
     input: "src/index.browser.core.ts",
     output: [
-      { file: "dist/browser/seidr.core.min.js", format: "esm", compact: true, sourcemap: true },
-      { file: "dist/browser/seidr.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
+      { file: "dist/seidr.core.min.js", format: "esm", compact: true, sourcemap: true },
+      { file: "dist/seidr.core.min.cjs", format: "cjs", compact: true, sourcemap: true },
     ],
     plugins: [...pluginsCore, terserPlugin],
     treeshake,

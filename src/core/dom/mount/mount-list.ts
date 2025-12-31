@@ -1,5 +1,5 @@
 import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
+import { getCurrentComponent, type SeidrComponent } from "../component";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -7,6 +7,9 @@ import type { SeidrComponent } from "../component";
  * mountList provides optimized list rendering with key-based diffing, ensuring
  * minimal DOM operations when the list changes. Components are reused when
  * possible, and only the necessary additions, removals, and reordering occur.
+ *
+ * If called within a parent component's render function, the cleanup is automatically
+ * tracked and will be executed when the parent component is destroyed.
  *
  * @template {any} T - The type of list items
  * @template {string | number} I - The type of unique item keys (string or number)
@@ -58,6 +61,21 @@ import type { SeidrComponent } from "../component";
  * // Remove item - only one component is destroyed
  * todos.value = todos.value.filter(todo => todo.id !== 1);
  * ```
+ *
+ * @example
+ * Automatic cleanup when used within a parent component
+ * ```typescript
+ * function TodoList() {
+ *   return component((scope) => {
+ *     const todos = new Seidr<Todo[]>([]);
+ *
+ *     // Automatically tracked - no need to store cleanup!
+ *     mountList(todos, (t) => t.id, (t) => TodoItem({ todo: t }), container);
+ *
+ *     return $('div', { className: 'todo-list' });
+ *   });
+ * }
+ * ```
  */
 export function mountList<T, I extends string | number, C extends SeidrComponent<any, any>>(
   observable: Seidr<T[]>,
@@ -107,7 +125,7 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
   // Track changes
   const unsubscribe = observable.observe(update);
 
-  return () => {
+  const cleanup = () => {
     unsubscribe();
     for (const component of componentMap.values()) {
       component.element.remove();
@@ -115,4 +133,12 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
     }
     componentMap.clear();
   };
+
+  // Automatically track cleanup if called within a component's render function
+  const parentComponent = getCurrentComponent();
+  if (parentComponent) {
+    parentComponent.scope.track(cleanup);
+  }
+
+  return cleanup;
 }

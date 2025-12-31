@@ -16,7 +16,7 @@ export default defineConfig((_config) => {
       "process.env.CORE_BUNDLE": "true",
       // Disable SSR code
       process: "undefined",
-      window: "true",
+      window: "{}",
     },
     build: {
       outDir: "examples/dist",

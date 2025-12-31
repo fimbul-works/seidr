@@ -1,5 +1,5 @@
 import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
+import { getCurrentComponent, type SeidrComponent } from "../component";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -7,6 +7,9 @@ import type { SeidrComponent } from "../component";
  * This function provides lazy component creation - the component factory function
  * is only called when the condition becomes true. When the condition becomes false,
  * the component is properly destroyed and removed from the DOM.
+ *
+ * If called within a parent component's render function, the cleanup is automatically
+ * tracked and will be executed when the parent component is destroyed.
  *
  * @template {SeidrComponent} C - The type of SeidrComponent being conditionally mounted
  *
@@ -43,6 +46,21 @@ import type { SeidrComponent } from "../component";
  * // Hide panel
  * isVisible.value = false; // Destroys and removes DetailsPanel
  * ```
+ *
+ * @example
+ * Automatic cleanup when used within a parent component
+ * ```typescript
+ * function ParentComponent() {
+ *   return component((scope) => {
+ *     const isVisible = new Seidr(false);
+ *
+ *     // Automatically tracked - no need to store cleanup!
+ *     mountConditional(isVisible, () => DetailsPanel(), document.body);
+ *
+ *     return $('div', { textContent: 'Parent' });
+ *   });
+ * }
+ * ```
  */
 export function mountConditional<C extends SeidrComponent<any, any>>(
   condition: Seidr<boolean>,
@@ -68,7 +86,7 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
   // Track changes
   const unsubscribe = condition.observe(update);
 
-  return () => {
+  const cleanup = () => {
     unsubscribe();
     if (currentComponent) {
       currentComponent.element.remove();
@@ -76,4 +94,12 @@ export function mountConditional<C extends SeidrComponent<any, any>>(
       currentComponent = null;
     }
   };
+
+  // Automatically track cleanup if called within a component's render function
+  const parentComponent = getCurrentComponent();
+  if (parentComponent) {
+    parentComponent.scope.track(cleanup);
+  }
+
+  return cleanup;
 }

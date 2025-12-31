@@ -1,4 +1,4 @@
-import type { SeidrComponent } from "../component";
+import { getCurrentComponent, type SeidrComponent } from "../component";
 
 /**
  * Mounts a component into a container element with automatic cleanup.
@@ -7,6 +7,9 @@ import type { SeidrComponent } from "../component";
  * and returns a cleanup function that can properly unmount the component, including
  * destroying all child components, removing event listeners, and cleaning up
  * reactive bindings.
+ *
+ * If called within a parent component's render function, the cleanup is automatically
+ * tracked and will be executed when the parent component is destroyed.
  *
  * @template {SeidrComponent} C - The type of SeidrComponent being mounted
  *
@@ -25,6 +28,25 @@ import type { SeidrComponent } from "../component";
  * // Later cleanup
  * unmount(); // Removes component and cleans up all resources
  * ```
+ *
+ * @example
+ * Automatic cleanup when mounted within a parent component
+ * ```typescript
+ * import { mount, component, $ } from '@fimbul-works/seidr';
+ *
+ * function ParentComponent() {
+ *   return component((scope) => {
+ *     const child = createChildComponent();
+ *
+ *     // Mount is automatically tracked - no need to store cleanup function!
+ *     mount(child, document.body);
+ *
+ *     return $('div', { textContent: 'Parent' });
+ *   });
+ * }
+ *
+ * // When ParentComponent is destroyed, child component is automatically unmounted
+ * ```
  */
 export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): () => void {
   // Check if element is already in the container (happens during hydration with DOM reuse)
@@ -34,8 +56,16 @@ export function mount<C extends SeidrComponent<any, any>>(component: C, containe
     container.appendChild(component.element);
   }
 
-  return () => {
+  const cleanup = () => {
     component.element.remove();
     component.destroy();
   };
+
+  // Automatically track cleanup if called within a component's render function
+  const parentComponent = getCurrentComponent();
+  if (parentComponent) {
+    parentComponent.scope.track(cleanup);
+  }
+
+  return cleanup;
 }
