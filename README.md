@@ -10,8 +10,10 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 ## Table of Contents
 
 - [Features](#-features)
+- [When to Use Seidr](#-when-to-use-seidr)
 - [Installation](#-installation)
 - [Quick Start](#-quick-start)
+- [Conceptual Overview](#-conceptual-overview)
 - [Core Concepts](#-core-concepts)
 - [Advanced Patterns](#-advanced-patterns)
 - [API Reference](#-api-reference)
@@ -28,6 +30,56 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
+
+## 🎯 When to Use Seidr
+
+Seidr is designed for developers who value **control, correctness, and deliberate engineering**. It's not the right tool for every project.
+
+### ✅ Ideal Use Cases
+
+**Small to Medium-Sized Applications**
+- SPAs where bundle size matters
+- Interactive widgets and components
+- Browser extensions with size constraints
+- Progressive enhancement of server-rendered pages
+
+**Projects That Benefit From**
+- Direct DOM manipulation without virtual DOM overhead
+- Explicit lifecycle management (no hidden re-renders)
+- Type-safe reactive bindings
+- Zero build step (or minimal build setup)
+- Full TypeScript support with advanced type inference
+
+**Teams That Prefer**
+- Functional programming patterns over class hierarchies
+- Explicit over implicit (no magic, just functions)
+- Understanding how their tools work internally
+- Control over performance characteristics
+
+### ❌ Consider Alternatives When
+
+**You Need**
+- A rich ecosystem of pre-built components (use React, Vue)
+- Complex routing and state management out of the box (use Next.js, SvelteKit)
+- Learning resources for junior developers (use more mainstream frameworks)
+- Built-in dev tools and debugging experiences (use React DevTools, Vue DevTools)
+
+**Your Team**
+- Is primarily focused on rapid prototyping over long-term maintainability
+- Prefers convention over configuration
+- Doesn't want to think about cleanup and memory management
+- Needs extensive community support and third-party integrations
+
+### 🎨 The Philosophy
+
+Seidr embraces **tradeoffs explicitly**:
+
+- **No virtual DOM** → Faster updates, more predictable performance, but manual DOM management
+- **One class only** → Simpler mental model, but you must understand observables deeply
+- **Functional API** → Composable and testable, but requires functional programming thinking
+- **Explicit cleanup** → No memory leaks, but requires understanding lifecycle
+
+This is infrastructure for developers who have felt the pain of framework abstractions and want something that gets out of the way.
 
 ## 📦 Installation
 
@@ -73,6 +125,181 @@ function Counter() {
 // Mount component
 mount(Counter(), document.body);
 ```
+
+## 🧠 Conceptual Overview
+
+Before diving into the details, it helps to understand Seidr's mental model. This section walks through the complete flow from state to reactivity to cleanup.
+
+### The Three Pillars
+
+**1. Observables (`Seidr<T>`)**
+- The only class in Seidr
+- Holds a value and notifies listeners when it changes
+- Think "reactive variable" not "state management system"
+
+**2. Bindings**
+- Connect observables to DOM properties
+- Automatically update when the observable changes
+- No manual DOM manipulation needed
+
+**3. Cleanup**
+- Every binding returns a cleanup function
+- Components track their bindings and clean up automatically
+- No memory leaks when components are destroyed
+
+### A Complete Flow: From State to UI to Cleanup
+
+Let's build a simple search filter step by step:
+
+#### Step 1: Create State
+```typescript
+import { Seidr } from '@fimbul-works/seidr';
+
+// Create an observable with initial value
+const searchQuery = new Seidr('');
+const items = new Seidr([
+  { id: 1, name: 'Apple' },
+  { id: 2, name: 'Banana' },
+  { id: 3, name: 'Cherry' }
+]);
+```
+
+#### Step 2: Derive Filtered Results
+```typescript
+// Create derived observable that filters based on search
+const filteredItems = items.as(items => {
+  const query = searchQuery.value.toLowerCase();
+  return query
+    ? items.filter(item => item.name.toLowerCase().includes(query))
+    : items;
+});
+```
+
+**What happens:** `filteredItems` is now a reactive value that automatically updates whenever:
+- `items` changes (if you add/remove items)
+- `searchQuery` changes (when user types)
+
+#### Step 3: Bind to DOM
+```typescript
+import { $input, $ul, $li, mount } from '@fimbul-works/seidr';
+
+// Create input bound to search query
+const searchInput = $input({
+  type: 'text',
+  placeholder: 'Search...',
+  // Two-way binding: observable -> DOM and DOM -> observable
+  value: searchQuery.value,
+  oninput: (e) => searchQuery.value = e.target.value
+});
+```
+
+**What happens:**
+- Initial render: input shows `searchQuery.value` (empty string)
+- User types "App": `oninput` fires → `searchQuery.value` becomes "App"
+- `filteredItems` automatically recomputes → `[{ id: 1, name: 'Apple' }]`
+
+#### Step 4: Create Component with List Rendering
+```typescript
+import { component, mountList } from '@fimbul-works/seidr';
+
+function SearchApp() {
+  return component((scope) => {
+    // All state created inside component
+    const searchQuery = new Seidr('');
+    const items = new Seidr([
+      { id: 1, name: 'Apple' },
+      { id: 2, name: 'Banana' },
+      { id: 3, name: 'Cherry' }
+    ]);
+
+    const filteredItems = items.as(items => {
+      const query = searchQuery.value.toLowerCase();
+      return query
+        ? items.filter(item => item.name.toLowerCase().includes(query))
+        : items;
+    });
+
+    const searchInput = $input({
+      type: 'text',
+      placeholder: 'Search...',
+      value: searchQuery.value,
+      oninput: (e) => searchQuery.value = e.target.value
+    });
+
+    // Create container for filtered items
+    const listContainer = $ul();
+
+    // Mount list with key-based diffing
+    mountList(
+      filteredItems,
+      (item) => item.id,
+      (item) => $li({ textContent: item.name }),
+      listContainer
+    );
+
+    return $div({}, [searchInput, listContainer]);
+  });
+}
+```
+
+**What happens:**
+- `mountList` tracks `filteredItems` observable
+- When `filteredItems` changes:
+  - Diff algorithm finds changed/added/removed items
+  - Updates only affected DOM elements
+  - No full re-render
+
+#### Step 5: Mount and Automatic Cleanup
+```typescript
+const app = SearchApp();
+const cleanup = mount(app, document.body);
+
+// App is now interactive!
+// - User types → searchQuery updates → filteredItems recomputes → list updates
+// - All reactive bindings work automatically
+
+// When done, cleanup everything:
+cleanup();
+// - All reactive bindings disconnected
+// - All event listeners removed
+// - All DOM elements removed
+// - No memory leaks
+```
+
+### The Mental Model
+
+**Think in Graphs, Not Trees**
+
+```
+searchQuery (root)
+    ↓
+items (root) → filteredItems (derived) → list rendering
+```
+
+- **Root observables** (`searchQuery`, `items`) hold actual data
+- **Derived observables** (`filteredItems`) transform data
+- **Bindings** connect observables to DOM
+
+**The Flow:**
+1. User action changes root observable
+2. Change propagates through derived observables
+3. Bindings update DOM elements directly
+4. No virtual DOM, no diffing entire component trees
+
+**Why This Matters:**
+- **Predictable:** You know exactly what updates when
+- **Efficient:** Only changed DOM elements update
+- **Simple:** One-way data flow, no cycles
+- **Type-safe:** TypeScript tracks observable types through derivations
+
+### Key Takeaways
+
+1. **Seidr instances are the source of truth** - all state flows from them
+2. **Derived values are automatic** - no manual recomputation needed
+3. **Cleanup is automatic** - components track and clean up their bindings
+4. **Direct DOM manipulation** - no virtual DOM means predictable performance
+
+This model gives you **control** without **complexity**. You understand exactly what's happening, but you don't have to manage the details manually.
 
 ## 🎯 Core Concepts
 
@@ -123,6 +350,44 @@ function UserProfile() {
   });
 }
 ```
+
+#### Components with Props
+
+Components accept parameters for configuration and initial state:
+
+```typescript
+function Counter({ initialCount = 0, step = 1 } = {}) {
+  return component((scope) => {
+    const count = new Seidr(initialCount);
+    const disabled = count.as(value => value >= 10);
+
+    return $div({ className: 'counter' }, [
+      $span({ textContent: count.as(n => `Count: ${n}`) }),
+      $button({
+        textContent: `+${step}`,
+        disabled,
+        onclick: () => count.value += step
+      }),
+      $button({
+        textContent: 'Reset',
+        onclick: () => count.value = 0
+      })
+    ]);
+  });
+}
+
+// Usage: Create component instances with different props
+const counter1 = Counter({ initialCount: 5, step: 2 });
+const counter2 = Counter({ initialCount: 0 });  // Uses defaults
+
+mount(counter1, document.body);
+```
+
+**Key Points:**
+- Props are passed when creating the component (not when mounting)
+- Each component instance has its own isolated state
+- Props can include initial values, configuration, or callbacks
+- Destructuring with defaults (`= {}`) makes props optional
 
 **Learn more:** [component()](API.md#component) | [Manual bindings](API.md#seidrbind)
 

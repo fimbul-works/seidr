@@ -219,6 +219,8 @@ export class SSRScope {
     }
 
     // Clear observables map to prevent memory leaks
+    // First destroy all observables to clean up observer relationships
+    this.destroyObservables();
     this.observables.clear();
 
     return {
@@ -267,5 +269,38 @@ export class SSRScope {
    */
   clear(): void {
     this.observables.clear();
+  }
+
+  /**
+   * Destroys all registered observables recursively.
+   *
+   * This method:
+   * 1. Starts with root observables (those with no parents)
+   * 2. Calls destroy() on each observable
+   * 3. This recursively cleans up all derived observables that observe them
+   *
+   * Called after capturing hydration data to ensure proper cleanup.
+   */
+  destroyObservables(): void {
+    // Start from roots and work down to avoid destroying parents before children
+    const entries = Array.from(this.observables.entries());
+
+    // Build a quick dependency map to find roots
+    const hasParents = new Set<string>();
+    for (const [, parents] of this.parents.entries()) {
+      parents.forEach(parentId => hasParents.add(parentId));
+    }
+
+    // Destroy root observables first (those that aren't anyone's child)
+    for (const [id, seidr] of entries) {
+      if (!hasParents.has(id)) {
+        seidr.destroy();
+      }
+    }
+
+    // Then destroy all remaining observables (derived ones)
+    for (const [, seidr] of entries) {
+      seidr.destroy();
+    }
   }
 }

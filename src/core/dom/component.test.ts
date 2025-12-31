@@ -80,6 +80,70 @@ describe("Documentation Examples", () => {
     });
   });
 
+  describe("Components with Props example", () => {
+    it("should demonstrate component with props for configuration", () => {
+      interface CounterProps {
+        initialCount?: number;
+        step?: number;
+        label?: string;
+      }
+
+      function Counter({ initialCount = 0, step = 1, label = "Counter" }: CounterProps = {}) {
+        return component((scope) => {
+          const count = new Seidr(initialCount);
+          const disabled = count.as((value) => value >= 10);
+
+          return $("div", { className: "counter" }, [
+            $("span", { textContent: label }),
+            $("span", { textContent: count.as((n) => `: ${n}`) }),
+            $("button", {
+              textContent: `+${step}`,
+              disabled,
+              onclick: () => (count.value += step),
+            }),
+            $("button", {
+              textContent: "Reset",
+              onclick: () => (count.value = 0),
+            }),
+          ]);
+        });
+      }
+
+      // Create component with custom props
+      const counter1 = Counter({ initialCount: 5, step: 2, label: "Steps" });
+      document.body.appendChild(counter1.element);
+
+      const spans = counter1.element.querySelectorAll("span");
+      const buttons = counter1.element.querySelectorAll("button");
+
+      // Verify label and initial count
+      expect(spans[0].textContent).toBe("Steps");
+      expect(spans[1].textContent).toBe(": 5");
+
+      // Click increment (should add 2)
+      buttons[0].click();
+      expect(spans[1].textContent).toBe(": 7");
+
+      // Create another component with defaults
+      const counter2 = Counter();
+      document.body.appendChild(counter2.element);
+
+      const spans2 = counter2.element.querySelectorAll("span");
+      expect(spans2[0].textContent).toBe("Counter");
+      expect(spans2[1].textContent).toBe(": 0");
+
+      // Cleanup
+      counter1.destroy();
+      counter2.destroy();
+      if (document.body.contains(counter1.element)) {
+        document.body.removeChild(counter1.element);
+      }
+      if (document.body.contains(counter2.element)) {
+        document.body.removeChild(counter2.element);
+      }
+    });
+  });
+
   describe("Manual scope creation example", () => {
     it("should demonstrate manual scope lifecycle management", () => {
       const scope = createScope();

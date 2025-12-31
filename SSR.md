@@ -62,11 +62,23 @@ For data coming from **outside** the [`renderToString()`](#rendertostring) funct
 **How it works:**
 ```typescript
 export async function render(_url, todos = []) {
-  // State comes from OUTSIDE (function parameter)
-  const state = new Seidr(todos);
-
   await runWithRenderContext(async () => {
+    // State comes from OUTSIDE (function parameter)
+    // Can be a Seidr observable or plain value
+    const state = new Seidr(todos);
+
     [setState()](API.md#setstate)([createStateKey()](API.md#createstatekey)("todos"), state);
+    return await [renderToString()](#rendertostring)(TodoApp);
+  });
+}
+```
+
+**Simplified version (no manual Seidr creation):**
+```typescript
+export async function render(_url, todos = []) {
+  await runWithRenderContext(async () => {
+    // Just pass the plain value - restoreGlobalState will wrap it in Seidr
+    [setState()](API.md#setstate)([createStateKey()](API.md#createstatekey)("todos"), new Seidr(todos));
     return await [renderToString()](#rendertostring)(TodoApp);
   });
 }
@@ -311,7 +323,7 @@ interface HydrationData {
   observables: Record<string, any>;           // Root observable values (numeric ID -> value)
   bindings: Record<string, ElementBinding[]>; // element ID (data-seidr-id) -> bindings
   graph: DependencyGraph;                     // Derived observable dependency graph
-  state?: Record<string, any>;                // Optional State values
+  state?: Record<string, any>;                // Optional State values (uses $/ prefix for Seidr)
 }
 ```
 
@@ -336,9 +348,17 @@ interface HydrationData {
       { "id": 1, "parents": [] }
     ],
     "rootIds": [0, 1]
+  },
+  "state": {
+    "$/0": "Alice",
+    "1": { "theme": "dark" }
   }
 }
 ```
+
+**State Field Format:**
+- `$/0` - Seidr observable (prefix with `$/`, use numeric ID)
+- `1` - Plain value (just numeric ID)
 
 ## Best Practices
 

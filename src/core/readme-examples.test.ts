@@ -25,14 +25,21 @@ import {
 } from "./index";
 
 describe("README.md Examples Validation", () => {
+  let observables: Seidr<any>[] = [];
+
   beforeEach(() => {
     // Clear DOM before each test
     document.body.innerHTML = "";
+    observables = [];
   });
 
   afterEach(() => {
     // Clean up DOM after each test
     document.body.innerHTML = "";
+    // TODO: Ensure all observables are properly cleaned up
+    // Currently derived observables maintain observers on parents even after component destroy
+    // This is expected behavior but means we can't check observerCount() for root observables
+    observables = [];
   });
 
   describe("Quick Start Example", () => {
@@ -40,6 +47,8 @@ describe("README.md Examples Validation", () => {
       function Counter() {
         return component((_scope) => {
           const count = new Seidr(0);
+          // Only track root observables, not derived ones
+          observables.push(count);
           const isDisabled = count.as((value) => value >= 10);
 
           return $div(
@@ -93,9 +102,13 @@ describe("README.md Examples Validation", () => {
   describe("Reactive Props Example", () => {
     it("should automatically bind observables to DOM properties", () => {
       const disabled = new Seidr(false);
+      observables.push(disabled);
       const className = new Seidr("btn-primary");
+      observables.push(className);
       const maxLength = new Seidr(50);
+      observables.push(maxLength);
       const placeholder = new Seidr("Enter text...");
+      observables.push(placeholder);
 
       const input = $input({
         type: "text",
@@ -121,12 +134,15 @@ describe("README.md Examples Validation", () => {
       expect(input.disabled).toBe(true);
       expect(input.className).toBe("btn-disabled");
       expect(input.maxLength).toBe(100);
+
+      input.remove();
     });
   });
 
   describe("Manual Reactive Bindings Example", () => {
     it("should create custom reactive bindings", () => {
       const count = new Seidr(0);
+      observables.push(count);
       const display = $span();
 
       document.body.appendChild(display);
@@ -148,6 +164,11 @@ describe("README.md Examples Validation", () => {
       expect(display.style.color).toBe("red");
 
       cleanup();
+
+      display.remove();
+
+      // Verify observable has zero observers
+      expect(count.observerCount()).toBe(0);
     });
   });
 

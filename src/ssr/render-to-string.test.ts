@@ -11,10 +11,13 @@ import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
 
 describe("SSR Utilities", () => {
+  let observables: Seidr<any>[] = [];
+
   beforeEach(() => {
     // Enable SSR mode for all tests
     // @ts-expect-error
     process.env.SEIDR_TEST_SSR = true;
+    observables = [];
   });
 
   afterEach(() => {
@@ -30,13 +33,20 @@ describe("SSR Utilities", () => {
 
     // Clear hydration context
     clearHydrationData();
+
+    // Verify all observables have zero observers after SSR
+    observables.forEach(obs => {
+      expect(obs.observerCount()).toBe(0);
+    });
   });
 
   describe("renderToString", () => {
     it("should render simple component and capture state", async () => {
+      let count: Seidr<number>;
       const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
-          const count = new Seidr(42);
+          count = new Seidr(42);
+          observables.push(count);
           return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
         });
       });
@@ -47,12 +57,17 @@ describe("SSR Utilities", () => {
       expect(hydrationData.observables[0]).toBe(42);
       // Should have captured the binding
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
+
+      // Verify observable has zero observers after render
+      expect(count!.observerCount()).toBe(0);
     });
 
     it("should only capture root observable state", async () => {
+      let count: Seidr<number>;
       const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
-          const count = new Seidr(10);
+          count = new Seidr(10);
+          observables.push(count);
           const doubled = count.as((n) => n * 2);
 
           return $("div", {}, [
@@ -69,13 +84,19 @@ describe("SSR Utilities", () => {
       expect(hydrationData.observables[0]).toBe(10);
       // Should have captured bindings for both spans
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
+
+      // Verify root observable has zero observers after render
+      expect(count!.observerCount()).toBe(0);
     });
 
     it("should capture multiple root observables", async () => {
+      let firstName: Seidr<string>;
+      let lastName: Seidr<string>;
       const { html, hydrationData } = await renderToString(() => {
         return component((_scope) => {
-          const firstName = new Seidr("John");
-          const lastName = new Seidr("Doe");
+          firstName = new Seidr("John");
+          lastName = new Seidr("Doe");
+          observables.push(firstName, lastName);
           const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
           return $("div", {}, [$("h1", { textContent: fullName })]);
@@ -89,6 +110,10 @@ describe("SSR Utilities", () => {
       expect(hydrationData.observables[1]).toBe("Doe");
       // Should have captured binding
       expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
+
+      // Verify all root observables have zero observers after render
+      expect(firstName!.observerCount()).toBe(0);
+      expect(lastName!.observerCount()).toBe(0);
     });
 
     it("should capture computed dependencies but not computed values", async () => {

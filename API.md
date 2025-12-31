@@ -373,6 +373,57 @@ document.body.appendChild(profile.element);
 profile.destroy(); // Cleans up all reactive bindings automatically
 ```
 
+**Components with Props:**
+
+Components can accept parameters for configuration and initial state. Props are passed when creating the component instance:
+
+```typescript
+import { component, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+
+interface CounterProps {
+  initialCount?: number;
+  step?: number;
+  label?: string;
+}
+
+function Counter({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) {
+  return component((scope) => {
+    const count = new Seidr(initialCount);
+    const disabled = count.as(value => value >= 10);
+
+    return $div({ className: 'counter' }, [
+      $span({ textContent: label }),
+      $span({ textContent: count.as(n => `: ${n}`) }),
+      $button({
+        textContent: `+${step}`,
+        disabled,
+        onclick: () => count.value += step
+      }),
+      $button({
+        textContent: 'Reset',
+        onclick: () => count.value = 0
+      })
+    ]);
+  });
+}
+
+// Create multiple instances with different props
+const counter1 = Counter({ initialCount: 5, step: 2, label: 'Steps' });
+const counter2 = Counter({ initialCount: 0 });  // Uses defaults
+const counter3 = Counter({ label: 'Simple' });
+
+// Mount them
+document.body.appendChild(counter1.element);
+document.body.appendChild(counter2.element);
+document.body.appendChild(counter3.element);
+```
+
+**Props Best Practices:**
+- Destructure props with defaults for optional parameters: `{ prop = default } = {}`
+- Use TypeScript interfaces for type safety on props
+- Props are captured when the component is created (not when mounted)
+- Each component instance has isolated state, even with the same props
+
 **Component Hierarchy with Automatic Tracking**:
 
 ```typescript
