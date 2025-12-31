@@ -95,17 +95,17 @@ const fullName = Seidr.computed(
 
 // Dependency graph stores:
 // doubled -> [count (index 0)]
-// fullName -> [firstName (index 0), lastName (index 1)]
+// fullName -> [firstName (index 2), lastName (index 3)]
 ```
 
 **2. Path-Based Restoration**: Each element binding stores a `path` array that indicates which parent dependencies to traverse:
 
 ```json
 {
-  "elementId": "5",        // The element's data-seidr-id attribute value
-  "seidrId": "2",           // Numeric ID of the bound Seidr instance
+  "elementId": 5,        // The element's data-seidr-id attribute value
+  "seidrId": 4,          // Numeric ID of the bound Seidr instance
   "prop": "textContent",
-  "path": [0, 1]          // "To get value, follow parents: parent[0] → parent[1]"
+  "path": [2, 3]         // "To get value, follow parents: parent[2] → parent[3]"
 }
 ```
 

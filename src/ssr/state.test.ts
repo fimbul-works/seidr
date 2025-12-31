@@ -1,31 +1,30 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getRenderContext } from "../core/render-context-contract";
+import { globalStates } from "../core/state";
 import { Seidr } from "../core/seidr";
-import { createStateKey, getState, globalStates, hasState, setState, symbolNames } from "../core/state";
+import { symbolNames } from "../core/state";
 import { runWithRenderContextSync } from "../render-context.node";
 import { captureRenderContextState, restoreGlobalState } from "./state";
+import { createStateKey, getState, hasState, setState } from "../core/state";
 
 describe("SSR State Serialization", () => {
   beforeEach(() => {
-    // Clear all global state and symbols before each test
     globalStates.clear();
     symbolNames.clear();
   });
 
   afterEach(() => {
-    // Clean up after each test
     globalStates.clear();
     symbolNames.clear();
   });
 
-  // Helper to capture state from the current render context
   const captureState = () => {
     const ctx = getRenderContext();
     return captureRenderContextState(ctx!.renderContextID);
   };
 
   describe("captureRenderContextState", () => {
-    it("should capture Seidr observables with $/ prefix", () => {
+    it("should capture Seidr observables with $/ prefix and numeric IDs", () => {
       runWithRenderContextSync(() => {
         const userKey = createStateKey<Seidr<string>>("user");
         const countKey = createStateKey<Seidr<number>>("count");
@@ -33,18 +32,17 @@ describe("SSR State Serialization", () => {
         setState(userKey, new Seidr("Alice"));
         setState(countKey, new Seidr(42));
 
-        // Get the actual render context ID from the current context
-        const ctx = getRenderContext();
-        const state = captureRenderContextState(ctx!.renderContextID);
+        const state = captureState();
 
+        // IDs: 0 for "user", 1 for "count"
         expect(state).toEqual({
-          "$/user": "Alice",
-          "$/count": 42,
+          "$/0": "Alice",
+          "$/1": 42
         });
       });
     });
 
-    it("should capture plain values without prefix", () => {
+    it("should capture plain values with numeric IDs", () => {
       runWithRenderContextSync(() => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const configKey = createStateKey<{ debug: boolean }>("config");
@@ -54,9 +52,10 @@ describe("SSR State Serialization", () => {
 
         const state = captureState();
 
+        // IDs: 0 for "settings", 1 for "config"
         expect(state).toEqual({
-          settings: { theme: "dark" },
-          config: { debug: true },
+          "0": { theme: "dark" },
+          "1": { debug: true }
         });
       });
     });
@@ -73,10 +72,11 @@ describe("SSR State Serialization", () => {
 
         const state = captureState();
 
+        // IDs: 0 for "user", 1 for "settings", 2 for "count"
         expect(state).toEqual({
-          "$/user": "Bob",
-          settings: { theme: "light" },
-          "$/count": 100,
+          "$/0": "Bob",
+          "1": { theme: "light" },
+          "$/2": 100
         });
       });
     });
@@ -87,7 +87,7 @@ describe("SSR State Serialization", () => {
         const doubledKey = createStateKey<Seidr<number>>("doubled");
 
         const count = new Seidr(5);
-        const doubled = count.as((n) => n * 2); // Derived
+        const doubled = count.as(n => n * 2); // Derived
 
         setState(countKey, count);
         setState(doubledKey, doubled);
@@ -96,9 +96,9 @@ describe("SSR State Serialization", () => {
 
         // Only non-derived Seidr should be captured
         expect(state).toEqual({
-          "$/count": 5,
+          "$/0": 5  // "count" has ID 0
         });
-        expect(state).not.toHaveProperty("$/doubled");
+        expect(state).not.toHaveProperty("$/1"); // "doubled" not captured
       });
     });
 
@@ -111,14 +111,14 @@ describe("SSR State Serialization", () => {
   });
 
   describe("restoreGlobalState", () => {
-    it("should restore Seidr observables from $/ prefixed keys", () => {
+    it("should restore Seidr observables from $/ prefixed numeric keys", () => {
       runWithRenderContextSync(() => {
         const userKey = createStateKey<Seidr<string>>("user");
         const countKey = createStateKey<Seidr<number>>("count");
 
         restoreGlobalState({
-          "$/user": "Alice",
-          "$/count": 42,
+          "$/0": "Alice",  // ID 0 for "user"
+          "$/1": 42       // ID 1 for "count"
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -131,14 +131,14 @@ describe("SSR State Serialization", () => {
       });
     });
 
-    it("should restore plain values from non-prefixed keys", () => {
+    it("should restore plain values from numeric keys", () => {
       runWithRenderContextSync(() => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const configKey = createStateKey<{ debug: boolean }>("config");
 
         restoreGlobalState({
-          settings: { theme: "dark" },
-          config: { debug: true },
+          "0": { theme: "dark" },  // ID 0 for "settings"
+          "1": { debug: true }      // ID 1 for "config"
         });
 
         const settings = getState<{ theme: string }>(settingsKey);
@@ -158,9 +158,9 @@ describe("SSR State Serialization", () => {
         const countKey = createStateKey<Seidr<number>>("count");
 
         restoreGlobalState({
-          "$/user": "Bob",
-          settings: { theme: "light" },
-          "$/count": 100,
+          "$/0": "Bob",
+          "1": { theme: "light" },
+          "$/2": 100
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -177,12 +177,10 @@ describe("SSR State Serialization", () => {
       runWithRenderContextSync(() => {
         const userKey = createStateKey<Seidr<string>>("user");
 
-        // Create initial Seidr instance
         setState(userKey, new Seidr("Initial"));
 
-        // Restore should update the existing instance
         restoreGlobalState({
-          "$/user": "Updated",
+          "$/0": "Updated"  // ID 0 for "user"
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -197,7 +195,7 @@ describe("SSR State Serialization", () => {
         expect(hasState(userKey)).toBe(false);
 
         restoreGlobalState({
-          "$/user": "New User",
+          "$/0": "New User"  // ID 0 for "user"
         });
 
         expect(hasState(userKey)).toBe(true);
@@ -213,7 +211,7 @@ describe("SSR State Serialization", () => {
         setState(settingsKey, { theme: "dark" });
 
         restoreGlobalState({
-          settings: { theme: "light" },
+          "0": { theme: "light" }  // ID 0 for "settings"
         });
 
         const settings = getState<{ theme: string }>(settingsKey);
@@ -221,14 +219,14 @@ describe("SSR State Serialization", () => {
       });
     });
 
-    it("should ignore unknown keys", () => {
+    it("should ignore unknown numeric IDs", () => {
       runWithRenderContextSync(() => {
         const userKey = createStateKey<Seidr<string>>("user");
 
         restoreGlobalState({
-          "$/user": "Alice",
-          "$/unknown": "value", // This key doesn't exist
-          settings: { theme: "dark" }, // This key doesn't exist
+          "$/0": "Alice",
+          "$/99": "value", // This ID doesn't exist
+          "99": { theme: "dark" } // This ID doesn't exist
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -244,18 +242,14 @@ describe("SSR State Serialization", () => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const countKey = createStateKey<Seidr<number>>("count");
 
-        // Set initial values
         setState(userKey, new Seidr("Alice"));
         setState(settingsKey, { theme: "dark" });
         setState(countKey, new Seidr(42));
 
-        // Serialize
         const serialized = captureState();
 
-        // Deserialize
         restoreGlobalState(serialized);
 
-        // Verify values match
         const user = getState<Seidr<string>>(userKey);
         const settings = getState<{ theme: string }>(settingsKey);
         const count = getState<Seidr<number>>(countKey);
@@ -275,7 +269,7 @@ describe("SSR State Serialization", () => {
 
         const complexConfig = {
           database: { host: "localhost", port: 5432 },
-          features: ["auth", "logging", "caching"],
+          features: ["auth", "logging", "caching"]
         };
 
         setState(configKey, complexConfig);
@@ -299,15 +293,13 @@ describe("SSR State Serialization", () => {
 
         const todoProps: Todo[] = [
           { id: 1, text: "Learn Seidr", completed: false },
-          { id: 2, text: "Build apps", completed: false },
+          { id: 2, text: "Build apps", completed: false }
         ];
 
-        // Simulating SSR data from server
         restoreGlobalState({
-          "$/todos": todoProps,
+          "$/0": todoProps  // ID 0 for "todos"
         });
 
-        // Now we can just get the state - it's automatically a Seidr!
         const todos = getState<Seidr<Todo[]>>(todosKey);
 
         expect(todos).toBeInstanceOf(Seidr);
@@ -321,20 +313,18 @@ describe("SSR State Serialization", () => {
 
         type Todo = { id: number; text: string; completed: boolean };
 
-        const todoProps: Todo[] = [{ id: 1, text: "Learn Seidr", completed: false }];
+        const todoProps: Todo[] = [
+          { id: 1, text: "Learn Seidr", completed: false }
+        ];
 
-        // Simulate server scenario
         if (todoProps) {
           setState(todosKey, new Seidr(todoProps));
         }
 
-        // Serialize on server
         const serverState = captureState();
 
-        // Hydrate on client
         restoreGlobalState(serverState);
 
-        // Get hydrated state - automatically wrapped in Seidr
         const todos = getState<Seidr<Todo[]>>(todosKey);
 
         expect(todos).toBeInstanceOf(Seidr);
