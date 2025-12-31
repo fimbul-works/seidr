@@ -1,16 +1,44 @@
 import type { SeidrElementInterface } from "../core/index";
 import { isFn, isObj, isSeidr, isStr } from "../core/util/is";
 
+/**
+ * Global map of server-side HTML elements indexed by their ID attribute.
+ *
+ * This map allows for O(1) lookup of elements by ID during server-side rendering,
+ * mirroring the behavior of `document.getElementById()` on the client side.
+ *
+ * @example
+ * ```typescript
+ * const div = new ServerHTMLElement("div", { id: "my-div" });
+ * const found = ServerElementMap.get("my-div"); // Returns the div element
+ * ```
+ */
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
 
 /**
  * Server-side DOM utilities that mirror the client-side API
  * but generate HTML strings instead of actual DOM elements.
+ *
+ * @internal
  */
 export type Attributes = Record<string, string | number | boolean | null | undefined>;
 
 /**
  * Mock DOMTokenList for classList support on server side.
+ *
+ * Provides a subset of the DOMTokenList API for manipulating CSS classes
+ * during server-side rendering. Changes are tracked via an optional callback.
+ *
+ * @internal
+ * @example
+ * ```typescript
+ * const classList = new ServerDOMTokenList("foo bar", (value) => {
+ *   console.log("Classes changed to:", value);
+ * });
+ *
+ * classList.add("baz"); // Triggers callback with "foo bar baz"
+ * classList.toggle("foo"); // Removes "foo", triggers callback
+ * ```
  */
 class ServerDOMTokenList {
   private classes: Set<string>;
@@ -79,7 +107,22 @@ class ServerDOMTokenList {
 
 /**
  * Mock CSSStyleDeclaration for server-side rendering.
+ *
  * Stores styles as a string since we don't have actual DOM on server.
+ * Supports both string assignment (e.g., `element.style = "color: red;"`) and
+ * individual property manipulation (e.g., `element.style.color = "red"`).
+ *
+ * @internal
+ * @example
+ * ```typescript
+ * const style = new ServerCSSStyleDeclaration(
+ *   () => "color: blue;",
+ *   (s) => console.log("Style set to:", s)
+ * );
+ *
+ * style.setProperty("font-size", "14px"); // Sets style
+ * style.getPropertyValue("color"); // Returns "blue"
+ * ```
  */
 class ServerCSSStyleDeclaration {
   constructor(
@@ -87,12 +130,10 @@ class ServerCSSStyleDeclaration {
     private setStyle: (style: string) => void,
   ) {}
 
-  // Support string assignment (e.g., element.style = "color: red;")
   toString(): string {
     return this.getStyle();
   }
 
-  // Support individual properties (e.g., element.style.color = "red")
   setProperty(property: string, value: string): void {
     const currentStyle = this.getStyle();
     const styles = currentStyle
@@ -134,30 +175,206 @@ class ServerCSSStyleDeclaration {
   }
 }
 
+/**
+ * Server-side HTMLElement implementation for SSR.
+ *
+ * This class mimics the browser's HTMLElement API but generates HTML strings
+ * instead of manipulating actual DOM elements. It's used during server-side
+ * rendering to create HTML markup that can be sent to the client.
+ *
+ * @template T - The HTML tag name (e.g., "div", "span", "button")
+ *
+ * @example
+ * ```typescript
+ * const div = new ServerHTMLElement("div", { className: "container" }, [
+ *   new ServerHTMLElement("span", { textContent: "Hello" })
+ * ]);
+ *
+ * console.log(div.toString());
+ * // Output: <div class="container"><span>Hello</span></div>
+ * ```
+ *
+ * @internal
+ */
 export class ServerHTMLElement implements SeidrElementInterface {
-  // Internal storage
+  /**
+   * Internal style storage.
+   * @internal
+   */
   private _style: string = "";
+
+  /**
+   * Internal text content storage.
+   * @internal
+   */
   private _textContent: string = "";
+
+  /**
+   * Internal class name storage.
+   * @internal
+   */
   private _className: string = "";
+
+  /**
+   * Internal inner HTML storage.
+   * @internal
+   */
   private _innerHTML: string = "";
 
-  // Public properties matching HTMLElement interface
+  /**
+   * The HTML tag name (e.g., "DIV", "SPAN", "BUTTON").
+   *
+   * @type {string}
+   * @readonly
+   */
   public readonly tagName: string;
+
+  /**
+   * CSS style declaration for inline styles.
+   *
+   * @type {ServerCSSStyleDeclaration}
+   */
   public style: ServerCSSStyleDeclaration;
+
+  /**
+   * Parent element in the DOM tree.
+   *
+   * @type {ServerHTMLElement | undefined}
+   */
   public parentElement?: ServerHTMLElement;
+
+  /**
+   * Element ID attribute.
+   *
+   * Automatically registers the element in {@link ServerElementMap} when set.
+   *
+   * @type {string | undefined}
+   */
   private _id?: string;
+
+  /**
+   * Element value property (for inputs, textareas, etc.).
+   *
+   * @type {string | undefined}
+   * @internal
+   */
   private _value?: string;
+
+  /**
+   * Checked state for checkboxes and radio buttons.
+   *
+   * @type {boolean | undefined}
+   * @internal
+   */
   private _checked?: boolean;
+
+  /**
+   * Disabled state for form elements.
+   *
+   * @type {boolean | undefined}
+   * @internal
+   */
   private _disabled?: boolean;
+
+  /**
+   * Readonly state for form elements.
+   *
+   * @type {boolean | undefined}
+   * @internal
+   */
   private _readonly?: boolean;
+
+  /**
+   * Required state for form elements.
+   *
+   * @type {boolean | undefined}
+   * @internal
+   */
   private _required?: boolean;
+
+  /**
+   * Input type (e.g., "text", "checkbox", "radio").
+   *
+   * @type {string | undefined}
+   * @internal
+   */
   private _type?: string;
+
+  /**
+   * Href attribute for anchor tags.
+   *
+   * @type {string | undefined}
+   * @internal
+   */
   private _href?: string;
+
+  /**
+   * Src attribute for image, script, iframe tags.
+   *
+   * @type {string | undefined}
+   * @internal
+   */
   private _src?: string;
 
+  /**
+   * Class list for CSS class manipulation.
+   *
+   * Provides methods to add, remove, toggle, and check for CSS classes.
+   *
+   * @type {ServerDOMTokenList}
+   */
   public classList: ServerDOMTokenList;
+
+  /**
+   * Data attributes (data-* attributes).
+   *
+   * Stores custom data attributes that can be accessed via `dataset-*` properties.
+   *
+   * @type {Record<string, string>}
+   */
   public dataset: Record<string, string> = {};
 
+  /**
+   * Internal attributes storage.
+   *
+   * @type {Attributes}
+   * @internal
+   */
+  private _attributes: Attributes = {};
+
+  /**
+   * Create a new server-side HTML element.
+   *
+   * Initializes a mock HTMLElement for server-side rendering with the given
+   * tag name, attributes, and children. Processes Seidr observables by evaluating
+   * their current value (no reactive binding on server side).
+   *
+   * @param {string} tag - HTML tag name (e.g., "div", "span", "button")
+   * @param {Attributes} [attrs={}] - Element attributes, properties, and event handlers
+   * @param {(ServerHTMLElement | string)[]} [children=[]] - Child elements or text nodes
+   * @returns {ServerHTMLElement} A server-side HTML element mock
+   *
+   * @example
+   * Create a div with class and children
+   * ```typescript
+   * const div = new ServerHTMLElement(
+   *   "div",
+   *   { className: "container", id: "main" },
+   *   [new ServerHTMLElement("span", { textContent: "Hello" })]
+   * );
+   * ```
+   *
+   * @example
+   * Create an input with reactive binding evaluated
+   * ```typescript
+   * const disabled = new Seidr(false);
+   * const input = new ServerHTMLElement("input", {
+   *   type: "text",
+   *   disabled, // Automatically evaluates to disabled.value
+   *   value: "Initial text"
+   * });
+   * ```
+   */
   constructor(
     tag: string,
     attrs: Attributes = {},
@@ -175,9 +392,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
     this.classList = new ServerDOMTokenList("", (value) => {
       this._className = value;
     });
-
-    // Initialize attributes and process special properties
-    this._attributes = {};
 
     // Process all attributes
     for (const [key, value] of Object.entries(attrs)) {
@@ -219,14 +433,36 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * Type guard identifying this as a Seidr element.
+   *
+   * Always returns `true` for ServerHTMLElement instances.
+   *
+   * @type {true}
+   * @readonly
+   */
   get isSeidrElement(): true {
     return true;
   }
 
+  /**
+   * Element ID attribute.
+   *
+   * Automatically registers the element in {@link ServerElementMap} when set.
+   *
+   * @type {string | undefined}
+   */
   get id(): string | undefined {
     return this._id;
   }
 
+  /**
+   * Set element ID attribute.
+   *
+   * Automatically removes old ID from {@link ServerElementMap} and registers new ID.
+   *
+   * @param {string | undefined} id - New ID value
+   */
   set id(id: string | undefined) {
     if (this._id) {
       ServerElementMap.delete(this._id);
@@ -237,110 +473,269 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * CSS class name.
+   *
+   * Gets or sets the element's CSS class names. Automatically syncs with `classList`.
+   *
+   * @type {string}
+   */
   get className(): string {
     return this._className;
   }
 
+  /**
+   * Set CSS class name.
+   *
+   * @param {string} value - New class name value
+   */
   set className(value: string) {
     this._className = value;
     this.classList.value = value;
   }
 
+  /**
+   * Text content of the element.
+   *
+   * @type {string}
+   */
   get textContent(): string {
     return this._textContent;
   }
 
+  /**
+   * Set text content of the element.
+   *
+   * @param {string} value - New text content
+   */
   set textContent(value: string) {
     this._textContent = value;
   }
 
+  /**
+   * Inner HTML content.
+   *
+   * @type {string}
+   */
   get innerHTML(): string {
     return this._innerHTML;
   }
 
+  /**
+   * Set inner HTML content.
+   *
+   * @param {string} value - New inner HTML
+   */
   set innerHTML(value: string) {
     this._innerHTML = value;
   }
 
+  /**
+   * Element value (for inputs, textareas, selects, etc.).
+   *
+   * @type {string | undefined}
+   */
   get value(): string | undefined {
     return this._value;
   }
 
+  /**
+   * Set element value.
+   *
+   * @param {string | undefined} value - New value
+   */
   set value(value: string | undefined) {
     this._value = value;
   }
 
+  /**
+   * Checked state (for checkboxes and radio buttons).
+   *
+   * @type {boolean | undefined}
+   */
   get checked(): boolean | undefined {
     return this._checked;
   }
 
+  /**
+   * Set checked state.
+   *
+   * @param {boolean | undefined} value - New checked state
+   */
   set checked(value: boolean | undefined) {
     this._checked = value;
   }
 
+  /**
+   * Disabled state (for form elements).
+   *
+   * @type {boolean | undefined}
+   */
   get disabled(): boolean | undefined {
     return this._disabled;
   }
 
+  /**
+   * Set disabled state.
+   *
+   * @param {boolean | undefined} value - New disabled state
+   */
   set disabled(value: boolean | undefined) {
     this._disabled = value;
   }
 
+  /**
+   * Readonly state (for form elements).
+   *
+   * @type {boolean | undefined}
+   */
   get readonly(): boolean | undefined {
     return this._readonly;
   }
 
+  /**
+   * Set readonly state.
+   *
+   * @param {boolean | undefined} value - New readonly state
+   */
   set readonly(value: boolean | undefined) {
     this._readonly = value;
   }
 
+  /**
+   * Required state (for form elements).
+   *
+   * @type {boolean | undefined}
+   */
   get required(): boolean | undefined {
     return this._required;
   }
 
+  /**
+   * Set required state.
+   *
+   * @param {boolean | undefined} value - New required state
+   */
   set required(value: boolean | undefined) {
     this._required = value;
   }
 
+  /**
+   * Input type (e.g., "text", "checkbox", "radio").
+   *
+   * @type {string | undefined}
+   */
   get type(): string | undefined {
     return this._type;
   }
 
+  /**
+   * Set input type.
+   *
+   * @param {string | undefined} value - New input type
+   */
   set type(value: string | undefined) {
     this._type = value;
   }
 
+  /**
+   * Href attribute (for anchor tags).
+   *
+   * @type {string | undefined}
+   */
   get href(): string | undefined {
     return this._href;
   }
 
+  /**
+   * Set href attribute.
+   *
+   * @param {string | undefined} value - New href value
+   */
   set href(value: string | undefined) {
     this._href = value;
   }
 
+  /**
+   * Src attribute (for images, scripts, iframes).
+   *
+   * @type {string | undefined}
+   */
   get src(): string | undefined {
     return this._src;
   }
 
+  /**
+   * Set src attribute.
+   *
+   * @param {string | undefined} value - New src value
+   */
   set src(value: string | undefined) {
     this._src = value;
   }
 
-  // Internal attributes storage
-  private _attributes: Attributes = {};
-
+  /**
+   * Register an event listener (no-op on server side).
+   *
+   * This method exists for API compatibility but does nothing on the server.
+   *
+   * @param {string} _event - Event name (ignored)
+   * @param {Function} _handler - Event handler (ignored)
+   * @param {any} _options - Event listener options (ignored)
+   * @returns {() => void} No-op cleanup function
+   *
+   * @example
+   * ```typescript
+   * const button = new ServerHTMLElement("button");
+   * const cleanup = button.on("click", () => console.log("clicked"));
+   * cleanup(); // Does nothing on server side
+   * ```
+   */
   on(_event: string, _handler: (ev: any) => any, _options?: any): () => void {
     return () => {};
   }
 
+  /**
+   * Add an event listener (no-op on server side).
+   *
+   * This method exists for API compatibility but does nothing on the server.
+   *
+   * @param {string} _event - Event name (ignored)
+   * @param {any} _handler - Event handler (ignored)
+   * @param {any} [_options] - Event listener options (ignored)
+   * @returns {void}
+   */
   addEventListener(_event: string, _handler: any, _options?: any): void {
     // No-op on server side
   }
 
+  /**
+   * Remove an event listener (no-op on server side).
+   *
+   * This method exists for API compatibility but does nothing on the server.
+   *
+   * @param {string} _event - Event name (ignored)
+   * @param {any} _handler - Event handler (ignored)
+   * @param {any} [_options] - Event listener options (ignored)
+   * @returns {void}
+   */
   removeEventListener(_event: string, _handler: any, _options?: any): void {
     // No-op on server side
   }
 
+  /**
+   * Append a child element or text node to this element.
+   *
+   * @param {ServerHTMLElement | string} child - Child element or text node to append
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const parent = new ServerHTMLElement("div");
+   * const child = new ServerHTMLElement("span", { textContent: "Hello" });
+   * parent.appendChild(child);
+   * ```
+   */
   appendChild(child: ServerHTMLElement | string) {
     this.children.push(child);
     if (isObj(child) && child !== null) {
@@ -348,6 +743,23 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * Insert a child element before another child element.
+   *
+   * @param {ServerHTMLElement | string} child - Child element to insert
+   * @param {ServerHTMLElement | string} currentChild - Reference child element to insert before
+   * @returns {void}
+   * @throws {Error} When currentChild is not found in children array
+   *
+   * @example
+   * ```typescript
+   * const parent = new ServerHTMLElement("div", {}, [
+   *   new ServerHTMLElement("span", { textContent: "World" })
+   * ]);
+   * const hello = new ServerHTMLElement("span", { textContent: "Hello " });
+   * parent.insertBefore(hello, parent.children[0]);
+   * ```
+   */
   insertBefore(child: ServerHTMLElement | string, currentChild: ServerHTMLElement | string) {
     const index = this.children.indexOf(currentChild);
     if (index === -1) {
@@ -359,6 +771,20 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * Remove a child element from this element's children.
+   *
+   * @param {ServerHTMLElement | string} child - Child element to remove
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const parent = new ServerHTMLElement("div", {}, [
+   *   new ServerHTMLElement("span", { textContent: "Remove me" })
+   * ]);
+   * parent.removeChild(parent.children[0]);
+   * ```
+   */
   removeChild(child: ServerHTMLElement | string): void {
     const index = this.children.indexOf(child);
     if (index !== -1) {
@@ -369,6 +795,22 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * Remove all children from this element.
+   *
+   * Calls `remove()` on all child elements and clears the children array.
+   *
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const parent = new ServerHTMLElement("div", {}, [
+   *   new ServerHTMLElement("span", { textContent: "Child 1" }),
+   *   new ServerHTMLElement("span", { textContent: "Child 2" })
+   * ]);
+   * parent.clear(); // All children removed
+   * ```
+   */
   clear() {
     this.children.forEach((child) => {
       if (isObj(child) && child !== null) {
@@ -378,6 +820,21 @@ export class ServerHTMLElement implements SeidrElementInterface {
     this.children = [];
   }
 
+  /**
+   * Remove this element from its parent.
+   *
+   * Removes this element from its parent's children array and clears all children.
+   *
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const parent = new ServerHTMLElement("div", {}, [
+   *   new ServerHTMLElement("span", { textContent: "Remove me" })
+   * ]);
+   * parent.children[0].remove(); // Span removed from parent
+   * ```
+   */
   remove(): void {
     if (this.parentElement) {
       this.parentElement.removeChild(this);
@@ -386,6 +843,28 @@ export class ServerHTMLElement implements SeidrElementInterface {
     this.parentElement = undefined;
   }
 
+  /**
+   * Get the value of an attribute.
+   *
+   * Returns the value of the specified attribute, or `null` if the attribute
+   * doesn't exist or has no value.
+   *
+   * @param {string} name - Name of the attribute to get
+   * @returns {string | null} Attribute value or null
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div", {
+   *   id: "my-div",
+   *   className: "container",
+   *   disabled: true
+   * });
+   * div.getAttribute("id"); // Returns: "my-div"
+   * div.getAttribute("class"); // Returns: "container"
+   * div.getAttribute("disabled"); // Returns: "true"
+   * div.getAttribute("nonexistent"); // Returns: null
+   * ```
+   */
   getAttribute(name: string): string | null {
     if (name === "class") {
       return this._className || null;
@@ -424,6 +903,24 @@ export class ServerHTMLElement implements SeidrElementInterface {
     return value != null ? String(value) : null;
   }
 
+  /**
+   * Set an attribute value.
+   *
+   * Sets the specified attribute to the given value. Undefined values are rejected.
+   * Special handling for "class" attribute (also sets className property).
+   *
+   * @param {string} name - Name of the attribute to set
+   * @param {any} value - Value to set the attribute to
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div");
+   * div.setAttribute("id", "my-div");
+   * div.setAttribute("class", "container");
+   * div.setAttribute("disabled", true);
+   * ```
+   */
   setAttribute(name: string, value: any): void {
     // Reject undefined values
     if (value === undefined) return;
@@ -435,29 +932,133 @@ export class ServerHTMLElement implements SeidrElementInterface {
     }
   }
 
+  /**
+   * Check if an attribute exists.
+   *
+   * @param {string} name - Name of the attribute to check
+   * @returns {boolean} True if attribute exists
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div", { id: "my-div" });
+   * div.hasAttribute("id"); // Returns: true
+   * div.hasAttribute("class"); // Returns: false
+   * ```
+   */
   hasAttribute(name: string): boolean {
     return name in this._attributes;
   }
 
+  /**
+   * Remove an attribute.
+   *
+   * @param {string} name - Name of the attribute to remove
+   * @returns {void}
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div", { id: "my-div", className: "container" });
+   * div.removeAttribute("id");
+   * div.getAttribute("id"); // Returns: null
+   * ```
+   */
   removeAttribute(name: string): void {
     const attrName = name === "class" ? "className" : name;
     delete this._attributes[attrName];
   }
 
+  /**
+   * Query for the first matching element (not implemented).
+   *
+   * This method exists for API compatibility but always returns `null`.
+   *
+   * @param {string} _selector - CSS selector (ignored)
+   * @returns {ServerHTMLElement | null} Always returns null
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div");
+   * div.querySelector(".class"); // Returns: null
+   * ```
+   */
   querySelector(_selector: string): ServerHTMLElement | null {
     // Simplified - return null for now
     // Could implement basic selector support if needed
     return null;
   }
 
+  /**
+   * Query for all matching elements (not implemented).
+   *
+   * This method exists for API compatibility but always returns an empty array.
+   *
+   * @param {string} _selector - CSS selector (ignored)
+   * @returns {ServerHTMLElement[]} Always returns empty array
+   *
+   * @example
+   * ```typescript
+   * const div = new ServerHTMLElement("div");
+   * div.querySelectorAll(".class"); // Returns: []
+   * ```
+   */
   querySelectorAll(_selector: string): ServerHTMLElement[] {
     // Simplified - return empty array for now
     // Could implement basic selector support if needed
     return [];
   }
 
+  /**
+   * Simulate a click event (no-op on server side).
+   *
+   * This method exists for API compatibility but does nothing on the server.
+   *
+   * @param {...unknown[]} _args - Click arguments (ignored)
+   * @returns {void}
+   */
   click(..._args: unknown[]) {}
 
+  /**
+   * Convert the element to an HTML string.
+   *
+   * Generates complete HTML markup including opening tag, attributes, children,
+   * and closing tag. Handles self-closing void elements (e.g., `<img/>`, `<br/>`)
+   * and escapes HTML entities in attribute values and text content.
+   *
+   * @returns {string} HTML string representation of this element and all descendants
+   *
+   * @example
+   * Basic element
+   * ```typescript
+   * const div = new ServerHTMLElement("div", { className: "container" });
+   * div.toString(); // Returns: '<div class="container"></div>'
+   * ```
+   *
+   * @example
+   * Element with children
+   * ```typescript
+   * const div = new ServerHTMLElement("div", {}, [
+   *   new ServerHTMLElement("span", { textContent: "Hello" })
+   * ]);
+   * div.toString(); // Returns: '<div><span>Hello</span></div>'
+   * ```
+   *
+   * @example
+   * Self-closing void element
+   * ```typescript
+   * const img = new ServerHTMLElement("img", { src: "/image.png" });
+   * img.toString(); // Returns: '<img src="/image.png" />'
+   * ```
+   *
+   * @example
+   * HTML escaping for security
+   * ```typescript
+   * const div = new ServerHTMLElement("div", {
+   *   textContent: '<script>alert("XSS")</script>'
+   * });
+   * div.toString();
+   * // Returns: '<div>&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</div>'
+   * ```
+   */
   toString(): string {
     // Build attributes string
     const attrEntries: string[] = [];
@@ -559,8 +1160,18 @@ export class ServerHTMLElement implements SeidrElementInterface {
 
   /**
    * Escape special HTML characters.
-   * @param text - Text to escape special characters from
-   * @returns Escaped text
+   *
+   * Converts special characters that have meaning in HTML to their
+   * HTML entity equivalents to prevent injection and ensure proper rendering.
+   *
+   * @param {string} text - Text to escape special characters from
+   * @returns {string} Escaped text safe for HTML attribute or content usage
+   *
+   * @example
+   * ```typescript
+   * escapeHtml('<script>alert("XSS")</script>');
+   * // Returns: "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;"
+   * ```
    */
   escapeHtml(text: string): string {
     const map: Record<string, string> = {

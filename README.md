@@ -15,6 +15,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - [Core Concepts](#-core-concepts)
 - [Advanced Patterns](#-advanced-patterns)
 - [API Reference](#-api-reference)
+- [Server-Side Rendering](#-server-side-rendering-experimental)
 - [Performance](#-performance)
 - [Browser Support](#-browser-support)
 
@@ -219,6 +220,72 @@ Quick links:
 - **Utilities:** [uid()](API.md#uid) | [uidTime()](API.md#uidtime) | [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle) | [debounce()](API.md#debounce)
 - **Persistence:** [withStorage()](API.md#withstorage)
 
+---
+
+## 🌐 Server-Side Rendering (Experimental)
+
+> ⚠️ **Experimental** - Server-Side Rendering support is currently experimental and may change in future versions.
+
+Seidr provides SSR support with automatic state capture and client-side hydration. This allows you to render your Seidr applications on the server and make them interactive on the client.
+
+**Key Features:**
+- 🖥️ Server-side HTML rendering with `renderToString()`
+- 💾 Automatic state capture and dependency graph traversal
+- 🔄 Client-side hydration with `hydrate()`
+- 📦 Compact numeric ID-based hydration data
+- 🔒 Render context isolation using AsyncLocalStorage (Node.js)
+
+**Quick Start:**
+
+```typescript
+// Server-side (Node.js)
+import { renderToString } from '@fimbul-works/seidr/node';
+import { component, $, Seidr } from '@fimbul-works/seidr/node';
+
+function App() {
+  return component((scope) => {
+    const count = new Seidr(0);
+
+    return $('div', {}, [
+      $('p', { textContent: count.as(n => `Count: ${n}`) }),
+      $('button', {
+        textContent: 'Increment',
+        onclick: () => count.value++
+      })
+    ]);
+  });
+}
+
+// In your server route (must be async!)
+app.get('/', async (req, res) => {
+  const { html, hydrationData } = await renderToString(App);
+
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <script>window.__HYDRATION_DATA__ = ${JSON.stringify(hydrationData)}</script>
+      </head>
+      <body>
+        <div id="app">${html}</div>
+        <script type="module" src="/client.js"></script>
+      </body>
+    </html>
+  `);
+});
+```
+
+```typescript
+// Client-side
+import { hydrate } from '@fimbul-works/seidr';
+import { App } from './app.js';
+
+const hydrationData = window.__HYDRATION_DATA__;
+hydrate(App, document.getElementById('app'), hydrationData);
+```
+
+**Learn more:** **[SSR.md](SSR.md)** - Complete SSR documentation with examples, best practices, and gotchas.
+
 ## ⚡ Performance
 
 Seidr's direct DOM manipulation approach offers several performance advantages:
@@ -302,7 +369,7 @@ Pre-built ESM bundles are available for direct browser use:
 
 **Bundle sizes (minified):**
 - `seidr.js` - 10.1KB (4.2KB gzipped)
-- `seidr.core.js` - 4.7KB (2.1KB gzipped)
+- `seidr.core.js` - 4.7KB (2.0KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 

@@ -198,8 +198,8 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>} [props] - Element properties supporting reactive bindings
- * @param {K} [children] - Child elements or functions returning elements
- * @returns {(SeidrNode | (() => SeidrNode))[]} A Seidr-enhanced HTML element with additional methods
+ * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Child elements or functions returning elements
+ * @returns {SeidrElement<K>} A Seidr-enhanced HTML element with additional methods
  * @throws {Error} When attempting to use reserved properties ('on', 'clear', 'destroy')
  *
  * @example
