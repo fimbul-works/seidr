@@ -61,7 +61,7 @@
     "build:types:browser:full": "dts-bundle-generator -o dist/seidr.d.ts src/index.browser.ts",
     "build:types:browser:core": "dts-bundle-generator -o dist/seidr.core.d.ts src/index.browser.core.ts",
     "build:types:node": "dts-bundle-generator -o dist/seidr.node.d.ts src/index.node.ts",
-    "copy:types": "cp dist/seidr.d.ts dist/seidr.min.d.ts && cp dist/seidr.core.d.ts dist/seidr.core.min.d.ts && cp dist/seidr.node.d.ts dist/seidr.node.min.d.ts",
+    "copy:types": "cp dist/seidr.d.ts dist/seidr.min.d.ts && cp dist/seidr.core.d.ts dist/seidr.core.min.d.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm build && pnpm build:examples && pnpm bundlesizes",
     "bundlesizes": "./calculate-bundle-sizes.sh",

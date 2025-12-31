@@ -24,7 +24,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 2.1KB core, 4.2KB full bundle (minified + gzipped)
+- 📦 **Tiny Footprint** - 2.1KB core, 4.4KB full bundle (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -361,15 +361,15 @@ Pre-built ESM bundles are available for direct browser use:
 
   // Your code here
   const count = new Seidr(0);
-  const div = $d('div', { textContent: count.as((count) => `Count: ${count}`) }, [
+  const div = $('div', { textContent: count.as((count) => `Count: ${count}`) }, [
     $('button', { textContent: 'OK' })
   ]);
 </script>
 ```
 
 **Bundle sizes (minified):**
-- `seidr.js` - 10.1KB (4.2KB gzipped)
-- `seidr.core.js` - 4.7KB (2.0KB gzipped)
+- `seidr.js` - 10.1KB (4.4KB gzipped)
+- `seidr.core.js` - 5.0KB (2.1KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 
