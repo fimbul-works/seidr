@@ -16,7 +16,7 @@ export interface SSRRenderResult {
  */
 export interface ElementBinding {
   /** Numeric ID of the bound Seidr instance */
-  seidrId: number;
+  id: number;
   /** Property name on the element (e.g., "disabled", "textContent") */
   prop: string;
   /**
@@ -27,7 +27,7 @@ export interface ElementBinding {
    * - `[1, 0]` means this Seidr's second parent's first parent is a root
    *
    * During hydration, we follow these paths to find which root values to update.
-   * Omitted when empty (when the bound Seidr is itself a root) to save space.
+   * Omitted when binding directly to a root observable (no traversal needed) to save space.
    */
   paths?: number[][];
 }
@@ -37,14 +37,6 @@ export interface ElementBinding {
  * This is combined with renderContextID to form the complete HydrationData.
  */
 export interface SSRScopeCapture {
-  /**
-   * Element IDs in order of first binding.
-   *
-   * Tracks the order in which elements received their first Seidr binding.
-   * Used to ensure deterministic ID assignment between SSR and hydration.
-   */
-  elementIds: string[];
-
   /**
    * Numeric ID -> value mapping for root observables.
    *
@@ -81,21 +73,13 @@ export interface SSRScopeCapture {
  */
 export interface HydrationData extends SSRScopeCapture {
   /**
-   * Render context ID from the server.
-   *
-   * This ID is used to ensure state lookups use the correct context
-   * during hydration, maintaining proper request-scoped isolation.
-   */
-  renderContextID: number;
-
-  /**
    * State values from the server.
    *
    * This record contains all non-derived Seidr instances that were stored
    * in the state system during SSR. The keys are the string names from
    * the state symbols, and the values are the Seidr values.
    *
-   * During hydration, these values are restored to the statae storage
+   * During hydration, these values are restored to the state storage
    * for the render context, so that getState() calls return the same
    * values that were used on the server.
    */

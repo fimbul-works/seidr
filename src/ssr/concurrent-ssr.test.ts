@@ -36,11 +36,6 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(result2.html).toContain("Count: 100");
     expect(result3.html).toContain("Count: 0");
 
-    // Each should have its own hydration data
-    expect(result1.hydrationData.renderContextID).not.toBe(result2.hydrationData.renderContextID);
-    expect(result2.hydrationData.renderContextID).not.toBe(result3.hydrationData.renderContextID);
-    expect(result3.hydrationData.renderContextID).not.toBe(result1.hydrationData.renderContextID);
-
     // Each should have captured the correct observable value
     const obs1 = Object.values(result1.hydrationData.observables);
     const obs2 = Object.values(result2.hydrationData.observables);
@@ -81,14 +76,6 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(r3.html).toContain("30");
     expect(r3.html).toContain("45");
 
-    // Each should have different render context IDs
-    const ids = new Set([
-      r1.hydrationData.renderContextID,
-      r2.hydrationData.renderContextID,
-      r3.hydrationData.renderContextID,
-    ]);
-    expect(ids.size).toBe(3);
-
     // Each should have captured only its root observable
     const values1 = Object.values(r1.hydrationData.observables);
     const values2 = Object.values(r2.hydrationData.observables);
@@ -114,13 +101,8 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(results).toHaveLength(10);
     results.forEach((result) => {
       expect(result.html).toContain("<span");
-      expect(result.hydrationData.renderContextID).toBeDefined();
+      expect(result.hydrationData.observables).toBeDefined();
     });
-
-    // All render context IDs should be unique
-    const ids = results.map((r) => r.hydrationData.renderContextID);
-    const uniqueIds = new Set(ids);
-    expect(uniqueIds.size).toBe(10);
   });
 
   it("should handle mixed simple and complex graphs concurrently", async () => {
@@ -160,8 +142,5 @@ describe("Concurrent SSR Request Isolation", () => {
     // Note: c is not used in any binding, so it won't be captured
     // Only a and b are dependencies of bound observables
     expect(Object.values(complex.hydrationData.observables)).toEqual([1, 2]);
-
-    // Verify different render contexts
-    expect(simple.hydrationData.renderContextID).not.toBe(complex.hydrationData.renderContextID);
   });
 });

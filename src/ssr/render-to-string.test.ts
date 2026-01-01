@@ -35,7 +35,7 @@ describe("SSR Utilities", () => {
     clearHydrationData();
 
     // Verify all observables have zero observers after SSR
-    observables.forEach(obs => {
+    observables.forEach((obs) => {
       expect(obs.observerCount()).toBe(0);
     });
   });
@@ -193,9 +193,6 @@ describe("SSR Utilities", () => {
 
       // Verify observables were captured
       expect(Object.keys(hydrationData.observables).length).toBeGreaterThan(0);
-
-      // Verify renderContextID is included in hydration data
-      expect(typeof hydrationData.renderContextID).toBe("number");
     });
   });
 });

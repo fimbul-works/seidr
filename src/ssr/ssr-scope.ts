@@ -79,8 +79,6 @@ export class SSRScope {
   private parents = new Map<string, string[]>();
   // observable -> [elementId, prop]
   private bindings = new Map<string, [string, string]>();
-  // Track element IDs in order of first binding
-  private elementIds = [] as string[];
 
   /**
    * Returns the number of observables registered in this scope.
@@ -122,11 +120,6 @@ export class SSRScope {
    * @param property - The property name on the element
    */
   registerBindings(observableId: string, elementId: string, property: string): void {
-    // Track element IDs in order of first binding
-    if (!this.elementIds.includes(elementId)) {
-      this.elementIds.push(elementId);
-    }
-
     this.bindings.set(observableId, [elementId, property]);
   }
 
@@ -201,13 +194,14 @@ export class SSRScope {
         bindings[elementId] = [];
       }
 
-      const binding: { seidrId: number; prop: string; paths?: number[][] } = {
-        seidrId: numericId,
+      const binding: { id: number; prop: string; paths?: number[][] } = {
+        id: numericId,
         prop: property,
       };
 
-      // Only include paths if non-empty (saves space when binding to root observables)
-      if (paths.length > 0) {
+      // Only include paths if we have actual path data (not just [[]] for root observables)
+      // [[]] means the observable IS a root (no traversal needed), so we omit the paths field
+      if (paths.length > 0 && paths[0].length > 0) {
         binding.paths = paths;
       }
 
@@ -230,7 +224,6 @@ export class SSRScope {
     this.observables.clear();
 
     return {
-      elementIds: this.elementIds,
       observables,
       bindings,
       graph,

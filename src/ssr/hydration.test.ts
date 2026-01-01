@@ -48,7 +48,6 @@ describe("Client-Side Hydration", () => {
       expect(isHydrating()).toBe(false);
 
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: 42 },
         bindings: {},
@@ -64,7 +63,6 @@ describe("Client-Side Hydration", () => {
 
     it("should clear registry when setting new context", () => {
       const data1: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: "first" },
         bindings: {},
@@ -79,7 +77,6 @@ describe("Client-Side Hydration", () => {
 
       // Clear and set new context
       const data2: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: "second" },
         bindings: {},
@@ -99,7 +96,6 @@ describe("Client-Side Hydration", () => {
   describe("Seidr Registration", () => {
     it("should register Seidr instances in creation order", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: 100, 1: 200 },
         bindings: {},
@@ -126,7 +122,6 @@ describe("Client-Side Hydration", () => {
 
     it("should only hydrate root observables", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: "root" },
         bindings: {},
@@ -150,7 +145,6 @@ describe("Client-Side Hydration", () => {
 
     it("should work with computed observables", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: {
           0: "John",
@@ -187,7 +181,6 @@ describe("Client-Side Hydration", () => {
   describe("Element Binding Application", () => {
     it("should apply bindings for elements with data-seidr-id", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: true },
         bindings: {
@@ -219,7 +212,6 @@ describe("Client-Side Hydration", () => {
 
     it("should traverse paths to find root values", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: "hydrated" },
         bindings: {
@@ -254,7 +246,6 @@ describe("Client-Side Hydration", () => {
 
     it("should handle multiple paths to different roots", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: {
           0: "John",
@@ -298,7 +289,6 @@ describe("Client-Side Hydration", () => {
 
     it("should handle nested path traversal", () => {
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: 10 },
         bindings: {
@@ -339,7 +329,6 @@ describe("Client-Side Hydration", () => {
     it("should hydrate complete component with bindings", () => {
       // Server-side data
       const data: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: {
           0: "hydrated-name",
@@ -431,7 +420,6 @@ describe("Client-Side Hydration", () => {
 
     it("should clear hydration context after hydration", () => {
       const hydrationData: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: {},
         bindings: {},
@@ -459,7 +447,6 @@ describe("Client-Side Hydration", () => {
 
     it("should restore nested context after hydration", () => {
       const originalData: HydrationData = {
-        renderContextID: 0,
         elementIds: [],
         observables: { 0: 1 },
         bindings: {},
@@ -467,7 +454,6 @@ describe("Client-Side Hydration", () => {
       };
 
       const hydrateData: HydrationData = {
-        renderContextID: 1,
         elementIds: [],
         observables: { 0: 2 },
         bindings: {},

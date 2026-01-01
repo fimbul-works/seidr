@@ -87,13 +87,13 @@ export function applyElementBindings(elementId: string): void {
   }
 
   for (const binding of bindings) {
-    const { seidrId, paths } = binding;
+    const { id, paths } = binding;
     const graph = hydrationData.graph;
 
     // Get the Seidr instance that this binding references
-    const boundSeidr = hydrationRegistry[seidrId];
+    const boundSeidr = hydrationRegistry[id];
     if (!boundSeidr) {
-      console.error(`Hydration: Seidr #${seidrId} not found in registry`);
+      console.error(`Hydration: Seidr #${id} not found in registry`);
       return;
     }
 
@@ -102,7 +102,7 @@ export function applyElementBindings(elementId: string): void {
     const pathsToProcess = paths || [[]];
 
     for (const path of pathsToProcess) {
-      const rootNumericId = traversePathToRoot(seidrId, path, graph);
+      const rootNumericId = traversePathToRoot(id, path, graph);
 
       if (rootNumericId !== null && hydrationData.observables[rootNumericId] !== undefined) {
         const rootSeidr = hydrationRegistry[rootNumericId];

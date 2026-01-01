@@ -67,17 +67,11 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       const component = componentFactory(props);
 
       // Add data-seidr-id attribute to root element for hydration
-      // This attribute carries the render context ID from server to client
-      if (typeof component.element.dataset !== "undefined") {
-        component.element.dataset["seidr-id"] = String(ctx.renderContextID);
-      }
-
       // Convert to HTML string
       const html = String(component.element);
 
       // Capture hydration data (observables, bindings, graph) BEFORE destroying component
       const hydrationData = {
-        renderContextID: ctx.renderContextID,
         ...activeScope.captureHydrationData(),
         // Capture state values for this render context
         state: captureRenderContextState(ctx.renderContextID),
