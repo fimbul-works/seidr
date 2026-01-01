@@ -98,7 +98,10 @@ export function applyElementBindings(elementId: string): void {
     }
 
     // For each path, traverse to the root and set its value
-    for (const path of paths) {
+    // If paths is undefined, this means the binding is directly to a root observable
+    const pathsToProcess = paths || [[]];
+
+    for (const path of pathsToProcess) {
       const rootNumericId = traversePathToRoot(seidrId, path, graph);
 
       if (rootNumericId !== null && hydrationData.observables[rootNumericId] !== undefined) {
@@ -130,15 +133,16 @@ function traversePathToRoot(startId: number, path: number[], graph: DependencyGr
 
   for (const parentIndex of path) {
     const node = graph.nodes[currentId];
+    const parents = node.parents || [];
 
-    if (parentIndex >= node.parents.length) {
+    if (parentIndex >= parents.length) {
       console.error(
-        `Hydration: Invalid path index ${parentIndex} for node ${currentId} (only ${node.parents.length} parents)`,
+        `Hydration: Invalid path index ${parentIndex} for node ${currentId} (only ${parents.length} parents)`,
       );
       return null;
     }
 
-    currentId = node.parents[parentIndex];
+    currentId = parents[parentIndex];
   }
 
   return currentId;

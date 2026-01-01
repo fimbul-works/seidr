@@ -35,13 +35,14 @@ export function findRootDependencies(graph: DependencyGraph, nodeId: number): Se
     visited.add(id);
 
     const node = graph.nodes[id];
+    const parents = node.parents || [];
 
-    if (node.parents.length === 0) {
+    if (parents.length === 0) {
       // Root observable
       roots.add(id);
     } else {
       // Traverse parents
-      node.parents.forEach((parentId) => traverse(parentId));
+      parents.forEach((parentId) => traverse(parentId));
     }
   }
 

@@ -27,8 +27,9 @@ export interface ElementBinding {
    * - `[1, 0]` means this Seidr's second parent's first parent is a root
    *
    * During hydration, we follow these paths to find which root values to update.
+   * Omitted when empty (when the bound Seidr is itself a root) to save space.
    */
-  paths: number[][];
+  paths?: number[][];
 }
 
 /**

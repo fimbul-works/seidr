@@ -201,11 +201,17 @@ export class SSRScope {
         bindings[elementId] = [];
       }
 
-      bindings[elementId].push({
+      const binding: { seidrId: number; prop: string; paths?: number[][] } = {
         seidrId: numericId,
         prop: property,
-        paths,
-      });
+      };
+
+      // Only include paths if non-empty (saves space when binding to root observables)
+      if (paths.length > 0) {
+        binding.paths = paths;
+      }
+
+      bindings[elementId].push(binding);
     }
 
     // Step 5: Capture root observable values
@@ -240,8 +246,9 @@ export class SSRScope {
    */
   private addTransitiveDependencies(nodeId: number, graph: DependencyGraph, neededIds: Set<number>): void {
     const node = graph.nodes[nodeId];
+    const parents = node.parents || [];
 
-    for (const parentId of node.parents) {
+    for (const parentId of parents) {
       if (!neededIds.has(parentId)) {
         neededIds.add(parentId);
         this.addTransitiveDependencies(parentId, graph, neededIds);

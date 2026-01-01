@@ -29,7 +29,8 @@ export function validateDependencyGraph(graph: DependencyGraph): {
 
   // Check 1: All parent IDs exist
   for (const node of graph.nodes) {
-    for (const parentId of node.parents) {
+    const parents = node.parents || [];
+    for (const parentId of parents) {
       if (!nodeIdSet.has(parentId)) {
         errors.push(`Node ${node.id} has parent ${parentId} that doesn't exist in the graph`);
       }
@@ -60,7 +61,8 @@ export function validateDependencyGraph(graph: DependencyGraph): {
       return false;
     }
 
-    for (const parentId of node.parents) {
+    const parents = node.parents || [];
+    for (const parentId of parents) {
       if (hasCycle(parentId, [...path, nodeId])) {
         return true;
       }
@@ -80,7 +82,8 @@ export function validateDependencyGraph(graph: DependencyGraph): {
   // Check 3: Root observables match isDerived flag
   for (const rootId of graph.rootIds) {
     const node = graph.nodes[rootId];
-    if (node.parents.length > 0) {
+    const parents = node.parents || [];
+    if (parents.length > 0) {
       errors.push(`Root ID ${rootId} has parents, but should be a root observable`);
     }
   }

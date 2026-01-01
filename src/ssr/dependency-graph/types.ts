@@ -7,8 +7,8 @@
 export interface DependencyNode {
   /** Numeric ID (index in the observables array) */
   id: number;
-  /** Array of parent numeric IDs (empty for root observables) */
-  parents: number[];
+  /** Array of parent numeric IDs (omitted for root observables to save space) */
+  parents?: number[];
 }
 
 /**

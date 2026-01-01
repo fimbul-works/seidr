@@ -17,8 +17,8 @@ describe("buildDependencyGraph", () => {
     expect(graph.nodes).toHaveLength(2);
     expect(graph.rootIds).toEqual([0, 1]);
 
-    expect(graph.nodes[0]).toEqual({ id: 0, parents: [] });
-    expect(graph.nodes[1]).toEqual({ id: 1, parents: [] });
+    expect(graph.nodes[0]).toEqual({ id: 0 }); // root observable - parents omitted
+    expect(graph.nodes[1]).toEqual({ id: 1 }); // root observable - parents omitted
   });
 
   it("should build graph with derived observables from .as()", () => {
@@ -35,7 +35,7 @@ describe("buildDependencyGraph", () => {
     expect(graph.nodes).toHaveLength(2);
     expect(graph.rootIds).toEqual([0]);
 
-    expect(graph.nodes[0]).toEqual({ id: 0, parents: [] }); // parent (root)
+    expect(graph.nodes[0]).toEqual({ id: 0 }); // parent (root) - parents omitted
     expect(graph.nodes[1]).toEqual({ id: 1, parents: [0] }); // derived (depends on parent)
   });
 
@@ -55,8 +55,8 @@ describe("buildDependencyGraph", () => {
     expect(graph.nodes).toHaveLength(3);
     expect(graph.rootIds).toEqual([0, 1]);
 
-    expect(graph.nodes[0]).toEqual({ id: 0, parents: [] }); // firstName
-    expect(graph.nodes[1]).toEqual({ id: 1, parents: [] }); // lastName
+    expect(graph.nodes[0]).toEqual({ id: 0 }); // firstName - parents omitted
+    expect(graph.nodes[1]).toEqual({ id: 1 }); // lastName - parents omitted
     expect(graph.nodes[2]).toEqual({ id: 2, parents: [0, 1] }); // fullName (depends on both)
   });
 
@@ -76,7 +76,7 @@ describe("buildDependencyGraph", () => {
     expect(graph.nodes).toHaveLength(3);
     expect(graph.rootIds).toEqual([0]);
 
-    expect(graph.nodes[0]).toEqual({ id: 0, parents: [] }); // count (root)
+    expect(graph.nodes[0]).toEqual({ id: 0 }); // count (root) - parents omitted
     expect(graph.nodes[1]).toEqual({ id: 1, parents: [0] }); // doubled (depends on count)
     expect(graph.nodes[2]).toEqual({ id: 2, parents: [1] }); // quadrupled (depends on doubled)
   });
@@ -99,7 +99,7 @@ describe("buildDependencyGraph", () => {
     expect(graph.nodes).toHaveLength(4);
     expect(graph.rootIds).toEqual([0]);
 
-    expect(graph.nodes[0]).toEqual({ id: 0, parents: [] }); // base (root)
+    expect(graph.nodes[0]).toEqual({ id: 0 }); // base (root) - parents omitted
     expect(graph.nodes[1]).toEqual({ id: 1, parents: [0] }); // doubled
     expect(graph.nodes[2]).toEqual({ id: 2, parents: [0] }); // tripled
     expect(graph.nodes[3]).toEqual({ id: 3, parents: [1, 2] }); // sum (depends on doubled and tripled)

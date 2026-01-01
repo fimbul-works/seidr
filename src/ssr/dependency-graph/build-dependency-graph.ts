@@ -53,10 +53,10 @@ export function buildDependencyGraph(entries: [string, Seidr<any>][]): Dependenc
   entries.forEach(([_, seidr], index) => {
     const node: DependencyNode = {
       id: index,
-      parents: [],
     };
 
     // Convert parent Seidr instances to numeric IDs
+    // Only include parents field if there are actual parents (saves space in JSON)
     if (seidr.parents.length > 0) {
       node.parents = seidr.parents.map((parent) => {
         const parentId = idMap.get(parent);

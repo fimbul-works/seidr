@@ -37,17 +37,18 @@ export function findPathsToRoots(graph: DependencyGraph, startId: number): numbe
 
   function traverse(nodeId: number): void {
     const node = graph.nodes[nodeId];
+    const parents = node.parents || [];
 
-    if (node.parents.length === 0) {
+    if (parents.length === 0) {
       // Found a root - save the path
       paths.push([...currentPath]);
       return;
     }
 
     // Traverse each parent
-    for (let i = 0; i < node.parents.length; i++) {
+    for (let i = 0; i < parents.length; i++) {
       currentPath.push(i);
-      traverse(node.parents[i]);
+      traverse(parents[i]);
       currentPath.pop();
     }
   }
