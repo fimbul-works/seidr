@@ -62,7 +62,7 @@ export class Seidr<T> {
     ) {
       const scope = getActiveSSRScope();
       if (scope) scope.register(this);
-    } else if (!process.env.CORE_BUNDLE) {
+    } else if (typeof process !== "undefined" && !process.env.CORE_BUNDLE) {
       // Client-side hydration check
       registerHydratedSeidr(this);
     }

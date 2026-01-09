@@ -5,6 +5,8 @@ import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
 
+export let isHydrating: boolean = false;
+
 /**
  * Hydrates a component with previously captured SSR hydration data.
  *
@@ -55,6 +57,8 @@ export function hydrate<C extends SeidrComponent<any, any>>(
   container: HTMLElement,
   hydrationData: HydrationData,
 ): SeidrComponent {
+  isHydrating = true;
+
   // Set the client render context so state lookups use the correct context ID
   // NOTE: We DON'T reset this in the finally block because it needs to persist
   // for the lifetime of the component. The render context ID should match the
