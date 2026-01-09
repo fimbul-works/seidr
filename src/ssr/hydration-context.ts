@@ -40,7 +40,7 @@ export function clearHydrationData(): void {
  *
  * @returns true if in hydration mode with data available
  */
-export function isHydrating(): boolean {
+export function hasHydrationData(): boolean {
   return hydrationData !== undefined;
 }
 
@@ -53,7 +53,7 @@ export function isHydrating(): boolean {
  * @param seidr - The Seidr instance to register
  */
 export function registerHydratedSeidr(seidr: Seidr<any>): void {
-  if (!isHydrating()) return;
+  if (!hasHydrationData()) return;
 
   const numericId = hydrationRegistry.length;
   hydrationRegistry.push(seidr);
@@ -76,13 +76,11 @@ export function registerHydratedSeidr(seidr: Seidr<any>): void {
  */
 export function applyElementBindings(elementId: string): void {
   if (!hydrationData) {
-    console.warn("Hydration: No context available");
     return;
   }
 
   const bindings = hydrationData.bindings[elementId];
   if (!bindings) {
-    console.warn(`Hydration: No bindings found for element ${elementId}`);
     return;
   }
 

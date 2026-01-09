@@ -3,8 +3,8 @@ import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
 import { enableClientMode } from "../test-setup";
-import { hydrate } from "./hydrate";
-import { applyElementBindings, clearHydrationData, isHydrating, setHydrationData } from "./hydration-context";
+import { hydrate, isHydrating as isHydratingFlag, resetHydratingFlag } from "./hydrate";
+import { applyElementBindings, clearHydrationData, hasHydrationData, setHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 import type { HydrationData } from "./types";
@@ -22,6 +22,7 @@ describe("Client-Side Hydration", () => {
 
   afterEach(() => {
     clearHydrationData();
+    resetHydratingFlag();
     // Restore original environment state
     cleanupClientMode();
 
@@ -45,7 +46,7 @@ describe("Client-Side Hydration", () => {
     });
 
     it("should track hydration state", () => {
-      expect(isHydrating()).toBe(false);
+      expect(hasHydrationData()).toBe(false);
 
       const data: HydrationData = {
         elementIds: [],
@@ -55,10 +56,10 @@ describe("Client-Side Hydration", () => {
       };
 
       setHydrationData(data);
-      expect(isHydrating()).toBe(true);
+      expect(hasHydrationData()).toBe(true);
 
       clearHydrationData();
-      expect(isHydrating()).toBe(false);
+      expect(hasHydrationData()).toBe(false);
     });
 
     it("should clear registry when setting new context", () => {
@@ -431,7 +432,8 @@ describe("Client-Side Hydration", () => {
           return $("div", {}, ["test"]);
         });
 
-      expect(isHydrating()).toBe(false);
+      expect(isHydratingFlag).toBe(false);
+      expect(hasHydrationData()).toBe(false);
 
       // Switch to client mode for hydration
       const cleanupClientMode2 = enableClientMode();
@@ -439,7 +441,10 @@ describe("Client-Side Hydration", () => {
       const container = document.createElement("div");
       hydrate(TestComponent, container, hydrationData);
 
-      expect(isHydrating()).toBe(false);
+      // Flag should be set after hydration starts
+      expect(isHydratingFlag).toBe(true);
+      // But hydration data context should be cleared
+      expect(hasHydrationData()).toBe(false);
 
       // Cleanup client mode
       cleanupClientMode2();

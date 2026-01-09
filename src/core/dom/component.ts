@@ -158,6 +158,11 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   try {
     component.element = factory(scope);
     component.destroy = () => (scope.destroy(), component.element.remove());
+
+    // Apply root element attributes after creation
+    if (isRootComponent) {
+      component.element.dataset.seidrRoot = "true";
+    }
   } catch (err) {
     console.error(`Component error`, err);
     scope.destroy();

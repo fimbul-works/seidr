@@ -1104,10 +1104,12 @@ export class ServerHTMLElement implements SeidrElementInterface {
     if (this._href !== undefined) attrEntries.push(`href="${this.escapeHtml(this._href)}"`);
     if (this._src !== undefined) attrEntries.push(`src="${this.escapeHtml(this._src)}"`);
 
+    const camelToKebabCase = (str: string) => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+
     // Add dataset attributes (data-*)
     for (const [key, value] of Object.entries(this.dataset)) {
       if (value != null) {
-        const dataAttrName = key.startsWith("data-") ? key : `data-${key}`;
+        const dataAttrName = key.startsWith("data-") ? key : `data-${camelToKebabCase(key)}`;
         attrEntries.push(`${dataAttrName}="${this.escapeHtml(String(value))}"`);
       }
     }

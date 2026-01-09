@@ -377,7 +377,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // Client-side handling
 
-  // If element has Seidr bindings and we have a render context, assign ID
+  // During hydration, we don't assign new IDs - we only match SSR elements
   let elementId: string | undefined;
   if (
     typeof process !== "undefined" &&
@@ -387,13 +387,6 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     !isUndef(ctx.renderContextID)
   ) {
     elementId = String(ctx.idCounter++);
-
-    // Try to find existing DOM element with this SeidrID
-    const ssrEl = $query(`[${DATA_SEIDR_ID}="${elementId}"]`);
-    if (ssrEl) {
-      // Mark SSR element for removal (will be cleaned up at end of hydration)
-      ssrEl.dataset.seidrRemove = "1";
-    }
   }
 
   // Create a new HTMLElement if not found
@@ -435,9 +428,9 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       Array.from(el.children).forEach((child: any) => child.remove());
     },
     remove(): void {
-      this.clear();
       cleanups.forEach((cleanup) => cleanup());
       cleanups = [];
+      this.clear();
       domRemove();
     },
   } as SeidrElementInterface);

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Todo } from "./types.js";
 
-const TODO_JSON = "./todos.json";
+const TODO_JSON = "./examples/ssr/data/todos.json";
 
 export const loadTodos = () => {
   if (!existsSync(TODO_JSON)) {

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { enableSSRMode } from "../test-setup";
-import { clearHydrationData, isHydrating, setHydrationData } from "./hydration-context";
+import { clearHydrationData, hasHydrationData, setHydrationData } from "./hydration-context";
 
 describe("Hydration Context", () => {
   let cleanupSSRMode: () => void;
@@ -19,7 +19,7 @@ describe("Hydration Context", () => {
   });
 
   it("should detect hydration mode", () => {
-    expect(isHydrating()).toBe(false);
+    expect(hasHydrationData()).toBe(false);
 
     setHydrationData({
       elementIds: [],
@@ -28,10 +28,10 @@ describe("Hydration Context", () => {
       graph: { nodes: [], rootIds: [] },
     });
 
-    expect(isHydrating()).toBe(true);
+    expect(hasHydrationData()).toBe(true);
 
     clearHydrationData();
 
-    expect(isHydrating()).toBe(false);
+    expect(hasHydrationData()).toBe(false);
   });
 });

@@ -1,11 +1,18 @@
 import type { SeidrComponent } from "../core/dom/component";
 import { mount } from "../core/dom/mount/mount";
-import { $queryAll } from "../core/dom/query/query-all";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
 
 export let isHydrating: boolean = false;
+
+/**
+ * Resets the isHydrating flag (for testing).
+ * @internal
+ */
+export function resetHydratingFlag() {
+  isHydrating = false;
+}
 
 /**
  * Hydrates a component with previously captured SSR hydration data.
@@ -72,14 +79,16 @@ export function hydrate<C extends SeidrComponent<any, any>>(
   // Set the hydration context so Seidr instances get their server values
   setHydrationData(hydrationData);
 
+  // Find and remove the SSR root element (marked with data-seidr-root="true")
+  // This element was rendered on the server and will be replaced by the hydrated component
+  const ssrRoot = container.querySelector('[data-seidr-root="true"]');
+  ssrRoot?.remove();
+
   // Create the component (Seidr instances will auto-hydrate)
   const component = componentFactory();
 
   // Mount the component in the container
   mount(component, container);
-
-  // Clean up old SSR elements marked for removal
-  $queryAll('[data-seidr-remove="1"]', container).forEach((el) => el.remove());
 
   // Clear the hydration context
   clearHydrationData();

@@ -53,8 +53,8 @@ const initRenderContext = (): RenderContext => {
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
   // Run with new context on the server
-  const store: RenderContext = { renderContextID: 0, idCounter: 0 };
-  return asyncLocalStorage.run(store, async () => {
+  const createStore = (): RenderContext => ({ renderContextID: 0, idCounter: 0 });
+  return asyncLocalStorage.run(createStore(), async () => {
     initRenderContext();
     return callback();
   });
