@@ -1,6 +1,5 @@
 node_modules/
 dist/
-AGENTS.md
 bundle.*.js
-bundle.*.gz
-examples/ssr/data
+*.gz
+examples/ssr/data/
