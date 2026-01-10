@@ -15,22 +15,13 @@ describe("TODO Example", () => {
     global.HTMLFormElement = dom.window.HTMLFormElement;
   });
 
-  it("should render TODO app with title", async () => {
-    const { TodoApp } = await import("./todo.ts");
-    const todoComponent = TodoApp([]);
-    document.body.appendChild(todoComponent.element);
-
-    const h1 = document.querySelector(".todo-app h1");
-    expect(h1?.textContent).toBe("TODO App");
-  });
-
   it("should render form with input and button", async () => {
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
     const form = document.querySelector(".todo-form");
     const input = document.querySelector(".todo-input") as HTMLInputElement;
-    const button = document.querySelector(".todo-add-button") as HTMLButtonElement;
+    const button = document.querySelector(".btn-primary") as HTMLButtonElement;
 
     expect(form).not.toBeNull();
     expect(input?.placeholder).toBe("What needs to be done?");

@@ -13,7 +13,7 @@ import {
   List,
   mount,
   Seidr,
-  withStorage
+  withStorage,
 } from "../src/index.browser.js";
 
 type Todo = { id: number; text: string; completed: boolean };
@@ -50,7 +50,7 @@ function TodoItem({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 
 export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) {
   return component((scope) => {
-    const todos = withStorage('todos', new Seidr<Todo[]>(initialTodos));
+    const todos = withStorage("todos", new Seidr<Todo[]>(initialTodos));
     const newTodoText = new Seidr("");
 
     const addTodo = (e: Event) => {
@@ -62,7 +62,7 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
       }
     };
 
-    return $div({ className: "card todo-app" }, [
+    return $div({ className: "todo-app card" }, [
       $form({ className: "todo-form" }, [
         $input({
           type: "text",

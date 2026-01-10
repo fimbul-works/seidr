@@ -386,20 +386,14 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // During hydration, we don't assign new IDs - we only match SSR elements
   let elementId: string | undefined;
-  if (
-    typeof process !== "undefined" &&
-    !process.env.CORE_BUNDLE &&
-    hasSeidrBindings() &&
-    ctx &&
-    !isUndef(ctx.renderContextID)
-  ) {
+  if (typeof process !== "undefined" && hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
     elementId = String(ctx.idCounter++);
   }
 
   // Create a new HTMLElement if not found
   const el: HTMLElementTagNameMap[K] = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
-  if (typeof process !== "undefined" && !process.env.CORE_BUNDLE && typeof elementId !== "undefined") {
+  if (typeof process !== "undefined" && typeof elementId !== "undefined") {
     el.dataset[SEIDR_ID_CAME_CASE] = elementId;
   }
 
@@ -456,7 +450,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   }
 
   // Check for hydration bindings (element has data-seidr-id from server)
-  if (typeof process !== "undefined" && !process.env.CORE_BUNDLE && typeof elementId !== "undefined") {
+  if (typeof process !== "undefined" && typeof elementId !== "undefined") {
     applyElementBindings(elementId);
   }
 

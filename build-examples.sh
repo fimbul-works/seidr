@@ -28,5 +28,3 @@ cp examples/temp/pomodoro.js examples/dist/pomodoro.js
 
 # Cleanup temp directory
 rm -rf examples/temp
-
-./calculate-bundle-sizes.sh

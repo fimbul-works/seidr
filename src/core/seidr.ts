@@ -1,3 +1,4 @@
+import { isHydrating } from "src/index.browser";
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
 import type { EventHandler } from "./types";
@@ -62,7 +63,7 @@ export class Seidr<T> {
     ) {
       const scope = getActiveSSRScope();
       if (scope) scope.register(this);
-    } else if (typeof process !== "undefined" && !process.env.CORE_BUNDLE) {
+    } else if (typeof process !== "undefined") {
       // Client-side hydration check
       registerHydratedSeidr(this);
     }

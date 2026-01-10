@@ -1,4 +1,4 @@
-# Seidr
+![Seidr](seidr-logo.svg)
 
 Build reactive user interfaces with **zero build step** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript.
 
@@ -27,7 +27,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 2.5KB core, 4.3KB full bundle (minified + gzipped)
+- 📦 **Tiny Footprint** - 4.3KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -626,40 +626,6 @@ Seidr works in all modern browsers:
 - ES6 Class support
 - ES6 Map/Set support
 - ES Modules support
-
-### Browser Bundles
-
-Pre-built ESM bundles are available for direct browser use:
-
-```html
-<!-- Use the full bundle (recommended) -->
-<script type="module">
-  import { Seidr, $div, $button } from './dist/seidr.js';
-
-  // Your code here
-  const count = new Seidr(0);
-  const div = $div({ textContent: count.as((count) => `Count: ${count}`) }, [
-    $button({ textContent: 'OK' })
-  ]);
-</script>
-
-<!-- Or use the core bundle (without predefined element creators or SSR hydration) -->
-<script type="module">
-  import { Seidr, $ } from './dist/seidr.core.js';
-
-  // Your code here
-  const count = new Seidr(0);
-  const div = $('div', { textContent: count.as((count) => `Count: ${count}`) }, [
-    $('button', { textContent: 'OK' })
-  ]);
-</script>
-```
-
-**Bundle sizes (minified):**
-- `seidr.js` - 10.6KB (4.3KB gzipped)
-- `seidr.core.js` - 6.1KB (2.5KB gzipped)
-
-For library consumers, use the package through npm and let your bundler handle the imports.
 
 ## 📄 License
 
