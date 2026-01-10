@@ -1,6 +1,3 @@
-import type { Seidr } from "../../seidr";
-import { getCurrentComponent, type SeidrComponent } from "../component";
-
 /**
  * Switches between different components based on an observable value.
  *
@@ -90,49 +87,20 @@ import { getCurrentComponent, type SeidrComponent } from "../component";
  * }
  * ```
  */
+import type { Seidr } from "../../seidr";
+import type { SeidrComponent } from "../component";
+import { Switch } from "../components/switch";
+import { mount } from "./mount";
+
+/**
+ * Switches between different components based on an observable value.
+ * Legacy utility that internally uses the Switch component.
+ */
 export function mountSwitch<T extends string>(
   observable: Seidr<T>,
   componentMap: Record<T, () => SeidrComponent>,
   container: HTMLElement,
 ): () => void {
-  let currentComponent: SeidrComponent | null = null;
-
-  function update(key: T) {
-    if (currentComponent) {
-      currentComponent.element.remove();
-      currentComponent.destroy();
-    }
-
-    const factory = componentMap[key];
-    if (factory) {
-      currentComponent = factory();
-      container.appendChild(currentComponent.element);
-    } else {
-      currentComponent = null;
-      console.warn(`No component found for key: ${key}`);
-    }
-  }
-
-  // Initial render
-  update(observable.value);
-
-  // Track changes
-  const unsubscribe = observable.observe(update);
-
-  const cleanup = () => {
-    unsubscribe();
-    if (currentComponent) {
-      currentComponent.element.remove();
-      currentComponent.destroy();
-      currentComponent = null;
-    }
-  };
-
-  // Automatically track cleanup if called within a component's render function
-  const parentComponent = getCurrentComponent();
-  if (parentComponent) {
-    parentComponent.scope.track(cleanup);
-  }
-
-  return cleanup;
+  const comp = Switch(observable, componentMap);
+  return mount(comp, container);
 }

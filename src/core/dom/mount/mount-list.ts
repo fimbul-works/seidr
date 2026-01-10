@@ -1,6 +1,3 @@
-import type { Seidr } from "../../seidr";
-import { getCurrentComponent, type SeidrComponent } from "../component";
-
 /**
  * Renders an efficient list of components from an observable array.
  *
@@ -77,68 +74,21 @@ import { getCurrentComponent, type SeidrComponent } from "../component";
  * }
  * ```
  */
+import type { Seidr } from "../../seidr";
+import type { SeidrComponent } from "../component";
+import { List } from "../components/list";
+import { mount } from "./mount";
+
+/**
+ * Renders an efficient list of components from an observable array.
+ * Legacy utility that internally uses the List component.
+ */
 export function mountList<T, I extends string | number, C extends SeidrComponent<any, any>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
   container: HTMLElement,
 ): () => void {
-  const componentMap = new Map<I, C>();
-
-  function update(items: T[]) {
-    const newKeys = new Set(items.map(getKey));
-
-    // Remove components that are no longer in the list
-    for (const [key, component] of componentMap.entries()) {
-      if (!newKeys.has(key)) {
-        component.element.remove();
-        component.destroy();
-        componentMap.delete(key);
-      }
-    }
-
-    // Add or reorder components
-    items.forEach((item, index) => {
-      const key = getKey(item);
-      let component = componentMap.get(key);
-
-      if (!component) {
-        component = componentFactory(item);
-        componentMap.set(key, component);
-      }
-
-      // Ensure correct position
-      const currentChild = container.children[index];
-      if (currentChild !== component.element) {
-        if (currentChild) {
-          container.insertBefore(component.element, currentChild);
-        } else {
-          container.appendChild(component.element);
-        }
-      }
-    });
-  }
-
-  // Initial render
-  update(observable.value);
-
-  // Track changes
-  const unsubscribe = observable.observe(update);
-
-  const cleanup = () => {
-    unsubscribe();
-    for (const component of componentMap.values()) {
-      component.element.remove();
-      component.destroy();
-    }
-    componentMap.clear();
-  };
-
-  // Automatically track cleanup if called within a component's render function
-  const parentComponent = getCurrentComponent();
-  if (parentComponent) {
-    parentComponent.scope.track(cleanup);
-  }
-
-  return cleanup;
+  const comp = List(observable, getKey, componentFactory);
+  return mount(comp, container);
 }

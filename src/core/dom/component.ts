@@ -1,6 +1,5 @@
 import { getRenderContext } from "../render-context-contract";
 import { type ComponentScope, createScope } from "./component-scope";
-import type { SeidrElement } from "./element";
 
 /** Map of SeidrComponent stack by render context ID */
 const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
@@ -44,9 +43,15 @@ export const getCurrentComponent = (): SeidrComponent | null => {
  * @template {SeidrElement<K>} E - The type of SeidrElement this component contains
  */
 export interface SeidrComponent<
-  K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
-  E extends SeidrElement<K> = any,
+  _K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
+  E extends Node = any,
 > {
+  /**
+   * Read-only identifier for Seidr components.
+   * @type {true}
+   */
+  readonly isSeidrComponent: true;
+
   /**
    * The root element of the component.
    *
@@ -73,6 +78,13 @@ export interface SeidrComponent<
    * @type {() => void}
    */
   destroy(): void;
+
+  /**
+   * Optional callback triggered when the component's element is attached to a parent.
+   * Internal use for marker-based components.
+   * @internal
+   */
+  onAttached?: (parent: Node) => void;
 }
 
 /**
@@ -133,7 +145,7 @@ export interface SeidrComponent<
  * }
  * ```
  */
-export function component<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+export function component<K extends keyof HTMLElementTagNameMap, E extends Node>(
   factory: (scope: ComponentScope) => E,
 ): SeidrComponent<K, E> {
   const stack = getComponentStack();
@@ -142,6 +154,7 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   // Create the scope and partial SeidrComponent
   const scope = createScope();
   const component = {
+    isSeidrComponent: true,
     scope,
     destroy: () => scope.destroy(),
   } as SeidrComponent<K, E>;
@@ -157,10 +170,27 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Seidr
   // Render the component via factory
   try {
     component.element = factory(scope);
-    component.destroy = () => (scope.destroy(), component.element.remove());
+    component.destroy = () => {
+      scope.destroy();
+      const el = component.element as any;
+      if (el?.remove) {
+        el.remove();
+      } else if (el?.parentNode) {
+        try {
+          el.parentNode.removeChild(el);
+        } catch (_e) {
+          // Ignore if node was already removed or parent changed
+        }
+      }
+    };
+
+    // Propagate onAttached from scope
+    if (scope.onAttached) {
+      component.onAttached = scope.onAttached;
+    }
 
     // Apply root element attributes after creation
-    if (isRootComponent) {
+    if (isRootComponent && component.element instanceof HTMLElement) {
       component.element.dataset.seidrRoot = "true";
     }
   } catch (err) {

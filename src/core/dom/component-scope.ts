@@ -1,5 +1,4 @@
 import type { SeidrComponent } from "./component";
-import type { SeidrElement } from "./element";
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
@@ -54,9 +53,7 @@ export interface ComponentScope {
    * scope.child(footerComponent);
    * ```
    */
-  child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
-    component: SeidrComponent<K, E>,
-  ): SeidrComponent<K, E>;
+  child<K extends keyof HTMLElementTagNameMap, E extends Node>(component: SeidrComponent<K, E>): SeidrComponent<K, E>;
 
   /**
    * Destroys all tracked resources and marks the scope as destroyed.
@@ -79,6 +76,12 @@ export interface ComponentScope {
    * ```
    */
   destroy(): void;
+
+  /**
+   * Optional callback triggered when the component is attached to a parent.
+   * @internal
+   */
+  onAttached?: (parent: Node) => void;
 }
 
 /**
@@ -111,7 +114,7 @@ export function createScope(): ComponentScope {
     cleanups.push(cleanup);
   }
 
-  function child<K extends keyof HTMLElementTagNameMap, E extends SeidrElement<K>>(
+  function child<K extends keyof HTMLElementTagNameMap, E extends Node>(
     component: SeidrComponent<K, E>,
   ): SeidrComponent<K, E> {
     track(() => component.destroy());
@@ -137,5 +140,6 @@ export function createScope(): ComponentScope {
     track,
     child,
     destroy,
+    onAttached: undefined,
   };
 }

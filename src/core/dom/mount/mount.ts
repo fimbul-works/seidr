@@ -56,8 +56,11 @@ export function mount<C extends SeidrComponent<any, any>>(component: C, containe
     container.appendChild(component.element);
   }
 
+  if (component.onAttached) {
+    component.onAttached(container);
+  }
+
   const cleanup = () => {
-    component.element.remove();
     component.destroy();
   };
 

@@ -1,10 +1,10 @@
 import { applyElementBindings } from "../../ssr/hydration-context";
-import { ServerHTMLElement } from "../../ssr/server-html-element";
+import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element";
 import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
 import type { Seidr } from "../seidr";
-import { isFn, isSeidr, isStr, isUndef } from "../util/is";
-import { $query } from "./query/query";
+import { isFn, isSeidr, isSeidrComponent, isStr, isUndef } from "../util/is";
+import type { SeidrComponent } from "./component";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -82,7 +82,7 @@ export type ReactiveARIAMixin = {
  * Children can be regular DOM elements, Seidr-enhanced elements, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode = SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
+export type SeidrNode = SeidrComponent<any, any> | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
@@ -360,7 +360,14 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
     // Process children
     if (Array.isArray(children)) {
-      children.forEach((child) => el.appendChild(isFn(child) ? (child as any)() : child));
+      children.forEach((child) => {
+        const item = isFn(child) ? (child as any)() : child;
+        const node = isSeidrComponent(item) ? item.element : item;
+        el.appendChild(node);
+        if (isSeidrComponent(item) && item.onAttached) {
+          item.onAttached(el as any);
+        }
+      });
     }
 
     // Store cleanup method
@@ -439,7 +446,12 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   if (Array.isArray(children)) {
     children.forEach((child) => {
       const item = isFn(child) ? child() : child;
-      el.appendChild(isStr(item) ? $text(item) : item);
+      if (isSeidrComponent(item)) {
+        el.appendChild(item.element);
+        if (item.onAttached) item.onAttached(el);
+      } else {
+        el.appendChild(isStr(item) ? $text(item) : item);
+      }
     });
   }
 
@@ -457,3 +469,18 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
  * @returns DOM Text node
  */
 export const $text = (text: string) => document.createTextNode(text);
+
+/**
+ * Creates a new DOM Comment node.
+ * @param text - String to convert into Dom Comment node
+ * @param id? - Optional unique ID for the marker
+ * @returns DOM Comment node
+ */
+export const $comment = (text: string, id?: string | number): Comment => {
+  const content = id !== undefined ? `${text}:${id}` : text;
+
+  if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
+    return new ServerComment(content) as any;
+  }
+  return document.createComment(content);
+};

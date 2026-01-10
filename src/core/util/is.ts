@@ -1,3 +1,4 @@
+import type { SeidrComponent } from "../dom";
 import { Seidr } from "../seidr";
 
 /**
@@ -33,7 +34,7 @@ export const isStr = (v: any): v is string => typeof v === "string";
  * @param v - Value to check
  * @returns True if the value is a function, false otherwise
  */
-export const isFn = (v: any): v is Function => typeof v === "function";
+export const isFn = (v: any): v is (...args: any[]) => any => typeof v === "function";
 
 /**
  * Check if a value is an object.
@@ -48,3 +49,10 @@ export const isObj = (v: any): v is object => typeof v === "object" && !Array.is
  * @returns True if the value is a Seidr class instance, false otherwise
  */
 export const isSeidr = (v: any): v is Seidr<any> => v instanceof Seidr;
+
+/**
+ * Check if a value is a Seidr component.
+ * @param v - Value to check
+ * @returns True if the value is a Seidr component, false otherwise
+ */
+export const isSeidrComponent = (v: any): v is SeidrComponent => v && v.isSeidrComponent === true;

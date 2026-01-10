@@ -598,6 +598,25 @@ See the `examples/` directory for complete SSR examples:
 
 **Solution:** Ensure state is created properly and check hydration data format.
 
+### Marker Nodes and Fragments
+
+Seidr uses **Marker Nodes** (HTML Comments) for declarative components that manage multiple or conditional child nodes, such as `Conditional`, `Switch`, and `List`.
+
+This approach provides **Fragment-like support** without adding extra wrapper elements (like `<div>`) to the DOM, keeping the tree minimalist and the styling predictable.
+
+**How it works in SSR:**
+1. The server renders an HTML comment (e.g., `<!--seidr-conditional-->`) as a placeholder.
+2. The component's active children (if any) are rendered immediately before or after the marker.
+3. During hydration, the client finds the marker and attaches reactive logic to manage its siblings.
+
+**Example output:**
+```html
+<div class="parent">
+  <span>Visible Content</span>
+  <!--seidr-conditional-->
+</div>
+```
+
 ## Resources
 
 - [Main README](README.md)

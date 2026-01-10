@@ -236,12 +236,17 @@ export class ServerHTMLElement implements SeidrElementInterface {
    */
   public style: ServerCSSStyleDeclaration;
 
-  /**
-   * Parent element in the DOM tree.
-   *
-   * @type {ServerHTMLElement | undefined}
-   */
   public parentElement?: ServerHTMLElement;
+
+  get parentNode() {
+    return this.parentElement;
+  }
+
+  get nextSibling(): any {
+    if (!this.parentElement) return null;
+    const index = this.parentElement.children.indexOf(this as any);
+    return this.parentElement.children[index + 1] || null;
+  }
 
   /**
    * Element ID attribute.
@@ -988,6 +993,19 @@ export class ServerHTMLElement implements SeidrElementInterface {
   }
 
   /**
+   * Check if element contains a child.
+   *
+   * @param {any} node - Node to check
+   * @returns {boolean} True if node is a child/descendant
+   */
+  contains(node: any): boolean {
+    if (node === this) return true;
+    return this.children.some(
+      (child) => child === node || (child instanceof ServerHTMLElement && child.contains(node)),
+    );
+  }
+
+  /**
    * Query for all matching elements (not implemented).
    *
    * This method exists for API compatibility but always returns an empty array.
@@ -1184,5 +1202,33 @@ export class ServerHTMLElement implements SeidrElementInterface {
       "'": "&#039;",
     };
     return String(text).replace(/[&<>"']/g, (m) => map[m]);
+  }
+}
+
+/**
+ * Server-side Comment implementation for SSR.
+ * @internal
+ */
+export class ServerComment {
+  public parentElement?: ServerHTMLElement;
+  constructor(public text: string) {}
+
+  get parentNode() {
+    return this.parentElement;
+  }
+
+  get nextSibling(): any {
+    if (!this.parentElement) return null;
+    const index = this.parentElement.children.indexOf(this as any);
+    return this.parentElement.children[index + 1] || null;
+  }
+
+  toString() {
+    return `<!--${this.text}-->`;
+  }
+  remove() {
+    if (this.parentElement) {
+      this.parentElement.removeChild(this as any);
+    }
   }
 }

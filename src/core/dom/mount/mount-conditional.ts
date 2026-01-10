@@ -1,6 +1,3 @@
-import type { Seidr } from "../../seidr";
-import { getCurrentComponent, type SeidrComponent } from "../component";
-
 /**
  * Conditionally renders a component based on a boolean observable state.
  *
@@ -62,44 +59,20 @@ import { getCurrentComponent, type SeidrComponent } from "../component";
  * }
  * ```
  */
+import type { Seidr } from "../../seidr";
+import type { SeidrComponent } from "../component";
+import { Conditional } from "../components/conditional";
+import { mount } from "./mount";
+
+/**
+ * Conditionally renders a component based on a boolean observable state.
+ * Legacy utility that internally uses the Conditional component.
+ */
 export function mountConditional<C extends SeidrComponent<any, any>>(
   condition: Seidr<boolean>,
   componentFactory: () => C,
   container: HTMLElement,
 ): () => void {
-  let currentComponent: C | null = null;
-
-  function update(shouldShow: boolean) {
-    if (shouldShow && !currentComponent) {
-      currentComponent = componentFactory();
-      container.appendChild(currentComponent.element);
-    } else if (!shouldShow && currentComponent) {
-      currentComponent.element.remove();
-      currentComponent.destroy();
-      currentComponent = null;
-    }
-  }
-
-  // Initial render
-  update(condition.value);
-
-  // Track changes
-  const unsubscribe = condition.observe(update);
-
-  const cleanup = () => {
-    unsubscribe();
-    if (currentComponent) {
-      currentComponent.element.remove();
-      currentComponent.destroy();
-      currentComponent = null;
-    }
-  };
-
-  // Automatically track cleanup if called within a component's render function
-  const parentComponent = getCurrentComponent();
-  if (parentComponent) {
-    parentComponent.scope.track(cleanup);
-  }
-
-  return cleanup;
+  const comp = Conditional(condition, componentFactory);
+  return mount(comp, container);
 }
