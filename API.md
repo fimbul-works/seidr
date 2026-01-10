@@ -32,7 +32,7 @@
   - [`debounce()`](#debounce)
   - [Query Functions`](#query-functions)
 - [Type Guards](#type-guards)
-  - [`isUndef`](#isundef)
+  - [`isUndefined`](#isUndefined)
   - [`isBool`](#isbool)
   - [`isNum`](#isnum)
   - [`isStr`](#isstr)
@@ -202,6 +202,9 @@ const sessionData = withStorage(
   new Seidr('value'),
   sessionStorage
 );
+
+// withStorage handles parse errors gracefully by using initial value
+// it also ignores quota exceeded errors
 ```
 
 ---
@@ -479,7 +482,8 @@ import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
 const UserProfile = Safe(
   (scope) => {
     // Component initialization that might fail
-    const data = fetchUserData();
+    // Note: Safe() only catches synchronous errors!
+    const data = JSON.parse('invalid json');
     return $div({ textContent: data.name });
   },
   (err, scope) => {
@@ -935,7 +939,7 @@ const items = $queryAll('.item', customContainer);
 
 Utility functions to check types at runtime with proper TypeScript type narrowing.
 
-### isUndef()
+### isUndefined()
 
 Check if a value is `undefined`.
 
@@ -945,17 +949,17 @@ Check if a value is `undefined`.
 **Type Narrowing:** Narrows `unknown` to `undefined`
 
 ```typescript
-import { isUndef } from '@fimbul-works/seidr';
+import { isUndefined } from '@fimbul-works/seidr';
 
 let maybeUndefined: string | undefined;
 
 maybeUndefined = undefined;
-if (isUndef(maybeUndefined)) {
+if (isUndefined(maybeUndefined)) {
   // TypeScript knows: maybeUndefined is undefined
 }
 
 maybeUndefined = 'defined';
-console.log(isUndef(maybeUndefined)); // false
+console.log(isUndefined(maybeUndefined)); // false
 ```
 
 ---
@@ -1138,6 +1142,7 @@ const data = new Seidr(null);
 inServer(async () => {
   const response = await fetch('https://api.example.com/data');
   data.value = await response.json();
+  // renderToString waits for this to complete!
 });
 ```
 

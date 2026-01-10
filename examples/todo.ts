@@ -3,11 +3,11 @@ import {
   $checkbox,
   $div,
   $form,
-  $h1,
   $input,
   $li,
   $span,
   $ul,
+  bindInput,
   cn,
   component,
   List,
@@ -68,10 +68,7 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
           type: "text",
           placeholder: "What needs to be done?",
           className: "todo-input",
-          value: newTodoText, // Bind value with Seidr
-          oninput: (e: Event) => {
-            newTodoText.value = (e.target as HTMLInputElement).value; // And update value to complete two-way binding!
-          },
+          ...bindInput(newTodoText),
         }),
         $button({
           type: "submit",

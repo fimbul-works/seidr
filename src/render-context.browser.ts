@@ -2,7 +2,7 @@ import { setInternalContext } from "./core/render-context-contract";
 import type { RenderContext } from "./core/types";
 
 /** @type {RenderContext} Client-side render context */
-const clientRenderContext: RenderContext = { renderContextID: 0, idCounter: 0 };
+const clientRenderContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0 };
 
 /**
  * Get the current render context.

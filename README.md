@@ -1,6 +1,6 @@
 ![Seidr](seidr-logo.svg)
 
-Build reactive user interfaces with **zero build step** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript.
+Build reactive user interfaces with **build step optional** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript.
 
 **Seiðr** - Old Norse for "magic of influence and causality"
 
@@ -48,7 +48,7 @@ Seidr is designed for developers who value **control, correctness, and deliberat
 - Direct DOM manipulation without virtual DOM overhead
 - Explicit lifecycle management (no hidden re-renders)
 - Type-safe reactive bindings
-- Zero build step (or minimal build setup)
+- Build step optional (or minimal build setup)
 - Full TypeScript support with advanced type inference
 
 **Teams That Prefer**
@@ -182,7 +182,7 @@ const filteredItems = items.as(items => {
 
 #### Step 3: Bind to DOM
 ```typescript
-import { $input, $ul, $li, mount } from '@fimbul-works/seidr';
+import { $input, $ul, $li } from '@fimbul-works/seidr';
 
 // Create input bound to search query
 const searchInput = $input({
@@ -251,6 +251,8 @@ function SearchApp() {
 
 #### Step 5: Mount and Automatic Cleanup
 ```typescript
+import { mount } from '@fimbul-works/seidr';
+
 const app = SearchApp();
 const cleanup = mount(app, document.body);
 
@@ -437,17 +439,8 @@ mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
 Bind form inputs to observables with automatic synchronization:
 
 ```typescript
-import { Seidr, $input, $span, $div } from '@fimbul-works/seidr';
+import { Seidr, $input, $span, $div, bindInput } from '@fimbul-works/seidr';
 
-// Helper for two-way binding
-function bindInput(observable: Seidr<string>) {
-  return {
-    value: observable.value,
-    oninput: (e: Event) => {
-      observable.value = (e.target as HTMLInputElement).value;
-    }
-  };
-}
 
 const searchText = new Seidr('');
 
@@ -544,7 +537,7 @@ function App() {
   });
 }
 
-// In your server route (must be async!)
+// In your server route (must be async for AsyncLocalStorage context!)
 app.get('/', async (req, res) => {
   const { html, hydrationData } = await renderToString(App);
 

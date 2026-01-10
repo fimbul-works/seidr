@@ -20,4 +20,7 @@ export interface RenderContext {
 
   /** Counter incremented when elements are reused during hydration */
   idCounter: number;
+
+  /** Counter for generating unique Seidr instance IDs within this render context */
+  seidrIdCounter: number;
 }

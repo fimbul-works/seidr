@@ -1,21 +1,59 @@
 import type { Seidr } from "./seidr";
 
 /**
+ * Error callback type for withStorage error handling.
+ *
+ * @param error - The error that occurred
+ * @param operation - The type of storage operation that failed ('read' or 'write')
+ */
+export type StorageErrorHandler = (error: Error, operation: "read" | "write") => void;
+
+/**
  * Synchronizes a Seidr observable with browser storage (localStorage or sessionStorage).
  *
  * This function creates a two-way binding between a Seidr observable and browser storage,
  * enabling automatic persistence and restoration of reactive state across page reloads
  * and browser sessions.
  *
+ * ⚠️ **ERROR HANDLING REQUIRED**
+ *
+ * Storage operations can fail due to:
+ * - Quota exceeded (localStorage limit: ~5-10MB)
+ * - Access denied (privacy mode, CORS restrictions)
+ * - Corrupted data (invalid JSON)
+ * - Storage unavailable (older browsers, disabled storage)
+ *
+ * By default, withStorage throws on errors. Wrap components using withStorage in a
+ * `<Safe>` boundary to handle errors gracefully:
+ *
+ * @example
+ * Error handling with Safe component
+ * ```typescript
+ * import { withStorage, Safe, $, Seidr } from '@fimbul-works/seidr';
+ *
+ * Safe(() => {
+ *   const settings = withStorage('settings', new Seidr({ theme: 'light' }));
+ *   return $('div', `Theme: ${settings.value.theme}`);
+ * }, {
+ *   fallback: (error) => $('div', {
+ *     style: 'color: red',
+ *     textContent: `Storage error: ${error.message}. Please clear your browser data.`
+ *   })
+ * });
+ * ```
+ *
  * @template {Seidr} T - The Seidr instance type (inferred from the provided seidr parameter)
  *
  * @param {string} key - The storage key to use for persisting the observable value
  * @param {T} seidr - The Seidr observable to bind to storage
  * @param {Storage} [storage=localStorage] - The storage API to use (defaults to localStorage)
+ * @param {StorageErrorHandler} [onError] - Optional error handler. If provided, errors
+ *   will be passed to this handler instead of being thrown. Useful for custom error
+ *   handling or logging.
+ *
  * @returns {T} The same Seidr instance, now with storage synchronization enabled
  *
- * @throws {JSONError} If the stored value cannot be parsed as JSON
- * @throws {QuotaExceededError} If storage quota is exceeded
+ * @throws {Error} If storage read/write fails and no onError handler is provided
  *
  * @example
  * Basic usage with localStorage
@@ -45,6 +83,25 @@ import type { Seidr } from "./seidr";
  *
  * // Form data persists across page reloads but clears when tab closes
  * formData.value = { name: 'John Doe', email: formData.value.email };
+ * ```
+ *
+ * @example
+ * Custom error handling with onError callback
+ * ```typescript
+ * import { Seidr, withStorage } from '@fimbul-works/seidr';
+ *
+ * const settings = withStorage(
+ *   'app-settings',
+ *   new Seidr({ volume: 50 }),
+ *   localStorage,
+ *   (error, operation) => {
+ *     console.error(`Storage ${operation} failed:`, error);
+ *     // Send to error tracking service
+ *     Sentry.captureException(error);
+ *     // Show user notification
+ *     showNotification('Settings could not be saved');
+ *   }
+ * );
  * ```
  *
  * @example
@@ -85,11 +142,45 @@ import type { Seidr } from "./seidr";
  * ];
  * ```
  */
-export function withStorage<T extends Seidr<any>>(key: string, seidr: T, storage: Storage = localStorage): T {
-  const initial = storage.getItem(key);
-  if (initial) {
-    seidr.value = JSON.parse(initial);
+export function withStorage<T extends Seidr<any>>(
+  key: string,
+  seidr: T,
+  storage: Storage = typeof window !== "undefined" ? localStorage : ({} as Storage),
+  onError?: StorageErrorHandler,
+): T {
+  // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
+  if (typeof window === "undefined") {
+    return seidr;
   }
-  seidr.observe((value) => storage.setItem(key, JSON.stringify(value)));
+
+  // Load initial value from storage
+  try {
+    const initial = storage.getItem(key);
+    if (initial !== null) {
+      seidr.value = JSON.parse(initial);
+    }
+  } catch (error) {
+    const err = error instanceof Error ? error : new Error(String(error));
+    if (onError) {
+      onError(err, "read");
+    } else {
+      throw new Error(`Failed to read from storage (key="${key}"): ${err.message}`);
+    }
+  }
+
+  // Observe changes and save to storage
+  seidr.observe((value) => {
+    try {
+      storage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      const err = error instanceof Error ? error : new Error(String(error));
+      if (onError) {
+        onError(err, "write");
+      } else {
+        throw new Error(`Failed to write to storage (key="${key}"): ${err.message}`);
+      }
+    }
+  });
+
   return seidr;
 }

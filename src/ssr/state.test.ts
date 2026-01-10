@@ -1,11 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getRenderContext } from "../core/render-context-contract";
-import { globalStates } from "../core/state";
 import { Seidr } from "../core/seidr";
-import { symbolNames } from "../core/state";
-import { runWithRenderContextSync } from "../render-context.node";
+import { createStateKey, getState, globalStates, hasState, setState, symbolNames } from "../core/state";
+import { runWithRenderContext } from "../render-context.node";
 import { captureRenderContextState, restoreGlobalState } from "./state";
-import { createStateKey, getState, hasState, setState } from "../core/state";
 
 describe("SSR State Serialization", () => {
   beforeEach(() => {
@@ -25,7 +23,7 @@ describe("SSR State Serialization", () => {
 
   describe("captureRenderContextState", () => {
     it("should capture Seidr observables with $/ prefix and numeric IDs", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
         const countKey = createStateKey<Seidr<number>>("count");
 
@@ -43,7 +41,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should capture plain values with numeric IDs", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const configKey = createStateKey<{ debug: boolean }>("config");
 
@@ -61,7 +59,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should capture mixed Seidr and plain values", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const countKey = createStateKey<Seidr<number>>("count");
@@ -82,7 +80,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should skip derived Seidr instances", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const countKey = createStateKey<Seidr<number>>("count");
         const doubledKey = createStateKey<Seidr<number>>("doubled");
 
@@ -103,7 +101,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should return empty object when no state exists", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const state = captureState();
         expect(state).toEqual({});
       });
@@ -112,7 +110,7 @@ describe("SSR State Serialization", () => {
 
   describe("restoreGlobalState", () => {
     it("should restore Seidr observables from $/ prefixed numeric keys", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
         const countKey = createStateKey<Seidr<number>>("count");
 
@@ -132,7 +130,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should restore plain values from numeric keys", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const configKey = createStateKey<{ debug: boolean }>("config");
 
@@ -152,7 +150,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should restore mixed Seidr and plain values", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const countKey = createStateKey<Seidr<number>>("count");
@@ -174,7 +172,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should update existing Seidr instances", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
 
         setState(userKey, new Seidr("Initial"));
@@ -189,7 +187,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should create new Seidr instances if they don't exist", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
 
         expect(hasState(userKey)).toBe(false);
@@ -205,7 +203,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should overwrite existing plain values", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const settingsKey = createStateKey<{ theme: string }>("settings");
 
         setState(settingsKey, { theme: "dark" });
@@ -220,7 +218,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should ignore unknown numeric IDs", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
 
         restoreGlobalState({
@@ -237,7 +235,7 @@ describe("SSR State Serialization", () => {
 
   describe("Round-trip serialization", () => {
     it("should preserve data through serialize -> deserialize cycle", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const userKey = createStateKey<Seidr<string>>("user");
         const settingsKey = createStateKey<{ theme: string }>("settings");
         const countKey = createStateKey<Seidr<number>>("count");
@@ -261,7 +259,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should handle complex nested objects", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const configKey = createStateKey<{
           database: { host: string; port: number };
           features: string[];
@@ -286,7 +284,7 @@ describe("SSR State Serialization", () => {
 
   describe("Simplified SSR Pattern", () => {
     it("should enable the simplified SSR pattern without manual Seidr creation", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
         type Todo = { id: number; text: string; completed: boolean };
@@ -308,7 +306,7 @@ describe("SSR State Serialization", () => {
     });
 
     it("should handle conditional state initialization", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
         type Todo = { id: number; text: string; completed: boolean };

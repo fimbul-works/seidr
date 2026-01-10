@@ -74,11 +74,11 @@ export function clearSSRScope(renderContextID: number): void {
  */
 export class SSRScope {
   // id -> instance
-  private observables = new Map<string, Seidr<any>>();
+  private observables = new Map<number, Seidr<any>>();
   // child -> parents[]
-  private parents = new Map<string, string[]>();
+  private parents = new Map<number, number[]>();
   // observable -> [elementId, prop]
-  private bindings = new Map<string, [string, string]>();
+  private bindings = new Map<number, [string, string]>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
 
@@ -115,7 +115,7 @@ export class SSRScope {
 
   /**
    * Registers an observable with this scope.
-   * Called automatically by Seidr constructor during SSR rendering.
+   * Called automatically by Seidr during SSR rendering when first observed/bound.
    *
    * @param seidr - The Seidr instance to register
    */
@@ -140,11 +140,11 @@ export class SSRScope {
    * Registers binding between SeidrElement and a Seidr class instance.
    * Called during SSR rendering of an element to keep track.
    *
-   * @param observableId - The ID of the Seidr instance
+   * @param observableId - The numeric ID of the Seidr instance
    * @param elementId - The data-seidr-id of the element
    * @param property - The property name on the element
    */
-  registerBindings(observableId: string, elementId: string, property: string): void {
+  registerBindings(observableId: number, elementId: string, property: string): void {
     this.bindings.set(observableId, [elementId, property]);
   }
 
@@ -168,13 +168,14 @@ export class SSRScope {
    */
   captureHydrationData(): SSRScopeCapture {
     // Step 1: Build dependency graph from all registered observables
-    const entries = Array.from(this.observables.entries());
+    // Sort by ID to ensure deterministic order regardless of registration order
+    const entries = Array.from(this.observables.entries()).sort((a, b) => a[0] - b[0]);
     const graph = buildDependencyGraph(entries);
 
-    // Step 2: Build ID mapping (string ID -> numeric ID)
-    const idToNumeric = new Map<string, number>();
-    entries.forEach(([stringId, _], index) => {
-      idToNumeric.set(stringId, index);
+    // Step 2: Build ID mapping (numeric ID -> index in entries array)
+    const idToIndex = new Map<number, number>();
+    entries.forEach(([numericId, _], index) => {
+      idToIndex.set(numericId, index);
     });
 
     // Step 3: Determine which observables to include
@@ -193,15 +194,15 @@ export class SSRScope {
       const boundObservableIds = new Set(this.bindings.keys());
 
       for (const observableId of boundObservableIds) {
-        const numericId = idToNumeric.get(observableId);
-        if (numericId === undefined) {
+        const index = idToIndex.get(observableId);
+        if (index === undefined) {
           console.warn(`Bound observable ${observableId} not found in registered observables`);
           continue;
         }
-        neededIds.add(numericId);
+        neededIds.add(index);
 
         // Add all transitive dependencies
-        this.addTransitiveDependencies(numericId, graph, neededIds);
+        this.addTransitiveDependencies(index, graph, neededIds);
       }
     }
 
@@ -209,18 +210,18 @@ export class SSRScope {
     const bindings: Record<string, ElementBinding[]> = {};
 
     for (const [observableId, [elementId, property]] of this.bindings) {
-      const numericId = idToNumeric.get(observableId);
-      if (numericId === undefined) continue;
+      const index = idToIndex.get(observableId);
+      if (index === undefined) continue;
 
       // Find paths from this observable to all roots
-      const paths = findPathsToRoots(graph, numericId);
+      const paths = findPathsToRoots(graph, index);
 
       if (!bindings[elementId]) {
         bindings[elementId] = [];
       }
 
       const binding: { id: number; prop: string; paths?: number[][] } = {
-        id: numericId,
+        id: index,
         prop: property,
       };
 
@@ -277,14 +278,14 @@ export class SSRScope {
   /**
    * Checks if an observable with the given ID is registered in this scope.
    */
-  has(id: string): boolean {
+  has(id: number): boolean {
     return this.observables.has(id);
   }
 
   /**
    * Gets an observable by ID from this scope.
    */
-  get(id: string): Seidr<any> | undefined {
+  get(id: number): Seidr<any> | undefined {
     return this.observables.get(id);
   }
 
@@ -311,7 +312,7 @@ export class SSRScope {
     const entries = Array.from(this.observables.entries());
 
     // Build a quick dependency map to find roots
-    const hasParents = new Set<string>();
+    const hasParents = new Set<number>();
     for (const [, parents] of this.parents.entries()) {
       parents.forEach((parentId) => hasParents.add(parentId));
     }

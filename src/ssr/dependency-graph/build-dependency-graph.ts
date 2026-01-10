@@ -9,7 +9,7 @@ import type { DependencyGraph, DependencyNode } from "./types";
  * based on the order of instances in the entries array, providing
  * deterministic and stable IDs across render passes.
  *
- * @param entries - Array of [id, seidr] tuples from SSRScope.observables
+ * @param entries - Array of [numericId, seidr] tuples from SSRScope.observables
  *
  * @returns A dependency graph with numeric IDs
  *
@@ -23,7 +23,7 @@ import type { DependencyGraph, DependencyNode } from "./types";
  *   [firstName, lastName]
  * );
  *
- * const entries = Object.entries(scope.observables);
+ * const entries = Array.from(scope.observables.entries());
  * const graph = buildDependencyGraph(entries);
  *
  * // Result (indices based on entry order):
@@ -37,7 +37,7 @@ import type { DependencyGraph, DependencyNode } from "./types";
  * // }
  * ```
  */
-export function buildDependencyGraph(entries: [string, Seidr<any>][]): DependencyGraph {
+export function buildDependencyGraph(entries: [number, Seidr<any>][]): DependencyGraph {
   const nodes: DependencyNode[] = [];
   const rootIds: number[] = [];
 

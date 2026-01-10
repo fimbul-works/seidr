@@ -1,11 +1,21 @@
 import {
   $,
+  $button,
+  $checkbox,
+  $div,
+  $form,
+  $h1,
+  $input,
+  $li,
+  $span,
+  $ul,
+  bindInput,
   cn,
   component,
   createStateKey,
   getState,
   hasState,
-  isUndef,
+  isUndefinedined,
   List,
   Seidr,
   setState,
@@ -19,13 +29,12 @@ function TodoItem({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => v
   return component(() => {
     const isCompleted = new Seidr(todo.completed);
 
-    return $(
-      "li",
+    return $li(
       {
         className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
       },
       [
-        $("input", {
+        $checkbox({
           type: "checkbox",
           checked: isCompleted,
           onchange: () => {
@@ -34,10 +43,11 @@ function TodoItem({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => v
             saveTodos();
           },
         }),
-        $("span", {
+        $span({
           textContent: todo.text,
         }),
-        $("button", {
+        $button({
+          className: "btn btn-danger",
           textContent: "Delete",
           onclick: onDelete,
         }),
@@ -46,18 +56,13 @@ function TodoItem({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => v
   });
 }
 
-export function TodoApp(todoProps: Todo[]) {
+export function TodoApp(todos: Seidr<Todo[]>) {
   return component(() => {
-    let todos: Seidr<Todo[]>;
-    if (!isUndef(todoProps)) {
-      console.log("todoProps", todoProps);
-      todos = new Seidr(todoProps);
+    if (!isUndefinedined(todos)) {
       setState(todosKey, todos);
     } else {
-      console.log("todoProps hydrated", hasState(todosKey) && getState(todosKey));
       todos = getState(todosKey);
     }
-    console.log(todos);
 
     const newTodoText = new Seidr("");
 
@@ -73,27 +78,23 @@ export function TodoApp(todoProps: Todo[]) {
       }
     };
 
-    return $("div", { className: "todo-app" }, [
-      $("h1", { textContent: "TODO App" }),
-      $("form", { className: "todo-form" }, [
-        $("input", {
+    return $div({ className: "todo-app card" }, [
+      $h1({ textContent: "TODO App" }),
+      $form({ className: "todo-form" }, [
+        $input({
           type: "text",
           placeholder: "What needs to be done?",
           className: "todo-input",
-          value: newTodoText,
-          oninput: (e: Event) => {
-            // @ts-expect-error
-            newTodoText.value = e.target.value;
-          },
+          ...bindInput(newTodoText),
         }),
-        $("button", {
+        $button({
           type: "submit",
           textContent: "Add",
-          className: "todo-add-button",
+          className: "btn btn-primary",
           onclick: addTodo,
         }),
       ]),
-      $("ul", { className: "todo-list" }, [
+      $ul({ className: "todo-list" }, [
         List(
           todos,
           (item) => item.id,

@@ -13,6 +13,7 @@ let hydrationData: HydrationData | undefined;
  * This ensures numeric IDs match the server-side order.
  */
 let hydrationRegistry: Seidr<any>[] = [];
+const hydrationSet = new Set<Seidr<any>>();
 
 /**
  * Sets the hydration context for client-side hydration.
@@ -24,6 +25,7 @@ export function setHydrationData(data: HydrationData): void {
   hydrationData = data;
   // Clear registry when setting new context
   hydrationRegistry = [];
+  hydrationSet.clear();
 }
 
 /**
@@ -33,6 +35,7 @@ export function setHydrationData(data: HydrationData): void {
 export function clearHydrationData(): void {
   hydrationData = undefined;
   hydrationRegistry = [];
+  hydrationSet.clear();
 }
 
 /**
@@ -54,9 +57,11 @@ export function hasHydrationData(): boolean {
  */
 export function registerHydratedSeidr(seidr: Seidr<any>): void {
   if (!hasHydrationData()) return;
+  if (hydrationSet.has(seidr)) return;
 
   const numericId = hydrationRegistry.length;
   hydrationRegistry.push(seidr);
+  hydrationSet.add(seidr);
 
   // Set hydrated value if this is a root observable with a value
   // This ensures roots are hydrated even before bindings are applied

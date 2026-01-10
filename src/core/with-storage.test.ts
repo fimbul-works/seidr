@@ -561,4 +561,50 @@ describe("withStorage", () => {
       });
     });
   });
+
+  describe("Server-side rendering", () => {
+    it("should return Seidr unchanged when window is undefined (SSR)", () => {
+      // Store original window
+      const originalWindow = globalThis.window;
+
+      // Delete window to simulate SSR environment
+      // @ts-expect-error - Intentionally removing window for test
+      delete globalThis.window;
+
+      try {
+        const seidr = new Seidr("test-value");
+        const result = withStorage("ssr-key", seidr);
+
+        // Should return the same Seidr instance
+        expect(result).toBe(seidr);
+
+        // Should not attempt to access storage
+        expect(seidr.value).toBe("test-value");
+
+        // Changing value should not throw (no storage access)
+        seidr.value = "updated";
+        expect(seidr.value).toBe("updated");
+      } finally {
+        // Restore window
+        globalThis.window = originalWindow;
+      }
+    });
+
+    it("should not throw errors in SSR environment", () => {
+      const originalWindow = globalThis.window;
+
+      // @ts-expect-error - Intentionally removing window for test
+      delete globalThis.window;
+
+      try {
+        // Should not throw even with invalid key or missing storage
+        const seidr = withStorage("any-key", new Seidr({ data: "test" }));
+
+        expect(seidr).toBeDefined();
+        expect(seidr.value).toEqual({ data: "test" });
+      } finally {
+        globalThis.window = originalWindow;
+      }
+    });
+  });
 });

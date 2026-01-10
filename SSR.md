@@ -13,6 +13,8 @@ Seidr provides Server-Side Rendering (SSR) support with automatic state capture 
 - 🔒 Render context isolation (using AsyncLocalStorage on Node.js)
 - 🎯 **Graph traversal-based hydration** - A novel approach for minimal payloads!
 
+> **Note on Terminology:** We use "parents" to refer to **dependencies** or **source observables** in the dependency graph. If A depends on B (A is derived from B), then B is the "parent" of A.
+
 ## Architecture
 
 ### Conditional Exports
@@ -52,27 +54,173 @@ Automatically handles any derived state computed from other [`Seidr`](API.md#sei
 - Client traverses graph to find root values
 - Derived observables recreate themselves from roots
 
-#### 2. Global Application State (External Data)
+#### 2. Passing Seidr Instances as Props (Server Data)
 
-For data coming from **outside** the [`renderToString()`](#rendertostring) function:
+For data coming from **outside** the component, such as:
 - Database queries
 - API responses
 - User input from request params
 - Configuration data
 
-**How it works:**
+**The recommended pattern** is to create Seidr instances in your server entry point and pass them as props to your components:
+
 ```typescript
-export async function render(_url, todos = []) {
-  // State comes from OUTSIDE (function parameter)
-  // Can be a Seidr observable or plain value
+import { createStateKey, setState, getState, isUndefined } from '@fimbul-works/seidr';
+
+// Create type-capturing symbolic key for state
+const todosKey = createStateKey<Seidr<Todo[]>>("todos");
+
+// ✅ RECOMMENDED: Create Seidr outside, pass as prop
+export async function render(_url: string, todos: Todo[] = []) {
+  // Create Seidr instance with server data
   const state = new Seidr(todos);
 
+  // Pass to component as prop
+  return await renderToString(TodoApp, state);
+}
+
+// Component receives Seidr as prop (server) or undefined (client)
+export function TodoApp(todos: Seidr<Todo[]>) {
+  return component(() => {
+    // DUAL-MODE: Server sets state, client gets state from hydration
+    if (!isUndefined(todos)) {
+      // Server-side: Store the prop in global state
+      setState(todosKey, todos);
+    } else {
+      // Client-side: Retrieve from hydration data
+      todos = getState(todosKey);
+    }
+
+    // Use the Seidr - lazy state registration happens automatically!
+    return $ul({}, [
+      List(todos, (item) => item.id, TodoItem)
+    ]);
+  });
+}
+```
+
+**How the dual-mode pattern works:**
+
+1. **Server-side rendering:**
+   - Seidr prop is passed from server entry point
+   - `isUndefined(todos)` is `false`
+   - `setState()` stores the Seidr in global state with its ID
+   - Seidr gets registered when `List` observes it
+   - Hydration data captures the Seidr's value
+
+2. **Client-side hydration:**
+   - Component is called WITHOUT props
+   - `isUndefined(todos)` is `true`
+   - `getState()` retrieves the Seidr from hydration data using the same ID
+   - Hydration system populates the Seidr with server values
+   - Component becomes interactive with correct initial state
+
+**Why this is brilliant:**
+- ✅ Single component works for both SSR and client
+- ✅ No code duplication between server and client
+- ✅ Type-safe: TypeScript ensures `todos` is always `Seidr<Todo[]>` after the check
+- ✅ Hydration automatically populates the Seidr with server data
+- ✅ Clean separation: server fetches data, component consumes it
+
+**Alternative pattern** (create Seidr inside render function):
+
+```typescript
+// ✅ ALSO VALID: Create Seidr inside renderToString
+export async function render(_url: string, todos: Todo[] = []) {
   return await renderToString(() => {
+    const state = new Seidr(todos);
+
     setState(createStateKey("todos"), state);
     return TodoApp();
   });
 }
 ```
+
+Use this pattern when you need to create multiple Seidr instances or perform complex initialization logic before rendering.
+
+### Understanding the Dual-Mode Pattern
+
+The **dual-mode pattern** is the key to making components work seamlessly on both server and client with a single codebase:
+
+```typescript
+export function MyComponent(data: Seidr<MyData>) {
+  return component(() => {
+    // The magic isUndefined() check
+    if (!isUndefined(data)) {
+      // SERVER: Props provided → store in global state
+      setState(dataKey, data);
+    } else {
+      // CLIENT: No props → retrieve from hydration
+      data = getState(dataKey);
+    }
+
+    // Now 'data' is guaranteed to be a Seidr instance!
+    return $('div', { textContent: data.as(d => d.title) });
+  });
+}
+```
+
+**How it works step by step:**
+
+**Server-side:**
+```typescript
+// 1. Create Seidr with server data
+const serverData = new Seidr({ title: 'Hello from Server', count: 42 });
+
+// 2. Pass to component
+await renderToString(() => MyComponent(serverData));
+
+// 3. Component's isUndefined() check fails (data is provided)
+// 4. setState() stores the Seidr instance with its unique ID
+// 5. Lazy registration happens when component observes it
+// 6. Hydration data captures: { "observables": { "0": { title: "...", count: 42 } } }
+```
+
+**Client-side:**
+```typescript
+// 1. Call hydrate WITHOUT props
+hydrate(MyComponent, container, hydrationData);
+
+// 2. Component's isUndefined() check succeeds (data is undefined)
+// 3. getState() looks up the Seidr using the same ID from server
+// 4. Hydration system populates the Seidr with server values
+// 5. Component renders with correct initial state
+// 6. App becomes interactive!
+```
+
+**Why the isUndefined() check is critical:**
+
+❌ **Without the check:**
+```typescript
+export function MyComponent(data: Seidr<MyData>) {
+  return component(() => {
+    setState(dataKey, data);  // ⚠️ Overwrites server data with undefined!
+    //...
+  });
+}
+```
+
+✅ **With the check:**
+```typescript
+export function MyComponent(data: Seidr<MyData>) {
+  return component(() => {
+    if (!isUndefined(data)) {
+      setState(dataKey, data);  // ✅ Only set if provided
+    } else {
+      data = getState(dataKey);  // ✅ Retrieve from hydration
+    }
+    //...
+  });
+}
+```
+
+**TypeScript flow understanding:**
+
+After the `if/else` block, TypeScript knows that `data` is definitely `Seidr<MyData>`:
+- If `!isUndefined(data)` → `data` was already `Seidr<MyData>`
+- If `isUndefined(data)` → `data = getState()` returns `Seidr<MyData>`
+
+So the rest of the component can safely use `data` without null checks!
 
 ### Graph Traversal-Based Hydration
 
@@ -80,7 +228,7 @@ Seidr uses a unique **dependency graph traversal** approach for hydration that, 
 
 #### How It Works
 
-**1. During SSR**: When derived observables are created, they register their parent dependencies **in order**:
+**1. During SSR**: When derived observables are created, they register their **dependencies** (or "parents") **in order**:
 
 ```typescript
 // Using .as() for simple derivation
@@ -107,15 +255,15 @@ const fullName = Seidr.computed(
   "elementId": 5,        // The element's data-seidr-id attribute value
   "seidrId": 4,          // Numeric ID of the bound Seidr instance
   "prop": "textContent",
-  "path": [2, 3]         // "To get value, follow parents: parent[2] → parent[3]"
+  "path": [2, 3]         // "To get value, follow dependencies: dep[2] → dep[3]"
 }
 ```
 
 **3. Client-Side Hydration**: When an element has a binding to a derived observable:
 - Start at the bound [`Seidr`](API.md#seidrt) instance
 - Follow the `path` array to traverse the dependency graph
-- Each index points to a parent [`Seidr`](API.md#seidrt)
-- Continue until reaching a root [`Seidr`](API.md#seidrt) (no parents)
+- Each index points to a dependency (parent) [`Seidr`](API.md#seidrt)
+- Continue until reaching a root [`Seidr`](API.md#seidrt) (no dependencies)
 - Set the root's value from the hydration data
 - The entire derived chain updates automatically!
 
@@ -135,30 +283,58 @@ const fullName = Seidr.computed(
 
 ## Quick Start
 
-### Server-Side Rendering
+### Server-Side Rendering with Props Pattern
+
+The recommended way to share server data with your components is to create Seidr instances in your server entry point and pass them as props:
 
 ```typescript
-import { renderToString } from '@fimbul-works/seidr';
-import { $, component, Seidr } from '@fimbul-works/seidr';
+import { renderToString, Seidr } from '@fimbul-works/seidr';
+import { $, component, List } from '@fimbul-works/seidr';
 
-function App() {
-  return component((scope) => {
-    const count = new Seidr(0);
+// Server entry point (e.g., entry-server.ts)
+export async function render(url: string, todos: Todo[] = []) {
+  // Create Seidr with server data
+  const state = new Seidr(todos);
 
-    return $('div', {}, [
-      $('p', { textContent: count.as(n => `Count: ${n}`) }),
-      $('button', {
-        textContent: 'Increment',
-        onclick: () => count.value++
-      })
+  // Pass to component as prop
+  const { html, hydrationData } = await renderToString(TodoApp, state);
+
+  return { html, hydrationData };
+}
+
+// Component receives Seidr as prop (server) or undefined (client)
+export function TodoApp(todos: Seidr<Todo[]>) {
+  return component(() => {
+    // DUAL-MODE: Server sets state, client gets state from hydration
+    if (!isUndefined(todos)) {
+      // Server-side: Store the prop in global state
+      setState(todosKey, todos);
+    } else {
+      // Client-side: Retrieve from hydration data
+      todos = getState(todosKey);
+    }
+
+    // Use the Seidr - lazy registration happens automatically!
+    return $div({ className: 'todo-app' }, [
+      $h1({ textContent: 'My Todos' }),
+      $ul({ className: 'todo-list' }, [
+        List(
+          todos,
+          (item) => item.id,
+          (item) => $li({ textContent: item.text })
+        )
+      ])
     ]);
   });
 }
 
 // In your server route handler
 app.get('/', async (req, res) => {
-  // Just call renderToString - runWithRenderContext is automatic!
-  const { html, hydrationData } = await renderToString(App);
+  // Fetch data from database
+  const todos = await db.query('SELECT * FROM todos');
+
+  // Render with server data
+  const { html, hydrationData } = await render(req.url, todos);
 
   // Send both HTML and hydration data to client
   res.send(`
@@ -185,27 +361,38 @@ app.get('/', async (req, res) => {
 import { hydrate } from '@fimbul-works/seidr';
 import { $, component, Seidr } from '@fimbul-works/seidr';
 
-function App() {
-  return component((scope) => {
-    const count = new Seidr(0);
+// Same component definition as server - receives prop as optional parameter
+export function TodoApp(todos: Seidr<Todo[]>) {
+  return component(() => {
+    // DUAL-MODE: Server sets state, client gets state from hydration
+    if (!isUndefined(todos)) {
+      setState(todosKey, todos);
+    } else {
+      todos = getState(todosKey);
+    }
 
-    return $('div', {}, [
-      $('p', { textContent: count.as(n => `Count: ${n}`) }),
-      $('button', {
-        textContent: 'Increment',
-        onclick: () => count.value++
-      })
+    return $div({ className: 'todo-app' }, [
+      $ul({ className: 'todo-list' }, [
+        List(todos, (item) => item.id, TodoItem)
+      ])
     ]);
   });
 }
 
-// Hydrate the app
+// Hydrate the app WITHOUT props
+// The component will retrieve todos from hydration data
 const container = document.getElementById('app');
 const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
-hydrate(App, container, hydrationData);
-// App is now interactive!
+hydrate(TodoApp, container, hydrationData);
+// App is now interactive with server data!
 ```
+
+**Key points:**
+- Client calls `hydrate()` WITHOUT props
+- Component's `isUndefined()` check detects missing prop
+- `getState()` retrieves Seidr from hydration data
+- Hydration populates the Seidr with server values automatically
 
 ## API Reference
 
@@ -319,31 +506,124 @@ app.get('/', async (req, res) => {
 });
 ```
 
-✅ **ALSO CORRECT - Global state in async render function:**
-```typescript
-export async function render(_url, todos = []) {
-  const state = new Seidr(todos);
+### State Initialization Patterns
 
-  const result = await renderToString(() => {
+#### Pattern 1: Server Data via Props with Dual-Mode (Recommended)
+
+**Best for:** External data (databases, APIs, request params)
+
+This is the **recommended pattern** for sharing server data with components:
+
+```typescript
+// ✅ SERVER: Create Seidr and pass as prop
+export async function render(_url: string, todos: Todo[] = []) {
+  const state = new Seidr(todos);
+  return await renderToString(TodoApp, state);
+}
+
+// ✅ COMPONENT: Dual-mode - works on both server and client
+export function TodoApp(todos: Seidr<Todo[]>) {
+  return component(() => {
+    // DUAL-MODE: Server sets, client gets from hydration
+    if (!isUndefined(todos)) {
+      setState(todosKey, todos);      // Server: store prop
+    } else {
+      todos = getState(todosKey);     // Client: retrieve from hydration
+    }
+
+    // Use todos (guaranteed to be Seidr<Todo[]>)
+    return $ul({}, [
+      List(todos, (item) => item.id, TodoItem)
+    ]);
+  });
+}
+
+// ✅ CLIENT: Hydrate WITHOUT props
+hydrate(TodoApp, container, hydrationData);
+```
+
+**Why this is recommended:**
+- ✅ Single component works for both SSR and client
+- ✅ Clean separation of data fetching and component logic
+- ✅ Easy to test components with different data
+- ✅ Type-safe with TypeScript's flow analysis
+- ✅ Lazy registration ensures proper SSR tracking
+- ✅ Hydration automatically populates with server values
+
+#### Pattern 2: Create Inside renderToString
+
+**Best for:** Multiple Seidr instances or complex initialization
+
+```typescript
+// ✅ Create Seidr inside renderToString callback
+export async function render(_url: string, todos: Todo[] = []) {
+  return await renderToString(() => {
+    const state = new Seidr(todos);
     setState(createStateKey("todos"), state);
     return TodoApp();
   });
-
-  return result;
 }
 ```
 
-### State Initialization Best Practices
+#### Pattern 3: Component-Local State
 
-State can be created:
-- ✅ Inside component render functions (recommended for component-local state)
-- ✅ Inside async render functions (recommended for global/state shared across components)
+**Best for:** State specific to a component instance
 
-❌ **Avoid state outside any render context:**
 ```typescript
-// Will miss SSR registration!
-const globalState = new Seidr(0);
+// ✅ Create Seidr inside component function
+export function Counter() {
+  return component(() => {
+    const count = new Seidr(0);
+    return $('div', { textContent: count.as(n => `Count: ${n}`) });
+  });
+}
 ```
+
+#### ❌ Anti-Pattern to Avoid
+
+**Don't create Seidr outside and use `.as()` directly:**
+
+```typescript
+// ❌ AVOID: Creating Seidr outside and deriving in component
+const count = new Seidr(42);  // Created in wrong context!
+
+const App = () => component(() => {
+  // This creates a derived Seidr whose parent isn't properly registered
+  return $('div', { textContent: count.as(n => n * 2) });
+});
+```
+
+**Why this fails:**
+- The Seidr is created before `renderToString` establishes the render context
+- Derived Seidr (`.as()`) depends on parent, but parent has wrong ID
+- Dependency graph can't find the parent during hydration
+
+**Correct approach:**
+```typescript
+// ✅ Pass Seidr as prop instead
+const count = new Seidr(42);
+
+const App = (count: Seidr<number>) => component(() => {
+  // Component observes the Seidr, triggering proper registration
+  return $('div', { textContent: count.as(n => n * 2) });
+});
+
+await renderToString(() => App(count));
+```
+
+### Lazy Registration
+
+Seidr uses **lazy registration** - instances are automatically registered with the SSR scope when they are first:
+
+- Observed via `.observe()`
+- Bound via `.bind()`
+- Used in reactive components (`List`, Conditional, etc.)
+- Passed to element properties (`textContent`, `className`, etc.)
+
+This means:
+- ✅ You can create Seidr instances anywhere (server entry point, component, etc.)
+- ✅ They'll be registered automatically when used
+- ✅ No manual registration needed
 
 ### Component Hierarchy in SSR
 
@@ -433,7 +713,7 @@ c (2) ──┴─> bc (4) ──┘
 ```
 
 **During SSR:**
-- Each derived observable registers its parents in order
+- Each derived observable registers its dependencies (parents) in order
 - Graph captures these relationships
 - Only root values (a, b, c) are stored in hydration data
 
@@ -511,15 +791,51 @@ See the `examples/` directory for complete SSR examples:
 
 ### Hydration Not Working
 
-**Cause:** State was created outside the component/async function.
+**Cause:** Seidr instances created outside component but used incorrectly.
 
-**Solution:** Move Seidr state initialization inside the component function or async render function.
+**Solution:**
+- ✅ **Pass Seidr as props** - Create Seidr in server entry, pass to component
+- ✅ **Create inside component** - Use for component-local state
+- ❌ **Avoid**: Creating Seidr outside and using `.as()` directly in component
+
+### "Parent Seidr instance not found in registered observables" Error
+
+**Cause:** Derived Seidr (from `.as()` or `Seidr.computed()`) depends on a parent that wasn't registered.
+
+**Solution:**
+- If parent is created outside, pass it as a prop to the component
+- Don't create derived Seidr from parents that exist in a different render context
+- See the [Anti-Pattern section](#-anti-pattern-to-avoid) for details
 
 ### Elements Not Interactive After Hydration
 
 **Cause:** Seidr instances weren't hydrated correctly (wrong order or missing bindings).
 
 **Solution:** Ensure state is created properly and check hydration data format.
+
+### Wrong Values Displayed After Hydration
+
+**Cause:** Creating Seidr with different initial values on server vs client.
+
+**Solution:**
+- Server creates Seidr with actual data
+- Client creates Seidr with default/empty value
+- Hydration overwrites client value with server value
+- Both must use the same state key!
+
+**Example:**
+```typescript
+// Server
+const state = new Seidr(todos);  // Actual data from database
+await renderToString(() => TodoApp(state));
+
+// Client
+hydrate(() => {
+  // Seidr created with empty array, will be overwritten by hydration
+  const state = new Seidr<Todo[]>([]);
+  return TodoApp(state);
+}, container, hydrationData);
+```
 
 ### Marker Nodes and Fragments
 

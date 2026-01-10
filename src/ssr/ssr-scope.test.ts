@@ -113,12 +113,19 @@ describe("SSRScope", () => {
   });
 
   describe("Auto-registration", () => {
-    it("should auto-register Seidr instances created in scope", () => {
+    it("should auto-register Seidr instances when first observed/bound in scope", () => {
       const scope = new SSRScope();
       setActiveSSRScope(scope);
 
       const obs1 = new Seidr(42);
       const obs2 = new Seidr("test");
+
+      // Not registered yet
+      expect(scope.size).toBe(0);
+
+      // Observe to trigger registration
+      obs1.observe(() => {});
+      obs2.observe(() => {});
 
       expect(scope.size).toBe(2);
       expect(scope.has(obs1.id)).toBe(true);
@@ -131,16 +138,19 @@ describe("SSRScope", () => {
       const scope = new SSRScope();
 
       // Don't push scope
-      const _obs = new Seidr(42);
+      const obs = new Seidr(42);
+      obs.observe(() => {});
 
       expect(scope.size).toBe(0);
     });
 
-    it("should auto-register derived observables", () => {
+    it("should auto-register derived observables when first observed", () => {
       const scope = new SSRScope();
       setActiveSSRScope(scope);
 
       const root = new Seidr(10);
+      // Observe root to trigger its registration
+      root.observe(() => {});
       const derived = root.as((x) => x * 2);
 
       expect(scope.size).toBe(2);
@@ -156,6 +166,9 @@ describe("SSRScope", () => {
 
       const a = new Seidr(2);
       const b = new Seidr(3);
+      // Observe roots to trigger their registration
+      a.observe(() => {});
+      b.observe(() => {});
       const computed = Seidr.computed(() => a.value + b.value, [a, b]);
 
       expect(scope.size).toBe(3);

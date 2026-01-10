@@ -23,9 +23,8 @@ setInternalContext(getRenderContext);
 /**
  * Initialize the render context.
  * This is called internally by runWithRenderContext
- * and runWithRenderContextSync.
  *
- * @return {*}  {RenderContext}
+ * @return {RenderContext}
  */
 const initRenderContext = (): RenderContext => {
   const store = asyncLocalStorage.getStore();
@@ -38,6 +37,9 @@ const initRenderContext = (): RenderContext => {
 
   // Initialize element tracking for hydration
   store.idCounter = 0;
+
+  // Initialize Seidr ID counter for this render context
+  store.seidrIdCounter = 0;
 
   return store;
 };
@@ -53,26 +55,8 @@ const initRenderContext = (): RenderContext => {
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
   // Run with new context on the server
-  const createStore = (): RenderContext => ({ renderContextID: 0, idCounter: 0 });
+  const createStore = (): RenderContext => ({ renderContextID: 0, idCounter: 0, seidrIdCounter: 0 });
   return asyncLocalStorage.run(createStore(), async () => {
-    initRenderContext();
-    return callback();
-  });
-};
-
-/**
- * Run a synchronous function within a new render context.
- * Prefer runWithRenderContext for async operations.
- *
- * @template T - Type returned by callback
- *
- * @param {() => T} callback - Callback to invoke inside AsyncLocalStorage closure
- * @return {T}
- */
-export const runWithRenderContextSync = <T>(callback: () => T): T => {
-  const store: RenderContext = { renderContextID: 0, idCounter: 0 };
-
-  return asyncLocalStorage.run(store, () => {
     initRenderContext();
     return callback();
   });
@@ -104,7 +88,7 @@ export const runWithRenderContextSync = <T>(callback: () => T): T => {
  * ```
  */
 export const setMockRenderContextForTests = (): (() => void) => {
-  const mockContext: RenderContext = { renderContextID: 0, idCounter: 0 };
+  const mockContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0 };
   const originalGetRenderContext = getRenderContext;
 
   // Override with a simple function that always returns the mock context

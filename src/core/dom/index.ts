@@ -1,3 +1,4 @@
+export * from "./bind-input";
 export type { SeidrComponent } from "./component";
 export { component } from "./component";
 export type { ComponentScope } from "./component-scope";

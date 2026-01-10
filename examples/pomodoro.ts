@@ -88,50 +88,50 @@ function PomodoroTimer() {
     const buttonText = isRunning.as<string>((r) => (r ? "⏸ Pause" : "▶ Start"));
 
     return $div(
+      {
+        className: "card card-large timer-card",
+      },
+      [
+        $h1({
+          className: "timer-mode",
+          textContent: modeText,
+        }),
+
+        $div({
+          className: "session-count",
+          textContent: sessionText,
+        }),
+
+        $div({
+          className: "timer-display",
+          textContent: formattedTime,
+        }),
+
+        $div(
           {
-            className: "card card-large timer-card",
+            className: "timer-controls",
           },
           [
-            $h1({
-              className: "timer-mode",
-              textContent: modeText,
+            $button({
+              className: "btn btn-primary btn-large",
+              textContent: buttonText,
+              onclick: toggleTimer,
             }),
 
-            $div({
-              className: "session-count",
-              textContent: sessionText,
+            $button({
+              className: "btn btn-outline btn-medium",
+              textContent: "🔄 Reset",
+              onclick: resetTimer,
             }),
 
-            $div({
-              className: "timer-display",
-              textContent: formattedTime,
+            $button({
+              className: "btn btn-outline-secondary btn-medium",
+              textContent: "⏭ Skip",
+              onclick: skipSession,
             }),
-
-            $div(
-              {
-                className: "timer-controls",
-              },
-              [
-                $button({
-                  className: "btn btn-primary btn-large",
-                  textContent: buttonText,
-                  onclick: toggleTimer,
-                }),
-
-                $button({
-                  className: "btn btn-outline btn-medium",
-                  textContent: "🔄 Reset",
-                  onclick: resetTimer,
-                }),
-
-                $button({
-                  className: "btn btn-outline-secondary btn-medium",
-                  textContent: "⏭ Skip",
-                  onclick: skipSession,
-                }),
-              ],
-            ),
           ],
+        ),
+      ],
     );
   });
 }

@@ -434,8 +434,8 @@ describe("Seidr", () => {
 
         expect(observable1.id).toBeDefined();
         expect(observable2.id).toBeDefined();
-        expect(typeof observable1.id).toBe("string");
-        expect(typeof observable2.id).toBe("string");
+        expect(typeof observable1.id).toBe("number");
+        expect(typeof observable2.id).toBe("number");
       });
 
       it("should generate different IDs for different instances", () => {
@@ -465,7 +465,7 @@ describe("Seidr", () => {
         // Attempting to set id will throw in strict mode or silently fail in non-strict mode
         try {
           // @ts-expect-error - Testing that id is read-only
-          observable.id = "different-id";
+          observable.id = 999;
         } catch {
           // Expected to throw in strict mode
         }

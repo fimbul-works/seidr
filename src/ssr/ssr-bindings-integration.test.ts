@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
-import { runWithRenderContextSync } from "../render-context.node";
+import { runWithRenderContext } from "../render-context.node";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";
@@ -24,7 +24,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should register bindings for reactive props during SSR", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -49,7 +49,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should render reactive button with correct initial value", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -66,7 +66,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should capture multiple bindings on same element", () => {
-      runWithRenderContextSync(() => {
+      runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -137,22 +137,19 @@ describe("SSR Reactive Bindings Integration", () => {
 
       {
         const ssrMode = enableSSRMode();
-        const scope = new SSRScope();
-        setActiveSSRScope(scope);
 
-        // Create count and App in SSR scope
-        const count = new Seidr(42);
+        // Create App with Seidr created INSIDE component (correct pattern)
         const App = () =>
           component(() => {
+            const count = new Seidr(42);
             return $("button", {
               disabled: count.as((n) => n > 100),
               textContent: count.as((n) => `Count: ${n}`),
             });
           });
 
-        const { hydrationData: data } = await renderToString(App, undefined, scope);
+        const { hydrationData: data } = await renderToString(App);
         hydrationData = data;
-        setActiveSSRScope(undefined);
         ssrMode();
       }
 

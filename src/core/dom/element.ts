@@ -3,7 +3,7 @@ import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element"
 import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
 import type { Seidr } from "../seidr";
-import { isFn, isSeidr, isSeidrComponent, isStr, isUndef } from "../util/is";
+import { isFn, isSeidr, isSeidrComponent, isStr, isUndefinedined } from "../util/is";
 import type { SeidrComponent } from "./component";
 
 /**
@@ -386,7 +386,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // During hydration, we don't assign new IDs - we only match SSR elements
   let elementId: string | undefined;
-  if (typeof process !== "undefined" && hasSeidrBindings() && ctx && !isUndef(ctx.renderContextID)) {
+  if (typeof process !== "undefined" && hasSeidrBindings() && ctx && !isUndefinedined(ctx.renderContextID)) {
     elementId = String(ctx.idCounter++);
   }
 

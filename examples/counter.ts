@@ -10,26 +10,20 @@ export function Counter() {
         className: "card card-centered counter",
       },
       [
-        $span(
-          { className: "counter-display", textContent: count.as((c) => c.toString()) },
-          // Automatic reactive binding!
-        ),
-        $div(
-          { className: "counter-controls" },
-          [
-            $button({
-              className: "btn btn-primary",
-              textContent: "Increment",
-              disabled, // Reactive boolean binding!
-              onclick: () => count.value++,
-            }),
-            $button({
-              className: "btn btn-secondary",
-              textContent: "Reset",
-              onclick: () => (count.value = 0),
-            }),
-          ],
-        ),
+        $span({ className: "counter-display", textContent: count.as((c) => c.toString()) }),
+        $div({ className: "counter-controls" }, [
+          $button({
+            className: "btn btn-primary",
+            textContent: "Increment",
+            disabled, // Reactive boolean binding!
+            onclick: () => count.value++,
+          }),
+          $button({
+            className: "btn btn-secondary",
+            textContent: "Reset",
+            onclick: () => (count.value = 0),
+          }),
+        ]),
       ],
     );
   });

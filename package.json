@@ -1,6 +1,6 @@
 {
   "name": "@fimbul-works/seidr",
-  "description": "Zero-dependency reactive framework with fine-grained reactivity, SSR support, and 2.5KB footprint",
+  "description": "Zero-dependency reactive framework with fine-grained reactivity, SSR support, and tiny footprint",
   "version": "1.0.0",
   "type": "module",
   "private": false,

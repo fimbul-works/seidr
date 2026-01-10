@@ -4,7 +4,7 @@ import type { RenderContext } from "./core/types";
 
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object
-const browserContext: RenderContext = { renderContextID: 0, idCounter: 0 };
+const browserContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0 };
 setInternalContext(() => browserContext);
 
 afterEach(() => {

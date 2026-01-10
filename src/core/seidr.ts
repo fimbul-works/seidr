@@ -1,8 +1,33 @@
 import { isHydrating } from "src/index.browser";
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
+import { getRenderContext } from "./render-context-contract";
 import type { EventHandler } from "./types";
-import { uid } from "./util/uid";
+
+// Extend globalThis for the fallback counter
+let fallbackSeidrIdCounter: number = 0;
+
+/** Generates a unique numeric ID for a Seidr instance within the current render context */
+const generateSeidrId = (): number => {
+  // Use the global counter when client-side
+  if (typeof window !== "undefined") {
+    return fallbackSeidrIdCounter++;
+  }
+
+  try {
+    const ctx = getRenderContext();
+    if (ctx) {
+      // In SSR/client mode: use render context's counter (isolated per request)
+      return ctx.seidrIdCounter++;
+    }
+  } catch (_e) {
+    // getRenderContext() throws if not initialized, which is fine for simple usage
+  }
+
+  // Fallback for simple usage without render context (e.g., unit tests)
+  // Use a global counter with modulo to prevent overflow
+  return fallbackSeidrIdCounter++ % 2 ** 63;
+};
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -35,8 +60,8 @@ export class Seidr<T> {
   /** @type {T} The current value being stored */
   private v: T;
 
-  /** @type {string} Unique identifier for this observable */
-  private i: string = uid();
+  /** @type {number} Unique identifier for this observable (for debugging) */
+  private i: number = generateSeidrId();
 
   /** @type {Seidr<any>[]} Parent dependencies (for derived/computed observables) */
   private p: Seidr<any>[] = [];
@@ -56,6 +81,26 @@ export class Seidr<T> {
   constructor(initial: T) {
     this.v = initial;
 
+    // Client-side: register immediately for hydration
+    // (Server-side: registration happens on first observe/bind)
+    if (typeof window !== "undefined" && typeof process !== "undefined") {
+      registerHydratedSeidr(this);
+    }
+  }
+
+  /**
+   * Registers this Seidr instance with SSR/hydration systems.
+   *
+   * On server-side (SSR): Called automatically on first observe/bind to ensure
+   * registration happens in the same order on server and client, and allows
+   * Seidr instances to be created outside renderToString but used inside it.
+   *
+   * IMPORTANT: For proper SSR/hydration, Seidr instances should be created
+   * WITHIN the component function (inside renderToString), not outside.
+   *
+   * On client-side: Called in constructor for immediate hydration registration.
+   */
+  private register(): void {
     // Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
     if (
       typeof window === "undefined" ||
@@ -63,18 +108,15 @@ export class Seidr<T> {
     ) {
       const scope = getActiveSSRScope();
       if (scope) scope.register(this);
-    } else if (typeof process !== "undefined") {
-      // Client-side hydration check
-      registerHydratedSeidr(this);
     }
   }
 
   /**
    * Gets the unique identifier for this observable.
    *
-   * @type {string} The unique ID for this observable instance
+   * @type {number} The unique ID for this observable instance (for debugging)
    */
-  get id(): string {
+  get id(): number {
     return this.i;
   }
 
@@ -166,6 +208,7 @@ export class Seidr<T> {
    * @returns {() => void} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): () => void {
+    this.register();
     this.f.add(fn);
     return () => this.f.delete(fn);
   }
@@ -185,6 +228,7 @@ export class Seidr<T> {
    * @returns {() => void} A cleanup function that removes the binding when called
    */
   bind<E>(target: E, fn: (value: T, target: E) => void): () => void {
+    this.register();
     fn(this.value, target);
     return this.observe((value) => fn(value, target));
   }
@@ -435,6 +479,13 @@ export class Seidr<T> {
    */
   protected setParents(parents: Seidr<any>[]): void {
     this.p = parents;
+
+    // Register this derived Seidr with SSR scope (happens when .as() or .computed() is called)
+    this.register();
+
+    // Also register all parents to ensure they're in the SSR scope
+    // This handles cases where parents are created outside renderToString but used inside it
+    parents.forEach((parent) => parent.register());
 
     // Server-side rendering check: window === undefined || process.env.SEIDR_TEST_SSR === true
     if (typeof window !== "undefined" && (typeof process === "undefined" || !process.env.SEIDR_TEST_SSR)) return;
