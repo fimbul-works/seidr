@@ -14,14 +14,15 @@ import {
   $query,
   $queryAll,
   $span,
+  $ul,
   cn,
   component,
+  Conditional,
   elementClassToggle,
+  List,
   mount,
-  mountConditional,
-  mountList,
-  mountSwitch,
   Seidr,
+  Switch,
 } from "./index";
 
 describe("README.md Examples Validation", () => {
@@ -226,7 +227,7 @@ describe("README.md Examples Validation", () => {
   });
 
   describe("Conditional Rendering Example", () => {
-    it("should conditionally mount and unmount components", () => {
+    it("should conditionally render components as children", () => {
       const isVisible = new Seidr(false);
 
       function DetailsPanel() {
@@ -242,7 +243,10 @@ describe("README.md Examples Validation", () => {
         });
       }
 
-      mountConditional(isVisible, () => DetailsPanel(), document.body);
+      const container = $div({}, [
+        Conditional(isVisible, () => DetailsPanel()),
+      ]);
+      document.body.appendChild(container);
 
       // Initially not visible
       expect($query(".details-panel")).toBeFalsy();
@@ -290,12 +294,14 @@ describe("README.md Examples Validation", () => {
         });
       }
 
-      mountList(
-        todos,
-        (item) => item.id,
-        (item) => TodoItem({ todo: item }),
-        document.body,
-      );
+      const container = $ul({}, [
+        List(
+          todos,
+          (item) => item.id,
+          (item) => TodoItem({ todo: item })
+        )
+      ]);
+      document.body.appendChild(container);
 
       // Initial render
       let todoItems = $queryAll(".todo-item");
@@ -493,20 +499,15 @@ describe("README.md Examples Validation", () => {
           textContent: "Table",
           onclick: () => (viewMode.value = "table"),
         }),
-      ]);
-
-      document.body.appendChild(controls);
-
-      // Automatically switches components with full cleanup
-      mountSwitch(
-        viewMode,
-        {
+        // Switch component as a child
+        Switch(viewMode, {
           list: ListView,
           grid: GridView,
           table: TableView,
-        },
-        document.body,
-      );
+        })
+      ]);
+
+      document.body.appendChild(controls);
 
       // Test initial state
       expect(document.body.textContent).toContain("List View 📋");

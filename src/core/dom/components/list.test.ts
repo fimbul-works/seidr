@@ -44,9 +44,12 @@ describe("List Component", () => {
       { id: 3, text: "C" },
     ];
     expect(parentEl.querySelectorAll("span").length).toBe(2);
-    expect(parentEl.innerHTML).not.toContain("A");
-    expect(parentEl.innerHTML).toContain("B");
-    expect(parentEl.innerHTML).toContain("C");
+
+    // Check that "A" element was removed (not just textContent, to avoid false positives from UIDs in comments)
+    const spanTexts = Array.from(parentEl.querySelectorAll("span")).map(s => s.textContent);
+    expect(spanTexts).not.toContain("A");
+    expect(spanTexts).toContain("B");
+    expect(spanTexts).toContain("C");
 
     // Reorder
     items.value = [

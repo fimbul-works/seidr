@@ -26,8 +26,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 🧩 **Fragment Support** - No wrapper elements needed via Marker Nodes
-- 📦 **Tiny Footprint** - 2.1KB core, 4.4KB full bundle (minified + gzipped)
+- 📦 **Tiny Footprint** - 2.4KB core, 4.2KB full bundle (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -201,7 +200,7 @@ const searchInput = $input({
 
 #### Step 4: Create Component with List Rendering
 ```typescript
-import { component, mountList } from '@fimbul-works/seidr';
+import { component, List } from '@fimbul-works/seidr';
 
 function SearchApp() {
   return component((scope) => {
@@ -227,24 +226,23 @@ function SearchApp() {
       oninput: (e) => searchQuery.value = e.target.value
     });
 
-    // Create container for filtered items
-    const listContainer = $ul();
-
-    // Mount list with key-based diffing
-    mountList(
-      filteredItems,
-      (item) => item.id,
-      (item) => $li({ textContent: item.name }),
-      listContainer
-    );
-
-    return $div({}, [searchInput, listContainer]);
+    return $div({}, [
+      searchInput,
+      // List component with key-based diffing
+      $ul({}, [
+        List(
+          filteredItems,
+          (item) => item.id,
+          (item) => $li({ textContent: item.name })
+        )
+      ])
+    ]);
   });
 }
 ```
 
 **What happens:**
-- `mountList` tracks `filteredItems` observable
+- `List` component tracks `filteredItems` observable
 - When `filteredItems` changes:
   - Diff algorithm finds changed/added/removed items
   - Updates only affected DOM elements
@@ -394,16 +392,40 @@ mount(counter1, document.body);
 
 ### Mounting
 
-Mount components conditionally, as lists, or switch between them.
+Mount components to DOM or use them as children in other components.
 
 ```typescript
-// Conditional rendering
+// For direct DOM mounting (top-level)
+mount(MyComponent(), document.body);
+
+// Conditional rendering as a child
+$div({}, [
+  Conditional(isVisible, () => DetailsPanel())
+]);
+
+// List rendering as a child with key-based diffing
+$ul({}, [
+  List(todos, item => item.id, item => TodoItem({ item }))
+]);
+
+// Switch between components as a child
+$div({}, [
+  Switch(viewMode, {
+    list: () => ListView(),
+    grid: () => GridView()
+  })
+]);
+```
+
+**Shorthand utilities for direct DOM mounting:**
+```typescript
+// Mount directly to DOM (equivalent to mount(Conditional(...), container))
 mountConditional(isVisible, () => DetailsPanel(), container);
 
-// List rendering with key-based diffing
+// Mount directly to DOM (equivalent to mount(List(...), container))
 mountList(todos, item => item.id, item => TodoItem({ item }), container);
 
-// Switch between components
+// Mount directly to DOM (equivalent to mount(Switch(...), container))
 mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
 ```
 
@@ -573,7 +595,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.5KB (minified + gzipped)
+- **Seidr counter app**: ~1.7KB (minified + gzipped)
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
@@ -634,8 +656,8 @@ Pre-built ESM bundles are available for direct browser use:
 ```
 
 **Bundle sizes (minified):**
-- `seidr.js` - 10.1KB (4.4KB gzipped)
-- `seidr.core.js` - 5.0KB (2.1KB gzipped)
+- `seidr.js` - 10.1KB (4.2KB gzipped)
+- `seidr.core.js` - 5.7KB (2.4KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 

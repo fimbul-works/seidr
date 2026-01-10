@@ -614,7 +614,9 @@ Equivalent to `mount(List(observable, getKey, factory), container)`.
 
 #### `mountSwitch(observable, cases, container)`
 Equivalent to `mount(Switch(observable, cases), container)`.
+
 ---
+
 ## State Management
 
 ### createStateKey()
