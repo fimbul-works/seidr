@@ -26,7 +26,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 2.5KB core, 4.4KB full bundle (minified + gzipped)
+- 📦 **Tiny Footprint** - 2.5KB core, 4.3KB full bundle (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -302,7 +302,7 @@ This model gives you **control** without **complexity**. You understand exactly 
 
 ## 🎯 Core Concepts
 
-Seidr has a simple philosophy: **one class**, everything else is *utility functions*. The only class is `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements.
+Seidr is built around `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements. All other features are composable utility functions.
 
 ### Reactive State
 
@@ -527,8 +527,7 @@ Seidr provides SSR support with automatic state capture and client-side hydratio
 
 ```typescript
 // Server-side (Node.js)
-import { renderToString } from '@fimbul-works/seidr/node';
-import { component, $, Seidr } from '@fimbul-works/seidr/node';
+import { component, $, Seidr, renderToString } from '@fimbul-works/seidr';
 
 function App() {
   return component((scope) => {
@@ -656,8 +655,8 @@ Pre-built ESM bundles are available for direct browser use:
 ```
 
 **Bundle sizes (minified):**
-- `seidr.js` - 10.7KB (4.4KB gzipped)
-- `seidr.core.js` - 6.3KB (2.5KB gzipped)
+- `seidr.js` - 10.6KB (4.3KB gzipped)
+- `seidr.core.js` - 6.1KB (2.5KB gzipped)
 
 For library consumers, use the package through npm and let your bundler handle the imports.
 
