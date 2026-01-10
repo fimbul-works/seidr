@@ -13,11 +13,12 @@
 - [Components](#components)
   - [`component()`](#component)
   - [`createScope()`](#createscope)
-- [Mounting](#mounting)
+- [Mounting & Declarative Components](#mounting--declarative-components)
   - [`mount()`](#mount)
-  - [`mountConditional()`](#mountconditional)
-  - [`mountList()`](#mountlist)
-  - [`mountSwitch()`](#mountswitch)
+  - [`Conditional()`](#conditional)
+  - [`List()`](#list)
+  - [`Switch()`](#switch)
+  - [Shorthand Mounting Utilities](#shorthand-mounting-utilities)
 - [State Management](#state-management)
   - [`createStateKey()`](#createstatekey)
   - [`hasState()`](#hasstate)
@@ -221,8 +222,8 @@ Create DOM elements with reactive props support. Use `$` to create any HTML elem
 
 **Parameters:**
 - `tag` - HTML tag name
-- `props` - Object with element properties (can include [`Seidr<T>`](#seidt-class) observables)
-- `children` - Array of child elements or functions that return elements
+- `props` - Object with element properties (can include [`Seidr<T>`](#seidrt-class) observables)
+- `children` - Array of child elements, strings, functions, or [`SeidrComponents`](#component)
 
 **Returns:** [`SeidrElement`](#seidrelement-type)
 
@@ -248,7 +249,7 @@ Create reusable element creator functions with optional default props.
 **Parameters:**
 - `tag` - HTML tag name
 - `props` - Object with element properties (can include Seidr observables)
-- `initialProps` - Default properties to apply to all created elements (can include [`Seidr<T>`](#seidt-class) observables)
+- `initialProps` - Default properties to apply to all created elements (can include [`Seidr<T>`](#seidrt-class) observables)
 
 **Returns:** [`SeidrElement`](#seidrelement-type)
 
@@ -278,7 +279,7 @@ const submitButton = $primaryButton({ textContent: 'Submit' });
 All HTML elements available with `$` prefix:
 
 **Parameters:**
-- `props` - Object with element properties (can include [`Seidr<T>`](#seidt-class) observables)
+- `props` - Object with element properties (can include [`Seidr<T>`](#seidrt-class) observables)
 - `children` - Array of child elements or functions that return elements
 
 **Returns:** [`SeidrElement`](#seidrelement-type)
@@ -448,8 +449,8 @@ function UserProfile() {
     const avatar = Avatar();
 
     return $div({ className: 'profile' }, [
-      header.element,
-      avatar.element
+      header, // SeidrComponent passed directly!
+      avatar  // Element automatically extracted
     ]);
   });
 }
@@ -488,160 +489,131 @@ scope.destroy(); // Cleans up all tracked resources and children
 
 ---
 
-## Mounting
+## Mounting & Declarative Components
+
+Seidr provides declarative components for handling conditional logic and lists. These components use **Marker Nodes** (HTML comments) internally, allowing them to act like "Fragments" that don't introduce extra wrapper elements into the DOM.
 
 ### mount()
 
 Mount a component to a DOM container.
 
-**Generic Type:** `C` extends [`SeidrElement`](#seidrelement-type) - Type returned by `componentFactory`
-
 **Parameters:**
 - `component` - [`SeidrComponent`](#component) to mount
 - `container` - DOM element
 
-**Returns:** Fnction that unmounts the component when called
+**Returns:** Function that unmounts and destroys the component when called.
 
 ```typescript
 import { mount, component, $div } from '@fimbul-works/seidr';
 
-function Counter() {
-  return component(() => $div({ textContent: 'Hello' }));
-}
+const App = () => component(() => $div({ textContent: 'Hello Seidr' }));
 
-const unmount = mount(Counter(), document.body);
+const unmount = mount(App(), document.getElementById('app')!);
 
-// Unmount
+// Later
 unmount();
 ```
 
 ---
 
-### mountConditional()
+### Conditional()
 
-Conditionally mount/unmount a component based on observable value.
-
-**Generic Type:** `C` extends [`SeidrElement`](#seidrelement-type) - Type returned by `componentFactory`
+Conditionally renders a component based on a boolean observable.
 
 **Parameters:**
-- `condition` - [`Seidr<boolean>`](#seidrt-class)
-- `componentFactory` - Function that returns [`component`](#component)
-- `container` - DOM element
+- `condition` - [`Seidr<boolean>`](#seidrt-class) observable
+- `factory` - Function that returns a [`SeidrComponent`](#component) or DOM Node
 
-**Returns:** Function that unmounts the component when called
+**Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
 
+**Example:**
 ```typescript
-import { mountConditional, Seidr, component, $div, $button } from '@fimbul-works/seidr';
+import { Conditional, Seidr, component, $div } from '@fimbul-works/seidr';
 
 const isVisible = new Seidr(false);
+const MyComp = () => component(() => $div({ textContent: 'I am here' }));
 
-function DetailsPanel() {
-  return component(() => $div({ textContent: 'User Details' }));
-}
+const view = component(() => {
+  return $div({ className: 'container' }, [
+    Conditional(isVisible, MyComp)
+  ]);
+});
 
-// Conditionally mounted panel
-const unmount = mountConditional(
-  isVisible,
-  () => DetailsPanel(),
-  document.body
-);
-
-isVisible = true; // DetailsPanel is created
-
-// Unmount
-unmount();
+// Behavior:
+isVisible.value = true;
+// container contains: <div>I am here</div><!--seidr-conditional:...-->
 ```
 
 ---
 
-### mountList()
+### List()
 
-Render lists from observable arrays with key-based diffing.
-
-**Generic Types:**
-- `T` - The type of list items
-- `I` - The type of unique item keys (`string` or `number`)
-- `C` - The type of [`SeidrElement`](#seidrelement-type) returned by `componentFactory`
+Renders a dynamic list of components from an observable array with optimized key-based diffing.
 
 **Parameters:**
-- `observable` - [`Seidr<T[]>`](#seidrt-class) observable containing the list data
-- `getKey` - Function that extracts a key from array element (signature `(T) => I`)
-- `componentFactory` - Function that returns [`component`](#component)
-- `container` - DOM element
+- `observable` - [`Seidr<T[]>`](#seidrt-class) array observable
+- `getKey` - Function to extract unique key: `(item: T) => string | number`
+- `factory` - Function to create components: `(item: T) => SeidrComponent`
 
-**Returns:** Function that unmounts the components when called
+**Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
 
+**Example:**
 ```typescript
-import { mountList, Seidr, component, $div, $span, $button, uid } from '@fimbul-works/seidr';
+import { List, Seidr, component, $li, $ul, uid } from '@fimbul-works/seidr';
 
-const todos = new Seidr([
-  { id: uid(), text: 'Learn Seidr', completed: false },
-  { id: uid(), text: 'Build amazing apps', completed: false }
-]);
+const items = new Seidr([{ id: uid(), text: 'Item 1' }]);
+const Item = (data) => component(() => $li({ textContent: data.text }));
 
-function TodoItem({ todo }) {
-  return component(() => $div({ textContent: todo.text }));
-}
-
-const unmount = mountList(
-  todos,
-  (item) => item.id,                  // Key function
-  (item) => TodoItem({ todo: item }), // Component factory
-  document.body
-);
-
-// Updates efficiently handle additions, removals, and reordering
-todos.value = [...todos.value, { id: uid(), text: 'Master reactive programming', completed: false }];
-todos.value = todos.value.filter(todo => todo.id !== '1'); // Remove item
-
-// Unmount
-unmount();
+const list = component(() => {
+  return $ul({}, [
+    List(items, i => i.id, i => Item(i))
+  ]);
+});
 ```
 
 ---
 
-### mountSwitch()
+### Switch()
 
-Switch between different components based on observable value with automatic cleanup.
-
-**Generic Types:**
-- `T` - The key type for switching (typically string literals)
-- `C` - The type of [`SeidrElement`](#seidrelement-type) returned by `componentFactory`
+Switches between different components based on an observable value.
 
 **Parameters:**
-- `observable` - [`Seidr<T>`](#seidrt-class) observable containing the current switch key
-- `componentMap` - Object mapping keys to [`component`](#component) factory functions
-- `container` - DOM element
+- `observable` - [`Seidr<T>`](#seidrt-class) observable
+- `cases` - Object or Map: `{ [key: string]: () => SeidrComponent }`
+- `defaultCase?` - Optional fallback factory function
 
-**Returns:** Function that unmounts the component when called
+**Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
 
+**Example:**
 ```typescript
-import { mountSwitch, Seidr, component, $div } from '@fimbul-works/seidr';
+import { Switch, Seidr, component, $div } from '@fimbul-works/seidr';
 
-type ViewMode = 'list' | 'grid' | 'table';
-const viewMode = new Seidr<ViewMode>('list');
+const mode = new Seidr('A');
 
-const ListView = () => component(() => $div({ textContent: '📋 List View' }));
-const GridView = () => component(() => $div({ textContent: '📊 Grid View' }));
-const TableView = () => component(() => $div({ textContent: '📈 Table View' }));
-
-// Automatically switches components with full cleanup
-const unmount = mountSwitch(
-  viewMode,
-  {
-    list: ListView,
-    grid: GridView,
-    table: TableView
-  },
-  document.body
-);
-
-viewMode.value = 'grid'; // Switches to grid view, destroys list view
-
-// Unmount
-unmount();
+const view = component(() => {
+  return $div({}, [
+    Switch(mode, {
+      A: () => component(() => $div({ textContent: 'View A' })),
+      B: () => component(() => $div({ textContent: 'View B' }))
+    }, () => component(() => $div({ textContent: 'Default' })))
+  ]);
+});
 ```
 
+---
+
+### Shorthand Mounting Utilities
+
+The following functions are shorthands that create the corresponding declarative component and call `mount()` immediately. Use these for top-level application mounting.
+
+#### `mountConditional(condition, factory, container)`
+Equivalent to `mount(Conditional(condition, factory), container)`.
+
+#### `mountList(observable, getKey, factory, container)`
+Equivalent to `mount(List(observable, getKey, factory), container)`.
+
+#### `mountSwitch(observable, cases, container)`
+Equivalent to `mount(Switch(observable, cases), container)`.
 ---
 ## State Management
 

@@ -473,14 +473,11 @@ export const $text = (text: string) => document.createTextNode(text);
 /**
  * Creates a new DOM Comment node.
  * @param text - String to convert into Dom Comment node
- * @param id? - Optional unique ID for the marker
  * @returns DOM Comment node
  */
-export const $comment = (text: string, id?: string | number): Comment => {
-  const content = id !== undefined ? `${text}:${id}` : text;
-
+export const $comment = (text: string): Comment => {
   if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
-    return new ServerComment(content) as any;
+    return new ServerComment(text) as any;
   }
-  return document.createComment(content);
+  return document.createComment(text);
 };

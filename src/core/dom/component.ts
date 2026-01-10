@@ -1,4 +1,5 @@
 import { getRenderContext } from "../render-context-contract";
+import { isHTMLElement } from "../util/is";
 import { type ComponentScope, createScope } from "./component-scope";
 
 /** Map of SeidrComponent stack by render context ID */
@@ -190,7 +191,7 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Node>
     }
 
     // Apply root element attributes after creation
-    if (isRootComponent && component.element instanceof HTMLElement) {
+    if (isRootComponent && isHTMLElement(component.element)) {
       component.element.dataset.seidrRoot = "true";
     }
   } catch (err) {

@@ -56,3 +56,16 @@ export const isSeidr = (v: any): v is Seidr<any> => v instanceof Seidr;
  * @returns True if the value is a Seidr component, false otherwise
  */
 export const isSeidrComponent = (v: any): v is SeidrComponent => v && v.isSeidrComponent === true;
+
+/**
+ * Check if a value is an HTMLElement (safely works in Node.js/SSR environments).
+ * @param v - Value to check
+ * @returns True if the value is an HTMLElement or its server-side equivalent
+ */
+export const isHTMLElement = (v: any): v is HTMLElement => {
+  if (typeof HTMLElement !== "undefined" && v instanceof HTMLElement) {
+    return true;
+  }
+  // Fallback for SSR/ServerHTMLElement which may not inherit from global HTMLElement
+  return v && typeof v === "object" && "tagName" in v && "dataset" in v;
+};

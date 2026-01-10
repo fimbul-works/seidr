@@ -10,8 +10,8 @@ import {
   $ul,
   cn,
   component,
+  List,
   mount,
-  mountList,
   Seidr,
 } from "../src/index.browser.js";
 
@@ -49,7 +49,6 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
   return component((scope) => {
     const todos = new Seidr<Todo[]>(initialTodos);
     const newTodoText = new Seidr("");
-    const todoList = $ul({ className: "todo-list" });
 
     const addTodo = (e: Event) => {
       e.preventDefault();
@@ -59,20 +58,6 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
         newTodoText.value = "";
       }
     };
-
-    // Use mountList for proper reactive list rendering with cleanup
-    mountList(
-      todos,
-      (item) => item.id,
-      (item) =>
-        TodoItem({
-          todo: item,
-          onDelete: () => {
-            todos.value = todos.value.filter((t) => t.id !== item.id);
-          },
-        }),
-      todoList,
-    );
 
     return $div({ className: "todo-app" }, [
       $h1({ textContent: "TODO App" }),
@@ -93,7 +78,19 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
           onclick: addTodo,
         }),
       ]),
-      todoList,
+      $ul({ className: "todo-list" }, [
+        List(
+          todos,
+          (item) => item.id,
+          (item) =>
+            TodoItem({
+              todo: item,
+              onDelete: () => {
+                todos.value = todos.value.filter((t) => t.id !== item.id);
+              },
+            }),
+        ),
+      ]),
     ]);
   });
 }
