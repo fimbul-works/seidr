@@ -8,3 +8,4 @@ echo "Bundle sizes (bytes):"
 wc -c dist/*.min.*js* examples/dist/*.*js* | grep -v \.map
 
 # Note: .gz files are kept for size verification
+find dist/*.gz examples/dist/*.gz | xargs rm

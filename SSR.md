@@ -20,12 +20,13 @@ Seidr provides Server-Side Rendering (SSR) support with automatic state capture 
 Seidr uses **conditional exports** in [`package.json`](package.json) to provide the correct build based on the environment:
 
 **For Browser:**
-- Uses `dist/browser/index.js` (ESM) or `dist/browser/index.cjs` (CommonJS)
+- Uses `dist/seidr.js` (ESM) or `dist/seidr.cjs` (CommonJS)
 - Simple render context (no AsyncLocalStorage overhead)
+- Includes SSR [`hydrate`](#hydrate) function
 
 **For Node.js:**
-- Uses `dist/node/index.js` (ESM) or `dist/node/index.cjs` (CommonJS)
-- Includes SSR utilities ([`renderToString`](#rendertostring), [`hydrate`](#hydrate), [`runWithRenderContext`](#runwithrendercontext))
+- Uses `dist/seidr.node.js` (ESM) or `dist/seidr.node.cjs` (CommonJS)
+- Includes SSR [`renderToString`](#rendertostring) function
 - AsyncLocalStorage-based render context for SSR
 
 **The split happens at bundling time** - both environments can use the same imports:
@@ -35,7 +36,7 @@ Seidr uses **conditional exports** in [`package.json`](package.json) to provide 
 import { $, component, Seidr } from '@fimbul-works/seidr';
 
 // Node.js also gets SSR utilities:
-import { renderToString, runWithRenderContext } from '@fimbul-works/seidr';
+import { renderToString } from '@fimbul-works/seidr';
 ```
 
 ### Two Methods of State Synchronization
@@ -62,24 +63,13 @@ For data coming from **outside** the [`renderToString()`](#rendertostring) funct
 **How it works:**
 ```typescript
 export async function render(_url, todos = []) {
-  await runWithRenderContext(async () => {
-    // State comes from OUTSIDE (function parameter)
-    // Can be a Seidr observable or plain value
-    const state = new Seidr(todos);
+  // State comes from OUTSIDE (function parameter)
+  // Can be a Seidr observable or plain value
+  const state = new Seidr(todos);
 
-    [setState()](API.md#setstate)([createStateKey()](API.md#createstatekey)("todos"), state);
-    return await [renderToString()](#rendertostring)(TodoApp);
-  });
-}
-```
-
-**Simplified version (no manual Seidr creation):**
-```typescript
-export async function render(_url, todos = []) {
-  await runWithRenderContext(async () => {
-    // Just pass the plain value - restoreGlobalState will wrap it in Seidr
-    [setState()](API.md#setstate)([createStateKey()](API.md#createstatekey)("todos"), new Seidr(todos));
-    return await [renderToString()](#rendertostring)(TodoApp);
+  return await renderToString(() => {
+    setState(createStateKey("todos"), state);
+    return TodoApp();
   });
 }
 ```
@@ -148,8 +138,8 @@ const fullName = Seidr.computed(
 ### Server-Side Rendering
 
 ```typescript
-import { renderToString } from '@fimbul-works/seidr/node';
-import { $, component, Seidr } from '@fimbul-works/seidr/node';
+import { renderToString } from '@fimbul-works/seidr';
+import { $, component, Seidr } from '@fimbul-works/seidr';
 
 function App() {
   return component((scope) => {
@@ -192,7 +182,7 @@ app.get('/', async (req, res) => {
 ### Client-Side Hydration
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr/node';
+import { hydrate } from '@fimbul-works/seidr';
 import { $, component, Seidr } from '@fimbul-works/seidr';
 
 function App() {
@@ -226,7 +216,7 @@ Render a Seidr component to an HTML string with hydration data capture.
 **This function automatically wraps the rendering in an AsyncLocalStorage context**, so you don't need to manually call [`runWithRenderContext()`](#runwithrendercontext).
 
 ```typescript
-import { renderToString } from '@fimbul-works/seidr/node';
+import { renderToString } from '@fimbul-works/seidr';
 
 const { html, hydrationData } = await renderToString(App);
 ```
@@ -247,7 +237,7 @@ const { html, hydrationData } = await renderToString(App);
 Hydrate a server-rendered component on the client.
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr/node';
+import { hydrate } from '@fimbul-works/seidr';
 
 const component = hydrate(App, container, hydrationData);
 ```
@@ -260,58 +250,6 @@ const component = hydrate(App, container, hydrationData);
 **Returns:** The hydrated Seidr component
 
 ---
-
-### runWithRenderContext()
-
-**Advanced usage only.** Most users should use [`renderToString()`](#rendertostring) directly.
-
-Wrap a function in an AsyncLocalStorage render context. Used for advanced scenarios where you need manual control over the render context.
-
-```typescript
-import { runWithRenderContext } from '@fimbul-works/seidr/node';
-
-const result = await runWithRenderContext(async () => {
-  // Your SSR code here
-  return someValue;
-});
-```
-
-**Also available as synchronous version:** [`runWithRenderContextSync()`](#runwithrendercontextsync)
-
----
-
-### runWithRenderContextSync()
-
-Synchronous version of [`runWithRenderContext()`](#runwithrendercontext). Used in tests and scenarios where async context is not needed.
-
-```typescript
-import { runWithRenderContextSync } from '@fimbul-works/seidr/node';
-
-const result = runWithRenderContextSync(() => {
-  // Your SSR code here
-  return someValue;
-});
-```
-
----
-
-### SSRScope
-
-**Advanced usage only.** Low-level SSR scope management for complex scenarios.
-
-```typescript
-import { SSRScope, setActiveSSRScope } from '@fimbul-works/seidr/node';
-
-const scope = new SSRScope();
-setActiveSSRScope(scope);
-
-// ... create elements
-
-const hydrationData = scope.captureHydrationData();
-```
-
-**Methods:**
-- `captureHydrationData()` - Capture all SSR state for hydration
 
 ## Hydration Data Format
 
@@ -391,7 +329,6 @@ export async function render(_url, todos = []) {
     return TodoApp();
   });
 
-  clearHydrationContext();
   return result;
 }
 ```
@@ -413,7 +350,7 @@ const globalState = new Seidr(0);
 When using nested components in SSR, child components are automatically tracked and will be properly destroyed during cleanup. This works the same way as in client-side rendering:
 
 ```typescript
-import { component, $ } from '@fimbul-works/seidr/node';
+import { component, $ } from '@fimbul-works/seidr';
 
 function Header() {
   return component(() => {
@@ -522,20 +459,6 @@ npm test -- ssr
 
 # Run specific SSR test file
 npm test -- src/ssr/integration.test.ts
-```
-
-**Testing utilities:**
-
-```typescript
-import { runWithRenderContextSync } from 'render-context.node';
-
-it("should render with SSR", () => {
-  runWithRenderContextSync(() => {
-    // Test code here runs with proper AsyncLocalStorage context
-    const scope = new SSRScope();
-    // ... SSR test code
-  });
-});
 ```
 
 ## Migration Guide

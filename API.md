@@ -13,7 +13,6 @@
 - [Components](#components)
   - [`component()`](#component)
   - [`Safe()`](#safe)
-  - [`createScope()`](#createscope)
 - [Mounting & Declarative Components](#mounting--declarative-components)
   - [`mount()`](#mount)
   - [`Conditional()`](#conditional)
@@ -523,31 +522,6 @@ SafeComponent.destroy();
 // Logs:
 // - "Component cleanup" (from failed component)
 // - "Error boundary cleanup" (from error boundary)
-```
-
----
-
-### `createScope()` (Low-level)
-
-An internal utility for manual resource management. While [components](#component) provide an isolated scope automatically, `createScope` can be used to manage cleanups in non-component contexts or for advanced custom lifecycle logic.
-**Returns** New `scope` object
-
-**Scope methods:**
-- `scope.track(cleanupFn)` - Register a cleanup function
-- `scope.child(component)` - Register a child [component](#component) (usually automatic)
-- `scope.destroy()` - Run all cleanup functions
-
-```typescript
-import { createScope } from '@fimbul-works/seidr';
-
-const scope = createScope();
-
-// Track cleanup functions
-scope.track(() => console.log('Cleaning up resource 1'));
-scope.track(() => console.log('Cleaning up resource 2'));
-
-// When done:
-scope.destroy(); // Cleans up all tracked resources and children
 ```
 
 ---
