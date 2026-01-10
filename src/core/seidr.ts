@@ -1,3 +1,4 @@
+
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
 import type { EventHandler } from "./types";

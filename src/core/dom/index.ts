@@ -1,4 +1,3 @@
-export * from "../../ssr/hydrate";
 export * from "./component";
 export * from "./component-scope";
 export * from "./components/index";

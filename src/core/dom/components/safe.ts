@@ -84,35 +84,37 @@ export function Safe<K extends keyof HTMLElementTagNameMap, T extends Node>(
 
   // Render the component via factory with error handling
   try {
-    comp.element = factory(scope);
-  } catch (err) {
-    scope.destroy();
-    comp.scope = createScope();
-    comp.element = errorBoundaryFactory(err as Error, comp.scope);
-  }
-
-  // Set up destroy method
-  comp.destroy = () => {
-    comp.scope.destroy();
-    const el = comp.element as any;
-    if (el?.remove) {
-      el.remove();
-    } else if (el?.parentNode) {
-      try {
-        el.parentNode.removeChild(el);
-      } catch (_e) {
-        // Ignore if node was already removed or parent changed
-      }
+    try {
+      comp.element = factory(scope);
+    } catch (err) {
+      scope.destroy();
+      comp.scope = createScope();
+      comp.element = errorBoundaryFactory(err as Error, comp.scope);
     }
-  };
 
-  // Propagate onAttached from scope
-  if (comp.scope.onAttached) {
-    comp.onAttached = comp.scope.onAttached;
+    // Set up destroy method
+    comp.destroy = () => {
+      comp.scope.destroy();
+      const el = comp.element as any;
+      if (el?.remove) {
+        el.remove();
+      } else if (el?.parentNode) {
+        try {
+          el.parentNode.removeChild(el);
+        } catch (_e) {
+          // Ignore if node was already removed or parent changed
+        }
+      }
+    };
+
+    // Propagate onAttached from scope
+    if (comp.scope.onAttached) {
+      comp.onAttached = comp.scope.onAttached;
+    }
+  } finally {
+    // Remove from stack
+    stack.pop();
   }
-
-  // Remove from stack
-  stack.pop();
 
   // Apply root element attributes
   if (isRootComponent && isHTMLElement(comp.element)) {

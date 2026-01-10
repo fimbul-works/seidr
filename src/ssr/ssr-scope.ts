@@ -79,6 +79,31 @@ export class SSRScope {
   private parents = new Map<string, string[]>();
   // observable -> [elementId, prop]
   private bindings = new Map<string, [string, string]>();
+  // Async tasks to await during SSR
+  private promises: Promise<any>[] = [];
+
+  /**
+   * Registers a promise to be awaited before finishing the SSR render.
+   * Useful for inServer() async tasks.
+   *
+   * @param promise - The promise to track
+   */
+  trackPromise(promise: Promise<any>): void {
+    this.promises.push(promise);
+  }
+
+  /**
+   * Waits for all registered promises in this scope to resolve.
+   * Called by renderToString before finalizing the HTML output.
+   */
+  async waitForPromises(): Promise<void> {
+    // We loop in case resolving one promise kicks off more async work
+    while (this.promises.length > 0) {
+      const pending = [...this.promises];
+      this.promises = [];
+      await Promise.all(pending);
+    }
+  }
 
   /**
    * Returns the number of observables registered in this scope.
@@ -288,7 +313,7 @@ export class SSRScope {
     // Build a quick dependency map to find roots
     const hasParents = new Set<string>();
     for (const [, parents] of this.parents.entries()) {
-      parents.forEach(parentId => hasParents.add(parentId));
+      parents.forEach((parentId) => hasParents.add(parentId));
     }
 
     // Destroy root observables first (those that aren't anyone's child)

@@ -169,30 +169,32 @@ export function component<K extends keyof HTMLElementTagNameMap, T extends Node>
   stack.push(comp);
 
   // Render the component via factory
-  comp.element = factory(scope);
+  try {
+    comp.element = factory(scope);
 
-  // Set up destroy method
-  comp.destroy = () => {
-    scope.destroy();
-    const el = comp.element as any;
-    if (el?.remove) {
-      el.remove();
-    } else if (el?.parentNode) {
-      try {
-        el.parentNode.removeChild(el);
-      } catch (_e) {
-        // Ignore if node was already removed or parent changed
+    // Set up destroy method
+    comp.destroy = () => {
+      scope.destroy();
+      const el = comp.element as any;
+      if (el?.remove) {
+        el.remove();
+      } else if (el?.parentNode) {
+        try {
+          el.parentNode.removeChild(el);
+        } catch (_e) {
+          // Ignore if node was already removed or parent changed
+        }
       }
+    };
+
+    // Propagate onAttached from scope
+    if (scope.onAttached) {
+      comp.onAttached = scope.onAttached;
     }
-  };
-
-  // Propagate onAttached from scope
-  if (scope.onAttached) {
-    comp.onAttached = scope.onAttached;
+  } finally {
+    // Remove from stack
+    stack.pop();
   }
-
-  // Remove from stack
-  stack.pop();
 
   // Apply root element attributes
   if (isRootComponent && isHTMLElement(comp.element)) {

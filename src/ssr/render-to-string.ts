@@ -66,6 +66,9 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       // Create component (Seidr instances will auto-register during creation)
       const component = componentFactory(props);
 
+      // Wait for any async work registered via inServer()
+      await activeScope.waitForPromises();
+
       // Add data-seidr-id attribute to root element for hydration
       // Convert to HTML string
       const html = String(component.element);

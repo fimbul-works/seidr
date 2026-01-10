@@ -469,8 +469,8 @@ profile.destroy();
 Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
 
 **Parameters:**
-- `factory` - Function that creates the component element (signature `(scope) => SeidrElement`)
-- `errorBoundaryFactory` - Error handler that returns fallback UI (signature `(err: Error, scope: ComponentScope) => SeidrElement`)
+- `factory` - Function that creates the component element: `(scope: ComponentScope) => Node`
+- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error, scope: ComponentScope) => Node`
 
 **Returns:** `SeidrComponent`
 
@@ -519,7 +519,7 @@ const SafeComponent = Safe(
   }
 );
 
-comp.destroy();
+SafeComponent.destroy();
 // Logs:
 // - "Component cleanup" (from failed component)
 // - "Error boundary cleanup" (from error boundary)
@@ -527,10 +527,9 @@ comp.destroy();
 
 ---
 
-### createScope()
+### `createScope()` (Low-level)
 
-Creates a cleanup scope for tracking resources.
-
+An internal utility for manual resource management. While [components](#component) provide an isolated scope automatically, `createScope` can be used to manage cleanups in non-component contexts or for advanced custom lifecycle logic.
 **Returns** New `scope` object
 
 **Scope methods:**
@@ -1118,6 +1117,72 @@ console.log(isSeidr(count));    // true
 console.log(isSeidr(derived));  // true
 console.log(isSeidr(plainObj)); // false
 console.log(isSeidr(42));       // false
+```
+
+---
+
+## Environment Utilities
+
+Utilities for managing code that runs in both browser and server (SSR) environments.
+
+### inBrowser()
+
+Executes a function only in the browser environment. Useful for client-side side effects like DOM APIs, `localStorage`, or third-party libraries. Return value is `undefined` on the server.
+
+**Parameters:**
+- `fn` - Function to execute: `() => T`
+
+**Returns:** The result of `fn()`, or `undefined` on the server.
+
+```typescript
+import { inBrowser } from '@fimbul-works/seidr';
+
+inBrowser(() => {
+  const width = window.innerWidth;
+  console.log('Window width:', width);
+});
+```
+
+---
+
+### inServer()
+
+Executes a function only in the server (SSR) environment.
+
+**Async Support:** If the function returns a `Promise`, `renderToString` will automatically await it before generating the final HTML. This is the recommended way to perform data fetching during SSR.
+
+**Parameters:**
+- `fn` - Function to execute: `() => T`
+
+**Returns:** The result of `fn()`, or `undefined` in the browser.
+
+```typescript
+import { inServer, Seidr } from '@fimbul-works/seidr';
+
+const data = new Seidr(null);
+
+inServer(async () => {
+  const response = await fetch('https://api.example.com/data');
+  data.value = await response.json();
+});
+```
+
+---
+
+### isServer() / isBrowser()
+
+Functions that return a boolean indicating the current environment. These are dynamic and safe to use in tests.
+
+```typescript
+import { isServer, isBrowser } from '@fimbul-works/seidr';
+
+if (isServer()) {
+  console.log('Running on Node.js');
+}
+
+if (isBrowser()) {
+  console.log('Running in the browser');
+}
 ```
 
 ---
