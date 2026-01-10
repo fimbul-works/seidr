@@ -21,7 +21,6 @@ export default defineConfig((_config) => {
     build: {
       outDir: "examples/dist",
       emptyOutDir: true,
-      sourcemap: true,
       minify: "terser",
       target: "es2020",
       rollupOptions: {

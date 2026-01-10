@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
-import { $query, $queryAll } from "../src/index.browser";
+import { $query, $queryAll } from "../src/index.browser.ts";
 import { Counter } from "./counter.ts";
 
 describe("Counter Example", () => {

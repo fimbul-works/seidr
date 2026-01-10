@@ -6,6 +6,7 @@ Build reactive user interfaces with **zero build step** and **kilobyte scale foo
 
 [![npm version](https://badge.fury.io/js/%40fimbul-works%2Fseidr.svg)](https://www.npmjs.com/package/@fimbul-works/seidr)
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/microsoft/TypeScript)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@fimbul-works/seidr)](https://bundlephobia.com/package/@fimbul-works/seidr)
 
 ## Table of Contents
 

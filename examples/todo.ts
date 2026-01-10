@@ -13,11 +13,12 @@ import {
   List,
   mount,
   Seidr,
+  withStorage
 } from "../src/index.browser.js";
 
 type Todo = { id: number; text: string; completed: boolean };
 
-function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
+function TodoItem({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => void; onDelete: () => void }) {
   return component(() => {
     const isCompleted = new Seidr(todo.completed);
 
@@ -31,12 +32,14 @@ function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
           onchange: () => {
             isCompleted.value = !isCompleted.value;
             todo.completed = isCompleted.value;
+            onUpdate();
           },
         }),
         $span({
           textContent: todo.text,
         }),
         $button({
+          className: "btn btn-danger",
           textContent: "Delete",
           onclick: onDelete,
         }),
@@ -47,7 +50,7 @@ function TodoItem({ todo, onDelete }: { todo: Todo; onDelete: () => void }) {
 
 export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) {
   return component((scope) => {
-    const todos = new Seidr<Todo[]>(initialTodos);
+    const todos = withStorage('todos', new Seidr<Todo[]>(initialTodos));
     const newTodoText = new Seidr("");
 
     const addTodo = (e: Event) => {
@@ -59,8 +62,7 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
       }
     };
 
-    return $div({ className: "todo-app" }, [
-      $h1({ textContent: "TODO App" }),
+    return $div({ className: "card todo-app" }, [
       $form({ className: "todo-form" }, [
         $input({
           type: "text",
@@ -74,7 +76,7 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
         $button({
           type: "submit",
           textContent: "Add",
-          className: "todo-add-button",
+          className: "btn btn-primary",
           onclick: addTodo,
         }),
       ]),
@@ -85,7 +87,10 @@ export function TodoApp(initialTodos: Todo[] = [{ id: Date.now(), text: "Learn S
           (item) =>
             TodoItem({
               todo: item,
-              onDelete: () => {
+              onUpdate() {
+                todos.value = todos.value.slice(0);
+              },
+              onDelete() {
                 todos.value = todos.value.filter((t) => t.id !== item.id);
               },
             }),

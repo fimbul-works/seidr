@@ -1,10 +1,6 @@
-/* Todo app example specific styles */
+/* Todo app specific styles */
 
 .todo-app {
-  background: white;
-  border-radius: 12px;
-  padding: 30px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   max-width: 600px;
   width: 100%;
 }
@@ -34,24 +30,6 @@
 
 .todo-input:focus {
   border-color: #667eea;
-}
-
-.todo-add-button {
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.todo-add-button:hover {
-  background: #5568d3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 .todo-list {
@@ -95,17 +73,6 @@
 .todo-item button {
   padding: 6px 12px;
   font-size: 14px;
-  background: #ff4757;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.todo-item button:hover {
-  background: #ff3838;
-  transform: translateY(-1px);
 }
 
 .empty-state {

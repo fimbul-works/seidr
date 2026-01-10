@@ -243,9 +243,7 @@ describe("README.md Examples Validation", () => {
         });
       }
 
-      const container = $div({}, [
-        Conditional(isVisible, () => DetailsPanel()),
-      ]);
+      const container = $div({}, [Conditional(isVisible, () => DetailsPanel())]);
       document.body.appendChild(container);
 
       // Initially not visible
@@ -298,8 +296,8 @@ describe("README.md Examples Validation", () => {
         List(
           todos,
           (item) => item.id,
-          (item) => TodoItem({ todo: item })
-        )
+          (item) => TodoItem({ todo: item }),
+        ),
       ]);
       document.body.appendChild(container);
 
@@ -504,7 +502,7 @@ describe("README.md Examples Validation", () => {
           list: ListView,
           grid: GridView,
           table: TableView,
-        })
+        }),
       ]);
 
       document.body.appendChild(controls);

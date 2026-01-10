@@ -1,0 +1,44 @@
+/* Pomodoro Timer Specific Styles */
+.container {
+  padding: 0;
+}
+
+.timer-mode {
+  text-align: center;
+  font-size: 32px;
+  margin: 0 0 16px 0;
+  color: #667eea;
+}
+
+.session-count {
+  text-align: center;
+  color: #888;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.timer-display {
+  font-size: 72px;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+  margin: 32px 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 32px;
+}
+
+.timer-card {
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.btn {
+  min-width: 33%;
+}

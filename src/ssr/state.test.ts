@@ -37,7 +37,7 @@ describe("SSR State Serialization", () => {
         // IDs: 0 for "user", 1 for "count"
         expect(state).toEqual({
           "$/0": "Alice",
-          "$/1": 42
+          "$/1": 42,
         });
       });
     });
@@ -55,7 +55,7 @@ describe("SSR State Serialization", () => {
         // IDs: 0 for "settings", 1 for "config"
         expect(state).toEqual({
           "0": { theme: "dark" },
-          "1": { debug: true }
+          "1": { debug: true },
         });
       });
     });
@@ -76,7 +76,7 @@ describe("SSR State Serialization", () => {
         expect(state).toEqual({
           "$/0": "Bob",
           "1": { theme: "light" },
-          "$/2": 100
+          "$/2": 100,
         });
       });
     });
@@ -87,7 +87,7 @@ describe("SSR State Serialization", () => {
         const doubledKey = createStateKey<Seidr<number>>("doubled");
 
         const count = new Seidr(5);
-        const doubled = count.as(n => n * 2); // Derived
+        const doubled = count.as((n) => n * 2); // Derived
 
         setState(countKey, count);
         setState(doubledKey, doubled);
@@ -96,7 +96,7 @@ describe("SSR State Serialization", () => {
 
         // Only non-derived Seidr should be captured
         expect(state).toEqual({
-          "$/0": 5  // "count" has ID 0
+          "$/0": 5, // "count" has ID 0
         });
         expect(state).not.toHaveProperty("$/1"); // "doubled" not captured
       });
@@ -117,8 +117,8 @@ describe("SSR State Serialization", () => {
         const countKey = createStateKey<Seidr<number>>("count");
 
         restoreGlobalState({
-          "$/0": "Alice",  // ID 0 for "user"
-          "$/1": 42       // ID 1 for "count"
+          "$/0": "Alice", // ID 0 for "user"
+          "$/1": 42, // ID 1 for "count"
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -137,8 +137,8 @@ describe("SSR State Serialization", () => {
         const configKey = createStateKey<{ debug: boolean }>("config");
 
         restoreGlobalState({
-          "0": { theme: "dark" },  // ID 0 for "settings"
-          "1": { debug: true }      // ID 1 for "config"
+          "0": { theme: "dark" }, // ID 0 for "settings"
+          "1": { debug: true }, // ID 1 for "config"
         });
 
         const settings = getState<{ theme: string }>(settingsKey);
@@ -160,7 +160,7 @@ describe("SSR State Serialization", () => {
         restoreGlobalState({
           "$/0": "Bob",
           "1": { theme: "light" },
-          "$/2": 100
+          "$/2": 100,
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -180,7 +180,7 @@ describe("SSR State Serialization", () => {
         setState(userKey, new Seidr("Initial"));
 
         restoreGlobalState({
-          "$/0": "Updated"  // ID 0 for "user"
+          "$/0": "Updated", // ID 0 for "user"
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -195,7 +195,7 @@ describe("SSR State Serialization", () => {
         expect(hasState(userKey)).toBe(false);
 
         restoreGlobalState({
-          "$/0": "New User"  // ID 0 for "user"
+          "$/0": "New User", // ID 0 for "user"
         });
 
         expect(hasState(userKey)).toBe(true);
@@ -211,7 +211,7 @@ describe("SSR State Serialization", () => {
         setState(settingsKey, { theme: "dark" });
 
         restoreGlobalState({
-          "0": { theme: "light" }  // ID 0 for "settings"
+          "0": { theme: "light" }, // ID 0 for "settings"
         });
 
         const settings = getState<{ theme: string }>(settingsKey);
@@ -226,7 +226,7 @@ describe("SSR State Serialization", () => {
         restoreGlobalState({
           "$/0": "Alice",
           "$/99": "value", // This ID doesn't exist
-          "99": { theme: "dark" } // This ID doesn't exist
+          "99": { theme: "dark" }, // This ID doesn't exist
         });
 
         const user = getState<Seidr<string>>(userKey);
@@ -269,7 +269,7 @@ describe("SSR State Serialization", () => {
 
         const complexConfig = {
           database: { host: "localhost", port: 5432 },
-          features: ["auth", "logging", "caching"]
+          features: ["auth", "logging", "caching"],
         };
 
         setState(configKey, complexConfig);
@@ -293,11 +293,11 @@ describe("SSR State Serialization", () => {
 
         const todoProps: Todo[] = [
           { id: 1, text: "Learn Seidr", completed: false },
-          { id: 2, text: "Build apps", completed: false }
+          { id: 2, text: "Build apps", completed: false },
         ];
 
         restoreGlobalState({
-          "$/0": todoProps  // ID 0 for "todos"
+          "$/0": todoProps, // ID 0 for "todos"
         });
 
         const todos = getState<Seidr<Todo[]>>(todosKey);
@@ -313,9 +313,7 @@ describe("SSR State Serialization", () => {
 
         type Todo = { id: number; text: string; completed: boolean };
 
-        const todoProps: Todo[] = [
-          { id: 1, text: "Learn Seidr", completed: false }
-        ];
+        const todoProps: Todo[] = [{ id: 1, text: "Learn Seidr", completed: false }];
 
         if (todoProps) {
           setState(todosKey, new Seidr(todoProps));

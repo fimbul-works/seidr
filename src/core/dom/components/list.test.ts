@@ -46,7 +46,7 @@ describe("List Component", () => {
     expect(parentEl.querySelectorAll("span").length).toBe(2);
 
     // Check that "A" element was removed (not just textContent, to avoid false positives from UIDs in comments)
-    const spanTexts = Array.from(parentEl.querySelectorAll("span")).map(s => s.textContent);
+    const spanTexts = Array.from(parentEl.querySelectorAll("span")).map((s) => s.textContent);
     expect(spanTexts).not.toContain("A");
     expect(spanTexts).toContain("B");
     expect(spanTexts).toContain("C");

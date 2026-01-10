@@ -1,6 +1,6 @@
 {
   "name": "@fimbul-works/seidr",
-  "description": "Reactive primitives and DOM utilities for building UIs",
+  "description": "Zero-dependency reactive framework with fine-grained reactivity, SSR support, and 2.5KB footprint",
   "version": "1.0.0",
   "type": "module",
   "private": false,
@@ -19,8 +19,19 @@
     "dom",
     "reactive",
     "reactive-programming",
+    "observables",
+    "signals",
+    "fine-grained-reactivity",
     "functional",
-    "typescript"
+    "typescript",
+    "ui",
+    "framework",
+    "components",
+    "ssr",
+    "server-side-rendering",
+    "lightweight",
+    "zero-dependencies",
+    "virtual-dom-free"
   ],
   "main": "./dist/seidr.node.cjs",
   "module": "./dist/seidr.node.js",
@@ -51,6 +62,9 @@
     "LICENSE"
   ],
   "sideEffects": false,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "clean:dist": "rm -rf dist",
     "clean:examples": "rm -rf examples/dist",
@@ -67,7 +81,7 @@
     "bundlesizes": "./calculate-bundle-sizes.sh",
     "dev:examples": "vite --config vite.examples.config.ts",
     "dev": "tsx watch examples/ssr/server.ts",
-    "format": "npx biome format --write src *.json",
+    "format": "npx biome format --write src examples *.json",
     "test": "vitest",
     "prepublishOnly": "npm run build"
   },

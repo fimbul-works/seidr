@@ -1,23 +1,10 @@
 /* Counter example specific styles */
-
-.example-description {
-  color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 30px;
-  font-size: 1.1rem;
-  max-width: 600px;
-  text-align: center;
-}
-
 .counter {
-  background: white;
-  border-radius: 12px;
-  padding: 40px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
   text-align: center;
   min-width: 300px;
 }
 
-.counter span {
+.counter-display {
   display: block;
   font-size: 72px;
   font-weight: bold;
@@ -25,39 +12,8 @@
   margin-bottom: 30px;
 }
 
-.counter button {
-  margin: 0 10px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.counter button:first-of-type {
-  background: #667eea;
-  color: white;
-}
-
-.counter button:first-of-type:hover:not(:disabled) {
-  background: #5568d3;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
-}
-
-.counter button:first-of-type:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-}
-
-.counter button:last-of-type {
-  background: #f0f0f0;
-  color: #333;
-}
-
-.counter button:last-of-type:hover {
-  background: #e0e0e0;
-  transform: translateY(-2px);
+.counter-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }

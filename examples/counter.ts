@@ -7,20 +7,29 @@ export function Counter() {
 
     return $div(
       {
-        className: "counter",
+        className: "card card-centered counter",
       },
       [
-        // @ts-expect-error
-        $span({ textContent: count }), // Automatic reactive binding!
-        $button({
-          textContent: "Increment",
-          disabled, // Reactive boolean binding!
-          onclick: () => count.value++,
-        }),
-        $button({
-          textContent: "Reset",
-          onclick: () => (count.value = 0),
-        }),
+        $span(
+          { className: "counter-display", textContent: count.as((c) => c.toString()) },
+          // Automatic reactive binding!
+        ),
+        $div(
+          { className: "counter-controls" },
+          [
+            $button({
+              className: "btn btn-primary",
+              textContent: "Increment",
+              disabled, // Reactive boolean binding!
+              onclick: () => count.value++,
+            }),
+            $button({
+              className: "btn btn-secondary",
+              textContent: "Reset",
+              onclick: () => (count.value = 0),
+            }),
+          ],
+        ),
       ],
     );
   });
