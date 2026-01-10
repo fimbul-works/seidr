@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr";
 import { component } from "./component";
 import { createScope } from "./component-scope";
 import { $ } from "./element";
+import { mount } from "./mount";
 
 describe("component", () => {
   it("should create a component with element and destroy method", () => {
@@ -812,7 +813,7 @@ describe("Documentation Examples", () => {
           }
 
           const child = childFactory(); // Automatically tracked
-
+          // @ts-expect-error
           return $("div", {}, [child.element]);
         });
 
@@ -954,6 +955,48 @@ describe("Documentation Examples", () => {
         expect(cleanupLog).toContain("CommentList");
         expect(cleanupLog).toHaveLength(6); // Feed, Post, CommentList, 3x Comments
       });
+    });
+  });
+
+  describe("Component as Child", () => {
+    beforeEach(() => {
+      document.body.innerHTML = "";
+    });
+
+    it("should allow SeidrComponent as a child in $ factory", () => {
+      function Child() {
+        return component(() => $("span", { textContent: "Child" }));
+      }
+
+      const parent = component(() => {
+        const child = Child();
+        return $("div", { className: "parent" }, [child]);
+      });
+
+      mount(parent, document.body);
+
+      const parentEl = document.querySelector(".parent");
+      expect(parentEl).toBeTruthy();
+      expect(parentEl?.innerHTML).toBe("<span>Child</span>");
+
+      parent.destroy();
+    });
+
+    it("should allow multiple SeidrComponents as children", () => {
+      function Child(props: { name: string }) {
+        return component(() => $("span", { textContent: props.name }));
+      }
+
+      const parent = component(() => {
+        return $("div", { className: "parent" }, [Child({ name: "A" }), Child({ name: "B" })]);
+      });
+
+      mount(parent, document.body);
+
+      const parentEl = document.querySelector(".parent");
+      expect(parentEl?.innerHTML).toBe("<span>A</span><span>B</span>");
+
+      parent.destroy();
     });
   });
 });

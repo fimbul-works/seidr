@@ -79,6 +79,7 @@ describe("createScope", () => {
     const scope = createScope();
     let childDestroyed = false;
 
+    // @ts-expect-error
     const mockChild: SeidrComponent = {
       scope: createScope(),
       element: $("div"),

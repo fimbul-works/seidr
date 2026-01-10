@@ -12,6 +12,7 @@
   - [Predefined Element Creators](#predefined-element-creators)
 - [Components](#components)
   - [`component()`](#component)
+  - [`Safe()`](#safe)
   - [`createScope()`](#createscope)
 - [Mounting & Declarative Components](#mounting--declarative-components)
   - [`mount()`](#mount)
@@ -459,6 +460,69 @@ const profile = UserProfile();
 
 // Destroying profile automatically destroys header and avatar
 profile.destroy();
+```
+
+---
+
+### Safe()
+
+Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
+
+**Parameters:**
+- `factory` - Function that creates the component element (signature `(scope) => SeidrElement`)
+- `errorBoundaryFactory` - Error handler that returns fallback UI (signature `(err: Error, scope: ComponentScope) => SeidrElement`)
+
+**Returns:** `SeidrComponent`
+
+```typescript
+import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
+
+const UserProfile = Safe(
+  (scope) => {
+    // Component initialization that might fail
+    const data = fetchUserData();
+    return $div({ textContent: data.name });
+  },
+  (err, scope) => {
+    // Error boundary: return fallback UI
+    return $div({ className: 'error' }, [
+      $h2({ textContent: 'Error Occurred' }),
+      $p({ textContent: err.message })
+    ]);
+  }
+);
+```
+
+**Error Boundary Behavior**:
+
+- **Scope Cleanup**: Original component scope is destroyed before error boundary is called
+- **Fresh Scope**: Error boundary receives a new `ComponentScope` for tracking its own resources
+- **Root Components**: Errors in root components without `Safe` wrapper are logged to console
+- **Resource Tracking**: Error boundary can track its own cleanup functions via `scope.track()`
+
+```typescript
+import { Safe, $div } from '@fimbul-works/seidr';
+
+const SafeComponent = Safe(
+  (scope) => {
+    // Track resources
+    scope.track(() => console.log('Component cleanup'));
+
+    throw new Error('Failed');
+    return $div();
+  },
+  (err, scope) => {
+    // Error boundary gets its own scope for resource tracking
+    scope.track(() => console.log('Error boundary cleanup'));
+
+    return $div({ textContent: 'Fallback UI' });
+  }
+);
+
+comp.destroy();
+// Logs:
+// - "Component cleanup" (from failed component)
+// - "Error boundary cleanup" (from error boundary)
 ```
 
 ---

@@ -97,10 +97,10 @@ export interface SeidrComponent<
  * components to prevent memory leaks.
  *
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- * @template {SeidrElement<K>} E - The type of SeidrElement the component returns
+ * @template {SeidrElement<K>} T - The type of SeidrElement the component returns
  *
- * @param {(scope: ComponentScope) => E} factory - Function that creates the component element and tracks resources
- * @returns {SeidrComponent<K, E>} A Component instance with the created element and destroy method
+ * @param {(scope: ComponentScope) => T} factory - Function that creates the component element and tracks resources
+ * @returns {SeidrComponent<K, T>} A Component instance with the created element and destroy method
  *
  * @example
  * Basic counter component
@@ -146,59 +146,57 @@ export interface SeidrComponent<
  * }
  * ```
  */
-export function component<K extends keyof HTMLElementTagNameMap, E extends Node>(
-  factory: (scope: ComponentScope) => E,
-): SeidrComponent<K, E> {
+export function component<K extends keyof HTMLElementTagNameMap, T extends Node>(
+  factory: (scope: ComponentScope) => T,
+): SeidrComponent<K, T> {
   const stack = getComponentStack();
   const isRootComponent = stack.length === 0;
 
   // Create the scope and partial SeidrComponent
   const scope = createScope();
-  const component = {
+  const comp = {
     isSeidrComponent: true,
     scope,
     destroy: () => scope.destroy(),
-  } as SeidrComponent<K, E>;
+  } as SeidrComponent<K, T>;
 
   // Register as child component
   if (stack.length > 0) {
-    stack[stack.length - 1].scope.child(component);
+    stack[stack.length - 1].scope.child(comp);
   }
 
-  // Add the object to the stack to the stack
-  stack.push(component);
+  // Add to component stack
+  stack.push(comp);
 
   // Render the component via factory
-  try {
-    component.element = factory(scope);
-    component.destroy = () => {
-      scope.destroy();
-      const el = component.element as any;
-      if (el?.remove) {
-        el.remove();
-      } else if (el?.parentNode) {
-        try {
-          el.parentNode.removeChild(el);
-        } catch (_e) {
-          // Ignore if node was already removed or parent changed
-        }
-      }
-    };
+  comp.element = factory(scope);
 
-    // Propagate onAttached from scope
-    if (scope.onAttached) {
-      component.onAttached = scope.onAttached;
-    }
-
-    // Apply root element attributes after creation
-    if (isRootComponent && isHTMLElement(component.element)) {
-      component.element.dataset.seidrRoot = "true";
-    }
-  } catch (err) {
-    console.error(`Component error`, err);
+  // Set up destroy method
+  comp.destroy = () => {
     scope.destroy();
-  } finally {
-    stack.pop();
+    const el = comp.element as any;
+    if (el?.remove) {
+      el.remove();
+    } else if (el?.parentNode) {
+      try {
+        el.parentNode.removeChild(el);
+      } catch (_e) {
+        // Ignore if node was already removed or parent changed
+      }
+    }
+  };
+
+  // Propagate onAttached from scope
+  if (scope.onAttached) {
+    comp.onAttached = scope.onAttached;
+  }
+
+  // Remove from stack
+  stack.pop();
+
+  // Apply root element attributes
+  if (isRootComponent && isHTMLElement(comp.element)) {
+    comp.element.dataset.seidrRoot = "true";
   }
 
   // Root component must clear out component stack
@@ -206,5 +204,5 @@ export function component<K extends keyof HTMLElementTagNameMap, E extends Node>
     while (stack.length) stack.pop();
   }
 
-  return component;
+  return comp;
 }
