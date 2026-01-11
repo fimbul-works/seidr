@@ -14,12 +14,12 @@ import { $comment } from "../element";
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls visibility
  * @param {() => C} componentFactory - Function that creates the component when needed
- * @returns {SeidrComponent<any, Comment>} A component whose root is a Comment marker
+ * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
-export function Conditional<C extends SeidrComponent<any, any>>(
+export function Conditional<C extends SeidrComponent<Comment>>(
   condition: Seidr<boolean>,
   componentFactory: () => C,
-): SeidrComponent<any, Comment> {
+): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-conditional:${uid()}`);

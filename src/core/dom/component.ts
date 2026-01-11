@@ -74,13 +74,9 @@ export const useScope = (): ComponentScope => {
  * management. Each component tracks its own reactive bindings, event listeners,
  * and child components.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- * @template {SeidrElement<K>} E - The type of SeidrElement this component contains
+ * @template {Node} T - The type of SeidrElement this component contains
  */
-export interface SeidrComponent<
-  _K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap,
-  E extends Node = any,
-> {
+export interface SeidrComponent<T extends Node = any> {
   /**
    * Read-only identifier for Seidr components.
    * @type {true}
@@ -92,9 +88,9 @@ export interface SeidrComponent<
    *
    * This element is enhanced with SeidrElement functionality including
    * reactive bindings, event handling, and cleanup capabilities.
-   * @type {E}
+   * @type {T}
    */
-  element: E;
+  element: T;
 
   /**
    * The ComponentScope of this element.

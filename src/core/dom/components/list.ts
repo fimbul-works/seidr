@@ -14,13 +14,13 @@ import { $comment } from "../element";
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
  * @param {(item: T) => C} componentFactory - Component creation function
- * @returns {SeidrComponent<any, Comment>} List component
+ * @returns {SeidrComponent<Comment>} List component
  */
-export function List<T, I extends string | number, C extends SeidrComponent<any, any>>(
+export function List<T, I extends string | number, C extends SeidrComponent>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
-): SeidrComponent<any, Comment> {
+): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-list:${uid()}`);

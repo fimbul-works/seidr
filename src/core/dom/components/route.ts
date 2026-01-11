@@ -149,7 +149,7 @@ export function parseRouteParams(pattern: string, path?: string): Record<string,
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {() => void} Cleanup function that removes the conditional mount
  */
-export function Route<C extends SeidrComponent<any, any>, P extends Seidr<any>>(
+export function Route<C extends SeidrComponent, P extends Seidr<any>>(
   pattern: string | RegExp,
   componentFactory: (params?: P) => C,
   pathState: Seidr<string> = getCurrentPath(),
@@ -179,7 +179,7 @@ export function Route<C extends SeidrComponent<any, any>, P extends Seidr<any>>(
 /**
  * Route definition for Router.
  */
-export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends Seidr<any>> {
+export interface RouteDefinition<C extends SeidrComponent, P extends Seidr<any>> {
   pattern: string | RegExp;
   componentFactory: (params?: P) => C;
 }
@@ -189,7 +189,7 @@ export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends S
  *
  * Helper function to create type-safe route definitions with proper TypeScript inference.
  *
- * @template {SeidrComponent<any, any>} C - The component type
+ * @template {SeidrComponent<any>} C - The component type
  * @template {Seidr<any>} P - The params observable type
  * @param {string | RegExp} pattern - Path pattern or RegExp
  * @param {(params?: P) => C} componentFactory - Function that creates the component
@@ -205,7 +205,7 @@ export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends S
  * const route = createRoute('/', HomePage);
  * ```
  */
-export function createRoute<C extends SeidrComponent<any, any>>(
+export function createRoute<C extends SeidrComponent>(
   pattern: string | RegExp,
   componentFactory: (params?: Seidr<any>) => C,
 ): RouteDefinition<C, any> {
@@ -217,7 +217,7 @@ export function createRoute<C extends SeidrComponent<any, any>>(
  */
 export interface RouterProps {
   routes: Array<RouteDefinition<any, any>>;
-  fallback?: () => SeidrComponent<any, any>;
+  fallback?: () => SeidrComponent<any>;
 }
 
 /**
@@ -227,7 +227,7 @@ export interface RouterProps {
  * before less specific ones (e.g., "/user/:id" before "/user/*").
  *
  * @param {RouterProps} props - Router props containing routes and optional fallback
- * @returns {SeidrComponent<any, Comment>} SeidrComponent that manages route rendering
+ * @returns {SeidrComponent<Comment>} SeidrComponent that manages route rendering
  *
  * @example
  * Basic Router with fallback
@@ -254,7 +254,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
   const marker = $comment(`router:${uid()}`);
   const currentPath = getCurrentPath();
 
-  let currentComponent: SeidrComponent<any, any> | null = null;
+  let currentComponent: SeidrComponent<any> | null = null;
 
   const updateRoutes = () => {
     const path = currentPath.value;
@@ -388,7 +388,7 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     ...restProps
   }: LinkProps<K> & ReactiveProps<K, HTMLElementTagNameMap[K]>,
   children: (SeidrNode | (() => SeidrNode))[] = [],
-): SeidrComponent<K, SeidrElement<K>> {
+): SeidrComponent<SeidrElement<K>> {
   return component(() => {
     const scope = useScope();
 

@@ -12,13 +12,13 @@ import { $comment } from "../element";
  * @param {Seidr<T>} observable - Observable value to switch on
  * @param {Map<T, () => C> | Record<string, () => C>} cases - Map or object of cases to components
  * @param {() => C} [defaultCase] - Optional fallback component factory
- * @returns {SeidrComponent<any, Comment>} A component whose root is a Comment marker
+ * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
-export function Switch<T, C extends SeidrComponent<any, any>>(
+export function Switch<T, C extends SeidrComponent>(
   observable: Seidr<T>,
   cases: Map<T, () => C> | Record<string, () => C>,
   defaultCase?: () => C,
-): SeidrComponent<any, Comment> {
+): SeidrComponent {
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-switch:${uid()}`);

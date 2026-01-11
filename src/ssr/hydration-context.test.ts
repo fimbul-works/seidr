@@ -22,7 +22,6 @@ describe("Hydration Context", () => {
     expect(hasHydrationData()).toBe(false);
 
     setHydrationData({
-      elementIds: [],
       observables: {},
       bindings: {},
       graph: { nodes: [], rootIds: [] },

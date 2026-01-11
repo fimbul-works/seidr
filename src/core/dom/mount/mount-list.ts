@@ -82,7 +82,7 @@ import { $comment } from "../element";
  * Renders an efficient list of components from an observable array.
  * Legacy utility that internally implements list rendering.
  */
-export function mountList<T, I extends string | number, C extends SeidrComponent<any, any>>(
+export function mountList<T, I extends string | number, C extends SeidrComponent>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,

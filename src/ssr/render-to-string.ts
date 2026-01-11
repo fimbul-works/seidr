@@ -85,7 +85,7 @@ export interface RenderToStringOptions {
  * });
  * ```
  */
-export async function renderToString<C extends SeidrComponent<any, any>>(
+export async function renderToString<C extends SeidrComponent>(
   component: () => C,
   optionsOrScope?: RenderToStringOptions | SSRScope,
 ): Promise<SSRRenderResult> {

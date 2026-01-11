@@ -48,7 +48,7 @@ import { getCurrentComponent, type SeidrComponent } from "../component";
  * // When ParentComponent is destroyed, child component is automatically unmounted
  * ```
  */
-export function mount<C extends SeidrComponent<any, any>>(component: C, container: HTMLElement): () => void {
+export function mount<C extends SeidrComponent>(component: C, container: HTMLElement): () => void {
   // Check if element is already in the container (happens during hydration with DOM reuse)
   const isAlreadyMounted = container.contains(component.element);
 

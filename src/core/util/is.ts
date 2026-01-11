@@ -1,4 +1,4 @@
-import type { SeidrComponent } from "../dom";
+import type { SeidrComponent, SeidrElement } from "../dom";
 import { Seidr } from "../seidr";
 
 /**
@@ -49,6 +49,13 @@ export const isObj = (v: any): v is object => typeof v === "object" && !Array.is
  * @returns True if the value is a Seidr class instance, false otherwise
  */
 export const isSeidr = (v: any): v is Seidr<any> => v instanceof Seidr;
+
+/**
+ * Check if a value is a SeidrElement extending HTMLElement.
+ * @param v - Value to check
+ * @returns True if the value is a SeidrElement, false otherwise
+ */
+export const isSeidrElement = (v: any): v is SeidrElement => v && v.isSeidrElement === true;
 
 /**
  * Check if a value is a Seidr component.

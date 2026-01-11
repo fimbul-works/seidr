@@ -36,11 +36,8 @@ export interface ComponentScope {
    * is destroyed, creating a proper cleanup hierarchy. This method ensures
    * that child components are properly managed and cleaned up.
    *
-   * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
-   * @template {SeidrElement<K>} E - The type of SeidrElement the child component contains
-   *
-   * @param {SeidrComponent<K, E>} component - The child component to track
-   * @returns {SeidrComponent<K, E>} The same child SeidrComponent
+   * @param {SeidrComponent} component - The child component to track
+   * @returns {SeidrComponent} The same child SeidrComponent
    *
    * @example
    * Managing child components
@@ -53,7 +50,7 @@ export interface ComponentScope {
    * scope.child(footerComponent);
    * ```
    */
-  child<K extends keyof HTMLElementTagNameMap, E extends Node>(component: SeidrComponent<K, E>): SeidrComponent<K, E>;
+  child(component: SeidrComponent): SeidrComponent;
 
   /**
    * Destroys all tracked resources and marks the scope as destroyed.
@@ -114,9 +111,7 @@ export function createScope(): ComponentScope {
     cleanups.push(cleanup);
   }
 
-  function child<K extends keyof HTMLElementTagNameMap, E extends Node>(
-    component: SeidrComponent<K, E>,
-  ): SeidrComponent<K, E> {
+  function child(component: SeidrComponent): SeidrComponent {
     track(() => component.destroy());
     return component;
   }

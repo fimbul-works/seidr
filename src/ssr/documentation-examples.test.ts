@@ -1,11 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach } from "vitest";
-import { renderToString } from "./render-to-string";
-import { component, $div, $ul, $li, List, setState, getState, createStateKey, isUndefined } from "../core/index";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { $div, $li, $ul, component, createStateKey, getState, isUndefined, List, setState } from "../core/index";
 import { Seidr } from "../core/seidr";
+import { enableClientMode, enableSSRMode } from "../test-setup";
+import { inBrowser, inServer } from "./env";
 import { hydrate } from "./hydrate";
-import { enableSSRMode, enableClientMode } from "../test-setup";
 import { clearHydrationData } from "./hydration-context";
-import { inServer, inBrowser } from "./env";
+import { renderToString } from "./render-to-string";
 
 /**
  * Test suite covering all examples from the updated SSR.md documentation.
@@ -325,9 +325,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
             { id: 2, text: "Build app" },
           ]);
 
-          return $div({ className: "todo-app" }, [
-            $div({ textContent: todos.as((t) => `Todo count: ${t.length}`) }),
-          ]);
+          return $div({ className: "todo-app" }, [$div({ textContent: todos.as((t) => `Todo count: ${t.length}`) })]);
         })();
       }
 

@@ -85,7 +85,7 @@ export type ReactiveARIAMixin = {
  * Children can be regular DOM elements, Seidr-enhanced elements, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode = SeidrComponent<any, any> | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
+export type SeidrNode = SeidrComponent | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.

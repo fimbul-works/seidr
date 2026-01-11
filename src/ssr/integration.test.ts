@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
 import { $ } from "../core/dom/element";
+import { Seidr } from "../core/seidr";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;

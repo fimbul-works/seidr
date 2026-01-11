@@ -1,8 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { $, component } from "../core/index";
 import { Seidr } from "../core/seidr";
-import { renderToString } from "./render-to-string";
-import { component, $ } from "../core/index";
 import { enableSSRMode } from "../test-setup";
+import { renderToString } from "./render-to-string";
 
 /**
  * Comprehensive tests for Seidr registration logic

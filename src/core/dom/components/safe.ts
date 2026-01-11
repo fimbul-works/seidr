@@ -1,5 +1,4 @@
-import { isHTMLElement } from "../../util/is";
-import { component, createScope, getComponentStack, useScope, type SeidrComponent } from "../component";
+import { component, createScope, getComponentStack, type SeidrComponent, useScope } from "../component";
 
 /**
  * Creates a component with error boundary protection.
@@ -13,7 +12,7 @@ import { component, createScope, getComponentStack, useScope, type SeidrComponen
  *
  * @param {() => T} factory - Function that creates the component element
  * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
- * @returns {SeidrComponent<K, T>} A Component instance with error handling
+ * @returns {SeidrComponent} A Component instance with error handling
  *
  * @example
  * Basic error boundary
@@ -62,10 +61,7 @@ import { component, createScope, getComponentStack, useScope, type SeidrComponen
  * SafeComponent();
  * ```
  */
-export function Safe<K extends keyof HTMLElementTagNameMap, T extends Node>(
-  factory: () => T,
-  errorBoundaryFactory: (err: Error) => T,
-): SeidrComponent<K, T> {
+export function Safe<T extends Node>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
   return component(() => {
     const scope = useScope();
     const stack = getComponentStack();

@@ -49,6 +49,9 @@
   - [`isFn`](#isFn)
   - [`isObj`](#isObj)
   - [`isSeidr`](#isseidr)
+  - [`isSeidrComponent`](#isseidrcomponent)
+  - [`isHTMLElement`](#ishtmlelement)
+  - [`isSeidrElement`](#isseidrelement)
 
 ---
 
@@ -1395,6 +1398,77 @@ console.log(isSeidr(count));    // true
 console.log(isSeidr(derived));  // true
 console.log(isSeidr(plainObj)); // false
 console.log(isSeidr(42));       // false
+```
+
+---
+
+### isSeidrComponent()
+
+Check if a value is a [SeidrComponent](#component) object.
+
+**Parameters:**
+- `value` - Value to test
+
+**Type Narrowing:** Narrows `unknown` to `SeidrComponent`
+
+```typescript
+import { isSeidrComponent, component, $div } from '@fimbul-works/seidr';
+
+const factory = component(() => $div());
+const comp = factory();
+const plainObj = { value: 0 };
+
+console.log(isSeidrComponent(comp));     // true
+console.log(isSeidrComponent(plainObj)); // false
+console.log(isSeidrComponent(42));       // false
+```
+
+---
+
+### isHTMLElement()
+
+Check if a value is a `HTMLElement` or [`ServerHTMLElement`](SSR.md) instance.
+
+**Parameters:**
+- `value` - Value to test
+
+**Type Narrowing:** Narrows `unknown` to `HTMLElement`
+
+```typescript
+import { isHTMLElement, $div } from '@fimbul-works/seidr';
+
+const el = document.createElement('div');
+const seidrEl = $div();
+const plainObj = { value: 0 };
+
+console.log(isHTMLElement(el));       // true
+console.log(isHTMLElement(seidrEl));  // true
+console.log(isHTMLElement(plainObj)); // false
+console.log(isHTMLElement(42));       // false
+```
+
+---
+
+### isSeidrElement()
+
+Check if a value is a [`SeidrElement`](#seidrelement-type) instance.
+
+**Parameters:**
+- `value` - Value to test
+
+**Type Narrowing:** Narrows `unknown` to `SeidrElement`
+
+```typescript
+import { isSeidrElement, $div } from '@fimbul-works/seidr';
+
+const seidrEl = $div();
+const el = document.createElement('div');
+const plainObj = { value: 0 };
+
+console.log(isHTMLElement(seidrEl));  // true
+console.log(isHTMLElement(el));       // false
+console.log(isHTMLElement(plainObj)); // false
+console.log(isHTMLElement(42));       // false
 ```
 
 ---

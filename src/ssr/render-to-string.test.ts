@@ -181,7 +181,7 @@ describe("SSR Utilities", () => {
     });
 
     it("should render TODO application", async () => {
-      const { html, hydrationData } = await renderToString(() => TodoApp());
+      const { html, hydrationData } = await renderToString(TodoApp);
 
       // Verify HTML structure (data-seidr-id is added automatically)
       expect(html).toContain('class="todo-app card"');

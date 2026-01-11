@@ -49,7 +49,6 @@ describe("Client-Side Hydration", () => {
       expect(hasHydrationData()).toBe(false);
 
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: 42 },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
@@ -64,7 +63,6 @@ describe("Client-Side Hydration", () => {
 
     it("should clear registry when setting new context", () => {
       const data1: HydrationData = {
-        elementIds: [],
         observables: { 0: "first" },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
@@ -78,7 +76,6 @@ describe("Client-Side Hydration", () => {
 
       // Clear and set new context
       const data2: HydrationData = {
-        elementIds: [],
         observables: { 0: "second" },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
@@ -97,7 +94,6 @@ describe("Client-Side Hydration", () => {
   describe("Seidr Registration", () => {
     it("should register Seidr instances in creation order", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: 100, 1: 200 },
         bindings: {},
         graph: {
@@ -123,7 +119,6 @@ describe("Client-Side Hydration", () => {
 
     it("should only hydrate root observables", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: "root" },
         bindings: {},
         graph: {
@@ -146,7 +141,6 @@ describe("Client-Side Hydration", () => {
 
     it("should work with computed observables", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: {
           0: "John",
           1: "Doe",
@@ -182,12 +176,11 @@ describe("Client-Side Hydration", () => {
   describe("Element Binding Application", () => {
     it("should apply bindings for elements with data-seidr-id", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: true },
         bindings: {
           "test-element": [
             {
-              seidrId: 0,
+              id: 0,
               prop: "disabled",
               paths: [[]], // Empty path = is a root
             },
@@ -213,12 +206,11 @@ describe("Client-Side Hydration", () => {
 
     it("should traverse paths to find root values", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: "hydrated" },
         bindings: {
           "test-element": [
             {
-              seidrId: 1, // derived
+              id: 1, // derived
               prop: "textContent",
               paths: [[0]], // derived.parents[0] = root
             },
@@ -247,7 +239,6 @@ describe("Client-Side Hydration", () => {
 
     it("should handle multiple paths to different roots", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: {
           0: "John",
           1: "Doe",
@@ -255,7 +246,7 @@ describe("Client-Side Hydration", () => {
         bindings: {
           "test-element": [
             {
-              seidrId: 2, // fullName (computed)
+              id: 2, // fullName (computed)
               prop: "textContent",
               paths: [
                 [0], // fullName.parents[0] = firstName
@@ -290,12 +281,11 @@ describe("Client-Side Hydration", () => {
 
     it("should handle nested path traversal", () => {
       const data: HydrationData = {
-        elementIds: [],
         observables: { 0: 10 },
         bindings: {
           "test-element": [
             {
-              seidrId: 2, // level2 (doubled of doubled)
+              id: 2, // level2 (doubled of doubled)
               prop: "textContent",
               paths: [[0, 0]], // level2.parents[0].parents[0] = root
             },
@@ -330,7 +320,6 @@ describe("Client-Side Hydration", () => {
     it("should hydrate complete component with bindings", () => {
       // Server-side data
       const data: HydrationData = {
-        elementIds: [],
         observables: {
           0: "hydrated-name",
           1: true,
@@ -338,12 +327,12 @@ describe("Client-Side Hydration", () => {
         bindings: {
           abc123: [
             {
-              seidrId: 0,
+              id: 0,
               prop: "textContent",
               paths: [[]],
             },
             {
-              seidrId: 1,
+              id: 1,
               prop: "disabled",
               paths: [[]],
             },
@@ -401,7 +390,7 @@ describe("Client-Side Hydration", () => {
       // Server-side capture
       const scope = new SSRScope();
       setActiveSSRScope(scope);
-      const { hydrationData } = await renderToString(TestComponent, undefined, scope);
+      const { hydrationData } = await renderToString(TestComponent, scope);
       setActiveSSRScope(undefined);
 
       // Switch to client mode for hydration
@@ -421,7 +410,6 @@ describe("Client-Side Hydration", () => {
 
     it("should clear hydration context after hydration", () => {
       const hydrationData: HydrationData = {
-        elementIds: [],
         observables: {},
         bindings: {},
         graph: { nodes: [], rootIds: [] },
@@ -452,14 +440,12 @@ describe("Client-Side Hydration", () => {
 
     it("should restore nested context after hydration", () => {
       const originalData: HydrationData = {
-        elementIds: [],
         observables: { 0: 1 },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },
       };
 
       const hydrateData: HydrationData = {
-        elementIds: [],
         observables: { 0: 2 },
         bindings: {},
         graph: { nodes: [{ id: 0, parents: [] }], rootIds: [0] },

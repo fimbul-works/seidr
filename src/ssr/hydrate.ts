@@ -59,7 +59,7 @@ export function resetHydratingFlag() {
  * // The app is now interactive!
  * ```
  */
-export function hydrate<C extends SeidrComponent<any, any>>(
+export function hydrate<C extends SeidrComponent>(
   componentFactory: (...args: any) => C,
   container: HTMLElement,
   hydrationData: HydrationData,

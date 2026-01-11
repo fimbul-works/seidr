@@ -61,15 +61,13 @@
  */
 import type { Seidr } from "../../seidr";
 import type { SeidrComponent } from "../component";
-import { useScope } from "../component";
 import { $comment } from "../element";
-import { mount } from "./mount";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
  * Legacy utility that internally implements conditional mounting.
  */
-export function mountConditional<C extends SeidrComponent<any, any>>(
+export function mountConditional<C extends SeidrComponent>(
   condition: Seidr<boolean>,
   componentFactory: () => C,
   container: HTMLElement,
