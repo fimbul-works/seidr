@@ -18,7 +18,7 @@ import { $comment } from "../element";
  */
 export function Conditional<C extends SeidrComponent<Comment>>(
   condition: Seidr<boolean>,
-  componentFactory: () => C,
+  componentFactory: (...args: any) => C,
 ): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();

@@ -82,10 +82,10 @@ export type ReactiveARIAMixin = {
 /**
  * Union type representing allowed child nodes for Seidr elements.
  *
- * Children can be regular DOM elements, Seidr-enhanced elements, or text nodes.
+ * Children can be regular DOM elements, Seidr-enhanced elements, Comments, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode = SeidrComponent | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | string;
+export type SeidrNode = SeidrComponent | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | Comment | string;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
@@ -372,8 +372,8 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         const item = isFn(child) ? (child as any)() : child;
         const node = isSeidrComponent(item) ? item.element : item;
         el.appendChild(node);
-        if (isSeidrComponent(item) && item.onAttached) {
-          item.onAttached(el as any);
+        if (isSeidrComponent(item) && item.scope.onAttached) {
+          item.scope.onAttached(el as any);
         }
       });
     }
@@ -465,7 +465,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       const item = isFn(child) ? child() : child;
       if (isSeidrComponent(item)) {
         el.appendChild(item.element);
-        if (item.onAttached) item.onAttached(el);
+        if (item.scope.onAttached) item.scope.onAttached(el);
       } else {
         el.appendChild(isStr(item) ? $text(item) : item);
       }

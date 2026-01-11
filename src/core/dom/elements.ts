@@ -1,4 +1,3 @@
-import type { SeidrElement } from "./element";
 import { $factory } from "./element-factory";
 
 /**

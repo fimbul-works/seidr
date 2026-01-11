@@ -30,20 +30,18 @@
  *   { id: 2, text: 'Build apps', completed: false }
  * ]);
  *
- * function TodoItem({ todo }: { todo: Todo }) {
- *   return component((scope) => {
- *     const isCompleted = new Seidr(todo.completed);
+ * const TodoItem = ({ todo }: { todo: Todo }) => component(() => {
+ *   const isCompleted = new Seidr(todo.completed);
  *
- *     return $('div', { className: 'todo-item' }, [
- *       $('span', {
- *         textContent: todo.text,
- *         style: isCompleted.as(completed =>
- *           completed ? 'text-decoration: line-through' : ''
- *         )
- *       })
- *     ]);
- *   });
- * }
+ *   return $('div', { className: 'todo-item' }, [
+ *     $('span', {
+ *       textContent: todo.text,
+ *       style: isCompleted.as(completed =>
+ *         completed ? 'text-decoration: line-through' : ''
+ *       )
+ *     })
+ *   ]);
+ * });
  *
  * const cleanup = mountList(
  *   todos,
@@ -62,16 +60,14 @@
  * @example
  * Automatic cleanup when used within a parent component
  * ```typescript
- * function TodoList() {
- *   return component((scope) => {
- *     const todos = new Seidr<Todo[]>([]);
+ * const TodoList = component(() => {
+ *   const todos = new Seidr<Todo[]>([]);
  *
- *     // Automatically tracked - no need to store cleanup!
- *     mountList(todos, (t) => t.id, (t) => TodoItem({ todo: t }), container);
+ *   // Automatically tracked - no need to store cleanup!
+ *   mountList(todos, (t) => t.id, (t) => TodoItem({ todo: t }), container);
  *
- *     return $('div', { className: 'todo-list' });
- *   });
- * }
+ *   return $('div', { className: 'todo-list' });
+ * });
  * ```
  */
 import type { Seidr } from "../../seidr";

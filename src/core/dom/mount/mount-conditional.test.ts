@@ -15,7 +15,11 @@ describe("mountConditional", () => {
     const condition = new Seidr(true);
     const mockElement = $("div");
 
-    mountConditional(condition, () => component(() => mockElement)(), container);
+    mountConditional(
+      condition,
+      component(() => mockElement),
+      container,
+    );
 
     expect(container.contains(mockElement)).toBe(true);
   });
@@ -24,7 +28,11 @@ describe("mountConditional", () => {
     const condition = new Seidr(false);
     const mockElement = $("div");
 
-    mountConditional(condition, () => component(() => mockElement)(), container);
+    mountConditional(
+      condition,
+      component(() => mockElement),
+      container,
+    );
 
     expect(container.contains(mockElement)).toBe(false);
   });
@@ -33,7 +41,11 @@ describe("mountConditional", () => {
     const condition = new Seidr(false);
     const mockElement = $("div");
 
-    mountConditional(condition, () => component(() => mockElement)(), container);
+    mountConditional(
+      condition,
+      component(() => mockElement),
+      container,
+    );
 
     expect(container.contains(mockElement)).toBe(false);
 

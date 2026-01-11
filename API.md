@@ -560,7 +560,7 @@ Mount a component to a DOM container.
 ```typescript
 import { mount, component, $div } from '@fimbul-works/seidr';
 
-const App = () => component(() => $div({ textContent: 'Hello Seidr' }));
+const App = component(() => $div({ textContent: 'Hello Seidr' }));
 
 const unmount = mount(App(), document.getElementById('app')!);
 
@@ -585,7 +585,7 @@ Conditionally renders a component based on a boolean observable.
 import { Conditional, Seidr, component, $div } from '@fimbul-works/seidr';
 
 const isVisible = new Seidr(false);
-const MyComp = () => component(() => $div({ textContent: 'I am here' }));
+const MyComp = component(() => $div({ textContent: 'I am here' }));
 
 const view = component(() => {
   return $div({ className: 'container' }, [
@@ -775,9 +775,9 @@ import { Router, createRoute, component, $div, initRouter } from '@fimbul-works/
 
 initRouter();
 
-const Home = () => component(() => $div({ textContent: 'Home' }));
-const About = () => component(() => $div({ textContent: 'About' }));
-const NotFound = () => component(() => $div({ textContent: '404 - Not Found' }));
+const Home = component(() => $div({ textContent: 'Home' }));
+const About = component(() => $div({ textContent: 'About' }));
+const NotFound = component(() => $div({ textContent: '404 - Not Found' }));
 
 const App = Router({
   routes: [
@@ -840,7 +840,7 @@ Navigation link component that updates the URL reactively and can show active st
 ```typescript
 import { Link, component, $div, $nav } from '@fimbul-works/seidr';
 
-const Navigation = () => component(() => $nav({}, [
+const Navigation = component(() => $nav({}, [
   Link({ to: '/' }, ['Home']),
   Link({ to: '/about' }, ['About']),
   Link({ to: '/contact' }, ['Contact']),

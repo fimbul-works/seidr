@@ -383,7 +383,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
   constructor(
     tag: string,
     attrs: Attributes = {},
-    public children: (ServerHTMLElement | string)[] = [],
+    public children: (ServerHTMLElement | ServerComment | string)[] = [],
   ) {
     this.tagName = tag.toUpperCase();
 
@@ -434,6 +434,13 @@ export class ServerHTMLElement implements SeidrElementInterface {
       } else {
         // Regular attribute
         this._attributes[key] = resolvedValue;
+      }
+    }
+
+    // Set parentElement for all children
+    for (const child of this.children) {
+      if (isObj(child) && child !== null && "parentElement" in child) {
+        (child as any).parentElement = this;
       }
     }
   }
@@ -523,7 +530,22 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * @type {string}
    */
   get innerHTML(): string {
-    return this._innerHTML;
+    if (this._innerHTML) {
+      return this._innerHTML;
+    }
+
+    // Compute inner HTML from children (same logic as toString())
+    const parts: string[] = [];
+
+    if (this._textContent) {
+      parts.push(this.escapeHtml(this._textContent));
+    }
+
+    if (this.children.length > 0) {
+      parts.push(...this.children.map((child) => (isStr(child) ? this.escapeHtml(child) : child.toString())));
+    }
+
+    return parts.join("");
   }
 
   /**

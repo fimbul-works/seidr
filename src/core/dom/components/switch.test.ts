@@ -15,8 +15,8 @@ describe("Switch Component", () => {
 
   it("should switch between components", () => {
     const mode = new Seidr("A");
-    const CompA = () => component(() => $("span", { textContent: "View A" }))();
-    const CompB = () => component(() => $("span", { textContent: "View B" }))();
+    const CompA = component(() => $("span", { textContent: "View A" }));
+    const CompB = component(() => $("span", { textContent: "View B" }));
 
     const Parent = component(() => {
       return $("div", { className: "parent" }, [

@@ -76,7 +76,7 @@ describe("Counter Example", () => {
     const counterComponent = Counter();
     document.body.appendChild(counterComponent.element);
 
-    counterComponent.element.remove();
+    counterComponent.destroy();
 
     expect(document.body.children.length).toBe(0);
   });

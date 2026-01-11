@@ -15,7 +15,7 @@ describe("Conditional Component", () => {
 
   it("should render and toggle component based on condition", () => {
     const isVisible = new Seidr(false);
-    const Child = () => component(() => $("span", { textContent: "Visible" }))();
+    const Child = component(() => $("span", { textContent: "Visible" }));
 
     const Parent = component(() => {
       return $("div", { className: "parent" }, [Conditional(isVisible, Child)]);

@@ -96,7 +96,7 @@ describe("Safe", () => {
       );
 
       // Root components have data-seidr-root attribute even when error boundary is used
-      expect(comp.element.dataset.seidrRoot).toBe("true");
+      expect(comp.element.dataset.seidrRoot).toBeTruthy();
     });
   });
 

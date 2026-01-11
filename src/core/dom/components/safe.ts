@@ -1,4 +1,5 @@
 import { component, createScope, getComponentStack, type SeidrComponent, useScope } from "../component";
+import type { SeidrNode } from "../element";
 
 /**
  * Creates a component with error boundary protection.
@@ -7,8 +8,7 @@ import { component, createScope, getComponentStack, type SeidrComponent, useScop
  * an error during initialization, the error boundary factory is called to create
  * a fallback UI instead of crashing.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- * @template {SeidrElement<K>} T - The type of element the component returns
+ * @template {SeidrNode} T - The type of element the component returns
  *
  * @param {() => T} factory - Function that creates the component element
  * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
@@ -61,7 +61,7 @@ import { component, createScope, getComponentStack, type SeidrComponent, useScop
  * SafeComponent();
  * ```
  */
-export function Safe<T extends Node>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
+export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
   return component(() => {
     const scope = useScope();
     const stack = getComponentStack();

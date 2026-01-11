@@ -10,6 +10,15 @@ const clientRenderContext: RenderContext = {
 };
 
 /**
+ * Set the render context ID (used during hydration to match server-side IDs).
+ * @param {number} id - The render context ID from the server
+ * @internal
+ */
+export function setRenderContextID(id: number): void {
+  clientRenderContext.renderContextID = id;
+}
+
+/**
  * Get the current render context.
  * Returns undefined in browser or if not initialized.
  *

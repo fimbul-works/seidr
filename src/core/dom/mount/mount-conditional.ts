@@ -22,14 +22,12 @@
  *
  * const isVisible = new Seidr(false);
  *
- * function DetailsPanel() {
- *   return component((scope) => {
- *     return $('div', { className: 'details-panel' }, [
- *       $('h2', { textContent: 'Details' }),
- *       $('p', { textContent: 'Additional information...' })
- *     ]);
- *   });
- * }
+ * const DetailsPanel = component(() => {
+ *   return $('div', { className: 'details-panel' }, [
+ *     $('h2', { textContent: 'Details' }),
+ *     $('p', { textContent: 'Additional information...' })
+ *   ]);
+ * });
  *
  * const cleanup = mountConditional(
  *   isVisible,
@@ -47,16 +45,14 @@
  * @example
  * Automatic cleanup when used within a parent component
  * ```typescript
- * function ParentComponent() {
- *   return component((scope) => {
- *     const isVisible = new Seidr(false);
+ * const ParentComponent = component(() => {
+ *   const isVisible = new Seidr(false);
  *
- *     // Automatically tracked - no need to store cleanup!
- *     mountConditional(isVisible, () => DetailsPanel(), document.body);
+ *   // Automatically tracked - no need to store cleanup!
+ *   mountConditional(isVisible, () => DetailsPanel(), document.body);
  *
- *     return $('div', { textContent: 'Parent' });
- *   });
- * }
+ *   return $('div', { textContent: 'Parent' });
+ * });
  * ```
  */
 import type { Seidr } from "../../seidr";

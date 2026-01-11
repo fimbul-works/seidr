@@ -20,8 +20,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should capture and hydrate a 4-level derivation chain", async () => {
-    function App() {
-      return component((_scope) => {
+    const App = component((_scope) => {
         // Layer 0: Root observables
         const a = new Seidr(1);
         const b = new Seidr(2);
@@ -50,9 +49,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: sumOfSums }),
           $("span", { textContent: final }),
         ]);
-      })();
-    }
-
+      });
     // Server-side rendering
     const { html, hydrationData } = await await renderToString(App);
 
@@ -98,8 +95,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should handle diamond dependencies correctly", async () => {
-    function App() {
-      return component((_scope) => {
+    const App = component((_scope) => {
         // Diamond pattern:
         //     a
         //    / \
@@ -120,9 +116,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: ac }),
           $("span", { textContent: abc }),
         ]);
-      })();
-    }
-
+      });
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 
@@ -145,8 +139,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should handle 5-level deep derivation chain", async () => {
-    function App() {
-      return component((_scope) => {
+    const App = component((_scope) => {
         // Level 0: Roots
         const a = new Seidr(1);
         const b = new Seidr(1);
@@ -175,9 +168,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: l4 }),
           $("span", { textContent: l5 }),
         ]);
-      })();
-    }
-
+      });
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 

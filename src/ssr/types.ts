@@ -84,4 +84,15 @@ export interface HydrationData extends SSRScopeCapture {
    * values that were used on the server.
    */
   state?: Record<string, unknown>;
+
+  /**
+   * Render context ID from the server.
+   *
+   * This ID is used to ensure deterministic marker IDs for components like Router,
+   * allowing the client-side hydration to match SSR-rendered markers.
+   *
+   * During hydration, the client-side render context is updated to use this ID
+   * instead of the default 0, enabling proper SSR/client marker matching.
+   */
+  renderContextID?: number;
 }

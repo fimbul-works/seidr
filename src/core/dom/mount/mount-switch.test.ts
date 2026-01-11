@@ -19,8 +19,8 @@ describe("mountSwitch", () => {
     mountSwitch(
       mode,
       {
-        list: () => component(() => listElement)(),
-        grid: () => component(() => gridElement)(),
+        list: component(() => listElement),
+        grid: component(() => gridElement),
       },
       container,
     );
@@ -37,8 +37,8 @@ describe("mountSwitch", () => {
     mountSwitch(
       mode,
       {
-        list: () => component(() => listElement)(),
-        grid: () => component(() => gridElement)(),
+        list: component(() => listElement),
+        grid: component(() => gridElement),
       },
       container,
     );
@@ -61,8 +61,8 @@ describe("mountSwitch", () => {
     mountSwitch(
       mode as Seidr<"list" | "grid">,
       {
-        list: () => component(() => listElement)(),
-        grid: () => component(() => gridElement)(),
+        list: component(() => listElement),
+        grid: component(() => gridElement),
       },
       container,
     );
@@ -89,7 +89,7 @@ describe("mountSwitch", () => {
           };
           return comp;
         },
-        grid: () => component(() => $("div"))(),
+        grid: component(() => $("div")),
       },
       container,
     );

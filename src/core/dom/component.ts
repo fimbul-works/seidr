@@ -1,6 +1,10 @@
 import { getRenderContext } from "../render-context-contract";
-import { isHTMLElement } from "../util/is";
+import { isHTMLElement, isSeidrComponent } from "../util/is";
 import { type ComponentScope, createScope } from "./component-scope";
+import type { SeidrNode } from "./element";
+
+// Check if we're in SSR mode
+const isSSR = typeof window === "undefined" || (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);
 
 export { createScope };
 
@@ -109,13 +113,6 @@ export interface SeidrComponent<T extends Node = any> {
    * @type {() => void}
    */
   destroy(): void;
-
-  /**
-   * Optional callback triggered when the component's element is attached to a parent.
-   * Internal use for marker-based components.
-   * @internal
-   */
-  onAttached?: (parent: Node) => void;
 }
 
 /**
@@ -193,7 +190,7 @@ export interface SeidrComponent<T extends Node = any> {
  * ```
  */
 export function component<P = void>(
-  factory: P extends void ? () => Node : (props: P) => Node,
+  factory: P extends void ? () => SeidrNode : (props: P) => SeidrNode,
 ): P extends void ? () => SeidrComponent : (props: P) => SeidrComponent {
   // Return a function that accepts props and creates the component
   return ((props?: P) => {
@@ -219,7 +216,50 @@ export function component<P = void>(
     // Render the component via factory
     try {
       // Call factory with props (or undefined if no props)
-      comp.element = factory(props as P);
+      const result = factory(props as P);
+
+      // Track child SeidrComponents to propagate onAttached
+      const childComponents: SeidrComponent[] = [];
+
+      // Support for array returns (multiple root nodes)
+      if (Array.isArray(result)) {
+        if (isSSR) {
+          // In SSR, we can't use DocumentFragment because ServerComment instances
+          // can't be appended to real DOM fragments. Instead, create a wrapper div.
+          const wrapper = document.createElement("div");
+          result.forEach((item) => {
+            // Unwrap SeidrComponents to their elements
+            const node = isSeidrComponent(item) ? item.element : item;
+            // Track child components for onAttached propagation
+            if (isSeidrComponent(item)) {
+              childComponents.push(item);
+            }
+            // ServerHTMLElement.appendChild knows how to handle ServerComment
+            (wrapper as any).appendChild(node);
+          });
+          comp.element = wrapper;
+        } else {
+          // Client-side: Use DocumentFragment as normal
+          const fragment = document.createDocumentFragment();
+          result.forEach((item) => {
+            // Unwrap SeidrComponents to their elements
+            const node = isSeidrComponent(item) ? item.element : item;
+            // Track child components for onAttached propagation
+            if (isSeidrComponent(item)) {
+              childComponents.push(item);
+            }
+            fragment.appendChild(node as Node);
+          });
+          comp.element = fragment as any;
+        }
+      } else {
+        // Unwrap SeidrComponents to their elements
+        comp.element = isSeidrComponent(result) ? result.element : result;
+        // Track child component for onAttached propagation
+        if (isSeidrComponent(result)) {
+          childComponents.push(result);
+        }
+      }
 
       // Set up destroy method
       comp.destroy = () => {
@@ -236,9 +276,22 @@ export function component<P = void>(
         }
       };
 
-      // Propagate onAttached from scope
-      if (scope.onAttached) {
-        comp.onAttached = scope.onAttached;
+      // Propagate onAttached from scope to child components
+      if (childComponents.length > 0) {
+        // Always wrap scope.onAttached (or create one) to call child components' onAttached
+        const originalOnAttached = scope.onAttached;
+        scope.onAttached = (parent: Node) => {
+          // Call onAttached for all child components first
+          for (const child of childComponents) {
+            if (child.scope.onAttached) {
+              child.scope.onAttached(parent);
+            }
+          }
+          // Then call this component's scope.onAttached (if it exists)
+          if (originalOnAttached) {
+            originalOnAttached(parent);
+          }
+        };
       }
     } finally {
       // Remove from stack
@@ -247,7 +300,7 @@ export function component<P = void>(
 
     // Apply root element attributes
     if (isRootComponent && isHTMLElement(comp.element)) {
-      comp.element.dataset.seidrRoot = "true";
+      comp.element.dataset.seidrRoot = String(getRenderContext()?.renderContextID ?? true);
     }
 
     // Root component must clear out component stack

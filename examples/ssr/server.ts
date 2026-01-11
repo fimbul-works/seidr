@@ -6,7 +6,7 @@ import type { Todo } from "./types.js";
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
-const port = process.env.PORT || 8080;
+const port = process.env.PORT || 4000;
 const base = process.env.BASE || "/";
 
 // Cached production assets

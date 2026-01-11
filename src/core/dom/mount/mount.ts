@@ -56,8 +56,8 @@ export function mount<C extends SeidrComponent>(component: C, container: HTMLEle
     container.appendChild(component.element);
   }
 
-  if (component.onAttached) {
-    component.onAttached(container);
+  if (component.scope.onAttached) {
+    component.scope.onAttached(container);
   }
 
   const cleanup = () => {

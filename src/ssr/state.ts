@@ -1,7 +1,7 @@
-import { unwrapSeidr } from "../core";
 import { getRenderContext } from "../core/render-context-contract";
 import { Seidr } from "../core/seidr";
 import { globalStates, symbolNames } from "../core/state";
+import { unwrapSeidr } from "../core/util";
 import { isSeidr } from "../core/util/is";
 
 const SEIDR_PREFIX = "$/";

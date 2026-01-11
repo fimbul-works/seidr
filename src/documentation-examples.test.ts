@@ -97,15 +97,13 @@ describe("Documentation Verification", () => {
     it("renderToString awaits inServer promises", async () => {
       const externalState = new Seidr<string>("initial");
 
-      const App = () => {
-        return component(() => {
-          inServer(async () => {
-            await new Promise((r) => setTimeout(r, 10)); // simulate fetch
-            externalState.value = "fetched";
-          });
-          return $div({ textContent: externalState });
-        })();
-      };
+      const App = component(() => {
+        inServer(async () => {
+          await new Promise((r) => setTimeout(r, 10)); // simulate fetch
+          externalState.value = "fetched";
+        });
+        return $div({ textContent: externalState });
+      });
 
       const { html } = await renderToString(App);
       // In SSR mode, html is string

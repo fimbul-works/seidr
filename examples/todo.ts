@@ -48,56 +48,57 @@ const TodoItem = component(
   },
 );
 
-export const TodoApp = component(
-  (initialTodos: Todo[] = [{ id: Date.now(), text: "Learn Seidr", completed: false }]) => {
-    const todos = withStorage("todos", new Seidr<Todo[]>(initialTodos));
-    const newTodoText = new Seidr("");
+export const TodoApp = component((initialTodos: Todo[]) => {
+  const todos = withStorage(
+    "todos",
+    new Seidr<Todo[]>(initialTodos || [{ id: Date.now(), text: "Learn Seidr", completed: false }]),
+  );
+  const newTodoText = new Seidr("");
 
-    const addTodo = (e: Event) => {
-      e.preventDefault();
-      const text = newTodoText.value.trim();
-      if (text) {
-        todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
-        newTodoText.value = "";
-      }
-    };
+  const addTodo = (e: Event) => {
+    e.preventDefault();
+    const text = newTodoText.value.trim();
+    if (text) {
+      todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
+      newTodoText.value = "";
+    }
+  };
 
-    return $div({ className: "todo-app card" }, [
-      $form({ className: "todo-form" }, [
-        $input({
-          type: "text",
-          placeholder: "What needs to be done?",
-          className: "todo-input",
-          ...bindInput(newTodoText),
-        }),
-        $button({
-          type: "submit",
-          textContent: "Add",
-          className: "btn btn-primary",
-          onclick: addTodo,
-        }),
-      ]),
-      $ul({ className: "todo-list" }, [
-        List(
-          todos,
-          (item) => item.id,
-          (item) =>
-            TodoItem({
-              todo: item,
-              onUpdate() {
-                todos.value = todos.value.slice(0);
-              },
-              onDelete() {
-                todos.value = todos.value.filter((t) => t.id !== item.id);
-              },
-            }),
-        ),
-      ]),
-    ]);
-  },
-);
+  return $div({ className: "todo-app card" }, [
+    $form({ className: "todo-form" }, [
+      $input({
+        type: "text",
+        placeholder: "What needs to be done?",
+        className: "todo-input",
+        ...bindInput(newTodoText),
+      }),
+      $button({
+        type: "submit",
+        textContent: "Add",
+        className: "btn btn-primary",
+        onclick: addTodo,
+      }),
+    ]),
+    $ul({ className: "todo-list" }, [
+      List(
+        todos,
+        (item) => item.id,
+        (item) =>
+          TodoItem({
+            todo: item,
+            onUpdate() {
+              todos.value = todos.value.slice(0);
+            },
+            onDelete() {
+              todos.value = todos.value.filter((t) => t.id !== item.id);
+            },
+          }),
+      ),
+    ]),
+  ]);
+});
 
 // Mount component only in browser environment (not in tests)
 if (typeof window !== "undefined") {
-  mount(TodoApp(), document.body);
+  mount(TodoApp([]), document.body);
 }

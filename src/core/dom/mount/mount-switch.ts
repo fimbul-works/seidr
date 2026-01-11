@@ -23,15 +23,15 @@
  * type ViewMode = 'list' | 'grid' | 'table';
  * const viewMode = new Seidr<ViewMode>('list');
  *
- * const ListView = () => component(() =>
+ * const ListView = component(() =>
  *   $('div', { textContent: '📋 List View', className: 'view-list' })
  * );
  *
- * const GridView = () => component(() =>
+ * const GridView = component(() =>
  *   $('div', { textContent: '📊 Grid View', className: 'view-grid' })
  * );
  *
- * const TableView = () => component(() =>
+ * const TableView = component(() =>
  *   $('div', { textContent: '📈 Table View', className: 'view-table' })
  * );
  *
@@ -72,19 +72,17 @@
  * @example
  * Automatic cleanup when used within a parent component
  * ```typescript
- * function ViewManager() {
- *   return component((scope) => {
- *     const viewMode = new Seidr<'list' | 'grid'>('list');
+ * const ViewManager = component(() => {
+ *   const viewMode = new Seidr<'list' | 'grid'>('list');
  *
- *     // Automatically tracked - no need to store cleanup!
- *     mountSwitch(viewMode, {
- *       list: ListView,
- *       grid: GridView
- *     }, container);
+ *   // Automatically tracked - no need to store cleanup!
+ *   mountSwitch(viewMode, {
+ *     list: ListView,
+ *     grid: GridView
+ *   }, container);
  *
- *     return $('div', { className: 'view-manager' });
- *   });
- * }
+ *   return $('div', { className: 'view-manager' });
+ * });
  * ```
  */
 import type { Seidr } from "../../seidr";

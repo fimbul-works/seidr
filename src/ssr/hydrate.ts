@@ -1,8 +1,14 @@
 import type { SeidrComponent } from "../core/dom/component";
 import { mount } from "../core/dom/mount/mount";
+import { $query } from "../core/dom/query";
+// Import setRenderContextID only on browser (will be tree-shaken from Node builds)
+import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
+
+// Use browser implementation or no-op for Node
+const setRenderContextID = typeof window !== "undefined" ? setRenderContextIDBrowser : () => {};
 
 export let isHydrating: boolean = false;
 
@@ -41,7 +47,7 @@ export function resetHydratingFlag() {
  * import { renderToString, hydrate } from '@fimbul-works/seidr/ssr';
  *
  * // Server-side:
- * const AppFactory = () => component((scope) => {
+ * const AppFactory = component((scope) => {
  *   const count = new Seidr(42);
  *   return $('div', {}, [`Count: ${count.value}`]);
  * });
@@ -66,10 +72,14 @@ export function hydrate<C extends SeidrComponent>(
 ): SeidrComponent {
   isHydrating = true;
 
-  // Set the client render context so state lookups use the correct context ID
+  // Set the client render context ID from the server to ensure marker matching
   // NOTE: We DON'T reset this in the finally block because it needs to persist
   // for the lifetime of the component. The render context ID should match the
   // server's ID for all reactive updates to work correctly.
+  const hasRenderContextID = hydrationData.renderContextID !== undefined;
+  if (hasRenderContextID) {
+    setRenderContextID(hydrationData.renderContextID!);
+  }
 
   // Restore state values from the server
   if (hydrationData.state) {
@@ -79,16 +89,19 @@ export function hydrate<C extends SeidrComponent>(
   // Set the hydration context so Seidr instances get their server values
   setHydrationData(hydrationData);
 
-  // Find and remove the SSR root element (marked with data-seidr-root="true")
-  // This element was rendered on the server and will be replaced by the hydrated component
-  const ssrRoot = container.querySelector('[data-seidr-root="true"]');
-  ssrRoot?.remove();
+  // Find existing root component after SSR
+  const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
   const component = componentFactory();
 
   // Mount the component in the container
   mount(component, container);
+
+  // Remove existing root component if found
+  if (existingRoot) {
+    existingRoot.remove();
+  }
 
   // Clear the hydration context
   clearHydrationData();

@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { renderToString } from "../../../ssr/render-to-string";
+import { enableSSRMode } from "../../../test-setup";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $a, $div, $span } from "../elements";
@@ -26,7 +28,7 @@ describe("Route Component", () => {
 
   describe("Basic Pattern Matching", () => {
     it("should match exact path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
@@ -38,7 +40,7 @@ describe("Route Component", () => {
     });
 
     it("should match nested paths", () => {
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const About = component(() => $div({ textContent: "About" }));
       const App = component(() => {
         return $div({}, [Route("/about", About)]);
       });
@@ -50,7 +52,7 @@ describe("Route Component", () => {
     });
 
     it("should handle trailing slashes in current path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
@@ -62,7 +64,7 @@ describe("Route Component", () => {
     });
 
     it("should handle trailing slashes in pattern", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
@@ -74,7 +76,7 @@ describe("Route Component", () => {
     });
 
     it("should not match different path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
@@ -86,7 +88,7 @@ describe("Route Component", () => {
     });
 
     it("should match deeply nested paths", () => {
-      const Deep = () => component(() => $div({ textContent: "Deep" }))();
+      const Deep = component(() => $div({ textContent: "Deep" }));
       const App = component(() => {
         return $div({}, [Route("/a/b/c/d/e", Deep)]);
       });
@@ -205,7 +207,7 @@ describe("Route Component", () => {
 
   describe("RegExp Patterns", () => {
     it("should match RegExp pattern", () => {
-      const ApiPage = () => component(() => $div({ textContent: "API" }))();
+      const ApiPage = component(() => $div({ textContent: "API" }));
       const App = component(() => {
         return $div({}, [Route(/^\/api\/.*/, ApiPage)]);
       });
@@ -217,7 +219,7 @@ describe("Route Component", () => {
     });
 
     it("should not mismatch RegExp pattern", () => {
-      const ApiPage = () => component(() => $div({ textContent: "API" }))();
+      const ApiPage = component(() => $div({ textContent: "API" }));
       const App = component(() => {
         return $div({}, [Route(/^\/api\/.*/, ApiPage)]);
       });
@@ -229,7 +231,7 @@ describe("Route Component", () => {
     });
 
     it("should handle complex RegExp patterns", () => {
-      const UUIDPage = () => component(() => $div({ textContent: "UUID" }))();
+      const UUIDPage = component(() => $div({ textContent: "UUID" }));
       const App = component(() => {
         // UUID pattern
         return $div({}, [Route(/^\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, UUIDPage)]);
@@ -242,7 +244,7 @@ describe("Route Component", () => {
     });
 
     it("should handle RegExp with word boundaries", () => {
-      const AdminPage = () => component(() => $div({ textContent: "Admin" }))();
+      const AdminPage = component(() => $div({ textContent: "Admin" }));
       const App = component(() => {
         return $div({}, [Route(/^\/admin$/, AdminPage)]);
       });
@@ -339,7 +341,6 @@ describe("Route Component", () => {
           }
           return $div({ textContent: params?.as((p) => `File ${p.id}`) || "Loading" });
         })();
-
       const App = component(() => {
         return $div({}, [Route(/^\/files\/(?<id>[^/]+)(?:\/rev\/(?<revision>\d+))?$/, FilePage)]);
       });
@@ -486,7 +487,7 @@ describe("Route Component", () => {
       const RegExpRoute = (params?: RegExpParams) =>
         component(() => $div({ textContent: params?.as((p) => `RegExp: ${p.id}`) || "Loading" }))();
 
-      const StringRoute = () => component(() => $div({ textContent: "String Route" }))();
+      const StringRoute = component(() => $div({ textContent: "String Route" }));
 
       const App = component(() => {
         return $div({}, [Route(/^\/regex\/(?<id>\d+)$/, RegExpRoute), Route("/string", StringRoute)]);
@@ -567,13 +568,10 @@ describe("Route Component", () => {
     });
 
     it("should not pass params to component when RegExp doesn't match", () => {
-      type Params = Seidr<{ id: string }>;
-      const UserPage = (params?: Params) =>
-        component(() => {
-          return $div({ textContent: params?.as((p) => `User ${p.id}`) || "No user" });
-        })();
-
-      const NotFound = () => component(() => $div({ textContent: "Not Found" }))();
+      const UserPage = component((params?: any) => {
+        return $div({ textContent: params?.as((p: any) => `User ${p.id}`) || "No user" });
+      });
+      const NotFound = component(() => $div({ textContent: "Not Found" }));
 
       const App = component(() => {
         return $div({}, [
@@ -592,8 +590,8 @@ describe("Route Component", () => {
 
   describe("Multiple Routes", () => {
     it("should only render matching route", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
@@ -607,8 +605,8 @@ describe("Route Component", () => {
     });
 
     it("should switch between routes", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
@@ -624,7 +622,7 @@ describe("Route Component", () => {
     });
 
     it("should handle routes with similar prefixes", () => {
-      const Users = () => component(() => $div({ textContent: "Users List" }))();
+      const Users = component(() => $div({ textContent: "Users List" }));
       type Params = Seidr<{ id: string }>;
       const UserDetail = (params?: Params) =>
         component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
@@ -645,8 +643,8 @@ describe("Route Component", () => {
 
   describe("Navigation", () => {
     it("should update currentPath on navigate", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
@@ -659,8 +657,8 @@ describe("Route Component", () => {
     });
 
     it("should handle popstate events", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
@@ -772,7 +770,7 @@ describe("Route Component", () => {
   describe("Custom Path State", () => {
     it("should use custom path state instead of currentPath", () => {
       const customPath = new Seidr("/custom");
-      const CustomPage = () => component(() => $div({ textContent: "Custom" }))();
+      const CustomPage = component(() => $div({ textContent: "Custom" }));
 
       const App = component(() => {
         return $div({}, [Route("/custom", CustomPage, customPath)]);
@@ -785,8 +783,8 @@ describe("Route Component", () => {
 
     it("should react to custom path state changes", () => {
       const customPath = new Seidr("/first");
-      const FirstPage = () => component(() => $div({ textContent: "First" }))();
-      const SecondPage = () => component(() => $div({ textContent: "Second" }))();
+      const FirstPage = component(() => $div({ textContent: "First" }));
+      const SecondPage = component(() => $div({ textContent: "Second" }));
 
       const App = component(() => {
         return $div({}, [Route("/first", FirstPage, customPath), Route("/second", SecondPage, customPath)]);
@@ -802,7 +800,7 @@ describe("Route Component", () => {
 
   describe("Edge Cases", () => {
     it("should handle empty path", () => {
-      const HomePage = () => component(() => $div({ textContent: "Home" }))();
+      const HomePage = component(() => $div({ textContent: "Home" }));
       const App = component(() => {
         return $div({}, [Route("", HomePage)]);
       });
@@ -814,7 +812,7 @@ describe("Route Component", () => {
     });
 
     it("should handle double slashes in current path", () => {
-      const UserPage = () => component(() => $div({ textContent: "User" }))();
+      const UserPage = component(() => $div({ textContent: "User" }));
       const App = component(() => {
         return $div({}, [Route("/user/:id", UserPage)]);
       });
@@ -829,7 +827,7 @@ describe("Route Component", () => {
     });
 
     it("should handle very deeply nested paths", () => {
-      const DeepPage = () => component(() => $div({ textContent: "Deep" }))();
+      const DeepPage = component(() => $div({ textContent: "Deep" }));
       const App = component(() => {
         return $div({}, [Route("/a/b/c/d/e/f/g/h/i/j", DeepPage)]);
       });
@@ -886,7 +884,7 @@ describe("Route Component", () => {
     });
 
     it("should handle hash in path (hash is not part of pathname)", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }))();
+      const Page = component(() => $div({ textContent: "Page" }));
       const App = component(() => {
         return $div({}, [Route("/page", Page)]);
       });
@@ -900,7 +898,7 @@ describe("Route Component", () => {
     });
 
     it("should handle query string (not part of routing)", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }))();
+      const Page = component(() => $div({ textContent: "Page" }));
       const App = component(() => {
         return $div({}, [Route("/page", Page)]);
       });
@@ -918,8 +916,8 @@ describe("Route Component", () => {
       const customPath = new Seidr("/page1");
       const normalizedPath = customPath.as((p) => p.toLowerCase());
 
-      const Page1 = () => component(() => $div({ textContent: "Page 1" }))();
-      const Page2 = () => component(() => $div({ textContent: "Page 2" }))();
+      const Page1 = component(() => $div({ textContent: "Page 1" }));
+      const Page2 = component(() => $div({ textContent: "Page 2" }));
 
       const App = component(() => {
         return $div({}, [Route("/page1", Page1, normalizedPath), Route("/page2", Page2, normalizedPath)]);
@@ -933,7 +931,7 @@ describe("Route Component", () => {
     });
 
     it("should clean up routes when component unmounts", () => {
-      const Page1 = () => component(() => $div({ textContent: "Page 1" }))();
+      const Page1 = component(() => $div({ textContent: "Page 1" }));
 
       const App = component(() => {
         return $div({}, [Route("/page1", Page1)]);
@@ -988,7 +986,7 @@ describe("Route Component", () => {
 
   describe("Real-world Scenarios", () => {
     it("should handle typical blog routes", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
 
       type ListParams = Seidr<{ page: string }>;
       const PostList = (params?: ListParams) => {
@@ -1017,7 +1015,7 @@ describe("Route Component", () => {
     });
 
     it("should handle admin panel routes", () => {
-      const Dashboard = () => component(() => $div({ textContent: "Dashboard" }))();
+      const Dashboard = component(() => $div({ textContent: "Dashboard" }));
       type UserParams = Seidr<{ userId: string }>;
       const UserEdit = (params?: UserParams) => {
         return component(() => $div({ textContent: params?.as((p) => `Edit User ${p.userId}`) || "Loading" }))();
@@ -1048,14 +1046,16 @@ describe("Route Component", () => {
     });
 
     it("should handle e-commerce product routes", () => {
-      const Shop = () => component(() => $div({ textContent: "Shop" }))();
+      const Shop = component(() => $div({ textContent: "Shop" }));
       type CategoryParams = Seidr<{ category: string }>;
       const Category = (params?: CategoryParams) => {
         return component(() => $div({ textContent: params?.as((p) => `Category: ${p.category}`) || "Loading" }))();
       };
       type ProductParams = Seidr<{ category: string; productId: string }>;
       const Product = (params?: ProductParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }))();
+        return component(() =>
+          $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }),
+        )();
       };
 
       const App = component(() => {
@@ -1365,8 +1365,8 @@ describe("Route Component", () => {
     });
 
     it("should render the first matching route", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/about", About)],
@@ -1379,8 +1379,8 @@ describe("Route Component", () => {
     });
 
     it("should switch between routes", async () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const About = () => component(() => $div({ textContent: "About" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const About = component(() => $div({ textContent: "About" }));
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/about", About)],
@@ -1400,8 +1400,8 @@ describe("Route Component", () => {
     });
 
     it("should render fallback when no route matches", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const NotFound = () => component(() => $div({ textContent: "404 - Not Found" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const NotFound = component(() => $div({ textContent: "404 - Not Found" }));
 
       const App = Router({
         routes: [createRoute("/", Home)],
@@ -1415,9 +1415,9 @@ describe("Route Component", () => {
     });
 
     it("should only render one route at a time", () => {
-      const RouteOne = () => component(() => $div({ textContent: "Route One" }))();
-      const RouteTwo = () => component(() => $div({ textContent: "Route Two" }))();
-      const RouteThree = () => component(() => $div({ textContent: "Route Three" }))();
+      const RouteOne = component(() => $div({ textContent: "Route One" }));
+      const RouteTwo = component(() => $div({ textContent: "Route Two" }));
+      const RouteThree = component(() => $div({ textContent: "Route Three" }));
 
       const App = Router({
         routes: [createRoute("/one", RouteOne), createRoute("/two", RouteTwo), createRoute("/three", RouteThree)],
@@ -1436,8 +1436,8 @@ describe("Route Component", () => {
     });
 
     it("should evaluate routes in order", () => {
-      const Specific = () => component(() => $div({ textContent: "Specific" }))();
-      const General = () => component(() => $div({ textContent: "General" }))();
+      const Specific = component(() => $div({ textContent: "Specific" }));
+      const General = component(() => $div({ textContent: "General" }));
 
       const App = Router({
         routes: [createRoute("/users/admin", Specific), createRoute(/^\/users\/.+$/, () => General())],
@@ -1453,7 +1453,7 @@ describe("Route Component", () => {
     });
 
     it("should support RegExp patterns", () => {
-      const UserProfile = () => component(() => $div({ textContent: "User Profile" }))();
+      const UserProfile = component(() => $div({ textContent: "User Profile" }));
 
       const App = Router({
         routes: [createRoute(/^\/profile\/\w+$/, UserProfile)],
@@ -1469,7 +1469,7 @@ describe("Route Component", () => {
     });
 
     it("should work without fallback", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
 
       const App = Router({
         routes: [createRoute("/", Home)],
@@ -1483,8 +1483,8 @@ describe("Route Component", () => {
     });
 
     it("should clean up previous route when switching", async () => {
-      const Route1 = () => component(() => $div({ textContent: "Route 1" }))();
-      const Route2 = () => component(() => $div({ textContent: "Route 2" }))();
+      const Route1 = component(() => $div({ textContent: "Route 1" }));
+      const Route2 = component(() => $div({ textContent: "Route 2" }));
 
       const App = Router({
         routes: [createRoute("/route1", Route1), createRoute("/route2", Route2)],
@@ -1500,7 +1500,8 @@ describe("Route Component", () => {
 
       expect(container.textContent).toBe("Route 2");
       // Verify that only Route2 is in the DOM, not Route1
-      expect(container.querySelectorAll("div").length).toBe(1); // just route2
+      // Router uses comment markers, so only the route content div should be present
+      expect(container.querySelectorAll("div").length).toBe(1);
     });
 
     it("should support route parameters", () => {
@@ -1519,7 +1520,7 @@ describe("Route Component", () => {
     });
 
     it("should handle trailing slashes in routes", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }))();
+      const Page = component(() => $div({ textContent: "Page" }));
 
       const App = Router({
         routes: [createRoute("/page/", Page)],
@@ -1535,11 +1536,11 @@ describe("Route Component", () => {
     });
 
     it("should handle real-world routing scenarios", () => {
-      const Home = () => component(() => $div({ textContent: "Home Page" }))();
+      const Home = component(() => $div({ textContent: "Home Page" }));
       type BlogParams = Seidr<{ id: string }>;
       const BlogPost = (params?: BlogParams) =>
         component(() => $div({ textContent: params?.as((p) => `Blog Post ${p.id}`) || "Loading" }))();
-      const NotFound = () => component(() => $div({ textContent: "404" }))();
+      const NotFound = component(() => $div({ textContent: "404" }));
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/blog/:id", BlogPost)],
@@ -1559,8 +1560,8 @@ describe("Route Component", () => {
     });
 
     it("should switch from fallback to matched route", async () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const NotFound = () => component(() => $div({ textContent: "404" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const NotFound = component(() => $div({ textContent: "404" }));
 
       const App = Router({
         routes: [createRoute("/", Home)],
@@ -1578,9 +1579,9 @@ describe("Route Component", () => {
     });
 
     it("should handle multiple rapid route changes", async () => {
-      const RouteA = () => component(() => $div({ textContent: "A" }))();
-      const RouteB = () => component(() => $div({ textContent: "B" }))();
-      const RouteC = () => component(() => $div({ textContent: "C" }))();
+      const RouteA = component(() => $div({ textContent: "A" }));
+      const RouteB = component(() => $div({ textContent: "B" }));
+      const RouteC = component(() => $div({ textContent: "C" }));
 
       const App = Router({
         routes: [createRoute("/a", RouteA), createRoute("/b", RouteB), createRoute("/c", RouteC)],
@@ -1606,27 +1607,20 @@ describe("Route Component", () => {
     });
 
     it("should render fallback when clicking Link to non-existent route", async () => {
-      const Home = () => component(() => $div({ textContent: "Home" }))();
-      const NotFound = () => component(() => $div({ textContent: "404 - Not Found" }))();
+      const Home = component(() => $div({ textContent: "Home" }));
+      const NotFound = component(() => $div({ textContent: "404 - Not Found" }));
 
       const App = Router({
         routes: [createRoute("/", Home)],
         fallback: NotFound,
       });
 
-      const Navigation = () =>
-        component(() => {
-          return $div({}, [
-            Link({ to: "/" }, ["Home"]),
-            Link({ to: "/nonexistent" }, ["Non-existent"]),
-          ]);
-        })();
-
-      const RootApp = () =>
-        component(() => {
-          return $div({}, [Navigation(), App]);
-        })();
-
+      const Navigation = component(() => {
+        return $div({}, [Link({ to: "/" }, ["Home"]), Link({ to: "/nonexistent" }, ["Non-existent"])]);
+      });
+      const RootApp = component(() => {
+        return $div({}, [Navigation(), App]);
+      });
       mount(RootApp(), container);
 
       // Should start at home
@@ -1644,6 +1638,137 @@ describe("Route Component", () => {
 
       // Should show fallback
       expect(container.textContent).toContain("404 - Not Found");
+    });
+  });
+
+  describe("SSR Rendering", () => {
+    let cleanupSSR: () => void;
+
+    beforeEach(() => {
+      cleanupSSR = enableSSRMode();
+    });
+
+    afterEach(() => {
+      cleanupSSR();
+    });
+
+    describe("Router Component SSR", () => {
+      it("should render the matching route for given path", async () => {
+        const Home = component(() => $div({ textContent: "Home Page" }));
+        const About = component(() => $div({ textContent: "About Us" }));
+
+        const App = Router({
+          routes: [createRoute("/", Home), createRoute("/about", About)],
+        });
+
+        // Render with path = "/"
+        const { html } = await renderToString(() => App, { path: "/" });
+        expect(html).toContain("Home Page");
+        expect(html).not.toContain("About Us");
+      });
+
+      it("should render different routes based on path", async () => {
+        const Home = component(() => $div({ textContent: "Home" }));
+        const About = component(() => $div({ textContent: "About" }));
+
+        // Render home page
+        const homeHtml = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute("/", Home), createRoute("/about", About)],
+            }),
+          { path: "/" },
+        );
+        expect(homeHtml.html).toContain("Home");
+
+        // Render about page
+        const aboutHtml = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute("/", Home), createRoute("/about", About)],
+            }),
+          { path: "/about" },
+        );
+        expect(aboutHtml.html).toContain("About");
+      });
+
+      it("should render fallback when no route matches", async () => {
+        const Home = component(() => $div({ textContent: "Home" }));
+        const NotFound = component(() => $div({ textContent: "404 - Page Not Found" }));
+
+        const { html } = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute("/", Home)],
+              fallback: NotFound,
+            }),
+          { path: "/nonexistent" },
+        );
+        expect(html).toContain("404 - Page Not Found");
+        expect(html).not.toContain("Home");
+      });
+
+      it("should handle route parameters in SSR", async () => {
+        type UserParams = Seidr<{ id: string }>;
+        const UserDetail = (params?: UserParams) =>
+          component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
+
+        const { html } = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute("/user/:id", UserDetail)],
+            }),
+          { path: "/user/123" },
+        );
+        expect(html).toContain("User 123");
+      });
+
+      it("should render empty when no routes match and no fallback", async () => {
+        const Home = component(() => $div({ textContent: "Home" }));
+
+        const { html } = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute("/", Home)],
+            }),
+          { path: "/nonexistent" },
+        );
+        // Router returns comment markers, and with no matching route and no fallback, only markers are present
+        expect(html).toContain("router-start");
+        expect(html).toContain("router-end");
+        expect(html).not.toContain("Home");
+      });
+
+      it("should work with RegExp patterns in SSR", async () => {
+        const UserProfile = component(() => $div({ textContent: "User Profile" }));
+
+        const { html } = await renderToString(
+          () =>
+            Router({
+              routes: [createRoute(/^\/profile\/\w+$/, UserProfile)],
+            }),
+          { path: "/profile/alice" },
+        );
+        expect(html).toContain("User Profile");
+      });
+    });
+
+    // Note: Route component SSR tests removed - Route is meant to be used with Router component
+    // Router SSR tests provide comprehensive coverage of SSR routing functionality
+
+    describe("SSR Hydration", () => {
+      it("should capture hydration data for Router", async () => {
+        const Home = component(() => $div({ textContent: "Home" }));
+
+        const App = Router({
+          routes: [createRoute("/", Home)],
+        });
+
+        const { hydrationData } = await renderToString(() => App, { path: "/" });
+
+        // Should have captured state for the render context
+        expect(hydrationData.state).toBeDefined();
+      });
     });
   });
 });

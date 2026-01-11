@@ -23,36 +23,38 @@ import type { Todo } from "./types.js";
 
 const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
-const TodoItem = component(({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => void; saveTodos: () => void }) => {
-  const isCompleted = new Seidr(todo.completed);
+const TodoItem = component(
+  ({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => void; saveTodos: () => void }) => {
+    const isCompleted = new Seidr(todo.completed);
 
-  return $li(
-    {
-      className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
-    },
-    [
-      $checkbox({
-        type: "checkbox",
-        checked: isCompleted,
-        onchange: () => {
-          isCompleted.value = !isCompleted.value;
-          todo.completed = isCompleted.value;
-          saveTodos();
-        },
-      }),
-      $span({
-        textContent: todo.text,
-      }),
-      $button({
-        className: "btn btn-danger",
-        textContent: "Delete",
-        onclick: onDelete,
-      }),
-    ],
-  );
-});
+    return $li(
+      {
+        className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
+      },
+      [
+        $checkbox({
+          type: "checkbox",
+          checked: isCompleted,
+          onchange: () => {
+            isCompleted.value = !isCompleted.value;
+            todo.completed = isCompleted.value;
+            saveTodos();
+          },
+        }),
+        $span({
+          textContent: todo.text,
+        }),
+        $button({
+          className: "btn btn-danger",
+          textContent: "Delete",
+          onclick: onDelete,
+        }),
+      ],
+    );
+  },
+);
 
-export const TodoApp = component((todos: Seidr<Todo[]>) => {
+export const TodoApp = component((todos?: Seidr<Todo[]>) => {
   if (!isUndefined(todos)) {
     setState(todosKey, todos);
   } else {
@@ -65,9 +67,9 @@ export const TodoApp = component((todos: Seidr<Todo[]>) => {
     e.preventDefault();
     const text = newTodoText.value.trim();
     if (text) {
-      todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
+      todos!.value = [...todos!.value, { id: Date.now(), text, completed: false }];
       newTodoText.value = "";
-      saveTodos(todos.value)
+      saveTodos(todos!.value)
         .then(() => console.log("Added TODO", text))
         .catch((err) => console.error(err));
     }
@@ -91,16 +93,16 @@ export const TodoApp = component((todos: Seidr<Todo[]>) => {
     ]),
     $ul({ className: "todo-list" }, [
       List(
-        todos,
+        todos!,
         (item) => item.id,
         (item) =>
           TodoItem({
             todo: item,
             onDelete: () => {
-              todos.value = todos.value.filter((t) => t.id !== item.id);
-              saveTodos(todos.value);
+              todos!.value = todos!.value.filter((t) => t.id !== item.id);
+              saveTodos(todos!.value);
             },
-            saveTodos: () => saveTodos(todos.value),
+            saveTodos: () => saveTodos(todos!.value),
           }),
       ),
     ]),

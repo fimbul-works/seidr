@@ -43,13 +43,12 @@ describe("SSR Utilities", () => {
   describe("renderToString", () => {
     it("should render simple component and capture state", async () => {
       let count: Seidr<number>;
-      const { html, hydrationData } = await renderToString(() => {
-        return component(() => {
-          count = new Seidr(42);
-          observables.push(count);
-          return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
-        })();
+      const TestComponent = component(() => {
+        count = new Seidr(42);
+        observables.push(count);
+        return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
       });
+      const { html, hydrationData } = await renderToString(TestComponent);
 
       expect(html).toContain('<div class="counter"');
       expect(html).toContain("Count: 42");
@@ -64,18 +63,17 @@ describe("SSR Utilities", () => {
 
     it("should only capture root observable state", async () => {
       let count: Seidr<number>;
-      const { html, hydrationData } = await renderToString(() => {
-        return component(() => {
-          count = new Seidr(10);
-          observables.push(count);
-          const doubled = count.as((n) => n * 2);
+      const TestComponent = component(() => {
+        count = new Seidr(10);
+        observables.push(count);
+        const doubled = count.as((n) => n * 2);
 
-          return $("div", {}, [
-            $("span", { textContent: count.as((n) => `Count: ${n}`) }),
-            $("span", { textContent: doubled.as((n) => `Doubled: ${n}`) }),
-          ]);
-        })();
+        return $("div", {}, [
+          $("span", { textContent: count.as((n) => `Count: ${n}`) }),
+          $("span", { textContent: doubled.as((n) => `Doubled: ${n}`) }),
+        ]);
       });
+      const { html, hydrationData } = await renderToString(TestComponent);
 
       expect(html).toContain("Count: 10");
       expect(html).toContain("Doubled: 20");
@@ -92,16 +90,15 @@ describe("SSR Utilities", () => {
     it("should capture multiple root observables", async () => {
       let firstName: Seidr<string>;
       let lastName: Seidr<string>;
-      const { html, hydrationData } = await renderToString(() => {
-        return component(() => {
-          firstName = new Seidr("John");
-          lastName = new Seidr("Doe");
-          observables.push(firstName, lastName);
-          const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      const TestComponent = component(() => {
+        firstName = new Seidr("John");
+        lastName = new Seidr("Doe");
+        observables.push(firstName, lastName);
+        const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
-          return $("div", {}, [$("h1", { textContent: fullName })]);
-        })();
+        return $("div", {}, [$("h1", { textContent: fullName })]);
       });
+      const { html, hydrationData } = await renderToString(TestComponent);
 
       expect(html).toContain("John Doe");
       // Only firstName and lastName should be captured (fullName is derived)
@@ -117,15 +114,14 @@ describe("SSR Utilities", () => {
     });
 
     it("should capture computed dependencies but not computed values", async () => {
-      const { html, hydrationData } = await renderToString(() => {
-        return component(() => {
-          const a = new Seidr(2);
-          const b = new Seidr(3);
-          const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+      const TestComponent = component(() => {
+        const a = new Seidr(2);
+        const b = new Seidr(3);
+        const sum = Seidr.computed(() => a.value + b.value, [a, b]);
 
-          return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
-        })();
+        return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
       });
+      const { html, hydrationData } = await renderToString(TestComponent);
 
       expect(html).toContain("Sum: 5");
       // Both a and b should be in observables, not sum (computed)
@@ -139,12 +135,12 @@ describe("SSR Utilities", () => {
     it("should use provided scope", async () => {
       const scope = new SSRScope();
 
-      const { hydrationData } = await renderToString(() => {
-        return component(() => {
-          const obs = new Seidr(100);
-          return $("div", { textContent: obs.as((n) => `${n}`) });
-        })();
-      }, scope);
+      const App = component(() => {
+        const obs = new Seidr(100);
+        return $("div", { textContent: obs.as((n) => `${n}`) });
+      });
+
+      const { hydrationData } = await renderToString(() => App(), scope);
 
       expect(scope.size).toBe(0); // scope should be cleared after captureHydrationData
       expect(hydrationData.observables[0]).toBe(100);
@@ -155,24 +151,23 @@ describe("SSR Utilities", () => {
     it("should clean up scope after rendering", async () => {
       const scope = new SSRScope();
 
-      await renderToString(() => {
-        return component(() => {
-          const obs = new Seidr(42);
-          return $("div", { textContent: obs.as((n) => `${n}`) });
-        })();
-      }, scope);
+      const App = component(() => {
+        const obs = new Seidr(42);
+        return $("div", { textContent: obs.as((n) => `${n}`) });
+      });
+
+      await renderToString(() => App(), scope);
 
       // Scope SHOULD be cleared automatically by captureHydrationData() to prevent memory leaks
       expect(scope.size).toBe(0);
     });
 
     it("should handle observables created in nested function calls", async () => {
-      const { html, hydrationData } = await renderToString(() => {
-        return component(() => {
-          const count = new Seidr(5);
-          return $("div", { textContent: count.as((n) => `Count: ${n}`) });
-        })();
+      const TestComponent = component(() => {
+        const count = new Seidr(5);
+        return $("div", { textContent: count.as((n) => `Count: ${n}`) });
       });
+      const { html, hydrationData } = await renderToString(TestComponent);
 
       expect(html).toContain("Count: 5");
       expect(Object.keys(hydrationData.observables)).toHaveLength(1);

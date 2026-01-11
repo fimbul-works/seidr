@@ -1,4 +1,4 @@
-import { clearPathCache } from "../core/dom/components/route";
+import { clearPathCache, initRouter } from "../core/dom/components/route";
 import type { SeidrComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
 import { runWithRenderContext } from "../render-context.node";
@@ -126,13 +126,22 @@ export async function renderToString<C extends SeidrComponent>(
 
       // Add data-seidr-id attribute to root element for hydration
       // Convert to HTML string
-      const html = String(comp.element);
+      // Special handling for Router: if element is a comment with _ssrWrapper, use wrapper's innerHTML
+      let html: string;
+      if ((comp.element as any)._ssrWrapper) {
+        // Router component: return the wrapper's innerHTML (markers + content, no wrapper div)
+        html = (comp.element as any)._ssrWrapper.innerHTML;
+      } else {
+        html = String(comp.element);
+      }
 
       // Capture hydration data (observables, bindings, graph) BEFORE destroying component
       const hydrationData = {
         ...activeScope.captureHydrationData(),
         // Capture state values for this render context
         state: captureRenderContextState(ctx.renderContextID),
+        // Capture render context ID for client-side marker matching
+        renderContextID: ctx.renderContextID,
       };
 
       // Destroy component to clean up scope bindings

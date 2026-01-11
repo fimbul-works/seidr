@@ -33,7 +33,13 @@ describe("TODO Example", () => {
     document.body.appendChild(todoComponent.element);
 
     const todoList = document.querySelector(".todo-list");
-    expect(todoList?.children.length).toBe(0);
+    // List component uses a comment marker node (in childNodes, not children)
+    expect(todoList?.childNodes.length).toBe(1);
+    // Check that it's a comment node (the marker)
+    expect(todoList?.childNodes[0].nodeType).toBe(Node.COMMENT_NODE);
+    // No actual todo items
+    const listItems = todoList?.querySelectorAll("li");
+    expect(listItems?.length).toBe(0);
   });
 
   it("should render with initial todos", async () => {
@@ -45,14 +51,18 @@ describe("TODO Example", () => {
     document.body.appendChild(todoComponent.element);
 
     const todoList = document.querySelector(".todo-list");
-    expect(todoList?.children.length).toBe(2);
+    // 2 todo items + 1 marker comment node = 3 childNodes
+    expect(todoList?.childNodes.length).toBe(3);
+    // Count actual list items (not the marker)
+    const listItems = todoList?.querySelectorAll("li");
+    expect(listItems?.length).toBe(2);
   });
 
   it("should cleanup properly when destroyed", async () => {
     const todoComponent = TodoApp([]);
     document.body.appendChild(todoComponent.element);
 
-    todoComponent.element.remove();
+    todoComponent.destroy();
 
     expect(document.body.children.length).toBe(0);
   });

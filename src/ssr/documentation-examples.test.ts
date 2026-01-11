@@ -36,22 +36,19 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
       // Component works on both server and client
-      function TodoApp(todos?: Seidr<Todo[]>) {
-        return component(() => {
-          // Dual-mode: server sets, client retrieves from hydration
-          if (!isUndefined(todos)) {
-            setState(todosKey, todos);
-          } else {
-            todos = getState(todosKey);
-          }
+      const TodoApp = component((todos?: Seidr<Todo[]>) => {
+        // Dual-mode: server sets, client retrieves from hydration
+        if (!isUndefined(todos)) {
+          setState(todosKey, todos);
+        } else {
+          todos = getState(todosKey);
+        }
 
-          // Use simple rendering instead of List for SSR compatibility
-          return $div({ className: "todo-app" }, [
-            $div({ textContent: todos?.as((t) => `Todo count: ${t.length}`) || "Loading" }),
-          ]);
-        })();
-      }
-
+        // Use simple rendering instead of List for SSR compatibility
+        return $div({ className: "todo-app" }, [
+          $div({ textContent: todos?.as((t) => `Todo count: ${t.length}`) || "Loading" }),
+        ]);
+      });
       // Server-side
       const serverTodos: Todo[] = [
         { id: 1, text: "Learn SSR" },
@@ -70,32 +67,29 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       type Product = { id: number; name: string };
       const productsKey = createStateKey<Seidr<Product[]>>("products");
 
-      function ProductApp(products?: Seidr<Product[]>) {
-        return component(() => {
-          if (!isUndefined(products)) {
-            setState(productsKey, products);
-          } else {
-            products = getState(productsKey);
-          }
+      const ProductApp = component((products?: Seidr<Product[]>) => {
+        if (!isUndefined(products)) {
+          setState(productsKey, products);
+        } else {
+          products = getState(productsKey);
+        }
 
-          // Server: Fetch from database (async is automatically awaited)
-          inServer(async () => {
-            // This would normally fetch from database
-            // For testing, we just set a value
-            if (products) products.value = [{ id: 1, name: "Server Product" }];
-          });
+        // Server: Fetch from database (async is automatically awaited)
+        inServer(async () => {
+          // This would normally fetch from database
+          // For testing, we just set a value
+          if (products) products.value = [{ id: 1, name: "Server Product" }];
+        });
 
-          // Client: Fetch from API
-          inBrowser(async () => {
-            // This would normally fetch from API
-            // For testing, we just verify it's called
-            expect(typeof window).not.toBe("undefined");
-          });
+        // Client: Fetch from API
+        inBrowser(async () => {
+          // This would normally fetch from API
+          // For testing, we just verify it's called
+          expect(typeof window).not.toBe("undefined");
+        });
 
-          return $div({ textContent: products?.as((p) => `Count: ${p.length}`) || "Loading" });
-        })();
-      }
-
+        return $div({ textContent: products?.as((p) => `Count: ${p.length}`) || "Loading" });
+      });
       // Server-side
       const productsState = new Seidr<Product[]>([]);
       const { html } = await renderToString(() => ProductApp(productsState));
@@ -110,20 +104,17 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
         type Data = { items: number[] };
         const dataKey = createStateKey<Seidr<Data>>("data");
 
-        function MyApp(data?: Seidr<Data>) {
-          return component(() => {
-            if (!isUndefined(data)) {
-              setState(dataKey, data);
-            } else {
-              data = getState(dataKey);
-            }
+        const MyApp = component((data?: Seidr<Data>) => {
+          if (!isUndefined(data)) {
+            setState(dataKey, data);
+          } else {
+            data = getState(dataKey);
+          }
 
-            return $div({
-              textContent: data?.as((d) => `Items: ${d.items.join(",")}`) || "Loading",
-            });
-          })();
-        }
-
+          return $div({
+            textContent: data?.as((d) => `Items: ${d.items.join(",")}`) || "Loading",
+          });
+        });
         // Server
         const state = new Seidr({ items: [1, 2, 3] });
         const { html, hydrationData } = await renderToString(() => MyApp(state));
@@ -135,13 +126,10 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
 
     describe("Pattern 2: Component-Local State", () => {
       it("should work with local state created inside component", async () => {
-        function Counter() {
-          return component(() => {
-            const count = new Seidr(0);
-            return $div({ textContent: count.as((n) => `Count: ${n}`) });
-          })();
-        }
-
+        const Counter = component(() => {
+          const count = new Seidr(0);
+          return $div({ textContent: count.as((n) => `Count: ${n}`) });
+        });
         // Server
         const { html, hydrationData } = await renderToString(Counter);
 
@@ -155,13 +143,11 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
         // This is the anti-pattern from the docs
         const count = new Seidr(0);
 
-        const App = () =>
-          component(() => {
-            // This will fail because count was created before renderToString
-            const doubled = count.as((n) => n * 2);
-            return $div({ textContent: doubled.as(String) });
-          })();
-
+        const App = component(() => {
+          // This will fail because count was created before renderToString
+          const doubled = count.as((n) => n * 2);
+          return $div({ textContent: doubled.as(String) });
+        });
         // This should either fail or show the problem
         // For now, we just verify it renders without errors in SSR mode
         const { html } = await renderToString(App);
@@ -174,17 +160,15 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
     it("should produce correct hydration data structure", async () => {
       const dataKey = createStateKey<Seidr<string>>("data");
 
-      function App(data?: Seidr<string>) {
-        return component(() => {
-          if (!isUndefined(data)) {
-            setState(dataKey, data);
-          } else {
-            data = getState(dataKey);
-          }
+      const App = component((data?: Seidr<string>) => {
+        if (!isUndefined(data)) {
+          setState(dataKey, data);
+        } else {
+          data = getState(dataKey);
+        }
 
-          return $div({ textContent: data?.as((d) => d.toUpperCase()) || "" });
-        })();
-      }
+        return $div({ textContent: data?.as((d) => d.toUpperCase()) || "" });
+      });
 
       const state = new Seidr("hello");
       const { hydrationData } = await renderToString(() => App(state));
@@ -209,11 +193,9 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
 
   describe("Best Practices", () => {
     it("should work correctly when renderToString is called in async function", async () => {
-      function App() {
-        return component(() => {
-          return $div({ textContent: "Test" });
-        })();
-      }
+      const App = component(() => {
+        return $div({ textContent: "Test" });
+      });
 
       // This should work (async)
       const { html } = await renderToString(App);
@@ -223,18 +205,15 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
     it("should handle JSON-serializable values only", async () => {
       const key = createStateKey<Seidr<any>>("data");
 
-      function App(data?: Seidr<any>) {
-        return component(() => {
-          if (!isUndefined(data)) {
-            setState(key, data);
-          } else {
-            data = getState(key);
-          }
+      const App = component((data?: Seidr<any>) => {
+        if (!isUndefined(data)) {
+          setState(key, data);
+        } else {
+          data = getState(key);
+        }
 
-          return $div({ textContent: String(data?.value ?? "null") });
-        })();
-      }
-
+        return $div({ textContent: String(data?.value ?? "null") });
+      });
       // Primitives work
       const primitives = new Seidr({ num: 42, str: "hello", bool: true, arr: [1, 2, 3] });
       const { html, hydrationData } = await renderToString(() => App(primitives));
@@ -248,18 +227,15 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
     it("should demonstrate server values hydrate correctly", async () => {
       const key = createStateKey<Seidr<number>>("count");
 
-      function Counter(count?: Seidr<number>) {
-        return component(() => {
-          if (!isUndefined(count)) {
-            setState(key, count);
-          } else {
-            count = getState(key);
-          }
+      const Counter = component((count?: Seidr<number>) => {
+        if (!isUndefined(count)) {
+          setState(key, count);
+        } else {
+          count = getState(key);
+        }
 
-          return $div({ textContent: count?.as((n) => `Count: ${n}`) || "Loading" });
-        })();
-      }
-
+        return $div({ textContent: count?.as((n) => `Count: ${n}`) || "Loading" });
+      });
       // Server
       const serverCount = new Seidr(42);
       const { html, hydrationData } = await renderToString(() => Counter(serverCount));
@@ -274,18 +250,15 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       const key = createStateKey<Seidr<string>>("data");
 
       // After: Dual-mode component
-      function App(data?: Seidr<string>) {
-        return component(() => {
-          if (!isUndefined(data)) {
-            setState(key, data);
-          } else {
-            data = getState(key);
-          }
+      const App = component((data?: Seidr<string>) => {
+        if (!isUndefined(data)) {
+          setState(key, data);
+        } else {
+          data = getState(key);
+        }
 
-          return $div({ textContent: data?.as((d) => d) ?? "Loading" });
-        })();
-      }
-
+        return $div({ textContent: data?.as((d) => d) ?? "Loading" });
+      });
       // Server
       const data = new Seidr("Hello SSR");
       const { html, hydrationData } = await renderToString(() => App(data));
@@ -318,17 +291,14 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
 
       type Todo = { id: number; text: string };
 
-      function TodoApp() {
-        return component(() => {
-          const todos = new Seidr<Todo[]>([
-            { id: 1, text: "Learn SSR" },
-            { id: 2, text: "Build app" },
-          ]);
+      const TodoApp = component(() => {
+        const todos = new Seidr<Todo[]>([
+          { id: 1, text: "Learn SSR" },
+          { id: 2, text: "Build app" },
+        ]);
 
-          return $div({ className: "todo-app" }, [$div({ textContent: todos.as((t) => `Todo count: ${t.length}`) })]);
-        })();
-      }
-
+        return $div({ className: "todo-app" }, [$div({ textContent: todos.as((t) => `Todo count: ${t.length}`) })]);
+      });
       const { hydrationData } = await renderToString(TodoApp);
 
       // Clean up SSR mode
@@ -349,21 +319,18 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
       // First, simulate server-side rendering
       const ssrCleanup = enableSSRMode();
 
-      function App() {
-        return component(() => {
-          const data = new Seidr("Test");
+      const App = component(() => {
+        const data = new Seidr("Test");
 
-          let browserExecuted = false;
-          inBrowser(() => {
-            browserExecuted = true;
-          });
+        let browserExecuted = false;
+        inBrowser(() => {
+          browserExecuted = true;
+        });
 
-          return $div({
-            textContent: data.as((d) => `${d} - ${browserExecuted ? "client" : "server"}`),
-          });
-        })();
-      }
-
+        return $div({
+          textContent: data.as((d) => `${d} - ${browserExecuted ? "client" : "server"}`),
+        });
+      });
       const { hydrationData } = await renderToString(App);
 
       // Clean up SSR mode
@@ -386,16 +353,13 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
 
       type Data = { items: number[] };
 
-      function MyApp() {
-        return component(() => {
-          const data = new Seidr<Data>({ items: [1, 2, 3] });
+      const MyApp = component(() => {
+        const data = new Seidr<Data>({ items: [1, 2, 3] });
 
-          return $div({
-            textContent: data.as((d) => `Items: ${d.items.join(",")}`),
-          });
-        })();
-      }
-
+        return $div({
+          textContent: data.as((d) => `Items: ${d.items.join(",")}`),
+        });
+      });
       const { hydrationData } = await renderToString(MyApp);
 
       // Clean up SSR mode
@@ -414,13 +378,10 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
       // First, simulate server-side rendering
       const ssrCleanup = enableSSRMode();
 
-      function Counter() {
-        return component(() => {
-          const count = new Seidr(0);
-          return $div({ textContent: count.as((n) => `Count: ${n}`) });
-        })();
-      }
-
+      const Counter = component(() => {
+        const count = new Seidr(0);
+        return $div({ textContent: count.as((n) => `Count: ${n}`) });
+      });
       const { hydrationData } = await renderToString(Counter);
 
       // Clean up SSR mode
@@ -441,13 +402,10 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
       // First, simulate server-side rendering
       const ssrCleanup = enableSSRMode();
 
-      function App() {
-        return component(() => {
-          const data = new Seidr("Hello SSR");
-          return $div({ textContent: data.as((d) => d) });
-        })();
-      }
-
+      const App = component(() => {
+        const data = new Seidr("Hello SSR");
+        return $div({ textContent: data.as((d) => d) });
+      });
       const { hydrationData } = await renderToString(App);
 
       // Clean up SSR mode
@@ -468,13 +426,10 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
       // First, simulate server-side rendering
       const ssrCleanup = enableSSRMode();
 
-      function Counter() {
-        return component(() => {
-          const count = new Seidr(42);
-          return $div({ textContent: count.as((n) => `Count: ${n}`) });
-        })();
-      }
-
+      const Counter = component(() => {
+        const count = new Seidr(42);
+        return $div({ textContent: count.as((n) => `Count: ${n}`) });
+      });
       const { hydrationData } = await renderToString(Counter);
 
       // Clean up SSR mode
