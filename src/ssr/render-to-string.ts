@@ -1,10 +1,10 @@
+import { clearPathCache } from "../core/dom/components/route";
 import type { SeidrComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
 import { runWithRenderContext } from "../render-context.node";
 import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
-import { clearPathCache } from "../core/dom/components/route";
 
 /**
  * Options for rendering a component to string during SSR.
@@ -14,7 +14,7 @@ export interface RenderToStringOptions {
   scope?: SSRScope;
 
   /** Initial URL path for routing (defaults to "/") */
-  initialPath?: string;
+  path?: string;
 }
 
 /**
@@ -91,8 +91,8 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
     }
 
     // Initialize current path in RenderContext if provided
-    if (options.initialPath !== undefined) {
-      ctx.currentPath = options.initialPath;
+    if (options.path !== undefined) {
+      ctx.currentPath = options.path;
     }
 
     // Create new scope if not provided

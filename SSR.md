@@ -269,22 +269,86 @@ No manual registration needed!
 
 ## 📖 API Reference
 
-### `renderToString(factory)`
+### `renderToString(factory, props?, options?)`
 
 Render a component to HTML with hydration data capture.
 
 **Must be called inside an async function** for AsyncLocalStorage isolation.
 
 ```typescript
+// Basic usage
 const { html, hydrationData } = await renderToString(App);
+
+// With props
+const state = new Seidr(todos);
+const { html, hydrationData } = await renderToString(App, state);
+
+// With initial path for routing
+const { html, hydrationData } = await renderToString(App, null, {
+  initialPath: req.path
+});
+
+// With custom SSR scope
+const scope = new SSRScope();
+const { html, hydrationData } = await renderToString(App, null, { scope });
 ```
 
 **Parameters:**
 - `factory` - Function that returns a Seidr component
+- `props?` - Optional props to pass to the component
+- `options?` - Options object or legacy SSRScope parameter:
+  - `initialPath?` - Initial URL path for routing (defaults to "/")
+  - `scope?` - Optional existing SSR scope (creates new one if not provided)
 
 **Returns:**
 - `html` - Rendered HTML string
 - `hydrationData` - Data for client-side restoration
+
+---
+
+### Routing with SSR
+
+When using the Router component in SSR, you must pass the current request path to `renderToString`:
+
+```typescript
+import { renderToString } from '@fimbul-works/seidr/node';
+import { Router, createRoute, component } from '@fimbul-works/seidr/node';
+
+const HomePage = component(() => $div({ textContent: 'Home' }));
+const AboutPage = component(() => $div({ textContent: 'About' }));
+
+const App = Router({
+  routes: [
+    createRoute('/', HomePage),
+    createRoute('/about', AboutPage),
+  ],
+  fallback: NotFoundPage
+});
+
+// Server route handler
+app.get('*', async (req, res) => {
+  const { html, hydrationData } = await renderToString(
+    () => App,
+    null,
+    {
+      initialPath: req.path  // Pass request URL path for routing
+    }
+  );
+
+  res.send(html);
+});
+```
+
+**How it works:**
+- Each SSR request gets its own isolated path state via `AsyncLocalStorage`
+- The `initialPath` is stored in the `RenderContext` for that request
+- Route components read from the context to determine which page to render
+- Path state is automatically cleaned up after rendering
+
+**Important:** SSR is a **single-pass render**, meaning:
+- The component renders once based on `initialPath`
+- Calling `navigate()` during SSR updates the path but doesn't cause re-renders
+- For redirects during SSR, check conditions BEFORE rendering and set the appropriate `initialPath`
 
 ---
 

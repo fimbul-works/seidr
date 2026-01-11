@@ -1,8 +1,8 @@
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
-import { cn, isSeidr, uid, unwrapSeidr } from "../../util/index";
+import { cn, isSeidr, uid, unwrapSeidr, wrapSeidr } from "../../util/index";
 import { component, type SeidrComponent } from "../component";
-import { $, $comment, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
+import { $, $comment, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
 import { Conditional } from "./conditional";
 
 /** Map to cache Seidr instances per render context ID */
@@ -42,9 +42,7 @@ function getCurrentPath(): Seidr<string> {
 
   // Client-side: Use module-level state
   if (!clientPathState) {
-    clientPathState = new Seidr(
-      typeof window !== "undefined" ? window.location.pathname : "/"
-    );
+    clientPathState = new Seidr(typeof window !== "undefined" ? window.location.pathname : "/");
   }
   return clientPathState;
 }
@@ -143,16 +141,17 @@ export function parseRouteParams(pattern: string, path?: string): Record<string,
 /**
  * Conditionally mount a SeidrComponent when current URL path matches pattern
  * @template {SeidrComponent} C - The type of SeidrComponent being conditionally rendered
- * @template {Record<string, string>} P - The type of matching route parameters
+ * @template {Seidr<any>} P - The type of matching route parameters
  * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
  * @param {(params?: P) => C} componentFactory - Function that creates the component when needed
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {() => void} Cleanup function that removes the conditional mount
  */
-export function Route<
-  C extends SeidrComponent<any, any>,
-  P extends Seidr<Record<string, string>> = Seidr<Record<string, string>>,
->(pattern: string | RegExp, componentFactory: (params?: P) => C, pathState: Seidr<string> = getCurrentPath()) {
+export function Route<C extends SeidrComponent<any, any>, P extends Seidr<any>>(
+  pattern: string | RegExp,
+  componentFactory: (params?: P) => C,
+  pathState: Seidr<string> = getCurrentPath(),
+) {
   // Match pathState.value against RegExp pattern (no parameters extracted)
   if (pattern instanceof RegExp) {
     const routeParams = pathState.as((path) => {
@@ -178,7 +177,7 @@ export function Route<
 /**
  * Route definition for Router.
  */
-export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends Seidr<Record<string, string>>> {
+export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends Seidr<any>> {
   pattern: string | RegExp;
   componentFactory: (params?: P) => C;
 }
@@ -189,7 +188,7 @@ export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends S
  * Helper function to create type-safe route definitions with proper TypeScript inference.
  *
  * @template {SeidrComponent<any, any>} C - The component type
- * @template {Seidr<Record<string, string>>} P - The params observable type
+ * @template {Seidr<any>} P - The params observable type
  * @param {string | RegExp} pattern - Path pattern or RegExp
  * @param {(params?: P) => C} componentFactory - Function that creates the component
  * @returns {RouteDefinition<C, P>} Route definition object
@@ -206,7 +205,7 @@ export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends S
  */
 export function createRoute<C extends SeidrComponent<any, any>>(
   pattern: string | RegExp,
-  componentFactory: (params?: Seidr<Record<string, string>>) => C,
+  componentFactory: (params?: Seidr<any>) => C,
 ): RouteDefinition<C, any> {
   return { pattern, componentFactory };
 }
@@ -226,7 +225,7 @@ export interface RouterProps {
  * before less specific ones (e.g., "/user/:id" before "/user/*").
  *
  * @param {RouterProps} props - Router props containing routes and optional fallback
- * @returns {SeidrComponent<"div", SeidrElement<"div">>} SeidrComponent that manages route rendering
+ * @returns {SeidrComponent<any, Comment>} SeidrComponent that manages route rendering
  *
  * @example
  * Basic Router with fallback
@@ -332,50 +331,82 @@ export function Router({ routes, fallback }: RouterProps): SeidrComponent<any, C
 /**
  * Link component props.
  */
-export interface LinkProps extends Partial<ReactiveProps<any, any> & ReactiveARIAMixin> {
-  to: string;
-  tagName?: string;
+export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
+  to: string | Seidr<string>;
+  tagName?: K;
   activeClass?: string;
   activeProp?: string;
   activeValue?: string;
+  className?: string | Seidr<string>;
 }
 
 /**
  * Link component for Route.
- * @param {LinkProps} props - Link props
+ * @param {LinkProps & ReactiveProps<K, HTMLElementTagNameMap[K]>} props - Link props with reactive bindings
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
- * @returns {SeidrComponent<"a", SeidrElement<"a">>} SeidrComponent that wraps an anchor element
+ * @returns {SeidrComponent<K, SeidrElement<K>>} SeidrComponent that wraps an anchor element
+ *
+ * @example
+ * Basic Link
+ * ```typescript
+ * import { Link, component, $div } from '@fimbul-works/seidr';
+ *
+ * const App = component(() => {
+ *   return $div({}, [
+ *     Link({ to: '/about' }, ['About']),
+ *     Link({ to: '/', activeClass: 'current' }, ['Home'])
+ *   ]);
+ * });
+ * ```
+ *
+ * @example
+ * Link with custom tagName and reactive active state
+ * ```typescript
+ * const currentPath = new Seidr('/');
+ *
+ * const App = component(() => {
+ *   return $div({}, [
+ *     Link({
+ *       to: currentPath.as(p => p === '/home' ? '/' : '/home'),
+ *       tagName: 'button',
+ *       activeProp: 'aria-current',
+ *       activeValue: 'page'
+ *     }, ['Home'])
+ *   ]);
+ * });
+ * ```
  */
-export function Link<K extends keyof HTMLElementTagNameMap>(
+export function Link<K extends keyof HTMLElementTagNameMap = "a">(
   {
-    tagName = "a",
     to,
-    className,
+    tagName = "a" as K,
     activeClass = "active",
     activeProp = "className",
-    activeValue,
+    activeValue = undefined,
+    className,
     ...restProps
-  }: LinkProps,
+  }: LinkProps<K> & ReactiveProps<K, HTMLElementTagNameMap[K]>,
   children: (SeidrNode | (() => SeidrNode))[] = [],
 ): SeidrComponent<K, SeidrElement<K>> {
   return component((scope) => {
     // If to is a Seidr, observe it; otherwise wrap it in a Seidr
-    const toValue = isSeidr(to) ? to : new Seidr(to);
+    const toValue = wrapSeidr(to);
     const val = activeValue ?? activeClass;
     const currentPath = getCurrentPath();
 
     // Create a combined computed that depends on both currentPath and toValue
     const isActive = Seidr.computed(
-      () => normalizePath(currentPath.value) === normalizePath(unwrapSeidr(toValue.value)),
+      () => normalizePath(currentPath.value) === normalizePath(unwrapSeidr(toValue)),
       [currentPath, toValue],
     );
 
     // Build props object with reactive bindings
     const props: Record<string, any> = {
       ...restProps,
+      href: toValue,
       onclick: (e: Event) => {
         e.preventDefault();
-        navigate(unwrapSeidr(toValue.value));
+        navigate(unwrapSeidr(toValue));
       },
     };
 

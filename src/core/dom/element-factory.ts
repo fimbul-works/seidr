@@ -13,9 +13,9 @@ import { $, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type 
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  *
  * @param {K} tagName - The HTML tag name to create a specialized factory for
- * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>} [initialProps] - Optional default props to apply to all created elements
+ * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>} [initialProps] - Optional default props to apply to all created elements
  * @returns {((
- *   options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
+ *   options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
  *   children?: SeidrNode[],
  * ) => HTMLElementTagNameMap[K] & SeidrElement)} A specialized function that creates elements of the specified type
  *
@@ -143,16 +143,14 @@ import { $, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type 
  */
 export function $factory<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
-  initialProps?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]>>,
+  initialProps?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
 ): (
-  options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
+  options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
   children?: SeidrNode[],
 ) => HTMLElementTagNameMap[K] & SeidrElement {
   return (
-    options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
+    options?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
     children?: SeidrNode[],
-  ): HTMLElementTagNameMap[K] & SeidrElement => {
-    const mergedProps = initialProps ? { ...initialProps, ...options } : options;
-    return $(tagName, mergedProps, children);
-  };
+  ): HTMLElementTagNameMap[K] & SeidrElement =>
+    $(tagName, initialProps ? { ...initialProps, ...options } : options, children);
 }

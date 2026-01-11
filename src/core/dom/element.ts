@@ -61,7 +61,10 @@ export type ReactiveValue<T> = [T] extends string ? T | Seidr<Scalar> : [T] exte
  * @template K - The HTML tag name from HTMLElementTagNameMap
  * @template T - The corresponding HTML element type
  */
-export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends Omit<HTMLElementTagNameMap[K], "style">> = {
+export type ReactiveProps<
+  K extends keyof HTMLElementTagNameMap,
+  T extends Omit<HTMLElementTagNameMap[K], "style"> = Omit<HTMLElementTagNameMap[K], "style">,
+> = {
   [K in WritableKeys<T>]?: ReactiveValue<T[K]>;
 };
 
@@ -73,7 +76,7 @@ export type ReactiveProps<K extends keyof HTMLElementTagNameMap, T extends Omit<
  * reactive binding without additional API calls.
  */
 export type ReactiveARIAMixin = {
-  [K in keyof WritableKeys<ARIAMixin>]?: ReactiveValue<WritableKeys<ARIAMixin>[K]>;
+  [K in keyof ARIAMixin]-?: ReactiveValue<ARIAMixin[K]>;
 };
 
 /**
@@ -197,7 +200,7 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @template {keyof HTMLElementTagNameMap[K]} P - Property type inference (internal use)
  *
  * @param {K} tagName - The HTML tag name to create
- * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>} [props] - Element properties supporting reactive bindings
+ * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>} [props] - Element properties supporting reactive bindings
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Child elements or functions returning elements
  * @returns {SeidrElement<K>} A Seidr-enhanced HTML element with additional methods
  * @throws {Error} When attempting to use reserved properties ('on', 'clear', 'destroy')
@@ -262,7 +265,7 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  */
 export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
-  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> | ReactiveARIAMixin>,
+  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> {
   // Helper function to check props for a Seidr instance

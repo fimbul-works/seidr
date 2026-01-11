@@ -59,7 +59,7 @@ describe("SSR Navigate", () => {
 
     // Render with initial path as /login
     const { html } = await renderToString(makeApp, null, {
-      initialPath: "/login",
+      path: "/login",
     });
 
     // Verify navigate was called but component still rendered (SSR is single-pass)
@@ -108,7 +108,7 @@ describe("SSR Navigate", () => {
 
     // Start at /a
     const { html } = await renderToString(makeApp, null, {
-      initialPath: "/a",
+      path: "/a",
     });
 
     // Navigate was called (at least once), and only Component A is rendered (SSR is single-pass)
@@ -127,14 +127,14 @@ describe("SSR Navigate", () => {
       });
 
     const result1 = await renderToString(makeApp, null, {
-      initialPath: "/about",
+      path: "/about",
     });
 
     expect(result1.html).toContain("About");
 
     // Request 2: Render / (should NOT show "About" from previous request)
     const result2 = await renderToString(makeApp, null, {
-      initialPath: "/",
+      path: "/",
     });
 
     expect(result2.html).toContain("Home");

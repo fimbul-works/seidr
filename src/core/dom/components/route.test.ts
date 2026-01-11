@@ -3,7 +3,7 @@ import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $a, $div, $span } from "../elements";
 import { mount } from "../mount";
-import { Router, createRoute, Link, Route, initRouter, navigate, parseRouteParams } from "./route";
+import { createRoute, initRouter, Link, navigate, parseRouteParams, Route, Router } from "./route";
 
 describe("Route Component", () => {
   let container: HTMLDivElement;
@@ -273,9 +273,7 @@ describe("Route Component", () => {
     it("should extract multiple named capture groups", () => {
       type Params = Seidr<{ category: string; id: string }>;
       const ProductPage = (params?: Params) =>
-        component(() =>
-          $div({ textContent: params?.as((p) => `${p.category}: ${p.id}`) || "Loading" }),
-        );
+        component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.id}`) || "Loading" }));
 
       const App = component(() => {
         return $div({}, [Route(/^\/shop\/(?<category>[^/]+)\/(?<id>[^/]+)$/, ProductPage)]);
@@ -290,9 +288,7 @@ describe("Route Component", () => {
     it("should extract capture groups with numbers", () => {
       type Params = Seidr<{ year: string; month: string; day: string }>;
       const ArchivePage = (params?: Params) =>
-        component(() =>
-          $div({ textContent: params?.as((p) => `${p.year}-${p.month}-${p.day}`) || "Loading" }),
-        );
+        component(() => $div({ textContent: params?.as((p) => `${p.year}-${p.month}-${p.day}`) || "Loading" }));
 
       const App = component(() => {
         return $div({}, [Route(/^\/archive\/(?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2})$/, ArchivePage)]);
@@ -322,14 +318,10 @@ describe("Route Component", () => {
     it("should extract capture groups with mixed patterns", () => {
       type Params = Seidr<{ lang: string; category: string; id: string }>;
       const MixedPage = (params?: Params) =>
-        component(() =>
-          $div({ textContent: params?.as((p) => `${p.lang}/${p.category}/${p.id}`) || "Loading" }),
-        );
+        component(() => $div({ textContent: params?.as((p) => `${p.lang}/${p.category}/${p.id}`) || "Loading" }));
 
       const App = component(() => {
-        return $div({}, [
-          Route(/^\/(?<lang>[a-z]{2})\/products\/(?<category>[^/]+)\/(?<id>\d+)$/, MixedPage),
-        ]);
+        return $div({}, [Route(/^\/(?<lang>[a-z]{2})\/products\/(?<category>[^/]+)\/(?<id>\d+)$/, MixedPage)]);
       });
 
       mount(App, container);
@@ -415,7 +407,7 @@ describe("Route Component", () => {
         component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }));
 
       const App = component(() => {
-        return $div({}, [Route(/^\/safe\/(?<id>[^\/]+)$/, SafeIdPage)]);
+        return $div({}, [Route(/^\/safe\/(?<id>[^/]+)$/, SafeIdPage)]);
       });
 
       mount(App, container);
@@ -480,12 +472,7 @@ describe("Route Component", () => {
         );
 
       const App = component(() => {
-        return $div({}, [
-          Route(
-            /^\/(?<locale>[a-z]{2})\/v(?<version>\d+\.\d+)\/(?<resource>[a-z-]+)$/,
-            ResourcePage,
-          ),
-        ]);
+        return $div({}, [Route(/^\/(?<locale>[a-z]{2})\/v(?<version>\d+\.\d+)\/(?<resource>[a-z-]+)$/, ResourcePage)]);
       });
 
       mount(App, container);
@@ -502,10 +489,7 @@ describe("Route Component", () => {
       const StringRoute = () => component(() => $div({ textContent: "String Route" }));
 
       const App = component(() => {
-        return $div({}, [
-          Route(/^\/regex\/(?<id>\d+)$/, RegExpRoute),
-          Route("/string", StringRoute),
-        ]);
+        return $div({}, [Route(/^\/regex\/(?<id>\d+)$/, RegExpRoute), Route("/string", StringRoute)]);
       });
 
       mount(App, container);
@@ -568,15 +552,12 @@ describe("Route Component", () => {
       const OrderedPage = (params?: Params) =>
         component(() =>
           $div({
-            textContent:
-              params?.as((p) => `1:${p.first} 2:${p.second} 3:${p.third}`) || "Loading",
+            textContent: params?.as((p) => `1:${p.first} 2:${p.second} 3:${p.third}`) || "Loading",
           }),
         );
 
       const App = component(() => {
-        return $div({}, [
-          Route(/^\/(?<first>[^/]+)\/(?<second>[^/]+)\/(?<third>[^/]+)$/, OrderedPage),
-        ]);
+        return $div({}, [Route(/^\/(?<first>[^/]+)\/(?<second>[^/]+)\/(?<third>[^/]+)$/, OrderedPage)]);
       });
 
       mount(App, container);
@@ -1016,17 +997,11 @@ describe("Route Component", () => {
 
       type PostParams = Seidr<{ id: string; slug: string }>;
       const PostDetail = (params?: PostParams) => {
-        return component(() =>
-          $div({ textContent: params?.as((p) => `Post ${p.id}: ${p.slug}`) || "Loading" }),
-        );
+        return component(() => $div({ textContent: params?.as((p) => `Post ${p.id}: ${p.slug}`) || "Loading" }));
       };
 
       const App = component(() => {
-        return $div({}, [
-          Route("/", Home),
-          Route("/blog/page/:page", PostList),
-          Route("/blog/:id/:slug", PostDetail),
-        ]);
+        return $div({}, [Route("/", Home), Route("/blog/page/:page", PostList), Route("/blog/:id/:slug", PostDetail)]);
       });
 
       mount(App, container);
@@ -1080,9 +1055,7 @@ describe("Route Component", () => {
       };
       type ProductParams = Seidr<{ category: string; productId: string }>;
       const Product = (params?: ProductParams) => {
-        return component(() =>
-          $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }),
-        );
+        return component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }));
       };
 
       const App = component(() => {
@@ -1148,9 +1121,7 @@ describe("Route Component", () => {
 
     it("should navigate when clicked", async () => {
       const App = component(() => {
-        return $div({}, [
-          Link({ to: "/target" }, ["Go to Target"]),
-        ]);
+        return $div({}, [Link({ to: "/target" }, ["Go to Target"])]);
       });
 
       mount(App, container);
@@ -1182,7 +1153,7 @@ describe("Route Component", () => {
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
 
-    it("should work with reactive to prop", async  () => {
+    it("should work with reactive to prop", async () => {
       const targetPath = new Seidr("/dynamic");
 
       const App = component(() => {
@@ -1204,7 +1175,7 @@ describe("Route Component", () => {
       expect(link.classList.contains("active")).toBe(true);
     });
 
-    it("should merge custom className with active class", async  () => {
+    it("should merge custom className with active class", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/active", className: "custom-class" }, ["Active Link"])]);
       });
@@ -1231,7 +1202,7 @@ describe("Route Component", () => {
       expect(link.classList.contains("custom-class")).toBe(true);
     });
 
-    it("should support custom activeClass", async  () => {
+    it("should support custom activeClass", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/active", activeClass: "is-current" }, ["Active Link"])]);
       });
@@ -1245,7 +1216,7 @@ describe("Route Component", () => {
       expect(link.classList.contains("active")).toBe(false);
     });
 
-    it("should support custom activeProp (aria-current)", async  () => {
+    it("should support custom activeProp (aria-current)", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/active", activeProp: "aria-current", activeValue: "page" }, ["Active Link"])]);
       });
@@ -1259,7 +1230,7 @@ describe("Route Component", () => {
       expect(link.classList.contains("active")).toBe(false);
     });
 
-    it("should support custom activeProp with default value", async  () => {
+    it("should support custom activeProp with default value", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/active", activeProp: "aria-current" }, ["Active Link"])]);
       });
@@ -1284,7 +1255,7 @@ describe("Route Component", () => {
       expect(link.getAttribute("aria-current")).toBeNull();
     });
 
-    it("should normalize trailing slashes for path matching", async  () => {
+    it("should normalize trailing slashes for path matching", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/path/" }, ["Link"])]);
       });
@@ -1297,7 +1268,7 @@ describe("Route Component", () => {
       expect(link.classList.contains("active")).toBe(true);
     });
 
-    it("should normalize trailing slashes in current path", async  () => {
+    it("should normalize trailing slashes in current path", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/path" }, ["Link"])]);
       });
@@ -1322,7 +1293,7 @@ describe("Route Component", () => {
       expect(button?.textContent).toBe("Button Link");
     });
 
-    it("should pass through additional props", async  () => {
+    it("should pass through additional props", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/target", id: "my-link", "data-test": "value" }, ["Link"])]);
       });
@@ -1334,7 +1305,7 @@ describe("Route Component", () => {
       expect(link.getAttribute("data-test")).toBe("value");
     });
 
-    it("should work with multiple links in the same component", async  () => {
+    it("should work with multiple links in the same component", async () => {
       const App = component(() => {
         return $div({}, [
           Link({ to: "/home" }, ["Home"]),
@@ -1354,7 +1325,7 @@ describe("Route Component", () => {
       expect(links[2].classList.contains("active")).toBe(false);
     });
 
-    it("should update active state when path changes", async  () => {
+    it("should update active state when path changes", async () => {
       const App = component(() => {
         return $div({}, [Link({ to: "/dynamic" }, ["Dynamic Link"])]);
       });
@@ -1376,9 +1347,7 @@ describe("Route Component", () => {
 
     it("should work with nested children", () => {
       const App = component(() => {
-        return $div({}, [
-          Link({ to: "/nested" }, [$span({ textContent: "Nested" }), " Link"]),
-        ]);
+        return $div({}, [Link({ to: "/nested" }, [$span({ textContent: "Nested" }), " Link"])]);
       });
 
       mount(App, container);
@@ -1386,7 +1355,7 @@ describe("Route Component", () => {
       const link = container.querySelector("a") as HTMLAnchorElement;
       expect(link.textContent).toBe("Nested Link");
     });
-});
+  });
 
   describe("Router Component", () => {
     beforeEach(() => {
@@ -1451,11 +1420,7 @@ describe("Route Component", () => {
       const RouteThree = () => component(() => $div({ textContent: "Route Three" }));
 
       const App = Router({
-        routes: [
-          createRoute("/one", RouteOne),
-          createRoute("/two", RouteTwo),
-          createRoute("/three", RouteThree),
-        ],
+        routes: [createRoute("/one", RouteOne), createRoute("/two", RouteTwo), createRoute("/three", RouteThree)],
       });
 
       mount(App, container);
@@ -1475,10 +1440,7 @@ describe("Route Component", () => {
       const General = () => component(() => $div({ textContent: "General" }));
 
       const App = Router({
-        routes: [
-          createRoute("/users/admin", Specific),
-          createRoute(/^\/users\/.+$/, () => General()),
-        ],
+        routes: [createRoute("/users/admin", Specific), createRoute(/^\/users\/.+$/, () => General())],
       });
 
       mount(App, container);
@@ -1580,10 +1542,7 @@ describe("Route Component", () => {
       const NotFound = () => component(() => $div({ textContent: "404" }));
 
       const App = Router({
-        routes: [
-          createRoute("/", Home),
-          createRoute("/blog/:id", BlogPost),
-        ],
+        routes: [createRoute("/", Home), createRoute("/blog/:id", BlogPost)],
         fallback: NotFound(),
       });
 
@@ -1624,11 +1583,7 @@ describe("Route Component", () => {
       const RouteC = () => component(() => $div({ textContent: "C" }));
 
       const App = Router({
-        routes: [
-          createRoute("/a", RouteA),
-          createRoute("/b", RouteB),
-          createRoute("/c", RouteC),
-        ],
+        routes: [createRoute("/a", RouteA), createRoute("/b", RouteB), createRoute("/c", RouteC)],
       });
 
       mount(App, container);
