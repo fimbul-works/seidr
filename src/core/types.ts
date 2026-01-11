@@ -23,4 +23,7 @@ export interface RenderContext {
 
   /** Counter for generating unique Seidr instance IDs within this render context */
   seidrIdCounter: number;
+
+  /** Current URL path for routing (isolated per request in SSR) */
+  currentPath: string;
 }

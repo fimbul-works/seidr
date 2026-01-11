@@ -3,7 +3,7 @@ import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $a, $div, $span } from "../elements";
 import { mount } from "../mount";
-import { Router, createRoute, currentPath, Link, Route, initRouter, navigate, parseRouteParams } from "./route";
+import { Router, createRoute, Link, Route, initRouter, navigate, parseRouteParams } from "./route";
 
 describe("Route Component", () => {
   let container: HTMLDivElement;

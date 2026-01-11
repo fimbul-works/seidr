@@ -4,6 +4,18 @@ import { runWithRenderContext } from "../render-context.node";
 import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
+import { clearPathCache } from "../core/dom/components/route";
+
+/**
+ * Options for rendering a component to string during SSR.
+ */
+export interface RenderToStringOptions {
+  /** Optional existing SSR scope (creates new one if not provided) */
+  scope?: SSRScope;
+
+  /** Initial URL path for routing (defaults to "/") */
+  initialPath?: string;
+}
 
 /**
  * Renders a component to an HTML string with hydration data capture.
@@ -11,35 +23,47 @@ import type { SSRRenderResult } from "./types";
  * This function:
  * 1. Creates or uses the provided SSR scope
  * 2. Sets the scope as active (enables auto-registration)
- * 3. Executes the component function (Seidr instances auto-register)
- * 4. Captures hydration data (observables, bindings, and dependency graph)
- * 5. Returns HTML string with hydration data
- * 6. Cleans up the scope
+ * 3. Initializes the current path in RenderContext (for routing)
+ * 4. Executes the component function (Seidr instances auto-register)
+ * 5. Captures hydration data (observables, bindings, and dependency graph)
+ * 6. Returns HTML string with hydration data
+ * 7. Cleans up the scope
  *
  * @template C - SeidrComponent type
  *
  * @param {(...args: any) => C} componentFactory - Function that returns SeidrComponent
  * @param {any} props - Props to be passed to the component
- * @param {SSRScope} [scope] - Optional existing SSR scope (creates new one if not provided)
+ * @param {RenderToStringOptions | SSRScope} [optionsOrScope] - Options object or legacy scope parameter
  *
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  *
  * @example
+ * Basic usage
  * ```typescript
  * import { renderToString } from '@fimbul-works/seidr/node';
- * import { $, component, Seidr, setState, createStateKey } from '@fimbul-works/seidr/node';
+ * import { component, $div } from '@fimbul-works/seidr/node';
  *
- * function App() {
- *   return component((state) => {
- *     const count = new Seidr(0);
- *     return $('div', {}, [
- *       $('span', { textContent: count.as(n => `Count: ${n}`) })
- *     ]);
- *   });
- * };
+ * const App = component(() => $div({ textContent: 'Hello' }));
  *
  * app.get('*', async (req, res) => {
  *   const { html, hydrationData } = await renderToString(App);
+ *   res.send(html);
+ * });
+ * ```
+ *
+ * @example
+ * With initial path for routing
+ * ```typescript
+ * import { renderToString } from '@fimbul-works/seidr/node';
+ * import { component, $div } from '@fimbul-works/seidr/node';
+ *
+ * const App = component(() => $div({ textContent: 'Home' }));
+ *
+ * app.get('*', async (req, res) => {
+ *   // Pass the request URL path for routing
+ *   const { html, hydrationData } = await renderToString(App, null, {
+ *     initialPath: req.path
+ *   });
  *   res.send(html);
  * });
  * ```
@@ -47,8 +71,18 @@ import type { SSRRenderResult } from "./types";
 export async function renderToString<C extends SeidrComponent<any, any>>(
   componentFactory: (...args: any) => C,
   props?: any,
-  scope?: SSRScope,
+  optionsOrScope?: RenderToStringOptions | SSRScope,
 ): Promise<SSRRenderResult> {
+  // Normalize options to handle both legacy scope parameter and new options object
+  let options: RenderToStringOptions;
+  if (optionsOrScope && typeof optionsOrScope === "object" && "captureHydrationData" in optionsOrScope) {
+    // Legacy: SSRScope object passed directly
+    options = { scope: optionsOrScope };
+  } else {
+    // New: options object or undefined
+    options = optionsOrScope ?? {};
+  }
+
   return await runWithRenderContext(async () => {
     const ctx = getRenderContext();
 
@@ -56,8 +90,13 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       throw new Error("No render context available. This should not happen - please report this bug.");
     }
 
+    // Initialize current path in RenderContext if provided
+    if (options.initialPath !== undefined) {
+      ctx.currentPath = options.initialPath;
+    }
+
     // Create new scope if not provided
-    const activeScope = scope ?? new SSRScope();
+    const activeScope = options.scope ?? new SSRScope();
 
     // Set scope as active to enable auto-registration in Seidr constructor
     setActiveSSRScope(activeScope);
@@ -86,6 +125,9 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       // Clear the render context state
       clearRenderContextState(ctx.renderContextID);
 
+      // Clear the path cache for this render context
+      clearPathCache(ctx.renderContextID);
+
       return { html, hydrationData };
     } finally {
       // Always clear active scope, even if component throws
@@ -95,7 +137,7 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       clearSSRScope(ctx.renderContextID);
 
       // Clear scope if we created it (captureState already cleared observables)
-      if (!scope) {
+      if (!options.scope) {
         activeScope.clear();
       }
     }

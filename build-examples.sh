@@ -19,7 +19,6 @@ mv examples/dist/pomodoro.js examples/temp/pomodoro.js
 
 echo "Building SSR example..."
 EXAMPLE=todo npx vite build --config vite.examples-ssr.config.ts
-mv examples/dist/todo.js examples/temp/todo.js
 
 # Copy both files to final location
 cp examples/temp/counter.js examples/dist/counter.js

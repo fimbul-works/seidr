@@ -41,6 +41,9 @@ const initRenderContext = (): RenderContext => {
   // Initialize Seidr ID counter for this render context
   store.seidrIdCounter = 0;
 
+  // Initialize current path (defaults to root for SSR)
+  store.currentPath = "/";
+
   return store;
 };
 
@@ -55,7 +58,12 @@ const initRenderContext = (): RenderContext => {
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
   // Run with new context on the server
-  const createStore = (): RenderContext => ({ renderContextID: 0, idCounter: 0, seidrIdCounter: 0 });
+  const createStore = (): RenderContext => ({
+    renderContextID: 0,
+    idCounter: 0,
+    seidrIdCounter: 0,
+    currentPath: "/"
+  });
   return asyncLocalStorage.run(createStore(), async () => {
     initRenderContext();
     return callback();
@@ -88,7 +96,12 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
  * ```
  */
 export const setMockRenderContextForTests = (): (() => void) => {
-  const mockContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0 };
+  const mockContext: RenderContext = {
+    renderContextID: 0,
+    idCounter: 0,
+    seidrIdCounter: 0,
+    currentPath: "/"
+  };
   const originalGetRenderContext = getRenderContext;
 
   // Override with a simple function that always returns the mock context

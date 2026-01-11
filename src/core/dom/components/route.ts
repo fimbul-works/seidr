@@ -1,11 +1,53 @@
+import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
 import { cn, isSeidr, uid, unwrapSeidr } from "../../util/index";
 import { component, type SeidrComponent } from "../component";
 import { $, $comment, type ReactiveARIAMixin, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
 import { Conditional } from "./conditional";
 
-/** Reactive current URL path */
-const currentPath = new Seidr<string>("");
+/** Map to cache Seidr instances per render context ID */
+const pathCache = new Map<number, Seidr<string>>();
+
+/** Clear cached path for a render context */
+export function clearPathCache(renderContextID: number): void {
+  pathCache.delete(renderContextID);
+}
+
+/** Client-side path state (created once, reused across calls) */
+let clientPathState: Seidr<string> | undefined;
+
+/**
+ * Get the reactive current path observable.
+ *
+ * On the client: Returns a module-level Seidr that persists across the session.
+ * On the server: Returns a cached Seidr per render context (request-isolated).
+ *
+ * @returns {Seidr<string>} Reactive current path observable
+ */
+function getCurrentPath(): Seidr<string> {
+  const ctx = getRenderContext();
+
+  // Server-side: Get or create Seidr for this render context
+  if (ctx) {
+    let pathSeidr = pathCache.get(ctx.renderContextID);
+
+    if (!pathSeidr) {
+      // Create a new Seidr for this render context
+      pathSeidr = new Seidr(ctx.currentPath);
+      pathCache.set(ctx.renderContextID, pathSeidr);
+    }
+
+    return pathSeidr;
+  }
+
+  // Client-side: Use module-level state
+  if (!clientPathState) {
+    clientPathState = new Seidr(
+      typeof window !== "undefined" ? window.location.pathname : "/"
+    );
+  }
+  return clientPathState;
+}
 
 /** Remove traailing slashes from path */
 const normalizePath = (path: string) => path.replace(/\/+$/, "");
@@ -17,6 +59,7 @@ const normalizePath = (path: string) => path.replace(/\/+$/, "");
  */
 export function initRouter(path: string = typeof window !== "undefined" ? window.location.pathname : "/"): () => void {
   // Set the initial path value
+  const currentPath = getCurrentPath();
   currentPath.value = path;
 
   // Return noop in SSR
@@ -48,6 +91,7 @@ export function navigate(path: string): void {
   const cleanPath = path.split(/[?#]/)[0];
 
   // Set the new path
+  const currentPath = getCurrentPath();
   currentPath.value = cleanPath;
 
   // Stop in SSR
@@ -62,13 +106,16 @@ export function navigate(path: string): void {
 /**
  * Try to match pattern with path, and parse Route parameters.
  * @param {string} pattern - Path pattern like `"/user/:id/edit"`
- * @param {string} path - Optional URL pathname to match against (default: `currentPath.value`)
+ * @param {string} path - Optional URL pathname to match against (default: current path)
  * @returns {Record<string, string> | false} Object with matching parameters, or `false` when pattern and path do not match
  */
-export function parseRouteParams(pattern: string, path: string = currentPath.value): Record<string, string> | false {
+export function parseRouteParams(pattern: string, path?: string): Record<string, string> | false {
+  // If no path provided, use current path
+  const pathToMatch = path ?? getCurrentPath().value;
+
   // Normalize paths by removing trailing slashes
   const normalizedPattern = normalizePath(pattern);
-  const normalizedPath = normalizePath(path);
+  const normalizedPath = normalizePath(pathToMatch);
 
   const parts = normalizedPattern.split("/");
   const pathParts = normalizedPath.split("/");
@@ -99,13 +146,13 @@ export function parseRouteParams(pattern: string, path: string = currentPath.val
  * @template {Record<string, string>} P - The type of matching route parameters
  * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
  * @param {(params?: P) => C} componentFactory - Function that creates the component when needed
- * @param {Seidr<string>} pathState - Optional current path state (default: `currentPath`)
+ * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {() => void} Cleanup function that removes the conditional mount
  */
 export function Route<
   C extends SeidrComponent<any, any>,
   P extends Seidr<Record<string, string>> = Seidr<Record<string, string>>,
->(pattern: string | RegExp, componentFactory: (params?: P) => C, pathState: Seidr<string> = currentPath) {
+>(pattern: string | RegExp, componentFactory: (params?: P) => C, pathState: Seidr<string> = getCurrentPath()) {
   // Match pathState.value against RegExp pattern (no parameters extracted)
   if (pattern instanceof RegExp) {
     const routeParams = pathState.as((path) => {
@@ -134,6 +181,34 @@ export function Route<
 export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends Seidr<Record<string, string>>> {
   pattern: string | RegExp;
   componentFactory: (params?: P) => C;
+}
+
+/**
+ * Create a route definition for use with Router.
+ *
+ * Helper function to create type-safe route definitions with proper TypeScript inference.
+ *
+ * @template {SeidrComponent<any, any>} C - The component type
+ * @template {Seidr<Record<string, string>>} P - The params observable type
+ * @param {string | RegExp} pattern - Path pattern or RegExp
+ * @param {(params?: P) => C} componentFactory - Function that creates the component
+ * @returns {RouteDefinition<C, P>} Route definition object
+ *
+ * @example
+ * Creating a route
+ * ```typescript
+ * import { createRoute, component, $div } from '@fimbul-works/seidr';
+ *
+ * const HomePage = component(() => $div({ textContent: 'Home' }));
+ *
+ * const route = createRoute('/', HomePage);
+ * ```
+ */
+export function createRoute<C extends SeidrComponent<any, any>>(
+  pattern: string | RegExp,
+  componentFactory: (params?: Seidr<Record<string, string>>) => C,
+): RouteDefinition<C, any> {
+  return { pattern, componentFactory };
 }
 
 /**
@@ -176,6 +251,7 @@ export interface RouterProps {
 export function Router({ routes, fallback }: RouterProps): SeidrComponent<any, Comment> {
   return component((scope) => {
     const marker = $comment(`router:${uid()}`);
+    const currentPath = getCurrentPath();
 
     let currentComponent: SeidrComponent<any, any> | null = null;
 
@@ -286,6 +362,7 @@ export function Link<K extends keyof HTMLElementTagNameMap>(
     // If to is a Seidr, observe it; otherwise wrap it in a Seidr
     const toValue = isSeidr(to) ? to : new Seidr(to);
     const val = activeValue ?? activeClass;
+    const currentPath = getCurrentPath();
 
     // Create a combined computed that depends on both currentPath and toValue
     const isActive = Seidr.computed(

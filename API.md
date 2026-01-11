@@ -19,6 +19,14 @@
   - [`List()`](#list)
   - [`Switch()`](#switch)
   - [Shorthand Mounting Utilities](#shorthand-mounting-utilities)
+- [Routing](#routing)
+  - [`initRouter()`](#initrouter)
+  - [`navigate()`](#navigate)
+  - [`Route()`](#route)
+  - [`Router()`](#router)
+  - [`createRoute()`](#createroute)
+  - [`Link()`](#link)
+  - [`parseRouteParams()`](#parserouteparams)
 - [State Management](#state-management)
   - [`createStateKey()`](#createstatekey)
   - [`hasState()`](#hasstate)
@@ -31,6 +39,7 @@
   - [`uidTime()`](#uidtime)
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
+  - [`unwrapSeidr()`](#unwrapseidr)
   - [Query Functions`](#query-functions)
 - [Type Guards](#type-guards)
   - [`isUndefined`](#isUndefined)
@@ -659,6 +668,222 @@ Equivalent to `mount(Switch(observable, cases), container)`.
 
 ---
 
+## Routing
+
+Seidr provides a simple yet powerful client-side routing system that works seamlessly with SSR. The routing components react to URL changes and automatically render the matching route.
+
+### initRouter()
+
+Initialize the Seidr router and set up browser history listeners.
+
+**Parameters:**
+- `path` - Optional initial path (defaults to `window.location.pathname` on client)
+
+**Returns:** Cleanup function that removes event listeners
+
+```typescript
+import { initRouter } from '@fimbul-works/seidr';
+
+// Initialize with current URL
+const cleanup = initRouter();
+
+// Initialize with specific path (useful for SSR)
+const cleanup = initRouter('/home');
+
+// Later cleanup
+cleanup();
+```
+
+**Important:** Always call `initRouter()` once when your application starts, typically after mounting your root component.
+
+---
+
+### navigate()
+
+Navigate to a new path programmatically.
+
+**Parameters:**
+- `path` - The path to navigate to
+
+```typescript
+import { navigate } from '@fimbul-works/seidr';
+
+// Navigate to a path
+navigate('/about');
+navigate('/user/123');
+
+// Query strings and hashes are stripped automatically
+navigate('/about?ref=twitter');  // Navigates to '/about'
+```
+
+**Note:** `navigate()` updates the browser's history using `pushState()`, so the back button works automatically.
+
+---
+
+### Route()
+
+Conditionally render a component when the current URL path matches a pattern.
+
+**Parameters:**
+- `pattern` - Path pattern (string with `:params`) or RegExp
+- `componentFactory` - Function that creates the component when matched
+- `pathState` - Optional path state observable (defaults to global `currentPath`)
+
+**Returns:** Conditional component that mounts when pattern matches
+
+```typescript
+import { Route, component, $div, initRouter } from '@fimbul-works/seidr';
+
+initRouter();
+
+// String pattern with parameters
+const UserPage = (params?: Seidr<{id: string}>) => component(() =>
+  $div({ textContent: params.as(p => `User ${p.id}`) })
+);
+
+Route('/user/:id', UserPage);
+
+// RegExp pattern with named groups
+const BlogPost = (params?: Seidr<{slug: string}>) => component(() =>
+  $div({ textContent: params.as(p => `Post: ${p.slug}`) })
+);
+
+Route(/^\/blog\/(?<slug>[a-z0-9-]+)$/, BlogPost);
+```
+
+**Pattern Syntax:**
+- `:param` - Matches any path segment (e.g., `/user/:id` matches `/user/123`)
+- Trailing slashes are automatically normalized (`/about/` === `/about`)
+
+---
+
+### Router()
+
+Collection of routes that renders the first matching pattern, with optional fallback.
+
+**Parameters:**
+- `routes` - Array of route definitions (use `createRoute()`)
+- `fallback` - Optional component to render when no routes match
+
+**Returns:** Router component (renders as a comment marker)
+
+```typescript
+import { Router, createRoute, component, $div, initRouter } from '@fimbul-works/seidr';
+
+initRouter();
+
+const Home = () => component(() => $div({ textContent: 'Home' }));
+const About = () => component(() => $div({ textContent: 'About' }));
+const NotFound = () => component(() => $div({ textContent: '404 - Not Found' }));
+
+const App = Router({
+  routes: [
+    createRoute('/', Home),
+    createRoute('/about', About),
+    createRoute('/user/:id', UserPage),
+  ],
+  fallback: NotFound(),
+});
+```
+
+**Route Precedence:** Routes are evaluated in order. More specific routes should come before less specific ones:
+
+```typescript
+const App = Router({
+  routes: [
+    createRoute('/users/admin', AdminPanel),  // Must come first!
+    createRoute('/users/:id', UserProfile),
+    createRoute(/^\/users\/.+$/, UsersList),
+  ],
+});
+```
+
+---
+
+### createRoute()
+
+Helper function to create a route definition for `Router()`.
+
+**Parameters:**
+- `pattern` - Path pattern or RegExp
+- `componentFactory` - Factory function that receives optional params observable
+
+**Returns:** Route definition object
+
+```typescript
+import { createRoute, component, $div, Seidr } from '@fimbul-works/seidr';
+
+const UserPage = (params?: Seidr<{id: string}>) => component(() =>
+  $div({ textContent: params.as(p => `User ${p.id}`) })
+);
+
+createRoute('/user/:id', UserPage);
+```
+
+---
+
+### Link()
+
+Navigation link component that updates the URL reactively and can show active state.
+
+**Props (extends ReactiveProps):**
+- `to` - Target path (string or reactive Seidr observable)
+- `tagName` - HTML tag name (defaults to `"a"`)
+- `activeClass` - CSS class when active (defaults to `"active"`)
+- `activeProp` - Property to set when active (defaults to `"className"`)
+- `activeValue` - Value for activeProp (defaults to `activeClass`)
+- All standard HTML element props
+
+```typescript
+import { Link, component, $div, $nav } from '@fimbul-works/seidr';
+
+const Navigation = component(() => $nav({}, [
+  Link({ to: '/' }, ['Home']),
+  Link({ to: '/about' }, ['About']),
+  Link({ to: '/contact' }, ['Contact']),
+]));
+
+// Custom active class
+Link({ to: '/dashboard', activeClass: 'is-current' }, ['Dashboard']);
+
+// Use aria-current for accessibility
+Link({
+  to: '/page',
+  activeProp: 'aria-current',
+  activeValue: 'page',
+}, ['Page']);
+
+// Reactive target path
+const currentPath = new Seidr('/home');
+Link({ to: currentPath }, ['Home']);
+```
+
+**Active State:** The link automatically shows the active class/prop when `currentPath` matches the `to` prop.
+
+---
+
+### parseRouteParams()
+
+Parse route parameters from a path pattern (lower-level utility).
+
+**Parameters:**
+- `pattern` - Path pattern with `:param` syntax
+- `path` - URL pathname to match
+
+**Returns:** Parameter object or `false` if no match
+
+```typescript
+import { parseRouteParams } from '@fimbul-works/seidr';
+
+const params = parseRouteParams('/user/:id/edit', '/user/123/edit');
+// params === { id: '123' }
+
+const noMatch = parseRouteParams('/user/:id', '/other');
+// noMatch === false
+```
+
+---
+
 ## State Management
 
 ### createStateKey()
@@ -898,6 +1123,47 @@ const handleInput = debounce((value: string) => {
 handleInput('test');
 handleInput('testing'); // Only this executes after 300ms
 ```
+
+---
+
+### unwrapSeidr()
+
+Utility to safely extract the value from a Seidr observable or return non-Seidr values as-is.
+
+**Generic Type:** `T` - Type of value to unwrap
+
+**Parameters:**
+- `value` - A Seidr observable or a plain value
+
+**Returns:** The unwrapped value of type `T`
+
+This utility is particularly useful when working with functions that accept both Seidr observables and plain values, and you need to access the underlying value without checking types manually.
+
+```typescript
+import { unwrapSeidr, Seidr } from '@fimbul-works/seidr';
+
+// Unwrap a Seidr observable
+const observable = new Seidr('test value');
+const value = unwrapSeidr(observable); // 'test value'
+
+// Return non-Seidr values as-is
+const plainValue = unwrapSeidr('plain string'); // 'plain string'
+const number = unwrapSeidr(42); // 42
+
+// Works with null and undefined
+const nullValue = unwrapSeidr(null); // null
+const undefinedValue = unwrapSeidr(undefined); // undefined
+
+// Useful in utilities that handle both reactive and static values
+function logValue(value: Seidr<string> | string) {
+  console.log(unwrapSeidr(value));
+}
+
+logValue(new Seidr('reactive')); // 'reactive'
+logValue('static'); // 'static'
+```
+
+**Common use case:** Used internally by components like `Link` to normalize path comparisons when the `to` prop can be either a string or a Seidr observable.
 
 ---
 
