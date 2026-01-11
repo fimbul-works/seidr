@@ -22,7 +22,7 @@ describe("Concurrent SSR Request Isolation", () => {
       component(() => {
         const count = new Seidr(initialCount);
         return $("div", {}, [$("span", { textContent: count.as((n) => `Count: ${n}`) })]);
-      });
+      })();
 
     // Simulate concurrent SSR requests
     const [result1, result2, result3] = await Promise.all([
@@ -57,7 +57,7 @@ describe("Concurrent SSR Request Isolation", () => {
           $("span", { textContent: doubled.as((n) => String(n)) }),
           $("span", { textContent: tripled.as((n) => String(n)) }),
         ]);
-      });
+      })();
 
     // Concurrent renders
     const [r1, r2, r3] = await Promise.all([
@@ -92,7 +92,7 @@ describe("Concurrent SSR Request Isolation", () => {
       component(() => {
         const state = new Seidr("test");
         return $("div", {}, [$("span", { textContent: state })]);
-      });
+      })();
 
     // Run multiple renders
     const results = await Promise.all(Array.from({ length: 10 }, () => renderToString(makeComponent)));
@@ -110,7 +110,7 @@ describe("Concurrent SSR Request Isolation", () => {
       component(() => {
         const count = new Seidr(1);
         return $("div", {}, [$("span", { textContent: count.as((n) => String(n)) })]);
-      });
+      })();
 
     const complexComponent = () =>
       component(() => {
@@ -126,7 +126,7 @@ describe("Concurrent SSR Request Isolation", () => {
           $("span", { textContent: bc.as((n) => String(n)) }),
           $("span", { textContent: sum.as((n) => String(n)) }),
         ]);
-      });
+      })();
 
     // Run simple and complex components concurrently
     const [simple, complex] = await Promise.all([renderToString(simpleComponent), renderToString(complexComponent)]);

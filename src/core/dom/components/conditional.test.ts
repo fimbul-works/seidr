@@ -15,13 +15,14 @@ describe("Conditional Component", () => {
 
   it("should render and toggle component based on condition", () => {
     const isVisible = new Seidr(false);
-    const Child = () => component(() => $("span", { textContent: "Visible" }));
+    const Child = () => component(() => $("span", { textContent: "Visible" }))();
 
     const Parent = component(() => {
       return $("div", { className: "parent" }, [Conditional(isVisible, Child)]);
     });
 
-    mount(Parent, container);
+    const parent = Parent();
+    mount(parent, container);
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("<!--seidr-conditional");

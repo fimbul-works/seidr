@@ -23,6 +23,7 @@ import {
   mount,
   Seidr,
   Switch,
+  useScope,
 } from "./index";
 
 describe("README.md Examples Validation", () => {
@@ -45,35 +46,33 @@ describe("README.md Examples Validation", () => {
 
   describe("Quick Start Example", () => {
     it("should create a working counter component", () => {
-      function Counter() {
-        return component((_scope) => {
-          const count = new Seidr(0);
-          // Only track root observables, not derived ones
-          observables.push(count);
-          const isDisabled = count.as((value) => value >= 10);
+      const Counter = component(() => {
+        const count = new Seidr(0);
+        // Only track root observables, not derived ones
+        observables.push(count);
+        const isDisabled = count.as((value) => value >= 10);
 
-          return $div(
-            {
-              className: "counter",
-              // @ts-expect-error
-              style: "padding: 20px; border: 1px solid #ccc;",
-            },
-            [
-              // @ts-expect-error
-              $span({ textContent: count }),
-              $button({
-                textContent: "Increment",
-                disabled: isDisabled,
-                onclick: () => count.value++,
-              }),
-              $button({
-                textContent: "Reset",
-                onclick: () => (count.value = 0),
-              }),
-            ],
-          );
-        });
-      }
+        return $div(
+          {
+            className: "counter",
+            // @ts-expect-error
+            style: "padding: 20px; border: 1px solid #ccc;",
+          },
+          [
+            // @ts-expect-error
+            $span({ textContent: count }),
+            $button({
+              textContent: "Increment",
+              disabled: isDisabled,
+              onclick: () => count.value++,
+            }),
+            $button({
+              textContent: "Reset",
+              onclick: () => (count.value = 0),
+            }),
+          ],
+        );
+      });
 
       const counter = Counter();
       mount(counter, document.body);
@@ -175,31 +174,30 @@ describe("README.md Examples Validation", () => {
 
   describe("Components with Lifecycle Example", () => {
     it("should manage component lifecycle and cleanup", () => {
-      function UserProfile() {
-        return component((scope) => {
-          const name = new Seidr("Alice");
-          const age = new Seidr(30);
+      const UserProfile = component(() => {
+        const scope = useScope();
+        const name = new Seidr("Alice");
+        const age = new Seidr(30);
 
-          // Manual binding for complex age display with formatting
-          const ageSpan = $span();
-          scope.track(
-            age.bind(ageSpan, (value, el) => {
-              el.textContent = `Age: ${value} years`;
-              el.style.fontWeight = value >= 18 ? "bold" : "normal";
-            }),
-          );
+        // Manual binding for complex age display with formatting
+        const ageSpan = $span();
+        scope.track(
+          age.bind(ageSpan, (value, el) => {
+            el.textContent = `Age: ${value} years`;
+            el.style.fontWeight = value >= 18 ? "bold" : "normal";
+          }),
+        );
 
-          return $div({ className: "user-profile" }, [
-            // Simple reactive binding for name
-            $span({ textContent: name }),
-            ageSpan,
-            $button({
-              textContent: "Birthday",
-              onclick: () => age.value++,
-            }),
-          ]);
-        });
-      }
+        return $div({ className: "user-profile" }, [
+          // Simple reactive binding for name
+          $span({ textContent: name }),
+          ageSpan,
+          $button({
+            textContent: "Birthday",
+            onclick: () => age.value++,
+          }),
+        ]);
+      });
 
       const profile = UserProfile();
       mount(profile, document.body);
@@ -230,18 +228,16 @@ describe("README.md Examples Validation", () => {
     it("should conditionally render components as children", () => {
       const isVisible = new Seidr(false);
 
-      function DetailsPanel() {
-        return component((_scope) => {
-          return $div({ className: "details-panel" }, [
-            $div({ textContent: "User Details" }),
-            $div({ textContent: "Some additional information..." }),
-            $button({
-              textContent: "Close",
-              onclick: () => (isVisible.value = false),
-            }),
-          ]);
-        });
-      }
+      const DetailsPanel = component(() => {
+        return $div({ className: "details-panel" }, [
+          $div({ textContent: "User Details" }),
+          $div({ textContent: "Some additional information..." }),
+          $button({
+            textContent: "Close",
+            onclick: () => (isVisible.value = false),
+          }),
+        ]);
+      });
 
       const container = $div({}, [Conditional(isVisible, () => DetailsPanel())]);
       document.body.appendChild(container);
@@ -267,30 +263,28 @@ describe("README.md Examples Validation", () => {
         { id: 2, text: "Build amazing apps", completed: false },
       ]);
 
-      function TodoItem({ todo }: { todo: any }) {
-        return component((_scope) => {
-          const isCompleted = new Seidr(todo.completed);
+      const TodoItem = component<{ todo: any }>(({ todo }) => {
+        const isCompleted = new Seidr(todo.completed);
 
-          return $div(
-            {
-              className: "todo-item",
-            },
-            [
-              $button({
-                textContent: isCompleted,
-                onclick: () => {
-                  isCompleted.value = !isCompleted.value;
-                  todo.completed = isCompleted.value;
-                },
-              }),
-              $span({
-                textContent: todo.text,
-                className: isCompleted.as<string>((completed) => (completed ? "completed" : "")),
-              }),
-            ],
-          );
-        });
-      }
+        return $div(
+          {
+            className: "todo-item",
+          },
+          [
+            $button({
+              textContent: isCompleted,
+              onclick: () => {
+                isCompleted.value = !isCompleted.value;
+                todo.completed = isCompleted.value;
+              },
+            }),
+            $span({
+              textContent: todo.text,
+              className: isCompleted.as<string>((completed) => (completed ? "completed" : "")),
+            }),
+          ],
+        );
+      });
 
       const container = $ul({}, [
         List(
@@ -477,11 +471,11 @@ describe("README.md Examples Validation", () => {
     it("should switch between components based on observable state", () => {
       const viewMode = new Seidr<"list" | "grid" | "table">("list");
 
-      const ListView = () => component(() => $div({ textContent: "List View 📋", className: "view-list" }));
+      const ListView = component(() => $div({ textContent: "List View 📋", className: "view-list" }));
 
-      const GridView = () => component(() => $div({ textContent: "Grid View 📊", className: "view-grid" }));
+      const GridView = component(() => $div({ textContent: "Grid View 📊", className: "view-grid" }));
 
-      const TableView = () => component(() => $div({ textContent: "Table View 📈", className: "view-table" }));
+      const TableView = component(() => $div({ textContent: "Table View 📈", className: "view-table" }));
 
       // Control buttons
       const controls = $div({}, [
@@ -499,9 +493,9 @@ describe("README.md Examples Validation", () => {
         }),
         // Switch component as a child
         Switch(viewMode, {
-          list: ListView,
-          grid: GridView,
-          table: TableView,
+          list: () => ListView(),
+          grid: () => GridView(),
+          table: () => TableView(),
         }),
       ]);
 

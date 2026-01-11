@@ -26,72 +26,72 @@ describe("Route Component", () => {
 
   describe("Basic Pattern Matching", () => {
     it("should match exact path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/");
 
       expect(container.textContent).toContain("Home");
     });
 
     it("should match nested paths", () => {
-      const About = () => component(() => $div({ textContent: "About" }));
+      const About = () => component(() => $div({ textContent: "About" }))();
       const App = component(() => {
         return $div({}, [Route("/about", About)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/about");
 
       expect(container.textContent).toContain("About");
     });
 
     it("should handle trailing slashes in current path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/"); // Browser often normalizes to no trailing slash
 
       expect(container.textContent).toContain("Home");
     });
 
     it("should handle trailing slashes in pattern", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/");
 
       expect(container.textContent).toContain("Home");
     });
 
     it("should not match different path", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
       const App = component(() => {
         return $div({}, [Route("/", Home)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/about");
 
       expect(container.textContent).not.toContain("Home");
     });
 
     it("should match deeply nested paths", () => {
-      const Deep = () => component(() => $div({ textContent: "Deep" }));
+      const Deep = () => component(() => $div({ textContent: "Deep" }))();
       const App = component(() => {
         return $div({}, [Route("/a/b/c/d/e", Deep)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/a/b/c/d/e");
 
       expect(container.textContent).toContain("Deep");
@@ -102,13 +102,13 @@ describe("Route Component", () => {
     it("should extract single route parameter", () => {
       type Params = Seidr<{ id: string }>;
       const UserPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/user/:id", UserPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/user/123");
 
       expect(container.textContent).toContain("User 123");
@@ -121,13 +121,13 @@ describe("Route Component", () => {
           $div({
             textContent: params?.as((p) => `User ${p.userId} Post ${p.postId}`) || "Loading",
           }),
-        );
+        )();
 
       const App = component(() => {
         return $div({}, [Route("/user/:userId/post/:postId", PostPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/user/alice/post/456");
 
       expect(container.textContent).toContain("User alice Post 456");
@@ -136,13 +136,13 @@ describe("Route Component", () => {
     it("should handle parameters with special characters", () => {
       type Params = Seidr<{ id: string }>;
       const ItemPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Item ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Item ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/item/:id", ItemPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/item/item-with-dashes");
 
       expect(container.textContent).toContain("Item item-with-dashes");
@@ -151,13 +151,13 @@ describe("Route Component", () => {
     it("should handle unicode characters in parameters", () => {
       type Params = Seidr<{ name: string }>;
       const UserPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.name}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.name}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/user/:name", UserPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/user/café");
 
       expect(container.textContent).toContain("User café");
@@ -166,13 +166,13 @@ describe("Route Component", () => {
     it("should handle parameters with numbers", () => {
       type Params = Seidr<{ id: string }>;
       const NumberPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/number/:id", NumberPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/number/12345");
 
       expect(container.textContent).toContain("ID: 12345");
@@ -181,13 +181,13 @@ describe("Route Component", () => {
     it("should handle empty parameter values", () => {
       type Params = Seidr<{ id: string }>;
       const EmptyPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `ID: "${p.id}"`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `ID: "${p.id}"`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/empty/:id", EmptyPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       // /empty/ gets normalized to /empty, which doesn't match /empty/:id
       // Need to provide actual value for :id parameter
       navigate("/empty/");
@@ -205,49 +205,49 @@ describe("Route Component", () => {
 
   describe("RegExp Patterns", () => {
     it("should match RegExp pattern", () => {
-      const ApiPage = () => component(() => $div({ textContent: "API" }));
+      const ApiPage = () => component(() => $div({ textContent: "API" }))();
       const App = component(() => {
         return $div({}, [Route(/^\/api\/.*/, ApiPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/api/users");
 
       expect(container.textContent).toContain("API");
     });
 
     it("should not mismatch RegExp pattern", () => {
-      const ApiPage = () => component(() => $div({ textContent: "API" }));
+      const ApiPage = () => component(() => $div({ textContent: "API" }))();
       const App = component(() => {
         return $div({}, [Route(/^\/api\/.*/, ApiPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/home");
 
       expect(container.textContent).not.toContain("API");
     });
 
     it("should handle complex RegExp patterns", () => {
-      const UUIDPage = () => component(() => $div({ textContent: "UUID" }));
+      const UUIDPage = () => component(() => $div({ textContent: "UUID" }))();
       const App = component(() => {
         // UUID pattern
         return $div({}, [Route(/^\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, UUIDPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/550e8400-e29b-41d4-a716-446655440000");
 
       expect(container.textContent).toContain("UUID");
     });
 
     it("should handle RegExp with word boundaries", () => {
-      const AdminPage = () => component(() => $div({ textContent: "Admin" }));
+      const AdminPage = () => component(() => $div({ textContent: "Admin" }))();
       const App = component(() => {
         return $div({}, [Route(/^\/admin$/, AdminPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/admin");
 
       expect(container.textContent).toContain("Admin");
@@ -258,13 +258,13 @@ describe("Route Component", () => {
     it("should extract single named capture group", () => {
       type Params = Seidr<{ id: string }>;
       const UserPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/users\/(?<id>[^/]+)$/, UserPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/users/123");
 
       expect(container.textContent).toContain("User 123");
@@ -273,13 +273,13 @@ describe("Route Component", () => {
     it("should extract multiple named capture groups", () => {
       type Params = Seidr<{ category: string; id: string }>;
       const ProductPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/shop\/(?<category>[^/]+)\/(?<id>[^/]+)$/, ProductPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/shop/electronics/laptop");
 
       expect(container.textContent).toContain("electronics: laptop");
@@ -288,13 +288,13 @@ describe("Route Component", () => {
     it("should extract capture groups with numbers", () => {
       type Params = Seidr<{ year: string; month: string; day: string }>;
       const ArchivePage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `${p.year}-${p.month}-${p.day}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `${p.year}-${p.month}-${p.day}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/archive\/(?<year>\d{4})\/(?<month>\d{2})\/(?<day>\d{2})$/, ArchivePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/archive/2024/12/25");
 
       expect(container.textContent).toContain("2024-12-25");
@@ -303,13 +303,13 @@ describe("Route Component", () => {
     it("should extract capture groups with character classes", () => {
       type Params = Seidr<{ slug: string }>;
       const BlogPostPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Post: ${p.slug}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Post: ${p.slug}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/blog\/(?<slug>[a-z0-9-]+)$/, BlogPostPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/blog/my-awesome-post");
 
       expect(container.textContent).toContain("Post: my-awesome-post");
@@ -318,13 +318,13 @@ describe("Route Component", () => {
     it("should extract capture groups with mixed patterns", () => {
       type Params = Seidr<{ lang: string; category: string; id: string }>;
       const MixedPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `${p.lang}/${p.category}/${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `${p.lang}/${p.category}/${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/(?<lang>[a-z]{2})\/products\/(?<category>[^/]+)\/(?<id>\d+)$/, MixedPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/en/products/electronics/12345");
 
       expect(container.textContent).toContain("en/electronics/12345");
@@ -338,13 +338,13 @@ describe("Route Component", () => {
             return $div({ textContent: params?.as((p) => `File ${p.id} rev ${p.revision}`) || "Loading" });
           }
           return $div({ textContent: params?.as((p) => `File ${p.id}`) || "Loading" });
-        });
+        })();
 
       const App = component(() => {
         return $div({}, [Route(/^\/files\/(?<id>[^/]+)(?:\/rev\/(?<revision>\d+))?$/, FilePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       navigate("/files/document");
       expect(container.textContent).toContain("File document");
@@ -356,13 +356,13 @@ describe("Route Component", () => {
     it("should extract capture groups with special characters", () => {
       type Params = Seidr<{ filename: string }>;
       const DownloadPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Download: ${p.filename}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Download: ${p.filename}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/download\/(?<filename>[^.]+\.\w+)$/, DownloadPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/download/document.pdf");
 
       expect(container.textContent).toContain("Download: document.pdf");
@@ -371,13 +371,13 @@ describe("Route Component", () => {
     it("should handle Unicode in capture groups", () => {
       type Params = Seidr<{ term: string }>;
       const SearchPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Search: ${p.term}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Search: ${p.term}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/search\/(?<term>[\u4e00-\u9fa5]+)$/, SearchPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/search/搜索");
 
       expect(container.textContent).toContain("Search: 搜索");
@@ -386,13 +386,13 @@ describe("Route Component", () => {
     it("should handle capture groups with OR patterns", () => {
       type Params = Seidr<{ type: string }>;
       const ItemTypePage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Type: ${p.type}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Type: ${p.type}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/items\/(?<type>book|magazine|newspaper)$/, ItemTypePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/items/book");
 
       expect(container.textContent).toContain("Type: book");
@@ -404,13 +404,13 @@ describe("Route Component", () => {
     it("should extract capture groups with negation", () => {
       type Params = Seidr<{ id: string }>;
       const SafeIdPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/safe\/(?<id>[^/]+)$/, SafeIdPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/safe/valid-id");
 
       expect(container.textContent).toContain("ID: valid-id");
@@ -419,13 +419,13 @@ describe("Route Component", () => {
     it("should handle capture groups that match empty strings", () => {
       type Params = Seidr<{ optional: string }>;
       const OptionalPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Opt: "${p.optional}"`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Opt: "${p.optional}"`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/optional\/(?<optional>.*)$/, OptionalPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/optional/");
 
       expect(container.textContent).toContain('Opt: ""');
@@ -434,13 +434,13 @@ describe("Route Component", () => {
     it("should work with trailing slashes and capture groups", () => {
       type Params = Seidr<{ id: string }>;
       const TrailingSlashPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `ID: ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/item\/(?<id>[^/]+)\/?$/, TrailingSlashPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/item/123/");
 
       expect(container.textContent).toContain("ID: 123");
@@ -449,13 +449,13 @@ describe("Route Component", () => {
     it("should not match when capture groups don't match", () => {
       type Params = Seidr<{ year: string; month: string }>;
       const DatePage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `${p.year}-${p.month}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `${p.year}-${p.month}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/date\/(?<year>\d{4})\/(?<month>\d{2})$/, DatePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/date/2024/abc"); // month is not digits
 
       // Won't match because "abc" doesn't match \d{2}
@@ -469,13 +469,13 @@ describe("Route Component", () => {
           $div({
             textContent: params?.as((p) => `${p.locale} v${p.version} ${p.resource}`) || "Loading",
           }),
-        );
+        )();
 
       const App = component(() => {
         return $div({}, [Route(/^\/(?<locale>[a-z]{2})\/v(?<version>\d+\.\d+)\/(?<resource>[a-z-]+)$/, ResourcePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/en/v2.0/user-guide");
 
       expect(container.textContent).toContain("en v2.0 user-guide");
@@ -484,15 +484,15 @@ describe("Route Component", () => {
     it("should work alongside string-based routes", () => {
       type RegExpParams = Seidr<{ id: string }>;
       const RegExpRoute = (params?: RegExpParams) =>
-        component(() => $div({ textContent: params?.as((p) => `RegExp: ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `RegExp: ${p.id}`) || "Loading" }))();
 
-      const StringRoute = () => component(() => $div({ textContent: "String Route" }));
+      const StringRoute = () => component(() => $div({ textContent: "String Route" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/regex\/(?<id>\d+)$/, RegExpRoute), Route("/string", StringRoute)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       navigate("/regex/123");
       expect(container.textContent).toContain("RegExp: 123");
@@ -504,13 +504,13 @@ describe("Route Component", () => {
     it("should handle capture groups with repeated patterns", () => {
       type Params = Seidr<{ segments: string }>;
       const RepeatedPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Segments: ${p.segments}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Segments: ${p.segments}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/repeat\/(?<segments>[a-z]+(?:-[a-z]+)+)$/, RepeatedPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/repeat/foo-bar-baz");
 
       expect(container.textContent).toContain("Segments: foo-bar-baz");
@@ -519,14 +519,14 @@ describe("Route Component", () => {
     it("should handle capture groups with lookahead/lookbehind", () => {
       type Params = Seidr<{ value: string }>;
       const LookaheadPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Value: ${p.value}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Value: ${p.value}`) || "Loading" }))();
 
       const App = component(() => {
         // Positive lookahead for a forward slash
         return $div({}, [Route(/^\/(?<value>[^/]+)(?=\/|$)/, LookaheadPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/test/path");
 
       expect(container.textContent).toContain("Value: test");
@@ -535,13 +535,13 @@ describe("Route Component", () => {
     it("should work with case-insensitive RegExp flags", () => {
       type Params = Seidr<{ page: string }>;
       const CaseInsensitivePage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Page: ${p.page}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Page: ${p.page}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route(/^\/wiki\/(?<page>[a-z]+)$/i, CaseInsensitivePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/wiki/About");
 
       expect(container.textContent).toContain("Page: About");
@@ -554,13 +554,13 @@ describe("Route Component", () => {
           $div({
             textContent: params?.as((p) => `1:${p.first} 2:${p.second} 3:${p.third}`) || "Loading",
           }),
-        );
+        )();
 
       const App = component(() => {
         return $div({}, [Route(/^\/(?<first>[^/]+)\/(?<second>[^/]+)\/(?<third>[^/]+)$/, OrderedPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/alpha/beta/gamma");
 
       expect(container.textContent).toContain("1:alpha 2:beta 3:gamma");
@@ -571,9 +571,9 @@ describe("Route Component", () => {
       const UserPage = (params?: Params) =>
         component(() => {
           return $div({ textContent: params?.as((p) => `User ${p.id}`) || "No user" });
-        });
+        })();
 
-      const NotFound = () => component(() => $div({ textContent: "Not Found" }));
+      const NotFound = () => component(() => $div({ textContent: "Not Found" }))();
 
       const App = component(() => {
         return $div({}, [
@@ -582,7 +582,7 @@ describe("Route Component", () => {
         ]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/about"); // Won't match the user pattern
 
       expect(container.textContent).toContain("Not Found");
@@ -592,14 +592,14 @@ describe("Route Component", () => {
 
   describe("Multiple Routes", () => {
     it("should only render matching route", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/");
 
       expect(container.textContent).toContain("Home");
@@ -607,14 +607,14 @@ describe("Route Component", () => {
     });
 
     it("should switch between routes", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/");
       expect(container.textContent).toContain("Home");
 
@@ -624,16 +624,16 @@ describe("Route Component", () => {
     });
 
     it("should handle routes with similar prefixes", () => {
-      const Users = () => component(() => $div({ textContent: "Users List" }));
+      const Users = () => component(() => $div({ textContent: "Users List" }))();
       type Params = Seidr<{ id: string }>;
       const UserDetail = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/users", Users), Route("/users/:id", UserDetail)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/users");
       expect(container.textContent).toContain("Users List");
 
@@ -645,28 +645,28 @@ describe("Route Component", () => {
 
   describe("Navigation", () => {
     it("should update currentPath on navigate", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/about");
 
       expect(container.textContent).toContain("About");
     });
 
     it("should handle popstate events", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/about", About)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       // Simulate browser back/forward
       const popStateEvent = new PopStateEvent("popstate", {});
@@ -772,27 +772,27 @@ describe("Route Component", () => {
   describe("Custom Path State", () => {
     it("should use custom path state instead of currentPath", () => {
       const customPath = new Seidr("/custom");
-      const CustomPage = () => component(() => $div({ textContent: "Custom" }));
+      const CustomPage = () => component(() => $div({ textContent: "Custom" }))();
 
       const App = component(() => {
         return $div({}, [Route("/custom", CustomPage, customPath)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       expect(container.textContent).toContain("Custom");
     });
 
     it("should react to custom path state changes", () => {
       const customPath = new Seidr("/first");
-      const FirstPage = () => component(() => $div({ textContent: "First" }));
-      const SecondPage = () => component(() => $div({ textContent: "Second" }));
+      const FirstPage = () => component(() => $div({ textContent: "First" }))();
+      const SecondPage = () => component(() => $div({ textContent: "Second" }))();
 
       const App = component(() => {
         return $div({}, [Route("/first", FirstPage, customPath), Route("/second", SecondPage, customPath)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       expect(container.textContent).toContain("First");
 
       customPath.value = "/second";
@@ -802,24 +802,24 @@ describe("Route Component", () => {
 
   describe("Edge Cases", () => {
     it("should handle empty path", () => {
-      const HomePage = () => component(() => $div({ textContent: "Home" }));
+      const HomePage = () => component(() => $div({ textContent: "Home" }))();
       const App = component(() => {
         return $div({}, [Route("", HomePage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("");
 
       expect(container.textContent).toContain("Home");
     });
 
     it("should handle double slashes in current path", () => {
-      const UserPage = () => component(() => $div({ textContent: "User" }));
+      const UserPage = () => component(() => $div({ textContent: "User" }))();
       const App = component(() => {
         return $div({}, [Route("/user/:id", UserPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       // Double slash creates empty segment - won't match :id parameter
       navigate("/user//123");
 
@@ -829,12 +829,12 @@ describe("Route Component", () => {
     });
 
     it("should handle very deeply nested paths", () => {
-      const DeepPage = () => component(() => $div({ textContent: "Deep" }));
+      const DeepPage = () => component(() => $div({ textContent: "Deep" }))();
       const App = component(() => {
         return $div({}, [Route("/a/b/c/d/e/f/g/h/i/j", DeepPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/a/b/c/d/e/f/g/h/i/j");
 
       expect(container.textContent).toContain("Deep");
@@ -843,13 +843,13 @@ describe("Route Component", () => {
     it("should handle route with only parameters", () => {
       type Params = Seidr<{ a: string; b: string }>;
       const OnlyParamsPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `${p.a}-${p.b}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `${p.a}-${p.b}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/:a/:b", OnlyParamsPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/foo/bar");
 
       expect(container.textContent).toContain("foo-bar");
@@ -858,13 +858,13 @@ describe("Route Component", () => {
     it("should not match when parameter count differs", () => {
       type Params = Seidr<{ id: string }>;
       const UserPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/user/:id", UserPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/user/123/extra");
 
       expect(container.textContent).not.toContain("User 123");
@@ -873,25 +873,25 @@ describe("Route Component", () => {
     it("should handle URL-encoded characters in parameters", () => {
       type Params = Seidr<{ query: string }>;
       const SearchPage = (params?: Params) =>
-        component(() => $div({ textContent: params?.as((p) => `Search: ${p.query}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `Search: ${p.query}`) || "Loading" }))();
 
       const App = component(() => {
         return $div({}, [Route("/search/:query", SearchPage)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/search/hello%20world");
 
       expect(container.textContent).toContain("Search: hello%20world");
     });
 
     it("should handle hash in path (hash is not part of pathname)", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }));
+      const Page = () => component(() => $div({ textContent: "Page" }))();
       const App = component(() => {
         return $div({}, [Route("/page", Page)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       // navigate() now strips hash fragments
       navigate("/page#section");
 
@@ -900,12 +900,12 @@ describe("Route Component", () => {
     });
 
     it("should handle query string (not part of routing)", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }));
+      const Page = () => component(() => $div({ textContent: "Page" }))();
       const App = component(() => {
         return $div({}, [Route("/page", Page)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       // navigate() now strips query strings
       navigate("/page?foo=bar");
 
@@ -918,14 +918,14 @@ describe("Route Component", () => {
       const customPath = new Seidr("/page1");
       const normalizedPath = customPath.as((p) => p.toLowerCase());
 
-      const Page1 = () => component(() => $div({ textContent: "Page 1" }));
-      const Page2 = () => component(() => $div({ textContent: "Page 2" }));
+      const Page1 = () => component(() => $div({ textContent: "Page 1" }))();
+      const Page2 = () => component(() => $div({ textContent: "Page 2" }))();
 
       const App = component(() => {
         return $div({}, [Route("/page1", Page1, normalizedPath), Route("/page2", Page2, normalizedPath)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       expect(container.textContent).toContain("Page 1");
 
       customPath.value = "/Page1"; // Uppercase
@@ -933,13 +933,13 @@ describe("Route Component", () => {
     });
 
     it("should clean up routes when component unmounts", () => {
-      const Page1 = () => component(() => $div({ textContent: "Page 1" }));
+      const Page1 = () => component(() => $div({ textContent: "Page 1" }))();
 
       const App = component(() => {
         return $div({}, [Route("/page1", Page1)]);
       });
 
-      const cleanup = mount(App, container);
+      const cleanup = mount(App(), container);
       navigate("/page1");
 
       expect(container.textContent).toContain("Page 1");
@@ -988,23 +988,23 @@ describe("Route Component", () => {
 
   describe("Real-world Scenarios", () => {
     it("should handle typical blog routes", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
 
       type ListParams = Seidr<{ page: string }>;
       const PostList = (params?: ListParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `Page ${p.page}`) || "Page 1" }));
+        return component(() => $div({ textContent: params?.as((p) => `Page ${p.page}`) || "Page 1" }))();
       };
 
       type PostParams = Seidr<{ id: string; slug: string }>;
       const PostDetail = (params?: PostParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `Post ${p.id}: ${p.slug}`) || "Loading" }));
+        return component(() => $div({ textContent: params?.as((p) => `Post ${p.id}: ${p.slug}`) || "Loading" }))();
       };
 
       const App = component(() => {
         return $div({}, [Route("/", Home), Route("/blog/page/:page", PostList), Route("/blog/:id/:slug", PostDetail)]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       navigate("/");
       expect(container.textContent).toContain("Home");
@@ -1017,14 +1017,14 @@ describe("Route Component", () => {
     });
 
     it("should handle admin panel routes", () => {
-      const Dashboard = () => component(() => $div({ textContent: "Dashboard" }));
+      const Dashboard = () => component(() => $div({ textContent: "Dashboard" }))();
       type UserParams = Seidr<{ userId: string }>;
       const UserEdit = (params?: UserParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `Edit User ${p.userId}`) || "Loading" }));
+        return component(() => $div({ textContent: params?.as((p) => `Edit User ${p.userId}`) || "Loading" }))();
       };
       type SettingsParams = Seidr<{ section: string }>;
       const Settings = (params?: SettingsParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `Settings: ${p.section}`) || "Loading" }));
+        return component(() => $div({ textContent: params?.as((p) => `Settings: ${p.section}`) || "Loading" }))();
       };
 
       const App = component(() => {
@@ -1035,7 +1035,7 @@ describe("Route Component", () => {
         ]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       navigate("/admin");
       expect(container.textContent).toContain("Dashboard");
@@ -1048,14 +1048,14 @@ describe("Route Component", () => {
     });
 
     it("should handle e-commerce product routes", () => {
-      const Shop = () => component(() => $div({ textContent: "Shop" }));
+      const Shop = () => component(() => $div({ textContent: "Shop" }))();
       type CategoryParams = Seidr<{ category: string }>;
       const Category = (params?: CategoryParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `Category: ${p.category}`) || "Loading" }));
+        return component(() => $div({ textContent: params?.as((p) => `Category: ${p.category}`) || "Loading" }))();
       };
       type ProductParams = Seidr<{ category: string; productId: string }>;
       const Product = (params?: ProductParams) => {
-        return component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }));
+        return component(() => $div({ textContent: params?.as((p) => `${p.category}: ${p.productId}`) || "Loading" }))();
       };
 
       const App = component(() => {
@@ -1066,7 +1066,7 @@ describe("Route Component", () => {
         ]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       navigate("/shop");
       expect(container.textContent).toContain("Shop");
@@ -1085,7 +1085,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/home" }, ["Home"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       const link = container.querySelector("a") as HTMLAnchorElement;
 
       expect(link).toBeTruthy();
@@ -1097,7 +1097,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/dashboard" }, ["Dashboard"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/dashboard");
 
       // Wait for microtasks to complete
@@ -1112,7 +1112,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/home" }, ["Home"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/other");
 
       const link = container.querySelector("a") as HTMLAnchorElement;
@@ -1124,7 +1124,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/target" }, ["Go to Target"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/initial");
 
       const link = container.querySelector("a") as HTMLAnchorElement;
@@ -1142,7 +1142,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/somewhere" }, ["Click Me"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       const link = container.querySelector("a") as HTMLAnchorElement;
       const clickEvent = new MouseEvent("click", { bubbles: true, cancelable: true });
@@ -1160,7 +1160,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: targetPath }, ["Dynamic Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       const link = container.querySelector("a") as HTMLAnchorElement;
       expect(link.classList.contains("active")).toBe(false);
@@ -1180,7 +1180,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/active", className: "custom-class" }, ["Active Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/active");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1194,7 +1194,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/target", className: "custom-class" }, ["Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/other");
 
       const link = container.querySelector("a") as HTMLAnchorElement;
@@ -1207,7 +1207,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/active", activeClass: "is-current" }, ["Active Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/active");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1221,7 +1221,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/active", activeProp: "aria-current", activeValue: "page" }, ["Active Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/active");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1235,7 +1235,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/active", activeProp: "aria-current" }, ["Active Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/active");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1248,7 +1248,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/target", activeProp: "aria-current", activeValue: "page" }, ["Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/other");
 
       const link = container.querySelector("a") as HTMLAnchorElement;
@@ -1260,7 +1260,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/path/" }, ["Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/path");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1273,7 +1273,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/path" }, ["Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/path/");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1286,7 +1286,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/target", tagName: "button" }, ["Button Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       const button = container.querySelector("button");
       expect(button).toBeTruthy();
@@ -1298,7 +1298,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/target", id: "my-link", "data-test": "value" }, ["Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       const link = container.querySelector("a") as HTMLAnchorElement;
       expect(link.id).toBe("my-link");
@@ -1314,7 +1314,7 @@ describe("Route Component", () => {
         ]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/home");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1330,7 +1330,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/dynamic" }, ["Dynamic Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
       navigate("/other");
       await new Promise((resolve) => setTimeout(resolve, 0));
 
@@ -1350,7 +1350,7 @@ describe("Route Component", () => {
         return $div({}, [Link({ to: "/nested" }, [$span({ textContent: "Nested" }), " Link"])]);
       });
 
-      mount(App, container);
+      mount(App(), container);
 
       const link = container.querySelector("a") as HTMLAnchorElement;
       expect(link.textContent).toBe("Nested Link");
@@ -1365,8 +1365,8 @@ describe("Route Component", () => {
     });
 
     it("should render the first matching route", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/about", About)],
@@ -1379,8 +1379,8 @@ describe("Route Component", () => {
     });
 
     it("should switch between routes", async () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const About = () => component(() => $div({ textContent: "About" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const About = () => component(() => $div({ textContent: "About" }))();
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/about", About)],
@@ -1400,12 +1400,12 @@ describe("Route Component", () => {
     });
 
     it("should render fallback when no route matches", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const NotFound = () => component(() => $div({ textContent: "404 - Not Found" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const NotFound = () => component(() => $div({ textContent: "404 - Not Found" }))();
 
       const App = Router({
         routes: [createRoute("/", Home)],
-        fallback: NotFound(),
+        fallback: NotFound,
       });
 
       mount(App, container);
@@ -1415,9 +1415,9 @@ describe("Route Component", () => {
     });
 
     it("should only render one route at a time", () => {
-      const RouteOne = () => component(() => $div({ textContent: "Route One" }));
-      const RouteTwo = () => component(() => $div({ textContent: "Route Two" }));
-      const RouteThree = () => component(() => $div({ textContent: "Route Three" }));
+      const RouteOne = () => component(() => $div({ textContent: "Route One" }))();
+      const RouteTwo = () => component(() => $div({ textContent: "Route Two" }))();
+      const RouteThree = () => component(() => $div({ textContent: "Route Three" }))();
 
       const App = Router({
         routes: [createRoute("/one", RouteOne), createRoute("/two", RouteTwo), createRoute("/three", RouteThree)],
@@ -1436,8 +1436,8 @@ describe("Route Component", () => {
     });
 
     it("should evaluate routes in order", () => {
-      const Specific = () => component(() => $div({ textContent: "Specific" }));
-      const General = () => component(() => $div({ textContent: "General" }));
+      const Specific = () => component(() => $div({ textContent: "Specific" }))();
+      const General = () => component(() => $div({ textContent: "General" }))();
 
       const App = Router({
         routes: [createRoute("/users/admin", Specific), createRoute(/^\/users\/.+$/, () => General())],
@@ -1453,7 +1453,7 @@ describe("Route Component", () => {
     });
 
     it("should support RegExp patterns", () => {
-      const UserProfile = () => component(() => $div({ textContent: "User Profile" }));
+      const UserProfile = () => component(() => $div({ textContent: "User Profile" }))();
 
       const App = Router({
         routes: [createRoute(/^\/profile\/\w+$/, UserProfile)],
@@ -1469,7 +1469,7 @@ describe("Route Component", () => {
     });
 
     it("should work without fallback", () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
 
       const App = Router({
         routes: [createRoute("/", Home)],
@@ -1483,8 +1483,8 @@ describe("Route Component", () => {
     });
 
     it("should clean up previous route when switching", async () => {
-      const Route1 = () => component(() => $div({ textContent: "Route 1" }));
-      const Route2 = () => component(() => $div({ textContent: "Route 2" }));
+      const Route1 = () => component(() => $div({ textContent: "Route 1" }))();
+      const Route2 = () => component(() => $div({ textContent: "Route 2" }))();
 
       const App = Router({
         routes: [createRoute("/route1", Route1), createRoute("/route2", Route2)],
@@ -1506,7 +1506,7 @@ describe("Route Component", () => {
     it("should support route parameters", () => {
       type UserParams = Seidr<{ id: string }>;
       const UserDetail = (params?: UserParams) =>
-        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }));
+        component(() => $div({ textContent: params?.as((p) => `User ${p.id}`) || "Loading" }))();
 
       const App = Router({
         routes: [createRoute("/user/:id", UserDetail)],
@@ -1519,7 +1519,7 @@ describe("Route Component", () => {
     });
 
     it("should handle trailing slashes in routes", () => {
-      const Page = () => component(() => $div({ textContent: "Page" }));
+      const Page = () => component(() => $div({ textContent: "Page" }))();
 
       const App = Router({
         routes: [createRoute("/page/", Page)],
@@ -1535,15 +1535,15 @@ describe("Route Component", () => {
     });
 
     it("should handle real-world routing scenarios", () => {
-      const Home = () => component(() => $div({ textContent: "Home Page" }));
+      const Home = () => component(() => $div({ textContent: "Home Page" }))();
       type BlogParams = Seidr<{ id: string }>;
       const BlogPost = (params?: BlogParams) =>
-        component(() => $div({ textContent: params?.as((p) => `Blog Post ${p.id}`) || "Loading" }));
-      const NotFound = () => component(() => $div({ textContent: "404" }));
+        component(() => $div({ textContent: params?.as((p) => `Blog Post ${p.id}`) || "Loading" }))();
+      const NotFound = () => component(() => $div({ textContent: "404" }))();
 
       const App = Router({
         routes: [createRoute("/", Home), createRoute("/blog/:id", BlogPost)],
-        fallback: NotFound(),
+        fallback: NotFound,
       });
 
       mount(App, container);
@@ -1559,12 +1559,12 @@ describe("Route Component", () => {
     });
 
     it("should switch from fallback to matched route", async () => {
-      const Home = () => component(() => $div({ textContent: "Home" }));
-      const NotFound = () => component(() => $div({ textContent: "404" }));
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const NotFound = () => component(() => $div({ textContent: "404" }))();
 
       const App = Router({
         routes: [createRoute("/", Home)],
-        fallback: NotFound(),
+        fallback: NotFound,
       });
 
       mount(App, container);
@@ -1578,9 +1578,9 @@ describe("Route Component", () => {
     });
 
     it("should handle multiple rapid route changes", async () => {
-      const RouteA = () => component(() => $div({ textContent: "A" }));
-      const RouteB = () => component(() => $div({ textContent: "B" }));
-      const RouteC = () => component(() => $div({ textContent: "C" }));
+      const RouteA = () => component(() => $div({ textContent: "A" }))();
+      const RouteB = () => component(() => $div({ textContent: "B" }))();
+      const RouteC = () => component(() => $div({ textContent: "C" }))();
 
       const App = Router({
         routes: [createRoute("/a", RouteA), createRoute("/b", RouteB), createRoute("/c", RouteC)],
@@ -1603,6 +1603,47 @@ describe("Route Component", () => {
       navigate("/a");
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(container.textContent).toBe("A");
+    });
+
+    it("should render fallback when clicking Link to non-existent route", async () => {
+      const Home = () => component(() => $div({ textContent: "Home" }))();
+      const NotFound = () => component(() => $div({ textContent: "404 - Not Found" }))();
+
+      const App = Router({
+        routes: [createRoute("/", Home)],
+        fallback: NotFound,
+      });
+
+      const Navigation = () =>
+        component(() => {
+          return $div({}, [
+            Link({ to: "/" }, ["Home"]),
+            Link({ to: "/nonexistent" }, ["Non-existent"]),
+          ]);
+        })();
+
+      const RootApp = () =>
+        component(() => {
+          return $div({}, [Navigation(), App]);
+        })();
+
+      mount(RootApp(), container);
+
+      // Should start at home
+      expect(container.textContent).toContain("Home");
+
+      // Find the non-existent link
+      const links = container.querySelectorAll("a");
+      const nonExistentLink = Array.from(links).find((link) => link.textContent === "Non-existent");
+
+      // Click the link
+      nonExistentLink!.click();
+
+      // Wait for reactivity
+      await new Promise((resolve) => setTimeout(resolve, 0));
+
+      // Should show fallback
+      expect(container.textContent).toContain("404 - Not Found");
     });
   });
 });

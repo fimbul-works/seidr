@@ -104,7 +104,7 @@ describe("Documentation Verification", () => {
             externalState.value = "fetched";
           });
           return $div({ textContent: externalState });
-        });
+        })();
       };
 
       const { html } = await renderToString(App);

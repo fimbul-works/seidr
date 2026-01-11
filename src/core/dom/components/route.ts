@@ -1,7 +1,7 @@
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
 import { cn, isSeidr, uid, unwrapSeidr, wrapSeidr } from "../../util/index";
-import { component, type SeidrComponent } from "../component";
+import { component, type SeidrComponent, useScope } from "../component";
 import { $, $comment, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
 import { Conditional } from "./conditional";
 
@@ -59,6 +59,8 @@ export function initRouter(path: string = typeof window !== "undefined" ? window
   // Set the initial path value
   const currentPath = getCurrentPath();
   currentPath.value = path;
+
+  console.log("initRouter", path);
 
   // Return noop in SSR
   if (typeof window === "undefined") {
@@ -198,7 +200,7 @@ export interface RouteDefinition<C extends SeidrComponent<any, any>, P extends S
  * ```typescript
  * import { createRoute, component, $div } from '@fimbul-works/seidr';
  *
- * const HomePage = component(() => $div({ textContent: 'Home' }));
+ * const HomePage = () => component(() => $div({ textContent: 'Home' }));
  *
  * const route = createRoute('/', HomePage);
  * ```
@@ -215,7 +217,7 @@ export function createRoute<C extends SeidrComponent<any, any>>(
  */
 export interface RouterProps {
   routes: Array<RouteDefinition<any, any>>;
-  fallback?: SeidrComponent<any, any>;
+  fallback?: () => SeidrComponent<any, any>;
 }
 
 /**
@@ -247,86 +249,85 @@ export interface RouterProps {
  * );
  * ```
  */
-export function Router({ routes, fallback }: RouterProps): SeidrComponent<any, Comment> {
-  return component((scope) => {
-    const marker = $comment(`router:${uid()}`);
-    const currentPath = getCurrentPath();
+export const Router = component(({ routes, fallback }: RouterProps) => {
+  const scope = useScope();
+  const marker = $comment(`router:${uid()}`);
+  const currentPath = getCurrentPath();
 
-    let currentComponent: SeidrComponent<any, any> | null = null;
+  let currentComponent: SeidrComponent<any, any> | null = null;
 
-    const updateRoutes = () => {
-      const path = currentPath.value;
-      let matched = false;
+  const updateRoutes = () => {
+    const path = currentPath.value;
+    let matched = false;
 
-      // Clean up previous component
-      if (currentComponent) {
-        currentComponent.destroy();
-        currentComponent = null;
+    // Clean up previous component
+    if (currentComponent) {
+      currentComponent.destroy();
+      currentComponent = null;
+    }
+
+    // Try each route in order
+    for (const route of routes) {
+      let params: Record<string, string> | false;
+
+      if (route.pattern instanceof RegExp) {
+        const match = path.match(route.pattern);
+        params = match ? match.groups || {} : false;
+      } else {
+        params = parseRouteParams(route.pattern, path);
       }
 
-      // Try each route in order
-      for (const route of routes) {
-        let params: Record<string, string> | false;
-
-        if (route.pattern instanceof RegExp) {
-          const match = path.match(route.pattern);
-          params = match ? match.groups || {} : false;
-        } else {
-          params = parseRouteParams(route.pattern, path);
-        }
-
-        if (params) {
-          // Found a match - wrap params in Seidr observable and mount component
-          const paramsObservable = new Seidr(params);
-          currentComponent = route.componentFactory(paramsObservable);
-
-          if (marker.parentNode) {
-            marker.parentNode.insertBefore(currentComponent!.element, marker);
-          }
-
-          if (currentComponent!.onAttached) {
-            currentComponent!.onAttached(marker.parentNode!);
-          }
-
-          matched = true;
-          break;
-        }
-      }
-
-      // No route matched - show fallback
-      if (!matched && fallback) {
-        // Create a new instance of the fallback component
-        currentComponent = fallback;
+      if (params) {
+        // Found a match - wrap params in Seidr observable and mount component
+        const paramsObservable = new Seidr(params);
+        currentComponent = route.componentFactory(paramsObservable);
 
         if (marker.parentNode) {
-          marker.parentNode.insertBefore(currentComponent.element, marker);
+          marker.parentNode.insertBefore(currentComponent!.element, marker);
         }
 
-        if (currentComponent.onAttached) {
-          currentComponent.onAttached(marker.parentNode!);
+        if (currentComponent!.onAttached) {
+          currentComponent!.onAttached(marker.parentNode!);
         }
+
+        matched = true;
+        break;
       }
-    };
+    }
 
-    // Initial render when attached to DOM
-    scope.onAttached = () => {
-      updateRoutes();
-    };
+    // No route matched - show fallback
+    if (!matched && fallback) {
+      // Create a new instance of the fallback component
+      currentComponent = fallback();
 
-    // Re-render when path changes
-    scope.track(currentPath.observe(updateRoutes));
-
-    // Cleanup on destroy
-    scope.track(() => {
-      if (currentComponent) {
-        currentComponent.destroy();
-        currentComponent = null;
+      if (marker.parentNode) {
+        marker.parentNode.insertBefore(currentComponent!.element, marker);
       }
-    });
 
-    return marker;
+      if (currentComponent!.onAttached) {
+        currentComponent!.onAttached(marker.parentNode!);
+      }
+    }
+  };
+
+  // Initial render when attached to DOM
+  scope.onAttached = () => {
+    updateRoutes();
+  };
+
+  // Re-render when path changes
+  scope.track(currentPath.observe(updateRoutes));
+
+  // Cleanup on destroy
+  scope.track(() => {
+    if (currentComponent) {
+      currentComponent.destroy();
+      currentComponent = null;
+    }
   });
-}
+
+  return marker;
+});
 
 /**
  * Link component props.
@@ -388,7 +389,9 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
   }: LinkProps<K> & ReactiveProps<K, HTMLElementTagNameMap[K]>,
   children: (SeidrNode | (() => SeidrNode))[] = [],
 ): SeidrComponent<K, SeidrElement<K>> {
-  return component((scope) => {
+  return component(() => {
+    const scope = useScope();
+
     // If to is a Seidr, observe it; otherwise wrap it in a Seidr
     const toValue = wrapSeidr(to);
     const val = activeValue ?? activeClass;
@@ -422,5 +425,5 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     }
 
     return $(tagName as K, props as any, children);
-  });
+  })();
 }

@@ -25,7 +25,7 @@ describe("mountList", () => {
           const el = $("li");
           el.textContent = item.name;
           return el;
-        }),
+        })(),
       container,
     );
 
@@ -45,7 +45,7 @@ describe("mountList", () => {
           const el = $("li");
           el.textContent = item.name;
           return el;
-        }),
+        })(),
       container,
     );
 
@@ -75,7 +75,7 @@ describe("mountList", () => {
           const el = $("li");
           el.textContent = item.name;
           return el;
-        }),
+        })(),
       container,
     );
 
@@ -105,7 +105,7 @@ describe("mountList", () => {
           const el = $("li");
           el.textContent = item.name;
           return el;
-        }),
+        })(),
       container,
     );
 
@@ -133,7 +133,7 @@ describe("mountList", () => {
           const el = $("li");
           el.textContent = item.name;
           return el;
-        });
+        })();
         const originalDestroy = comp.destroy;
         comp.destroy = () => {
           componentDestroyed = true;

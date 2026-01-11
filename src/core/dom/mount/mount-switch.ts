@@ -89,18 +89,50 @@
  */
 import type { Seidr } from "../../seidr";
 import type { SeidrComponent } from "../component";
-import { Switch } from "../components/switch";
-import { mount } from "./mount";
+import { $comment } from "../element";
 
 /**
  * Switches between different components based on an observable value.
- * Legacy utility that internally uses the Switch component.
+ * Legacy utility that internally implements component switching.
  */
 export function mountSwitch<T extends string>(
   observable: Seidr<T>,
   componentMap: Record<T, () => SeidrComponent>,
   container: HTMLElement,
 ): () => void {
-  const comp = Switch(observable, componentMap);
-  return mount(comp, container);
+  const marker = $comment("mount-switch-marker");
+  container.appendChild(marker);
+
+  let currentComponent: SeidrComponent | null = null;
+
+  const update = (value: T) => {
+    const factory = componentMap[value];
+
+    if (currentComponent) {
+      currentComponent.destroy();
+      currentComponent = null;
+    }
+
+    if (factory) {
+      currentComponent = factory();
+      container.insertBefore(currentComponent.element, marker);
+    }
+  };
+
+  // Initial render
+  update(observable.value);
+
+  // Reactive updates
+  const cleanup = observable.observe((val) => update(val));
+
+  // Return combined cleanup
+  return () => {
+    cleanup();
+    if (currentComponent) {
+      currentComponent.destroy();
+    }
+    if (container.contains(marker)) {
+      container.removeChild(marker);
+    }
+  };
 }

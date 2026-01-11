@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr";
 import { uid } from "../../util/uid";
-import { component, type SeidrComponent } from "../component";
+import { component, type SeidrComponent, useScope } from "../component";
 import { $comment } from "../element";
 
 /**
@@ -21,7 +21,8 @@ export function List<T, I extends string | number, C extends SeidrComponent<any,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
 ): SeidrComponent<any, Comment> {
-  return component((scope) => {
+  return component(() => {
+    const scope = useScope();
     const marker = $comment(`seidr-list:${uid()}`);
     const componentMap = new Map<I, C>();
 
@@ -75,5 +76,5 @@ export function List<T, I extends string | number, C extends SeidrComponent<any,
     });
 
     return marker;
-  });
+  })();
 }

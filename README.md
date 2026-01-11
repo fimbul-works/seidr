@@ -97,30 +97,29 @@ pnpm install @fimbul-works/seidr
 ## 🚀 Quick Start
 
 ```typescript
-import { component, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+import { component, useScope, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
 
-function Counter() {
-  return component((scope) => {
-    const count = new Seidr(0);
-    const disabled = count.as(value => value >= 10);
+const Counter = component(() => {
+  const scope = useScope();
+  const count = new Seidr(0);
+  const disabled = count.as(value => value >= 10);
 
-    return $div({
-      className: 'counter',
-      style: 'padding: 20px; border: 1px solid #ccc;'
-    }, [
-      $span({ textContent: count }), // Automatic reactive binding
-      $button({
-        textContent: 'Increment',
-        disabled, // Reactive boolean binding
-        onclick: () => count.value++
-      }),
-      $button({
-        textContent: 'Reset',
-        onclick: () => count.value = 0
-      })
-    ]);
-  });
-}
+  return $div({
+    className: 'counter',
+    style: 'padding: 20px; border: 1px solid #ccc;'
+  }, [
+    $span({ textContent: count }), // Automatic reactive binding
+    $button({
+      textContent: 'Increment',
+      disabled, // Reactive boolean binding
+      onclick: () => count.value++
+    }),
+    $button({
+      textContent: 'Reset',
+      onclick: () => count.value = 0
+    })
+  ]);
+});
 
 // Mount component
 mount(Counter(), document.body);
@@ -200,45 +199,44 @@ const searchInput = $input({
 
 #### Step 4: Create Component with List Rendering
 ```typescript
-import { component, List } from '@fimbul-works/seidr';
+import { component, useScope, List } from '@fimbul-works/seidr';
 
-function SearchApp() {
-  return component((scope) => {
-    // All state created inside component
-    const searchQuery = new Seidr('');
-    const items = new Seidr([
-      { id: 1, name: 'Apple' },
-      { id: 2, name: 'Banana' },
-      { id: 3, name: 'Cherry' }
-    ]);
+const SearchApp = component(() => {
+  const scope = useScope();
+  // All state created inside component
+  const searchQuery = new Seidr('');
+  const items = new Seidr([
+    { id: 1, name: 'Apple' },
+    { id: 2, name: 'Banana' },
+    { id: 3, name: 'Cherry' }
+  ]);
 
-    const filteredItems = items.as(items => {
-      const query = searchQuery.value.toLowerCase();
-      return query
-        ? items.filter(item => item.name.toLowerCase().includes(query))
-        : items;
-    });
-
-    const searchInput = $input({
-      type: 'text',
-      placeholder: 'Search...',
-      value: searchQuery.value,
-      oninput: (e) => searchQuery.value = e.target.value
-    });
-
-    return $div({}, [
-      searchInput,
-      // List component with key-based diffing
-      $ul({}, [
-        List(
-          filteredItems,
-          (item) => item.id,
-          (item) => $li({ textContent: item.name })
-        )
-      ])
-    ]);
+  const filteredItems = items.as(items => {
+    const query = searchQuery.value.toLowerCase();
+    return query
+      ? items.filter(item => item.name.toLowerCase().includes(query))
+      : items;
   });
-}
+
+  const searchInput = $input({
+    type: 'text',
+    placeholder: 'Search...',
+    value: searchQuery.value,
+    oninput: (e) => searchQuery.value = e.target.value
+  });
+
+  return $div({}, [
+    searchInput,
+    // List component with key-based diffing
+    $ul({}, [
+      List(
+        filteredItems,
+        (item) => item.id,
+        (item) => $li({ textContent: item.name })
+      )
+    ])
+  ]);
+});
 ```
 
 **What happens:**
@@ -338,18 +336,17 @@ const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 Components are functions, not classes. Use `component()` for automatic cleanup of reactive bindings.
 
 ```typescript
-function UserProfile() {
-  return component((scope) => {
-    const name = new Seidr('Alice');
+const UserProfile = component(() => {
+  const scope = useScope();
+  const name = new Seidr('Alice');
 
-    // scope.track() registers cleanup functions
-    scope.track(name.bind(element, (value) => {
-      element.textContent = value;
-    }));
+  // scope.track() registers cleanup functions
+  scope.track(name.bind(element, (value) => {
+    element.textContent = value;
+  }));
 
-    return $div({ textContent: name });
-  });
-}
+  return $div({ textContent: name });
+});
 ```
 
 #### Components with Props
@@ -357,25 +354,24 @@ function UserProfile() {
 Components accept parameters for configuration and initial state:
 
 ```typescript
-function Counter({ initialCount = 0, step = 1 } = {}) {
-  return component((scope) => {
-    const count = new Seidr(initialCount);
-    const disabled = count.as(value => value >= 10);
+const Counter = component(({ initialCount = 0, step = 1 } = {}) => {
+  const scope = useScope();
+  const count = new Seidr(initialCount);
+  const disabled = count.as(value => value >= 10);
 
-    return $div({ className: 'counter' }, [
-      $span({ textContent: count.as(n => `Count: ${n}`) }),
-      $button({
-        textContent: `+${step}`,
-        disabled,
-        onclick: () => count.value += step
-      }),
-      $button({
-        textContent: 'Reset',
-        onclick: () => count.value = 0
-      })
-    ]);
-  });
-}
+  return $div({ className: 'counter' }, [
+    $span({ textContent: count.as(n => `Count: ${n}`) }),
+    $button({
+      textContent: `+${step}`,
+      disabled,
+      onclick: () => count.value += step
+    }),
+    $button({
+      textContent: 'Reset',
+      onclick: () => count.value = 0
+    })
+  ]);
+});
 
 // Usage: Create component instances with different props
 const counter1 = Counter({ initialCount: 5, step: 2 });
@@ -520,21 +516,20 @@ Seidr provides SSR support with automatic state capture and client-side hydratio
 
 ```typescript
 // Server-side (Node.js)
-import { component, $, Seidr, renderToString } from '@fimbul-works/seidr';
+import { component, useScope, $, Seidr, renderToString } from '@fimbul-works/seidr';
 
-function App() {
-  return component((scope) => {
-    const count = new Seidr(0);
+const App = component(() => {
+  const scope = useScope();
+  const count = new Seidr(0);
 
-    return $('div', {}, [
-      $('p', { textContent: count.as(n => `Count: ${n}`) }),
-      $('button', {
-        textContent: 'Increment',
-        onclick: () => count.value++
-      })
-    ]);
-  });
-}
+  return $('div', {}, [
+    $('p', { textContent: count.as(n => `Count: ${n}`) }),
+    $('button', {
+      textContent: 'Increment',
+      onclick: () => count.value++
+    })
+  ]);
+});
 
 // In your server route (must be async for AsyncLocalStorage context!)
 app.get('/', async (req, res) => {

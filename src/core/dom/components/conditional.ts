@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr";
 import { uid } from "../../util/uid";
-import { component, type SeidrComponent } from "../component";
+import { component, type SeidrComponent, useScope } from "../component";
 import { $comment } from "../element";
 
 /**
@@ -20,7 +20,8 @@ export function Conditional<C extends SeidrComponent<any, any>>(
   condition: Seidr<boolean>,
   componentFactory: () => C,
 ): SeidrComponent<any, Comment> {
-  return component((scope) => {
+  return component(() => {
+    const scope = useScope();
     const marker = $comment(`seidr-conditional:${uid()}`);
     let currentComponent: C | null = null;
 
@@ -56,5 +57,5 @@ export function Conditional<C extends SeidrComponent<any, any>>(
     });
 
     return marker;
-  });
+  })();
 }

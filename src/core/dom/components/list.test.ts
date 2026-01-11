@@ -18,7 +18,7 @@ describe("List Component", () => {
       { id: 1, text: "A" },
       { id: 2, text: "B" },
     ]);
-    const Item = (props: { text: string }) => component(() => $("span", { textContent: props.text }));
+    const Item = component((props: { text: string }) => $("span", { textContent: props.text }));
 
     const Parent = component(() => {
       return $("div", { className: "parent" }, [
@@ -30,7 +30,8 @@ describe("List Component", () => {
       ]);
     });
 
-    mount(Parent, container);
+    const parent = Parent();
+    mount(parent, container);
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.querySelectorAll("span").length).toBe(2);

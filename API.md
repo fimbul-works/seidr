@@ -338,10 +338,10 @@ const app = $div({ className: 'app' }, [
 
 ### component()
 
-Create a component with automatic cleanup and automatic child component tracking. Function receives a [`scope`](#createscope) object.
+Create a component with automatic cleanup and automatic child component tracking.
 
 **Parameters:**
-- `factory` - Factory function (signature `(scope) => SeidrElement`)
+- `factory` - Factory function (signature `(props) => SeidrElement`)
 
 **Returns:**
 
@@ -357,28 +357,31 @@ Create a component with automatic cleanup and automatic child component tracking
 
 **Automatic Child Tracking**: Child components created during parent component rendering are automatically tracked and destroyed when the parent is destroyed.
 
+**Using `useScope()`:**
+
+Inside the component factory, call `useScope()` to get the scope object for tracking cleanup:
+
 ```typescript
-import { component, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
+import { component, useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
 
-function UserProfile() {
-  return component((scope) => {
-    const name = new Seidr('Alice');
-    const age = new Seidr(30);
+const UserProfile = component(() => {
+  const scope = useScope();
+  const name = new Seidr('Alice');
+  const age = new Seidr(30);
 
-    scope.track(age.bind(ageSpan, (value) => {
-      ageSpan.textContent = `Age: ${value}`;
-    }));
+  scope.track(age.bind(ageSpan, (value) => {
+    ageSpan.textContent = `Age: ${value}`;
+  }));
 
-    return $div({ className: 'user-profile' }, [
-      $span({ textContent: name }),
-      ageSpan,
-      $button({
-        textContent: 'Birthday',
-        onclick: () => age.value++
-      })
-    ]);
-  });
-}
+  return $div({ className: 'user-profile' }, [
+    $span({ textContent: name }),
+    ageSpan,
+    $button({
+      textContent: 'Birthday',
+      onclick: () => age.value++
+    })
+  ]);
+});
 
 const profile = UserProfile();
 document.body.appendChild(profile.element);
@@ -392,7 +395,7 @@ profile.destroy(); // Cleans up all reactive bindings automatically
 Components can accept parameters for configuration and initial state. Props are passed when creating the component instance:
 
 ```typescript
-import { component, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+import { component, useScope, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
 
 interface CounterProps {
   initialCount?: number;
@@ -400,26 +403,25 @@ interface CounterProps {
   label?: string;
 }
 
-function Counter({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) {
-  return component((scope) => {
-    const count = new Seidr(initialCount);
-    const disabled = count.as(value => value >= 10);
+const Counter = component(({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) => {
+  const scope = useScope();
+  const count = new Seidr(initialCount);
+  const disabled = count.as(value => value >= 10);
 
-    return $div({ className: 'counter' }, [
-      $span({ textContent: label }),
-      $span({ textContent: count.as(n => `: ${n}`) }),
-      $button({
-        textContent: `+${step}`,
-        disabled,
-        onclick: () => count.value += step
-      }),
-      $button({
-        textContent: 'Reset',
-        onclick: () => count.value = 0
-      })
-    ]);
-  });
-}
+  return $div({ className: 'counter' }, [
+    $span({ textContent: label }),
+    $span({ textContent: count.as(n => `: ${n}`) }),
+    $button({
+      textContent: `+${step}`,
+      disabled,
+      onclick: () => count.value += step
+    }),
+    $button({
+      textContent: 'Reset',
+      onclick: () => count.value = 0
+    })
+  ]);
+});
 
 // Create multiple instances with different props
 const counter1 = Counter({ initialCount: 5, step: 2, label: 'Steps' });
@@ -443,30 +445,24 @@ document.body.appendChild(counter3.element);
 ```typescript
 import { component, $div, $header, $img } from '@fimbul-works/seidr';
 
-function Header() {
-  return component(() => {
-    return $header({ textContent: 'User Profile' });
-  });
-}
+const Header = component(() => {
+  return $header({ textContent: 'User Profile' });
+});
 
-function Avatar() {
-  return component(() => {
-    return $img({ src: '/avatar.png', alt: 'User Avatar' });
-  });
-}
+const Avatar = component(() => {
+  return $img({ src: '/avatar.png', alt: 'User Avatar' });
+});
 
-function UserProfile() {
-  return component((scope) => {
-    // Child components are automatically tracked
-    const header = Header();
-    const avatar = Avatar();
+const UserProfile = component(() => {
+  // Child components are automatically tracked
+  const header = Header();
+  const avatar = Avatar();
 
-    return $div({ className: 'profile' }, [
-      header, // SeidrComponent passed directly!
-      avatar  // Element automatically extracted
-    ]);
-  });
-}
+  return $div({ className: 'profile' }, [
+    header, // SeidrComponent passed directly!
+    avatar  // Element automatically extracted
+  ]);
+});
 
 const profile = UserProfile();
 
@@ -481,22 +477,24 @@ profile.destroy();
 Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
 
 **Parameters:**
-- `factory` - Function that creates the component element: `(scope: ComponentScope) => Node`
-- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error, scope: ComponentScope) => Node`
+- `factory` - Function that creates the component element: `() => Node`
+- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error) => Node`
 
 **Returns:** `SeidrComponent`
 
 ```typescript
-import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
+import { Safe, useScope, $div, $h2, $p } from '@fimbul-works/seidr';
 
 const UserProfile = Safe(
-  (scope) => {
+  () => {
+    const scope = useScope();
     // Component initialization that might fail
     // Note: Safe() only catches synchronous errors!
     const data = JSON.parse('invalid json');
     return $div({ textContent: data.name });
   },
-  (err, scope) => {
+  (err) => {
+    const scope = useScope();
     // Error boundary: return fallback UI
     return $div({ className: 'error' }, [
       $h2({ textContent: 'Error Occurred' }),
@@ -509,22 +507,24 @@ const UserProfile = Safe(
 **Error Boundary Behavior**:
 
 - **Scope Cleanup**: Original component scope is destroyed before error boundary is called
-- **Fresh Scope**: Error boundary receives a new `ComponentScope` for tracking its own resources
+- **Fresh Scope**: Error boundary receives a new `ComponentScope` for tracking its own resources (via `useScope()`)
 - **Root Components**: Errors in root components without `Safe` wrapper are logged to console
 - **Resource Tracking**: Error boundary can track its own cleanup functions via `scope.track()`
 
 ```typescript
-import { Safe, $div } from '@fimbul-works/seidr';
+import { Safe, useScope, $div } from '@fimbul-works/seidr';
 
 const SafeComponent = Safe(
-  (scope) => {
+  () => {
+    const scope = useScope();
     // Track resources
     scope.track(() => console.log('Component cleanup'));
 
     throw new Error('Failed');
     return $div();
   },
-  (err, scope) => {
+  (err) => {
+    const scope = useScope();
     // Error boundary gets its own scope for resource tracking
     scope.track(() => console.log('Error boundary cleanup'));
 
@@ -782,7 +782,7 @@ const App = Router({
     createRoute('/about', About),
     createRoute('/user/:id', UserPage),
   ],
-  fallback: NotFound(),
+  fallback: NotFound,
 });
 ```
 
@@ -837,7 +837,7 @@ Navigation link component that updates the URL reactively and can show active st
 ```typescript
 import { Link, component, $div, $nav } from '@fimbul-works/seidr';
 
-const Navigation = component(() => $nav({}, [
+const Navigation = () => component(() => $nav({}, [
   Link({ to: '/' }, ['Home']),
   Link({ to: '/about' }, ['About']),
   Link({ to: '/contact' }, ['Contact']),

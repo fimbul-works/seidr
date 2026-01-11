@@ -10,7 +10,7 @@ describe("buildDependencyGraph", () => {
     const entries = Array.from([
       [seidr1.id, seidr1],
       [seidr2.id, seidr2],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph = buildDependencyGraph(entries);
 
@@ -28,7 +28,7 @@ describe("buildDependencyGraph", () => {
     const entries = Array.from([
       [parent.id, parent],
       [derived.id, derived],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph = buildDependencyGraph(entries);
 
@@ -48,7 +48,7 @@ describe("buildDependencyGraph", () => {
       [firstName.id, firstName],
       [lastName.id, lastName],
       [fullName.id, fullName],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph = buildDependencyGraph(entries);
 
@@ -69,7 +69,7 @@ describe("buildDependencyGraph", () => {
       [count.id, count],
       [doubled.id, doubled],
       [quadrupled.id, quadrupled],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph = buildDependencyGraph(entries);
 
@@ -92,7 +92,7 @@ describe("buildDependencyGraph", () => {
       [doubled.id, doubled],
       [tripled.id, tripled],
       [sum.id, sum],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph = buildDependencyGraph(entries);
 
@@ -110,7 +110,7 @@ describe("buildDependencyGraph", () => {
     const derived = parent.as((x) => x * 2);
 
     // Only register derived, not parent (simulating SSR scope error)
-    const entries = Array.from([[derived.id, derived]] as [string, Seidr<any>][]);
+    const entries = Array.from([[derived.id, derived]] as [number, Seidr<any>][]);
 
     expect(() => buildDependencyGraph(entries)).toThrow("Parent Seidr instance not found in registered observables");
   });
@@ -125,13 +125,13 @@ describe("buildDependencyGraph", () => {
       [seidr1.id, seidr1],
       [seidr2.id, seidr2],
       [seidr3.id, seidr3],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const entries2 = Array.from([
       [seidr3.id, seidr3],
       [seidr1.id, seidr1],
       [seidr2.id, seidr2],
-    ] as [string, Seidr<any>][]);
+    ] as [number, Seidr<any>][]);
 
     const graph1 = buildDependencyGraph(entries1);
     const graph2 = buildDependencyGraph(entries2);

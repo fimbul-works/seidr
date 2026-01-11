@@ -1,6 +1,5 @@
 import { isHTMLElement } from "../../util/is";
-import { getComponentStack, type SeidrComponent } from "../component";
-import { type ComponentScope, createScope } from "../component-scope";
+import { component, createScope, getComponentStack, useScope, type SeidrComponent } from "../component";
 
 /**
  * Creates a component with error boundary protection.
@@ -12,8 +11,8 @@ import { type ComponentScope, createScope } from "../component-scope";
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  * @template {SeidrElement<K>} T - The type of element the component returns
  *
- * @param {(scope: ComponentScope) => T} factory - Function that creates the component element
- * @param {(err: Error, scope: ComponentScope) => T} errorBoundaryFactory - Error handler that returns fallback UI
+ * @param {() => T} factory - Function that creates the component element
+ * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {SeidrComponent<K, T>} A Component instance with error handling
  *
  * @example
@@ -22,12 +21,12 @@ import { type ComponentScope, createScope } from "../component-scope";
  * import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
  *
  * const UserProfile = Safe(
- *   (scope) => {
+ *   () => {
  *     // Component initialization that might fail
  *     const data = fetchUserData();
  *     return $div({ textContent: data.name });
  *   },
- *   (err, scope) => {
+ *   (err) => {
  *     // Error boundary: return fallback UI
  *     return $div({ className: 'error' }, [
  *       $h2({ textContent: 'Error Occurred' }),
@@ -35,6 +34,7 @@ import { type ComponentScope, createScope } from "../component-scope";
  *     ]);
  *   }
  * );
+ * UserProfile();
  * ```
  *
  * @example
@@ -43,88 +43,55 @@ import { type ComponentScope, createScope } from "../component-scope";
  * import { Safe, $div, $button } from '@fimbul-works/seidr';
  *
  * const SafeComponent = Safe(
- *   (scope) => {
+ *   () => {
+ *     const scope = useScope();
  *     // Track resources
  *     scope.track(() => console.log('Component cleanup'));
  *
  *     throw new Error('Failed');
  *     return $div();
  *   },
- *   (err, scope) => {
+ *   (err) => {
+ *     const scope = useScope();
  *     // Error boundary gets its own scope for resource tracking
  *     scope.track(() => console.log('Error boundary cleanup'));
  *
  *     return $div({ textContent: 'Fallback UI' });
  *   }
  * );
+ * SafeComponent();
  * ```
  */
 export function Safe<K extends keyof HTMLElementTagNameMap, T extends Node>(
-  factory: (scope: ComponentScope) => T,
-  errorBoundaryFactory: (err: Error, scope: ComponentScope) => T,
+  factory: () => T,
+  errorBoundaryFactory: (err: Error) => T,
 ): SeidrComponent<K, T> {
-  const stack = getComponentStack();
-  const isRootComponent = stack.length === 0;
+  return component(() => {
+    const scope = useScope();
+    const stack = getComponentStack();
+    const isRootComponent = stack.length === 0;
+    const currentComp = stack[stack.length - 1];
 
-  // Create the scope and partial SeidrComponent
-  const scope = createScope();
-  const comp = {
-    isSeidrComponent: true,
-    scope,
-    destroy: () => scope.destroy(),
-  } as SeidrComponent<K, T>;
-
-  // Register as child component
-  if (stack.length > 0) {
-    stack[stack.length - 1].scope.child(comp);
-  }
-
-  // Add to component stack
-  stack.push(comp);
-
-  // Render the component via factory with error handling
-  try {
     try {
-      comp.element = factory(scope);
-    } catch (err) {
-      scope.destroy();
-      comp.scope = createScope();
-      comp.element = errorBoundaryFactory(err as Error, comp.scope);
-    }
+      try {
+        return factory();
+      } catch (err) {
+        // Destroy scope from failed component and create new one for error boundary
+        scope.destroy();
+        const newScope = createScope();
 
-    // Set up destroy method
-    comp.destroy = () => {
-      comp.scope.destroy();
-      const el = comp.element as any;
-      if (el?.remove) {
-        el.remove();
-      } else if (el?.parentNode) {
-        try {
-          el.parentNode.removeChild(el);
-        } catch (_e) {
-          // Ignore if node was already removed or parent changed
+        // Update the component's scope so useScope() returns the new scope
+        if (currentComp) {
+          currentComp.scope = newScope;
         }
+
+        return errorBoundaryFactory(err as Error);
       }
-    };
-
-    // Propagate onAttached from scope
-    if (comp.scope.onAttached) {
-      comp.onAttached = comp.scope.onAttached;
+    } finally {
+      // Root component must clear out component stack
+      if (isRootComponent && stack.length > 0) {
+        while (stack.length) stack.pop();
+      }
     }
-  } finally {
-    // Remove from stack
-    stack.pop();
-  }
-
-  // Apply root element attributes
-  if (isRootComponent && isHTMLElement(comp.element)) {
-    comp.element.dataset.seidrRoot = "true";
-  }
-
-  // Root component must clear out component stack
-  if (isRootComponent && stack.length > 0) {
-    while (stack.length) stack.pop();
-  }
-
-  return comp;
+  })();
 }

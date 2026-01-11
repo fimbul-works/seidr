@@ -18,22 +18,20 @@ import { component, $div, $ul, $li, List, setState, getState, createStateKey, is
 const todosKey = createStateKey<Seidr<Todo[]>>('todos');
 
 // Component works on both server and client
-export function TodoApp(todos?: Seidr<Todo[]>) {
-  return component(() => {
-    // Dual-mode: server sets, client retrieves from hydration
-    if (!isUndefined(todos)) {
-      setState(todosKey, todos);
-    } else {
-      todos = getState(todosKey);
-    }
+export const TodoApp = component((todos?: Seidr<Todo[]>) => {
+  // Dual-mode: server sets, client retrieves from hydration
+  if (!isUndefined(todos)) {
+    setState(todosKey, todos);
+  } else {
+    todos = getState(todosKey);
+  }
 
-    return $div({ className: 'todo-app' }, [
-      $ul({}, [
-        List(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
-      ])
-    ]);
-  });
-}
+  return $div({ className: 'todo-app' }, [
+    $ul({}, [
+      List(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
+    ])
+  ]);
+});
 
 // Server route handler
 app.get('/', async (req, res) => {
@@ -85,20 +83,18 @@ The **Dual-Mode Pattern** allows a single component to work on both server and c
 **Client:** Receives no props → retrieves data with [`getState()`](./API.md#getstate) → becomes interactive
 
 ```typescript
-export function MyComponent(data?: Seidr<MyData>) {
-  return component(() => {
-    if (!isUndefined(data)) {
-      // SERVER: Props provided, store in global state
-      setState(dataKey, data);
-    } else {
-      // CLIENT: No props, retrieve from hydration
-      data = getState(dataKey);
-    }
+export const MyComponent = component((data?: Seidr<MyData>) => {
+  if (!isUndefined(data)) {
+    // SERVER: Props provided, store in global state
+    setState(dataKey, data);
+  } else {
+    // CLIENT: No props, retrieve from hydration
+    data = getState(dataKey);
+  }
 
-    // Now 'data' is guaranteed to be Seidr<MyData>
-    return $div({ textContent: data.as(d => d.title) });
-  });
-}
+  // Now 'data' is guaranteed to be Seidr<MyData>
+  return $div({ textContent: data.as(d => d.title) });
+});
 ```
 
 **Why the check is critical:**
@@ -205,16 +201,14 @@ const state = new Seidr(await fetchData());
 await renderToString(MyApp, state);
 
 // Component
-export function MyApp(data?: Seidr<Data>) {
-  return component(() => {
-    if (!isUndefined(data)) {
-      setState(dataKey, data);
-    } else {
-      data = getState(dataKey);
-    }
-    // Use data...
-  });
-}
+export const MyApp = component((data?: Seidr<Data>) => {
+  if (!isUndefined(data)) {
+    setState(dataKey, data);
+  } else {
+    data = getState(dataKey);
+  }
+  // Use data...
+});
 
 // Client
 hydrate(MyApp, container, hydrationData);
@@ -227,12 +221,10 @@ hydrate(MyApp, container, hydrationData);
 **Best for:** UI state (toggles, form inputs, etc.)
 
 ```typescript
-export function Counter() {
-  return component(() => {
-    const count = new Seidr(0);
-    return $div({ textContent: count.as(n => `Count: ${n}`) });
-  });
-}
+export const Counter = component(() => {
+  const count = new Seidr(0);
+  return $div({ textContent: count.as(n => `Count: ${n}`) });
+});
 ```
 
 ### ❌ Anti-Pattern: Global Scope Observables
@@ -243,7 +235,7 @@ export function Counter() {
 // ❌ THIS WILL FAIL
 const count = new Seidr(0);
 
-export const App = () => component(() => {
+export const App = component(() => {
   return $div({ textContent: count.as(String) });
 });
 ```
@@ -316,13 +308,14 @@ import { Router, createRoute, component } from '@fimbul-works/seidr/node';
 
 const HomePage = component(() => $div({ textContent: 'Home' }));
 const AboutPage = component(() => $div({ textContent: 'About' }));
+const NotFoundPage = component(() => $div({ textContent: '404 - Not Found' }));
 
 const App = Router({
   routes: [
     createRoute('/', HomePage),
     createRoute('/about', AboutPage),
   ],
-  fallback: NotFoundPage
+  fallback: () => NotFoundPage
 });
 
 // Server route handler
@@ -562,22 +555,20 @@ import { hydrate } from '@fimbul-works/seidr';
 
 ```typescript
 // Before
-export function App() {
+export const App = component(() => {
   const data = new Seidr(initialData);
-  return component(() => ...);
-}
+  return ...;
+});
 
 // After
-export function App(data?: Seidr<Data>) {
-  return component(() => {
-    if (!isUndefined(data)) {
-      setState(dataKey, data);
-    } else {
-      data = getState(dataKey);
-    }
-    // ...
-  });
-}
+export const App = component((data?: Seidr<Data>) => {
+  if (!isUndefined(data)) {
+    setState(dataKey, data);
+  } else {
+    data = getState(dataKey);
+  }
+  // ...
+});
 ```
 
 **3. Add server rendering:**

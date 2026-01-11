@@ -31,8 +31,7 @@ export interface RenderToStringOptions {
  *
  * @template C - SeidrComponent type
  *
- * @param {(...args: any) => C} componentFactory - Function that returns SeidrComponent
- * @param {any} props - Props to be passed to the component
+ * @param {() => C} component - Component function to render
  * @param {RenderToStringOptions | SSRScope} [optionsOrScope] - Options object or legacy scope parameter
  *
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
@@ -52,6 +51,24 @@ export interface RenderToStringOptions {
  * ```
  *
  * @example
+ * Component with props
+ * ```typescript
+ * import { renderToString } from '@fimbul-works/seidr/node';
+ * import { component, $div } from '@fimbul-works/seidr/node';
+ *
+ * const HomePage = component(({ title }: { title: string }) => {
+ *   return $div({ textContent: title });
+ * });
+ *
+ * app.get('*', async (req, res) => {
+ *   // Create a component with props
+ *   const page = () => HomePage({ title: 'Welcome' });
+ *   const { html, hydrationData } = await renderToString(page);
+ *   res.send(html);
+ * });
+ * ```
+ *
+ * @example
  * With initial path for routing
  * ```typescript
  * import { renderToString } from '@fimbul-works/seidr/node';
@@ -61,16 +78,15 @@ export interface RenderToStringOptions {
  *
  * app.get('*', async (req, res) => {
  *   // Pass the request URL path for routing
- *   const { html, hydrationData } = await renderToString(App, null, {
- *     initialPath: req.path
+ *   const { html, hydrationData } = await renderToString(App, {
+ *     path: req.path
  *   });
  *   res.send(html);
  * });
  * ```
  */
 export async function renderToString<C extends SeidrComponent<any, any>>(
-  componentFactory: (...args: any) => C,
-  props?: any,
+  component: () => C,
   optionsOrScope?: RenderToStringOptions | SSRScope,
 ): Promise<SSRRenderResult> {
   // Normalize options to handle both legacy scope parameter and new options object
@@ -103,14 +119,14 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
 
     try {
       // Create component (Seidr instances will auto-register during creation)
-      const component = componentFactory(props);
+      const comp = component();
 
       // Wait for any async work registered via inServer()
       await activeScope.waitForPromises();
 
       // Add data-seidr-id attribute to root element for hydration
       // Convert to HTML string
-      const html = String(component.element);
+      const html = String(comp.element);
 
       // Capture hydration data (observables, bindings, graph) BEFORE destroying component
       const hydrationData = {
@@ -120,7 +136,7 @@ export async function renderToString<C extends SeidrComponent<any, any>>(
       };
 
       // Destroy component to clean up scope bindings
-      component.destroy();
+      comp.destroy();
 
       // Clear the render context state
       clearRenderContextState(ctx.renderContextID);

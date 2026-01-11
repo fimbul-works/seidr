@@ -49,7 +49,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           return $div({ className: "todo-app" }, [
             $div({ textContent: todos?.as((t) => `Todo count: ${t.length}`) || "Loading" }),
           ]);
-        });
+        })();
       }
 
       // Server-side
@@ -58,7 +58,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
         { id: 2, text: "Build app" },
       ];
       const todosState = new Seidr(serverTodos);
-      const { html, hydrationData } = await renderToString(TodoApp, todosState);
+      const { html, hydrationData } = await renderToString(() => TodoApp(todosState));
 
       expect(html).toContain("Todo count: 2");
       expect(hydrationData.observables).toBeDefined();
@@ -93,12 +93,12 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           });
 
           return $div({ textContent: products?.as((p) => `Count: ${p.length}`) || "Loading" });
-        });
+        })();
       }
 
       // Server-side
       const productsState = new Seidr<Product[]>([]);
-      const { html } = await renderToString(ProductApp, productsState);
+      const { html } = await renderToString(() => ProductApp(productsState));
 
       expect(html).toContain("Count: 1");
     });
@@ -121,12 +121,12 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
             return $div({
               textContent: data?.as((d) => `Items: ${d.items.join(",")}`) || "Loading",
             });
-          });
+          })();
         }
 
         // Server
         const state = new Seidr({ items: [1, 2, 3] });
-        const { html, hydrationData } = await renderToString(MyApp, state);
+        const { html, hydrationData } = await renderToString(() => MyApp(state));
 
         expect(html).toContain("Items: 1,2,3");
         expect(hydrationData.observables).toBeDefined();
@@ -139,7 +139,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           return component(() => {
             const count = new Seidr(0);
             return $div({ textContent: count.as((n) => `Count: ${n}`) });
-          });
+          })();
         }
 
         // Server
@@ -160,7 +160,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
             // This will fail because count was created before renderToString
             const doubled = count.as((n) => n * 2);
             return $div({ textContent: doubled.as(String) });
-          });
+          })();
 
         // This should either fail or show the problem
         // For now, we just verify it renders without errors in SSR mode
@@ -183,11 +183,11 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           }
 
           return $div({ textContent: data?.as((d) => d.toUpperCase()) || "" });
-        });
+        })();
       }
 
       const state = new Seidr("hello");
-      const { hydrationData } = await renderToString(App, state);
+      const { hydrationData } = await renderToString(() => App(state));
 
       // Verify structure (based on actual implementation, not documentation)
       expect(hydrationData).toHaveProperty("observables");
@@ -212,7 +212,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       function App() {
         return component(() => {
           return $div({ textContent: "Test" });
-        });
+        })();
       }
 
       // This should work (async)
@@ -232,12 +232,12 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           }
 
           return $div({ textContent: String(data?.value ?? "null") });
-        });
+        })();
       }
 
       // Primitives work
       const primitives = new Seidr({ num: 42, str: "hello", bool: true, arr: [1, 2, 3] });
-      const { html, hydrationData } = await renderToString(App, primitives);
+      const { html, hydrationData } = await renderToString(() => App(primitives));
 
       expect(html).toContain("[object Object]");
       expect(hydrationData.observables).toBeDefined();
@@ -257,12 +257,12 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           }
 
           return $div({ textContent: count?.as((n) => `Count: ${n}`) || "Loading" });
-        });
+        })();
       }
 
       // Server
       const serverCount = new Seidr(42);
-      const { html, hydrationData } = await renderToString(Counter, serverCount);
+      const { html, hydrationData } = await renderToString(() => Counter(serverCount));
 
       expect(html).toContain("Count: 42");
       expect(hydrationData.observables["0"]).toBe(42);
@@ -283,12 +283,12 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
           }
 
           return $div({ textContent: data?.as((d) => d) ?? "Loading" });
-        });
+        })();
       }
 
       // Server
       const data = new Seidr("Hello SSR");
-      const { html, hydrationData } = await renderToString(App, data);
+      const { html, hydrationData } = await renderToString(() => App(data));
 
       expect(html).toContain("Hello SSR");
       // Check that observables were captured (not checking specific ID)
@@ -328,7 +328,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
           return $div({ className: "todo-app" }, [
             $div({ textContent: todos.as((t) => `Todo count: ${t.length}`) }),
           ]);
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(TodoApp);
@@ -363,7 +363,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
           return $div({
             textContent: data.as((d) => `${d} - ${browserExecuted ? "client" : "server"}`),
           });
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(App);
@@ -395,7 +395,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
           return $div({
             textContent: data.as((d) => `Items: ${d.items.join(",")}`),
           });
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(MyApp);
@@ -420,7 +420,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
         return component(() => {
           const count = new Seidr(0);
           return $div({ textContent: count.as((n) => `Count: ${n}`) });
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(Counter);
@@ -447,7 +447,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
         return component(() => {
           const data = new Seidr("Hello SSR");
           return $div({ textContent: data.as((d) => d) });
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(App);
@@ -474,7 +474,7 @@ describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
         return component(() => {
           const count = new Seidr(42);
           return $div({ textContent: count.as((n) => `Count: ${n}`) });
-        });
+        })();
       }
 
       const { hydrationData } = await renderToString(Counter);

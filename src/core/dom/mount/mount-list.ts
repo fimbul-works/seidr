@@ -76,12 +76,11 @@
  */
 import type { Seidr } from "../../seidr";
 import type { SeidrComponent } from "../component";
-import { List } from "../components/list";
-import { mount } from "./mount";
+import { $comment } from "../element";
 
 /**
  * Renders an efficient list of components from an observable array.
- * Legacy utility that internally uses the List component.
+ * Legacy utility that internally implements list rendering.
  */
 export function mountList<T, I extends string | number, C extends SeidrComponent<any, any>>(
   observable: Seidr<T[]>,
@@ -89,6 +88,57 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
   componentFactory: (item: T) => C,
   container: HTMLElement,
 ): () => void {
-  const comp = List(observable, getKey, componentFactory);
-  return mount(comp, container);
+  const marker = $comment("mount-list-marker");
+  container.appendChild(marker);
+  const componentMap = new Map<I, C>();
+
+  const update = (items: T[]) => {
+    const newKeys = new Set(items.map(getKey));
+
+    // Remove components no longer in list
+    for (const [key, comp] of componentMap.entries()) {
+      if (!newKeys.has(key)) {
+        comp.destroy();
+        componentMap.delete(key);
+      }
+    }
+
+    // Add or reorder components by iterating backwards from marker
+    let currentAnchor: Node = marker;
+    for (let i = items.length - 1; i >= 0; i--) {
+      const item = items[i];
+      const key = getKey(item);
+      let comp = componentMap.get(key);
+
+      if (!comp) {
+        comp = componentFactory(item);
+        componentMap.set(key, comp);
+      }
+
+      // Move to correct position if needed
+      if (comp.element.nextSibling !== currentAnchor) {
+        container.insertBefore(comp.element, currentAnchor);
+      }
+
+      currentAnchor = comp.element;
+    }
+  };
+
+  // Initial render
+  update(observable.value);
+
+  // Reactive updates
+  const cleanup = observable.observe((items) => update(items));
+
+  // Return combined cleanup
+  return () => {
+    cleanup();
+    for (const comp of componentMap.values()) {
+      comp.destroy();
+    }
+    componentMap.clear();
+    if (container.contains(marker)) {
+      container.removeChild(marker);
+    }
+  };
 }

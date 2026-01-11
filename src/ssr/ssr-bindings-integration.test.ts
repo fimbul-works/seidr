@@ -103,7 +103,7 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
       // Server-side
-      const { html, hydrationData } = await renderToString(App);
+      const { html, hydrationData } = await renderToString(() => App()());
 
       expect(html).toContain("Count: 42");
       expect(html).not.toContain("disabled"); // 42 is not > 100
@@ -114,7 +114,7 @@ describe("SSR Reactive Bindings Integration", () => {
       // Client-side
       cleanupMode = enableClientMode();
       const container = document.createElement("div");
-      const hydratedComponent = hydrate(App, container, hydrationData);
+      const hydratedComponent = hydrate(() => App()(), container, hydrationData);
 
       expect(hydratedComponent).toBeDefined();
       expect(String(container.textContent)).toContain("Count: 42");
@@ -148,7 +148,7 @@ describe("SSR Reactive Bindings Integration", () => {
             });
           });
 
-        const { hydrationData: data } = await renderToString(App);
+        const { hydrationData: data } = await renderToString(() => App()());
         hydrationData = data;
         ssrMode();
       }
@@ -164,7 +164,7 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
       const container = document.createElement("div");
-      hydrate(App, container, hydrationData);
+      hydrate(() => App()(), container, hydrationData);
 
       // Should have server values
       expect(String(container.textContent)).toContain("Count: 42");

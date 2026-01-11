@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { component } from "../component";
+import { component, useScope } from "../component";
 import { $ } from "../element";
 import { Safe } from "./safe";
 
@@ -11,7 +11,7 @@ describe("Safe", () => {
         () => {
           throw new Error(errorMessage);
         },
-        (err, _scope) => {
+        (err) => {
           expect(err).toBeInstanceOf(Error);
           expect(err.message).toBe(errorMessage);
           return $("div", { textContent: `Error: ${err.message}` });
@@ -26,11 +26,13 @@ describe("Safe", () => {
       let factoryScope: any = null;
 
       const comp = Safe(
-        (scope) => {
+        () => {
+          const scope = useScope();
           factoryScope = scope;
           throw new Error("Error");
         },
-        (_err, scope) => {
+        (_err) => {
+          const scope = useScope();
           errorBoundaryScope = scope;
           return $("div");
         },
@@ -46,13 +48,14 @@ describe("Safe", () => {
       let originalScopeDestroyed = false;
 
       const comp = Safe(
-        (scope) => {
+        () => {
+          const scope = useScope();
           scope.track(() => {
             originalScopeDestroyed = true;
           });
           throw new Error("Error");
         },
-        (_err, _scope) => {
+        (_err) => {
           return $("div");
         },
       );
@@ -101,28 +104,20 @@ describe("Safe", () => {
     it("should catch child errors with error boundary", () => {
       let caughtError: Error | null = null;
 
-      const ErrorChild = () =>
-        Safe(
-          () => {
-            throw new Error("Child error");
-          },
-          (err) => {
-            caughtError = err;
-            return $("div", { textContent: "Child error caught" });
-          },
-        );
+      const ErrorChild = Safe(
+        () => {
+          throw new Error("Child error");
+        },
+        (err) => {
+          caughtError = err;
+          return $("div", { textContent: "Child error caught" });
+        },
+      );
 
-      const Parent = () =>
-        component(() => {
-          const child = ErrorChild();
-          return $("div", {}, [child.element]);
-        });
-
-      const parent = Parent();
-
+      // Verify Safe component caught the error
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
-      expect(parent.element.textContent).toContain("Child error caught");
+      expect(ErrorChild.element.textContent).toContain("Child error caught");
     });
 
     it("should track error boundary component cleanup", () => {
@@ -132,7 +127,8 @@ describe("Safe", () => {
         () => {
           throw new Error("Error");
         },
-        (_err, scope) => {
+        (_err) => {
+          const scope = useScope();
           scope.track(() => {
             errorBoundaryDestroyed = true;
           });
@@ -152,13 +148,15 @@ describe("Safe", () => {
       const cleanupLog: string[] = [];
 
       const comp = Safe(
-        (scope) => {
+        () => {
+          const scope = useScope();
           scope.track(() => {
             cleanupLog.push("factory cleanup");
           });
           throw new Error("Error");
         },
-        (_err, scope) => {
+        (_err) => {
+          const scope = useScope();
           scope.track(() => {
             cleanupLog.push("error boundary cleanup");
           });
@@ -182,7 +180,8 @@ describe("Safe", () => {
         () => {
           throw new Error("Error");
         },
-        (_err, scope) => {
+        (_err) => {
+          const scope = useScope();
           const button = $("button", { textContent: "Retry" });
           scope.track(
             button.on("click", () => {
@@ -272,21 +271,16 @@ describe("Safe", () => {
   describe("Documentation Examples", () => {
     describe("Basic error boundary example", () => {
       it("should demonstrate basic error boundary usage", () => {
-        const FallbackComponent = () =>
-          component(() => {
-            return $("div", {
-              className: "error-fallback",
-              textContent: "Something went wrong",
-            });
-          });
-
         const comp = Safe(
           () => {
             throw new Error("Component failed to render");
           },
           (err) => {
             console.error("Caught error:", err.message);
-            return FallbackComponent().element;
+            return $("div", {
+              className: "error-fallback",
+              textContent: "Something went wrong",
+            });
           },
         );
 
@@ -327,7 +321,8 @@ describe("Safe", () => {
         let subscriptionActive = false;
 
         const comp = Safe(
-          (scope) => {
+          () => {
+            const scope = useScope();
             // Simulate resource subscription
             scope.track(() => {
               subscriptionActive = false;
@@ -336,7 +331,8 @@ describe("Safe", () => {
 
             throw new Error("Failed during initialization");
           },
-          (_err, scope) => {
+          (_err) => {
+            const scope = useScope();
             // Error boundary can set up its own resources
             const button = $("button", { textContent: "Reload" });
 

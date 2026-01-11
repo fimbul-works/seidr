@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr";
-import { component } from "./component";
+import { component, useScope } from "./component";
 import { createScope } from "./component-scope";
 import { $ } from "./element";
 import { mount } from "./mount";
@@ -10,7 +10,7 @@ describe("component", () => {
     const mockElement = $("div");
     const comp = component(() => {
       return mockElement;
-    });
+    })();
 
     expect(comp).toHaveProperty("element");
     expect(comp).toHaveProperty("destroy");
@@ -21,7 +21,8 @@ describe("component", () => {
   it("should call destroy on scope when component is destroyed", () => {
     let scopeDestroyed = false;
 
-    const comp = component((scopeParam) => {
+    const comp = component(() => {
+      const scopeParam = useScope();
       // Override destroy for testing
       const originalDestroy = scopeParam.destroy;
       scopeParam.destroy = () => {
@@ -29,7 +30,7 @@ describe("component", () => {
         originalDestroy();
       };
       return $("div");
-    });
+    })();
 
     expect(scopeDestroyed).toBe(false);
 
@@ -42,7 +43,8 @@ describe("component", () => {
 describe("Documentation Examples", () => {
   describe("Basic counter component example", () => {
     it("should demonstrate basic component creation with reactive bindings", () => {
-      const comp = component((scope) => {
+      const comp = component(() => {
+        const scope = useScope();
         const count = new Seidr(0);
         const button = $("button", { textContent: "Count: 0" });
 
@@ -57,7 +59,7 @@ describe("Documentation Examples", () => {
         scope.track(button.on("click", () => count.value++));
 
         return button;
-      });
+      })();
 
       // Mount to DOM for testing
       document.body.appendChild(comp.element);
@@ -90,7 +92,8 @@ describe("Documentation Examples", () => {
       }
 
       function Counter({ initialCount = 0, step = 1, label = "Counter" }: CounterProps = {}) {
-        return component((scope) => {
+        return component(() => {
+          const scope = useScope();
           const count = new Seidr(initialCount);
           const disabled = count.as((value) => value >= 10);
 
@@ -107,7 +110,7 @@ describe("Documentation Examples", () => {
               onclick: () => (count.value = 0),
             }),
           ]);
-        });
+        })();
       }
 
       // Create component with custom props
@@ -187,7 +190,8 @@ describe("Documentation Examples", () => {
       const reactiveBindingCleanup = vi.fn();
       const customCleanup = vi.fn();
 
-      const comp = component((scope) => {
+      const comp = component(() => {
+        const scope = useScope();
         const element = $("div");
 
         // Track event listener cleanup
@@ -203,7 +207,7 @@ describe("Documentation Examples", () => {
         scope.track(customCleanup);
 
         return element;
-      });
+      })();
 
       // Destroy component
       comp.destroy();
@@ -221,7 +225,7 @@ describe("Documentation Examples", () => {
       const Grandchild = () =>
         component(() => {
           return $("div", { textContent: "Grandchild" });
-        });
+        })();
 
       const Child = () =>
         component(() => {
@@ -236,7 +240,7 @@ describe("Documentation Examples", () => {
           };
 
           return $("div", { textContent: "Child" }, [grandchild.element]);
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -251,7 +255,7 @@ describe("Documentation Examples", () => {
           };
 
           return $("div", { textContent: "Parent" }, [child.element]);
-        });
+        })();
 
       const parent = Parent();
 
@@ -272,7 +276,7 @@ describe("Documentation Examples", () => {
       const createChild = (name: string) =>
         component(() => {
           return $("div", { textContent: name });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -293,7 +297,7 @@ describe("Documentation Examples", () => {
           };
 
           return $("div", {}, [child1.element, child2.element]);
-        });
+        })();
 
       const parent = Parent();
 
@@ -315,28 +319,28 @@ describe("Documentation Examples", () => {
         component(() => {
           creationOrder.push("Leaf");
           return $("div", { textContent: "Leaf" });
-        });
+        })();
 
       const Branch = () =>
         component(() => {
           creationOrder.push("Branch");
           const leaf = Leaf(); // Automatically tracked
           return $("div", {}, [leaf.element]);
-        });
+        })();
 
       const Trunk = () =>
         component(() => {
           creationOrder.push("Trunk");
           const branch = Branch(); // Automatically tracked
           return $("div", {}, [branch.element]);
-        });
+        })();
 
       const Root = () =>
         component(() => {
           creationOrder.push("Root");
           const trunk = Trunk(); // Automatically tracked
           return $("div", {}, [trunk.element]);
-        });
+        })();
 
       const root = Root();
 
@@ -353,14 +357,14 @@ describe("Documentation Examples", () => {
       const Child = () =>
         component(() => {
           return $("div", { textContent: "Child" });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
           const child = Child(); // Automatically tracked
 
           return $("div", {}, [child.element]);
-        });
+        })();
 
       const parent1 = Parent();
 
@@ -398,7 +402,8 @@ describe("Documentation Examples", () => {
       const destructionOrder: string[] = [];
 
       const createComponent = (name: string) =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const element = $("div", { textContent: name });
 
           // Track destruction order
@@ -407,12 +412,13 @@ describe("Documentation Examples", () => {
           });
 
           return element;
-        });
+        })();
 
       const Level3 = () => createComponent("Level3");
 
       const Level2 = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const level3 = Level3(); // Automatically tracked
 
           // Also track cleanup for this level
@@ -421,10 +427,11 @@ describe("Documentation Examples", () => {
           });
 
           return $("div", {}, [level3.element]);
-        });
+        })();
 
       const Level1 = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const level2 = Level2(); // Automatically tracked
 
           // Also track cleanup for this level
@@ -433,7 +440,7 @@ describe("Documentation Examples", () => {
           });
 
           return $("div", {}, [level2.element]);
-        });
+        })();
 
       const root = Level1();
       root.destroy();
@@ -449,12 +456,13 @@ describe("Documentation Examples", () => {
       const destroyedChildren: string[] = [];
 
       const Child = (name: string) =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             destroyedChildren.push(name);
           });
           return $("div", { textContent: name });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -464,7 +472,7 @@ describe("Documentation Examples", () => {
 
           // All automatically tracked
           return $("div", {}, [child1.element, child2.element, child3.element]);
-        });
+        })();
 
       const parent = Parent();
       parent.destroy();
@@ -483,15 +491,17 @@ describe("Documentation Examples", () => {
       let childCleanupCalled = false;
 
       const ErrorChild = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             throw new Error("Child cleanup error");
           });
           return $("div", { textContent: "Error Child" });
-        });
+        })();
 
       const Parent = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const errorChild = ErrorChild(); // Automatically tracked
 
           scope.track(() => {
@@ -499,7 +509,7 @@ describe("Documentation Examples", () => {
           });
 
           return $("div", {}, [errorChild.element]);
-        });
+        })();
 
       const parent = Parent();
 
@@ -521,20 +531,22 @@ describe("Documentation Examples", () => {
       let sibling2Destroyed = false;
 
       const ErrorChild = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             throw new Error("Child cleanup error");
           });
           return $("div", { textContent: "Error Child" });
-        });
+        })();
 
       const NormalChild = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             sibling2Destroyed = true;
           });
           return $("div", { textContent: "Normal Child" });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -542,7 +554,7 @@ describe("Documentation Examples", () => {
           const child2 = NormalChild(); // Automatically tracked
 
           return $("div", {}, [child1.element, child2.element]);
-        });
+        })();
 
       const parent = Parent();
       parent.destroy();
@@ -560,7 +572,8 @@ describe("Documentation Examples", () => {
       let parentClickListenerCalled = false;
 
       const Child = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const button = $("button", { textContent: "Child Button" });
 
           scope.track(
@@ -570,10 +583,11 @@ describe("Documentation Examples", () => {
           );
 
           return button;
-        });
+        })();
 
       const Parent = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const child = Child(); // Automatically tracked
 
           const button = $("button", { textContent: "Parent Button" });
@@ -585,7 +599,7 @@ describe("Documentation Examples", () => {
           );
 
           return $("div", {}, [child.element, button]);
-        });
+        })();
 
       const parent = Parent();
 
@@ -617,7 +631,8 @@ describe("Documentation Examples", () => {
 
     it("should cleanup child component reactive bindings", () => {
       const Child = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           const count = new (class {
             value = 0;
             listeners: Array<(val: number) => void> = [];
@@ -638,14 +653,14 @@ describe("Documentation Examples", () => {
           );
 
           return span;
-        });
+        })();
 
       const Parent = () =>
         component(() => {
           const child = Child(); // Automatically tracked
 
           return $("div", {}, [child.element]);
-        });
+        })();
 
       const parent = Parent();
 
@@ -666,16 +681,18 @@ describe("Documentation Examples", () => {
       const destructionLog: string[] = [];
 
       const Header = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => destructionLog.push("Header destroyed"));
           return $("header", { textContent: "Header Component" });
-        });
+        })();
 
       const Avatar = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => destructionLog.push("Avatar destroyed"));
           return $("div", { className: "avatar", textContent: "Avatar Component" });
-        });
+        })();
 
       const UserProfile = () =>
         component(() => {
@@ -683,7 +700,7 @@ describe("Documentation Examples", () => {
           const avatar = Avatar(); // Automatically tracked
 
           return $("div", { className: "profile" }, [header.element, avatar.element]);
-        });
+        })();
 
       const profile = UserProfile();
 
@@ -706,13 +723,15 @@ describe("Documentation Examples", () => {
       const cleanupLog: string[] = [];
 
       const Comment = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => cleanupLog.push("Comment"));
           return $("div", { textContent: "Comment" });
-        });
+        })();
 
       const CommentList = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => cleanupLog.push("CommentList"));
 
           const comments = [Comment(), Comment(), Comment()]; // All automatically tracked
@@ -722,25 +741,27 @@ describe("Documentation Examples", () => {
             {},
             comments.map((c) => c.element),
           );
-        });
+        })();
 
       const Post = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => cleanupLog.push("Post"));
 
           const commentList = CommentList(); // Automatically tracked
 
           return $("article", {}, [commentList.element]);
-        });
+        })();
 
       const Feed = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => cleanupLog.push("Feed"));
 
           const post = Post(); // Automatically tracked
 
           return $("main", {}, [post.element]);
-        });
+        })();
 
       const feed = Feed();
       feed.destroy();
@@ -760,7 +781,7 @@ describe("Documentation Examples", () => {
       const Leaf = () =>
         component(() => {
           return $("div", { textContent: "Leaf" });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -774,7 +795,7 @@ describe("Documentation Examples", () => {
           };
 
           return $("div", {}, [leaf.element]);
-        });
+        })();
 
       const parent = Parent();
       parent.destroy();
@@ -786,12 +807,13 @@ describe("Documentation Examples", () => {
       let destroyed = false;
 
       const Parent = () =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             destroyed = true;
           });
           return $("div", { textContent: "Parent" });
-        });
+        })();
 
       const parent = Parent();
       parent.destroy();
@@ -803,7 +825,8 @@ describe("Documentation Examples", () => {
       const destructions: string[] = [];
 
       const createComponent = (name: string, childFactory?: () => ReturnType<typeof component>) =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             destructions.push(name);
           });
@@ -815,7 +838,7 @@ describe("Documentation Examples", () => {
           const child = childFactory(); // Automatically tracked
           // @ts-expect-error
           return $("div", {}, [child.element]);
-        });
+        })();
 
       const root = createComponent("root", () =>
         createComponent("level1", () =>
@@ -837,12 +860,13 @@ describe("Documentation Examples", () => {
       const destroyed: string[] = [];
 
       const createDynamicChild = (id: number) =>
-        component((scope) => {
+        component(() => {
+          const scope = useScope();
           scope.track(() => {
             destroyed.push(`child-${id}`);
           });
           return $("div", { textContent: `Child ${id}` });
-        });
+        })();
 
       const Parent = () =>
         component(() => {
@@ -853,7 +877,7 @@ describe("Documentation Examples", () => {
           }
 
           return $("div", {}, children);
-        });
+        })();
 
       const parent = Parent();
       parent.destroy();
@@ -870,16 +894,18 @@ describe("Documentation Examples", () => {
         const destructionLog: string[] = [];
 
         const Header = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => destructionLog.push("Header destroyed"));
             return $("header", { textContent: "Header Component" });
-          });
+          })();
 
         const Avatar = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => destructionLog.push("Avatar destroyed"));
             return $("div", { className: "avatar", textContent: "Avatar Component" });
-          });
+          })();
 
         const UserProfile = () =>
           component(() => {
@@ -887,7 +913,7 @@ describe("Documentation Examples", () => {
             const avatar = Avatar(); // Automatically tracked
 
             return $("div", { className: "profile" }, [header.element, avatar.element]);
-          });
+          })();
 
         const profile = UserProfile();
 
@@ -910,13 +936,15 @@ describe("Documentation Examples", () => {
         const cleanupLog: string[] = [];
 
         const Comment = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => cleanupLog.push("Comment"));
             return $("div", { textContent: "Comment" });
-          });
+          })();
 
         const CommentList = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => cleanupLog.push("CommentList"));
 
             const comments = [Comment(), Comment(), Comment()]; // All automatically tracked
@@ -926,25 +954,27 @@ describe("Documentation Examples", () => {
               {},
               comments.map((c) => c.element),
             );
-          });
+          })();
 
         const Post = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => cleanupLog.push("Post"));
 
             const commentList = CommentList(); // Automatically tracked
 
             return $("article", {}, [commentList.element]);
-          });
+          })();
 
         const Feed = () =>
-          component((scope) => {
+          component(() => {
+            const scope = useScope();
             scope.track(() => cleanupLog.push("Feed"));
 
             const post = Post(); // Automatically tracked
 
             return $("main", {}, [post.element]);
-          });
+          })();
 
         const feed = Feed();
         feed.destroy();
@@ -965,13 +995,13 @@ describe("Documentation Examples", () => {
 
     it("should allow SeidrComponent as a child in $ factory", () => {
       function Child() {
-        return component(() => $("span", { textContent: "Child" }));
+        return component(() => $("span", { textContent: "Child" }))();
       }
 
       const parent = component(() => {
         const child = Child();
         return $("div", { className: "parent" }, [child]);
-      });
+      })();
 
       mount(parent, document.body);
 
@@ -984,12 +1014,12 @@ describe("Documentation Examples", () => {
 
     it("should allow multiple SeidrComponents as children", () => {
       function Child(props: { name: string }) {
-        return component(() => $("span", { textContent: props.name }));
+        return component(() => $("span", { textContent: props.name }))();
       }
 
       const parent = component(() => {
         return $("div", { className: "parent" }, [Child({ name: "A" }), Child({ name: "B" })]);
-      });
+      })();
 
       mount(parent, document.body);
 

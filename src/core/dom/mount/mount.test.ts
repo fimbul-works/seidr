@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { component } from "../component";
+import { component, useScope } from "../component";
 import { $ } from "../element";
 import { mount } from "./mount";
 
@@ -12,7 +12,10 @@ describe("mount", () => {
 
   it("should mount component into container", () => {
     const mockElement = $("div");
-    const comp = component(() => mockElement);
+    const createComp = component(() => {
+      return mockElement;
+    });
+    const comp = createComp();
 
     mount(comp, container);
 
@@ -21,7 +24,10 @@ describe("mount", () => {
 
   it("should return unmount function", () => {
     const mockElement = $("div");
-    const comp = component(() => mockElement);
+    const createComp = component(() => {
+      return mockElement;
+    });
+    const comp = createComp();
 
     const unmount = mount(comp, container);
 

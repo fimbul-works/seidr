@@ -396,7 +396,7 @@ describe("Client-Side Hydration", () => {
         component(() => {
           const count = new Seidr(42);
           return $("div", { textContent: count.as((n) => `Count: ${n}`) });
-        });
+        })();
 
       // Server-side capture
       const scope = new SSRScope();
@@ -430,7 +430,7 @@ describe("Client-Side Hydration", () => {
       const TestComponent = () =>
         component(() => {
           return $("div", {}, ["test"]);
-        });
+        })();
 
       expect(isHydratingFlag).toBe(false);
       expect(hasHydrationData()).toBe(false);
@@ -470,7 +470,7 @@ describe("Client-Side Hydration", () => {
       const TestComponent = () =>
         component(() => {
           return $("div", {}, ["test"]);
-        });
+        })();
 
       // Switch to client mode for hydration
       const cleanupClientMode2 = enableClientMode();

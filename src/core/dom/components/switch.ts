@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr";
 import { uid } from "../../util/uid";
-import { component, type SeidrComponent } from "../component";
+import { component, type SeidrComponent, useScope } from "../component";
 import { $comment } from "../element";
 
 /**
@@ -19,7 +19,8 @@ export function Switch<T, C extends SeidrComponent<any, any>>(
   cases: Map<T, () => C> | Record<string, () => C>,
   defaultCase?: () => C,
 ): SeidrComponent<any, Comment> {
-  return component((scope) => {
+  return component(() => {
+    const scope = useScope();
     const marker = $comment(`seidr-switch:${uid()}`);
     let currentComponent: C | null = null;
 
@@ -57,5 +58,5 @@ export function Switch<T, C extends SeidrComponent<any, any>>(
     });
 
     return marker;
-  });
+  })();
 }

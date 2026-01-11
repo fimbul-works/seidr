@@ -2,6 +2,8 @@ import { getRenderContext } from "../render-context-contract";
 import { isHTMLElement } from "../util/is";
 import { type ComponentScope, createScope } from "./component-scope";
 
+export { createScope };
+
 /** Map of SeidrComponent stack by render context ID */
 const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
 
@@ -30,6 +32,38 @@ export const getCurrentComponent = (): SeidrComponent | null => {
     return stack[stack.length - 1];
   }
   return null;
+};
+
+/**
+ * Gets the scope of the current component.
+ *
+ * This is a convenience helper that provides access to the current component's scope
+ * for tracking cleanup functions and child components. It must be called within a component.
+ *
+ * @throws {Error} If called outside of a component context
+ * @returns {ComponentScope} The scope of the current component
+ *
+ * @example
+ * Using useScope in a component
+ * ```typescript
+ * const Counter = component(({ initialValue }: { initialValue: number }) => {
+ *   const scope = useScope();
+ *   const count = new Seidr(initialValue);
+ *
+ *   scope.track(count.bind(button, (value) => {
+ *     button.textContent = `Count: ${value}`;
+ *   }));
+ *
+ *   return button;
+ * });
+ * ```
+ */
+export const useScope = (): ComponentScope => {
+  const current = getCurrentComponent();
+  if (!current) {
+    throw new Error("useScope() must be called within a component");
+  }
+  return current.scope;
 };
 
 /**
@@ -96,115 +130,135 @@ export interface SeidrComponent<
  * function automatically tracks cleanup functions, reactive bindings, and child
  * components to prevent memory leaks.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- * @template {SeidrElement<K>} T - The type of SeidrElement the component returns
+ * @template P - Props object type (optional)
  *
- * @param {(scope: ComponentScope) => T} factory - Function that creates the component element and tracks resources
- * @returns {SeidrComponent<K, T>} A Component instance with the created element and destroy method
+ * @param {(props: P) => Node} factory - Function that accepts props and creates the component element
+ * @returns {(props: P) => SeidrComponent} A function that accepts props and returns a Component instance
  *
  * @example
- * Basic counter component
+ * Component with props
  * ```typescript
- * import { component, Seidr, $ } from '@fimbul-works/seidr';
+ * import { component, useScope, Seidr, $button } from '@fimbul-works/seidr';
  *
- * function Counter() {
- *   return component((scope) => {
- *     const count = new Seidr(0);
- *     const button = $('button', { textContent: 'Count: 0' });
+ * const Counter = component(({ initialValue }: { initialValue: number }) => {
+ *   const scope = useScope();
+ *   const count = new Seidr(initialValue);
+ *   const button = $button({ textContent: `Count: ${count.value}` });
  *
- *     // Track reactive binding
- *     scope.track(count.bind(button, (value, el) => {
- *       el.textContent = `Count: ${value}`;
- *     }));
+ *   // Track reactive binding
+ *   scope.track(count.bind(button, (value, el) => {
+ *     el.textContent = `Count: ${value}`;
+ *   }));
  *
- *     // Track event listener
- *     scope.track(button.on('click', () => count.value++));
+ *   // Track event listener
+ *   scope.track(button.on('click', () => count.value++));
  *
- *     return button;
- *   });
- * }
+ *   return button;
+ * });
+ *
+ * // Usage
+ * Counter({ initialValue: 5 });
+ * ```
+ *
+ * @example
+ * Component without props
+ * ```typescript
+ * const App = component(() => {
+ *   const scope = useScope();
+ *   const user = new Seidr({ name: 'John' });
+ *
+ *   return $('div', { className: 'profile' }, [
+ *     $('span', { textContent: user.as(u => u.name) })
+ *   ]);
+ * });
+ *
+ * // Usage
+ * App();
  * ```
  *
  * @example
  * Component with child components
  * ```typescript
- * function UserProfile() {
- *   return component((scope) => {
- *     const user = new Seidr({ name: 'John', email: 'john@example.com' });
+ * const UserProfile = component(({ userId }: { userId: string }) => {
+ *   const scope = useScope();
+ *   const user = new Seidr({ name: 'John', email: 'john@example.com' });
  *
- *     const header = scope.child(createHeader());
- *     const avatar = scope.child(createAvatar());
+ *   const header = scope.child(createHeader());
+ *   const avatar = scope.child(createAvatar());
  *
- *     const container = $('div', { className: 'profile' }, [
- *       header.element,
- *       avatar.element,
- *       $('span', { textContent: user.as(u => u.name) })
- *     ]);
+ *   const container = $('div', { className: 'profile' }, [
+ *     header.element,
+ *     avatar.element,
+ *     $('span', { textContent: user.as(u => u.name) })
+ *   ]);
  *
- *     return container;
- *   });
- * }
+ *   return container;
+ * });
  * ```
  */
-export function component<K extends keyof HTMLElementTagNameMap, T extends Node>(
-  factory: (scope: ComponentScope) => T,
-): SeidrComponent<K, T> {
-  const stack = getComponentStack();
-  const isRootComponent = stack.length === 0;
+export function component<P = void>(
+  factory: P extends void ? () => Node : (props: P) => Node,
+): P extends void ? () => SeidrComponent : (props: P) => SeidrComponent {
+  // Return a function that accepts props and creates the component
+  return ((props?: P) => {
+    const stack = getComponentStack();
+    const isRootComponent = stack.length === 0;
 
-  // Create the scope and partial SeidrComponent
-  const scope = createScope();
-  const comp = {
-    isSeidrComponent: true,
-    scope,
-    destroy: () => scope.destroy(),
-  } as SeidrComponent<K, T>;
+    // Create the scope and partial SeidrComponent
+    const scope = createScope();
+    const comp = {
+      isSeidrComponent: true,
+      scope,
+      destroy: () => scope.destroy(),
+    } as SeidrComponent;
 
-  // Register as child component
-  if (stack.length > 0) {
-    stack[stack.length - 1].scope.child(comp);
-  }
-
-  // Add to component stack
-  stack.push(comp);
-
-  // Render the component via factory
-  try {
-    comp.element = factory(scope);
-
-    // Set up destroy method
-    comp.destroy = () => {
-      scope.destroy();
-      const el = comp.element as any;
-      if (el?.remove) {
-        el.remove();
-      } else if (el?.parentNode) {
-        try {
-          el.parentNode.removeChild(el);
-        } catch (_e) {
-          // Ignore if node was already removed or parent changed
-        }
-      }
-    };
-
-    // Propagate onAttached from scope
-    if (scope.onAttached) {
-      comp.onAttached = scope.onAttached;
+    // Register as child component
+    if (stack.length > 0) {
+      stack[stack.length - 1].scope.child(comp);
     }
-  } finally {
-    // Remove from stack
-    stack.pop();
-  }
 
-  // Apply root element attributes
-  if (isRootComponent && isHTMLElement(comp.element)) {
-    comp.element.dataset.seidrRoot = "true";
-  }
+    // Add to component stack
+    stack.push(comp);
 
-  // Root component must clear out component stack
-  if (isRootComponent && stack.length > 0) {
-    while (stack.length) stack.pop();
-  }
+    // Render the component via factory
+    try {
+      // Call factory with props (or undefined if no props)
+      comp.element = factory(props as P);
 
-  return comp;
+      // Set up destroy method
+      comp.destroy = () => {
+        comp.scope.destroy();
+        const el = comp.element as any;
+        if (el?.remove) {
+          el.remove();
+        } else if (el?.parentNode) {
+          try {
+            el.parentNode.removeChild(el);
+          } catch (_e) {
+            // Ignore if node was already removed or parent changed
+          }
+        }
+      };
+
+      // Propagate onAttached from scope
+      if (scope.onAttached) {
+        comp.onAttached = scope.onAttached;
+      }
+    } finally {
+      // Remove from stack
+      stack.pop();
+    }
+
+    // Apply root element attributes
+    if (isRootComponent && isHTMLElement(comp.element)) {
+      comp.element.dataset.seidrRoot = "true";
+    }
+
+    // Root component must clear out component stack
+    if (isRootComponent && stack.length > 0) {
+      while (stack.length) stack.pop();
+    }
+
+    return comp;
+  }) as P extends void ? () => SeidrComponent : (props: P) => SeidrComponent;
 }

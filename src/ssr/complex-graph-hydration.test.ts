@@ -50,7 +50,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: sumOfSums }),
           $("span", { textContent: final }),
         ]);
-      });
+      })();
     }
 
     // Server-side rendering
@@ -120,7 +120,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: ac }),
           $("span", { textContent: abc }),
         ]);
-      });
+      })();
     }
 
     // Server-side
@@ -175,7 +175,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
           $("span", { textContent: l4 }),
           $("span", { textContent: l5 }),
         ]);
-      });
+      })();
     }
 
     // Server-side

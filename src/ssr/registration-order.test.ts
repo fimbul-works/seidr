@@ -40,7 +40,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
           // Just observing to trigger registration
         });
         return $("div", {}, [`Count: ${outsideCount.value}`]);
-      });
+      })();
     });
 
     // Should render correctly
@@ -65,7 +65,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         outsideSeidr.observe(() => {});
 
         return $("div", {}, [`A: ${insideSeidr.value}, B: ${outsideSeidr.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("A: 200, B: 100");
@@ -93,7 +93,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         outside1.observe(() => {});
 
         return $("div", {}, [`${inside1.value} ${outside1.value} ${inside2.value} ${outside2.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("inside-1 outside-1 inside-2 outside-2");
@@ -114,7 +114,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         doubled.observe(() => {});
 
         return $("div", {}, [`Doubled: ${doubled.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Doubled: 20");
@@ -140,7 +140,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         sum.observe(() => {});
 
         return $("div", {}, [`Sum: ${sum.value}, Doubled: ${doubled.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Sum: 8, Doubled: 16");
@@ -165,7 +165,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         doubled.observe(() => {});
 
         return $("div", {}, [`${doubled.value} ${quadrupled.value} ${octupled.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("4 8 16");
@@ -188,7 +188,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         unsub2();
 
         return $("div", {}, [`Count: ${outsideCount.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Count: 7");
@@ -211,7 +211,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         // OUTSIDE is NOT observed
 
         return $("div", {}, [`Inside: ${insideCount.value}, Outside: ${outsideCount.value}`]);
-      });
+      })();
     });
 
     // Should render correctly
@@ -231,7 +231,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         sharedSeidr.observe(() => {});
         local1.observe(() => {});
         return $("div", {}, [`${sharedSeidr.value} ${local1.value}`]);
-      });
+      })();
     });
 
     // Second render - should start with fresh ID counter
@@ -241,7 +241,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         sharedSeidr.observe(() => {});
         local2.observe(() => {});
         return $("div", {}, [`${sharedSeidr.value} ${local2.value}`]);
-      });
+      })();
     });
 
     expect(html1).toContain("shared local-1");
@@ -262,7 +262,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         });
 
         return $("div", {}, [`Count: ${boundValue}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Count: 42");
@@ -295,7 +295,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         inside1.observe(() => {});
 
         return $("div", {}, ["test"]);
-      });
+      })();
     });
 
     // All IDs should be unique
@@ -317,7 +317,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         fullName.observe(() => {});
 
         return $("div", {}, [`Name: ${fullName.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Name: John Doe");
@@ -339,7 +339,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         sum.observe(() => {});
 
         return $("div", {}, [`Sum: ${sum.value}`]);
-      });
+      })();
     });
 
     expect(html).toContain("Sum: 15");
@@ -355,7 +355,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
       return component(() => {
         outsideCount.observe(() => {});
         return $("div", {}, [`Count: ${outsideCount.value}`]);
-      });
+      })();
     });
 
     // Verify HTML contains hydration data
@@ -381,7 +381,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         shared.observe(() => {});
         firstOnly.observe(() => {});
         return $("div", {}, [`${shared.value} ${firstOnly.value}`]);
-      });
+      })();
     });
 
     const { html: html2 } = await renderToString(() => {
@@ -389,7 +389,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         shared.observe(() => {});
         secondOnly.observe(() => {});
         return $("div", {}, [`${shared.value} ${secondOnly.value}`]);
-      });
+      })();
     });
 
     const { html: html3 } = await renderToString(() => {
@@ -398,7 +398,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
         firstOnly.observe(() => {});
         secondOnly.observe(() => {});
         return $("div", {}, [`${shared.value} ${firstOnly.value} ${secondOnly.value}`]);
-      });
+      })();
     });
 
     expect(html1).toContain("shared first");
