@@ -344,9 +344,14 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           }
 
           cleanups.push(
-            value.bind(el, (value, element) =>
-              directProps.has(prop) ? ((element as any)[prop] = value) : element.setAttribute(prop, String(value)),
-            ),
+            value.bind(el, (value, element) => {
+              if (prop.startsWith("aria") || prop.startsWith("data-")) {
+                console.log(`[element.ts] Binding ${prop}=${value} (typeof: ${typeof value})`);
+              }
+              return directProps.has(prop)
+                ? ((element as any)[prop] = value)
+                : element.setAttribute(prop, String(value));
+            }),
           );
         } else {
           if (directProps.has(prop)) {
@@ -403,11 +408,26 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // Assign properties
   if (props) {
     for (const [prop, value] of Object.entries(props)) {
+      // For aria-* and data-* attributes, use setAttribute
+      const useAttribute = prop.startsWith("aria-") || prop.startsWith("data-");
       // Set up reactive binding
       if (isSeidr(value)) {
-        cleanups.push(value.bind(el, (value, el) => (el[prop as P] = value)));
+        cleanups.push(
+          value.bind(el, (value, element) => {
+            if (useAttribute) {
+              value === null ? element.removeAttribute(prop) : element.setAttribute(prop, value);
+            } else {
+              (element as any)[prop] = value;
+            }
+          }),
+        );
       } else {
-        el[prop as P] = value as HTMLElementTagNameMap[K][P];
+        // For non-Seidr values
+        if (useAttribute && value !== null && value !== undefined) {
+          el.setAttribute(prop, value);
+        } else {
+          el[prop as P] = value as HTMLElementTagNameMap[K][P];
+        }
       }
     }
   }

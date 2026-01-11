@@ -7,8 +7,8 @@ echo "Minifying bundles for size calculation..."
 npx rollup -c rollup.config.js --environment MINIFY:true > /dev/null 2>&1 || true
 
 # Create temporary minified versions using terser
-npx terser dist/seidr.js -c -m -o dist/seidr.min.js --module
-npx terser dist/seidr.cjs -c -m -o dist/seidr.min.cjs
+npx terser dist/seidr.js -c passes=2 -m -o dist/seidr.min.js --module
+npx terser dist/seidr.cjs -c passes=2 -m -o dist/seidr.min.cjs
 
 # Compress the bundles
 gzip -f -k dist/seidr.min.js

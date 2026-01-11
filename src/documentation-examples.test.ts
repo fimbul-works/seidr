@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $div, bindInput, component, Safe, Seidr, withStorage } from "./core";
-import { inServer } from "./core/util/env";
+import { inServer } from "./ssr/env";
 import { renderToString } from "./ssr/render-to-string";
 
 // Mocks

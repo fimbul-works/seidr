@@ -1,4 +1,3 @@
-import { isHydrating } from "src/index.browser";
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
 import { getRenderContext } from "./render-context-contract";

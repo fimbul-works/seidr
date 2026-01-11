@@ -1,5 +1,5 @@
 import type { SeidrElementInterface } from "../core/index";
-import { isFn, isObj, isSeidr, isStr } from "../core/util/is";
+import { isFn, isObj, isStr, unwrapSeidr } from "../core/util";
 
 /**
  * Global map of server-side HTML elements indexed by their ID attribute.
@@ -401,7 +401,7 @@ export class ServerHTMLElement implements SeidrElementInterface {
     // Process all attributes
     for (const [key, value] of Object.entries(attrs)) {
       // Handle Seidr observables - evaluate them to get the value
-      const resolvedValue = isSeidr(value) ? value.value : value;
+      const resolvedValue = unwrapSeidr(value);
 
       // Handle special properties that shouldn't be attributes
       if (key === "className") {

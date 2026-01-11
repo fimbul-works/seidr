@@ -1,8 +1,8 @@
+import { unwrapSeidr } from "../core";
 import { getRenderContext } from "../core/render-context-contract";
-import { globalStates } from "../core/state";
 import { Seidr } from "../core/seidr";
+import { globalStates, symbolNames } from "../core/state";
 import { isSeidr } from "../core/util/is";
-import { symbolNames } from "../core/state";
 
 const SEIDR_PREFIX = "$/";
 
@@ -61,7 +61,7 @@ export function captureRenderContextState(renderContextID: number): Record<strin
 
     // Prefix Seidr observable keys with "$/"
     const stateKey = isSeidr(value) ? `${SEIDR_PREFIX}${id}` : String(id);
-    captured[stateKey] = isSeidr(value) ? value.value : value;
+    captured[stateKey] = unwrapSeidr(value);
   }
 
   return captured;
