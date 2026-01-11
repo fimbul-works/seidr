@@ -1,26 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { Seidr } from "../seidr";
-import { isBool, isFn, isNum, isObj, isSeidr, isStr, isUndefinedined } from "./is";
+import { isBool, isFn, isNum, isObj, isSeidr, isStr, isUndefined } from "./is";
 
 describe("is.ts - Type Guard Utilities", () => {
-  describe("isUndefinedined", () => {
+  describe("isUndefined", () => {
     it("should return true for undefined", () => {
-      expect(isUndefinedined(undefined)).toBe(true);
+      expect(isUndefined(undefined)).toBe(true);
     });
 
     it("should return false for null", () => {
-      expect(isUndefinedined(null)).toBe(false);
+      expect(isUndefined(null)).toBe(false);
     });
 
     it("should return false for defined values", () => {
-      expect(isUndefinedined(0)).toBe(false);
-      expect(isUndefinedined("")).toBe(false);
-      expect(isUndefinedined(false)).toBe(false);
+      expect(isUndefined(0)).toBe(false);
+      expect(isUndefined("")).toBe(false);
+      expect(isUndefined(false)).toBe(false);
     });
 
     it("should narrow type correctly", () => {
       const value: unknown = undefined;
-      if (isUndefinedined(value)) {
+      if (isUndefined(value)) {
         // Type should be narrowed to undefined
         const typed: undefined = value;
         expect(typed).toBeUndefined();
@@ -32,10 +32,10 @@ describe("is.ts - Type Guard Utilities", () => {
         let maybeUndefined: string | undefined;
 
         maybeUndefined = undefined;
-        expect(isUndefinedined(maybeUndefined)).toBe(true);
+        expect(isUndefined(maybeUndefined)).toBe(true);
 
         maybeUndefined = "defined";
-        expect(isUndefinedined(maybeUndefined)).toBe(false);
+        expect(isUndefined(maybeUndefined)).toBe(false);
       });
     });
   });
@@ -321,7 +321,7 @@ describe("is.ts - Type Guard Utilities", () => {
       const seidr = new Seidr(0);
 
       // undefined
-      expect(isUndefinedined(undef)).toBe(true);
+      expect(isUndefined(undef)).toBe(true);
       expect(isBool(undef)).toBe(false);
       expect(isNum(undef)).toBe(false);
       expect(isStr(undef)).toBe(false);
@@ -330,7 +330,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(undef)).toBe(false);
 
       // null
-      expect(isUndefinedined(nul)).toBe(false);
+      expect(isUndefined(nul)).toBe(false);
       expect(isBool(nul)).toBe(false);
       expect(isNum(nul)).toBe(false);
       expect(isStr(nul)).toBe(false);
@@ -339,7 +339,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(nul)).toBe(false);
 
       // boolean
-      expect(isUndefinedined(bool)).toBe(false);
+      expect(isUndefined(bool)).toBe(false);
       expect(isBool(bool)).toBe(true);
       expect(isNum(bool)).toBe(false);
       expect(isStr(bool)).toBe(false);
@@ -348,7 +348,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(bool)).toBe(false);
 
       // number
-      expect(isUndefinedined(num)).toBe(false);
+      expect(isUndefined(num)).toBe(false);
       expect(isBool(num)).toBe(false);
       expect(isNum(num)).toBe(true);
       expect(isStr(num)).toBe(false);
@@ -357,7 +357,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(num)).toBe(false);
 
       // string
-      expect(isUndefinedined(str)).toBe(false);
+      expect(isUndefined(str)).toBe(false);
       expect(isBool(str)).toBe(false);
       expect(isNum(str)).toBe(false);
       expect(isStr(str)).toBe(true);
@@ -366,7 +366,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(str)).toBe(false);
 
       // function
-      expect(isUndefinedined(fn)).toBe(false);
+      expect(isUndefined(fn)).toBe(false);
       expect(isBool(fn)).toBe(false);
       expect(isNum(fn)).toBe(false);
       expect(isStr(fn)).toBe(false);
@@ -375,7 +375,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(fn)).toBe(false);
 
       // object
-      expect(isUndefinedined(obj)).toBe(false);
+      expect(isUndefined(obj)).toBe(false);
       expect(isBool(obj)).toBe(false);
       expect(isNum(obj)).toBe(false);
       expect(isStr(obj)).toBe(false);
@@ -384,7 +384,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isSeidr(obj)).toBe(false);
 
       // Seidr
-      expect(isUndefinedined(seidr)).toBe(false);
+      expect(isUndefined(seidr)).toBe(false);
       expect(isBool(seidr)).toBe(false);
       expect(isNum(seidr)).toBe(false);
       expect(isStr(seidr)).toBe(false);

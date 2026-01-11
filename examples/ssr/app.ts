@@ -1,5 +1,4 @@
 import {
-  $,
   $button,
   $checkbox,
   $div,
@@ -14,8 +13,7 @@ import {
   component,
   createStateKey,
   getState,
-  hasState,
-  isUndefinedined,
+  isUndefined,
   List,
   Seidr,
   setState,
@@ -58,7 +56,7 @@ function TodoItem({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => v
 
 export function TodoApp(todos: Seidr<Todo[]>) {
   return component(() => {
-    if (!isUndefinedined(todos)) {
+    if (!isUndefined(todos)) {
       setState(todosKey, todos);
     } else {
       todos = getState(todosKey);

@@ -26,6 +26,7 @@
   - [`getState()`](#getstate)
 - [Utilities](#utilities)
   - [`elementClassToggle()`](#elementclasstoggle)
+  - [`bindInput()`](#bindinput)
   - [`uid()`](#uid)
   - [`uidTime()`](#uidtime)
   - [`cn()`](#cn)
@@ -775,6 +776,39 @@ elementClassToggle(button, 'active', isActive);
 isActive.value = true;  // Adds 'active' class
 isActive.value = false; // Removes 'active' class
 ```
+
+---
+
+### bindInput()
+
+Create two-way binding props for form input elements. Automatically syncs input changes with a [`Seidr<string>`](#seidrt-class) observable.
+
+**Parameters:**
+- `observable` - String [Seidr](#seidrt-class) to bind to the input
+
+**Returns:** Object with `value` and `oninput` props to spread onto input elements
+
+```typescript
+import { bindInput, Seidr, $input, $div, $span } from '@fimbul-works/seidr';
+
+const searchText = new Seidr('');
+
+const searchComponent = $div({}, [
+  $input({
+    type: 'text',
+    placeholder: 'Search...',
+    ...bindInput(searchText)
+  }),
+  $span({ textContent: searchText.as(t => `Searching: ${t}`) })
+]);
+
+// searchText.value updates automatically as user types
+```
+
+**How it works:**
+- Sets the input's `value` to the observable (reactive binding)
+- Adds an `oninput` handler that updates the observable when user types
+- Spreads the props onto the input element for clean syntax
 
 ---
 

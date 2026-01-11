@@ -6,7 +6,7 @@ import { Seidr } from "../seidr";
  * @param v - Value to check
  * @returns True if the value is undefined, false otherwise
  */
-export const isUndefinedined = (v: any): v is undefined => typeof v === "undefined";
+export const isUndefined = (v: any): v is undefined => typeof v === "undefined";
 
 /**
  * Check if a value is a boolean.

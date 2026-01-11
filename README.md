@@ -16,7 +16,6 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 - [Quick Start](#-quick-start)
 - [Conceptual Overview](#-conceptual-overview)
 - [Core Concepts](#-core-concepts)
-- [Advanced Patterns](#-advanced-patterns)
 - [API Reference](#-api-reference)
 - [Server-Side Rendering](#-server-side-rendering-experimental)
 - [Performance](#-performance)
@@ -27,7 +26,7 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 4.3KB (minified + gzipped)
+- 📦 **Tiny Footprint** - 4.5KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -109,10 +108,10 @@ function Counter() {
       className: 'counter',
       style: 'padding: 20px; border: 1px solid #ccc;'
     }, [
-      $span({ textContent: count }), // Automatic reactive binding!
+      $span({ textContent: count }), // Automatic reactive binding
       $button({
         textContent: 'Increment',
-        disabled, // Reactive boolean binding!
+        disabled, // Reactive boolean binding
         onclick: () => count.value++
       }),
       $button({
@@ -256,7 +255,7 @@ import { mount } from '@fimbul-works/seidr';
 const app = SearchApp();
 const cleanup = mount(app, document.body);
 
-// App is now interactive!
+// App is now interactive
 // - User types → searchQuery updates → filteredItems recomputes → list updates
 // - All reactive bindings work automatically
 
@@ -288,7 +287,7 @@ items (root) → filteredItems (derived) → list rendering
 3. Bindings update DOM elements directly
 4. No virtual DOM, no diffing entire component trees
 
-**Why This Matters:**
+**Benefits:**
 - **Predictable:** You know exactly what updates when
 - **Efficient:** Only changed DOM elements update
 - **Simple:** One-way data flow, no cycles
@@ -315,7 +314,7 @@ State is stored in `Seidr<T>` observables. Create them, pass them to element pro
 import { Seidr, $input } from '@fimbul-works/seidr';
 
 const disabled = new Seidr(false);
-const input = $input({ disabled }); // That's it!
+const input = $input({ disabled });
 
 disabled.value = true; // Input instantly becomes disabled
 ```
@@ -432,7 +431,7 @@ mountList(todos, item => item.id, item => TodoItem({ item }), container);
 mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
 ```
 
-**Learn more:** [Mounting](API.md#mounting)
+**Learn more:** [Mounting](API.md#mounting--declarative-components)
 
 ### Two-Way Form Binding
 
@@ -588,7 +587,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.7KB (minified + gzipped)
+- **Seidr counter app**: ~1.6KB (minified + gzipped)
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
