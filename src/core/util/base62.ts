@@ -1,5 +1,3 @@
-import { random } from "./random";
-
 // Base-62 alphabet for compact, URL-safe unique IDs
 const BASE62_ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 const RADIX = BASE62_ALPHABET.length;
@@ -36,7 +34,7 @@ export function decodeBase62(str: string): number {
 export function randomString(length: number): string {
   let result = "";
   for (let i = 0; i < length; i++) {
-    result += BASE62_ALPHABET[Math.floor(random() * RADIX)];
+    result += BASE62_ALPHABET[Math.floor(Math.random() * RADIX)];
   }
   return result;
 }

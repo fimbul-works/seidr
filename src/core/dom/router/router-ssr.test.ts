@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { clearHydrationData } from "../../../ssr/hydration-context";
 import { renderToString } from "../../../ssr/render-to-string";
 import { setActiveSSRScope } from "../../../ssr/ssr-scope";
+import { enableSSRMode } from "../../../test-setup";
 import { component } from "../component";
 import { $ } from "../element";
 import { createRoute } from "./create-route";
@@ -9,21 +10,17 @@ import { navigate } from "./navigate";
 import { Route } from "./route";
 import { Router } from "./router";
 
-const originalSSREnv = process.env.SEIDR_TEST_SSR;
-
 describe("Router SSR", () => {
+  let cleanupEnv: () => void;
+
   beforeEach(() => {
     // Enable SSR mode
-    process.env.SEIDR_TEST_SSR = "true";
+    cleanupEnv = enableSSRMode();
   });
 
   afterEach(() => {
-    if (originalSSREnv) {
-      process.env.SEIDR_TEST_SSR = originalSSREnv;
-    } else {
-      delete process.env.SEIDR_TEST_SSR;
-    }
     setActiveSSRScope(undefined);
+    cleanupEnv();
     clearHydrationData();
   });
 

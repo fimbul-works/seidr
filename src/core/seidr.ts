@@ -3,7 +3,6 @@ import { getActiveSSRScope } from "../ssr/ssr-scope";
 import { getRenderContext } from "./render-context-contract";
 import type { EventHandler } from "./types";
 
-// Extend globalThis for the fallback counter
 let fallbackSeidrIdCounter: number = 0;
 
 /** Generates a unique numeric ID for a Seidr instance within the current render context */

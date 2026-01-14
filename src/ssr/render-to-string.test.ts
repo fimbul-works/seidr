@@ -3,33 +3,27 @@ import { TodoApp } from "../../examples/todo.js";
 import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
+import { enableSSRMode } from "../test-setup";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
-// Store original SSR env var
-const originalSSREnv = process.env.SEIDR_TEST_SSR;
-
 describe("SSR Utilities", () => {
   let observables: Seidr<any>[] = [];
+  let cleanupEnv: () => void;
 
   beforeEach(() => {
     // Enable SSR mode for all tests
-    // @ts-expect-error
-    process.env.SEIDR_TEST_SSR = true;
+    cleanupEnv = enableSSRMode();
     observables = [];
   });
 
   afterEach(() => {
-    // Restore original SSR env var
-    if (originalSSREnv) {
-      process.env.SEIDR_TEST_SSR = originalSSREnv;
-    } else {
-      delete process.env.SEIDR_TEST_SSR;
-    }
-
-    // Clear active scope
+    // Use active context for cleanup if possible
     setActiveSSRScope(undefined);
+
+    // Restore original environment
+    cleanupEnv();
 
     // Clear hydration context
     clearHydrationData();
@@ -176,6 +170,7 @@ describe("SSR Utilities", () => {
     });
 
     it("should render TODO application", async () => {
+      // @ts-expect-error
       const { html, hydrationData } = await renderToString(TodoApp);
 
       // Verify HTML structure (data-seidr-id is added automatically)

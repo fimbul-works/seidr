@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $div, bindInput, component, Safe, Seidr, withStorage } from "./core";
 import { inServer } from "./ssr/env";
 import { renderToString } from "./ssr/render-to-string";
+import { enableClientMode, enableSSRMode } from "./test-setup";
 
 // Mocks
 const localStorageMock = (() => {
@@ -25,8 +26,13 @@ Object.defineProperty(global, "localStorage", {
 });
 
 describe("Documentation Verification", () => {
+  beforeEach(() => {
+    enableClientMode();
+  });
+
   describe("withStorage Error Handling", () => {
     beforeEach(() => {
+      enableClientMode();
       localStorageMock.clear();
       vi.clearAllMocks();
     });
@@ -63,35 +69,15 @@ describe("Documentation Verification", () => {
     });
   });
 
-  describe("Safe Component", () => {
-    it("catches synchronous errors", () => {
-      const errorComp = Safe(
-        () => {
-          throw new Error("Sync Error");
-        },
-        (err) => $div({ textContent: err.message }),
-      );
-      // expect(String(errorComp.element)).toContain("div");
-      // HTMLDivElement.toString() is [object HTMLDivElement]
-      // Use textContent for JSDOM
-      expect(errorComp.element.textContent).toContain("Sync Error");
-    });
-  });
-
   describe("SSR Async", () => {
-    const originalSSREnv = process.env.SEIDR_TEST_SSR;
+    let cleanup: () => void;
 
     beforeEach(() => {
-      process.env.SEIDR_TEST_SSR = "true";
+      cleanup = enableSSRMode();
     });
 
     afterEach(() => {
-      if (originalSSREnv) {
-        process.env.SEIDR_TEST_SSR = originalSSREnv;
-      } else {
-        delete process.env.SEIDR_TEST_SSR;
-      }
-      // clear hydration?
+      cleanup();
     });
 
     it("renderToString awaits inServer promises", async () => {

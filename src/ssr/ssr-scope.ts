@@ -1,4 +1,4 @@
-import type { Seidr } from "../core/index";
+import type { RenderContext, Seidr } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
 import { buildDependencyGraph, findPathsToRoots } from "./dependency-graph/index";
 import type { DependencyGraph } from "./dependency-graph/types";
@@ -17,16 +17,11 @@ const scopes = new Map<number, SSRScope>();
  * @param {(SSRScope | undefined)} scope - The scope to activate for the current render context
  */
 export function setActiveSSRScope(scope: SSRScope | undefined): void {
-  const ctx = getRenderContext();
-
-  // If no render context but setting undefined, allow for cleanup
-  if (!ctx) {
-    if (scope === undefined) {
-      return;
-    }
-
-    // If no render context but setting a scope, use a temporary key
-    // This supports the manual scope pattern where scope is set before renderToString
+  let ctx: RenderContext | undefined;
+  try {
+    ctx = getRenderContext();
+  } catch (_e) {
+    if (scope === undefined) return;
     scopes.set(-1, scope);
     return;
   }
@@ -46,8 +41,10 @@ export function setActiveSSRScope(scope: SSRScope | undefined): void {
  * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
 export function getActiveSSRScope(): SSRScope | undefined {
-  const ctx = getRenderContext();
-  if (!ctx) {
+  let ctx: RenderContext | undefined;
+  try {
+    ctx = getRenderContext();
+  } catch (_e) {
     // Check for temporary scope (manual scope pattern)
     return scopes.get(-1);
   }

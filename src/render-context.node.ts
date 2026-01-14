@@ -27,10 +27,12 @@ if (typeof global !== "undefined") {
 /**
  * Get the current render context.
  *
- * @return {(RenderContext | undefined)}
+ * @return {RenderContext}
  */
-export const getRenderContext = (): RenderContext | undefined => {
-  return contextLocalStorage.getStore();
+export const getRenderContext = (): RenderContext => {
+  const store = contextLocalStorage.getStore();
+  if (!store) throw new Error("RenderContext not initialized");
+  return store;
 };
 
 // Pass the SSR getRenderContext to contract

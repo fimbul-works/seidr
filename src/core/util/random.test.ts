@@ -5,10 +5,14 @@ import { enableClientMode, enableSSRMode } from "../../test-setup";
 import { random } from "./random";
 
 describe("random", () => {
+  let cleanup: () => void;
+
   it("should return a number between 0 and 1", () => {
+    cleanup = enableClientMode();
     const val = random();
     expect(val).toBeGreaterThanOrEqual(0);
     expect(val).toBeLessThan(1);
+    cleanup();
   });
 
   it("should produce different values on subsequent calls in same context", async () => {

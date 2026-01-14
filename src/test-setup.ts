@@ -16,7 +16,7 @@ export const browserContext: RenderContext = {
  * Robust getRenderContext for tests.
  * Prefers AsyncLocalStorage if available (SSR), falls back to browserContext.
  */
-function testGetRenderContext(): RenderContext | undefined {
+function testGetRenderContext(): RenderContext {
   // This is essentially what render-context.node.ts does but with a fallback
   // We try to get it from the contract-assigned function first if it's set to something else,
   // but here we just want a reliable fallback.
@@ -30,6 +30,7 @@ afterEach(() => {
   browserContext.idCounter = 0;
   browserContext.seidrIdCounter = 0;
   browserContext.randomCounter = 0;
+  browserContext.randomState = undefined;
   browserContext.currentPath = "/";
 
   // Clean up DOM after each test

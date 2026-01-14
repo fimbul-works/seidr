@@ -3,18 +3,17 @@ import type { RenderContext } from "./types";
 /**
  * Cross-environment getRenderContext.
  *
- * @returns {RenderContext | undefined} RenderContext object or undefined.
+ * @returns {RenderContext} RenderContext object.
  */
-export let getRenderContext: () => RenderContext | undefined = (): RenderContext | undefined => {
-  if (typeof process !== "undefined" && process.env.CLIENT_BUNDLE) return undefined;
-  throw new Error("Context not initialized");
+export let getRenderContext: () => RenderContext = (): RenderContext => {
+  throw new Error("RenderContext not initialized");
 };
 
 /**
  * Cross-environment getRenderContext contract dependency injector.
  *
- * @param {(() => RenderContext | undefined)} fn
+ * @param {(() => RenderContext)} fn
  */
-export function setInternalContext(fn: () => RenderContext | undefined) {
+export function setInternalContext(fn: () => RenderContext) {
   getRenderContext = fn;
 }

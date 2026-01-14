@@ -8,7 +8,7 @@ const LCG_M = 4022871197;
 const ALEA_M = 2091639;
 
 /**
- * Deterministic random number generator for Seidr.
+ * Deterministic random number generator for Seidr using the Alea algorithm.
  *
  * This function maintains state within the current RenderContext to provide
  * a sequence of high-entropy pseudo-random numbers that is deterministic
@@ -25,18 +25,12 @@ export function random(): number {
   // Initialize state if not present
   if (!ctx.randomState) {
     // We use the ID and initial counter to seed the sequence
-    const seed = ctx.renderContextID + ctx.randomCounter;
-    let r0: number, r1: number, r2: number, i: number;
-
-    const s = seed < 1 ? 1 / seed : seed;
-    r0 = (s >>> 0) * FRAC;
-    const s1 = (s * LCG_M + 1) >>> 0;
-    r1 = s1 * FRAC;
+    // Adding an offset ensures high entropy even for seed 0
+    const seed = ctx.renderContextID + ctx.randomCounter + 0.1337;
+    const s0 = (seed * LCG_M + 1) >>> 0;
+    const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
-    r2 = s2 * FRAC;
-    i = 1;
-
-    ctx.randomState = [r0, r1, r2, i];
+    ctx.randomState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
   }
 
   // Generate next number using the stored state
