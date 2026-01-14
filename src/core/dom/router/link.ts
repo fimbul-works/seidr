@@ -1,5 +1,5 @@
 import { Seidr } from "../../seidr";
-import { cn, unwrapSeidr, wrapSeidr } from "../../util/index";
+import { cn, NO_HYDRATE, unwrapSeidr, wrapSeidr } from "../../util/index";
 import { component, type SeidrComponent, useScope } from "../component";
 import { $, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
 import { getCurrentPath } from "./get-current-path";
@@ -98,7 +98,7 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     } else {
       props.className = className;
       // Set up reactive binding for custom prop (like aria-current)
-      const activeValueBinding = new Seidr<string | null>(val);
+      const activeValueBinding = new Seidr<string | null>(val, NO_HYDRATE);
       scope.track(isActive.bind(activeValueBinding, (active, binding) => (binding.value = active ? val : null)));
       props[activeProp] = activeValueBinding;
     }

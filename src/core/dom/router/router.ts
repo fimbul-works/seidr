@@ -2,7 +2,7 @@ import { isHydrating } from "../../../ssr/hydrate";
 import { ServerHTMLElement } from "../../../ssr/server-html-element";
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
-import { uid } from "../../util/index";
+import { NO_HYDRATE, uid } from "../../util/index";
 import { isSeidrComponentFactory } from "../../util/is";
 import { component, type SeidrComponent, useScope } from "../component";
 import { $comment, type SeidrNode } from "../element";
@@ -134,7 +134,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
       }
     } else {
       // Show matched route
-      currentParamsSeidr = new Seidr(params as Record<string, string>);
+      currentParamsSeidr = new Seidr(params as Record<string, string>, NO_HYDRATE);
       const factory = routes[matchedIndex].componentFactory;
       currentComponent = (
         isSeidrComponentFactory(factory)

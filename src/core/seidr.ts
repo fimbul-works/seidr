@@ -76,7 +76,18 @@ export class Seidr<T> {
    * @param {T} initial - The initial value to store
    * @memberof Seidr
    */
-  constructor(initial: T) {
+
+  /**
+   * Creates an instance of Seidr.
+   *
+   * @param {T} initial - The initial value to store
+   * @param {{ hydrate?: boolean }} [o] - Options for this Seidr instance
+   * @memberof Seidr
+   */
+  constructor(
+    initial: T,
+    private o: { hydrate?: boolean } = {},
+  ) {
     this.v = initial;
 
     // Client-side: register immediately for hydration
@@ -93,12 +104,14 @@ export class Seidr<T> {
    * registration happens in the same order on server and client, and allows
    * Seidr instances to be created outside renderToString but used inside it.
    *
-   * IMPORTANT: For proper SSR/hydration, Seidr instances should be created
-   * WITHIN the component function (inside renderToString), not outside.
-   *
    * On client-side: Called in constructor for immediate hydration registration.
    */
   private register(): void {
+    // If hydration is explicitly disabled, skip registration
+    if (this.o.hydrate === false) {
+      return;
+    }
+
     // Server-side rendering check: window === undefined or process.env.SEIDR_TEST_SSR === true
     if (
       typeof window === "undefined" ||
