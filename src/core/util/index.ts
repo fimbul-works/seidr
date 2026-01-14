@@ -1,5 +1,7 @@
+export * from "./animate";
 export * from "./cn";
 export * from "./debounce";
+export * from "./easing";
 export * from "./is";
 export * from "./random";
 export * from "./uid";
