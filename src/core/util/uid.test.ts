@@ -14,27 +14,23 @@ describe("uid", () => {
     const ids = Array.from({ length: 10 }, () => uid());
     const timestamps = ids.map((id) => id.split("-")[0]);
     for (let i = 1; i < timestamps.length; i++) {
-      // console.log(ids[i], ids[i].length);
       expect(timestamps[i] >= timestamps[i - 1]).toBe(true);
     }
   });
 
   it("should be approximately 20 characters", () => {
     const id = uid();
-    // console.log(id, id.length);
     expect(id.length).toBeGreaterThanOrEqual(18);
     expect(id.length).toBeLessThanOrEqual(22);
   });
 
   it("should contain hyphens as separators", () => {
     const id = uid();
-    // console.log(id, id.length);
     expect(id).toMatch(/^[a-zA-Z0-9]+-[a-zA-Z0-9]+-[a-zA-Z0-9]+$/);
   });
 
   it("should be URL-safe", () => {
     const id = uid();
-    // console.log(id, id.length);
     // Should only contain alphanumeric and hyphens
     expect(id).toMatch(/^[a-zA-Z0-9-]+$/);
     // Should not contain special characters that need encoding
@@ -43,7 +39,6 @@ describe("uid", () => {
 
   it("should generate IDs with three components", () => {
     const id = uid();
-    // console.log(id, id.length);
     const parts = id.split("-");
     expect(parts.length).toBe(3);
     expect(parts[0].length).toBeGreaterThan(0); // timestamp

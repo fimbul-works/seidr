@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $div, bindInput, component, Safe, Seidr, withStorage } from "./core";
+import { $div, bindInput, Safe, Seidr, withStorage } from "./core";
 import { inServer } from "./ssr/env";
 import { renderToString } from "./ssr/render-to-string";
 import { enableClientMode, enableSSRMode } from "./test-setup";
@@ -83,13 +83,13 @@ describe("Documentation Verification", () => {
     it("renderToString awaits inServer promises", async () => {
       const externalState = new Seidr<string>("initial");
 
-      const App = component(() => {
+      const App = () => {
         inServer(async () => {
           await new Promise((r) => setTimeout(r, 10)); // simulate fetch
           externalState.value = "fetched";
         });
         return $div({ textContent: externalState });
-      });
+      };
 
       const { html } = await renderToString(App);
       // In SSR mode, html is string

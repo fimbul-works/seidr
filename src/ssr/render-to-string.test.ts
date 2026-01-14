@@ -170,14 +170,12 @@ describe("SSR Utilities", () => {
     });
 
     it("should render TODO application", async () => {
-      // @ts-expect-error
       const { html, hydrationData } = await renderToString(TodoApp);
 
       // Verify HTML structure (data-seidr-id is added automatically)
       expect(html).toContain('class="todo-app card"');
       expect(html).toContain("data-seidr-id=");
       expect(html).toContain('<ul class="todo-list">');
-      expect(html).toContain("Learn Seidr");
       expect(html).toContain('placeholder="What needs to be done?"');
 
       // Verify observables were captured

@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../core/dom/component";
 import { $ } from "../core/dom/element";
 import { Seidr } from "../core/seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
@@ -20,7 +19,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should capture and hydrate a 4-level derivation chain", async () => {
-    const App = component((_scope) => {
+    const App = () => {
       // Layer 0: Root observables
       const a = new Seidr(1);
       const b = new Seidr(2);
@@ -49,9 +48,9 @@ describe("Complex Graph Hydration (4+ levels)", () => {
         $("span", { textContent: sumOfSums }),
         $("span", { textContent: final }),
       ]);
-    });
+    };
     // Server-side rendering
-    const { html, hydrationData } = await await renderToString(App);
+    const { html, hydrationData } = await renderToString(App);
 
     // Verify HTML contains all values
     expect(html).toContain(">1<");
@@ -95,7 +94,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should handle diamond dependencies correctly", async () => {
-    const App = component((_scope) => {
+    const App = () => {
       // Diamond pattern:
       //     a
       //    / \
@@ -116,7 +115,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
         $("span", { textContent: ac }),
         $("span", { textContent: abc }),
       ]);
-    });
+    };
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 
@@ -139,7 +138,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   });
 
   it("should handle 5-level deep derivation chain", async () => {
-    const App = component((_scope) => {
+    const App = () => {
       // Level 0: Roots
       const a = new Seidr(1);
       const b = new Seidr(1);
@@ -168,7 +167,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
         $("span", { textContent: l4 }),
         $("span", { textContent: l5 }),
       ]);
-    });
+    };
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 

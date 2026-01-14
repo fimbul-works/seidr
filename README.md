@@ -25,11 +25,11 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
-- 🏗️ **Component System** - Functional components with automatic cleanup
-- 📦 **Tiny Footprint** - 7.0KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
-- ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
+- 🏗️ **Component System** - Functional components with automatic cleanup
+- 📦 **Tiny Footprint** - 1.8KB for the basics, 7.1KB for the full library (minified + gzipped)
 - 🌲 **Tree-Shakable** - Import only what you need
+- ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
 
 ## 🎯 When to Use Seidr
@@ -651,7 +651,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **Vue counter app**: ~35KB (Vue runtime)
 - **Seidr counter app**: ~1.8KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The 7.0KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The 7.1KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
@@ -681,7 +681,6 @@ Seidr works in all modern browsers:
 **Requires:**
 - ES6 Class support
 - ES6 Map/Set support
-- ES Modules support
 
 ## 📄 License
 

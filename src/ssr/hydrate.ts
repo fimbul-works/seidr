@@ -1,4 +1,6 @@
-import { component, mount, type SeidrComponent, type SeidrNode } from "../core/dom";
+import type { SeidrComponent, SeidrNode } from "../core/dom";
+import { component } from "../core/dom/component";
+import { mount } from "../core/dom/mount";
 import { $query } from "../core/dom/query";
 import { isSeidrComponentFactory } from "../core/util/is";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";

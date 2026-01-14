@@ -44,8 +44,7 @@ export default [
       { file: "dist/seidr.node.js", format: "esm" },
       { file: "dist/seidr.node.cjs", format: "cjs" },
     ],
-    // Mark Node built-ins as external so they aren't bundled
-    external: ["node:async_hooks"],
+    external: ["node:async_hooks"], // Mark Node built-ins as external so they aren't bundled
     plugins: pluginsNode,
     treeshake,
   },

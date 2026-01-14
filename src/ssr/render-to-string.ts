@@ -1,4 +1,4 @@
-import { component as createComponent } from "../core/dom/component";
+import { component } from "../core/dom/component";
 import { clearPathCache } from "../core/dom/router";
 import type { SeidrComponent, SeidrNode } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
@@ -33,7 +33,7 @@ export interface RenderToStringOptions {
  *
  * @template C - SeidrComponent type
  *
- * @param {() => C} component - Component function to render
+ * @param {() => C} factory - Component function to render
  * @param {RenderToStringOptions | SSRScope} [optionsOrScope] - Options object or legacy scope parameter
  *
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
@@ -90,7 +90,7 @@ export interface RenderToStringOptions {
  * ```
  */
 export async function renderToString<C extends SeidrNode>(
-  component: () => C,
+  factory: () => C,
   optionsOrScope?: RenderToStringOptions | SSRScope,
 ): Promise<SSRRenderResult> {
   // Normalize options to handle both legacy scope parameter and new options object
@@ -123,9 +123,7 @@ export async function renderToString<C extends SeidrNode>(
 
     try {
       // Create component (Seidr instances will auto-register during creation)
-      const comp = (isSeidrComponentFactory(component)
-        ? component()
-        : createComponent<void>(component as any)()) as any as SeidrComponent;
+      const comp = (isSeidrComponentFactory(factory) ? factory() : component<void>(factory as any)()) as SeidrComponent;
 
       // Wait for any async work registered via inServer()
       await activeScope.waitForPromises();

@@ -46,12 +46,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 };
 
 export const TodoApp = (initialTodos: Todo[] = []) => {
-  const todos = withStorage(
-    "todos",
-    new Seidr<Todo[]>(
-      initialTodos.length > 0 ? initialTodos : [{ id: Date.now(), text: "Learn Seidr", completed: false }],
-    ),
-  );
+  const todos = withStorage("todos", new Seidr<Todo[]>(initialTodos.length > 0 ? initialTodos : []));
   const newTodoText = new Seidr("");
 
   const addTodo = (e: Event) => {

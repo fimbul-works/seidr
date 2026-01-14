@@ -36,7 +36,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     // Use it INSIDE renderToString
     const { html } = await renderToString(() => {
       return component(() => {
-        outsideCount.observe((value) => {
+        outsideCount.observe(() => {
           // Just observing to trigger registration
         });
         return $("div", {}, [`Count: ${outsideCount.value}`]);
@@ -45,6 +45,7 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
 
     // Should render correctly
     expect(html).toContain("Count: 42");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -54,21 +55,20 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideSeidr = new Seidr(100);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Create Seidr INSIDE
-        const insideSeidr = new Seidr(200);
+      // Create Seidr INSIDE
+      const insideSeidr = new Seidr(200);
 
-        // Observe INSIDE first (reverse order)
-        insideSeidr.observe(() => {});
+      // Observe INSIDE first (reverse order)
+      insideSeidr.observe(() => {});
 
-        // Then observe OUTSIDE
-        outsideSeidr.observe(() => {});
+      // Then observe OUTSIDE
+      outsideSeidr.observe(() => {});
 
-        return $("div", {}, [`A: ${insideSeidr.value}, B: ${outsideSeidr.value}`]);
-      })();
+      return $("div", {}, [`A: ${insideSeidr.value}, B: ${outsideSeidr.value}`]);
     });
 
     expect(html).toContain("A: 200, B: 100");
+    expect(outsideSeidr.observerCount()).toBe(0);
   });
 
   /**
@@ -81,22 +81,23 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outside3 = new Seidr("outside-3");
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Create multiple INSIDE
-        const inside1 = new Seidr("inside-1");
-        const inside2 = new Seidr("inside-2");
+      // Create multiple INSIDE
+      const inside1 = new Seidr("inside-1");
+      const inside2 = new Seidr("inside-2");
 
-        // Observe in mixed order: inside, outside, inside, outside
-        inside2.observe(() => {});
-        outside2.observe(() => {});
-        inside1.observe(() => {});
-        outside1.observe(() => {});
+      // Observe in mixed order: inside, outside, inside, outside
+      inside2.observe(() => {});
+      outside2.observe(() => {});
+      inside1.observe(() => {});
+      outside1.observe(() => {});
 
-        return $("div", {}, [`${inside1.value} ${outside1.value} ${inside2.value} ${outside2.value}`]);
-      })();
+      return $("div", {}, [`${inside1.value} ${outside1.value} ${inside2.value} ${outside2.value}`]);
     });
 
     expect(html).toContain("inside-1 outside-1 inside-2 outside-2");
+    expect(outside1.observerCount()).toBe(0);
+    expect(outside2.observerCount()).toBe(0);
+    expect(outside3.observerCount()).toBe(0);
   });
 
   /**
@@ -106,18 +107,17 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(10);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Create derived INSIDE from OUTSIDE parent
-        const doubled = outsideCount.as((n) => n * 2);
+      // Create derived INSIDE from OUTSIDE parent
+      const doubled = outsideCount.as((n) => n * 2);
 
-        // Observe derived
-        doubled.observe(() => {});
+      // Observe derived
+      doubled.observe(() => {});
 
-        return $("div", {}, [`Doubled: ${doubled.value}`]);
-      })();
+      return $("div", {}, [`Doubled: ${doubled.value}`]);
     });
 
     expect(html).toContain("Doubled: 20");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -128,22 +128,22 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const base2 = new Seidr(3);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // First level derived
-        const sum = Seidr.computed(() => base1.value + base2.value, [base1, base2]);
+      // First level derived
+      const sum = Seidr.computed(() => base1.value + base2.value, [base1, base2]);
 
-        // Second level derived (depends on first derived)
-        const doubled = sum.as((n) => n * 2);
+      // Second level derived (depends on first derived)
+      const doubled = sum.as((n) => n * 2);
 
-        // Observe in reverse dependency order
-        doubled.observe(() => {});
-        sum.observe(() => {});
+      // Observe in reverse dependency order
+      doubled.observe(() => {});
+      sum.observe(() => {});
 
-        return $("div", {}, [`Sum: ${sum.value}, Doubled: ${doubled.value}`]);
-      })();
+      return $("div", {}, [`Sum: ${sum.value}, Doubled: ${doubled.value}`]);
     });
 
     expect(html).toContain("Sum: 8, Doubled: 16");
+    expect(base1.observerCount()).toBe(0);
+    expect(base2.observerCount()).toBe(0);
   });
 
   /**
@@ -153,22 +153,21 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(2);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Chain: outside -> inside1 -> inside2 -> inside3
-        const doubled = outsideCount.as((n) => n * 2);
-        const quadrupled = doubled.as((n) => n * 2);
-        const octupled = quadrupled.as((n) => n * 2);
+      // Chain: outside -> inside1 -> inside2 -> inside3
+      const doubled = outsideCount.as((n) => n * 2);
+      const quadrupled = doubled.as((n) => n * 2);
+      const octupled = quadrupled.as((n) => n * 2);
 
-        // Observe in reverse order
-        octupled.observe(() => {});
-        quadrupled.observe(() => {});
-        doubled.observe(() => {});
+      // Observe in reverse order
+      octupled.observe(() => {});
+      quadrupled.observe(() => {});
+      doubled.observe(() => {});
 
-        return $("div", {}, [`${doubled.value} ${quadrupled.value} ${octupled.value}`]);
-      })();
+      return $("div", {}, [`${doubled.value} ${quadrupled.value} ${octupled.value}`]);
     });
 
     expect(html).toContain("4 8 16");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -178,20 +177,19 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(7);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Observe same Seidr multiple times
-        const unsub1 = outsideCount.observe(() => {});
-        const unsub2 = outsideCount.observe(() => {});
-        const unsub3 = outsideCount.observe(() => {});
+      // Observe same Seidr multiple times
+      const unsub1 = outsideCount.observe(() => {});
+      const unsub2 = outsideCount.observe(() => {});
+      const unsub3 = outsideCount.observe(() => {});
 
-        // Cleanup some observers
-        unsub2();
+      // Cleanup some observers
+      unsub2();
 
-        return $("div", {}, [`Count: ${outsideCount.value}`]);
-      })();
+      return $("div", {}, [`Count: ${outsideCount.value}`]);
     });
 
     expect(html).toContain("Count: 7");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -201,21 +199,20 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(42);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Create INSIDE Seidr
-        const insideCount = new Seidr(100);
+      // Create INSIDE Seidr
+      const insideCount = new Seidr(100);
 
-        // Only observe INSIDE
-        insideCount.observe(() => {});
+      // Only observe INSIDE
+      insideCount.observe(() => {});
 
-        // OUTSIDE is NOT observed
+      // OUTSIDE is NOT observed
 
-        return $("div", {}, [`Inside: ${insideCount.value}, Outside: ${outsideCount.value}`]);
-      })();
+      return $("div", {}, [`Inside: ${insideCount.value}, Outside: ${outsideCount.value}`]);
     });
 
     // Should render correctly
     expect(html).toContain("Inside: 100, Outside: 42");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -226,26 +223,25 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
 
     // First render
     const { html: html1 } = await renderToString(() => {
-      return component(() => {
-        const local1 = new Seidr("local-1");
-        sharedSeidr.observe(() => {});
-        local1.observe(() => {});
-        return $("div", {}, [`${sharedSeidr.value} ${local1.value}`]);
-      })();
-    });
-
-    // Second render - should start with fresh ID counter
-    const { html: html2 } = await renderToString(() => {
-      return component(() => {
-        const local2 = new Seidr("local-2");
-        sharedSeidr.observe(() => {});
-        local2.observe(() => {});
-        return $("div", {}, [`${sharedSeidr.value} ${local2.value}`]);
-      })();
+      const local1 = new Seidr("local-1");
+      sharedSeidr.observe(() => {});
+      local1.observe(() => {});
+      return $("div", {}, [`${sharedSeidr.value} ${local1.value}`]);
     });
 
     expect(html1).toContain("shared local-1");
+    expect(sharedSeidr.observerCount()).toBe(0);
+
+    // Second render - should start with fresh ID counter
+    const { html: html2 } = await renderToString(() => {
+      const local2 = new Seidr("local-2");
+      sharedSeidr.observe(() => {});
+      local2.observe(() => {});
+      return $("div", {}, [`${sharedSeidr.value} ${local2.value}`]);
+    });
+
     expect(html2).toContain("shared local-2");
+    expect(sharedSeidr.observerCount()).toBe(0);
   });
 
   /**
@@ -255,17 +251,16 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(42);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        let boundValue = "";
-        outsideCount.bind("", (value, _target) => {
-          boundValue = String(value);
-        });
+      let boundValue = "";
+      outsideCount.bind("", (value, _target) => {
+        boundValue = String(value);
+      });
 
-        return $("div", {}, [`Count: ${boundValue}`]);
-      })();
+      return $("div", {}, [`Count: ${boundValue}`]);
     });
 
     expect(html).toContain("Count: 42");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -278,28 +273,28 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const ids = new Set<number>();
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        const inside1 = new Seidr(3);
-        const inside2 = new Seidr(4);
+      const inside1 = new Seidr(3);
+      const inside2 = new Seidr(4);
 
-        // Collect all IDs
-        ids.add(outside1.id);
-        ids.add(outside2.id);
-        ids.add(inside1.id);
-        ids.add(inside2.id);
+      // Collect all IDs
+      ids.add(outside1.id);
+      ids.add(outside2.id);
+      ids.add(inside1.id);
+      ids.add(inside2.id);
 
-        // Trigger registration
-        outside1.observe(() => {});
-        inside2.observe(() => {});
-        outside2.observe(() => {});
-        inside1.observe(() => {});
+      // Trigger registration
+      outside1.observe(() => {});
+      inside2.observe(() => {});
+      outside2.observe(() => {});
+      inside1.observe(() => {});
 
-        return $("div", {}, ["test"]);
-      })();
+      return $("div", {}, ["test"]);
     });
 
     // All IDs should be unique
     expect(ids.size).toBe(4);
+    expect(outside1.observerCount()).toBe(0);
+    expect(outside2.observerCount()).toBe(0);
   });
 
   /**
@@ -310,17 +305,17 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const lastName = new Seidr("Doe");
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        // Computed created INSIDE, parents OUTSIDE
-        const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      // Computed created INSIDE, parents OUTSIDE
+      const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
-        fullName.observe(() => {});
+      fullName.observe(() => {});
 
-        return $("div", {}, [`Name: ${fullName.value}`]);
-      })();
+      return $("div", {}, [`Name: ${fullName.value}`]);
     });
 
     expect(html).toContain("Name: John Doe");
+    expect(firstName.observerCount()).toBe(0);
+    expect(lastName.observerCount()).toBe(0);
   });
 
   /**
@@ -330,19 +325,18 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideBase = new Seidr(10);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        const insideBase = new Seidr(5);
+      const insideBase = new Seidr(5);
 
-        // Computed with mixed parents
-        const sum = Seidr.computed(() => outsideBase.value + insideBase.value, [outsideBase, insideBase]);
+      // Computed with mixed parents
+      const sum = Seidr.computed(() => outsideBase.value + insideBase.value, [outsideBase, insideBase]);
 
-        sum.observe(() => {});
+      sum.observe(() => {});
 
-        return $("div", {}, [`Sum: ${sum.value}`]);
-      })();
+      return $("div", {}, [`Sum: ${sum.value}`]);
     });
 
     expect(html).toContain("Sum: 15");
+    expect(outsideBase.observerCount()).toBe(0);
   });
 
   /**
@@ -352,15 +346,14 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const outsideCount = new Seidr(42);
 
     const { html } = await renderToString(() => {
-      return component(() => {
-        outsideCount.observe(() => {});
-        return $("div", {}, [`Count: ${outsideCount.value}`]);
-      })();
+      outsideCount.observe(() => {});
+      return $("div", {}, [`Count: ${outsideCount.value}`]);
     });
 
     // Verify HTML contains hydration data
     expect(html).toContain("data-seidr");
     expect(html).toContain("Count: 42");
+    expect(outsideCount.observerCount()).toBe(0);
   });
 
   /**
@@ -377,32 +370,29 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
     const secondOnly = new Seidr("second");
 
     const { html: html1 } = await renderToString(() => {
-      return component(() => {
-        shared.observe(() => {});
-        firstOnly.observe(() => {});
-        return $("div", {}, [`${shared.value} ${firstOnly.value}`]);
-      })();
+      shared.observe(() => {});
+      firstOnly.observe(() => {});
+      return $("div", {}, [`${shared.value} ${firstOnly.value}`]);
     });
 
     const { html: html2 } = await renderToString(() => {
-      return component(() => {
-        shared.observe(() => {});
-        secondOnly.observe(() => {});
-        return $("div", {}, [`${shared.value} ${secondOnly.value}`]);
-      })();
+      shared.observe(() => {});
+      secondOnly.observe(() => {});
+      return $("div", {}, [`${shared.value} ${secondOnly.value}`]);
     });
 
     const { html: html3 } = await renderToString(() => {
-      return component(() => {
-        shared.observe(() => {});
-        firstOnly.observe(() => {});
-        secondOnly.observe(() => {});
-        return $("div", {}, [`${shared.value} ${firstOnly.value} ${secondOnly.value}`]);
-      })();
+      shared.observe(() => {});
+      firstOnly.observe(() => {});
+      secondOnly.observe(() => {});
+      return $("div", {}, [`${shared.value} ${firstOnly.value} ${secondOnly.value}`]);
     });
 
     expect(html1).toContain("shared first");
     expect(html2).toContain("shared second");
     expect(html3).toContain("shared first second");
+    expect(shared.observerCount()).toBe(0);
+    expect(firstOnly.observerCount()).toBe(0);
+    expect(secondOnly.observerCount()).toBe(0);
   });
 });

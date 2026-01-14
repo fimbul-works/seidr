@@ -14,7 +14,7 @@ export const isUndefined = (v: any): v is undefined => typeof v === "undefined";
  * @param v - Value to check
  * @returns {boolean} `true` if the value is a boolean, `false` otherwise
  */
-export const isBool = (v: any): boolean => typeof v === "boolean";
+export const isBool = (v: any): v is boolean => typeof v === "boolean";
 
 /**
  * Check if a value is a number.

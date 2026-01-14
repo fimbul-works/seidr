@@ -178,6 +178,40 @@ export const easeOutBounce = (t: number) => {
 export const easeInOutBounce = (t: number) =>
   t < 0.5 ? (1 - easeOutBounce(1 - 2 * t)) / 2 : (1 + easeOutBounce(2 * t - 1)) / 2;
 
+const BACK_CONSTANT = 1.70158;
+
+/**
+ * Ease in with anticipation (pulls back before going forward).
+ * @param {number} t - Number to ease
+ * @returns {number} Interpolated value
+ */
+export const easeInBack = (t: number) => {
+  const c = BACK_CONSTANT;
+  return t * t * ((c + 1) * t - c);
+};
+
+/**
+ * Ease out with overshoot (goes past target then settles).
+ * @param {number} t - Number to ease
+ * @returns {number} Interpolated value
+ */
+export const easeOutBack = (t: number) => {
+  const c = BACK_CONSTANT;
+  return 1 + (t - 1) * (t - 1) * ((c + 1) * (t - 1) + c);
+};
+
+/**
+ * Ease in-out with anticipation and overshoot.
+ * @param {number} t - Number to ease
+ * @returns {number} Interpolated value
+ */
+export const easeInOutBack = (t: number) => {
+  const c = BACK_CONSTANT * 1.525;
+  return t < 0.5
+    ? ((2 * t) ** 2 * ((c + 1) * 2 * t - c)) / 2
+    : ((2 * t - 2) ** 2 * ((c + 1) * (t * 2 - 2) + c) + 2) / 2;
+};
+
 /**
  * Smoothly interpolate between two values.
  * @param {number} x - Number to ease

@@ -1,5 +1,6 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
+import { component, mount } from "../src/core/dom";
 import { $query, $queryAll } from "../src/index.browser.ts";
 import { Counter } from "./counter.ts";
 
@@ -16,9 +17,8 @@ describe("Counter Example", () => {
   });
 
   it("should render counter with initial value of 0", async () => {
-    const { Counter } = await import("./counter.ts");
     const counterComponent = Counter();
-    document.body.appendChild(counterComponent.element);
+    mount(counterComponent, document.body);
 
     const span = document.querySelector(".counter span");
     expect(span?.textContent).toBe("0");
@@ -26,7 +26,7 @@ describe("Counter Example", () => {
 
   it("should increment counter when increment button is clicked", async () => {
     const counterComponent = Counter();
-    document.body.appendChild(counterComponent.element);
+    mount(counterComponent, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -40,7 +40,7 @@ describe("Counter Example", () => {
 
   it("should disable increment button when count reaches 10", async () => {
     const counterComponent = Counter();
-    document.body.appendChild(counterComponent.element);
+    mount(counterComponent, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0] as HTMLButtonElement;
@@ -56,7 +56,7 @@ describe("Counter Example", () => {
 
   it("should reset counter when reset button is clicked", async () => {
     const counterComponent = Counter();
-    document.body.appendChild(counterComponent.element);
+    mount(counterComponent, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -73,8 +73,8 @@ describe("Counter Example", () => {
   });
 
   it("should cleanup properly when destroyed", async () => {
-    const counterComponent = Counter();
-    document.body.appendChild(counterComponent.element);
+    const counterComponent = component(Counter)();
+    mount(counterComponent, document.body);
 
     counterComponent.destroy();
 

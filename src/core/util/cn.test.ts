@@ -66,7 +66,6 @@ describe("cn (className utility)", () => {
 
   it("should remove duplicate classes", () => {
     expect(cn("class1", "class2", "class1")).toBe("class1 class2");
-    // The deduplication in cn is more complex than expected - let's test the actual behavior
     const result1 = cn(["duplicate", "class"], "duplicate");
     expect(result1).toContain("duplicate");
     expect(result1).toContain("class");
@@ -101,7 +100,6 @@ describe("cn (className utility)", () => {
 
   it("should preserve order while removing duplicates", () => {
     expect(cn("z", "a", "b", "a", "c", "z")).toBe("z a b c");
-    // Test the actual behavior for arrays with duplicates
     const result = cn(["first", "second"], "first", "third");
     expect(result).toContain("first");
     expect(result).toContain("second");

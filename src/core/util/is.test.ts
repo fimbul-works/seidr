@@ -60,8 +60,7 @@ describe("is.ts - Type Guard Utilities", () => {
     it("should narrow type correctly", () => {
       const value: unknown = true;
       if (isBool(value)) {
-        // Type should be narrowed to boolean
-        const typed: boolean = value;
+        const typed = value;
         expect(typeof typed).toBe("boolean");
       }
     });
@@ -93,14 +92,13 @@ describe("is.ts - Type Guard Utilities", () => {
     });
 
     it("should return false for Number objects", () => {
-      expect(isNum(new Number(42))).toBe(false); // eslint-disable-line no-new-wrappers
+      expect(isNum(new Number(42))).toBe(false);
     });
 
     it("should narrow type correctly", () => {
       const value: unknown = 42;
       if (isNum(value)) {
-        // Type should be narrowed to number
-        const typed: number = value;
+        const typed = value;
         expect(typeof typed).toBe("number");
       }
     });
@@ -137,8 +135,7 @@ describe("is.ts - Type Guard Utilities", () => {
     it("should narrow type correctly", () => {
       const value: unknown = "hello";
       if (isStr(value)) {
-        // Type should be narrowed to string
-        const typed: string = value;
+        const typed = value;
         expect(typeof typed).toBe("string");
       }
     });
@@ -181,8 +178,7 @@ describe("is.ts - Type Guard Utilities", () => {
     it("should narrow type correctly", () => {
       const value: unknown = () => {};
       if (isFn(value)) {
-        // Type should be narrowed to Function
-        const typed: Function = value;
+        const typed = value;
         expect(typeof typed).toBe("function");
       }
     });
@@ -232,8 +228,7 @@ describe("is.ts - Type Guard Utilities", () => {
     it("should narrow type correctly", () => {
       const value: unknown = { a: 1 };
       if (isObj(value)) {
-        // Type should be narrowed to object
-        const typed: object = value;
+        const typed = value;
         expect(typeof typed).toBe("object");
       }
     });
@@ -242,8 +237,8 @@ describe("is.ts - Type Guard Utilities", () => {
       it("should demonstrate object checking", () => {
         expect(isObj({})).toBe(true);
         expect(isObj({ a: 1, b: 2 })).toBe(true);
-        expect(isObj([])).toBe(false); // Arrays are not objects in this context
-        expect(isObj(null)).toBe(false); // null is not an object
+        expect(isObj([])).toBe(false);
+        expect(isObj(null)).toBe(false);
       });
     });
   });
@@ -271,8 +266,7 @@ describe("is.ts - Type Guard Utilities", () => {
     it("should narrow type correctly", () => {
       const value: unknown = new Seidr(42);
       if (isSeidr(value)) {
-        // Type should be narrowed to Seidr<any>
-        const typed: Seidr<any> = value;
+        const typed = value;
         expect(typed.value).toBe(42);
       }
     });
@@ -371,7 +365,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isNum(fn)).toBe(false);
       expect(isStr(fn)).toBe(false);
       expect(isFn(fn)).toBe(true);
-      expect(isObj(fn)).toBe(false); // Functions are NOT objects per isObj definition
+      expect(isObj(fn)).toBe(false);
       expect(isSeidr(fn)).toBe(false);
 
       // object
@@ -389,7 +383,7 @@ describe("is.ts - Type Guard Utilities", () => {
       expect(isNum(seidr)).toBe(false);
       expect(isStr(seidr)).toBe(false);
       expect(isFn(seidr)).toBe(false);
-      expect(isObj(seidr)).toBe(true); // Seidr instances are objects
+      expect(isObj(seidr)).toBe(true);
       expect(isSeidr(seidr)).toBe(true);
     });
   });

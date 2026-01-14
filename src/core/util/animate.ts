@@ -39,7 +39,11 @@ const animateFrame = (now: number) => {
  * @param {AnimationFunction} callback - The tween to animate
  * @returns {() => void} A function to stop the animation
  */
-export function animate(callback: AnimationFunction) {
+export function animate(callback: AnimationFunction): () => void {
+  // Disable in SSR
+  if (typeof window === "undefined") {
+    return () => {};
+  }
   animations.add(callback);
   animationFrameId = requestAnimationFrame(animateFrame);
   return () => stopAnimation(callback);
@@ -83,6 +87,10 @@ function createTween(durationMs: number, easing = (t: number) => t): AnimationFu
  * @returns {() => void} A function to stop the tween
  */
 export function tween(seidr: Seidr<number>, to: number, durationMs: number, easing = (t: number) => t): () => void {
+  // Disable in SSR
+  if (typeof window === "undefined") {
+    return () => {};
+  }
   const tween = createTween(durationMs, easing);
   const from = seidr.value;
   let t = 0;

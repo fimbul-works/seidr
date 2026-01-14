@@ -18,11 +18,10 @@ describe("Concurrent SSR Request Isolation", () => {
 
   it("should isolate SSR scopes between concurrent render contexts", async () => {
     // Create a component that uses different Seidr instances
-    const makeComponent = (initialCount: number) =>
-      component(() => {
-        const count = new Seidr(initialCount);
-        return $("div", {}, [$("span", { textContent: count.as((n) => `Count: ${n}`) })]);
-      })();
+    const makeComponent = (initialCount: number) => {
+      const count = new Seidr(initialCount);
+      return $("div", {}, [$("span", { textContent: count.as((n) => `Count: ${n}`) })]);
+    };
 
     // Simulate concurrent SSR requests
     const [result1, result2, result3] = await Promise.all([

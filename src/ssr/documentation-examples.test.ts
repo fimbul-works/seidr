@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $div, $li, $ul, component, createStateKey, getState, isUndefined, List, setState } from "../core/index";
+import { $div, component, createStateKey, getState, isUndefined, setState } from "../core/index";
 import { Seidr } from "../core/seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { inBrowser, inServer } from "./env";
@@ -36,7 +36,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
       // Component works on both server and client
-      const TodoApp = component((todos?: Seidr<Todo[]>) => {
+      const TodoApp = (todos?: Seidr<Todo[]>) => {
         // Dual-mode: server sets, client retrieves from hydration
         if (!isUndefined(todos)) {
           setState(todosKey, todos);
@@ -48,7 +48,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
         return $div({ className: "todo-app" }, [
           $div({ textContent: todos?.as((t) => `Todo count: ${t.length}`) || "Loading" }),
         ]);
-      });
+      };
       // Server-side
       const serverTodos: Todo[] = [
         { id: 1, text: "Learn SSR" },
@@ -67,7 +67,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
       type Product = { id: number; name: string };
       const productsKey = createStateKey<Seidr<Product[]>>("products");
 
-      const ProductApp = component((products?: Seidr<Product[]>) => {
+      const ProductApp = (products?: Seidr<Product[]>) => {
         if (!isUndefined(products)) {
           setState(productsKey, products);
         } else {
@@ -89,7 +89,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
         });
 
         return $div({ textContent: products?.as((p) => `Count: ${p.length}`) || "Loading" });
-      });
+      };
       // Server-side
       const productsState = new Seidr<Product[]>([]);
       const { html } = await renderToString(() => ProductApp(productsState));
