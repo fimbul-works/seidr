@@ -336,11 +336,11 @@ const input = $input({ disabled });
 disabled.value = true; // Input instantly becomes disabled
 ```
 
-**Learn more:** [Seidr<T>](API.md#seidrt)
+**Learn more:** [`Seidr`](API.md#seidrt)
 
 ### Derived Values
 
-Transform observables with `.as()` for computed values that update automatically.
+Transform observables with `.as()` and `.computed()` for derived values that update automatically.
 
 ```typescript
 const count = new Seidr(0);
@@ -348,7 +348,7 @@ const doubled = count.as(n => n * 2);
 const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 ```
 
-**Learn more:** [seidr.as()](API.md#seidras) | [Seidr.computed()](API.md#seidrcomputed)
+**Learn more:** [`instance.as()`](API.md#seidr-as) | [`Seidr.computed()`](API.md#seidr-computed)
 
 ### Components
 

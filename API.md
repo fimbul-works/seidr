@@ -84,16 +84,16 @@ console.log(count.value); // Get value: 5
 ```
 
 #### Methods
+
 <a name="seidr-as"></a>
+- `as<A>():` - Create a derived observable that transforms the source value.
 
-- `as<U>():` - Create a derived observable that transforms the source value.
-
-  **Generic Type:** `U` - The type of the transformed/derived value
+  **Generic Type:** `A` - The type of the transformed/derived value
 
   **Parameters:**
-  - `transform` - Tranforming function (signature `(value: T) => Seidr<U>`)
+  - `transform` - Tranforming function (signature `(value: T) => Seidr<A>`)
 
-  **Returns**: Derived [`Seidr<U>`](#seidrt-class) instance
+  **Returns**: Derived [`Seidr<A>`](#seidrt-class) instance
 
 ```typescript
 const count = new Seidr(0);
@@ -170,14 +170,14 @@ textContent.value = 'Hello!';
 - `destroy():` - Cleanup all observers and derived computations.
 
 #### Static Methods
-<a name="seidr-computed"></a>
 
+<a name="seidr-computed"></a>
 - `Seidr.computed<C>()` - Create a computed observable that depends on multiple sources.
 
   **Generic Type:** `C` - The type of the transformed/derived value
 
   **Parameters:**
-  - `computation` - Function that computes the value (signature `(value: T) => U`)
+  - `computation` - Function that computes the value (signature `(value: T) => C`)
   - `dependencies` - Array of Seidr observables this computation depends on
 
   **Returns**: Derived [`Seidr<C>`](#seidrt-class) instance
