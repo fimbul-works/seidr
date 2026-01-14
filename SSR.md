@@ -123,7 +123,22 @@ inBrowser(async () => {
 });
 ```
 
-**Note:** `inServer()` with async functions is automatically awaited by `renderToString()`.
+**Note:** `inServer()` with async functions is automatically awaited by `renderToString()`. This allows you to perform data fetching directly inside your component factories while maintaining the simplicity of the single-pass render.
+
+```typescript
+export const UserList = component(() => {
+  const users = new Seidr<User[]>([]);
+
+  // renderToString will wait for this!
+  inServer(async () => {
+    users.value = await db.users.findMany();
+  });
+
+  return $ul({}, [
+    List(users, u => u.id, u => $li({ textContent: u.name }))
+  ]);
+});
+```
 
 ---
 
@@ -465,12 +480,50 @@ Seidr uses HTML comments for `List`, `Conditional`, and `Switch`:
 
 ### No Browser APIs on Server
 
-Wrap any `window` or `document` access in `inBrowser()`:
+Wrap any `window` or `document` access in `inBrowser()` to prevent errors during server-side rendering:
 
 ```typescript
 inBrowser(() => {
   window.addEventListener('resize', handler);
 });
+```
+
+### Hydration Mismatches & Idempotency
+
+Hydration relies on the server and client generating the **exact same DOM structure** for a given set of data. If the structures differ, Seidr will fail to match markers or bindings to the correct elements.
+
+#### Avoid Non-Deterministic Data
+Don't use data that changes between server and client in the initial render:
+
+```typescript
+// ❌ WRONG: Math.random() will be different on client
+const id = new Seidr(Math.random());
+
+// ✅ CORRECT: Pass the ID as a prop or state so it's captured in hydration
+const id = new Seidr(capturedIdFromSSR);
+```
+
+#### Time and Dates
+`new Date()` or `Date.now()` are dangerous because time passes between SSR and hydration:
+
+```typescript
+// ❌ WRONG: Can cause mismatch if a second passes
+const now = new Seidr(new Date().toLocaleTimeString());
+
+// ✅ CORRECT: Use state that is captured on server
+const now = inBrowser(() => new Seidr(new Date())) || new Seidr(serverTime);
+```
+
+#### Component Logic
+Ensure your component logic doesn't branch based on `typeof window` in a way that affects the DOM structure before hydration is complete:
+
+```typescript
+// ❌ WRONG: Structure differs between environments
+return inServer() ? $div() : $span();
+
+// ✅ CORRECT: Keep structure identical, change content reactively
+const tag = new Seidr(inServer() ? 'Server' : 'Client');
+return $div({ textContent: tag });
 ```
 
 ---

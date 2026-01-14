@@ -110,7 +110,7 @@ console.log(message.value);  // "Count: 5"
   **Parameters:**
   - `handler` - Callback function (signature `(value: T) => void`)
 
-  **Returns:** Cleanup function
+  **Returns:** `CleanupFunction` (signature `() => void`)
 
 ```typescript
 const count = new Seidr(0);
@@ -125,7 +125,9 @@ count.value = 5;  // Logs: "Count changed to: 5"
 cleanup();
 ```
 
-- `bind<E>():` - Manually bind an observable to an object with custom update logic. Returns cleanup function.
+- `bind<E>():` - Manually bind an observable to an object with custom update logic.
+
+  **Returns:** `CleanupFunction` (signature `() => void`)
 
   **Generic Type:** `E` - The type being bound to
 
@@ -151,7 +153,7 @@ cleanup();
 ```
 
 **Automatic binding:**
-You can use `Seidr<T>` instances as props on [`SaidrElement`](#seidrelement-type) to update element properties automatically.
+You can use `Seidr<T>` instances as props on [`SeidrElement`](#seidrelement-type) to update element properties automatically.
 
 ```typescript
 import { $ } from '@fimbul-works/seidr';
@@ -160,7 +162,7 @@ const textContent = new Seidr('');
 
 const div = $('div', { textContent });
 textContent.value = 'Hello!';
-// div.textContnt is now "Hello!"
+// div.textContent is now "Hello!"
 ```
 
 - `destroy():` - Cleanup all observers and derived computations.
@@ -175,7 +177,7 @@ textContent.value = 'Hello!';
   - `computation` - Function that computes the value (signature `(value: T) => U`)
   - `dependencies` - Array of Seidr observables this computation depends on
 
-  **Returns**: Derived [`Saidr<C>`](#seidrt-class) instance
+  **Returns**: Derived [`Seidr<C>`](#seidrt-class) instance
 
 ```typescript
 const firstName = new Seidr('John');
@@ -225,7 +227,7 @@ const sessionData = withStorage(
 
 ### `SeidrElement` type
 
-An extendd `HTMLElement` with reactive props support. Use [`$`](#---create-dom-elements) to create any HTML element.
+An extended `HTMLElement` with reactive props support. Use [`$`](#---create-dom-elements) to create any HTML element.
 
 **Returned element has additional methods:**
 - `on<E>(event, handler)` - Add event listener, returns cleanup
@@ -352,9 +354,8 @@ Create a component with automatic cleanup and automatic child component tracking
 
 ```typescript
 {
-  scope: ComponentScope; // ComponentScope of the element
-  element: HTMLElement;  // The element
-  destroy: () => void;   // Cleanup function
+  element: HTMLElement | DocumentFragment; // The element or fragment
+  destroy: () => void;                    // Cleanup function
 }
 ```
 

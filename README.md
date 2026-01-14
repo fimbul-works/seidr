@@ -26,10 +26,11 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 6.3KB (minified + gzipped)
+- 📦 **Tiny Footprint** - 6.1KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
+- 🏗️ **Ready for SSR** - Automatic state capture and hydration
 
 ## 🎯 When to Use Seidr
 
@@ -284,6 +285,28 @@ items (root) → filteredItems (derived) → list rendering
 2. Change propagates through derived observables
 3. Bindings update DOM elements directly
 4. No virtual DOM, no diffing entire component trees
+
+### The Execution Model
+
+Seidr follows a "Push-Based" reactive model. Unlike React (which pulls updates by re-rendering) or Svelte (which compiles reactivity into statements), Seidr pushes updates directly to the specific DOM properties that need them.
+
+```text
+[ User Action ]
+      │
+      ▼
+[ Root Observable (Seidr) ] ──▶ [ Cleanup Tracking (Scope) ]
+      │
+      ▼
+[ Derived Observables (.as) ]
+      │
+      ▼
+[ DOM Bindings ($props) ] ──▶ [ Real DOM Updates ]
+```
+
+**What this means for you:**
+- **Zero re-renders:** A component function only ever runs *once*.
+- **O(1) updates:** Changing a value updates only the specific bound nodes, regardless of tree size.
+- **Predictable memory:** You decide when things are created and destroyed via scopes.
 
 **Benefits:**
 - **Predictable:** You know exactly what updates when
@@ -583,6 +606,8 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
 - **Seidr counter app**: ~1.7KB (minified + gzipped)
+
+> **Note on Tree-Shaking:** The 6.1KB footprint includes the entire library (Router, SSR engine, List diffing, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
