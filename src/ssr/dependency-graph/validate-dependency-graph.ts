@@ -9,16 +9,7 @@ import type { DependencyGraph } from "./types";
  * - All root observables are correctly identified
  *
  * @param graph - The dependency graph to validate
- *
  * @returns Object with validation result and any errors found
- *
- * @example
- * ```typescript
- * const result = validateDependencyGraph(graph);
- * if (!result.valid) {
- *   console.error("Invalid graph:", result.errors);
- * }
- * ```
  */
 export function validateDependencyGraph(graph: DependencyGraph): {
   valid: boolean;

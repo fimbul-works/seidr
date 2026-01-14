@@ -20,20 +20,6 @@ import { parseRouteParams } from "./parse-route-params";
  * @param {(params?: P) => C} factory - Function that creates the component when needed
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {SeidrComponent} Conditional component that mounts when matched
- *
- * @example
- * Route usage with plain functions
- * ```typescript
- * // Without params
- * const Home = () => $div({ textContent: 'Home' });
- * Route('/', Home)
- *
- * // With params - params are passed as a Seidr observable
- * const UserPage = (params?: Seidr<{id: string}>) =>
- *   $div({ textContent: params?.as(p => `User ${p.id}`) || 'Loading' });
- *
- * Route('/user/:id', UserPage)
- * ```
  */
 export function Route<C extends SeidrNode, P extends Seidr<any>>(
   pattern: string | RegExp,

@@ -10,32 +10,7 @@ import type { DependencyGraph, DependencyNode } from "./types";
  * deterministic and stable IDs across render passes.
  *
  * @param entries - Array of [numericId, seidr] tuples from SSRScope.observables
- *
  * @returns A dependency graph with numeric IDs
- *
- * @example
- * ```typescript
- * const scope = new SSRScope();
- * const firstName = new Seidr("John");
- * const lastName = new Seidr("Doe");
- * const fullName = Seidr.computed(
- *   () => `${firstName.value} ${lastName.value}`,
- *   [firstName, lastName]
- * );
- *
- * const entries = Array.from(scope.observables.entries());
- * const graph = buildDependencyGraph(entries);
- *
- * // Result (indices based on entry order):
- * // {
- * //   nodes: [
- * //     { id: 0, parents: [] },       // firstName (index 0)
- * //     { id: 1, parents: [] },       // lastName (index 1)
- * //     { id: 2, parents: [0, 1] }    // fullName (index 2, depends on 0, 1)
- * //   ],
- * //   rootIds: [0, 1]                // firstName and lastName are roots
- * // }
- * ```
  */
 export function buildDependencyGraph(entries: [number, Seidr<any>][]): DependencyGraph {
   const nodes: DependencyNode[] = [];
@@ -56,17 +31,26 @@ export function buildDependencyGraph(entries: [number, Seidr<any>][]): Dependenc
     };
 
     // Convert parent Seidr instances to numeric IDs
+    // Convert parent Seidr instances to numeric IDs
     // Only include parents field if there are actual parents (saves space in JSON)
     if (seidr.parents.length > 0) {
-      node.parents = seidr.parents.map((parent) => {
+      const parentIds: number[] = [];
+
+      seidr.parents.forEach((parent) => {
         const parentId = idMap.get(parent);
-        if (parentId === undefined) {
+        if (parentId !== undefined) {
+          parentIds.push(parentId);
+        } else if (parent.options?.hydrate !== false) {
+          // Only throw if the parent wasn't explicitly opted-out of hydration
           throw new Error(
             `Parent Seidr instance not found in registered observables. This indicates a critical SSR scope error.`,
           );
         }
-        return parentId;
       });
+
+      if (parentIds.length > 0) {
+        node.parents = parentIds;
+      }
     }
 
     nodes.push(node);

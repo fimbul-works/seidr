@@ -11,38 +11,6 @@ import type { Seidr } from "../seidr";
  * @param {string} className - The CSS class name to toggle
  * @param {Seidr<boolean>} active - Boolean Seidr that controls the class
  * @returns {() => void} A cleanup function that removes the binding when called
- *
- * @example
- * Basic reactive class toggling
- * ```typescript
- * import { elementClassToggle, $, Seidr } from '@fimbul-works/seidr';
- *
- * const isActive = new Seidr(false);
- * const button = $('button', { textContent: 'Toggle Me' });
- *
- * // Bind class to observable
- * elementClassToggle(button, 'active', isActive);
- *
- * isActive.value = true; // Adds 'active' class
- * isActive.value = false; // Removes 'active' class
- * ```
- *
- * @example
- * Multiple class bindings
- * ```typescript
- * import { elementClassToggle, $, Seidr } from '@fimbul-works/seidr';
- *
- * const isVisible = new Seidr(true);
- * const hasError = new Seidr(false);
- * const isLoading = new Seidr(false);
- *
- * const element = $('div');
- *
- * // Multiple reactive class bindings
- * elementClassToggle(element, 'visible', isVisible);
- * elementClassToggle(element, 'error', hasError);
- * elementClassToggle(element, 'loading', isLoading);
- * ```
  */
 export const elementClassToggle = (element: Element, className: string, active: Seidr<boolean>): (() => void) =>
   active.bind(element, (active, el) => el.classList.toggle(className, active));

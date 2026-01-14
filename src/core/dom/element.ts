@@ -93,24 +93,6 @@ export type SeidrNode = SeidrComponent | SeidrElement<keyof HTMLElementTagNameMa
  * SeidrElement extends the standard HTMLElement with additional methods for
  * reactive programming, event handling, and lifecycle management. All elements
  * created with $() automatically implement this interface.
- *
- * @example
- * Using SeidrElement methods
- * ```typescript
- * import { $, Seidr, elementClassToggle } from '@fimbul-works/seidr';
- *
- * const isActive = new Seidr(false);
- * const button = $('button', { textContent: 'Click me' });
- *
- * // Event handling with cleanup
- * const cleanup = button.on('click', () => console.log('clicked'));
- *
- * // Reactive class binding (utility function)
- * elementClassToggle(button, 'active', isActive);
- *
- * // Cleanup when done
- * button.remove(); // Removes event listeners and bindings
- * ```
  */
 export interface SeidrElementInterface {
   /**
@@ -136,20 +118,6 @@ export interface SeidrElementInterface {
    * @param {boolean | AddEventListenerOptions} [options] - Optional event listener options
    *
    * @returns A cleanup function that removes the event listener
-   *
-   * @example
-   * Event handling with cleanup
-   * ```typescript
-   * const cleanup = element.on('click', (e) => {
-   *   console.log('Element clicked:', e);
-   * });
-   *
-   * // Later, clean up the event listener
-   * cleanup();
-   *
-   * // Or let remove() handle it automatically
-   * element.remove();
-   * ```
    */
   on<E extends keyof HTMLElementEventMap>(
     event: E,
@@ -164,20 +132,6 @@ export interface SeidrElementInterface {
 
   /**
    * Removes the element from the DOM and cleans up all bindings.
-   *
-   * @example
-   * Manual cleanup
-   * ```typescript
-   * import { toggleClass } from '@fimbul-works/seidr';
-   *
-   * // Create element with event listeners and reactive bindings
-   * const button = $('button');
-   * button.on('click', handleClick);
-   * toggleClass(button, 'active', isActive);
-   *
-   * // Clean up everything when done
-   * button.remove();
-   * ```
    */
   remove(): void;
 }
@@ -204,64 +158,6 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Child elements or functions returning elements
  * @returns {SeidrElement<K>} A Seidr-enhanced HTML element with additional methods
  * @throws {Error} When attempting to use reserved properties ('on', 'clear', 'destroy')
- *
- * @example
- * Basic element creation
- * ```typescript
- * import { $ } from '@fimbul-works/seidr';
- *
- * const button = $('button', {
- *   textContent: 'Click me',
- *   className: 'btn btn-primary'
- * });
- * ```
- *
- * @example
- * Reactive property binding
- * ```typescript
- * import { $, Seidr } from '@fimbul-works/seidr';
- *
- * const isActive = new Seidr(false);
- * const count = new Seidr(0);
- *
- * const button = $('button', {
- *   disabled: isActive, // Reactive disabled property
- *   textContent: count.as(c => `Count: ${c}`), // Reactive text content
- *   className: 'btn', // Static property
- *   onclick: () => count.value++ // Event handler
- * });
- *
- * // DOM updates automatically when observables change
- * isActive.value = true; // Button becomes disabled
- * count.value = 5; // Button text updates to "Count: 5"
- * ```
- *
- * @example
- * With children elements
- * ```typescript
- * import { $, Seidr } from '@fimbul-works/seidr';
- *
- * const container = $('div', { className: 'container' }, [
- *   $('h1', { textContent: 'Title' }),
- *   $('p', { textContent: 'Description' }),
- *   () => $('button', { textContent: 'Dynamic' }) // Function child
- * ]);
- * ```
- *
- * @example
- * Complex reactive bindings
- * ```typescript
- * import { $, Seidr } from '@fimbul-works/seidr';
- *
- * const theme = new Seidr<'light' | 'dark'>('light');
- * const isLoading = new Seidr(false);
- *
- * const card = $('div', {
- *   className: theme.as(t => `card theme-${t}`),
- *   style: isLoading.as(loading => `opacity: ${loading ? 0.5 : 1}`),
- *   'aria-busy': isLoading // Reactive boolean attribute
- * });
- * ```
  */
 export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,

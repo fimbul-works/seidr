@@ -35,59 +35,7 @@ export interface RenderToStringOptions {
  *
  * @param {() => C} factory - Component function to render
  * @param {RenderToStringOptions | SSRScope} [optionsOrScope] - Options object or legacy scope parameter
- *
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
- *
- * @example
- * Basic usage
- * ```typescript
- * import { renderToString } from '@fimbul-works/seidr/node';
- * import { $div } from '@fimbul-works/seidr/node';
- *
- * // Components can be plain functions!
- * const App = () => $div({ textContent: 'Hello' });
- *
- * app.get('*', async (req, res) => {
- *   const { html, hydrationData } = await renderToString(App);
- *   res.send(html);
- * });
- * ```
- *
- * @example
- * Component with props
- * ```typescript
- * import { renderToString } from '@fimbul-works/seidr/node';
- * import { $div } from '@fimbul-works/seidr/node';
- *
- * const HomePage = ({ title }: { title: string }) => {
- *   return $div({ textContent: title });
- * };
- *
- * app.get('*', async (req, res) => {
- *   // Pass a factory function that calls the component with props
- *   const { html, hydrationData } = await renderToString(
- *     () => HomePage({ title: 'Welcome' })
- *   );
- *   res.send(html);
- * });
- * ```
- *
- * @example
- * With initial path for routing
- * ```typescript
- * import { renderToString } from '@fimbul-works/seidr/node';
- * import { $div } from '@fimbul-works/seidr/node';
- *
- * const App = () => $div({ textContent: 'Home' });
- *
- * app.get('*', async (req, res) => {
- *   // Pass the request URL path for routing
- *   const { html, hydrationData } = await renderToString(App, {
- *     path: req.path
- *   });
- *   res.send(html);
- * });
- * ```
  */
 export async function renderToString<C extends SeidrNode>(
   factory: () => C,

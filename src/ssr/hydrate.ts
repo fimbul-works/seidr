@@ -41,28 +41,6 @@ export function resetHydratingFlag() {
  * @param hydrationData - The previously captured hydration data with renderContextID
  *
  * @returns The hydrated SeidrComponent
- *
- * @example
- * ```typescript
- * import { Seidr, $div, mount } from '@fimbul-works/seidr';
- * import { renderToString, hydrate } from '@fimbul-works/seidr/ssr';
- *
- * // Shared component (plain function!)
- * const App = () => {
- *   const count = new Seidr(42);
- *   return $div({ textContent: count.as(n => `Count: ${n}`) });
- * };
- *
- * // Server-side:
- * const { html, hydrationData } = await renderToString(App);
- *
- * // Client-side:
- * const container = document.getElementById('app');
- * container.innerHTML = html;
- *
- * // Hydrate with hydrationData:
- * hydrate(App, container, hydrationData);
- * ```
  */
 export function hydrate<T extends SeidrNode>(
   factory: (...args: any) => T,
@@ -71,10 +49,7 @@ export function hydrate<T extends SeidrNode>(
 ): SeidrComponent {
   isHydrating = true;
 
-  // Set the client render context ID from the server to ensure marker matching
-  // NOTE: We DON'T reset this in the finally block because it needs to persist
-  // for the lifetime of the component. The render context ID should match the
-  // server's ID for all reactive updates to work correctly.
+  // Set the client render context ID from the server to ensure matching context
   const hasRenderContextID = hydrationData.renderContextID !== undefined;
   if (hasRenderContextID) {
     setRenderContextID(hydrationData.renderContextID!);

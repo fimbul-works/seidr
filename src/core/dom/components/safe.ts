@@ -14,53 +14,6 @@ import type { SeidrNode } from "../element";
  * @param {() => T} factory - Function that creates the component element
  * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {SeidrComponent} A Component instance with error handling
- *
- * @example
- * Basic error boundary
- * ```typescript
- * import { Safe, $div, $h2, $p, mount } from '@fimbul-works/seidr';
- *
- * const UserProfile = Safe(
- *   () => {
- *     // Component initialization that might fail
- *     const data = JSON.parse('{ invalid }');
- *     return $div({ textContent: data.name });
- *   },
- *   (err) => {
- *     // Error boundary: return fallback UI
- *     return $div({ className: 'error' }, [
- *       $h2({ textContent: 'Error Occurred' }),
- *       $p({ textContent: err.message })
- *     ]);
- *   }
- * );
- *
- * mount(UserProfile, document.body);
- * ```
- *
- * @example
- * With resource cleanup
- * ```typescript
- * import { Safe, $div, useScope, mount } from '@fimbul-works/seidr';
- *
- * const SafeComponent = Safe(
- *   () => {
- *     const scope = useScope();
- *     scope.track(() => console.log('Component cleanup'));
- *
- *     throw new Error('Failed');
- *     return $div();
- *   },
- *   (err) => {
- *     const scope = useScope();
- *     scope.track(() => console.log('Error boundary cleanup'));
- *
- *     return $div({ textContent: 'Fallback UI' });
- *   }
- * );
- *
- * mount(SafeComponent, document.body);
- * ```
  */
 export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
   return component(() => {

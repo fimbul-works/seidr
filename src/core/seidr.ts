@@ -3,29 +3,8 @@ import { getActiveSSRScope } from "../ssr/ssr-scope";
 import { getRenderContext } from "./render-context-contract";
 import type { EventHandler } from "./types";
 
-let fallbackSeidrIdCounter: number = 0;
-
 /** Generates a unique numeric ID for a Seidr instance within the current render context */
-const generateSeidrId = (): number => {
-  // Use the global counter when client-side
-  if (typeof window !== "undefined") {
-    return fallbackSeidrIdCounter++;
-  }
-
-  try {
-    const ctx = getRenderContext();
-    if (ctx) {
-      // In SSR/client mode: use render context's counter (isolated per request)
-      return ctx.seidrIdCounter++;
-    }
-  } catch (_e) {
-    // getRenderContext() throws if not initialized, which is fine for simple usage
-  }
-
-  // Fallback for simple usage without render context (e.g., unit tests)
-  // Use a global counter with modulo to prevent overflow
-  return fallbackSeidrIdCounter++ % 2 ** 63;
-};
+const generateSeidrId = (): number => getRenderContext().seidrIdCounter++;
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -35,24 +14,6 @@ const generateSeidrId = (): number => {
  * value and notifies all observers whenever that value changes.
  *
  * @template T - The type of value being stored and observed
- *
- * @example
- * Basic reactive value
- * ```typescript
- * import { Seidr } from '@fimbul-works/seidr';
- *
- * const count = new Seidr(0);
- *
- * // Subscribe to changes
- * const unsubscribe = count.observe(value => {
- *   console.log('Count changed:', value);
- * });
- *
- * count.value = 5; // Logs: "Count changed: 5"
- * count.value = 5; // No notification (same value)
- *
- * unsubscribe(); // Cleanup
- * ```
  */
 export class Seidr<T> {
   /** @type {T} The current value being stored */
@@ -74,19 +35,11 @@ export class Seidr<T> {
    * Creates an instance of Seidr.
    *
    * @param {T} initial - The initial value to store
-   * @memberof Seidr
-   */
-
-  /**
-   * Creates an instance of Seidr.
-   *
-   * @param {T} initial - The initial value to store
-   * @param {{ hydrate?: boolean }} [o] - Options for this Seidr instance
-   * @memberof Seidr
+   * @param {{ hydrate?: boolean }} [options] - Options for this Seidr instance
    */
   constructor(
     initial: T,
-    private o: { hydrate?: boolean } = {},
+    public readonly options: { hydrate?: boolean } = {},
   ) {
     this.v = initial;
 
@@ -108,7 +61,7 @@ export class Seidr<T> {
    */
   private register(): void {
     // If hydration is explicitly disabled, skip registration
-    if (this.o.hydrate === false) {
+    if (this.options.hydrate === false) {
       return;
     }
 
@@ -172,36 +125,6 @@ export class Seidr<T> {
    * this returns an empty array.
    *
    * @type {ReadonlyArray<Seidr<any>>} Array of parent Seidr instances (empty for root observables)
-   *
-   * @example
-   * Inspecting derived observable parents
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const firstName = new Seidr('John');
-   * const lastName = new Seidr('Doe');
-   *
-   * const fullName = Seidr.computed(
-   *   () => `${firstName.value} ${lastName.value}`,
-   *   [firstName, lastName]
-   * );
-   *
-   * console.log(fullName.parents); // [Seidr<string>, Seidr<string>]
-   * console.log(fullName.parents[0] === firstName); // true
-   * console.log(firstName.parents); // [] (root observable)
-   * ```
-   *
-   * @example
-   * Chained derived values
-   * ```typescript
-   * const count = new Seidr(5);
-   * const doubled = count.as(n => n * 2);
-   * const quadrupled = doubled.as(n => n * 2);
-   *
-   * console.log(doubled.parents); // [count]
-   * console.log(quadrupled.parents); // [doubled]
-   * console.log(quadrupled.parents[0].parents[0] === count); // true
-   * ```
    */
   get parents(): ReadonlyArray<Seidr<any>> {
     return this.p.slice(0);
@@ -257,104 +180,11 @@ export class Seidr<T> {
    * @template U - The type of the transformed/derived value
    *
    * @param {(value: T) => U} transform - Function that transforms the source value to the derived value
+   * @param {{ hydrate?: boolean }} [options] - Options for the new derived Seidr
    * @returns {Seidr<U>} A new Seidr instance containing the transformed value
-   *
-   * @example
-   * Simple numeric transformation
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const count = new Seidr(5);
-   * const doubled = count.as(n => n * 2); // Seidr<number> with value 10
-   * const isEven = count.as(n => n % 2 === 0); // Seidr<boolean> with value false
-   *
-   * console.log(doubled.value); // 10
-   * console.log(isEven.value); // false
-   *
-   * count.value = 6;
-   * console.log(doubled.value); // 12
-   * console.log(isEven.value); // true
-   * ```
-   *
-   * @example
-   * String formatting and concatenation
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const firstName = new Seidr('John');
-   * const lastName = new Seidr('Doe');
-   *
-   * const fullName = firstName.as(name => `${name} ${lastName.value}`);
-   * const displayName = firstName.as(name => name.toUpperCase());
-   *
-   * console.log(fullName.value); // "John Doe"
-   * console.log(displayName.value); // "JOHN"
-   *
-   * firstName.value = 'Jane';
-   * console.log(fullName.value); // "Jane Doe"
-   * console.log(displayName.value); // "JANE"
-   * ```
-   *
-   * @example
-   * Complex object transformations
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const user = new Seidr({ id: 1, name: 'John', age: 30 });
-   *
-   * const userName = user.as(u => u.name);
-   * const userDescription = user.as(u => `${u.name} (${u.age} years old)`);
-   * const isAdult = user.as(u => u.age >= 18);
-   *
-   * console.log(userName.value); // "John"
-   * console.log(userDescription.value); // "John (30 years old)"
-   * console.log(isAdult.value); // true
-   * ```
-   *
-   * @example
-   * Array filtering and mapping
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const numbers = new Seidr([1, 2, 3, 4, 5]);
-   *
-   * const evenNumbers = numbers.as(nums => nums.filter(n => n % 2 === 0));
-   * const squaredNumbers = numbers.as(nums => nums.map(n => n * n));
-   * const count = numbers.as(nums => nums.length);
-   *
-   * console.log(evenNumbers.value); // [2, 4]
-   * console.log(squaredNumbers.value); // [1, 4, 9, 16, 25]
-   * console.log(count.value); // 5
-   * ```
-   *
-   * @example
-   * Conditional transformations
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const temperature = new Seidr(25);
-   *
-   * const temperatureStatus = temperature.as(temp => {
-   *   if (temp < 0) return 'Freezing';
-   *   if (temp < 10) return 'Cold';
-   *   if (temp < 20) return 'Cool';
-   *   if (temp < 30) return 'Warm';
-   *   return 'Hot';
-   * });
-   *
-   * const temperatureColor = temperature.as(temp => {
-   *   if (temp < 10) return 'blue';
-   *   if (temp < 20) return 'green';
-   *   if (temp < 30) return 'orange';
-   *   return 'red';
-   * });
-   *
-   * console.log(temperatureStatus.value); // "Warm"
-   * console.log(temperatureColor.value); // "orange"
-   * ```
    */
-  as<U>(transform: (value: T) => U): Seidr<U> {
-    const derived = new Seidr<U>(transform(this.v));
+  as<U>(transform: (value: T) => U, options: { hydrate?: boolean } = {}): Seidr<U> {
+    const derived = new Seidr<U>(transform(this.v), options);
     derived.setParents([this]);
     this.addCleanup(this.observe((value) => (derived.value = transform(value))));
     return derived;
@@ -370,52 +200,16 @@ export class Seidr<T> {
    * @template C - The return type of the computed value
    *
    * @param {() => C} compute - Function that computes the derived value
-   * @param {Seidr<any>} parents - Array of Seidrs that trigger recomputation when changed
+   * @param {Seidr<any>[]} parents - Array of Seidrs that trigger recomputation when changed
+   * @param {{ hydrate?: boolean }} [options] - Options for the new computed Seidr
    * @returns {Seidr<C>} A new Seidr instance containing the computed result
-   *
-   * @example
-   * Full name computation
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const firstName = new Seidr('John');
-   * const lastName = new Seidr('Doe');
-   *
-   * const fullName = Seidr.computed(
-   *   () => `${firstName.value} ${lastName.value}`,
-   *   [firstName, lastName]
-   * );
-   *
-   * console.log(fullName.value); // "John Doe"
-   * firstName.value = 'Jane';
-   * console.log(fullName.value); // "Jane Doe"
-   * ```
-   *
-   * @example
-   * Complex calculations
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const width = new Seidr(100);
-   * const height = new Seidr(200);
-   *
-   * const area = Seidr.computed(
-   *   () => width.value * height.value,
-   *   [width, height]
-   * );
-   *
-   * const perimeter = Seidr.computed(
-   *   () => 2 * (width.value + height.value),
-   *   [width, height]
-   * );
-   * ```
    */
-  static computed<C>(compute: () => C, parents: Seidr<any>[]): Seidr<C> {
+  static computed<C>(compute: () => C, parents: Seidr<any>[], options: { hydrate?: boolean } = {}): Seidr<C> {
     if (parents.length === 0) {
       console.warn("Computed value with zero dependencies");
     }
 
-    const computed = new Seidr<C>(compute());
+    const computed = new Seidr<C>(compute(), options);
     computed.setParents(parents);
     parents.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
     return computed;
@@ -455,19 +249,6 @@ export class Seidr<T> {
    *
    * Cleanup functions are executed in a try-catch block to ensure that
    * errors in one cleanup function don't prevent others from running.
-   *
-   * @example
-   * Manual cleanup
-   * ```typescript
-   * import { Seidr } from '@fimbul-works/seidr';
-   *
-   * const counter = new Seidr(0);
-   * const unsubscribe = counter.observe(value => console.log(value));
-   *
-   * // When done:
-   * unsubscribe(); // Remove specific observer
-   * counter.destroy(); // Clean up everything
-   * ```
    */
   destroy(): void {
     this.f.clear();

@@ -22,22 +22,5 @@ const pid = () => (PID ? encodeBase62(PID) : randomString(3));
  * - Random: High-entropy random component
  *
  * @returns {string} A unique identifier string (approximately 20 characters)
- *
- * @example
- * Basic usage
- * ```typescript
- * import { uid } from '@fimbul-works/seidr';
- *
- * const id1 = uid(); // "v67DiBG-5fC-m58AknG1"
- * const id2 = uid(); // "v67DiBG-5fC-hTDykN0O"
- * ```
- *
- * @example
- * For list keys
- * ```typescript
- * import { uid } from '@fimbul-works/seidr';
- *
- * const todo = { id: uid(), text: "Learn Seidr" };
- * ```
  */
 export const uid = (): string => [timestamp(), pid(), randomString(8)].join("-");

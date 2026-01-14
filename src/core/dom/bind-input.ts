@@ -5,15 +5,6 @@ import type { Seidr } from "../seidr";
  *
  * @param observable - The observable to bind to the input
  * @returns Object containing value and oninput handler
- *
- * @example
- * ```typescript
- * const text = new Seidr('');
- * $input({
- *   ...bindInput(text),
- *   placeholder: 'Type here...'
- * });
- * ```
  */
 export function bindInput(observable: Seidr<string>) {
   return {

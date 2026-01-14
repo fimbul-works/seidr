@@ -20,22 +20,6 @@ import type { SeidrNode } from "../element";
  * @param {C | (() => C)} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement} container - The DOM container element to mount into
  * @returns {() => void} A cleanup function that unmounts the component when called
- *
- * @example
- * Mounting a plain function component
- * ```typescript
- * import { mount, $ } from '@fimbul-works/seidr';
- *
- * const App = () => $('div', { textContent: 'Hello Seidr' });
- * const unmount = mount(App, document.body);
- * ```
- *
- * @example
- * Mounting a component instance
- * ```typescript
- * const comp = component(() => $('div'))();
- * mount(comp, document.body);
- * ```
  */
 export function mount<C extends SeidrNode | SeidrComponent>(
   componentOrFactory: C | (() => C),

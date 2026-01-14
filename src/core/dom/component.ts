@@ -47,20 +47,7 @@ export const getCurrentComponent = (): SeidrComponent | null => {
  * @throws {Error} If called outside of a component context
  * @returns {ComponentScope} The scope of the current component
  *
- * @example
- * Using useScope in a component
- * ```typescript
- * // Works in both plain functions and component() wrapped factories!
- * const Counter = () => {
- *   const scope = useScope();
- *   const count = new Seidr(0);
- *
- *   return $button({
- *     textContent: count.as(v => `Count: ${v}`),
- *     onclick: () => count.value++
- *   });
- * };
- * ```
+
  */
 export const useScope = (): ComponentScope => {
   const current = getCurrentComponent();
@@ -143,54 +130,7 @@ export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : 
  * @param {(props: P) => SeidrNode} factory - Function that accepts props and creates the component element
  * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
  *
- * @example
- * Using component() for explicit factory creation
- * ```typescript
- * import { component, useScope, Seidr, $button } from '@fimbul-works/seidr';
- *
- * // Create a reusable factory
- * const Counter = component(({ initialValue = 0 }) => {
- *   const count = new Seidr(initialValue);
- *   return $button({
- *     textContent: count.as(v => `Count: ${v}`),
- *     onclick: () => count.value++
- *   });
- * });
- *
- * // Usage creates a SeidrComponent instance
- * const comp = Counter({ initialValue: 5 });
- * ```
- *
- * @example
- * Component without props
- * ```typescript
- * const App = component(() => {
- *   const scope = useScope();
- *   const user = new Seidr({ name: 'John' });
- *
- *   return $('div', { className: 'profile' }, [
- *     $('span', { textContent: user.as(u => u.name) })
- *   ]);
- * });
- *
- * // Usage
- * App();
- * ```
- *
- * @example
- * Components as plain functions passed to children
- * ```typescript
- * const Header = () => $('header', { textContent: 'User Profile' });
- * const Avatar = () => $('img', { src: '/avatar.png' });
- *
- * const UserProfile = () => {
- *   return $('div', { className: 'profile' }, [
- *     Header, // Plain functions are automatically wrapped
- *     Avatar,
- *     $('span', { textContent: 'John Doe' })
- *   ]);
- * };
- * ```
+
  */
 export function component<P = void>(
   factory: P extends void ? () => SeidrNode : (props: P) => SeidrNode,

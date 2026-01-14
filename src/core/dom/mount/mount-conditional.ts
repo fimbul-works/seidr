@@ -19,46 +19,6 @@ import { $comment, type SeidrNode } from "../element";
  * @param {() => C} componentFactory - Function that creates the component when needed
  * @param {HTMLElement} container - The DOM container element
  * @returns {(() => void)} A cleanup function that removes the reactive binding and any active component
- *
- * @example
- * Conditional panel display
- * ```typescript
- * import { $, mountConditional, Seidr, component } from '@fimbul-works/seidr';
- *
- * const isVisible = new Seidr(false);
- *
- * const DetailsPanel = component(() => {
- *   return $('div', { className: 'details-panel' }, [
- *     $('h2', { textContent: 'Details' }),
- *     $('p', { textContent: 'Additional information...' })
- *   ]);
- * });
- *
- * const cleanup = mountConditional(
- *   isVisible,
- *   () => DetailsPanel(), // Only created when true
- *   document.body
- * );
- *
- * // Show panel
- * isVisible.value = true; // Creates and mounts DetailsPanel
- *
- * // Hide panel
- * isVisible.value = false; // Destroys and removes DetailsPanel
- * ```
- *
- * @example
- * Automatic cleanup when used within a parent component
- * ```typescript
- * const ParentComponent = component(() => {
- *   const isVisible = new Seidr(false);
- *
- *   // Automatically tracked - no need to store cleanup!
- *   mountConditional(isVisible, () => DetailsPanel(), document.body);
- *
- *   return $('div', { textContent: 'Parent' });
- * });
- * ```
  */
 export function mountConditional<T extends SeidrNode>(
   condition: Seidr<boolean>,

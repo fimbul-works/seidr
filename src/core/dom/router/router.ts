@@ -4,7 +4,7 @@ import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
 import { NO_HYDRATE, uid } from "../../util/index";
 import { isSeidrComponentFactory } from "../../util/is";
-import { component, type SeidrComponent, useScope } from "../component";
+import { component, getComponentStack, getCurrentComponent, type SeidrComponent, useScope } from "../component";
 import { $comment, type SeidrNode } from "../element";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";

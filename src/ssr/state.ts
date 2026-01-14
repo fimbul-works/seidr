@@ -24,20 +24,6 @@ export const clearRenderContextState = (renderContextID: number) => globalStates
  *
  * @param renderContextID - Render context ID
  * @returns Object mapping numeric IDs to values (Seidr keys prefixed with "$/")
- *
- * @example
- * ```typescript
- * // During SSR
- * const USER_KEY = createStateKey<Seidr<string>>("user");
- * const SETTINGS_KEY = createStateKey<{ theme: string }>("settings");
- *
- * setState(USER_KEY, new Seidr("Alice"));
- * setState(SETTINGS_KEY, { theme: "dark" });
- *
- * const state = captureRenderContextState(ctx.renderContextID);
- * // Returns: { "$/0": "Alice", "1": { theme: "dark" } }
- * // Where 0 is the numeric ID for "user" and 1 is for "settings"
- * ```
  */
 export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
   const ctxStates = globalStates.get(renderContextID);
@@ -75,24 +61,6 @@ export function captureRenderContextState(renderContextID: number): Record<strin
  * wrapped in Seidr observables, while other numeric keys are stored as plain values.
  *
  * @param state - Record of numeric IDs to values from SSR
- *
- * @example
- * ```typescript
- * // During hydration
- * const USER_KEY = createStateKey<Seidr<string>>("user");
- * const SETTINGS_KEY = createStateKey<{ theme: string }>("settings");
- *
- * restoreGlobalState({
- *   "$/0": "Alice",      // 0 is the numeric ID for "user"
- *   "1": { theme: "dark" } // 1 is the numeric ID for "settings"
- * });
- *
- * const user = getState<Seidr<string>>(USER_KEY);
- * // user.value is now "Alice" (automatically wrapped in Seidr)
- *
- * const settings = getState<{ theme: string }>(SETTINGS_KEY);
- * // settings is { theme: "dark" } (plain value)
- * ```
  */
 export function restoreGlobalState(state: Record<string, unknown>): void {
   const ctx = getRenderContext();

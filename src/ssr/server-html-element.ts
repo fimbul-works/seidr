@@ -6,12 +6,6 @@ import { isFn, isObj, isStr, unwrapSeidr } from "../core/util";
  *
  * This map allows for O(1) lookup of elements by ID during server-side rendering,
  * mirroring the behavior of `document.getElementById()` on the client side.
- *
- * @example
- * ```typescript
- * const div = new ServerHTMLElement("div", { id: "my-div" });
- * const found = ServerElementMap.get("my-div"); // Returns the div element
- * ```
  */
 export const ServerElementMap = new Map<string, ServerHTMLElement>();
 
@@ -30,15 +24,6 @@ export type Attributes = Record<string, string | number | boolean | null | undef
  * during server-side rendering. Changes are tracked via an optional callback.
  *
  * @internal
- * @example
- * ```typescript
- * const classList = new ServerDOMTokenList("foo bar", (value) => {
- *   console.log("Classes changed to:", value);
- * });
- *
- * classList.add("baz"); // Triggers callback with "foo bar baz"
- * classList.toggle("foo"); // Removes "foo", triggers callback
- * ```
  */
 class ServerDOMTokenList {
   private classes: Set<string>;
@@ -113,16 +98,6 @@ class ServerDOMTokenList {
  * individual property manipulation (e.g., `element.style.color = "red"`).
  *
  * @internal
- * @example
- * ```typescript
- * const style = new ServerCSSStyleDeclaration(
- *   () => "color: blue;",
- *   (s) => console.log("Style set to:", s)
- * );
- *
- * style.setProperty("font-size", "14px"); // Sets style
- * style.getPropertyValue("color"); // Returns "blue"
- * ```
  */
 class ServerCSSStyleDeclaration {
   constructor(
@@ -183,16 +158,6 @@ class ServerCSSStyleDeclaration {
  * rendering to create HTML markup that can be sent to the client.
  *
  * @template T - The HTML tag name (e.g., "div", "span", "button")
- *
- * @example
- * ```typescript
- * const div = new ServerHTMLElement("div", { className: "container" }, [
- *   new ServerHTMLElement("span", { textContent: "Hello" })
- * ]);
- *
- * console.log(div.toString());
- * // Output: <div class="container"><span>Hello</span></div>
- * ```
  *
  * @internal
  */
@@ -358,27 +323,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * @param {Attributes} [attrs={}] - Element attributes, properties, and event handlers
    * @param {(ServerHTMLElement | string)[]} [children=[]] - Child elements or text nodes
    * @returns {ServerHTMLElement} A server-side HTML element mock
-   *
-   * @example
-   * Create a div with class and children
-   * ```typescript
-   * const div = new ServerHTMLElement(
-   *   "div",
-   *   { className: "container", id: "main" },
-   *   [new ServerHTMLElement("span", { textContent: "Hello" })]
-   * );
-   * ```
-   *
-   * @example
-   * Create an input with reactive binding evaluated
-   * ```typescript
-   * const disabled = new Seidr(false);
-   * const input = new ServerHTMLElement("input", {
-   *   type: "text",
-   *   disabled, // Automatically evaluates to disabled.value
-   *   value: "Initial text"
-   * });
-   * ```
    */
   constructor(
     tag: string,
@@ -710,13 +654,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * @param {Function} _handler - Event handler (ignored)
    * @param {any} _options - Event listener options (ignored)
    * @returns {() => void} No-op cleanup function
-   *
-   * @example
-   * ```typescript
-   * const button = new ServerHTMLElement("button");
-   * const cleanup = button.on("click", () => console.log("clicked"));
-   * cleanup(); // Does nothing on server side
-   * ```
    */
   on(_event: string, _handler: (ev: any) => any, _options?: any): () => void {
     return () => {};
@@ -755,13 +692,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {ServerHTMLElement | string} child - Child element or text node to append
    * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const parent = new ServerHTMLElement("div");
-   * const child = new ServerHTMLElement("span", { textContent: "Hello" });
-   * parent.appendChild(child);
-   * ```
    */
   appendChild(child: ServerHTMLElement | string) {
     this.children.push(child);
@@ -777,15 +707,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * @param {ServerHTMLElement | string} currentChild - Reference child element to insert before
    * @returns {void}
    * @throws {Error} When currentChild is not found in children array
-   *
-   * @example
-   * ```typescript
-   * const parent = new ServerHTMLElement("div", {}, [
-   *   new ServerHTMLElement("span", { textContent: "World" })
-   * ]);
-   * const hello = new ServerHTMLElement("span", { textContent: "Hello " });
-   * parent.insertBefore(hello, parent.children[0]);
-   * ```
    */
   insertBefore(child: ServerHTMLElement | string, currentChild: ServerHTMLElement | string) {
     const index = this.children.indexOf(currentChild);
@@ -803,14 +724,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {ServerHTMLElement | string} child - Child element to remove
    * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const parent = new ServerHTMLElement("div", {}, [
-   *   new ServerHTMLElement("span", { textContent: "Remove me" })
-   * ]);
-   * parent.removeChild(parent.children[0]);
-   * ```
    */
   removeChild(child: ServerHTMLElement | string): void {
     const index = this.children.indexOf(child);
@@ -828,15 +741,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * Calls `remove()` on all child elements and clears the children array.
    *
    * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const parent = new ServerHTMLElement("div", {}, [
-   *   new ServerHTMLElement("span", { textContent: "Child 1" }),
-   *   new ServerHTMLElement("span", { textContent: "Child 2" })
-   * ]);
-   * parent.clear(); // All children removed
-   * ```
    */
   clear() {
     this.children.forEach((child) => {
@@ -853,14 +757,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * Removes this element from its parent's children array and clears all children.
    *
    * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const parent = new ServerHTMLElement("div", {}, [
-   *   new ServerHTMLElement("span", { textContent: "Remove me" })
-   * ]);
-   * parent.children[0].remove(); // Span removed from parent
-   * ```
    */
   remove(): void {
     if (this.parentElement) {
@@ -878,19 +774,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} name - Name of the attribute to get
    * @returns {string | null} Attribute value or null
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div", {
-   *   id: "my-div",
-   *   className: "container",
-   *   disabled: true
-   * });
-   * div.getAttribute("id"); // Returns: "my-div"
-   * div.getAttribute("class"); // Returns: "container"
-   * div.getAttribute("disabled"); // Returns: "true"
-   * div.getAttribute("nonexistent"); // Returns: null
-   * ```
    */
   getAttribute(name: string): string | null {
     if (name === "class") {
@@ -938,15 +821,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} name - Name of the attribute to set
    * @param {any} value - Value to set the attribute to
-   * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div");
-   * div.setAttribute("id", "my-div");
-   * div.setAttribute("class", "container");
-   * div.setAttribute("disabled", true);
-   * ```
    */
   setAttribute(name: string, value: any): void {
     // Reject undefined values
@@ -964,13 +838,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} name - Name of the attribute to check
    * @returns {boolean} True if attribute exists
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div", { id: "my-div" });
-   * div.hasAttribute("id"); // Returns: true
-   * div.hasAttribute("class"); // Returns: false
-   * ```
    */
   hasAttribute(name: string): boolean {
     return name in this._attributes;
@@ -981,13 +848,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} name - Name of the attribute to remove
    * @returns {void}
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div", { id: "my-div", className: "container" });
-   * div.removeAttribute("id");
-   * div.getAttribute("id"); // Returns: null
-   * ```
    */
   removeAttribute(name: string): void {
     const attrName = name === "class" ? "className" : name;
@@ -1001,12 +861,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} _selector - CSS selector (ignored)
    * @returns {ServerHTMLElement | null} Always returns null
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div");
-   * div.querySelector(".class"); // Returns: null
-   * ```
    */
   querySelector(_selector: string): ServerHTMLElement | null {
     // Simplified - return null for now
@@ -1034,12 +888,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} _selector - CSS selector (ignored)
    * @returns {ServerHTMLElement[]} Always returns empty array
-   *
-   * @example
-   * ```typescript
-   * const div = new ServerHTMLElement("div");
-   * div.querySelectorAll(".class"); // Returns: []
-   * ```
    */
   querySelectorAll(_selector: string): ServerHTMLElement[] {
     // Simplified - return empty array for now
@@ -1065,39 +913,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * and escapes HTML entities in attribute values and text content.
    *
    * @returns {string} HTML string representation of this element and all descendants
-   *
-   * @example
-   * Basic element
-   * ```typescript
-   * const div = new ServerHTMLElement("div", { className: "container" });
-   * div.toString(); // Returns: '<div class="container"></div>'
-   * ```
-   *
-   * @example
-   * Element with children
-   * ```typescript
-   * const div = new ServerHTMLElement("div", {}, [
-   *   new ServerHTMLElement("span", { textContent: "Hello" })
-   * ]);
-   * div.toString(); // Returns: '<div><span>Hello</span></div>'
-   * ```
-   *
-   * @example
-   * Self-closing void element
-   * ```typescript
-   * const img = new ServerHTMLElement("img", { src: "/image.png" });
-   * img.toString(); // Returns: '<img src="/image.png" />'
-   * ```
-   *
-   * @example
-   * HTML escaping for security
-   * ```typescript
-   * const div = new ServerHTMLElement("div", {
-   *   textContent: '<script>alert("XSS")</script>'
-   * });
-   * div.toString();
-   * // Returns: '<div>&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</div>'
-   * ```
    */
   toString(): string {
     // Build attributes string
@@ -1208,12 +1023,6 @@ export class ServerHTMLElement implements SeidrElementInterface {
    *
    * @param {string} text - Text to escape special characters from
    * @returns {string} Escaped text safe for HTML attribute or content usage
-   *
-   * @example
-   * ```typescript
-   * escapeHtml('<script>alert("XSS")</script>');
-   * // Returns: "&lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;"
-   * ```
    */
   escapeHtml(text: string): string {
     const map: Record<string, string> = {

@@ -9,27 +9,7 @@ import type { DependencyGraph } from "./types";
  *
  * @param graph - The dependency graph
  * @param startId - The numeric ID of the node to start traversal from
- *
  * @returns Array of paths, where each path is an array of indices leading from startId to a root
- *
- * @example
- * ```typescript
- * // Given graph:
- * // count (0) -> doubled (1) -> quadrupled (2)
- * const graph = {
- *   nodes: [
- *     { id: 0, parents: [] },      // count (root)
- *     { id: 1, parents: [0] },     // doubled (depends on count)
- *     { id: 2, parents: [1] }      // quadrupled (depends on doubled)
- *   ],
- *   rootIds: [0]
- * };
- *
- * // Find paths from quadrupled (id: 2) to roots
- * const paths = findPathsToRoots(graph, 2);
- * // Result: [[1, 0]]
- * // Meaning: quadrupled.parents[1].parents[0] = count
- * ```
  */
 export function findPathsToRoots(graph: DependencyGraph, startId: number): number[][] {
   const paths: number[][] = [];

@@ -1,5 +1,5 @@
 import { Seidr } from "../../seidr";
-import { cn, NO_HYDRATE, unwrapSeidr, wrapSeidr } from "../../util/index";
+import { cn, isSeidr, NO_HYDRATE, unwrapSeidr } from "../../util/index";
 import { component, type SeidrComponent, useScope } from "../component";
 import { $, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
 import { getCurrentPath } from "./get-current-path";
@@ -24,37 +24,7 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
  * @returns {SeidrComponent<K, SeidrElement<K>>} SeidrComponent that wraps an anchor element
  *
- * @example
- * Basic Link
- * ```typescript
- * import { Link, $div } from '@fimbul-works/seidr';
- *
- * const App = () => {
- *   return $div({}, [
- *     Link({ to: '/about' }, ['About']),
- *     Link({ to: '/', activeClass: 'current' }, ['Home'])
- *   ]);
- * };
- * ```
- *
- * @example
- * Link with custom tagName and reactive active state
- * ```typescript
- * import { Link, $div, Seidr } from '@fimbul-works/seidr';
- *
- * const App = () => {
- *   const currentPath = new Seidr('/');
- *
- *   return $div({}, [
- *     Link({
- *       to: currentPath.as(p => p === '/home' ? '/' : '/home'),
- *       tagName: 'button',
- *       activeProp: 'aria-current',
- *       activeValue: 'page'
- *     }, ['Home'])
- *   ]);
- * };
- * ```
+
  */
 export function Link<K extends keyof HTMLElementTagNameMap = "a">(
   {
@@ -72,7 +42,8 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     const scope = useScope();
 
     // If to is a Seidr, observe it; otherwise wrap it in a Seidr
-    const toValue = wrapSeidr(to);
+    // We opt-out of hydration for this internal Seidr to save space
+    const toValue = isSeidr(to) ? to : new Seidr(to, NO_HYDRATE);
     const val = activeValue ?? activeClass;
     const currentPath = getCurrentPath();
 
@@ -80,6 +51,7 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     const isActive = Seidr.computed(
       () => normalizePath(currentPath.value) === normalizePath(unwrapSeidr(toValue)),
       [currentPath, toValue],
+      NO_HYDRATE,
     );
 
     // Build props object with reactive bindings
@@ -94,7 +66,7 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
 
     // Handle className reactively if activeProp is className
     if (activeProp === "className") {
-      props.className = isActive.as((active) => cn(active ? val : "", className));
+      props.className = isActive.as((active) => cn(active ? val : "", className), NO_HYDRATE);
     } else {
       props.className = className;
       // Set up reactive binding for custom prop (like aria-current)

@@ -10,21 +10,6 @@ import type { DependencyGraph } from "./types";
  * @param nodeId - The numeric ID of the node
  *
  * @returns Set of root IDs that this node ultimately depends on
- *
- * @example
- * ```typescript
- * const graph = {
- *   nodes: [
- *     { id: 0, parents: [] },      // firstName
- *     { id: 1, parents: [] },      // lastName
- *     { id: 2, parents: [0, 1] }   // fullName
- *   ],
- *   rootIds: [0, 1]
- * };
- *
- * const roots = findRootDependencies(graph, 2);
- * // Result: Set {0, 1} - fullName depends on both firstName and lastName
- * ```
  */
 export function findRootDependencies(graph: DependencyGraph, nodeId: number): Set<number> {
   const roots = new Set<number>();

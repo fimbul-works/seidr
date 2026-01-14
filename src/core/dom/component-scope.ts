@@ -16,16 +16,6 @@ export interface ComponentScope {
    * cleaning up reactive bindings, or clearing timeouts.
    *
    * @param {() => void} cleanup - The cleanup function to execute
-   *
-   * @example
-   * Tracking various cleanup functions
-   * ```typescript
-   * const timeoutId = setTimeout(() => {}, 1000);
-   * const cleanup = () => clearTimeout(timeoutId);
-   *
-   * scope.track(cleanup);
-   * scope.track(() => console.log('Component destroyed'));
-   * ```
    */
   track(cleanup: () => void): void;
 
@@ -38,17 +28,6 @@ export interface ComponentScope {
    *
    * @param {SeidrComponent} component - The child component to track
    * @returns {SeidrComponent} The same child SeidrComponent
-   *
-   * @example
-   * Managing child components
-   * ```typescript
-   * const headerComponent = createHeader();
-   * const footerComponent = createFooter();
-   *
-   // Track children for automatic cleanup
-   * scope.child(headerComponent);
-   * scope.child(footerComponent);
-   * ```
    */
   child(component: SeidrComponent): SeidrComponent;
 
@@ -58,19 +37,6 @@ export interface ComponentScope {
    * This method executes all registered cleanup functions in the order
    * they were added. Once destroyed, the scope can no longer be used
    * to track new cleanup functions.
-   *
-   * @example
-   * Manual scope destruction
-   * ```typescript
-   * const scope = createScope();
-   *
-   * // Track some resources
-   * scope.track(() => console.log('Cleanup 1'));
-   * scope.track(() => console.log('Cleanup 2'));
-   *
-   * // Destroy everything
-   * scope.destroy(); // Logs "Cleanup 1", then "Cleanup 2"
-   * ```
    */
   destroy(): void;
 
@@ -88,15 +54,6 @@ export interface ComponentScope {
  * function, but can also be created directly for advanced use cases or testing.
  *
  * @returns {ComponentScope} A new ComponentScope instance with cleanup tracking capabilities
- *
- * @example
- * Manual scope creation
- * ```typescript
- * const scope = createScope();
- *
- * scope.track(() => console.log('Cleaned up'));
- * scope.destroy(); // Executes cleanup
- * ```
  */
 export function createScope(): ComponentScope {
   let cleanups: (() => void)[] = [];
