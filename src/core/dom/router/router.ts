@@ -3,8 +3,9 @@ import { ServerHTMLElement } from "../../../ssr/server-html-element";
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
 import { uid } from "../../util/index";
+import { isSeidrComponentFactory } from "../../util/is";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $comment } from "../element";
+import { $comment, type SeidrNode } from "../element";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { parseRouteParams } from "./parse-route-params";
@@ -14,7 +15,7 @@ import { parseRouteParams } from "./parse-route-params";
  */
 export interface RouterProps {
   routes: Array<RouteDefinition<any, any>>;
-  fallback?: SeidrComponent<any> | (() => SeidrComponent<any>);
+  fallback?: SeidrNode | (() => SeidrNode);
 }
 
 /**
@@ -60,7 +61,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
   const currentPath = getCurrentPath();
 
   let currentRouteIndex = -100; // Initialize to a value that won't match any index or fallback
-  let currentComponent: SeidrComponent<any> | null = null;
+  let currentComponent: SeidrComponent | null = null;
   let currentParamsSeidr: Seidr<Record<string, string>> | null = null;
 
   /**
@@ -125,13 +126,21 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
       // Show Fallback
       currentParamsSeidr = null;
       if (fallback) {
-        currentComponent = typeof fallback === "function" ? fallback() : fallback;
+        const factory = typeof fallback === "function" ? fallback : () => fallback;
+        currentComponent = (
+          isSeidrComponentFactory(factory) ? (factory as any)() : component(factory as any)()
+        ) as SeidrComponent;
         mountComponent(currentComponent);
       }
     } else {
       // Show matched route
       currentParamsSeidr = new Seidr(params as Record<string, string>);
-      currentComponent = routes[matchedIndex].componentFactory(currentParamsSeidr);
+      const factory = routes[matchedIndex].componentFactory;
+      currentComponent = (
+        isSeidrComponentFactory(factory)
+          ? factory(currentParamsSeidr)
+          : component<Seidr<any>>(factory as any)(currentParamsSeidr)
+      ) as SeidrComponent;
       mountComponent(currentComponent!);
     }
   };
@@ -151,7 +160,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
         }
       }
     } else if (startMarker.parentNode) {
-      startMarker.parentNode.insertBefore(comp.element, endMarker);
+      startMarker.parentNode.insertBefore(comp.element as Node, endMarker);
       if (comp.scope.onAttached) {
         comp.scope.onAttached(startMarker.parentNode);
       }

@@ -346,10 +346,10 @@ const app = $div({ className: 'app' }, [
 
 ### component()
 
-Create a component with automatic cleanup and automatic child component tracking.
+Creates a `SeidrComponentFactory`. While Seidr supports plain functions as components, `component()` is used when you need explicit lifecycle management, custom scope tracking, or a reusable factory that can be passed between components.
 
 **Parameters:**
-- `factory` - Factory function (signature `(props) => SeidrElement`)
+- `factory` - Factory function (signature `(props) => SeidrNode`)
 
 **Returns:**
 
@@ -362,47 +362,44 @@ Create a component with automatic cleanup and automatic child component tracking
 }
 ```
 
-**Automatic Child Tracking**: Child components created during parent component rendering are automatically tracked and destroyed when the parent is destroyed.
+**Automatic Child Tracking**: All Seidr components (including plain functions when mounted) automatically track child components created during their execution. `component()` specifically returns a factory that creates a `SeidrComponent` instance.
 
 **Using `useScope()`:**
 
 Inside the component factory, call `useScope()` to get the scope object for tracking cleanup:
 
 ```typescript
-import { component, useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
+import { useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
 
-const UserProfile = component(() => {
+// A plain function component still has access to useScope() and automatic cleanup
+// when it is mounted using mount(), List(), Conditional(), or Switch()!
+const UserProfile = () => {
   const scope = useScope();
   const name = new Seidr('Alice');
   const age = new Seidr(30);
 
-  scope.track(age.bind(ageSpan, (value) => {
-    ageSpan.textContent = `Age: ${value}`;
-  }));
-
+  // Still works exactly the same!
   return $div({ className: 'user-profile' }, [
     $span({ textContent: name }),
-    ageSpan,
+    $span({ textContent: age.as(a => `Age: ${a}`) }),
     $button({
       textContent: 'Birthday',
       onclick: () => age.value++
     })
   ]);
-});
+};
 
-const profile = UserProfile();
-document.body.appendChild(profile.element);
+// Mount it
+const unmount = mount(UserProfile, document.body);
 
 // When done:
-profile.destroy(); // Cleans up all reactive bindings automatically
+unmount(); // Cleans up all reactive bindings automatically
 ```
 
-**Components with Props:**
-
-Components can accept parameters for configuration and initial state. Props are passed when creating the component instance:
+Components accept parameters for configuration and initial state. When using plain functions, props are just regular arguments. When using `component()`, props are passed to the factory:
 
 ```typescript
-import { component, useScope, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
 
 interface CounterProps {
   initialCount?: number;
@@ -410,8 +407,7 @@ interface CounterProps {
   label?: string;
 }
 
-const Counter = component(({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) => {
-  const scope = useScope();
+const Counter = ({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) => {
   const count = new Seidr(initialCount);
   const disabled = count.as(value => value >= 10);
 
@@ -422,23 +418,13 @@ const Counter = component(({ initialCount = 0, step = 1, label = 'Counter' }: Co
       textContent: `+${step}`,
       disabled,
       onclick: () => count.value += step
-    }),
-    $button({
-      textContent: 'Reset',
-      onclick: () => count.value = 0
     })
   ]);
-});
+};
 
-// Create multiple instances with different props
-const counter1 = Counter({ initialCount: 5, step: 2, label: 'Steps' });
-const counter2 = Counter({ initialCount: 0 });  // Uses defaults
-const counter3 = Counter({ label: 'Simple' });
-
-// Mount them
-document.body.appendChild(counter1.element);
-document.body.appendChild(counter2.element);
-document.body.appendChild(counter3.element);
+// Mount multiple instances with different props
+mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
+mount(() => Counter({ initialCount: 0 }), container2);
 ```
 
 **Props Best Practices:**
@@ -450,31 +436,19 @@ document.body.appendChild(counter3.element);
 **Component Hierarchy with Automatic Tracking**:
 
 ```typescript
-import { component, $div, $header, $img } from '@fimbul-works/seidr';
+import { $div, $header, $img, mount } from '@fimbul-works/seidr';
 
-const Header = component(() => {
-  return $header({ textContent: 'User Profile' });
-});
+const Header = () => $header({ textContent: 'User Profile' });
+const Avatar = () => $img({ src: '/avatar.png', alt: 'User Avatar' });
 
-const Avatar = component(() => {
-  return $img({ src: '/avatar.png', alt: 'User Avatar' });
-});
-
-const UserProfile = component(() => {
-  // Child components are automatically tracked
-  const header = Header();
-  const avatar = Avatar();
-
+const UserProfile = () => {
   return $div({ className: 'profile' }, [
-    header, // SeidrComponent passed directly!
-    avatar  // Element automatically extracted
+    Header, // Plain functions can be passed directly as children!
+    Avatar
   ]);
-});
+};
 
-const profile = UserProfile();
-
-// Destroying profile automatically destroys header and avatar
-profile.destroy();
+mount(UserProfile, document.body);
 ```
 
 ---
@@ -494,14 +468,11 @@ import { Safe, useScope, $div, $h2, $p } from '@fimbul-works/seidr';
 
 const UserProfile = Safe(
   () => {
-    const scope = useScope();
-    // Component initialization that might fail
-    // Note: Safe() only catches synchronous errors!
+    // Initialization that might fail
     const data = JSON.parse('invalid json');
     return $div({ textContent: data.name });
   },
   (err) => {
-    const scope = useScope();
     // Error boundary: return fallback UI
     return $div({ className: 'error' }, [
       $h2({ textContent: 'Error Occurred' }),
@@ -562,11 +533,11 @@ Mount a component to a DOM container.
 **Returns:** Function that unmounts and destroys the component when called.
 
 ```typescript
-import { mount, component, $div } from '@fimbul-works/seidr';
+import { mount, $div } from '@fimbul-works/seidr';
 
-const App = component(() => $div({ textContent: 'Hello Seidr' }));
+const App = () => $div({ textContent: 'Hello Seidr' });
 
-const unmount = mount(App(), document.getElementById('app')!);
+const unmount = mount(App, document.getElementById('app')!);
 
 // Later
 unmount();
@@ -586,16 +557,18 @@ Conditionally renders a component based on a boolean observable.
 
 **Example:**
 ```typescript
-import { Conditional, Seidr, component, $div } from '@fimbul-works/seidr';
+import { Conditional, Seidr, $div, mount } from '@fimbul-works/seidr';
 
 const isVisible = new Seidr(false);
-const MyComp = component(() => $div({ textContent: 'I am here' }));
+const MyComp = () => $div({ textContent: 'I am here' });
 
-const view = component(() => {
+const View = () => {
   return $div({ className: 'container' }, [
     Conditional(isVisible, MyComp)
   ]);
-});
+};
+
+mount(View, document.body);
 
 // Behavior:
 isVisible.value = true;
@@ -617,16 +590,18 @@ Renders a dynamic list of components from an observable array with optimized key
 
 **Example:**
 ```typescript
-import { List, Seidr, component, $li, $ul, uid } from '@fimbul-works/seidr';
+import { List, Seidr, $li, $ul, uid, mount } from '@fimbul-works/seidr';
 
 const items = new Seidr([{ id: uid(), text: 'Item 1' }]);
-const Item = (data) => component(() => $li({ textContent: data.text }));
+const Item = ({ text }) => $li({ textContent: text });
 
-const list = component(() => {
+const ListPage = () => {
   return $ul({}, [
     List(items, i => i.id, i => Item(i))
   ]);
-});
+};
+
+mount(ListPage, document.body);
 ```
 
 ---
@@ -644,18 +619,20 @@ Switches between different components based on an observable value.
 
 **Example:**
 ```typescript
-import { Switch, Seidr, component, $div } from '@fimbul-works/seidr';
+import { Switch, Seidr, $div, mount } from '@fimbul-works/seidr';
 
 const mode = new Seidr('A');
 
-const view = component(() => {
+const View = () => {
   return $div({}, [
     Switch(mode, {
-      A: () => component(() => $div({ textContent: 'View A' })),
-      B: () => component(() => $div({ textContent: 'View B' }))
-    }, () => component(() => $div({ textContent: 'Default' })))
+      A: () => $div({ textContent: 'View A' }),
+      B: () => $div({ textContent: 'View B' })
+    }, () => $div({ textContent: 'Default' }))
   ]);
-});
+};
+
+mount(View, document.body);
 ```
 
 ---
@@ -739,21 +716,19 @@ Conditionally render a component when the current URL path matches a pattern.
 **Returns:** Conditional component that mounts when pattern matches
 
 ```typescript
-import { Route, component, $div, initRouter } from '@fimbul-works/seidr';
+import { Route, $div, initRouter, mount, type Seidr } from '@fimbul-works/seidr';
 
 initRouter();
 
 // String pattern with parameters
-const UserPage = (params?: Seidr<{id: string}>) => component(() =>
-  $div({ textContent: params.as(p => `User ${p.id}`) })
-);
+const UserPage = (params?: Seidr<{id: string}>) =>
+  $div({ textContent: params.as(p => `User ${p.id}`) });
 
 Route('/user/:id', UserPage);
 
 // RegExp pattern with named groups
-const BlogPost = (params?: Seidr<{slug: string}>) => component(() =>
-  $div({ textContent: params.as(p => `Post: ${p.slug}`) })
-);
+const BlogPost = (params?: Seidr<{slug: string}>) =>
+  $div({ textContent: params.as(p => `Post: ${p.slug}`) });
 
 Route(/^\/blog\/(?<slug>[a-z0-9-]+)$/, BlogPost);
 ```
@@ -779,9 +754,9 @@ import { Router, createRoute, component, $div, initRouter } from '@fimbul-works/
 
 initRouter();
 
-const Home = component(() => $div({ textContent: 'Home' }));
-const About = component(() => $div({ textContent: 'About' }));
-const NotFound = component(() => $div({ textContent: '404 - Not Found' }));
+const Home = () => $div({ textContent: 'Home' });
+const About = () => $div({ textContent: 'About' });
+const NotFound = () => $div({ textContent: '404 - Not Found' });
 
 const App = Router({
   routes: [
@@ -818,11 +793,10 @@ Helper function to create a route definition for `Router()`.
 **Returns:** Route definition object
 
 ```typescript
-import { createRoute, component, $div, Seidr } from '@fimbul-works/seidr';
+import { createRoute, $div, type Seidr } from '@fimbul-works/seidr';
 
-const UserPage = (params?: Seidr<{id: string}>) => component(() =>
-  $div({ textContent: params.as(p => `User ${p.id}`) })
-);
+const UserPage = (params?: Seidr<{id: string}>) =>
+  $div({ textContent: params.as(p => `User ${p.id}`) });
 
 createRoute('/user/:id', UserPage);
 ```
@@ -842,13 +816,13 @@ Navigation link component that updates the URL reactively and can show active st
 - All standard HTML element props
 
 ```typescript
-import { Link, component, $div, $nav } from '@fimbul-works/seidr';
+import { Link, $nav } from '@fimbul-works/seidr';
 
-const Navigation = component(() => $nav({}, [
+const Navigation = () => $nav({}, [
   Link({ to: '/' }, ['Home']),
   Link({ to: '/about' }, ['About']),
   Link({ to: '/contact' }, ['Contact']),
-]));
+]);
 
 // Custom active class
 Link({ to: '/dashboard', activeClass: 'is-current' }, ['Dashboard']);

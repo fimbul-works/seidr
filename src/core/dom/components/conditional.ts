@@ -11,10 +11,10 @@ import { $comment, type SeidrNode } from "../element";
  * DOM without requiring a wrapper element. When the condition is met, the
  * component is created and inserted before the marker.
  *
- * @template {SeidrComponent} T - The type of SeidrComponent being conditionally rendered
+ * @template {SeidrNode} T - The type of SeidrNode being conditionally rendered
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls visibility
- * @param {() => T} factory - Function that creates the component when needed
+ * @param {() => T} factory - Function that creates the component or element when needed
  * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
 export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, factory: () => T): SeidrComponent<Comment> {

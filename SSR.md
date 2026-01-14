@@ -17,8 +17,8 @@ import { component, $div, $ul, $li, List, setState, getState, createStateKey, is
 // Create state key
 const todosKey = createStateKey<Seidr<Todo[]>>('todos');
 
-// Component works on both server and client
-export const TodoApp = component((todos?: Seidr<Todo[]>) => {
+// Component works on both server and client - can be a plain function!
+export const TodoApp = (todos?: Seidr<Todo[]>) => {
   // Dual-mode: server sets, client retrieves from hydration
   if (!isUndefined(todos)) {
     setState(todosKey, todos);
@@ -31,7 +31,7 @@ export const TodoApp = component((todos?: Seidr<Todo[]>) => {
       List(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
     ])
   ]);
-});
+};
 
 // Server route handler
 app.get('/', async (req, res) => {
@@ -83,7 +83,7 @@ The **Dual-Mode Pattern** allows a single component to work on both server and c
 **Client:** Receives no props → retrieves data with [`getState()`](./API.md#getstate) → becomes interactive
 
 ```typescript
-export const MyComponent = component((data?: Seidr<MyData>) => {
+export const MyComponent = (data?: Seidr<MyData>) => {
   if (!isUndefined(data)) {
     // SERVER: Props provided, store in global state
     setState(dataKey, data);
@@ -94,7 +94,7 @@ export const MyComponent = component((data?: Seidr<MyData>) => {
 
   // Now 'data' is guaranteed to be Seidr<MyData>
   return $div({ textContent: data.as(d => d.title) });
-});
+};
 ```
 
 **Why the check is critical:**
@@ -126,7 +126,7 @@ inBrowser(async () => {
 **Note:** `inServer()` with async functions is automatically awaited by `renderToString()`. This allows you to perform data fetching directly inside your component factories while maintaining the simplicity of the single-pass render.
 
 ```typescript
-export const UserList = component(() => {
+export const UserList = () => {
   const users = new Seidr<User[]>([]);
 
   // renderToString will wait for this!
@@ -137,7 +137,7 @@ export const UserList = component(() => {
   return $ul({}, [
     List(users, u => u.id, u => $li({ textContent: u.name }))
   ]);
-});
+};
 ```
 
 ---

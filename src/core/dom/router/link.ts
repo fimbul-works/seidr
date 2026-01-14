@@ -27,22 +27,24 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  * @example
  * Basic Link
  * ```typescript
- * import { Link, component, $div } from '@fimbul-works/seidr';
+ * import { Link, $div } from '@fimbul-works/seidr';
  *
- * const App = component(() => {
+ * const App = () => {
  *   return $div({}, [
  *     Link({ to: '/about' }, ['About']),
  *     Link({ to: '/', activeClass: 'current' }, ['Home'])
  *   ]);
- * });
+ * };
  * ```
  *
  * @example
  * Link with custom tagName and reactive active state
  * ```typescript
- * const currentPath = new Seidr('/');
+ * import { Link, $div, Seidr } from '@fimbul-works/seidr';
  *
- * const App = component(() => {
+ * const App = () => {
+ *   const currentPath = new Seidr('/');
+ *
  *   return $div({}, [
  *     Link({
  *       to: currentPath.as(p => p === '/home' ? '/' : '/home'),
@@ -51,7 +53,7 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  *       activeValue: 'page'
  *     }, ['Home'])
  *   ]);
- * });
+ * };
  * ```
  */
 export function Link<K extends keyof HTMLElementTagNameMap = "a">(

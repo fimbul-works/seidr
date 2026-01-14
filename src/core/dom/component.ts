@@ -50,16 +50,16 @@ export const getCurrentComponent = (): SeidrComponent | null => {
  * @example
  * Using useScope in a component
  * ```typescript
- * const Counter = component(({ initialValue }: { initialValue: number }) => {
+ * // Works in both plain functions and component() wrapped factories!
+ * const Counter = () => {
  *   const scope = useScope();
- *   const count = new Seidr(initialValue);
+ *   const count = new Seidr(0);
  *
- *   scope.track(count.bind(button, (value) => {
- *     button.textContent = `Count: ${value}`;
- *   }));
- *
- *   return button;
- * });
+ *   return $button({
+ *     textContent: count.as(v => `Count: ${v}`),
+ *     onclick: () => count.value++
+ *   });
+ * };
  * ```
  */
 export const useScope = (): ComponentScope => {
@@ -140,32 +140,25 @@ export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : 
  *
  * @template P - Props object type (optional)
  *
- * @param {(props: P) => Node} factory - Function that accepts props and creates the component element
- * @returns {(props: P) => SeidrComponent} A function that accepts props and returns a Component instance
+ * @param {(props: P) => SeidrNode} factory - Function that accepts props and creates the component element
+ * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
  *
  * @example
- * Component with props
+ * Using component() for explicit factory creation
  * ```typescript
  * import { component, useScope, Seidr, $button } from '@fimbul-works/seidr';
  *
- * const Counter = component(({ initialValue }: { initialValue: number }) => {
- *   const scope = useScope();
+ * // Create a reusable factory
+ * const Counter = component(({ initialValue = 0 }) => {
  *   const count = new Seidr(initialValue);
- *   const button = $button({ textContent: `Count: ${count.value}` });
- *
- *   // Track reactive binding
- *   scope.track(count.bind(button, (value, el) => {
- *     el.textContent = `Count: ${value}`;
- *   }));
- *
- *   // Track event listener
- *   scope.track(button.on('click', () => count.value++));
- *
- *   return button;
+ *   return $button({
+ *     textContent: count.as(v => `Count: ${v}`),
+ *     onclick: () => count.value++
+ *   });
  * });
  *
- * // Usage
- * Counter({ initialValue: 5 });
+ * // Usage creates a SeidrComponent instance
+ * const comp = Counter({ initialValue: 5 });
  * ```
  *
  * @example
@@ -185,23 +178,18 @@ export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : 
  * ```
  *
  * @example
- * Component with child components
+ * Components as plain functions passed to children
  * ```typescript
- * const UserProfile = component(({ userId }: { userId: string }) => {
- *   const scope = useScope();
- *   const user = new Seidr({ name: 'John', email: 'john@example.com' });
+ * const Header = () => $('header', { textContent: 'User Profile' });
+ * const Avatar = () => $('img', { src: '/avatar.png' });
  *
- *   const header = scope.child(createHeader());
- *   const avatar = scope.child(createAvatar());
- *
- *   const container = $('div', { className: 'profile' }, [
- *     header.element,
- *     avatar.element,
- *     $('span', { textContent: user.as(u => u.name) })
+ * const UserProfile = () => {
+ *   return $('div', { className: 'profile' }, [
+ *     Header, // Plain functions are automatically wrapped
+ *     Avatar,
+ *     $('span', { textContent: 'John Doe' })
  *   ]);
- *
- *   return container;
- * });
+ * };
  * ```
  */
 export function component<P = void>(

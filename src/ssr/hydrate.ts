@@ -42,26 +42,24 @@ export function resetHydratingFlag() {
  *
  * @example
  * ```typescript
- * import { component, $ } from '@fimbul-works/seidr';
+ * import { Seidr, $div, mount } from '@fimbul-works/seidr';
  * import { renderToString, hydrate } from '@fimbul-works/seidr/ssr';
  *
- * // Server-side:
- * const AppFactory = component((scope) => {
+ * // Shared component (plain function!)
+ * const App = () => {
  *   const count = new Seidr(42);
- *   return $('div', {}, [`Count: ${count.value}`]);
- * });
+ *   return $div({ textContent: count.as(n => `Count: ${n}`) });
+ * };
  *
- * const { html, hydrationData } = await await renderToString(AppFactory);
- * sendToClient({ html, hydrationData });
+ * // Server-side:
+ * const { html, hydrationData } = await renderToString(App);
  *
  * // Client-side:
- * const { html, hydrationData } = receiveFromServer();
  * const container = document.getElementById('app');
  * container.innerHTML = html;
  *
- * // Hydrate with hydrationData (same signature as renderToString):
- * hydrate(AppFactory, container, hydrationData);
- * // The app is now interactive!
+ * // Hydrate with hydrationData:
+ * hydrate(App, container, hydrationData);
  * ```
  */
 export function hydrate<T extends SeidrNode>(

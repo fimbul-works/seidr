@@ -10,7 +10,7 @@
  *
  * @template {any} T - The type of list items
  * @template {string | number} I - The type of unique item keys (string or number)
- * @template {SeidrComponent} C - The type of SeidrComponent for list items
+ * @template {SeidrNode} C - The type of SeidrNode for list items
  *
  * @param {Seidr<T[]>} observable - Array observable containing the list data
  * @param {(item: T) => I} getKey - Function to extract unique keys from list items
@@ -21,7 +21,7 @@
  * @example
  * Todo list rendering
  * ```typescript
- * import { $, component, mountList, Seidr } from '@fimbul-works/seidr';
+ * import { $, mountList, Seidr } from '@fimbul-works/seidr';
  *
  * type Todo = { id: number; text: string; completed: boolean };
  *
@@ -30,7 +30,7 @@
  *   { id: 2, text: 'Build apps', completed: false }
  * ]);
  *
- * const TodoItem = ({ todo }: { todo: Todo }) => component(() => {
+ * const TodoItem = ({ todo }: { todo: Todo }) => {
  *   const isCompleted = new Seidr(todo.completed);
  *
  *   return $('div', { className: 'todo-item' }, [
@@ -41,14 +41,15 @@
  *       )
  *     })
  *   ]);
- * });
+ * };
  *
  * const cleanup = mountList(
  *   todos,
  *   (todo) => todo.id, // Unique key extraction
- *   (todo) => TodoItem({ todo }), // Component factory
+ *   (todo) => TodoItem({ todo }), // Plain function component factory
  *   document.getElementById('todo-list')
  * );
+ * ```
  *
  * // Add new item - only one component is created
  * todos.value = [...todos.value, { id: 3, text: 'Master Seidr', completed: true }];
@@ -60,14 +61,14 @@
  * @example
  * Automatic cleanup when used within a parent component
  * ```typescript
- * const TodoList = component(() => {
+ * const TodoList = () => {
  *   const todos = new Seidr<Todo[]>([]);
  *
  *   // Automatically tracked - no need to store cleanup!
  *   mountList(todos, (t) => t.id, (t) => TodoItem({ todo: t }), container);
  *
  *   return $('div', { className: 'todo-list' });
- * });
+ * };
  * ```
  */
 import type { Seidr } from "../../seidr";

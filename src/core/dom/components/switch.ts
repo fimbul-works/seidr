@@ -2,28 +2,28 @@ import type { Seidr } from "../../seidr";
 import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $comment } from "../element";
+import { $comment, type SeidrNode } from "../element";
 
 /**
- * Renders a component based on a value matching a specific case.
+ * Switches between different components based on an observable value.
  *
  * @template T - The type of the observable value
- * @template {SeidrComponent} C - The type of SeidrComponent being rendered
+ * @template {SeidrNode} C - The type of SeidrNode being rendered
  *
  * @param {Seidr<T>} observable - Observable value to switch on
- * @param {Map<T, () => C> | Record<string, () => C>} factories - Map or object of cases to component factories
- * @param {() => C} [defaultCase] - Optional fallback component factory
+ * @param {Map<T, (val: T) => C> | Record<string, (val: T) => C>} factories - Map or object of cases to component factories (raw or wrapped)
+ * @param {(val: T) => C} [defaultCase] - Optional fallback component factory
  * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
-export function Switch<T, C extends SeidrComponent>(
+export function Switch<T, C extends SeidrNode>(
   observable: Seidr<T>,
-  factories: Map<T, () => C> | Record<string, () => C>,
-  defaultCase?: () => C,
-): SeidrComponent {
+  factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
+  defaultCase?: (val: T) => C,
+): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-switch:${uid()}`);
-    let currentComponent: C | null = null;
+    let currentComponent: SeidrComponent | null = null;
 
     const update = (value: T) => {
       const parent = marker.parentNode;
@@ -39,8 +39,10 @@ export function Switch<T, C extends SeidrComponent>(
       }
 
       if (factory && parent) {
-        currentComponent = (isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory)(value)) as C;
-        parent.insertBefore(currentComponent.element, marker);
+        currentComponent = (
+          isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory as any)(value)
+        ) as SeidrComponent;
+        parent.insertBefore(currentComponent.element as Node, marker);
       }
     };
 

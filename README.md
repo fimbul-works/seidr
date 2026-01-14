@@ -26,7 +26,7 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 6.2KB (minified + gzipped)
+- 📦 **Tiny Footprint** - 6.3KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -98,9 +98,9 @@ pnpm install @fimbul-works/seidr
 ## 🚀 Quick Start
 
 ```typescript
-import { component, useScope, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+import { useScope, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
 
-const Counter = component(() => {
+const Counter = () => {
   const scope = useScope();
   const count = new Seidr(0);
   const disabled = count.as(value => value >= 10);
@@ -120,10 +120,9 @@ const Counter = component(() => {
       onclick: () => count.value = 0
     })
   ]);
-});
+};
 
-// Mount component
-mount(Counter(), document.body);
+mount(Counter, document.body);
 ```
 
 ## 🧠 Conceptual Overview
@@ -199,9 +198,9 @@ const searchInput = $input({
 
 #### Step 4: Create Component with List Rendering
 ```typescript
-import { component, Seidr, $input, bindInput, $div, $ul, List, $li } from '@fimbul-works/seidr';
+import { Seidr, $input, bindInput, $div, $ul, List, $li } from '@fimbul-works/seidr';
 
-const SearchApp = component(() => {
+const SearchApp = () => {
   const searchQuery = new Seidr('');
   const items = new Seidr([
     { id: 1, name: 'Apple' },
@@ -233,7 +232,7 @@ const SearchApp = component(() => {
       )
     ])
   ]);
-});
+};
 ```
 
 **What happens:**
@@ -247,8 +246,7 @@ const SearchApp = component(() => {
 ```typescript
 import { mount } from '@fimbul-works/seidr';
 
-const app = SearchApp();
-const cleanup = mount(app, document.body);
+const cleanup = mount(SearchApp, document.body);
 
 // SearchApp is now interactive
 // - User types → searchQuery updates → filteredItems recomputes → list updates
@@ -352,29 +350,50 @@ const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 
 ### Components
 
-Components are functions, not classes. Use `component()` for automatic cleanup of reactive bindings.
+Seidr components are simple functions that return UI elements. For the best experience, Seidr supports two styles of components:
+
+#### 1. Plain Functions (Recommended for UI)
+Simple UI components can be plain functions. They are lightweight and easy to test.
 
 ```typescript
-const UserProfile = component(() => {
-  const scope = useScope();
-  const name = new Seidr('Alice');
+const UserProfile = ({ name, age }) => {
+  return $div({ className: 'user-profile' }, [
+    $span({ textContent: name }),
+    $span({ textContent: age })
+  ]);
+};
 
-  // scope.track() registers cleanup functions
-  scope.track(name.bind(element, (value) => {
-    element.textContent = value;
-  }));
-
-  return $div({ textContent: name });
-});
+// Usage
+mount(() => UserProfile({ name: 'Alice', age: 30 }), container);
 ```
+
+#### 2. Wrapped Components (`component()`)
+Use the `component()` wrapper when you want explicit lifecycle management or need to create a factory that can be passed between components as a single unit with a custom scope.
+
+```typescript
+import { component, useScope } from '@fimbul-works/seidr';
+
+const UserProfile = component(({ name, age }) => {
+  const scope = useScope();
+
+  // Custom cleanup logic
+  scope.track(() => console.log('Component destroyed'));
+
+  return $div({ textContent: `${name}, ${age}` });
+});
+
+// Usage
+mount(UserProfile({ name: 'Alice', age: 30 }), container);
+```
+
+> **Pro Tip:** Mount functions like `mount()`, `List()`, `Conditional()`, and `Switch()` automatically wrap plain functions in a Seidr component internally, so `useScope()` and automatic cleanup work in both styles!
 
 #### Components with Props
 
-Components accept parameters for configuration and initial state:
+Components accept parameters for configuration and initial state through plain function arguments:
 
 ```typescript
-const Counter = component(({ initialCount = 0, step = 1 } = {}) => {
-  const scope = useScope();
+const Counter = ({ initialCount = 0, step = 1 } = {}) => {
   const count = new Seidr(initialCount);
   const disabled = count.as(value => value >= 10);
 
@@ -384,19 +403,12 @@ const Counter = component(({ initialCount = 0, step = 1 } = {}) => {
       textContent: `+${step}`,
       disabled,
       onclick: () => count.value += step
-    }),
-    $button({
-      textContent: 'Reset',
-      onclick: () => count.value = 0
     })
   ]);
-});
+};
 
-// Usage: Create component instances with different props
-const counter1 = Counter({ initialCount: 5, step: 2 });
-const counter2 = Counter({ initialCount: 0 });  // Uses defaults
-
-mount(counter1, document.body);
+// Usage
+mount(Counter, document.body);
 ```
 
 **Key Points:**
@@ -413,11 +425,11 @@ Mount components to DOM or use them as children in other components.
 
 ```typescript
 // For direct DOM mounting (top-level)
-mount(MyComponent(), document.body);
+mount(MyComponent, document.body);
 
 // Conditional rendering as a child
 $div({}, [
-  Conditional(isVisible, () => DetailsPanel())
+  Conditional(isVisible, DetailsPanel)
 ]);
 
 // List rendering as a child with key-based diffing
@@ -428,8 +440,8 @@ $ul({}, [
 // Switch between components as a child
 $div({}, [
   Switch(viewMode, {
-    list: () => ListView(),
-    grid: () => GridView()
+    list: ListView,
+    grid: GridView
   })
 ]);
 ```
@@ -535,10 +547,9 @@ Seidr provides SSR support with automatic state capture and client-side hydratio
 
 ```typescript
 // Server-side (Node.js)
-import { component, useScope, $, Seidr, renderToString } from '@fimbul-works/seidr';
+import { useScope, $, Seidr, renderToString } from '@fimbul-works/seidr';
 
-const App = component(() => {
-  const scope = useScope();
+const App = () => {
   const count = new Seidr(0);
 
   return $('div', {}, [
@@ -548,7 +559,7 @@ const App = component(() => {
       onclick: () => count.value++
     })
   ]);
-});
+};
 
 // In your server route (must be async for AsyncLocalStorage context!)
 app.get('/', async (req, res) => {
@@ -575,7 +586,7 @@ import { hydrate } from '@fimbul-works/seidr';
 import { App } from './app.js';
 
 const hydrationData = window.__HYDRATION_DATA__;
-hydrate(App, document.getElementById('app'), hydrationData);
+hydrate(() => App(), document.getElementById('app'), hydrationData);
 ```
 
 **Learn more:** **[SSR.md](SSR.md)** - Complete SSR documentation with examples, best practices, and gotchas.
@@ -601,9 +612,9 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.7KB (minified + gzipped)
+- **Seidr counter app**: ~1.4KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The 6.2KB footprint includes the entire library (Router, SSR engine, List diffing, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The 6.3KB footprint includes the entire library (Router, SSR engine, List diffing, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:

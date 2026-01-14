@@ -11,25 +11,27 @@ import { parseRouteParams } from "./parse-route-params";
  * When you call component() without the trailing (), you get a factory that can be called
  * multiple times to create new instances. This is required because routes need to create
  * fresh component instances each time the route changes.
+ * Conditionally mount a SeidrNode when the current URL path matches the pattern.
+ * The `factory` function will be called to create the SeidrNode when the route matches.
  *
  * @template {SeidrNode} C - The type of SeidrNode being conditionally rendered
  * @template {Seidr<any>} P - The type of matching route parameters
  * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
  * @param {(params?: P) => C} factory - Function that creates the component when needed
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
- * @returns {() => void} Cleanup function that removes the conditional mount
+ * @returns {SeidrComponent} Conditional component that mounts when matched
  *
  * @example
- * Correct usage with Route
+ * Route usage with plain functions
  * ```typescript
- * // Without params - pass the factory (no trailing parentheses)
- * const Home = component(() => $div({ textContent: 'Home' }));
+ * // Without params
+ * const Home = () => $div({ textContent: 'Home' });
  * Route('/', Home)
  *
- * // With params - function that returns a new instance each time
- * const UserPage = (params?: Seidr<{id: string}>) => component(() => {
- *   return $div({ textContent: params?.as(p => `User ${p.id}`) || 'Loading' });
- * })();
+ * // With params - params are passed as a Seidr observable
+ * const UserPage = (params?: Seidr<{id: string}>) =>
+ *   $div({ textContent: params?.as(p => `User ${p.id}`) || 'Loading' });
+ *
  * Route('/user/:id', UserPage)
  * ```
  */

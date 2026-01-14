@@ -1,7 +1,7 @@
 import type { Seidr } from "../../seidr";
 import { isSeidrComponentFactory } from "../../util/is";
 import { component, type SeidrComponent } from "../component";
-import { type SeidrNode, $comment } from "../element";
+import { $comment, type SeidrNode } from "../element";
 
 /**
  * Conditionally renders a component based on a boolean observable state.

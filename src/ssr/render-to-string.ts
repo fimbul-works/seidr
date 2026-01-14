@@ -42,9 +42,10 @@ export interface RenderToStringOptions {
  * Basic usage
  * ```typescript
  * import { renderToString } from '@fimbul-works/seidr/node';
- * import { component, $div } from '@fimbul-works/seidr/node';
+ * import { $div } from '@fimbul-works/seidr/node';
  *
- * const App = component(() => $div({ textContent: 'Hello' }));
+ * // Components can be plain functions!
+ * const App = () => $div({ textContent: 'Hello' });
  *
  * app.get('*', async (req, res) => {
  *   const { html, hydrationData } = await renderToString(App);
@@ -56,16 +57,17 @@ export interface RenderToStringOptions {
  * Component with props
  * ```typescript
  * import { renderToString } from '@fimbul-works/seidr/node';
- * import { component, $div } from '@fimbul-works/seidr/node';
+ * import { $div } from '@fimbul-works/seidr/node';
  *
- * const HomePage = component(({ title }: { title: string }) => {
+ * const HomePage = ({ title }: { title: string }) => {
  *   return $div({ textContent: title });
- * });
+ * };
  *
  * app.get('*', async (req, res) => {
- *   // Create a component with props
- *   const page = () => HomePage({ title: 'Welcome' });
- *   const { html, hydrationData } = await renderToString(page);
+ *   // Pass a factory function that calls the component with props
+ *   const { html, hydrationData } = await renderToString(
+ *     () => HomePage({ title: 'Welcome' })
+ *   );
  *   res.send(html);
  * });
  * ```
@@ -74,9 +76,9 @@ export interface RenderToStringOptions {
  * With initial path for routing
  * ```typescript
  * import { renderToString } from '@fimbul-works/seidr/node';
- * import { component, $div } from '@fimbul-works/seidr/node';
+ * import { $div } from '@fimbul-works/seidr/node';
  *
- * const App = component(() => $div({ textContent: 'Home' }));
+ * const App = () => $div({ textContent: 'Home' });
  *
  * app.get('*', async (req, res) => {
  *   // Pass the request URL path for routing

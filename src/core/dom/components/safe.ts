@@ -18,12 +18,12 @@ import type { SeidrNode } from "../element";
  * @example
  * Basic error boundary
  * ```typescript
- * import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
+ * import { Safe, $div, $h2, $p, mount } from '@fimbul-works/seidr';
  *
  * const UserProfile = Safe(
  *   () => {
  *     // Component initialization that might fail
- *     const data = fetchUserData();
+ *     const data = JSON.parse('{ invalid }');
  *     return $div({ textContent: data.name });
  *   },
  *   (err) => {
@@ -34,18 +34,18 @@ import type { SeidrNode } from "../element";
  *     ]);
  *   }
  * );
- * UserProfile();
+ *
+ * mount(UserProfile, document.body);
  * ```
  *
  * @example
  * With resource cleanup
  * ```typescript
- * import { Safe, $div, $button } from '@fimbul-works/seidr';
+ * import { Safe, $div, useScope, mount } from '@fimbul-works/seidr';
  *
  * const SafeComponent = Safe(
  *   () => {
  *     const scope = useScope();
- *     // Track resources
  *     scope.track(() => console.log('Component cleanup'));
  *
  *     throw new Error('Failed');
@@ -53,13 +53,13 @@ import type { SeidrNode } from "../element";
  *   },
  *   (err) => {
  *     const scope = useScope();
- *     // Error boundary gets its own scope for resource tracking
  *     scope.track(() => console.log('Error boundary cleanup'));
  *
  *     return $div({ textContent: 'Fallback UI' });
  *   }
  * );
- * SafeComponent();
+ *
+ * mount(SafeComponent, document.body);
  * ```
  */
 export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {

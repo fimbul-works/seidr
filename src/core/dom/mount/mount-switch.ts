@@ -16,29 +16,26 @@ import { $comment, type SeidrNode } from "../element";
  * @template {string} T - The key type for switching
  *
  * @param {Seidr<T>} observable - Observable containing the current switch key
- * @param {Record<T, () => SeidrComponent>} componentMap - Object mapping keys to component factory functions
+ * @param {Map<T, (val: T) => SeidrNode> | Record<string, (val: T) => SeidrNode>} factories - Mapping from keys to component factory functions
  * @param {HTMLElement} container - The DOM container for the active component
  * @returns {() => void} A cleanup function that removes the reactive binding and active component
  *
  * @example
  * View mode switching
  * ```typescript
- * import { component, mountSwitch, Seidr } from '@fimbul-works/seidr';
+ * import { mountSwitch, Seidr, $ } from '@fimbul-works/seidr';
  *
  * type ViewMode = 'list' | 'grid' | 'table';
  * const viewMode = new Seidr<ViewMode>('list');
  *
- * const ListView = component(() =>
- *   $('div', { textContent: '📋 List View', className: 'view-list' })
- * );
+ * const ListView = () =>
+ *   $('div', { textContent: '📋 List View', className: 'view-list' });
  *
- * const GridView = component(() =>
- *   $('div', { textContent: '📊 Grid View', className: 'view-grid' })
- * );
+ * const GridView = () =>
+ *   $('div', { textContent: '📊 Grid View', className: 'view-grid' });
  *
- * const TableView = component(() =>
- *   $('div', { textContent: '📈 Table View', className: 'view-table' })
- * );
+ * const TableView = () =>
+ *   $('div', { textContent: '📈 Table View', className: 'view-table' });
  *
  * // Control buttons
  * const controls = $('div', { className: 'view-controls' }, [
@@ -77,7 +74,7 @@ import { $comment, type SeidrNode } from "../element";
  * @example
  * Automatic cleanup when used within a parent component
  * ```typescript
- * const ViewManager = component(() => {
+ * const ViewManager = () => {
  *   const viewMode = new Seidr<'list' | 'grid'>('list');
  *
  *   // Automatically tracked - no need to store cleanup!
@@ -87,7 +84,7 @@ import { $comment, type SeidrNode } from "../element";
  *   }, container);
  *
  *   return $('div', { className: 'view-manager' });
- * });
+ * };
  * ```
  */
 export function mountSwitch<T extends string, C extends SeidrNode>(

@@ -1,7 +1,8 @@
 import type { Seidr } from "../../seidr";
+import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $comment } from "../element";
+import { $comment, type SeidrNode } from "../element";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -9,14 +10,14 @@ import { $comment } from "../element";
  *
  * @template T - The type of list items
  * @template {string | number} I - Unique key type
- * @template {SeidrComponent} C - Component type
+ * @template {SeidrNode} C - The type of SeidrNode for list items
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
- * @param {(item: T) => C} componentFactory - Component creation function
+ * @param {(item: T) => C} componentFactory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent<Comment>} List component
  */
-export function List<T, I extends string | number, C extends SeidrComponent>(
+export function List<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
@@ -24,7 +25,7 @@ export function List<T, I extends string | number, C extends SeidrComponent>(
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-list:${uid()}`);
-    const componentMap = new Map<I, C>();
+    const componentMap = new Map<I, SeidrComponent>();
 
     const update = (items: T[]) => {
       const parent = marker.parentNode;
@@ -48,16 +49,20 @@ export function List<T, I extends string | number, C extends SeidrComponent>(
         let comp = componentMap.get(key);
 
         if (!comp) {
-          comp = componentFactory(item);
+          comp = (
+            isSeidrComponentFactory(componentFactory)
+              ? componentFactory(item)
+              : component<T>(componentFactory as any)(item)
+          ) as SeidrComponent;
           componentMap.set(key, comp);
         }
 
         // Move to correct position if needed
         if (comp.element.nextSibling !== currentAnchor) {
-          parent.insertBefore(comp.element, currentAnchor);
+          parent.insertBefore(comp.element as Node, currentAnchor);
         }
 
-        currentAnchor = comp.element;
+        currentAnchor = comp.element as Node;
       }
     };
 
