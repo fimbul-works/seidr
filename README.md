@@ -155,7 +155,7 @@ Let's build a simple search filter step by step:
 ```typescript
 import { Seidr } from '@fimbul-works/seidr';
 
-// Create an observable with initial value
+// Create observables with initial values
 const searchQuery = new Seidr('');
 const items = new Seidr([
   { id: 1, name: 'Apple' },
@@ -167,12 +167,12 @@ const items = new Seidr([
 #### Step 2: Derive Filtered Results
 ```typescript
 // Create derived observable that filters based on search
-const filteredItems = items.as(items => {
+const filteredItems = Seidr.computed(() => {
   const query = searchQuery.value.toLowerCase();
   return query
     ? items.filter(item => item.name.toLowerCase().includes(query))
     : items;
-});
+}, [items, searchQuery]);
 ```
 
 **What happens:** `filteredItems` is now a reactive value that automatically updates whenever:
@@ -181,30 +181,27 @@ const filteredItems = items.as(items => {
 
 #### Step 3: Bind to DOM
 ```typescript
-import { $input, $ul, $li } from '@fimbul-works/seidr';
+import { $input, bindInput } from '@fimbul-works/seidr';
 
 // Create input bound to search query
 const searchInput = $input({
   type: 'text',
   placeholder: 'Search...',
-  // Two-way binding: observable -> DOM and DOM -> observable
-  value: searchQuery.value,
-  oninput: (e) => searchQuery.value = e.target.value
+  // Two-way binding: observable -> DOM -> observable
+  ...bindInput(searchQuery),
 });
 ```
 
 **What happens:**
 - Initial render: input shows `searchQuery.value` (empty string)
-- User types "App": `oninput` fires → `searchQuery.value` becomes "App"
+- User types "app": `oninput` fires → `searchQuery.value` becomes "app"
 - `filteredItems` automatically recomputes → `[{ id: 1, name: 'Apple' }]`
 
 #### Step 4: Create Component with List Rendering
 ```typescript
-import { component, useScope, List } from '@fimbul-works/seidr';
+import { component, Seidr, $input, bindInput, $div, $ul, List, $li } from '@fimbul-works/seidr';
 
 const SearchApp = component(() => {
-  const scope = useScope();
-  // All state created inside component
   const searchQuery = new Seidr('');
   const items = new Seidr([
     { id: 1, name: 'Apple' },
@@ -212,24 +209,23 @@ const SearchApp = component(() => {
     { id: 3, name: 'Cherry' }
   ]);
 
-  const filteredItems = items.as(items => {
+  const filteredItems = Seidr.computed(() => {
     const query = searchQuery.value.toLowerCase();
     return query
       ? items.filter(item => item.name.toLowerCase().includes(query))
       : items;
-  });
+  }, [items, searchQuery]);
 
   const searchInput = $input({
     type: 'text',
     placeholder: 'Search...',
-    value: searchQuery.value,
-    oninput: (e) => searchQuery.value = e.target.value
+    ...bindInput(searchQuery),
   });
 
   return $div({}, [
     searchInput,
-    // List component with key-based diffing
     $ul({}, [
+      // List component with key-based diffing
       List(
         filteredItems,
         (item) => item.id,
@@ -254,7 +250,7 @@ import { mount } from '@fimbul-works/seidr';
 const app = SearchApp();
 const cleanup = mount(app, document.body);
 
-// App is now interactive
+// SearchApp is now interactive
 // - User types → searchQuery updates → filteredItems recomputes → list updates
 // - All reactive bindings work automatically
 
@@ -297,7 +293,7 @@ Seidr follows a "Push-Based" reactive model. Unlike React (which pulls updates b
 [ Root Observable (Seidr) ] ──▶ [ Cleanup Tracking (Scope) ]
       │
       ▼
-[ Derived Observables (.as) ]
+[ Derived Observables (Seidr.computed or instance.as) ]
       │
       ▼
 [ DOM Bindings ($props) ] ──▶ [ Real DOM Updates ]

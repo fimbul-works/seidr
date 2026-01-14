@@ -14,9 +14,9 @@ const ALEA_M = 2091639;
  * a sequence of high-entropy pseudo-random numbers that is deterministic
  * across the SSR/Hydration boundary.
  *
- * Original work copyright © 2010 Johannes Baagøe, under MIT license
+ * Original work copyright © 2010 Johannes Baagøe, under MIT license.
  *
- * @returns {number} A random float between 0 and 1.
+ * @returns {number} A random float between 0 and 1
  */
 export function random(): number {
   const ctx = getRenderContext();
@@ -26,7 +26,7 @@ export function random(): number {
   if (!ctx.randomState) {
     // We use the ID and initial counter to seed the sequence
     // Adding an offset ensures high entropy even for seed 0
-    const seed = ctx.renderContextID + ctx.randomCounter + 0.1337;
+    const seed = ctx.renderContextID + ctx.randomCounter + (LCG_M / 1);
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;

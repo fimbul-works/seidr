@@ -84,6 +84,7 @@ console.log(count.value); // Get value: 5
 ```
 
 #### Methods
+<a name="seidr-as">
 
 - `as<U>():` - Create a derived observable that transforms the source value.
 
@@ -169,6 +170,7 @@ textContent.value = 'Hello!';
 - `destroy():` - Cleanup all observers and derived computations.
 
 #### Static Methods
+<a name="seidr-computed">
 
 - `Seidr.computed<C>()` - Create a computed observable that depends on multiple sources.
 
