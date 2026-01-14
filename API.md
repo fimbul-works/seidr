@@ -40,6 +40,7 @@
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
   - [`random()`](#random)
+  - [`wrapSeidr()`](#wrapseidr)
   - [`unwrapSeidr()`](#unwrapseidr)
   - [Query Functions`](#query-functions)
 - [Animations](#animations)
@@ -1132,6 +1133,24 @@ import { random } from '@fimbul-works/seidr';
 
 // This value will be the same on server and client during hydration
 const initialRotation = random() * 360;
+```
+
+---
+
+### wrapSeidr()
+
+Ensures a value is wrapped in a `Seidr` observable. If the value is already a `Seidr` instance, it is returned as-is. If it is a raw value, a new `Seidr` instance is created with that value.
+
+**Parameters:**
+- `v` - The value to wrap: `T | Seidr<T>`
+
+**Returns:** `Seidr<T>`
+
+```typescript
+import { wrapSeidr, Seidr } from '@fimbul-works/seidr';
+
+const s1 = wrapSeidr(10); // Returns new Seidr with value 10
+const s2 = wrapSeidr(s1); // Returns s1 directly
 ```
 
 ---
