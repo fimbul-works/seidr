@@ -427,6 +427,33 @@ mount(Counter, document.body);
 
 **Learn more:** [component()](API.md#component) | [Manual bindings](API.md#seidrbind)
 
+### Memory Management
+
+Seidr automatically cleans up reactive bindings created within a component. However, for external resources like intervals, event listeners, or network connections, you should use the `useScope()` hook to track cleanup and avoid memory leaks.
+
+```typescript
+// ❌ WRONG: Leaks memory when component is destroyed
+const BadComponent = () => {
+  const count = new Seidr(0);
+
+  // This interval keeps running even after component is unmounted!
+  setInterval(() => count.value++, 1000);
+
+  return $div({ textContent: count });
+};
+
+// ✅ CORRECT: Cleanup tracked automatically
+const GoodComponent = () => {
+  const scope = useScope();
+  const count = new Seidr(0);
+
+  const interval = setInterval(() => count.value++, 1000);
+  scope.track(() => clearInterval(interval));
+
+  return $div({ textContent: count });
+};
+```
+
 ### Mounting
 
 Mount components to DOM or use them as children in other components.
@@ -474,7 +501,6 @@ Bind form inputs to observables with automatic synchronization:
 
 ```typescript
 import { Seidr, $input, $span, $div, bindInput } from '@fimbul-works/seidr';
-
 
 const searchText = new Seidr('');
 
@@ -529,18 +555,21 @@ For complete API documentation with all methods, parameters, and examples, see *
 
 Quick links:
 
-- **Core:** [Seidr<T>](API.md#seidrt) | [.as()](API.md#seidras) | [.observe()](API.md#seidrobserve) | [.bind()](API.md#seidrbind) | [Seidr.computed()](API.md#seidrcomputed)
-- **Components:** [component()](API.md#component) | [createScope()](API.md#createscope)
-- **Mounting:** [mount()](API.md#mount) | [mountConditional()](API.md#mountconditional) | [mountList()](API.md#mountlist) | [mountSwitch()](API.md#mountswitch)
-- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined elements](API.md#predefined-element-creators)
-- **Utilities:** [uid()](API.md#uid) | [uidTime()](API.md#uidtime) | [cn()](API.md#cn) | [elementClassToggle()](API.md#elementclasstoggle) | [debounce()](API.md#debounce)
-- **Persistence:** [withStorage()](API.md#withstorage)
+- **Core:** [Seidr<T>](API.md#seidrt-class) | [.as()](API.md#seidr-as) | [.observe()](API.md#seidr-observe) | [.bind()](API.md#seidr-bind) | [Seidr.computed()](API.md#seidr-computed)
+- **Components:** [useScope()](API.md#components-functions) | [component()](API.md#component) | [Safe()](API.md#safe) | [bindInput()](API.md#bindinput)
+- **Mounting:** [mount()](API.md#mount) | [Conditional()](API.md#conditional) | [List()](API.md#list) | [Switch()](API.md#switch)
+- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined Elements](API.md#predefined-element-creators)
+- **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
+- **Animations:** [tween()](API.md#tween) | [animate()](API.md#animate) | [Easing Functions](API.md#easing-functions)
+- **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
+- **State:** [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
+- **Environment:** [inBrowser() / inServer()](API.md#environment-utilities)
 
 ---
 
 ## 🌐 Server-Side Rendering (Experimental)
 
-> ⚠️ **Experimental** - Server-Side Rendering support is currently experimental and may change in future versions.
+> ⚠️ **Experimental** - While the SSR API is stable and likely to remain unchanged, the server-side DOM implementation is currently experimental and doesn't support all `HTMLElement` functionality. It is suitable for most UI rendering but may require environment-specific guards (`inBrowser`, `inServer`) for complex DOM manipulations.
 
 Seidr provides SSR support with automatic state capture and client-side hydration. This allows you to render your Seidr applications on the server and make them interactive on the client.
 
@@ -594,7 +623,7 @@ import { hydrate } from '@fimbul-works/seidr';
 import { App } from './app.js';
 
 const hydrationData = window.__HYDRATION_DATA__;
-hydrate(() => App(), document.getElementById('app'), hydrationData);
+hydrate(App, document.getElementById('app'), hydrationData);
 ```
 
 **Learn more:** **[SSR.md](SSR.md)** - Complete SSR documentation with examples, best practices, and gotchas.

@@ -112,6 +112,7 @@ console.log(doubled.value);  // 10
 console.log(message.value);  // "Count: 5"
 ```
 
+<a name="seidr-observe"></a>
 - `observe():` - Register a callback that runs when the value changes
 
   **Parameters:**
@@ -132,6 +133,7 @@ count.value = 5;  // Logs: "Count changed to: 5"
 cleanup();
 ```
 
+<a name="seidr-bind"></a>
 - `bind<E>():` - Manually bind an observable to an object with custom update logic.
 
   **Returns:** `CleanupFunction` (signature `() => void`)
