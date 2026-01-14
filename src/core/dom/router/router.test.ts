@@ -63,6 +63,10 @@ describe("Router Component", () => {
     pathSeidr.value = "/unknown";
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".fallback")).toBeTruthy();
+
+    pathSeidr.value = "/";
+    expect(container.querySelector(".fallback")).toBeFalsy();
+    expect(container.querySelector(".home")).toBeTruthy();
   });
 
   it("should pass dynamic parameters to components", () => {

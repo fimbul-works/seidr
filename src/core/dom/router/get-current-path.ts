@@ -36,6 +36,10 @@ export function getCurrentPath(): Seidr<string> {
       // Create a new Seidr for this render context
       pathSeidr = new Seidr(ctx.currentPath);
       pathCache.set(ctx.renderContextID, pathSeidr);
+
+      // Keep context synchronized with observable changes
+      // This is important for SSR navigation and hydration tests
+      pathSeidr.observe((val) => (ctx.currentPath = val));
     } else {
       // Update the cached Seidr with the current path from context
       // This allows renderToString to set different paths for different renders

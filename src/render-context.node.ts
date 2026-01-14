@@ -5,7 +5,17 @@ import type { RenderContext } from "./core/types";
 /** Global counter used to distribute render context IDs */
 let idCounter: number = 0;
 
+/** Reset the global ID counter (for testing) */
+export function resetIdCounter(): void {
+  idCounter = 0;
+}
+
 const asyncLocalStorage = new AsyncLocalStorage<RenderContext>();
+
+// Expose store globally for test-setup access in tests
+if (typeof global !== "undefined") {
+  (global as any).__SEIDR_CONTEXT_STORE__ = asyncLocalStorage;
+}
 
 /**
  * Get the current render context.
@@ -62,7 +72,7 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
     renderContextID: 0,
     idCounter: 0,
     seidrIdCounter: 0,
-    currentPath: "/"
+    currentPath: "/",
   });
   return asyncLocalStorage.run(createStore(), async () => {
     initRenderContext();
@@ -100,7 +110,7 @@ export const setMockRenderContextForTests = (): (() => void) => {
     renderContextID: 0,
     idCounter: 0,
     seidrIdCounter: 0,
-    currentPath: "/"
+    currentPath: "/",
   };
   const originalGetRenderContext = getRenderContext;
 

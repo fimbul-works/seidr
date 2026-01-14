@@ -21,35 +21,35 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
   it("should capture and hydrate a 4-level derivation chain", async () => {
     const App = component((_scope) => {
-        // Layer 0: Root observables
-        const a = new Seidr(1);
-        const b = new Seidr(2);
-        const c = new Seidr(3);
+      // Layer 0: Root observables
+      const a = new Seidr(1);
+      const b = new Seidr(2);
+      const c = new Seidr(3);
 
-        // Layer 1: First level derivations
-        const ab = a.as((n) => n + b.value); // 1 + 2 = 3
-        const bc = b.as((n) => n + c.value); // 2 + 3 = 5
+      // Layer 1: First level derivations
+      const ab = a.as((n) => n + b.value); // 1 + 2 = 3
+      const bc = b.as((n) => n + c.value); // 2 + 3 = 5
 
-        // Layer 2: Second level derivations
-        const abc = a.as((n) => n + b.value + c.value); // 1 + 2 + 3 = 6
+      // Layer 2: Second level derivations
+      const abc = a.as((n) => n + b.value + c.value); // 1 + 2 + 3 = 6
 
-        // Layer 3: Third level derivations
-        const sumOfSums = Seidr.computed(() => ab.value + bc.value, [ab, bc]); // 3 + 5 = 8
+      // Layer 3: Third level derivations
+      const sumOfSums = Seidr.computed(() => ab.value + bc.value, [ab, bc]); // 3 + 5 = 8
 
-        // Layer 4: Fourth level derivation
-        const final = sumOfSums.as((n) => n * 2); // 8 * 2 = 16
+      // Layer 4: Fourth level derivation
+      const final = sumOfSums.as((n) => n * 2); // 8 * 2 = 16
 
-        return $("div", {}, [
-          $("span", { textContent: a }),
-          $("span", { textContent: b }),
-          $("span", { textContent: c }),
-          $("span", { textContent: ab }),
-          $("span", { textContent: bc }),
-          $("span", { textContent: abc }),
-          $("span", { textContent: sumOfSums }),
-          $("span", { textContent: final }),
-        ]);
-      });
+      return $("div", {}, [
+        $("span", { textContent: a }),
+        $("span", { textContent: b }),
+        $("span", { textContent: c }),
+        $("span", { textContent: ab }),
+        $("span", { textContent: bc }),
+        $("span", { textContent: abc }),
+        $("span", { textContent: sumOfSums }),
+        $("span", { textContent: final }),
+      ]);
+    });
     // Server-side rendering
     const { html, hydrationData } = await await renderToString(App);
 
@@ -96,27 +96,27 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
   it("should handle diamond dependencies correctly", async () => {
     const App = component((_scope) => {
-        // Diamond pattern:
-        //     a
-        //    / \
-        //   ab   ac
-        //    \ /
-        //    abc
+      // Diamond pattern:
+      //     a
+      //    / \
+      //   ab   ac
+      //    \ /
+      //    abc
 
-        const a = new Seidr(10);
-        const b = new Seidr(5);
-        const c = new Seidr(3);
+      const a = new Seidr(10);
+      const b = new Seidr(5);
+      const c = new Seidr(3);
 
-        const ab = a.as((n) => n + b.value); // 10 + 5 = 15
-        const ac = a.as((n) => n + c.value); // 10 + 3 = 13
-        const abc = Seidr.computed(() => ab.value + ac.value, [ab, ac]); // 15 + 13 = 28
+      const ab = a.as((n) => n + b.value); // 10 + 5 = 15
+      const ac = a.as((n) => n + c.value); // 10 + 3 = 13
+      const abc = Seidr.computed(() => ab.value + ac.value, [ab, ac]); // 15 + 13 = 28
 
-        return $("div", {}, [
-          $("span", { textContent: ab }),
-          $("span", { textContent: ac }),
-          $("span", { textContent: abc }),
-        ]);
-      });
+      return $("div", {}, [
+        $("span", { textContent: ab }),
+        $("span", { textContent: ac }),
+        $("span", { textContent: abc }),
+      ]);
+    });
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 
@@ -140,35 +140,35 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
   it("should handle 5-level deep derivation chain", async () => {
     const App = component((_scope) => {
-        // Level 0: Roots
-        const a = new Seidr(1);
-        const b = new Seidr(1);
+      // Level 0: Roots
+      const a = new Seidr(1);
+      const b = new Seidr(1);
 
-        // Level 1
-        const l1_a = a.as((n) => n + 1); // 2
-        const l1_b = b.as((n) => n + 1); // 2
+      // Level 1
+      const l1_a = a.as((n) => n + 1); // 2
+      const l1_b = b.as((n) => n + 1); // 2
 
-        // Level 2
-        const l2 = Seidr.computed(() => l1_a.value + l1_b.value, [l1_a, l1_b]); // 4
+      // Level 2
+      const l2 = Seidr.computed(() => l1_a.value + l1_b.value, [l1_a, l1_b]); // 4
 
-        // Level 3
-        const l3 = l2.as((n) => n * 2); // 8
+      // Level 3
+      const l3 = l2.as((n) => n * 2); // 8
 
-        // Level 4
-        const l4 = l3.as((n) => n + 1); // 9
+      // Level 4
+      const l4 = l3.as((n) => n + 1); // 9
 
-        // Level 5
-        const l5 = l4.as((n) => n * 3); // 27
+      // Level 5
+      const l5 = l4.as((n) => n * 3); // 27
 
-        return $("div", {}, [
-          $("span", { textContent: l1_a }),
-          $("span", { textContent: l1_b }),
-          $("span", { textContent: l2 }),
-          $("span", { textContent: l3 }),
-          $("span", { textContent: l4 }),
-          $("span", { textContent: l5 }),
-        ]);
-      });
+      return $("div", {}, [
+        $("span", { textContent: l1_a }),
+        $("span", { textContent: l1_b }),
+        $("span", { textContent: l2 }),
+        $("span", { textContent: l3 }),
+        $("span", { textContent: l4 }),
+        $("span", { textContent: l5 }),
+      ]);
+    });
     // Server-side
     const { html, hydrationData } = await renderToString(App);
 

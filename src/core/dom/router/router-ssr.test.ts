@@ -5,6 +5,8 @@ import { setActiveSSRScope } from "../../../ssr/ssr-scope";
 import { component } from "../component";
 import { $ } from "../element";
 import { createRoute } from "./create-route";
+import { navigate } from "./navigate";
+import { Route } from "./route";
 import { Router } from "./router";
 
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -12,7 +14,6 @@ const originalSSREnv = process.env.SEIDR_TEST_SSR;
 describe("Router SSR", () => {
   beforeEach(() => {
     // Enable SSR mode
-    // @ts-expect-error
     process.env.SEIDR_TEST_SSR = "true";
   });
 
@@ -86,5 +87,55 @@ describe("Router SSR", () => {
 
     const { html } = await renderToString(() => App(), { path: "/user/123" });
     expect(html).toContain("User 123");
+  });
+
+  it("should handle navigate during SSR render", async () => {
+    let navigateWasCalled = false;
+
+    const TestComponent = component(() => {
+      navigateWasCalled = true;
+      navigate("/");
+      return $("div", { textContent: "Test Component" });
+    });
+
+    const { html } = await renderToString(() => TestComponent());
+    expect(navigateWasCalled).toBe(true);
+    expect(html).toContain("Test Component");
+  });
+
+  it("should isolate path between SSR requests", async () => {
+    const AboutPage = component(() => $("div", { textContent: "About" }));
+    const HomePage = component(() => $("div", { textContent: "Home" }));
+
+    const App = component(() => {
+      return $("div", {}, [Route("/about", () => AboutPage()), Route("/", () => HomePage())]);
+    });
+
+    const result1 = await renderToString(() => App(), { path: "/about" });
+    expect(result1.html).toContain("About");
+
+    const result2 = await renderToString(() => App(), { path: "/" });
+    expect(result2.html).toContain("Home");
+    expect(result2.html).not.toContain("About");
+  });
+
+  it("should use default path when initialPath is not provided", async () => {
+    const App = component(() =>
+      Router({
+        routes: [
+          createRoute(
+            "/",
+            component(() => $("div", { textContent: "Home" })),
+          ),
+          createRoute(
+            "/about",
+            component(() => $("div", { textContent: "About" })),
+          ),
+        ],
+      }),
+    );
+
+    const { html } = await renderToString(() => App());
+    expect(html).toContain("Home");
   });
 });

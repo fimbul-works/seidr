@@ -4,10 +4,27 @@ import type { RenderContext } from "./core/types";
 
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object
-const browserContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0 };
-setInternalContext(() => browserContext);
+export const browserContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0, currentPath: "/" };
+
+/**
+ * Robust getRenderContext for tests.
+ * Prefers AsyncLocalStorage if available (SSR), falls back to browserContext.
+ */
+function testGetRenderContext(): RenderContext | undefined {
+  // This is essentially what render-context.node.ts does but with a fallback
+  // We try to get it from the contract-assigned function first if it's set to something else,
+  // but here we just want a reliable fallback.
+  return (global as any).__SEIDR_CONTEXT_STORE__?.getStore() || browserContext;
+}
+
+setInternalContext(testGetRenderContext);
 
 afterEach(() => {
+  // Reset browser context counters for next test
+  browserContext.idCounter = 0;
+  browserContext.seidrIdCounter = 0;
+  browserContext.currentPath = "/";
+
   // Clean up DOM after each test
   document.body.innerHTML = "";
   document.head.innerHTML = "";
@@ -21,122 +38,49 @@ Object.defineProperty(window, "navigator", {
   writable: true,
 });
 
-/**
- * SSR/Client Mode Test Utilities
- *
- * These utilities help toggle between SSR and client modes for testing.
- * They manage environment variables and window object state.
- */
-
 interface TestEnvironmentState {
   seidrSSR?: string;
   vitest?: boolean;
   window: any;
 }
 
-/**
- * Enable SSR mode for testing
- * This sets environment variables to simulate server-side rendering
- *
- * @returns Cleanup function to restore previous state
- *
- * @example
- * ```ts
- * describe("SSR Tests", () => {
- *   beforeEach(() => {
- *     cleanupSSRMode = enableSSRMode();
- *   });
- *
- *   afterEach(() => {
- *     cleanupSSRMode();
- *   });
- * });
- * ```
- */
 export function enableSSRMode(): () => void {
-  // Save current state
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
     window: (global as any).window,
   };
-
-  // Enable SSR mode
   process.env.SEIDR_TEST_SSR = "true";
-
-  // Return cleanup function
   return () => {
-    if (currentState.seidrSSR !== undefined) {
-      process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
-    } else {
-      delete process.env.SEIDR_TEST_SSR;
-    }
-
-    if (currentState.vitest !== undefined) {
-      (process.env as any).VITEST = currentState.vitest;
-    } else {
-      delete (process.env as any).VITEST;
-    }
-
-    if (currentState.window !== undefined) {
-      (global as any).window = currentState.window;
-    }
+    if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
+    else delete process.env.SEIDR_TEST_SSR;
+    if (currentState.vitest !== undefined) (process.env as any).VITEST = currentState.vitest;
+    else delete (process.env as any).VITEST;
+    if (currentState.window !== undefined) (global as any).window = currentState.window;
+    setInternalContext(testGetRenderContext);
   };
 }
 
-/**
- * Enable client mode for testing
- * This clears environment variables to simulate client-side execution
- * and ensures window object is available
- *
- * @returns Cleanup function to restore previous state
- *
- * @example
- * ```ts
- * describe("Client Tests", () => {
- *   beforeEach(() => {
- *     cleanupClientMode = enableClientMode();
- *   });
- *
- *   afterEach(() => {
- *     cleanupClientMode();
- *   });
- * });
- * ```
- */
 export function enableClientMode(): () => void {
-  // Save current state
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
     window: (global as any).window,
   };
-
-  // Enable client mode
   delete process.env.SEIDR_TEST_SSR;
   delete (process.env as any).VITEST;
 
-  // Ensure window is defined (jsdom provides it, but SSR tests might have deleted it)
   if (typeof window === "undefined") {
     (global as any).window = currentState.window || {};
   }
 
-  // Return cleanup function
+  setInternalContext(testGetRenderContext);
+
   return () => {
-    if (currentState.seidrSSR !== undefined) {
-      process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
-    } else {
-      delete process.env.SEIDR_TEST_SSR;
-    }
-
-    if (currentState.vitest !== undefined) {
-      (process.env as any).VITEST = currentState.vitest;
-    } else {
-      delete (process.env as any).VITEST;
-    }
-
-    if (currentState.window !== undefined) {
-      (global as any).window = currentState.window;
-    }
+    if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
+    else delete process.env.SEIDR_TEST_SSR;
+    if (currentState.vitest !== undefined) (process.env as any).VITEST = currentState.vitest;
+    else delete (process.env as any).VITEST;
+    if (currentState.window !== undefined) (global as any).window = currentState.window;
   };
 }
