@@ -172,4 +172,57 @@ describe("mountList", () => {
     todos.value = [];
     expect(container.textContent).toBe("");
   });
+
+  it("should cleanup all reactive observers after unmount", () => {
+    const list = new Seidr([
+      { id: 1, name: "A" },
+      { id: 2, name: "B" },
+    ]);
+    const textA = new Seidr("content A");
+    const textB = new Seidr("content B");
+
+    expect(list.observerCount()).toBe(0);
+    expect(textA.observerCount()).toBe(0);
+
+    const cleanup = mountList(
+      list,
+      (item) => item.id,
+      (item) => {
+        const text = item.id === 1 ? textA : textB;
+        return $("div", { textContent: text });
+      },
+      container,
+    );
+
+    expect(list.observerCount()).toBe(1);
+    expect(textA.observerCount()).toBe(1);
+    expect(textB.observerCount()).toBe(1);
+
+    cleanup();
+
+    expect(list.observerCount()).toBe(0);
+    expect(textA.observerCount()).toBe(0);
+    expect(textB.observerCount()).toBe(0);
+  });
+
+  it("should cleanup observers when individual items are removed", () => {
+    const list = new Seidr([{ id: 1 }, { id: 2 }]);
+    const text1 = new Seidr("1");
+    const text2 = new Seidr("2");
+
+    mountList(
+      list,
+      (item) => item.id,
+      (item) => $("div", { textContent: item.id === 1 ? text1 : text2 }),
+      container,
+    );
+
+    expect(text1.observerCount()).toBe(1);
+    expect(text2.observerCount()).toBe(1);
+
+    // Remove item 1
+    list.value = [{ id: 2 }];
+    expect(text1.observerCount()).toBe(0);
+    expect(text2.observerCount()).toBe(1);
+  });
 });

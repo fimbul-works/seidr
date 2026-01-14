@@ -216,14 +216,14 @@ const state = new Seidr(await fetchData());
 await renderToString(MyApp, state);
 
 // Component
-export const MyApp = component((data?: Seidr<Data>) => {
+export const MyApp = (data?: Seidr<Data>) => {
   if (!isUndefined(data)) {
     setState(dataKey, data);
   } else {
     data = getState(dataKey);
   }
   // Use data...
-});
+};
 
 // Client
 hydrate(MyApp, container, hydrationData);
@@ -236,10 +236,10 @@ hydrate(MyApp, container, hydrationData);
 **Best for:** UI state (toggles, form inputs, etc.)
 
 ```typescript
-export const Counter = component(() => {
+export const Counter = () => {
   const count = new Seidr(0);
   return $div({ textContent: count.as(n => `Count: ${n}`) });
-});
+};
 ```
 
 ### ❌ Anti-Pattern: Global Scope Observables
@@ -250,9 +250,9 @@ export const Counter = component(() => {
 // ❌ THIS WILL FAIL
 const count = new Seidr(0);
 
-export const App = component(() => {
+export const App = () => {
   return $div({ textContent: count.as(String) });
-});
+};
 ```
 
 **Why it fails:**
@@ -319,11 +319,11 @@ When using the Router component in SSR, you must pass the current request path t
 
 ```typescript
 import { renderToString } from '@fimbul-works/seidr/node';
-import { Router, createRoute, component } from '@fimbul-works/seidr/node';
+import { Router, createRoute } from '@fimbul-works/seidr/node';
 
-const HomePage = component(() => $div({ textContent: 'Home' }));
-const AboutPage = component(() => $div({ textContent: 'About' }));
-const NotFoundPage = component(() => $div({ textContent: '404 - Not Found' }));
+const HomePage = () => $div({ textContent: 'Home' });
+const AboutPage = () => $div({ textContent: 'About' });
+const NotFoundPage = () => $div({ textContent: '404 - Not Found' });
 
 const App = Router({
   routes: [
@@ -608,20 +608,20 @@ import { hydrate } from '@fimbul-works/seidr';
 
 ```typescript
 // Before
-export const App = component(() => {
+export const App = () => {
   const data = new Seidr(initialData);
   return ...;
-});
+};
 
 // After
-export const App = component((data?: Seidr<Data>) => {
+export const App = (data?: Seidr<Data>) => {
   if (!isUndefined(data)) {
     setState(dataKey, data);
   } else {
     data = getState(dataKey);
   }
   // ...
-});
+};
 ```
 
 **3. Add server rendering:**

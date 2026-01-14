@@ -99,4 +99,41 @@ describe("mountConditional", () => {
     condition.value = false;
     expect(container.contains(mockElement)).toBe(false);
   });
+
+  it("should cleanup all reactive observers after unmount", () => {
+    const condition = new Seidr(true);
+    const text = new Seidr("content");
+
+    expect(condition.observerCount()).toBe(0);
+    expect(text.observerCount()).toBe(0);
+
+    const cleanup = mountConditional(condition, () => $("div", { textContent: text }), container);
+
+    expect(condition.observerCount()).toBe(1);
+    expect(text.observerCount()).toBe(1);
+
+    cleanup();
+
+    expect(condition.observerCount()).toBe(0);
+    expect(text.observerCount()).toBe(0);
+  });
+
+  it("should cleanup observers when switching branches", () => {
+    const condition = new Seidr(true);
+    const textA = new Seidr("A");
+    const textB = new Seidr("B");
+
+    mountConditional(condition, () => $("div", { textContent: textA }), container);
+
+    expect(textA.observerCount()).toBe(1);
+    expect(textB.observerCount()).toBe(0);
+
+    condition.value = false;
+
+    expect(textA.observerCount()).toBe(0);
+    expect(textB.observerCount()).toBe(0); // false has no branch here
+
+    condition.value = true;
+    expect(textA.observerCount()).toBe(1);
+  });
 });

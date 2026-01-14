@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { component, useScope } from "../component";
+import { Seidr } from "../../seidr";
+import { component } from "../component";
 import { $ } from "../element";
 import { mount } from "./mount";
 
@@ -37,5 +38,17 @@ describe("mount", () => {
     unmount();
 
     expect(container.contains(mockElement)).toBe(false);
+  });
+
+  it("should cleanup all reactive observers after unmount", () => {
+    const text = new Seidr("test");
+    const App = () => $("div", { textContent: text });
+
+    expect(text.observerCount()).toBe(0);
+    const unmount = mount(App, container);
+    expect(text.observerCount()).toBe(1);
+
+    unmount();
+    expect(text.observerCount()).toBe(0);
   });
 });

@@ -25,8 +25,8 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
-- 🏗️ **Component System** - Lifecycle management with automatic cleanup
-- 📦 **Tiny Footprint** - 6.3KB (minified + gzipped)
+- 🏗️ **Component System** - Functional components with automatic cleanup
+- 📦 **Tiny Footprint** - 7.0KB (minified + gzipped)
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🌲 **Tree-Shakable** - Import only what you need
@@ -350,43 +350,51 @@ const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 
 ### Components
 
-Seidr components are simple functions that return UI elements. For the best experience, Seidr supports two styles of components:
-
-#### 1. Plain Functions (Recommended for UI)
-Simple UI components can be plain functions. They are lightweight and easy to test.
+Seidr components are simple functions that return UI elements. They are lightweight, easy to test, and have full access to Seidr's reactivity and lifecycle management.
 
 ```typescript
-const UserProfile = ({ name, age }) => {
+import { useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
+
+const UserProfile = ({ name, initialAge = 30 }) => {
+  const scope = useScope(); // Access component lifecycle
+  const age = new Seidr(initialAge);
+
+  // Track custom cleanup logic
+  scope.track(() => console.log('Profile destroyed'));
+
   return $div({ className: 'user-profile' }, [
     $span({ textContent: name }),
-    $span({ textContent: age })
+    $span({ textContent: age.as(a => `Age: ${a}`) }),
+    $button({
+      textContent: 'Birthday',
+      onclick: () => age.value++
+    })
   ]);
 };
-
-// Usage
-mount(() => UserProfile({ name: 'Alice', age: 30 }), container);
 ```
 
-#### 2. Wrapped Components (`component()`)
-Use the `component()` wrapper when you want explicit lifecycle management or need to create a factory that can be passed between components as a single unit with a custom scope.
+> **The Magic:** When you mount a function using `mount()`, `List()`, `Conditional()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `useScope()` and automatic cleanup work perfectly in plain functions!
+
+#### Creating Reusable Factories with `component()`
+
+If you need to create a reusable component factory that can be passed around as a single unit, or if you need to manually instantiate a component instance, you can use the `component()` wrapper:
 
 ```typescript
-import { component, useScope } from '@fimbul-works/seidr';
+import { component } from '@fimbul-works/seidr';
 
-const UserProfile = component(({ name, age }) => {
-  const scope = useScope();
-
-  // Custom cleanup logic
-  scope.track(() => console.log('Component destroyed'));
-
-  return $div({ textContent: `${name}, ${age}` });
+// Returns a factory function
+const CounterFactory = component(({ start = 0 }) => {
+  const count = new Seidr(start);
+  return $button({
+    textContent: count,
+    onclick: () => count.value++
+  });
 });
 
 // Usage
-mount(UserProfile({ name: 'Alice', age: 30 }), container);
+const counter1 = CounterFactory({ start: 10 }); // Returns a SeidrComponent instance
+mount(counter1, container);
 ```
-
-> **Pro Tip:** Mount functions like `mount()`, `List()`, `Conditional()`, and `Switch()` automatically wrap plain functions in a Seidr component internally, so `useScope()` and automatic cleanup work in both styles!
 
 #### Components with Props
 
@@ -612,9 +620,9 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.4KB (minified + gzipped)
+- **Seidr counter app**: ~1.8KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The 6.3KB footprint includes the entire library (Router, SSR engine, List diffing, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The 7.0KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:

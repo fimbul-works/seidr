@@ -158,28 +158,6 @@ describe("mountSwitch", () => {
     expect(container.contains(elementB)).toBe(true);
   });
 
-  it("should pass the current value to the raw function factory", () => {
-    const mode = new Seidr<string>("first");
-    let receivedValue = "";
-
-    mountSwitch(
-      mode,
-      {
-        first: (val: string) => {
-          receivedValue = val;
-          return $("div");
-        },
-      },
-      container,
-    );
-
-    expect(receivedValue).toBe("first");
-
-    mode.value = "second";
-    // Since 'second' is not in factories, and no defaultCase, receivedValue won't change from factory call
-    // Wait, if I change it to another one that exists:
-  });
-
   it("should pass the current value to the factory", () => {
     const mode = new Seidr<"first" | "second">("first");
     const receivedValues: string[] = [];
@@ -202,5 +180,58 @@ describe("mountSwitch", () => {
     expect(receivedValues).toContain("first");
     mode.value = "second";
     expect(receivedValues).toContain("second");
+  });
+
+  it("should cleanup all reactive observers after unmount", () => {
+    const mode = new Seidr<"A" | "B">("A");
+    const textA = new Seidr("content A");
+    const textB = new Seidr("content B");
+
+    expect(mode.observerCount()).toBe(0);
+    expect(textA.observerCount()).toBe(0);
+
+    const cleanup = mountSwitch(
+      mode,
+      {
+        A: () => $("div", { textContent: textA }),
+        B: () => $("div", { textContent: textB }),
+      },
+      container,
+    );
+
+    expect(mode.observerCount()).toBe(1);
+    expect(textA.observerCount()).toBe(1);
+
+    cleanup();
+
+    expect(mode.observerCount()).toBe(0);
+    expect(textA.observerCount()).toBe(0);
+  });
+
+  it("should cleanup observers when switching branches", () => {
+    const mode = new Seidr<"A" | "B">("A");
+    const textA = new Seidr("content A");
+    const textB = new Seidr("content B");
+
+    mountSwitch(
+      mode,
+      {
+        A: () => $("div", { textContent: textA }),
+        B: () => $("div", { textContent: textB }),
+      },
+      container,
+    );
+
+    expect(textA.observerCount()).toBe(1);
+    expect(textB.observerCount()).toBe(0);
+
+    mode.value = "B";
+
+    expect(textA.observerCount()).toBe(0);
+    expect(textB.observerCount()).toBe(1);
+
+    mode.value = "A";
+    expect(textA.observerCount()).toBe(1);
+    expect(textB.observerCount()).toBe(0);
   });
 });

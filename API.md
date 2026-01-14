@@ -10,7 +10,7 @@
   - [`$` - Create DOM elements](#---create-dom-elements)
   - [`$factory()` - Create custom element creators](#factory---create-custom-element-creators)
   - [Predefined Element Creators](#predefined-element-creators)
-- [Components](#components)
+- [Components (Functions)](#components-functions)
   - [`component()`](#component)
   - [`Safe()`](#safe)
 - [Mounting & Declarative Components](#mounting--declarative-components)
@@ -42,6 +42,10 @@
   - [`random()`](#random)
   - [`unwrapSeidr()`](#unwrapseidr)
   - [Query Functions`](#query-functions)
+- [Animations](#animations)
+  - [`animate()`](#animate)
+  - [`tween()`](#tween)
+  - [Easing Functions](#easing-functions)
 - [Type Guards](#type-guards)
   - [`isUndefined`](#isUndefined)
   - [`isBool`](#isbool)
@@ -338,15 +342,34 @@ const app = $div({ className: 'app' }, [
               $button({ textContent: 'Click me' }),
               $span({ textContent: 'Hello' })
             ]);
+
+## Components (Functions)
+
+Seidr components are functions that return UI elements (or `SeidrNode`s). They can receive data via arguments ("props") and use the `useScope()` hook for lifecycle management.
+
+### The Functional Pattern (Recommended)
+
+Any function that returns a `SeidrNode` (element, string, or array of nodes) is a component. When mounted via Seidr's mounting utilities, they automatically receive a reactive scope.
+
+```typescript
+import { Seidr, useScope, $div, $span, $button } from '@fimbul-works/seidr';
+
+const Counter = ({ start = 0 } = {}) => {
+  const scope = useScope();
+  const count = new Seidr(start);
+
+  return $div({}, [
+    $span({ textContent: count }),
+    $button({ textContent: '+', onclick: () => count.value++ })
+  ]);
+};
+
+mount(Counter, document.body);
 ```
 
----
+### `component()`
 
-## Components
-
-### component()
-
-Creates a `SeidrComponentFactory`. While Seidr supports plain functions as components, `component()` is used when you need explicit lifecycle management, custom scope tracking, or a reusable factory that can be passed between components.
+While most components can be plain functions, the `component()` wrapper is used to create a formal **Component Factory**. This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the `SeidrComponent` instance.
 
 **Parameters:**
 - `factory` - Factory function (signature `(props) => SeidrNode`)
@@ -362,7 +385,7 @@ Creates a `SeidrComponentFactory`. While Seidr supports plain functions as compo
 }
 ```
 
-**Automatic Child Tracking**: All Seidr components (including plain functions when mounted) automatically track child components created during their execution. `component()` specifically returns a factory that creates a `SeidrComponent` instance.
+**Automatic Lifecycle**: All Seidr components (including plain functions when mounted) automatically track child components and reactive bindings created during their execution.
 
 **Using `useScope()`:**
 
@@ -371,8 +394,6 @@ Inside the component factory, call `useScope()` to get the scope object for trac
 ```typescript
 import { useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
 
-// A plain function component still has access to useScope() and automatic cleanup
-// when it is mounted using mount(), List(), Conditional(), or Switch()!
 const UserProfile = () => {
   const scope = useScope();
   const name = new Seidr('Alice');
@@ -396,40 +417,33 @@ const unmount = mount(UserProfile, document.body);
 unmount(); // Cleans up all reactive bindings automatically
 ```
 
-Components accept parameters for configuration and initial state. When using plain functions, props are just regular arguments. When using `component()`, props are passed to the factory:
+ ### Component Props
 
-```typescript
-import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
+ Components accept parameters for configuration and initial state. Using plain function arguments is the recommended way to handle "props":
 
-interface CounterProps {
-  initialCount?: number;
-  step?: number;
-  label?: string;
-}
+ ```typescript
+ import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
 
-const Counter = ({ initialCount = 0, step = 1, label = 'Counter' }: CounterProps = {}) => {
-  const count = new Seidr(initialCount);
-  const disabled = count.as(value => value >= 10);
+ const Counter = ({ initialCount = 0, step = 1, label = 'Counter' } = {}) => {
+   const count = new Seidr(initialCount);
 
-  return $div({ className: 'counter' }, [
-    $span({ textContent: label }),
-    $span({ textContent: count.as(n => `: ${n}`) }),
-    $button({
-      textContent: `+${step}`,
-      disabled,
-      onclick: () => count.value += step
-    })
-  ]);
-};
+   return $div({ className: 'counter' }, [
+     $span({ textContent: label }),
+     $span({ textContent: count.as(n => `: ${n}`) }),
+     $button({
+       textContent: `+${step}`,
+       onclick: () => count.value += step
+     })
+   ]);
+ };
 
-// Mount multiple instances with different props
-mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
-mount(() => Counter({ initialCount: 0 }), container2);
-```
+ // Using the component in different contexts
+ mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
+ mount(() => Counter({ initialCount: 0 }), container2);
+ ```
 
 **Props Best Practices:**
 - Destructure props with defaults for optional parameters: `{ prop = default } = {}`
-- Use TypeScript interfaces for type safety on props
 - Props are captured when the component is created (not when mounted)
 - Each component instance has isolated state, even with the same props
 
@@ -1227,6 +1241,90 @@ const items = $queryAll('.item');
 
 // With custom root
 const items = $queryAll('.item', customContainer);
+```
+
+---
+
+
+---
+
+## Animations
+
+Seidr provides a simple animation system based on `requestAnimationFrame`. It allows you to create high-performance animations and smooth state transitions for `Seidr<number>` observables.
+
+### animate()
+
+Low-level animation function that runs a callback every frame.
+
+**Parameters:**
+- `callback` - Function (signature `(deltaMs: number) => number`).
+  - Receives `deltaMs`: time since last frame in milliseconds.
+  - Returns: current progress (0...1). If return value is $\ge 1$, the animation stops automatically.
+
+**Returns:** Stop function (signature `() => void`)
+
+```typescript
+import { animate } from '@fimbul-works/seidr';
+
+const stop = animate((delta) => {
+  console.log(`Frame delta: ${delta}ms`);
+  // return progress to keep running, or >= 1 to stop
+  return 0;
+});
+
+// Stop manually later
+stop();
+```
+
+---
+
+### tween()
+
+Animates a `Seidr<number>` observable from its current value to a target value over a specified duration.
+
+**Parameters:**
+- `seidr` - The `Seidr<number>` observable to animate
+- `to` - Target numeric value
+- `durationMs` - Animation duration in milliseconds
+- `easing` - Optional easing function (defaults to `linear`)
+
+**Returns:** Stop function (signature `() => void`)
+
+```typescript
+import { $div, Seidr, tween, easeInOutQuad, mount } from '@fimbul-works/seidr';
+
+const opacity = new Seidr(0);
+const box = $div({
+  style: opacity.as(o => `opacity: ${o}; width: 100px; height: 100px; background: red;`)
+});
+
+mount(box, document.body);
+
+// Fade in over 500ms
+tween(opacity, 1, 500, easeInOutQuad);
+```
+
+---
+
+### Easing Functions
+
+Seidr includes a comprehensive set of easing functions. These functions take a number `t` (0...1) and return the interpolated value.
+
+Available functions:
+- `linear`
+- `easeInQuad`, `easeOutQuad`, `easeInOutQuad`
+- `easeInCubic`, `easeOutCubic`, `easeInOutCubic`
+- `easeInQuart`, `easeOutQuart`, `easeInOutQuart`
+- `easeInQuint`, `easeOutQuint`, `easeInOutQuint`
+- `easeInExpo`, `easeOutExpo`, `easeInOutExpo`
+- `easeInElastic`, `easeOutElastic`, `easeInOutElastic`
+- `easeInBounce`, `easeOutBounce`, `easeInOutBounce`
+- `smoothstep`
+
+```typescript
+import { tween, easeInOutElastic } from '@fimbul-works/seidr';
+
+tween(count, 100, 1000, easeInOutElastic);
 ```
 
 ---
