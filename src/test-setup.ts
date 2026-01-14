@@ -4,7 +4,13 @@ import type { RenderContext } from "./core/types";
 
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object
-export const browserContext: RenderContext = { renderContextID: 0, idCounter: 0, seidrIdCounter: 0, currentPath: "/" };
+export const browserContext: RenderContext = {
+  renderContextID: 0,
+  idCounter: 0,
+  seidrIdCounter: 0,
+  randomCounter: 0,
+  currentPath: "/",
+};
 
 /**
  * Robust getRenderContext for tests.
@@ -23,6 +29,7 @@ afterEach(() => {
   // Reset browser context counters for next test
   browserContext.idCounter = 0;
   browserContext.seidrIdCounter = 0;
+  browserContext.randomCounter = 0;
   browserContext.currentPath = "/";
 
   // Clean up DOM after each test

@@ -39,6 +39,7 @@
   - [`uidTime()`](#uidtime)
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
+  - [`random()`](#random)
   - [`unwrapSeidr()`](#unwrapseidr)
   - [Query Functions`](#query-functions)
 - [Type Guards](#type-guards)
@@ -1126,6 +1127,21 @@ const handleInput = debounce((value: string) => {
 
 handleInput('test');
 handleInput('testing'); // Only this executes after 300ms
+```
+
+---
+
+### random()
+
+Deterministic random number generator based on the Alea algorithm. When used within a Seidr component (on both server and client), it uses the internal `RenderContext` to ensure that a sequence of random numbers generated on the server is identical to the sequence generated during client-side hydration.
+
+**Returns:** A pseudo-random float between 0 (inclusive) and 1 (exclusive).
+
+```typescript
+import { random } from '@fimbul-works/seidr';
+
+// This value will be the same on server and client during hydration
+const initialRotation = random() * 360;
 ```
 
 ---

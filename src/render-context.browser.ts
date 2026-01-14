@@ -6,6 +6,7 @@ const clientRenderContext: RenderContext = {
   renderContextID: 0,
   idCounter: 0,
   seidrIdCounter: 0,
+  randomCounter: 0,
   currentPath: typeof window !== "undefined" ? window.location.pathname : "/",
 };
 
