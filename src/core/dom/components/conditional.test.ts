@@ -28,7 +28,6 @@ describe("Conditional Component", () => {
     expect(parentEl.innerHTML).toContain("<!--seidr-conditional");
     expect(parentEl.innerHTML).not.toContain("Visible");
 
-    console.log(parentEl.innerHTML);
     isVisible.value = true;
     expect(parentEl.innerHTML).toContain("Visible");
     expect(parentEl.innerHTML).toContain("<!--seidr-conditional");

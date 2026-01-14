@@ -1,313 +1,14 @@
-// Import ServerHTMLElement for SSR usage (will be tree-shaken in client builds)
-
 import { isHydrating } from "../../../ssr/hydrate";
 import { ServerHTMLElement } from "../../../ssr/server-html-element";
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
-import { cn, uid, unwrapSeidr, wrapSeidr } from "../../util/index";
+import { uid } from "../../util/index";
 import { isSeidrElement } from "../../util/is";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $, $comment, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
-import { Conditional } from "./conditional";
-
-/** Map to cache Seidr instances per render context ID */
-const pathCache = new Map<number, Seidr<string>>();
-
-/** Clear cached path for a render context */
-export function clearPathCache(renderContextID: number): void {
-  pathCache.delete(renderContextID);
-}
-
-/**
- * Find existing router markers in the DOM by renderContextID.
- * Searches the entire document for marker comments with the given ID.
- *
- * @param {string} routerId - The router ID (e.g., "ctx-2" or a uid)
- * @returns {[Comment | null, Comment | null]} Tuple of [startMarker, endMarker] or null if not found
- */
-function findExistingMarkers(routerId: string): [startMarker: Comment | null, endMarker: Comment | null] {
-  if (typeof document === "undefined") {
-    return [null, null];
-  }
-
-  const startMarkerPattern = `router-start:${routerId}`;
-  const endMarkerPattern = `router-end:${routerId}`;
-
-  let startMarker: Comment | null = null;
-  let endMarker: Comment | null = null;
-
-  // Use TreeWalker for efficient DOM traversal
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT, {
-    acceptNode: (node) => {
-      const comment = node as Comment;
-      if (comment.nodeValue?.includes(startMarkerPattern)) {
-        return NodeFilter.FILTER_ACCEPT;
-      }
-      if (comment.nodeValue?.includes(endMarkerPattern)) {
-        return NodeFilter.FILTER_ACCEPT;
-      }
-      return NodeFilter.FILTER_REJECT;
-    },
-  });
-
-  let node: Comment | null;
-  while ((node = walker.nextNode() as Comment | null)) {
-    if (node.nodeValue?.includes(startMarkerPattern)) {
-      startMarker = node;
-    } else if (node.nodeValue?.includes(endMarkerPattern)) {
-      endMarker = node;
-    }
-
-    // Found both markers, stop searching
-    if (startMarker && endMarker) {
-      break;
-    }
-  }
-
-  return [startMarker, endMarker];
-}
-
-/** Client-side path state (created once, reused across calls) */
-let clientPathState: Seidr<string> | undefined;
-
-/**
- * Get the reactive current path observable.
- *
- * On the client: Returns a module-level Seidr that persists across the session.
- * On the server: Returns a cached Seidr per render context (request-isolated).
- *
- * @returns {Seidr<string>} Reactive current path observable
- */
-function getCurrentPath(): Seidr<string> {
-  const ctx = getRenderContext();
-
-  // Server-side: Get or create Seidr for this render context
-  if (ctx) {
-    let pathSeidr = pathCache.get(ctx.renderContextID);
-
-    if (!pathSeidr) {
-      // Create a new Seidr for this render context
-      pathSeidr = new Seidr(ctx.currentPath);
-      pathCache.set(ctx.renderContextID, pathSeidr);
-    } else {
-      // Update the cached Seidr with the current path from context
-      // This allows renderToString to set different paths for different renders
-      pathSeidr.value = ctx.currentPath;
-    }
-
-    return pathSeidr;
-  }
-
-  // Client-side: Use module-level state
-  if (!clientPathState) {
-    clientPathState = new Seidr(typeof window !== "undefined" ? window.location.pathname : "/");
-  }
-  return clientPathState;
-}
-
-/** Remove traailing slashes from path */
-const normalizePath = (path: string) => path.replace(/\/+$/, "");
-
-/**
- * Initialize Seidr router.
- * @param {string} path - Current URL path
- * @returns {() => void} Cleanup function that stops listening to path change events.
- */
-export function initRouter(path: string = typeof window !== "undefined" ? window.location.pathname : "/"): () => void {
-  // Set the initial path value
-  const currentPath = getCurrentPath();
-  currentPath.value = path;
-
-  // Return noop in SSR
-  if (typeof window === "undefined") {
-    return () => {};
-  }
-
-  // Handle history.back
-  const popStateHandler = () => {
-    currentPath.value = window.location.pathname;
-  };
-  window.addEventListener("popstate", popStateHandler);
-
-  // Return cleanup function (capture window reference for closure)
-  return () => {
-    if (typeof window !== "undefined") {
-      window.removeEventListener("popstate", popStateHandler);
-    }
-  };
-}
-
-/**
- * Navigate to path.
- * @param {string} path
- */
-export function navigate(path: string): void {
-  // Strip hash and query string for routing purposes
-  // window.location.pathname doesn't include these, but navigate() might receive them
-  const cleanPath = path.split(/[?#]/)[0];
-
-  // Set the new path
-  const currentPath = getCurrentPath();
-  currentPath.value = cleanPath;
-
-  // Stop in SSR
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  // Push path to history
-  window.history.pushState({}, "", cleanPath);
-}
-
-/**
- * Try to match pattern with path, and parse Route parameters.
- * @param {string} pattern - Path pattern like `"/user/:id/edit"`
- * @param {string} path - Optional URL pathname to match against (default: current path)
- * @returns {Record<string, string> | false} Object with matching parameters, or `false` when pattern and path do not match
- */
-export function parseRouteParams(pattern: string, path?: string): Record<string, string> | false {
-  // If no path provided, use current path
-  const pathToMatch = path ?? getCurrentPath().value;
-
-  // Normalize paths by removing trailing slashes
-  const normalizedPattern = normalizePath(pattern);
-  const normalizedPath = normalizePath(pathToMatch);
-
-  const parts = normalizedPattern.split("/");
-  const pathParts = normalizedPath.split("/");
-
-  // Ensure path and pattern have equal number of parts
-  if (parts.length !== pathParts.length) {
-    return false;
-  }
-
-  // Collect parameters
-  const params = {} as Record<string, string>;
-  for (let i = 0; i < parts.length; i++) {
-    // Parameters start with ":"
-    if (parts[i].startsWith(":")) {
-      params[parts[i].slice(1)] = pathParts[i];
-    } else if (parts[i] !== pathParts[i]) {
-      // Return false on mismatch
-      return false;
-    }
-  }
-
-  return params;
-}
-
-/**
- * Conditionally mount a SeidrComponent when current URL path matches pattern
- *
- * IMPORTANT: The componentFactory must be a factory function (not an instantiated component).
- * When you call component() without the trailing (), you get a factory that can be called
- * multiple times to create new instances. This is required because routes need to create
- * fresh component instances each time the route changes.
- *
- * @template {SeidrComponent} C - The type of SeidrComponent being conditionally rendered
- * @template {Seidr<any>} P - The type of matching route parameters
- * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
- * @param {(params?: P) => C} componentFactory - Function that creates the component when needed
- * @param {Seidr<string>} pathState - Optional current path state (default: current path)
- * @returns {() => void} Cleanup function that removes the conditional mount
- *
- * @example
- * Correct usage with Route
- * ```typescript
- * // Without params - pass the factory (no trailing parentheses)
- * const Home = component(() => $div({ textContent: 'Home' }));
- * Route('/', Home)
- *
- * // With params - function that returns a new instance each time
- * const UserPage = (params?: Seidr<{id: string}>) => component(() => {
- *   return $div({ textContent: params?.as(p => `User ${p.id}`) || 'Loading' });
- * })();
- * Route('/user/:id', UserPage)
- * ```
- */
-export function Route<C extends SeidrComponent, P extends Seidr<any>>(
-  pattern: string | RegExp,
-  componentFactory: (params?: P) => C,
-  pathState: Seidr<string> = getCurrentPath(),
-) {
-  // Match pathState.value against RegExp pattern (no parameters extracted)
-  if (pattern instanceof RegExp) {
-    const routeParams = pathState.as((path) => {
-      const match = path.match(pattern);
-      if (!match) return false;
-
-      // Extract named groups as params
-      return match.groups ?? {};
-    });
-
-    const isMatch = routeParams.as((params) => !!params);
-    return Conditional(isMatch, () => componentFactory(routeParams as P));
-  }
-
-  // Attempt to match path with pattern (parseRouteParams handles normalization)
-  const routeParams = pathState.as((path) => parseRouteParams(pattern, path));
-
-  // Mount if params are truthy
-  const match = routeParams.as((params) => !!params);
-  return Conditional(match, () => componentFactory(routeParams as P));
-}
-
-/**
- * Route definition for Router.
- */
-export interface RouteDefinition<C extends SeidrComponent, P extends Seidr<any>> {
-  pattern: string | RegExp;
-  componentFactory: (params?: P) => C;
-}
-
-/**
- * Create a route definition for use with Router.
- *
- * Helper function to create type-safe route definitions with proper TypeScript inference.
- *
- * @template {SeidrComponent<any>} C - The component type
- * @template {Seidr<any>} P - The params observable type
- * @param {string | RegExp} pattern - Path pattern or RegExp
- * @param {C | (params?: P) => C} componentOrFactory - The component (created with component()) or a factory function that returns a component
- * @returns {RouteDefinition<C, P>} Route definition object
- *
- * @example
- * Creating a route without params
- * ```typescript
- * import { createRoute, component, $div } from '@fimbul-works/seidr';
- *
- * const HomePage = component(() => $div({ textContent: 'Home' }));
- *
- * const route = createRoute('/', HomePage);
- * ```
- *
- * @example
- * Creating a route with params
- * ```typescript
- * import { createRoute, component, $div } from '@fimbul-works/seidr';
- *
- * const UserPage = (params?: Seidr<{id: string}>) => component(() => {
- *   return $div({ textContent: params?.as((p) => `User ${p.id}`) || 'Loading' });
- * });
- *
- * const route = createRoute('/user/:id', UserPage);
- * ```
- */
-export function createRoute<C extends SeidrComponent>(
-  pattern: string | RegExp,
-  componentOrFactory: C | ((params?: Seidr<any>) => C),
-): RouteDefinition<C, any> {
-  // Check if it's already a factory function (has params)
-  if (typeof componentOrFactory === "function") {
-    // It's a factory function - use it directly
-    return { pattern, componentFactory: componentOrFactory as (params?: Seidr<any>) => C };
-  } else {
-    // It's a component instance - this is incorrect usage but we'll handle it
-    // The correct pattern is to pass the factory (without calling it)
-    // TODO: Consider throwing an error here to catch this mistake at compile time
-    return { pattern, componentFactory: () => componentOrFactory };
-  }
-}
+import { $comment, type SeidrElement } from "../element";
+import type { RouteDefinition } from "./create-route";
+import { getCurrentPath } from "./get-current-path";
+import { parseRouteParams } from "./parse-route-params";
 
 /**
  * Router component props.
@@ -392,7 +93,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
 
       if (route.pattern instanceof RegExp) {
         const match = path.match(route.pattern);
-        params = match ? match.groups || {} : false;
+        params = match ? (match.groups ?? {}) : false;
       } else {
         params = parseRouteParams(route.pattern, path);
       }
@@ -663,100 +364,50 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
 });
 
 /**
- * Link component props.
+ * Find existing router markers in the DOM by renderContextID.
+ * Searches the entire document for marker comments with the given ID.
+ *
+ * @param {string} routerId - The router ID (e.g., "ctx-2" or a uid)
+ * @returns {[Comment | null, Comment | null]} Tuple of [startMarker, endMarker] or null if not found
  */
-export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
-  to: string | Seidr<string>;
-  tagName?: K;
-  activeClass?: string;
-  activeProp?: string;
-  activeValue?: string;
-  className?: string | Seidr<string>;
-}
+function findExistingMarkers(routerId: string): [startMarker: Comment | null, endMarker: Comment | null] {
+  if (typeof document === "undefined") {
+    return [null, null];
+  }
 
-/**
- * Link component for Route.
- * @param {LinkProps & ReactiveProps<K, HTMLElementTagNameMap[K]>} props - Link props with reactive bindings
- * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
- * @returns {SeidrComponent<K, SeidrElement<K>>} SeidrComponent that wraps an anchor element
- *
- * @example
- * Basic Link
- * ```typescript
- * import { Link, component, $div } from '@fimbul-works/seidr';
- *
- * const App = component(() => {
- *   return $div({}, [
- *     Link({ to: '/about' }, ['About']),
- *     Link({ to: '/', activeClass: 'current' }, ['Home'])
- *   ]);
- * });
- * ```
- *
- * @example
- * Link with custom tagName and reactive active state
- * ```typescript
- * const currentPath = new Seidr('/');
- *
- * const App = component(() => {
- *   return $div({}, [
- *     Link({
- *       to: currentPath.as(p => p === '/home' ? '/' : '/home'),
- *       tagName: 'button',
- *       activeProp: 'aria-current',
- *       activeValue: 'page'
- *     }, ['Home'])
- *   ]);
- * });
- * ```
- */
-export function Link<K extends keyof HTMLElementTagNameMap = "a">(
-  {
-    to,
-    tagName = "a" as K,
-    activeClass = "active",
-    activeProp = "className",
-    activeValue = undefined,
-    className,
-    ...restProps
-  }: LinkProps<K> & ReactiveProps<K, HTMLElementTagNameMap[K]>,
-  children: (SeidrNode | (() => SeidrNode))[] = [],
-): SeidrComponent<SeidrElement<K>> {
-  return component(() => {
-    const scope = useScope();
+  const startMarkerPattern = `router-start:${routerId}`;
+  const endMarkerPattern = `router-end:${routerId}`;
 
-    // If to is a Seidr, observe it; otherwise wrap it in a Seidr
-    const toValue = wrapSeidr(to);
-    const val = activeValue ?? activeClass;
-    const currentPath = getCurrentPath();
+  let startMarker: Comment | null = null;
+  let endMarker: Comment | null = null;
 
-    // Create a combined computed that depends on both currentPath and toValue
-    const isActive = Seidr.computed(
-      () => normalizePath(currentPath.value) === normalizePath(unwrapSeidr(toValue)),
-      [currentPath, toValue],
-    );
+  // Use TreeWalker for efficient DOM traversal
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT, {
+    acceptNode: (node) => {
+      const comment = node as Comment;
+      if (comment.nodeValue?.includes(startMarkerPattern)) {
+        return NodeFilter.FILTER_ACCEPT;
+      }
+      if (comment.nodeValue?.includes(endMarkerPattern)) {
+        return NodeFilter.FILTER_ACCEPT;
+      }
+      return NodeFilter.FILTER_REJECT;
+    },
+  });
 
-    // Build props object with reactive bindings
-    const props: Record<string, any> = {
-      ...restProps,
-      href: toValue,
-      onclick: (e: Event) => {
-        e.preventDefault();
-        navigate(unwrapSeidr(toValue));
-      },
-    };
-
-    // Handle className reactively if activeProp is className
-    if (activeProp === "className") {
-      props.className = isActive.as((active) => cn(active ? val : "", className));
-    } else {
-      props.className = className;
-      // Set up reactive binding for custom prop (like aria-current)
-      const activeValueBinding = new Seidr<string | null>(val);
-      scope.track(isActive.bind(activeValueBinding, (active, binding) => (binding.value = active ? val : null)));
-      props[activeProp] = activeValueBinding;
+  let node: Comment | null;
+  while ((node = walker.nextNode() as Comment | null)) {
+    if (node.nodeValue?.includes(startMarkerPattern)) {
+      startMarker = node;
+    } else if (node.nodeValue?.includes(endMarkerPattern)) {
+      endMarker = node;
     }
 
-    return $(tagName as K, props as any, children);
-  })();
+    // Found both markers, stop searching
+    if (startMarker && endMarker) {
+      break;
+    }
+  }
+
+  return [startMarker, endMarker];
 }

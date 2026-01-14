@@ -348,9 +348,6 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
           cleanups.push(
             value.bind(el, (value, element) => {
-              if (prop.startsWith("aria") || prop.startsWith("data-")) {
-                console.log(`[element.ts] Binding ${prop}=${value} (typeof: ${typeof value})`);
-              }
               return directProps.has(prop)
                 ? ((element as any)[prop] = value)
                 : element.setAttribute(prop, String(value));

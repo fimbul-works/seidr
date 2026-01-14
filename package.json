@@ -80,7 +80,7 @@
     "dev:examples": "vite --config vite.examples.config.ts",
     "dev:ssr": "tsx watch examples/ssr/server.ts",
     "format": "npx biome format --write src examples *.json",
-    "test": "vitest",
+    "test": "vitest run",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "devDependencies": {

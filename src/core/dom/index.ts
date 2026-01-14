@@ -9,3 +9,4 @@ export * from "./element-factory";
 export * from "./elements";
 export * from "./mount/index";
 export * from "./query/index";
+export * from "./router/index";

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../core/dom/component";
-import { navigate, Route } from "../core/dom/components/route";
 import { $div } from "../core/dom/elements";
+import { navigate, Route } from "../core/dom/router";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { setActiveSSRScope } from "./ssr-scope";

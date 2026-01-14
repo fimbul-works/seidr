@@ -1,4 +1,4 @@
-import { clearPathCache, initRouter } from "../core/dom/components/route";
+import { clearPathCache } from "../core/dom/router";
 import type { SeidrComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
 import { runWithRenderContext } from "../render-context.node";
