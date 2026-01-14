@@ -1,6 +1,6 @@
-import { $button, $div, $h1, component, mount, Seidr, useScope } from "../src/index.browser.js";
+import { $button, $div, $h1, mount, Seidr, useScope } from "../src/index.browser.js";
 
-const PomodoroTimer = component(() => {
+const PomodoroTimer = () => {
   const scope = useScope();
 
   const WORK_TIME = 25 * 60;
@@ -134,9 +134,9 @@ const PomodoroTimer = component(() => {
       ),
     ],
   );
-});
+};
 
 // Mount component only in browser environment (not in tests)
 if (typeof window !== "undefined") {
-  mount(PomodoroTimer(), document.body);
+  mount(PomodoroTimer, document.body);
 }

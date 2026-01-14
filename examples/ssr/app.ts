@@ -10,7 +10,6 @@ import {
   $ul,
   bindInput,
   cn,
-  component,
   createStateKey,
   getState,
   isUndefined,
@@ -23,38 +22,36 @@ import type { Todo } from "./types.js";
 
 const todosKey = createStateKey<Seidr<Todo[]>>("todos");
 
-const TodoItem = component(
-  ({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => void; saveTodos: () => void }) => {
-    const isCompleted = new Seidr(todo.completed);
+const TodoItem = ({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => void; saveTodos: () => void }) => {
+  const isCompleted = new Seidr(todo.completed);
 
-    return $li(
-      {
-        className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
-      },
-      [
-        $checkbox({
-          type: "checkbox",
-          checked: isCompleted,
-          onchange: () => {
-            isCompleted.value = !isCompleted.value;
-            todo.completed = isCompleted.value;
-            saveTodos();
-          },
-        }),
-        $span({
-          textContent: todo.text,
-        }),
-        $button({
-          className: "btn btn-danger",
-          textContent: "Delete",
-          onclick: onDelete,
-        }),
-      ],
-    );
-  },
-);
+  return $li(
+    {
+      className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
+    },
+    [
+      $checkbox({
+        type: "checkbox",
+        checked: isCompleted,
+        onchange: () => {
+          isCompleted.value = !isCompleted.value;
+          todo.completed = isCompleted.value;
+          saveTodos();
+        },
+      }),
+      $span({
+        textContent: todo.text,
+      }),
+      $button({
+        className: "btn btn-danger",
+        textContent: "Delete",
+        onclick: onDelete,
+      }),
+    ],
+  );
+};
 
-export const TodoApp = component((todos?: Seidr<Todo[]>) => {
+export const TodoApp = (todos?: Seidr<Todo[]>) => {
   if (!isUndefined(todos)) {
     setState(todosKey, todos);
   } else {
@@ -107,4 +104,4 @@ export const TodoApp = component((todos?: Seidr<Todo[]>) => {
       ),
     ]),
   ]);
-});
+};

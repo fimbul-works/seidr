@@ -9,7 +9,6 @@ import {
   $ul,
   bindInput,
   cn,
-  component,
   List,
   mount,
   Seidr,
@@ -18,40 +17,40 @@ import {
 
 type Todo = { id: number; text: string; completed: boolean };
 
-const TodoItem = component(
-  ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => void; onDelete: () => void }) => {
-    const isCompleted = new Seidr(todo.completed);
+const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => void; onDelete: () => void }) => {
+  const isCompleted = new Seidr(todo.completed);
 
-    return $li(
-      {
-        className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
-      },
-      [
-        $checkbox({
-          checked: isCompleted,
-          onchange: () => {
-            isCompleted.value = !isCompleted.value;
-            todo.completed = isCompleted.value;
-            onUpdate();
-          },
-        }),
-        $span({
-          textContent: todo.text,
-        }),
-        $button({
-          className: "btn btn-danger",
-          textContent: "Delete",
-          onclick: onDelete,
-        }),
-      ],
-    );
-  },
-);
+  return $li(
+    {
+      className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
+    },
+    [
+      $checkbox({
+        checked: isCompleted,
+        onchange: () => {
+          isCompleted.value = !isCompleted.value;
+          todo.completed = isCompleted.value;
+          onUpdate();
+        },
+      }),
+      $span({
+        textContent: todo.text,
+      }),
+      $button({
+        className: "btn btn-danger",
+        textContent: "Delete",
+        onclick: onDelete,
+      }),
+    ],
+  );
+};
 
-export const TodoApp = component((initialTodos: Todo[]) => {
+export const TodoApp = (initialTodos: Todo[] = []) => {
   const todos = withStorage(
     "todos",
-    new Seidr<Todo[]>(initialTodos || [{ id: Date.now(), text: "Learn Seidr", completed: false }]),
+    new Seidr<Todo[]>(
+      initialTodos.length > 0 ? initialTodos : [{ id: Date.now(), text: "Learn Seidr", completed: false }],
+    ),
   );
   const newTodoText = new Seidr("");
 
@@ -96,9 +95,9 @@ export const TodoApp = component((initialTodos: Todo[]) => {
       ),
     ]),
   ]);
-});
+};
 
 // Mount component only in browser environment (not in tests)
 if (typeof window !== "undefined") {
-  mount(TodoApp([]), document.body);
+  mount(() => TodoApp([]), document.body);
 }
