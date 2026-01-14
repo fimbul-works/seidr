@@ -1,7 +1,6 @@
-import type { SeidrComponent } from "../core/dom/component";
-import { mount } from "../core/dom/mount/mount";
+import { component, mount, type SeidrComponent, type SeidrNode } from "../core/dom";
 import { $query } from "../core/dom/query";
-// Import setRenderContextID only on browser (will be tree-shaken from Node builds)
+import { isSeidrComponentFactory } from "../core/util/is";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
@@ -35,7 +34,7 @@ export function resetHydratingFlag() {
  * This function has the same signature as renderToString, making them
  * two halves of a whole for SSR hydration.
  *
- * @param componentFactory - Function that returns a Seidr Component
+ * @param factory - Function that returns a Seidr Component
  * @param container - The HTMLElement to mount the hydrated component into
  * @param hydrationData - The previously captured hydration data with renderContextID
  *
@@ -65,8 +64,8 @@ export function resetHydratingFlag() {
  * // The app is now interactive!
  * ```
  */
-export function hydrate<C extends SeidrComponent>(
-  componentFactory: (...args: any) => C,
+export function hydrate<T extends SeidrNode>(
+  factory: (...args: any) => T,
   container: HTMLElement,
   hydrationData: HydrationData,
 ): SeidrComponent {
@@ -93,10 +92,12 @@ export function hydrate<C extends SeidrComponent>(
   const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
-  const component = componentFactory();
+  const comp = (isSeidrComponentFactory(factory)
+    ? factory()
+    : component<void>(factory as any)()) as any as SeidrComponent;
 
   // Mount the component in the container
-  mount(component, container);
+  mount(comp, container);
 
   // Remove existing root component if found
   if (existingRoot) {
@@ -106,5 +107,5 @@ export function hydrate<C extends SeidrComponent>(
   // Clear the hydration context
   clearHydrationData();
 
-  return component;
+  return comp;
 }

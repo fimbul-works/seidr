@@ -467,5 +467,28 @@ describe("Client-Side Hydration", () => {
       // Cleanup client mode
       cleanupClientMode2();
     });
+
+    it("should support hydrating raw function components", async () => {
+      const RawComponent = () => $("div", { textContent: "raw function" });
+
+      // Server-side capture
+      const scope = new SSRScope();
+      setActiveSSRScope(scope);
+      const { hydrationData } = await renderToString(RawComponent, scope);
+      setActiveSSRScope(undefined);
+
+      // Switch to client mode for hydration
+      const cleanupClientMode2 = enableClientMode();
+
+      // Client-side hydration
+      const container = document.createElement("div");
+      const hydratedComponent = hydrate(RawComponent, container, hydrationData);
+
+      expect(hydratedComponent).toBeDefined();
+      expect(container.textContent).toBe("raw function");
+
+      // Cleanup client mode
+      cleanupClientMode2();
+    });
   });
 });

@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
 import { Conditional } from "../components/conditional";
+import type { SeidrNode } from "../element";
 import { getCurrentPath } from "./get-current-path";
 import { parseRouteParams } from "./parse-route-params";
 
@@ -12,10 +12,10 @@ import { parseRouteParams } from "./parse-route-params";
  * multiple times to create new instances. This is required because routes need to create
  * fresh component instances each time the route changes.
  *
- * @template {SeidrComponent} C - The type of SeidrComponent being conditionally rendered
+ * @template {SeidrNode} C - The type of SeidrNode being conditionally rendered
  * @template {Seidr<any>} P - The type of matching route parameters
  * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
- * @param {(params?: P) => C} componentFactory - Function that creates the component when needed
+ * @param {(params?: P) => C} factory - Function that creates the component when needed
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {() => void} Cleanup function that removes the conditional mount
  *
@@ -33,9 +33,9 @@ import { parseRouteParams } from "./parse-route-params";
  * Route('/user/:id', UserPage)
  * ```
  */
-export function Route<C extends SeidrComponent, P extends Seidr<any>>(
+export function Route<C extends SeidrNode, P extends Seidr<any>>(
   pattern: string | RegExp,
-  componentFactory: (params?: P) => C,
+  factory: (params?: P) => C,
   pathState: Seidr<string> = getCurrentPath(),
 ) {
   // Match pathState.value against RegExp pattern (no parameters extracted)
@@ -49,7 +49,7 @@ export function Route<C extends SeidrComponent, P extends Seidr<any>>(
     });
 
     const isMatch = routeParams.as((params) => !!params);
-    return Conditional(isMatch, () => componentFactory(routeParams as P));
+    return Conditional(isMatch, () => factory(routeParams as P));
   }
 
   // Attempt to match path with pattern (parseRouteParams handles normalization)
@@ -57,5 +57,5 @@ export function Route<C extends SeidrComponent, P extends Seidr<any>>(
 
   // Mount if params are truthy
   const match = routeParams.as((params) => !!params);
-  return Conditional(match, () => componentFactory(routeParams as P));
+  return Conditional(match, () => factory(routeParams as P));
 }

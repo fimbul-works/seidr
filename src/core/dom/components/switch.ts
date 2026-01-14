@@ -1,4 +1,5 @@
 import type { Seidr } from "../../seidr";
+import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent, useScope } from "../component";
 import { $comment } from "../element";
@@ -10,13 +11,13 @@ import { $comment } from "../element";
  * @template {SeidrComponent} C - The type of SeidrComponent being rendered
  *
  * @param {Seidr<T>} observable - Observable value to switch on
- * @param {Map<T, () => C> | Record<string, () => C>} cases - Map or object of cases to components
+ * @param {Map<T, () => C> | Record<string, () => C>} factories - Map or object of cases to component factories
  * @param {() => C} [defaultCase] - Optional fallback component factory
  * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
 export function Switch<T, C extends SeidrComponent>(
   observable: Seidr<T>,
-  cases: Map<T, () => C> | Record<string, () => C>,
+  factories: Map<T, () => C> | Record<string, () => C>,
   defaultCase?: () => C,
 ): SeidrComponent {
   return component(() => {
@@ -28,19 +29,18 @@ export function Switch<T, C extends SeidrComponent>(
       const parent = marker.parentNode;
       if (!parent) return;
 
-      const factory = cases instanceof Map ? cases.get(value) : (cases as any)[String(value)];
+      const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
 
-      const finalFactory = factory || defaultCase;
+      const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
         currentComponent.destroy();
         currentComponent = null;
       }
 
-      if (finalFactory && parent) {
-        const comp = finalFactory();
-        currentComponent = comp;
-        parent.insertBefore(comp.element, marker);
+      if (factory && parent) {
+        currentComponent = (isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory)(value)) as C;
+        parent.insertBefore(currentComponent.element, marker);
       }
     };
 

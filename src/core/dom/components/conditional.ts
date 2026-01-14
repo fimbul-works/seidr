@@ -1,7 +1,8 @@
 import type { Seidr } from "../../seidr";
+import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $comment } from "../element";
+import { $comment, type SeidrNode } from "../element";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -10,20 +11,17 @@ import { $comment } from "../element";
  * DOM without requiring a wrapper element. When the condition is met, the
  * component is created and inserted before the marker.
  *
- * @template {SeidrComponent} C - The type of SeidrComponent being conditionally rendered
+ * @template {SeidrComponent} T - The type of SeidrComponent being conditionally rendered
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls visibility
- * @param {() => C} componentFactory - Function that creates the component when needed
+ * @param {() => T} factory - Function that creates the component when needed
  * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
-export function Conditional<C extends SeidrComponent<Comment>>(
-  condition: Seidr<boolean>,
-  componentFactory: (...args: any) => C,
-): SeidrComponent<Comment> {
+export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, factory: () => T): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
     const marker = $comment(`seidr-conditional:${uid()}`);
-    let currentComponent: C | null = null;
+    let currentComponent: SeidrComponent | null = null;
 
     /**
      * Updates the DOM state based on the condition.
@@ -31,7 +29,9 @@ export function Conditional<C extends SeidrComponent<Comment>>(
      */
     const update = (shouldShow: boolean) => {
       if (shouldShow && !currentComponent) {
-        currentComponent = componentFactory();
+        currentComponent = (
+          isSeidrComponentFactory(factory) ? factory() : component(factory as any)()
+        ) as SeidrComponent;
         if (marker.parentNode) {
           marker.parentNode.insertBefore(currentComponent.element, marker);
         }

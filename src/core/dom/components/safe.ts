@@ -1,3 +1,4 @@
+import { isSeidrComponentFactory } from "../../util/is";
 import { component, createScope, getComponentStack, type SeidrComponent, useScope } from "../component";
 import type { SeidrNode } from "../element";
 
@@ -70,7 +71,7 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
 
     try {
       try {
-        return factory();
+        return (isSeidrComponentFactory(factory) ? factory() : component(factory)()) as T;
       } catch (err) {
         // Destroy scope from failed component and create new one for error boundary
         scope.destroy();

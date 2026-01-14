@@ -116,6 +116,21 @@ export interface SeidrComponent<T extends Node = any> {
 }
 
 /**
+ * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
+ */
+interface SeidrComponentFactoryInterface {
+  isComponentFactory: true;
+}
+
+/**
+ * Seidr component factory type.
+ *
+ * @template P - Props object type (optional)
+ */
+export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
+  SeidrComponentFactoryInterface;
+
+/**
  * Creates a component with automatic lifecycle and resource management.
  *
  * Components are the primary building blocks in Seidr applications. They encapsulate
@@ -191,9 +206,9 @@ export interface SeidrComponent<T extends Node = any> {
  */
 export function component<P = void>(
   factory: P extends void ? () => SeidrNode : (props: P) => SeidrNode,
-): P extends void ? () => SeidrComponent : (props: P) => SeidrComponent {
+): SeidrComponentFactory<P> {
   // Return a function that accepts props and creates the component
-  return ((props?: P) => {
+  const componentFactory = ((props?: P) => {
     const stack = getComponentStack();
     const isRootComponent = stack.length === 0;
 
@@ -309,5 +324,9 @@ export function component<P = void>(
     }
 
     return comp;
-  }) as P extends void ? () => SeidrComponent : (props: P) => SeidrComponent;
+  }) as SeidrComponentFactory<P>;
+
+  // Add component factory flag
+  componentFactory.isComponentFactory = true;
+  return componentFactory;
 }

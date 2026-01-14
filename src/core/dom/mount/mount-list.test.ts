@@ -152,4 +152,24 @@ describe("mountList", () => {
     expect(container.children.length).toBe(0);
     expect(componentDestroyed).toBe(true);
   });
+
+  it("should support raw functions as component factories", () => {
+    const todos = new Seidr<{ id: number; text: string }[]>([
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+    ]);
+
+    mountList(
+      todos,
+      (t) => t.id,
+      (t) => $("div", { textContent: t.text }),
+      container,
+    );
+
+    expect(container.textContent).toBe("AB");
+
+    // Clear and check
+    todos.value = [];
+    expect(container.textContent).toBe("");
+  });
 });

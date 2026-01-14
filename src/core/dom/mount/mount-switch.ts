@@ -1,3 +1,8 @@
+import type { Seidr } from "../../seidr";
+import { isSeidrComponentFactory } from "../../util/is";
+import { component, type SeidrComponent } from "../component";
+import { $comment, type SeidrNode } from "../element";
+
 /**
  * Switches between different components based on an observable value.
  *
@@ -85,18 +90,11 @@
  * });
  * ```
  */
-import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
-import { $comment } from "../element";
-
-/**
- * Switches between different components based on an observable value.
- * Legacy utility that internally implements component switching.
- */
-export function mountSwitch<T extends string>(
+export function mountSwitch<T extends string, C extends SeidrNode>(
   observable: Seidr<T>,
-  componentMap: Record<T, () => SeidrComponent>,
+  factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
   container: HTMLElement,
+  defaultCase?: (val: T) => C,
 ): () => void {
   const marker = $comment("mount-switch-marker");
   container.appendChild(marker);
@@ -104,7 +102,9 @@ export function mountSwitch<T extends string>(
   let currentComponent: SeidrComponent | null = null;
 
   const update = (value: T) => {
-    const factory = componentMap[value];
+    const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
+
+    const factory = caseFactory || defaultCase;
 
     if (currentComponent) {
       currentComponent.destroy();
@@ -112,7 +112,9 @@ export function mountSwitch<T extends string>(
     }
 
     if (factory) {
-      currentComponent = factory();
+      currentComponent = (
+        isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory as any)(value)
+      ) as SeidrComponent;
       container.insertBefore(currentComponent.element, marker);
     }
   };

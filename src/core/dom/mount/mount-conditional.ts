@@ -1,3 +1,8 @@
+import type { Seidr } from "../../seidr";
+import { isSeidrComponentFactory } from "../../util/is";
+import { component, type SeidrComponent } from "../component";
+import { type SeidrNode, $comment } from "../element";
+
 /**
  * Conditionally renders a component based on a boolean observable state.
  *
@@ -55,27 +60,19 @@
  * });
  * ```
  */
-import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
-import { $comment } from "../element";
-
-/**
- * Conditionally renders a component based on a boolean observable state.
- * Legacy utility that internally implements conditional mounting.
- */
-export function mountConditional<C extends SeidrComponent>(
+export function mountConditional<T extends SeidrNode>(
   condition: Seidr<boolean>,
-  componentFactory: () => C,
+  factory: () => T,
   container: HTMLElement,
 ): () => void {
   const marker = $comment("mount-conditional-marker");
   container.appendChild(marker);
 
-  let currentComponent: C | null = null;
+  let currentComponent: SeidrComponent | null = null;
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {
-      currentComponent = componentFactory();
+      currentComponent = (isSeidrComponentFactory(factory) ? factory() : component(factory as any)()) as SeidrComponent;
       container.insertBefore(currentComponent.element, marker);
     } else if (!shouldShow && currentComponent) {
       currentComponent.destroy();

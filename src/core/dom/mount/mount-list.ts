@@ -71,14 +71,15 @@
  * ```
  */
 import type { Seidr } from "../../seidr";
-import type { SeidrComponent } from "../component";
-import { $comment } from "../element";
+import { isSeidrComponentFactory } from "../../util/is";
+import { component, type SeidrComponent } from "../component";
+import { $comment, type SeidrNode } from "../element";
 
 /**
  * Renders an efficient list of components from an observable array.
  * Legacy utility that internally implements list rendering.
  */
-export function mountList<T, I extends string | number, C extends SeidrComponent>(
+export function mountList<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   componentFactory: (item: T) => C,
@@ -86,7 +87,7 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
 ): () => void {
   const marker = $comment("mount-list-marker");
   container.appendChild(marker);
-  const componentMap = new Map<I, C>();
+  const componentMap = new Map<I, SeidrComponent>();
 
   const update = (items: T[]) => {
     const newKeys = new Set(items.map(getKey));
@@ -104,19 +105,23 @@ export function mountList<T, I extends string | number, C extends SeidrComponent
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
       const key = getKey(item);
-      let comp = componentMap.get(key);
+      let comp = componentMap.get(key) as C;
 
       if (!comp) {
-        comp = componentFactory(item);
-        componentMap.set(key, comp);
+        comp = (
+          isSeidrComponentFactory(componentFactory)
+            ? componentFactory(item)
+            : component<T>(componentFactory as any)(item)
+        ) as C;
+        componentMap.set(key, comp as SeidrComponent);
       }
 
       // Move to correct position if needed
-      if (comp.element.nextSibling !== currentAnchor) {
-        container.insertBefore(comp.element, currentAnchor);
+      if ((comp as SeidrComponent).element.nextSibling !== currentAnchor) {
+        container.insertBefore((comp as SeidrComponent).element, currentAnchor);
       }
 
-      currentAnchor = comp.element;
+      currentAnchor = (comp as SeidrComponent).element;
     }
   };
 

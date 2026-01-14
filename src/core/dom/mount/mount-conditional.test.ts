@@ -86,4 +86,17 @@ describe("mountConditional", () => {
     expect(container.contains(mockElement)).toBe(false);
     expect(componentDestroyed).toBe(true);
   });
+
+  it("should support raw functions as component factories", () => {
+    const condition = new Seidr(true);
+    const mockElement = $("div", { className: "raw-fn-element" });
+
+    mountConditional(condition, () => mockElement, container);
+
+    expect(container.contains(mockElement)).toBe(true);
+    expect(mockElement.className).toBe("raw-fn-element");
+
+    condition.value = false;
+    expect(container.contains(mockElement)).toBe(false);
+  });
 });
