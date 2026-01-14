@@ -7,8 +7,8 @@ echo "Minifying bundles for size calculation..."
 npx rollup -c rollup.config.js --environment MINIFY:true > /dev/null 2>&1 || true
 
 # Create temporary minified versions using terser
-npx terser dist/seidr.js -c passes=2 -m -o dist/seidr.min.js --module
-npx terser dist/seidr.cjs -c passes=2 -m -o dist/seidr.min.cjs
+npx terser dist/seidr.js -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m -o dist/seidr.min.js --module
+npx terser dist/seidr.cjs -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m -o dist/seidr.min.cjs
 
 # Compress the bundles
 gzip -f -k dist/seidr.min.js
@@ -21,7 +21,7 @@ echo "Bundle sizes (bytes):"
 echo "=========================================="
 echo ""
 echo "Browser bundle:"
-wc -c dist/seidr.js dist/seidr.min.js dist/seidr.min.js.gz | grep -v total
+wc -c dist/seidr.js dist/seidr.min.js dist/seidr.min.js.gz dist/seidr.cjs dist/seidr.min.cjs dist/seidr.min.cjs.gz | grep -v total
 echo ""
 echo "Node bundle:"
 wc -c dist/seidr.node.js dist/seidr.node.cjs | grep -v total

@@ -69,9 +69,9 @@
     "clean:dist": "rm -rf dist",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm clean:dist && pnpm build:javascript && pnpm build:types",
+    "build": "pnpm build:javascript && pnpm build:types",
     "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c",
-    "build:types": "pnpm build:types:browser && pnpm build:types:node",
+    "build:types": "pnpm build:types:node && pnpm build:types:browser",
     "build:types:browser": "dts-bundle-generator -o dist/seidr.d.ts src/index.browser.ts",
     "build:types:node": "dts-bundle-generator -o dist/seidr.node.d.ts src/index.node.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
@@ -81,7 +81,7 @@
     "dev:ssr": "tsx watch examples/ssr/server.ts",
     "format": "npx biome format --write src examples *.json",
     "test": "vitest",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",

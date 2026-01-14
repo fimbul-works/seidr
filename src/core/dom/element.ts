@@ -63,7 +63,7 @@ export type ReactiveValue<T> = [T] extends string ? T | Seidr<Scalar> : [T] exte
  */
 export type ReactiveProps<
   K extends keyof HTMLElementTagNameMap,
-  T extends Omit<HTMLElementTagNameMap[K], "style"> = Omit<HTMLElementTagNameMap[K], "style">,
+  T extends HTMLElementTagNameMap[K] = HTMLElementTagNameMap[K],
 > = {
   [K in WritableKeys<T>]?: ReactiveValue<T[K]>;
 };
@@ -399,7 +399,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   }
 
   // Create a new HTMLElement if not found
-  const el: HTMLElementTagNameMap[K] = document.createElement(tagName);
+  const el = document.createElement(tagName);
   let cleanups: (() => void)[] = [];
   if (typeof process !== "undefined" && typeof elementId !== "undefined") {
     el.dataset[SEIDR_ID_CAME_CASE] = elementId;

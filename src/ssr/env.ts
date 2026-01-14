@@ -29,11 +29,11 @@ export const isBrowser = (): boolean => !isServer();
  * @param fn - The function to execute purely on the client
  * @returns The result of the function, or undefined if on the server
  */
-export function inBrowser<T>(fn: () => T): T | undefined {
+export function inBrowser<T>(fn: () => T): T {
   if (typeof window !== "undefined" && (typeof process === "undefined" || !process.env.SEIDR_TEST_SSR)) {
     return fn();
   }
-  return undefined;
+  return undefined as T;
 }
 
 /**
@@ -44,7 +44,7 @@ export function inBrowser<T>(fn: () => T): T | undefined {
  * @param fn - The function to execute purely on the server
  * @returns The result of the function, or undefined if in the browser
  */
-export function inServer<T>(fn: () => T): T | undefined {
+export function inServer<T>(fn: () => T): T {
   if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
     const result = fn();
 
@@ -58,5 +58,6 @@ export function inServer<T>(fn: () => T): T | undefined {
 
     return result;
   }
-  return undefined;
+
+  return undefined as T;
 }
