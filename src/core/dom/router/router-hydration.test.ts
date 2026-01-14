@@ -4,7 +4,6 @@ import { hydrate, resetHydratingFlag } from "../../../ssr/hydrate";
 import { clearHydrationData } from "../../../ssr/hydration-context";
 import { renderToString } from "../../../ssr/render-to-string";
 import { browserContext, enableClientMode } from "../../../test-setup";
-import { Seidr } from "../../seidr";
 import { component, useScope } from "../component";
 import { $ } from "../element";
 import { createRoute } from "./create-route";
@@ -59,11 +58,9 @@ describe("Router Hydration Unmounting", () => {
     );
 
     // 1. SSR a 404 page
-    // @ts-expect-error
     process.env.SEIDR_TEST_SSR = "true";
     browserContext.idCounter = 0;
     const { html, hydrationData } = await renderToString(() => App(), { path: "/unknown" });
-    // @ts-expect-error
     delete process.env.SEIDR_TEST_SSR;
 
     // 2. Setup browser DOM
@@ -120,11 +117,9 @@ describe("Router Hydration Unmounting", () => {
     );
 
     // 1. SSR Home page
-    // @ts-expect-error
     process.env.SEIDR_TEST_SSR = "true";
     browserContext.idCounter = 0;
     const { html, hydrationData } = await renderToString(() => App(), { path: "/" });
-    // @ts-expect-error
     delete process.env.SEIDR_TEST_SSR;
 
     // 2. Setup browser DOM

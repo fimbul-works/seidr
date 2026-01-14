@@ -347,11 +347,9 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           }
 
           cleanups.push(
-            value.bind(el, (value, element) => {
-              return directProps.has(prop)
-                ? ((element as any)[prop] = value)
-                : element.setAttribute(prop, String(value));
-            }),
+            value.bind(el, (value, element) =>
+              directProps.has(prop) ? ((element as any)[prop] = value) : element.setAttribute(prop, String(value)),
+            ),
           );
         } else {
           if (directProps.has(prop)) {
