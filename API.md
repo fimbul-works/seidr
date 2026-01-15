@@ -12,12 +12,13 @@
   - [Predefined Element Creators](#predefined-element-creators)
 - [Components (Functions)](#components-functions)
   - [`component()`](#component)
-  - [`Safe()`](#safe)
 - [Mounting & Declarative Components](#mounting--declarative-components)
   - [`mount()`](#mount)
   - [`Conditional()`](#conditional)
   - [`List()`](#list)
   - [`Switch()`](#switch)
+  - [`Suspense()`](#suspense)
+  - [`Safe()`](#safe)
   - [Shorthand Mounting Utilities](#shorthand-mounting-utilities)
 - [Routing](#routing)
   - [`initRouter()`](#initrouter)
@@ -470,71 +471,6 @@ mount(UserProfile, document.body);
 
 ---
 
-### Safe()
-
-Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
-
-**Parameters:**
-- `factory` - Function that creates the component element: `() => Node`
-- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error) => Node`
-
-**Returns:** `SeidrComponent`
-
-```typescript
-import { Safe, useScope, $div, $h2, $p } from '@fimbul-works/seidr';
-
-const UserProfile = Safe(
-  () => {
-    // Initialization that might fail
-    const data = JSON.parse('invalid json');
-    return $div({ textContent: data.name });
-  },
-  (err) => {
-    // Error boundary: return fallback UI
-    return $div({ className: 'error' }, [
-      $h2({ textContent: 'Error Occurred' }),
-      $p({ textContent: err.message })
-    ]);
-  }
-);
-```
-
-**Error Boundary Behavior**:
-
-- **Scope Cleanup**: Original component scope is destroyed before error boundary is called
-- **Fresh Scope**: Error boundary receives a new `ComponentScope` for tracking its own resources (via `useScope()`)
-- **Root Components**: Errors in root components without `Safe` wrapper are logged to console
-- **Resource Tracking**: Error boundary can track its own cleanup functions via `scope.track()`
-
-```typescript
-import { Safe, useScope, $div } from '@fimbul-works/seidr';
-
-const SafeComponent = Safe(
-  () => {
-    const scope = useScope();
-    // Track resources
-    scope.track(() => console.log('Component cleanup'));
-
-    throw new Error('Failed');
-    return $div();
-  },
-  (err) => {
-    const scope = useScope();
-    // Error boundary gets its own scope for resource tracking
-    scope.track(() => console.log('Error boundary cleanup'));
-
-    return $div({ textContent: 'Fallback UI' });
-  }
-);
-
-SafeComponent.destroy();
-// Logs:
-// - "Component cleanup" (from failed component)
-// - "Error boundary cleanup" (from error boundary)
-```
-
----
-
 ## Mounting & Declarative Components
 
 Seidr provides declarative components for handling conditional logic and lists. These components use **Marker Nodes** (HTML comments) internally, allowing them to act like "Fragments" that don't introduce extra wrapper elements into the DOM.
@@ -654,6 +590,45 @@ mount(View, document.body);
 
 ---
 
+ ### Suspense()
+
+ Handles asynchronous loading states for Promises with loading and error fallbacks.
+
+ **Parameters:**
+ - `promiseOrSeidr` - `Promise<T>` or `Seidr<Promise<T>>` to wait for
+ - `factory` - Function called with resolved value: `(value: T) => SeidrNode`
+ - `loading` - Factory for loading state UI: `() => SeidrNode`
+ - `error` - Factory for error state UI: `(err: Error) => SeidrNode`
+
+ **Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
+
+ **Example:**
+ ```typescript
+ import { Suspense, $div, mount } from '@fimbul-works/seidr';
+
+ const fetchUser = async (id: string) => {
+   const res = await fetch(`/api/user/${id}`);
+   return res.json();
+ };
+
+ const UserProfile = (user: any) => $div({ textContent: user.name });
+
+ const App = () => {
+   return $div({}, [
+     Suspense(
+       fetchUser('123'),
+       (user) => UserProfile(user),
+       () => $div({ textContent: 'Loading user...' }),
+       (err) => $div({ textContent: `Error: ${err.message}` })
+     )
+   ]);
+ };
+
+ mount(App, document.body);
+ ```
+
+---
+
 ### Shorthand Mounting Utilities
 
 The following functions are shorthands that create the corresponding declarative component and call `mount()` immediately. Use these for top-level application mounting.
@@ -666,6 +641,71 @@ Equivalent to `mount(List(observable, getKey, factory), container)`.
 
 #### `mountSwitch(observable, cases, container)`
 Equivalent to `mount(Switch(observable, cases), container)`.
+
+---
+
+### Safe()
+
+Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
+
+**Parameters:**
+- `factory` - Function that creates the component element: `() => Node`
+- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error) => Node`
+
+**Returns:** `SeidrComponent`
+
+```typescript
+import { Safe, useScope, $div, $h2, $p } from '@fimbul-works/seidr';
+
+const UserProfile = Safe(
+  () => {
+    // Initialization that might fail
+    const data = JSON.parse('invalid json');
+    return $div({ textContent: data.name });
+  },
+  (err) => {
+    // Error boundary: return fallback UI
+    return $div({ className: 'error' }, [
+      $h2({ textContent: 'Error Occurred' }),
+      $p({ textContent: err.message })
+    ]);
+  }
+);
+```
+
+**Error Boundary Behavior**:
+
+- **Scope Cleanup**: Original component scope is destroyed before error boundary is called
+- **Fresh Scope**: Error boundary receives a new `ComponentScope` for tracking its own resources (via `useScope()`)
+- **Root Components**: Errors in root components without `Safe` wrapper are logged to console
+- **Resource Tracking**: Error boundary can track its own cleanup functions via `scope.track()`
+
+```typescript
+import { Safe, useScope, $div } from '@fimbul-works/seidr';
+
+const SafeComponent = Safe(
+  () => {
+    const scope = useScope();
+    // Track resources
+    scope.track(() => console.log('Component cleanup'));
+
+    throw new Error('Failed');
+    return $div();
+  },
+  (err) => {
+    const scope = useScope();
+    // Error boundary gets its own scope for resource tracking
+    scope.track(() => console.log('Error boundary cleanup'));
+
+    return $div({ textContent: 'Fallback UI' });
+  }
+);
+
+SafeComponent.destroy();
+// Logs:
+// - "Component cleanup" (from failed component)
+// - "Error boundary cleanup" (from error boundary)
+```
 
 ---
 
