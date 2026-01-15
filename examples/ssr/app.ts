@@ -1,107 +1,160 @@
 import {
-  $button,
-  $checkbox,
+  $a,
+  $article,
   $div,
-  $form,
+  $footer,
   $h1,
-  $input,
+  $h2,
   $li,
-  $span,
+  $nav,
+  $p,
   $ul,
-  bindInput,
-  cn,
+  Conditional,
+  createRoute,
   createStateKey,
   getState,
-  isUndefined,
+  initRouter,
+  Link,
   List,
+  Router,
   Seidr,
+  Suspense,
   setState,
-} from "../../src/index.browser.js";
-import { saveTodos } from "./todo-api.js";
-import type { Todo } from "./types.js";
+} from "../../src/core/index.js";
+import { inBrowser } from "../../src/ssr/env.js";
+import type { BlogPost } from "./types.js";
 
-const todosKey = createStateKey<Seidr<Todo[]>>("todos");
+// State keys
+const postsKey = createStateKey<Seidr<BlogPost[]>>("posts");
+const currentPostKey = createStateKey<Seidr<BlogPost | null>>("currentPost");
 
-const TodoItem = ({ todo, onDelete, saveTodos }: { todo: Todo; onDelete: () => void; saveTodos: () => void }) => {
-  const isCompleted = new Seidr(todo.completed);
+// Components
+const Header = () =>
+  $nav({ className: "navbar" }, [
+    Link({ to: "/", className: "brand", textContent: "Seidr Blog" }),
+    $div({ className: "links" }, [
+      Link({ to: "/", textContent: "Home" }),
+      $a({ href: "https://github.com/fimbul-works/seidr", target: "_blank", textContent: "GitHub" }),
+    ]),
+  ]);
 
-  return $li(
-    {
-      className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
-    },
-    [
-      $checkbox({
-        type: "checkbox",
-        checked: isCompleted,
-        onchange: () => {
-          isCompleted.value = !isCompleted.value;
-          todo.completed = isCompleted.value;
-          saveTodos();
-        },
-      }),
-      $span({
-        textContent: todo.text,
-      }),
-      $button({
-        className: "btn btn-danger",
-        textContent: "Delete",
-        onclick: onDelete,
-      }),
-    ],
-  );
+const PostCard = (post: BlogPost) =>
+  $li({ className: "post-card" }, [
+    $h2({}, [Link({ to: `/post/${post.slug}`, textContent: post.title })]),
+    $div({ className: "meta", textContent: new Date(post.date).toLocaleDateString() }),
+    $p({ className: "excerpt", textContent: post.excerpt }),
+    Link({ to: `/post/${post.slug}`, className: "read-more", textContent: "Read more →" }),
+  ]);
+
+const HomePage = () => {
+  const posts = getState(postsKey);
+
+  // Client-side fetch if empty (SPA navigation scenario)
+  inBrowser(async () => {
+    if (posts.value.length === 0) {
+      const res = await fetch("/api/posts");
+      posts.value = await res.json();
+    }
+  });
+
+  return $div({ className: "home-page" }, [
+    $h1({ textContent: "Latest Posts" }),
+    $ul({ className: "post-list" }, [List(posts, (p) => p.slug, PostCard)]),
+  ]);
 };
 
-export const TodoApp = (todos?: Seidr<Todo[]>) => {
-  if (!isUndefined(todos)) {
-    setState(todosKey, todos);
+// Helper to manually create 'unsafe' HTML content
+const DangerousHTML = (html: Seidr<string> | string) => {
+  const el = $div({ className: "markdown-body" });
+  if (html instanceof Seidr) {
+    el.innerHTML = html.value;
+    html.observe((v) => (el.innerHTML = v));
   } else {
-    todos = getState(todosKey);
+    el.innerHTML = html;
+  }
+  return el;
+};
+
+const PostPage = (params?: Seidr<{ slug: string }>) => {
+  const currentPost = getState(currentPostKey);
+  const slug = params?.as((p) => p.slug);
+
+  const postPromise = new Seidr<Promise<BlogPost | null>>(Promise.resolve(null));
+
+  if (slug) {
+    slug.observe((s) => {
+      const current = currentPost.value;
+      if (current && current.slug === s) {
+        postPromise.value = Promise.resolve(current);
+      } else {
+        const prom = inBrowser(async () => {
+          const res = await fetch(`/api/posts/${s}`);
+          if (!res.ok) throw new Error("Post not found");
+          const data = await res.json();
+          currentPost.value = data;
+          return data;
+        });
+
+        if (prom) {
+          postPromise.value = prom;
+        } else {
+          // SSR or non-browser fallback: use currentPost if matches
+          if (currentPost.value && currentPost.value.slug === s) {
+            postPromise.value = Promise.resolve(currentPost.value);
+          } else {
+            // SSR waiting?
+            // In real SSR data fetching, we'd pre-load data and pass it.
+            // For now, assume resolved if present.
+            postPromise.value = Promise.resolve(currentPost.value);
+          }
+        }
+      }
+    });
   }
 
-  const newTodoText = new Seidr("");
+  return $article({ className: "post-page" }, [
+    Suspense(
+      postPromise,
+      (post) => {
+        if (!post) return $div({ textContent: "Post not found or loading..." });
+        return $div({}, [
+          $h1({ textContent: post.title }),
+          $div({ className: "meta", textContent: new Date(post.date).toLocaleDateString() }),
+          DangerousHTML(post.content),
+        ]);
+      },
+      () => $div({ textContent: "Loading..." }),
+      (err) => $div({ textContent: `Error: ${err.message}` }),
+    ),
+  ]);
+};
 
-  const addTodo = (e: Event) => {
-    e.preventDefault();
-    const text = newTodoText.value.trim();
-    if (text) {
-      todos!.value = [...todos!.value, { id: Date.now(), text, completed: false }];
-      newTodoText.value = "";
-      saveTodos(todos!.value)
-        .then(() => console.log("Added TODO", text))
-        .catch((err) => console.error(err));
-    }
-  };
+// Main App
+export const BlogApp = (props?: { posts?: BlogPost[]; currentPost?: BlogPost | null }) => {
+  initRouter();
 
-  return $div({ className: "todo-app card" }, [
-    $h1({ textContent: "TODO App" }),
-    $form({ className: "todo-form" }, [
-      $input({
-        type: "text",
-        placeholder: "What needs to be done?",
-        className: "todo-input",
-        ...bindInput(newTodoText),
-      }),
-      $button({
-        type: "submit",
-        textContent: "Add",
-        className: "btn btn-primary",
-        onclick: addTodo,
+  const posts = new Seidr<BlogPost[]>([]);
+  const currentPost = new Seidr<BlogPost | null>(null);
+
+  if (props) {
+    if (props.posts) posts.value = props.posts;
+    if (props.currentPost) currentPost.value = props.currentPost;
+
+    setState(postsKey, posts);
+    setState(currentPostKey, currentPost);
+  } else {
+    setState(postsKey, posts);
+    setState(currentPostKey, currentPost);
+  }
+
+  return $div({ className: "app-container" }, [
+    Header(),
+    $div({ className: "main-content" }, [
+      Router({
+        routes: [createRoute("/", HomePage), createRoute("/post/:slug", PostPage)],
+        fallback: () => $div({ textContent: "404 Not Found" }),
       }),
     ]),
-    $ul({ className: "todo-list" }, [
-      List(
-        todos!,
-        (item) => item.id,
-        (item) =>
-          TodoItem({
-            todo: item,
-            onDelete: () => {
-              todos!.value = todos!.value.filter((t) => t.id !== item.id);
-              saveTodos(todos!.value);
-            },
-            saveTodos: () => saveTodos(todos!.value),
-          }),
-      ),
-    ]),
+    $footer({ textContent: `© ${new Date().getFullYear()} Seidr Blog Example` }),
   ]);
 };

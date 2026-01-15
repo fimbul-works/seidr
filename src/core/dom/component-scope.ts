@@ -45,6 +45,11 @@ export interface ComponentScope {
    * @internal
    */
   onAttached?: (parent: Node) => void;
+
+  /**
+   * Whether the scope has been destroyed.
+   */
+  readonly isDestroyed: boolean;
 }
 
 /**
@@ -92,6 +97,9 @@ export function createScope(): ComponentScope {
     track,
     child,
     destroy,
+    get isDestroyed() {
+      return destroyed;
+    },
     onAttached: undefined,
   };
 }

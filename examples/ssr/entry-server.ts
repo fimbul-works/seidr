@@ -1,9 +1,9 @@
-import { renderToString, Seidr } from "../../src/index.node.js";
-import { TodoApp } from "./app.js";
-import type { Todo } from "./types.js";
+import { renderToString } from "../../src/index.node.js";
+import { BlogApp } from "./app.js";
+import type { BlogPost } from "./types.js";
 
-export async function render(path: string, todos: Todo[] = []) {
-  return await renderToString(() => TodoApp(new Seidr(todos)), {
+export async function render(path: string, posts?: BlogPost[], currentPost?: BlogPost | null) {
+  return await renderToString(() => BlogApp({ posts, currentPost }), {
     path,
   });
 }

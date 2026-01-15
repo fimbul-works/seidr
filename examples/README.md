@@ -48,3 +48,19 @@ A complete todo application showcasing:
 - List rendering and updates
 - Two-way data binding
 - State transformations
+
+### 🖥️ SSR Blog App
+
+**File:** `ssr/` (Directory)
+
+**Run with:** `pnpm dev:ssr`
+
+A full-stack Server-Side Rendering example featuring:
+- **Server:** Express + Vite
+- **Components:** Routing with `Router`, Async loading with `Suspense`
+- **Data:** Markdown-based content management
+- **Features:**
+  - Server-side data fetching and hydration
+  - SEO-friendly HTML generation
+  - Client-side navigation (SPA takeover)
+  - Reactive `Suspense` handling for async data

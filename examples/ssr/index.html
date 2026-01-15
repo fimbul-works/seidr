@@ -2,14 +2,30 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Seidr TODO App</title>
+    <title>Seidr SSR Blog</title>
     <!--app-head-->
+    <style>
+      body { font-family: system-ui, sans-serif; line-height: 1.6; padding: 2rem; max-width: 800px; margin: 0 auto; color: #333; }
+      a { color: #0066cc; text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      .navbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; border-bottom: 1px solid #eee; padding-bottom: 1rem; }
+      .brand { font-weight: bold; font-size: 1.2rem; color: #000; }
+      .links a { margin-left: 1.5rem; }
+      .post-card { list-style: none; margin-bottom: 2rem; }
+      .post-list { padding: 0; }
+      .post-card h2 { margin-bottom: 0.5rem; font-size: 1.5rem; }
+      .meta { color: #888; font-size: 0.9rem; margin-bottom: 1rem; }
+      .excerpt { margin-bottom: 1rem; }
+      .read-more { font-weight: 500; }
+      .post-page h1 { font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1.2; }
+      .markdown-body { margin-top: 2rem; }
+      footer { margin-top: 4rem; border-top: 1px solid #eee; padding-top: 2rem; text-align: center; color: #888; font-size: 0.9rem; }
+    </style>
   </head>
   <body>
     <div id="app"><!--app-html--></div>
-    <script type="module" src="./examples/ssr/entry-client.js"></script>
-    <script>window.__SEIDR_STATE__=<!--app-state-->;</script>
+    <script type="module" src="/examples/ssr/entry-client.ts"></script>
+    <!--app-state-->
   </body>
 </html>

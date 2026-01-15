@@ -1,8 +1,8 @@
 import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
 import type { ViteDevServer } from "vite";
-import { loadTodos, saveTodos } from "./todo-db.js";
-import type { Todo } from "./types.js";
+import { getPost, getPosts } from "./blog-api.js"; // Note: extension will be resolved by Vite/Node
+import type { BlogPost } from "./types.js";
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
@@ -31,45 +31,62 @@ if (!isProduction) {
   app.use(base, sirv("./examples/ssr/dist", { extensions: [] }));
 }
 
-app.get("/api/todos", (_req: Request, res: Response) => {
-  res.json(loadTodos());
+// API Routes
+app.get("/api/posts", async (_req: Request, res: Response) => {
+  const posts = await getPosts();
+  // Strip content for list view to reduce size
+  const list = posts.map((p) => ({ ...p, content: "" }));
+  res.json(list);
 });
 
-app.post("/api/todos", (req: Request, res: Response) => {
-  const todos = req.body;
-
-  if (Array.isArray(todos)) {
-    const error = saveTodos(todos);
-    return res.json({ error });
+app.get("/api/posts/:slug", async (req: Request, res: Response) => {
+  const post = await getPost(req.params.slug);
+  if (post) {
+    res.json(post);
+  } else {
+    res.status(404).json({ error: "Post not found" });
   }
-
-  return res.json({ error: "Invalid array" });
 });
 
 // Serve HTML
-app.get("/", async (req, res) => {
+app.get("*", async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, "");
 
     let template: string;
-    let render: (url: string, todos?: Todo[]) => any;
+    let render: (url: string, posts?: BlogPost[], currentPost?: BlogPost | null) => any;
+
     if (!isProduction) {
       // Always read fresh template in development
       template = await fs.readFile("./examples/ssr/index.html", "utf-8");
       template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule("/examples/ssr/entry-server.js")).render;
+      render = (await vite.ssrLoadModule("/examples/ssr/entry-server.ts")).render;
     } else {
       template = templateHtml;
       render = (await import("./entry-server.js")).render;
     }
 
-    const todos = loadTodos();
-    const rendered = await render(url, todos);
+    // SSR Data Fetching
+    let posts: BlogPost[] | undefined;
+    let currentPost: BlogPost | null | undefined;
+
+    if (url === "/" || url === "") {
+      const fullPosts = await getPosts();
+      posts = fullPosts.map((p) => ({ ...p, content: "" }));
+    } else if (url.startsWith("/post/")) {
+      const slug = url.split("/post/")[1];
+      currentPost = await getPost(slug);
+    }
+
+    const rendered = await render(url, posts, currentPost);
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")
       .replace(`<!--app-html-->`, rendered.html ?? "")
-      .replace("<!--app-state-->", JSON.stringify(rendered.hydrationData));
+      .replace(
+        "<!--app-state-->",
+        `<script>window.__SEIDR_HYDRATION_DATA__ = ${JSON.stringify(rendered.hydrationData)}</script>`,
+      );
 
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (e) {

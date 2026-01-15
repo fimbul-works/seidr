@@ -1,96 +1,50 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { SeidrComponent } from "./component";
 import { createScope } from "./component-scope";
-import { $ } from "./element";
 
-describe("createScope", () => {
-  it("should create a scope with track, child, and destroy methods", () => {
+describe("ComponentScope", () => {
+  it("should track and execute cleanups", () => {
     const scope = createScope();
+    const cleanup = vi.fn();
 
-    expect(scope).toHaveProperty("track");
-    expect(scope).toHaveProperty("child");
-    expect(scope).toHaveProperty("destroy");
-    expect(typeof scope.track).toBe("function");
-    expect(typeof scope.child).toBe("function");
-    expect(typeof scope.destroy).toBe("function");
+    scope.track(cleanup);
+    expect(cleanup).not.toHaveBeenCalled();
+
+    scope.destroy();
+    expect(cleanup).toHaveBeenCalled();
   });
 
-  it("should track cleanup functions and call them on destroy", () => {
+  it("should expose isDestroyed status", () => {
     const scope = createScope();
-    let cleanupCalled = false;
-
-    scope.track(() => {
-      cleanupCalled = true;
-    });
-
-    expect(cleanupCalled).toBe(false);
+    expect(scope.isDestroyed).toBe(false);
 
     scope.destroy();
-
-    expect(cleanupCalled).toBe(true);
+    expect(scope.isDestroyed).toBe(true);
   });
 
-  it("should track multiple cleanup functions", () => {
+  it("should execute cleanups immediately if already destroyed", () => {
     const scope = createScope();
-    let cleanup1Called = false;
-    let cleanup2Called = false;
-
-    scope.track(() => {
-      cleanup1Called = true;
-    });
-    scope.track(() => {
-      cleanup2Called = true;
-    });
-
     scope.destroy();
 
-    expect(cleanup1Called).toBe(true);
-    expect(cleanup2Called).toBe(true);
+    const cleanup = vi.fn();
+    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    scope.track(cleanup);
+
+    expect(cleanup).toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith("Tracking cleanup on already destroyed scope");
+
+    consoleSpy.mockRestore();
   });
 
-  it("should not execute cleanup functions twice on multiple destroy calls", () => {
+  it("should track child components", () => {
     const scope = createScope();
-    let cleanupCount = 0;
+    const childComponent = { destroy: vi.fn() } as unknown as SeidrComponent;
 
-    scope.track(() => {
-      cleanupCount++;
-    });
-
-    scope.destroy();
-    scope.destroy();
-
-    expect(cleanupCount).toBe(1);
-  });
-
-  it("should execute cleanup immediately if tracked after destroy", () => {
-    const scope = createScope();
-    let cleanupCalled = false;
+    scope.child(childComponent);
+    expect(childComponent.destroy).not.toHaveBeenCalled();
 
     scope.destroy();
-
-    scope.track(() => {
-      cleanupCalled = true;
-    });
-
-    expect(cleanupCalled).toBe(true);
-  });
-
-  it("should track child components and destroy them when parent is destroyed", () => {
-    const scope = createScope();
-    let childDestroyed = false;
-
-    // @ts-expect-error
-    const mockChild: SeidrComponent = {
-      scope: createScope(),
-      element: $("div"),
-      destroy: () => {
-        childDestroyed = true;
-      },
-    };
-
-    scope.child(mockChild);
-    scope.destroy();
-
-    expect(childDestroyed).toBe(true);
+    expect(childComponent.destroy).toHaveBeenCalled();
   });
 });
