@@ -142,63 +142,58 @@ export const UserList = () => {
 
 ---
 
-## 🗂️ Architecture: Graph Traversal Hydration
+## 🗂️ Architecture: Runtime Graph Reconstruction
 
-Seidr uses a **dependency graph traversal** approach that's unique in the framework landscape.
+Seidr uses a unique **Runtime Graph Reconstruction** strategy (also known as "State-First Hydration") that fundamentally differs from how React, Vue, or Svelte handle server-side rendering.
+
+Instead of serializing and re-hydrating the **Component Tree**, Seidr hydrates the **Dependency Graph**.
 
 ### How It Works
 
-**1. During SSR** - Dependencies are captured in order:
+**1. During SSR** - Seidr tracks the creation order of observables ("sources of truth"):
 
 ```typescript
-const count = new Seidr(0);
-const doubled = count.as(n => n * 2);
-const quadrupled = doubled.as(n => n * 2);
-
-// Graph stores:
-// doubled -> [parent: count at index 0]
-// quadrupled -> [parent: doubled at index 1]
+const count = new Seidr(0);           // ID: 0 (Source)
+const doubled = count.as(n => n * 2); // ID: 1 (Derived)
 ```
 
-**2. Bindings store paths** - Each element binding gets a path to traverse:
+**2. Minimal Payload** - The server sends **only the root source values**. Derived values, component props, and binding logic are **not** sent.
 
 ```json
 {
-  "2": [{ // Element ID (data-seidr-id attribute value)
-    "id": 2,      // Seidr instance index
-    "prop": "className",
-    "paths": [[1]]  // Path: follow parent at index 1 to find root
-  }]
+  "observables": {
+    "0": 0  // Only this single number is sent!
+  }
 }
 ```
 
-The path `[[1]]` means: "This is an array of paths. The first path is `[1]`, which means follow parent at index 1 to find the root observable."
+**3. Implicit Reconstruction** - As the client executes your component functions, the dependency graph **rebuilds itself**:
+*   `new Seidr(0)` is called -> Seidr checks the hydration payload for ID `0`, finds the value `0`.
+*   `.as(...)` is called -> Seidr re-establishes the derivation logic.
+*   The derived value `doubled` automatically re-computes itself from the hydrated source.
+*   DOM bindings automatically re-attach to these new instances.
 
-**3. Client hydration** - Traverse the path to find and restore root values:
+### Why This Is Innovation
 
-```
-derived (binding with id=2)
-  → path[0]=[1] → follow parent at index 1
-  → root found (id=1)
-  → Set root.value from hydration data
-  → Entire chain updates automatically!
-```
+Most frameworks pay a "hydration tax" proportional to the depth of your component tree.
 
-### Why This Is Better
+*   **Component-Bound Hydration (React/Vue/Svelte):** "Component A passes props to Component B passes props to Component C..." -> All those props must be serialized.
+*   **Graph Hydration (Seidr):** "State X drives the entire UI." -> Only State X is serialized. The UI rebuilds itself from that seed.
 
-**React/Vue:** Serialize entire component state tree
-
-**Seidr:** Only serialize root observable values + dependency paths
-
-**Result:** Minimal payload, no code duplication, derived state recreates itself
+**Result:** You can have a deeply nested UI with thousands of components, but if they are driven by a single piece of state, your hydration payload is effectively **zero overhead**.
 
 ### Comparison
 
-| Framework | Hydration Strategy | Payload Size |
-|-----------|-------------------|--------------|
-| React | Full component state snapshots | Large |
-| Vue | Component state snapshots | Medium |
-| Seidr | Root values + dependency graph | Minimal |
+| Strategy | Frameworks | Payload Content | Scaling Factor |
+|----------|------------|-----------------|----------------|
+| **Component-Bound** | React, Vue, Svelte | Component Props + State | Component Tree Depth |
+| **Graph Reconstruction** | **Seidr** | Root State Sources | **Data Complexity** |
+
+---
+
+### Deterministic ID Matching
+
+To achieve this magic without shipping a complex graph map, Seidr relies on **Deterministic Creation Order**. Since JavaScript execution is deterministic, Seidr assigns IDs (0, 1, 2...) to observables in the exact same order on both server and client.
 
 ---
 
@@ -257,8 +252,8 @@ export const App = () => {
 
 **Why it fails:**
 - Created before `renderToString` establishes render context
-- Derived observables can't find parent in dependency graph
-- Hydration fails with "Parent Seidr instance not found"
+- IDs will be non-deterministic or mismatch between requests
+- Hydration fails with mismatched values
 
 **Fix:** Pass as prop or create inside component
 
@@ -267,8 +262,7 @@ export const App = () => {
 Seidr uses **lazy registration** - instances are registered automatically when:
 - Observed (`.observe()`)
 - Bound (`.bind()`)
-- Used in components (`List`, `Conditional`, etc.)
-- Passed to element properties
+- Derived (`.as()` or `Seidr.computed()`)
 
 No manual registration needed!
 
@@ -401,11 +395,9 @@ inBrowser(() => {
 
 ```typescript
 interface HydrationData {
-  renderContextID: number;
-  observables: Record<string, any>;           // Root values by numeric ID
-  bindings: Record<string, ElementBinding[]>; // Element ID -> bindings
-  graph: DependencyGraph;                     // Dependency relationships
-  state?: Record<string, any>;                // Global state (uses $/ prefix)
+  renderContextID?: number;
+  observables: Record<number, any>; // Root values by numeric ID
+  state?: Record<string, any>;      // Global state
 }
 ```
 
@@ -418,21 +410,8 @@ interface HydrationData {
     "0": 42,
     "1": "hello"
   },
-  "bindings": {
-    "5": [
-      { "seidrId": "0", "prop": "textContent", "path": [] }
-    ]
-  },
-  "graph": {
-    "nodes": [
-      { "id": 0, "parents": [] },
-      { "id": 1, "parents": [] }
-    ],
-    "rootIds": [0, 1]
-  },
   "state": {
-    "$/0": { "name": "Alice" },
-    "1": "dark"
+    "$/0": { "name": "Alice" }
   }
 }
 ```
