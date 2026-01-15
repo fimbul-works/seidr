@@ -3,8 +3,29 @@ import { getActiveSSRScope } from "../ssr/ssr-scope";
 import { getRenderContext } from "./render-context-contract";
 import type { EventHandler } from "./types";
 
+let fallbackSeidrIdCounter: number = 0;
+
 /** Generates a unique numeric ID for a Seidr instance within the current render context */
-const generateSeidrId = (): number => getRenderContext().seidrIdCounter++;
+const generateSeidrId = (): number => {
+  // Use the global counter when client-side
+  if (typeof window !== "undefined") {
+    return fallbackSeidrIdCounter++;
+  }
+
+  try {
+    const ctx = getRenderContext();
+    if (ctx) {
+      // In SSR/client mode: use render context's counter (isolated per request)
+      return ctx.seidrIdCounter++;
+    }
+  } catch (_e) {
+    // getRenderContext() throws if not initialized, which is fine for simple usage
+  }
+
+  // Fallback for simple usage without render context (e.g., unit tests)
+  // Use a global counter with modulo to prevent overflow
+  return fallbackSeidrIdCounter++ % 2 ** 63;
+};
 
 /**
  * Represents a reactive value that can be observed for changes.

@@ -3,10 +3,11 @@ import { clearHydrationData } from "../../../ssr/hydration-context";
 import { setInternalContext } from "../../render-context-contract";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { initRouter } from "./init-router";
+import "../../../render-context.node";
 
 describe("initRouter", () => {
   beforeEach(() => {
-    setInternalContext(() => undefined);
+    setInternalContext(() => undefined as any);
     resetClientPathState();
     clearHydrationData();
     vi.stubGlobal("window", {
