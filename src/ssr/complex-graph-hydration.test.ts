@@ -62,10 +62,8 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">8<"); // sumOfSums
     expect(html).toContain(">16<"); // final
 
-    // Verify hydration data has dependency graph
-    // We have 8 Seidr instances (a, b, c, ab, bc, abc, sumOfSums, final)
-    // Each .as() for textContent creates additional derived Seidr instances
-    expect(hydrationData.graph.nodes.length).toBeGreaterThanOrEqual(8);
+    // Verify hydration data has captured observables
+    expect(Object.keys(hydrationData.observables).length).toBeGreaterThanOrEqual(3);
 
     // Only root observables should be captured (a, b, c)
     const observableValues = Object.values(hydrationData.observables);

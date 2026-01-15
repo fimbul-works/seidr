@@ -14,8 +14,9 @@ npx terser dist/bundle/ssr.js -o dist/bundle/ssr.min.js --toplevel -c passes=2 -
 
 # Compress the bundles
 gzip -f -k dist/seidr.min.js
-gzip -f -k examples/dist/*.*js
 gzip -f -k dist/bundle/*.*js
+gzip -f -k examples/dist/*.*js
+gzip -f -k examples/ssr/dist/*.*js
 
 echo ""
 echo "=========================================="
@@ -25,11 +26,11 @@ echo ""
 echo "Browser bundle:"
 wc -c dist/seidr.*.js* | grep -v .node. | grep -v total
 echo ""
-echo "Example bundles:"
-wc -c examples/dist/*.js* | grep -v \.map | grep -v total
-echo ""
 echo "Feature bundles:"
 wc -c dist/bundle/*.js* | grep -v \.map | grep -v total
+echo ""
+echo "Example bundles:"
+wc -c examples/dist/*.js* examples/ssr/dist/*.js* | grep -v \.map | grep -v total
 echo ""
 echo "=========================================="
 echo ""
@@ -38,6 +39,7 @@ echo ""
 rm -f dist/seidr.min.js dist/seidr.min.cjs
 rm -f dist/seidr.min.js.gz dist/seidr.min.cjs.gz
 rm -f examples/dist/*.gz
+rm -f examples/ssr/dist/*.gz
 rm -rf dist/bundle
 
 echo "Temporary minified files removed. Size report complete."

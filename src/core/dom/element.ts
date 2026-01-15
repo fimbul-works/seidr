@@ -1,4 +1,3 @@
-import { applyElementBindings } from "../../ssr/hydration-context";
 import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element";
 import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
@@ -235,12 +234,6 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
         // Set up reactive binding
         if (isSeidr(value)) {
-          // Register bindings - Seidr -> element.prop
-          const scope = getActiveSSRScope();
-          if (scope && elementId) {
-            scope.registerBindings(value.id, elementId, prop);
-          }
-
           cleanups.push(
             value.bind(el, (value, element) =>
               directProps.has(prop) ? ((element as any)[prop] = value) : element.setAttribute(prop, String(value)),
@@ -360,11 +353,6 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         el.appendChild(isStr(item) ? $text(item) : item);
       }
     });
-  }
-
-  // Check for hydration bindings (element has data-seidr-id from server)
-  if (typeof process !== "undefined" && typeof elementId !== "undefined") {
-    applyElementBindings(elementId);
   }
 
   return el as SeidrElement<K>;

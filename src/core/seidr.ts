@@ -299,11 +299,5 @@ export class Seidr<T> {
     // Also register all parents to ensure they're in the SSR scope
     // This handles cases where parents are created outside renderToString but used inside it
     parents.forEach((parent) => parent.register());
-
-    // Server-side rendering check: window === undefined || process.env.SEIDR_TEST_SSR === true
-    if (typeof window !== "undefined" && (typeof process === "undefined" || !process.env.SEIDR_TEST_SSR)) return;
-
-    const scope = getActiveSSRScope();
-    if (scope) scope.registerDerived(this, parents);
   }
 }

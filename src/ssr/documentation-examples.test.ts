@@ -175,19 +175,10 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
 
       // Verify structure (based on actual implementation, not documentation)
       expect(hydrationData).toHaveProperty("observables");
-      expect(hydrationData).toHaveProperty("bindings");
-      expect(hydrationData).toHaveProperty("graph");
 
       // Verify observables has root values
       expect(hydrationData.observables).toBeDefined();
       expect(typeof hydrationData.observables).toBe("object");
-
-      // Verify bindings structure
-      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
-
-      // Verify graph structure
-      expect(hydrationData.graph).toHaveProperty("nodes");
-      expect(hydrationData.graph).toHaveProperty("rootIds");
     });
   });
 

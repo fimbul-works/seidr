@@ -1,5 +1,4 @@
 import type { Seidr } from "../core/seidr";
-import type { DependencyGraph } from "./dependency-graph/types";
 import type { HydrationData } from "./types";
 
 /**
@@ -19,7 +18,7 @@ const hydrationSet = new Set<Seidr<any>>();
  * Sets the hydration context for client-side hydration.
  * Call this on the client before creating components with hydrated observables.
  *
- * @param {HydrationData} data - The hydration data containing observables, bindings, and graph
+ * @param {HydrationData} data - The hydration data containing observables
  */
 export function setHydrationData(data: HydrationData): void {
   hydrationData = data;
@@ -68,85 +67,4 @@ export function registerHydratedSeidr(seidr: Seidr<any>): void {
   if (hydrationData && hydrationData.observables[numericId] !== undefined && !seidr.isDerived) {
     seidr.value = hydrationData.observables[numericId];
   }
-}
-
-/**
- * Applies element bindings from hydration data.
- *
- * Called when creating an element with data-seidr-id attribute.
- * Traverses the dependency graph using the stored paths to find
- * and set root observable values.
- *
- * @param {string} elementId - The data-seidr-id value from the element
- */
-export function applyElementBindings(elementId: string): void {
-  if (!hydrationData) {
-    return;
-  }
-
-  const bindings = hydrationData.bindings[elementId];
-  if (!bindings) {
-    return;
-  }
-
-  for (const binding of bindings) {
-    const { id, paths } = binding;
-    const graph = hydrationData.graph;
-
-    // Get the Seidr instance that this binding references
-    const boundSeidr = hydrationRegistry[id];
-    if (!boundSeidr) {
-      console.error(`Hydration: Seidr #${id} not found in registry`);
-      return;
-    }
-
-    // For each path, traverse to the root and set its value
-    // If paths is undefined, this means the binding is directly to a root observable
-    const pathsToProcess = paths || [[]];
-
-    for (const path of pathsToProcess) {
-      const rootNumericId = traversePathToRoot(id, path, graph);
-
-      if (rootNumericId !== null && hydrationData.observables[rootNumericId] !== undefined) {
-        const rootSeidr = hydrationRegistry[rootNumericId];
-        if (rootSeidr && !rootSeidr.isDerived) {
-          const hydratedValue = hydrationData.observables[rootNumericId];
-          rootSeidr.value = hydratedValue;
-        }
-      }
-    }
-  }
-}
-
-/**
- * Traverses a path from a Seidr instance to its root.
- *
- * The path is an array of parent indices. For example:
- * - [0] means this Seidr's first parent
- * - [1, 0] means this Seidr's second parent's first parent
- *
- * @param {number} startId - The numeric ID to start from
- * @param {number[]} path - Array of parent indices to traverse
- * @param {DependencyGraph} graph - The dependency graph
- *
- * @returns {number | null} The numeric ID of the root, or null if traversal fails
- */
-function traversePathToRoot(startId: number, path: number[], graph: DependencyGraph): number | null {
-  let currentId = startId;
-
-  for (const parentIndex of path) {
-    const node = graph.nodes[currentId];
-    const parents = node.parents || [];
-
-    if (parentIndex >= parents.length) {
-      console.error(
-        `Hydration: Invalid path index ${parentIndex} for node ${currentId} (only ${parents.length} parents)`,
-      );
-      return null;
-    }
-
-    currentId = parents[parentIndex];
-  }
-
-  return currentId;
 }

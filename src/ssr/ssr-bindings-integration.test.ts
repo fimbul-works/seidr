@@ -23,8 +23,8 @@ describe("SSR Reactive Bindings Integration", () => {
       clearHydrationData();
     });
 
-    it("should register bindings for reactive props during SSR", () => {
-      runWithRenderContext(async () => {
+    it("should register observables for reactive props during SSR", async () => {
+      await runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -34,22 +34,14 @@ describe("SSR Reactive Bindings Integration", () => {
         const hydrationData = scope.captureHydrationData();
         setActiveSSRScope(undefined);
 
-        // Should have one binding registered
-        expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
-
-        // Get the element ID (first and only binding)
-        const elementId = Object.keys(hydrationData.bindings)[0];
-        expect(elementId).toBeDefined();
-
-        // Check the binding
-        const bindings = hydrationData.bindings[elementId];
-        expect(bindings).toHaveLength(1);
-        expect(bindings[0].prop).toBe("disabled");
+        // Should have captured the observable
+        expect(Object.keys(hydrationData.observables)).toHaveLength(1);
+        expect(hydrationData.observables[0]).toBe(false);
       });
     });
 
-    it("should render reactive button with correct initial value", () => {
-      runWithRenderContext(async () => {
+    it("should render reactive button with correct initial value", async () => {
+      await runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -65,8 +57,8 @@ describe("SSR Reactive Bindings Integration", () => {
       });
     });
 
-    it("should capture multiple bindings on same element", () => {
-      runWithRenderContext(async () => {
+    it("should capture all observables used in bindings", async () => {
+      await runWithRenderContext(async () => {
         const scope = new SSRScope();
         setActiveSSRScope(scope);
 
@@ -80,15 +72,10 @@ describe("SSR Reactive Bindings Integration", () => {
         const hydrationData = scope.captureHydrationData();
         setActiveSSRScope(undefined);
 
-        // Should have one element with 2 bindings
-        expect(Object.keys(hydrationData.bindings)).toHaveLength(1);
-
-        const elementId = Object.keys(hydrationData.bindings)[0];
-        expect(elementId).toBeDefined();
-
-        // Check the bindings
-        const bindings = hydrationData.bindings[elementId];
-        expect(bindings).toHaveLength(2);
+        // Should captured all root observables
+        expect(Object.keys(hydrationData.observables)).toHaveLength(2);
+        expect(hydrationData.observables[0]).toBe(5);
+        expect(hydrationData.observables[1]).toBe(true);
       });
     });
 
@@ -107,8 +94,8 @@ describe("SSR Reactive Bindings Integration", () => {
       expect(html).toContain("Count: 42");
       expect(html).not.toContain("disabled"); // 42 is not > 100
 
-      // Check bindings were captured
-      expect(Object.keys(hydrationData.bindings).length).toBeGreaterThan(0);
+      // Check observables were captured
+      expect(Object.keys(hydrationData.observables).length).toBeGreaterThan(0);
 
       // Client-side
       cleanupMode = enableClientMode();
