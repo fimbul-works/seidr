@@ -56,11 +56,11 @@ export class Seidr<T> {
    * Creates an instance of Seidr.
    *
    * @param {T} initial - The initial value to store
-   * @param {{ hydrate?: boolean }} [options] - Options for this Seidr instance
+   * @param {{ hydrate?: boolean; id?: string }} [options] - Options for this Seidr instance
    */
   constructor(
     initial: T,
-    public readonly options: { hydrate?: boolean } = {},
+    public readonly options: { hydrate?: boolean; id?: string } = {},
   ) {
     this.v = initial;
 

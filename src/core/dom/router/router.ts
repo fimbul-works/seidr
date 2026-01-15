@@ -134,7 +134,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
       }
     } else {
       // Show matched route
-      currentParamsSeidr = new Seidr(params as Record<string, string>, NO_HYDRATE);
+      currentParamsSeidr = new Seidr(params as Record<string, string>, { ...NO_HYDRATE, id: "router-params" });
       const factory = routes[matchedIndex].componentFactory;
       currentComponent = (
         isSeidrComponentFactory(factory)

@@ -25,14 +25,11 @@ echo ""
 echo "Browser bundle:"
 wc -c dist/seidr.*.js* | grep -v .node. | grep -v total
 echo ""
-echo "Node bundle:"
-wc -c dist/seidr.node.js dist/seidr.node.cjs | grep -v total
-echo ""
 echo "Example bundles:"
-wc -c examples/dist/*.*js.gz | grep -v \.map | grep -v total
+wc -c examples/dist/*.js* | grep -v \.map | grep -v total
 echo ""
 echo "Feature bundles:"
-wc -c dist/bundle/*.js** | grep -v \.map | grep -v total
+wc -c dist/bundle/*.js* | grep -v \.map | grep -v total
 echo ""
 echo "=========================================="
 echo ""
@@ -41,5 +38,6 @@ echo ""
 rm -f dist/seidr.min.js dist/seidr.min.cjs
 rm -f dist/seidr.min.js.gz dist/seidr.min.cjs.gz
 rm -f examples/dist/*.gz
+rm -rf dist/bundle
 
 echo "Temporary minified files removed. Size report complete."
