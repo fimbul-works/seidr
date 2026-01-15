@@ -8,8 +8,8 @@ import type { DependencyGraph } from "./types";
  * - No circular dependencies
  * - All root observables are correctly identified
  *
- * @param graph - The dependency graph to validate
- * @returns Object with validation result and any errors found
+ * @param {DependencyGraph} graph - The dependency graph to validate
+ * @returns {{valid: boolean, errors: string[]}} Object with validation result and any errors found
  */
 export function validateDependencyGraph(graph: DependencyGraph): {
   valid: boolean;

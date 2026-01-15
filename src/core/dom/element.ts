@@ -116,8 +116,7 @@ export interface SeidrElementInterface {
    * @param {E} event - The event type to listen for
    * @param {(ev: HTMLElementEventMap[E]) => void} handler - The event handler function
    * @param {boolean | AddEventListenerOptions} [options] - Optional event listener options
-   *
-   * @returns A cleanup function that removes the event listener
+   * @returns {() => void} A cleanup function that removes the event listener
    */
   on<E extends keyof HTMLElementEventMap>(
     event: E,
@@ -373,15 +372,15 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
 /**
  * Creates a new DOM Text node.
- * @param text - String to convert into Dom Text node
- * @returns DOM Text node
+ * @param {string} text - String to convert into Dom Text node
+ * @returns {Text} DOM Text node
  */
-export const $text = (text: string) => document.createTextNode(text);
+export const $text = (text: string): Text => document.createTextNode(text);
 
 /**
  * Creates a new DOM Comment node.
- * @param text - String to convert into Dom Comment node
- * @returns DOM Comment node
+ * @param {string} text - String to convert into Dom Comment node
+ * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
   if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {

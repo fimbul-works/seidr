@@ -9,10 +9,10 @@ import type { DependencyGraph, DependencyNode } from "./types";
  * based on the order of instances in the entries array, providing
  * deterministic and stable IDs across render passes.
  *
- * @param entries - Array of [numericId, seidr] tuples from SSRScope.observables
- * @returns A dependency graph with numeric IDs
+ * @param {Array<[number, Seidr<any>]>} entries - Array of [numericId, seidr] tuples from SSRScope.observables
+ * @returns {DependencyGraph} A dependency graph with numeric IDs
  */
-export function buildDependencyGraph(entries: [number, Seidr<any>][]): DependencyGraph {
+export function buildDependencyGraph(entries: Array<[number, Seidr<any>]>): DependencyGraph {
   const nodes: DependencyNode[] = [];
   const rootIds: number[] = [];
 

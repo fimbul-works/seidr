@@ -19,7 +19,7 @@ const hydrationSet = new Set<Seidr<any>>();
  * Sets the hydration context for client-side hydration.
  * Call this on the client before creating components with hydrated observables.
  *
- * @param data - The hydration data containing observables, bindings, and graph
+ * @param {HydrationData} data - The hydration data containing observables, bindings, and graph
  */
 export function setHydrationData(data: HydrationData): void {
   hydrationData = data;
@@ -41,7 +41,7 @@ export function clearHydrationData(): void {
 /**
  * Checks if hydration is currently active for the current render context.
  *
- * @returns true if in hydration mode with data available
+ * @returns {boolean} true if in hydration mode with data available
  */
 export function hasHydrationData(): boolean {
   return hydrationData !== undefined;
@@ -53,7 +53,7 @@ export function hasHydrationData(): boolean {
  * Called automatically by Seidr constructor when in hydration mode.
  * Tracks instances in creation order to assign matching numeric IDs.
  *
- * @param seidr - The Seidr instance to register
+ * @param {Seidr<any>} seidr - The Seidr instance to register
  */
 export function registerHydratedSeidr(seidr: Seidr<any>): void {
   if (!hasHydrationData()) return;
@@ -77,7 +77,7 @@ export function registerHydratedSeidr(seidr: Seidr<any>): void {
  * Traverses the dependency graph using the stored paths to find
  * and set root observable values.
  *
- * @param elementId - The data-seidr-id value from the element
+ * @param {string} elementId - The data-seidr-id value from the element
  */
 export function applyElementBindings(elementId: string): void {
   if (!hydrationData) {
@@ -125,11 +125,11 @@ export function applyElementBindings(elementId: string): void {
  * - [0] means this Seidr's first parent
  * - [1, 0] means this Seidr's second parent's first parent
  *
- * @param startId - The numeric ID to start from
- * @param path - Array of parent indices to traverse
- * @param graph - The dependency graph
+ * @param {number} startId - The numeric ID to start from
+ * @param {number[]} path - Array of parent indices to traverse
+ * @param {DependencyGraph} graph - The dependency graph
  *
- * @returns The numeric ID of the root, or null if traversal fails
+ * @returns {number | null} The numeric ID of the root, or null if traversal fails
  */
 function traversePathToRoot(startId: number, path: number[], graph: DependencyGraph): number | null {
   let currentId = startId;

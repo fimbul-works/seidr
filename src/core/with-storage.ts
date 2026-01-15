@@ -3,8 +3,8 @@ import type { Seidr } from "./seidr";
 /**
  * Error callback type for withStorage error handling.
  *
- * @param error - The error that occurred
- * @param operation - The type of storage operation that failed ('read' or 'write')
+ * @param {Error} error - The error that occurred
+ * @param {"read" | "write"} operation - The type of storage operation that failed ('read' or 'write')
  */
 export type StorageErrorHandler = (error: Error, operation: "read" | "write") => void;
 

@@ -36,14 +36,13 @@ export function resetHydratingFlag() {
  * This function has the same signature as renderToString, making them
  * two halves of a whole for SSR hydration.
  *
- * @param factory - Function that returns a Seidr Component
- * @param container - The HTMLElement to mount the hydrated component into
- * @param hydrationData - The previously captured hydration data with renderContextID
- *
- * @returns The hydrated SeidrComponent
+ * @param {(...args: any[]) => T} factory - Function that returns a Seidr Component
+ * @param {HTMLElement} container - The HTMLElement to mount the hydrated component into
+ * @param {HydrationData} hydrationData - The previously captured hydration data with renderContextID
+ * @returns {SeidrComponent} The hydrated SeidrComponent
  */
 export function hydrate<T extends SeidrNode>(
-  factory: (...args: any) => T,
+  factory: (...args: any[]) => T,
   container: HTMLElement,
   hydrationData: HydrationData,
 ): SeidrComponent {

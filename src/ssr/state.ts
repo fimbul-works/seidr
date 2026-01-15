@@ -10,8 +10,8 @@ const SEIDR_PREFIX = "$/";
  * Clear all States for a render context.
  * This fucntion should be called at the end of a SSR request.
  *
- * @param renderContextID - Render context ID
- * @returns true if the renderScopeState existed, false otherwise
+ * @param {number} renderContextID - Render context ID
+ * @returns {boolean} `true` if the renderScopeState existed, `false` otherwise
  */
 export const clearRenderContextState = (renderContextID: number) => globalStates.delete(renderContextID);
 
@@ -22,8 +22,8 @@ export const clearRenderContextState = (renderContextID: number) => globalStates
  * and captures both Seidr observables and plain values. Seidr observable keys are
  * prefixed with "$/" and use numeric IDs, while plain values use their numeric IDs directly.
  *
- * @param renderContextID - Render context ID
- * @returns Object mapping numeric IDs to values (Seidr keys prefixed with "$/")
+ * @param {number} renderContextID - Render context ID
+ * @returns {Record<string, unknown>} Object mapping numeric IDs to values (Seidr keys prefixed with "$/")
  */
 export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
   const ctxStates = globalStates.get(renderContextID);
@@ -60,7 +60,7 @@ export function captureRenderContextState(renderContextID: number): Record<strin
  * render context's state storage. Keys prefixed with "$/" are automatically
  * wrapped in Seidr observables, while other numeric keys are stored as plain values.
  *
- * @param state - Record of numeric IDs to values from SSR
+ * @param {Record<string, unknown>} state - Record of numeric IDs to values from SSR
  */
 export function restoreGlobalState(state: Record<string, unknown>): void {
   const ctx = getRenderContext();

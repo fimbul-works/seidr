@@ -83,7 +83,7 @@ export class SSRScope {
    * Registers a promise to be awaited before finishing the SSR render.
    * Useful for inServer() async tasks.
    *
-   * @param promise - The promise to track
+   * @param {Promise<any>} promise - The promise to track
    */
   trackPromise(promise: Promise<any>): void {
     this.promises.push(promise);
@@ -114,7 +114,7 @@ export class SSRScope {
    * Registers an observable with this scope.
    * Called automatically by Seidr during SSR rendering when first observed/bound.
    *
-   * @param seidr - The Seidr instance to register
+   * @param {Seidr<any>} seidr - The Seidr instance to register
    */
   register(seidr: Seidr<any>): void {
     // console.log("Registering Seidr", seidr.id);
@@ -125,7 +125,7 @@ export class SSRScope {
    * Registers an observable with this scope
    * to build a dependency graph.
    *
-   * @param seidr - The Seidr instance to register
+   * @param {Seidr<any>} seidr - The Seidr instance to register
    */
   registerDerived(seidr: Seidr<any>, parents: Seidr<any>[]): void {
     const ids = parents.map((s) => s.id);
@@ -137,9 +137,9 @@ export class SSRScope {
    * Registers binding between SeidrElement and a Seidr class instance.
    * Called during SSR rendering of an element to keep track.
    *
-   * @param observableId - The numeric ID of the Seidr instance
-   * @param elementId - The data-seidr-id of the element
-   * @param property - The property name on the element
+   * @param {number} observableId - The numeric ID of the Seidr instance
+   * @param {elementId} elementId - The data-seidr-id of the element
+   * @param {property} property - The property name on the element
    */
   registerBindings(observableId: number, elementId: string, property: string): void {
     this.bindings.set(observableId, [elementId, property]);
@@ -161,7 +161,7 @@ export class SSRScope {
    * memory leaks. This ensures that references to Seidr instances are released
    * after the render pass is complete.
    *
-   * @returns The complete hydration data
+   * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
     // Step 1: Build dependency graph from all registered observables
@@ -256,9 +256,9 @@ export class SSRScope {
   /**
    * Recursively adds all transitive dependencies of a node to the set.
    *
-   * @param nodeId - The numeric ID to start from
-   * @param graph - The dependency graph
-   * @param neededIds - Set to populate with needed IDs
+   * @param {number} nodeId - The numeric ID to start from
+   * @param {DependencyGraph} graph - The dependency graph
+   * @param {Set<number>} neededIds - Set to populate with needed IDs
    */
   private addTransitiveDependencies(nodeId: number, graph: DependencyGraph, neededIds: Set<number>): void {
     const node = graph.nodes[nodeId];

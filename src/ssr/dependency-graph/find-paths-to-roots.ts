@@ -7,9 +7,9 @@ import type { DependencyGraph } from "./types";
  * observables it depends on. The traversal keeps track of the dependency
  * indices at each level, allowing precise reconstruction of the value path.
  *
- * @param graph - The dependency graph
- * @param startId - The numeric ID of the node to start traversal from
- * @returns Array of paths, where each path is an array of indices leading from startId to a root
+ * @param {DependencyGraph} graph - The dependency graph
+ * @param {number} startId - The numeric ID of the node to start traversal from
+ * @returns {number[][]} Array of paths, where each path is an array of indices leading from startId to a root
  */
 export function findPathsToRoots(graph: DependencyGraph, startId: number): number[][] {
   const paths: number[][] = [];

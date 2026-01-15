@@ -25,7 +25,7 @@ export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, fact
 
     /**
      * Updates the DOM state based on the condition.
-     * @param shouldShow - Whether the component should be visible
+     * @param {boolean} shouldShow - Whether the component should be visible
      */
     const update = (shouldShow: boolean) => {
       if (shouldShow && !currentComponent) {

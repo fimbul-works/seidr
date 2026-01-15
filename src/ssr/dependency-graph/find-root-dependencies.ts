@@ -6,10 +6,9 @@ import type { DependencyGraph } from "./types";
  * This is a simpler version of findPathsToRoots that only returns the
  * root IDs without the full paths. Useful for quick dependency checks.
  *
- * @param graph - The dependency graph
- * @param nodeId - The numeric ID of the node
- *
- * @returns Set of root IDs that this node ultimately depends on
+ * @param {DependencyGraph} graph - The dependency graph
+ * @param {number} nodeId - The numeric ID of the node
+ * @returns {Set<number>} Set of root IDs that this node ultimately depends on
  */
 export function findRootDependencies(graph: DependencyGraph, nodeId: number): Set<number> {
   const roots = new Set<number>();
