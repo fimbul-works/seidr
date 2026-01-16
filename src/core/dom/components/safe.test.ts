@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { component, useScope } from "../component";
+import { useScope } from "../component";
 import { $ } from "../element";
 import { Safe } from "./safe";
 
@@ -198,7 +198,7 @@ describe("Safe", () => {
 
       expect(eventListenerCalled).toBe(true);
 
-      document.body.removeChild(comp.element);
+      comp.destroy();
     });
   });
 

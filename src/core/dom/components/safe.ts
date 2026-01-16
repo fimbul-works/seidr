@@ -1,5 +1,5 @@
 import { isSeidrComponentFactory } from "../../util/is";
-import { component, createScope, getComponentStack, type SeidrComponent, useScope } from "../component";
+import { component, createScope, getCurrentComponent, type SeidrComponent, useScope } from "../component";
 import type { SeidrNode } from "../element";
 
 /**
@@ -18,30 +18,29 @@ import type { SeidrNode } from "../element";
 export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
   return component(() => {
     const scope = useScope();
-    const stack = getComponentStack();
-    const isRootComponent = stack.length === 0;
-    const currentComp = stack[stack.length - 1];
 
     try {
-      try {
-        return (isSeidrComponentFactory(factory) ? factory() : component(factory)()) as T;
-      } catch (err) {
-        // Destroy scope from failed component and create new one for error boundary
-        scope.destroy();
-        const newScope = createScope();
+      return (isSeidrComponentFactory(factory) ? factory() : component(factory)()) as T;
+    } catch (err) {
+      // Destroy scope from failed component
+      scope.destroy();
 
-        // Update the component's scope so useScope() returns the new scope
-        if (currentComp) {
-          currentComp.scope = newScope;
-        }
+      const newScope = createScope();
 
-        return errorBoundaryFactory(err as Error);
+      // Ensure onAttached events propagate through the new scope to the original scope's handler
+      // which will be set up by the component() wrapper after this function returns.
+      newScope.onAttached = (parent) => {
+        scope.onAttached?.(parent);
+      };
+
+      const currentComp = getCurrentComponent();
+      if (currentComp) {
+        currentComp.scope = newScope;
       }
-    } finally {
-      // Root component must clear out component stack
-      if (isRootComponent && stack.length > 0) {
-        while (stack.length) stack.pop();
-      }
+
+      return isSeidrComponentFactory(errorBoundaryFactory)
+        ? errorBoundaryFactory(err as Error)
+        : component(errorBoundaryFactory)(err as Error);
     }
   })();
 }
