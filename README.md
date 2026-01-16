@@ -1,6 +1,6 @@
 ![Seidr](seidr-logo.svg)
 
-Build reactive user interfaces with **build step optional** and **kilobyte scale footprint**. Seidr brings reactive bindings, lifecycle management, and type-safe components to vanilla JavaScript/TypeScript.
+**Batteries-included** reactivity in a **kilobyte-sized** package. Seidr brings type-safe components, routing, and SSR to vanilla JavaScript/TypeScript with **build step optional**.
 
 **Seiðr** - Old Norse for "magic of influence and causality"
 
@@ -23,11 +23,12 @@ Build reactive user interfaces with **build step optional** and **kilobyte scale
 
 ## ✨ Features
 
+- 🔋 **Batteries Included** - Built-in Router, SSR engine, Animations, and Global State
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
-- 🏗️ **Component System** - Functional components with automatic cleanup
-- 📦 **Tiny Footprint** - ~1.7KB for the basics, ~7.4KB for the full library (minified + gzipped)
+- 🎥 **Animations** - Tweening engine with comprehensive easing functions
+- 📦 **Tiny Footprint** - ~1.7KB for hello world, ~7.4KB for full library (minified + gzipped)
 - 🌲 **Tree-Shakable** - Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -73,14 +74,13 @@ Seidr is designed for developers who value **control, correctness, and deliberat
 
 ### 🎨 The Philosophy
 
-Seidr embraces **tradeoffs explicitly**:
+Seidr embraces **fact-based tradeoffs**:
 
 - **No virtual DOM** → Faster updates, more predictable performance, but manual DOM management
 - **One class only** → Simpler mental model, but you must understand observables deeply
-- **Functional API** → Composable and testable, but requires functional programming thinking
-- **Explicit cleanup** → No memory leaks, but requires understanding lifecycle
+- **Explicit over Implicit** → You control the reactivity graph manually if needed
 
-This is infrastructure for developers who have felt the pain of framework abstractions and want something that gets out of the way.
+This is infrastructure for developers who want a "batteries included" framework (Router, SSR, Global State) without the bloat of a Virtual DOM or build-step requirement.
 
 ## 📦 Installation
 
