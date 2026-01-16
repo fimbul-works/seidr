@@ -2,6 +2,7 @@ import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element"
 import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
 import type { Seidr } from "../seidr";
+import { unwrapSeidr } from "../util";
 import { isFn, isSeidr, isSeidrComponent, isStr, isUndefined } from "../util/is";
 import type { SeidrComponent } from "./component";
 
@@ -84,7 +85,18 @@ export type ReactiveARIAMixin = {
  * Children can be regular DOM elements, Seidr-enhanced elements, Comments, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode = SeidrComponent | SeidrElement<keyof HTMLElementTagNameMap> | Element | Text | Comment | string;
+export type SeidrNode =
+  | SeidrComponent
+  | SeidrElement<keyof HTMLElementTagNameMap>
+  | Element
+  | Text
+  | Comment
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Seidr<SeidrNode>;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
@@ -252,9 +264,20 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     // Process children
     if (Array.isArray(children)) {
       children.forEach((child) => {
-        const item = isFn(child) ? (child as any)() : child;
+        const item = unwrapSeidr(isFn(child) ? (child as any)() : child);
+
+        // Skip null/undefined/false
+        if (item === null || item === undefined || item === false || item === true) return;
+
         const node = isSeidrComponent(item) ? item.element : item;
-        el.appendChild(node);
+
+        // Handle number
+        if (typeof node === "number") {
+          el.appendChild(String(node));
+        } else {
+          el.appendChild(node as any);
+        }
+
         if (isSeidrComponent(item) && item.scope.onAttached) {
           item.scope.onAttached(el as any);
         }
@@ -345,12 +368,65 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // Append children
   if (Array.isArray(children)) {
     children.forEach((child) => {
-      const item = isFn(child) ? child() : child;
+      const initialItem = isFn(child) ? child() : child;
+
+      // Handle reactive child (Seidr)
+      if (isSeidr(initialItem)) {
+        const anchor = $text("");
+        el.appendChild(anchor);
+
+        let currentNode: Node | null = null;
+        let currentComponent: SeidrComponent | null = null;
+
+        const update = (val: any) => {
+          // Cleanup previous
+          if (currentComponent) {
+            currentComponent.destroy();
+            currentComponent = null;
+          }
+          if (currentNode?.parentNode) {
+            currentNode.parentNode.removeChild(currentNode);
+            currentNode = null;
+          }
+
+          // Unwrap if nested function? (Optional, but good for safety)
+          const item = isFn(val) ? val() : val;
+
+          // Skip if null/undefined/boolean
+          if (item === null || item === undefined || item === false || item === true) return;
+
+          let newNode: Node;
+          if (isSeidrComponent(item)) {
+            newNode = item.element as Node;
+            currentComponent = item;
+            if (item.scope.onAttached) item.scope.onAttached(el);
+          } else if (isStr(item) || typeof item === "number") {
+            newNode = $text(String(item));
+          } else {
+            newNode = item as Node;
+          }
+
+          currentNode = newNode;
+          if (anchor.parentNode) {
+            anchor.parentNode.insertBefore(newNode, anchor);
+          }
+        };
+
+        // Bind update to Seidr
+        cleanups.push(initialItem.bind(el, (val) => update(val)));
+        return;
+      }
+
+      // Handle static child
+      const item = initialItem;
+      // Skip null/undefined/boolean static children
+      if (item === null || item === undefined || item === false || item === true) return;
+
       if (isSeidrComponent(item)) {
         el.appendChild(item.element);
         if (item.scope.onAttached) item.scope.onAttached(el);
       } else {
-        el.appendChild(isStr(item) ? $text(item) : item);
+        el.appendChild(isStr(item) || typeof item === "number" ? $text(String(item)) : (item as Node));
       }
     });
   }

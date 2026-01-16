@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../seidr";
-import { $, type SeidrElement } from "./element";
+import { $, SeidrNode, type SeidrElement } from "./element";
 import { elementClassToggle } from "./element-class-toggle";
 
 describe("$ (createElement)", () => {
@@ -222,6 +222,33 @@ describe("element on method", () => {
         expect(container.children[2].tagName).toBe("BUTTON");
         expect(container.children[2].textContent).toBe("Dynamic");
         expect(container.childNodes.length).toBe(3); // Including button from function
+      });
+
+      it("should accept Seidr<SeidrNode> as child and update reactively", () => {
+        const childState = new Seidr<SeidrNode>("Initial Text");
+        const container = $("div", {}, [childState]);
+
+        // Should initially render text node
+        expect(container.textContent).toBe("Initial Text");
+        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+
+        // Update to different text
+        childState.value = "Updated Text";
+        expect(container.textContent).toBe("Updated Text");
+        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+
+        // Update to an HTMLElement
+        const span = $("span", { textContent: "I am a span" });
+        childState.value = span;
+
+        expect(container.textContent).toBe("I am a span");
+        expect(container.firstChild).toBe(span);
+        expect(container.firstChild?.nodeType).toBe(Node.ELEMENT_NODE);
+
+        // Update back to text
+        childState.value = "Back to text";
+        expect(container.textContent).toBe("Back to text");
+        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
       });
     });
 
