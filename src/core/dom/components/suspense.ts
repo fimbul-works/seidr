@@ -19,8 +19,8 @@ import { Switch } from "./switch";
 export function Suspense<T, R extends SeidrNode>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
   factory: (value: T) => R,
-  loading: () => SeidrNode,
-  error: (err: Error) => SeidrNode,
+  loading: () => SeidrNode = () => "Loading...",
+  error: (err: Error) => SeidrNode = (err) => `Error: ${err.message}`,
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
