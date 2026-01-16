@@ -10,16 +10,18 @@
   - [`$` - Create DOM elements](#---create-dom-elements)
   - [`$factory()` - Create custom element creators](#factory---create-custom-element-creators)
   - [Predefined Element Creators](#predefined-element-creators)
-- [Components (Functions)](#components-functions)
+- [Components](#components)
   - [`component()`](#component)
-- [Mounting & Declarative Components](#mounting--declarative-components)
+- [Mounting Components](#mounting-components)
   - [`mount()`](#mount)
+- [Declarative Components](#declarative-components)
   - [`Conditional()`](#conditional)
   - [`List()`](#list)
   - [`Switch()`](#switch)
+  - [Shorthand Mounting Utilities](#shorthand-mounting-utilities)
+- [Async & Error Handling](#async--error-handling)
   - [`Suspense()`](#suspense)
   - [`Safe()`](#safe)
-  - [Shorthand Mounting Utilities](#shorthand-mounting-utilities)
 - [Routing](#routing)
   - [`initRouter()`](#initrouter)
   - [`navigate()`](#navigate)
@@ -56,9 +58,14 @@
   - [`isFn`](#isFn)
   - [`isObj`](#isObj)
   - [`isSeidr`](#isseidr)
-  - [`isSeidrComponent`](#isseidrcomponent)
   - [`isHTMLElement`](#ishtmlelement)
   - [`isSeidrElement`](#isseidrelement)
+  - [`isSeidrComponent`](#isseidrcomponent)
+- [Environment Utilities](#environment-utilities)
+  - [`inBrowser()`](#inbrowser)
+  - [`inServer()`](#inserver)
+  - [`isBrowser()`](#isbrowser)
+  - [`isServer()`](#isserver)
 
 ---
 
@@ -347,7 +354,7 @@ const app = $div({ className: 'app' }, [
               $span({ textContent: 'Hello' })
             ]);
 
-## Components (Functions)
+## Components
 
 Seidr components are functions that return UI elements (or `SeidrNode`s). They can receive data via arguments ("props") and use the `useScope()` hook for lifecycle management.
 
@@ -471,9 +478,7 @@ mount(UserProfile, document.body);
 
 ---
 
-## Mounting & Declarative Components
-
-Seidr provides declarative components for handling conditional logic and lists. These components use **Marker Nodes** (HTML comments) internally, allowing them to act like "Fragments" that don't introduce extra wrapper elements into the DOM.
+## Mounting Components
 
 ### mount()
 
@@ -498,7 +503,11 @@ unmount();
 
 ---
 
-### Conditional()
+ ## Declarative Components
+
+ Seidr provides declarative components for handling conditional logic and lists. These components use **Marker Nodes** (HTML comments) internally, allowing them to act like "Fragments" that don't introduce extra wrapper elements into the DOM.
+
+ ### Conditional()
 
 Conditionally renders a component based on a boolean observable.
 
@@ -590,45 +599,6 @@ mount(View, document.body);
 
 ---
 
- ### Suspense()
-
- Handles asynchronous loading states for Promises with loading and error fallbacks.
-
- **Parameters:**
- - `promiseOrSeidr` - `Promise<T>` or `Seidr<Promise<T>>` to wait for
- - `factory` - Function called with resolved value: `(value: T) => SeidrNode`
- - `loading` - Factory for loading state UI: `() => SeidrNode`
- - `error` - Factory for error state UI: `(err: Error) => SeidrNode`
-
- **Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
-
- **Example:**
- ```typescript
- import { Suspense, $div, mount } from '@fimbul-works/seidr';
-
- const fetchUser = async (id: string) => {
-   const res = await fetch(`/api/user/${id}`);
-   return res.json();
- };
-
- const UserProfile = (user: any) => $div({ textContent: user.name });
-
- const App = () => {
-   return $div({}, [
-     Suspense(
-       fetchUser('123'),
-       (user) => UserProfile(user),
-       () => $div({ textContent: 'Loading user...' }),
-       (err) => $div({ textContent: `Error: ${err.message}` })
-     )
-   ]);
- };
-
- mount(App, document.body);
- ```
-
----
-
 ### Shorthand Mounting Utilities
 
 The following functions are shorthands that create the corresponding declarative component and call `mount()` immediately. Use these for top-level application mounting.
@@ -641,6 +611,69 @@ Equivalent to `mount(List(observable, getKey, factory), container)`.
 
 #### `mountSwitch(observable, cases, container)`
 Equivalent to `mount(Switch(observable, cases), container)`.
+
+---
+
+## Async & Error Handling
+
+Components for managing asynchronous data and runtime errors.
+
+### Suspense()
+
+Handles asynchronous loading states for Promises with loading and error fallbacks.
+
+**Parameters:**
+- `promiseOrSeidr` - `Promise<T>` or `Seidr<Promise<T>>` to wait for
+- `factory` - Function called with resolved value: `(value: T) => SeidrNode`
+- `loading` - Optional factory for loading state UI: `() => SeidrNode`
+- `error` - Optional factory for error state UI: `(err: Error) => SeidrNode`
+
+**Returns:** A [`SeidrComponent`](#component) rooted in a Comment node.
+
+**Example:**
+```typescript
+import { Suspense, $div, mount } from '@fimbul-works/seidr';
+
+const fetchUser = async (id: string) => {
+  const res = await fetch(`/api/user/${id}`);
+  return res.json();
+};
+
+const UserProfile = (user: any) => $div({ textContent: user.name });
+
+const App = () => {
+  return $div({}, [
+    Suspense(
+      fetchUser('123'),
+      (user) => UserProfile(user),
+      () => $div({ textContent: 'Loading user...' }),
+      (err) => $div({ textContent: `Error: ${err.message}` })
+    )
+  ]);
+};
+
+mount(App, document.body);
+```
+
+**Reactive Usage:**
+
+You can pass a `Seidr<Promise<T>>` to `Suspense` to automatically handle promise updates. This is powerful for data fetching that depends on other reactive state.
+
+```typescript
+const userId = new Seidr('1');
+
+// Create a reactive promise that updates whenever userId changes
+const userIdPromise = userId.as(id =>
+  fetch(`/api/user/${id}`).then(r => r.json())
+);
+
+Suspense(
+  userIdPromise,
+  UserProfile,
+  LoadingSpinner,
+  ErrorMessage
+);
+```
 
 ---
 
@@ -1554,29 +1587,6 @@ console.log(isSeidr(42));       // false
 
 ---
 
-### isSeidrComponent()
-
-Check if a value is a [SeidrComponent](#component) object.
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `SeidrComponent`
-
-```typescript
-import { isSeidrComponent, component, $div } from '@fimbul-works/seidr';
-
-const factory = component(() => $div());
-const comp = factory();
-const plainObj = { value: 0 };
-
-console.log(isSeidrComponent(comp));     // true
-console.log(isSeidrComponent(plainObj)); // false
-console.log(isSeidrComponent(42));       // false
-```
-
----
-
 ### isHTMLElement()
 
 Check if a value is a `HTMLElement` or [`ServerHTMLElement`](SSR.md) instance.
@@ -1625,6 +1635,29 @@ console.log(isHTMLElement(42));       // false
 
 ---
 
+### isSeidrComponent()
+
+Check if a value is a [SeidrComponent](#component) object.
+
+**Parameters:**
+- `value` - Value to test
+
+**Type Narrowing:** Narrows `unknown` to `SeidrComponent`
+
+```typescript
+import { isSeidrComponent, component, $div } from '@fimbul-works/seidr';
+
+const factory = component(() => $div());
+const comp = factory();
+const plainObj = { value: 0 };
+
+console.log(isSeidrComponent(comp));     // true
+console.log(isSeidrComponent(plainObj)); // false
+console.log(isSeidrComponent(42));       // false
+```
+
+---
+
 ## Environment Utilities
 
 Utilities for managing code that runs in both browser and server (SSR) environments.
@@ -1651,7 +1684,7 @@ inBrowser(() => {
 
 ### inServer()
 
-Executes a function only in the server (SSR) environment.
+Executes a function only in the server [(SSR)](SSR.md) environment.
 
 **Async Support:** If the function returns a `Promise`, `renderToString` will automatically await it before generating the final HTML. This is the recommended way to perform data fetching during SSR.
 
@@ -1674,19 +1707,29 @@ inServer(async () => {
 
 ---
 
-### isServer() / isBrowser()
+### isBrowser()
 
-Functions that return a boolean indicating the current environment. These are dynamic and safe to use in tests.
+Returns `true` if the code is running in the browser environment.
 
 ```typescript
-import { isServer, isBrowser } from '@fimbul-works/seidr';
-
-if (isServer()) {
-  console.log('Running on Node.js');
-}
+import { isBrowser } from '@fimbul-works/seidr';
 
 if (isBrowser()) {
   console.log('Running in the browser');
+}
+```
+
+---
+
+### isServer()
+
+Returns `true` if the code is running in the server [(SSR)](SSR.md) environment.
+
+```typescript
+import { isServer } from '@fimbul-works/seidr';
+
+if (isServer()) {
+  console.log('Running on Node.js');
 }
 ```
 

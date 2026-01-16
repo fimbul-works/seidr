@@ -12,8 +12,8 @@ import { Switch } from "./switch";
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
  * @param {(value: T) => R} factory - Function that creates the component when promise resolves
- * @param {() => SeidrNode} loading - Loading component
- * @param {(error: Error) => SeidrNode} error - Error handler component
+ * @param {() => SeidrNode} [loading] - Optional loading component
+ * @param {(error: Error) => SeidrNode} [error] - Optional error handler component
  * @returns {SeidrComponent} A component handling the promise state
  */
 export function Suspense<T, R extends SeidrNode>(
@@ -24,19 +24,13 @@ export function Suspense<T, R extends SeidrNode>(
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
-
-    // State to track promise status
     const status = new Seidr<"pending" | "resolved" | "error">("pending");
 
-    // We store the resolved value/error
     let resolvedValue: T | null = null;
     let errorValue: Error | null = null;
-
-    // Helper to handle a promise instance
     let currentPromiseId = 0;
 
     const handlePromise = async (prom: Promise<T>) => {
-      // Reset state for new promise (show loading)
       status.value = "pending";
 
       const myId = ++currentPromiseId;
@@ -55,7 +49,6 @@ export function Suspense<T, R extends SeidrNode>(
       }
     };
 
-    // Initialize
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
       scope.track(promiseOrSeidr.observe(handlePromise));
       handlePromise(promiseOrSeidr.value);
