@@ -1,9 +1,9 @@
 import type { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
 import { useScope } from "../use-scope";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Switches between different components based on an observable value.
@@ -40,9 +40,7 @@ export function Switch<T, C extends SeidrNode>(
       }
 
       if (factory && parent) {
-        currentComponent = (
-          isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory as any)(value)
-        ) as SeidrComponent;
+        currentComponent = wrapComponent<typeof value>(factory)(value);
         parent.insertBefore(currentComponent.element as Node, marker);
       }
     };

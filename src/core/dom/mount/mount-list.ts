@@ -1,3 +1,9 @@
+import type { Seidr } from "../../seidr";
+import { uid } from "../../util/uid";
+import type { SeidrComponent } from "../component";
+import { $comment, type SeidrNode } from "../element";
+import { wrapComponent } from "../wrap-component";
+
 /**
  * Renders an efficient list of components from an observable array.
  *
@@ -14,26 +20,17 @@
  *
  * @param {Seidr<T[]>} observable - Array observable containing the list data
  * @param {(item: T) => I} getKey - Function to extract unique keys from list items
- * @param {(item: T) => C} componentFactory - Function that creates components for individual items
+ * @param {(item: T) => C} factory - Function that creates components for individual items
  * @param {HTMLElement} container - The DOM container for the list
  * @returns {(() => void)} A cleanup function that removes all components and reactive bindings
- */
-import type { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
-import { component, type SeidrComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
-
-/**
- * Renders an efficient list of components from an observable array.
- * Legacy utility that internally implements list rendering.
  */
 export function mountList<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  componentFactory: (item: T) => C,
+  factory: (item: T) => C,
   container: HTMLElement,
 ): () => void {
-  const marker = $comment("mount-list-marker");
+  const marker = $comment(`seidr-mount-list:${uid()}`);
   container.appendChild(marker);
   const componentMap = new Map<I, SeidrComponent>();
 
@@ -56,11 +53,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
       let comp = componentMap.get(key) as C;
 
       if (!comp) {
-        comp = (
-          isSeidrComponentFactory(componentFactory)
-            ? componentFactory(item)
-            : component<T>(componentFactory as any)(item)
-        ) as C;
+        comp = wrapComponent<typeof item>(factory as any)(item) as C;
         componentMap.set(key, comp as SeidrComponent);
       }
 

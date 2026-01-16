@@ -1,9 +1,9 @@
 import type { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
 import { useScope } from "../use-scope";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -15,13 +15,13 @@ import { useScope } from "../use-scope";
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
- * @param {(item: T) => C} componentFactory - Component creation function (raw or wrapped)
+ * @param {(item: T) => C} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent<Comment>} List component
  */
 export function List<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  componentFactory: (item: T) => C,
+  factory: (item: T) => C,
 ): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
@@ -50,11 +50,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         let comp = componentMap.get(key);
 
         if (!comp) {
-          comp = (
-            isSeidrComponentFactory(componentFactory)
-              ? componentFactory(item)
-              : component<T>(componentFactory as any)(item)
-          ) as SeidrComponent;
+          comp = wrapComponent<typeof item>(factory as any)(item);
           componentMap.set(key, comp);
         }
 

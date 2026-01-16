@@ -1,8 +1,6 @@
-import type { SeidrComponent, SeidrNode } from "../core/dom";
-import { component } from "../core/dom/component";
+import type { SeidrNode } from "../core/dom";
 import { mount } from "../core/dom/mount";
 import { $query } from "../core/dom/query";
-import { isSeidrComponentFactory } from "../core/util/is";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
@@ -33,19 +31,16 @@ export function resetHydratingFlag() {
  * 6. Returns the live component without destroying it
  * 7. Restores the original contexts
  *
- * This function has the same signature as renderToString, making them
- * two halves of a whole for SSR hydration.
- *
  * @param {(...args: any[]) => T} factory - Function that returns a Seidr Component
  * @param {HTMLElement} container - The HTMLElement to mount the hydrated component into
  * @param {HydrationData} hydrationData - The previously captured hydration data with renderContextID
- * @returns {SeidrComponent} The hydrated SeidrComponent
+ * @returns {() => void} A cleanup function that unmounts the component when called
  */
 export function hydrate<T extends SeidrNode>(
-  factory: (...args: any[]) => T,
+  factory: () => T,
   container: HTMLElement,
   hydrationData: HydrationData,
-): SeidrComponent {
+): () => void {
   isHydrating = true;
 
   // Set the client render context ID from the server to ensure matching context
@@ -66,12 +61,9 @@ export function hydrate<T extends SeidrNode>(
   const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
-  const comp = (isSeidrComponentFactory(factory)
-    ? factory()
-    : component<void>(factory as any)()) as any as SeidrComponent;
-
+  const comp = factory();
   // Mount the component in the container
-  mount(comp, container);
+  const unmount = mount(comp, container);
 
   // Remove existing root component if found
   if (existingRoot) {
@@ -81,5 +73,5 @@ export function hydrate<T extends SeidrNode>(
   // Clear the hydration context
   clearHydrationData();
 
-  return comp;
+  return unmount;
 }

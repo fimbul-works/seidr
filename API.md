@@ -45,6 +45,7 @@
   - [`random()`](#random)
   - [`wrapSeidr()`](#wrapseidr)
   - [`unwrapSeidr()`](#unwrapseidr)
+  - [`wrapComponent()`](#wrapcomponent)
   - [Query Functions`](#query-functions)
 - [Animations](#animations)
   - [`animate()`](#animate)
@@ -1247,29 +1248,36 @@ This utility is particularly useful when working with functions that accept both
 import { unwrapSeidr, Seidr } from '@fimbul-works/seidr';
 
 // Unwrap a Seidr observable
-const observable = new Seidr('test value');
-const value = unwrapSeidr(observable); // 'test value'
+const count = new Seidr(5);
+console.log(unwrapSeidr(count)); // 5
 
-// Return non-Seidr values as-is
-const plainValue = unwrapSeidr('plain string'); // 'plain string'
-const number = unwrapSeidr(42); // 42
-
-// Works with null and undefined
-const nullValue = unwrapSeidr(null); // null
-const undefinedValue = unwrapSeidr(undefined); // undefined
-
-// Useful in utilities that handle both reactive and static values
-function logValue(value: Seidr<string> | string) {
-  console.log(unwrapSeidr(value));
-}
-
-logValue(new Seidr('reactive')); // 'reactive'
-logValue('static'); // 'static'
+// Unwrap a plain value
+const name = "Alice";
+console.log(unwrapSeidr(name)); // "Alice"
 ```
 
-**Common use case:** Used internally by components like `Link` to normalize path comparisons when the `to` prop can be either a string or a Seidr observable.
+---
+
+### wrapComponent()
+
+Wraps a component factory to ensure it creates a proper SeidrComponent structure. This utility normalizes both function components and raw DOM nodes into a consistent component interface.
+
+**Parameters:**
+- `factory` - A component factory function, a SeidrComponent factory, or a raw DOM node.
+
+**Returns**: A function that returns a `SeidrComponent`
+
+```typescript
+import { wrapComponent, $div } from '@fimbul-works/seidr';
+
+// Wraps a simple function component
+const SimpleComp = () => $div({ textContent: 'Hello' });
+const factory = wrapComponent(SimpleComp);
+const component = factory(); // returns SeidrComponent
+```
 
 ---
+
 
 ### Query Functions
 

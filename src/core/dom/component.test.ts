@@ -93,7 +93,6 @@ describe("Documentation Examples", () => {
       }
 
       const Counter = component(({ initialCount = 0, step = 1, label = "Counter" }: CounterProps) => {
-        const scope = useScope();
         const count = new Seidr(initialCount);
         const disabled = count.as((value) => value >= 10);
 

@@ -1,9 +1,9 @@
 import type { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
 import { useScope } from "../use-scope";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -30,9 +30,7 @@ export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, fact
      */
     const update = (shouldShow: boolean) => {
       if (shouldShow && !currentComponent) {
-        currentComponent = (
-          isSeidrComponentFactory(factory) ? factory() : component(factory as any)()
-        ) as SeidrComponent;
+        currentComponent = wrapComponent(factory)();
         if (marker.parentNode) {
           marker.parentNode.insertBefore(currentComponent.element, marker);
         }

@@ -25,7 +25,7 @@ describe("Safe", () => {
       let errorBoundaryScope: any = null;
       let factoryScope: any = null;
 
-      const comp = Safe(
+      const _comp = Safe(
         () => {
           const scope = useScope();
           factoryScope = scope;
@@ -47,7 +47,7 @@ describe("Safe", () => {
     it("should destroy original scope before creating error boundary", () => {
       let originalScopeDestroyed = false;
 
-      const comp = Safe(
+      const _comp = Safe(
         () => {
           const scope = useScope();
           scope.track(() => {
@@ -255,7 +255,7 @@ describe("Safe", () => {
           () => {
             throw new Error("Parent error during child registration");
           },
-          (err) => {
+          (_err) => {
             errorCaught = true;
             return $("div", { textContent: "Parent error boundary" });
           },

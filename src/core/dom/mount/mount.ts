@@ -1,7 +1,8 @@
-import { isSeidrComponent, isSeidrComponentFactory } from "../../util/is";
-import { component as createComponent, type SeidrComponent } from "../component";
+import { isFn } from "../../util/is";
+import type { SeidrComponent } from "../component";
 import { getCurrentComponent } from "../component-stack";
 import type { SeidrNode } from "../element";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -26,22 +27,9 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   componentOrFactory: C | (() => C),
   container: HTMLElement,
 ): () => void {
-  let component: SeidrComponent;
+  const factory: any = isFn(componentOrFactory) ? componentOrFactory : () => componentOrFactory;
 
-  if (typeof componentOrFactory === "function") {
-    // If it's a factory, wrap/call it to get a component instance
-    component = (
-      isSeidrComponentFactory(componentOrFactory)
-        ? (componentOrFactory as any)()
-        : createComponent(componentOrFactory as any)()
-    ) as SeidrComponent;
-  } else if (isSeidrComponent(componentOrFactory)) {
-    // It's already a component instance
-    component = componentOrFactory;
-  } else {
-    // It's a raw element or other SeidrNode, wrap it
-    component = createComponent(() => componentOrFactory as SeidrNode)() as SeidrComponent;
-  }
+  const component: SeidrComponent = wrapComponent(factory)();
 
   // Check if element is already in the container (happens during hydration with DOM reuse)
   const isAlreadyMounted = container.contains(component.element as Node);

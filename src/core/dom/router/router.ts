@@ -3,10 +3,10 @@ import { ServerHTMLElement } from "../../../ssr/server-html-element";
 import { getRenderContext } from "../../render-context-contract";
 import { Seidr } from "../../seidr";
 import { NO_HYDRATE, uid } from "../../util/index";
-import { isSeidrComponentFactory } from "../../util/is";
 import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
 import { useScope } from "../use-scope";
+import { wrapComponent } from "../wrap-component";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { parseRouteParams } from "./parse-route-params";
@@ -128,20 +128,14 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
       currentParamsSeidr = null;
       if (fallback) {
         const factory = typeof fallback === "function" ? fallback : () => fallback;
-        currentComponent = (
-          isSeidrComponentFactory(factory) ? (factory as any)() : component(factory as any)()
-        ) as SeidrComponent;
+        currentComponent = wrapComponent(factory)();
         mountComponent(currentComponent);
       }
     } else {
       // Show matched route
       currentParamsSeidr = new Seidr(params as Record<string, string>, { ...NO_HYDRATE, id: "router-params" });
       const factory = routes[matchedIndex].componentFactory;
-      currentComponent = (
-        isSeidrComponentFactory(factory)
-          ? factory(currentParamsSeidr)
-          : component<Seidr<any>>(factory as any)(currentParamsSeidr)
-      ) as SeidrComponent;
+      currentComponent = wrapComponent(factory)(currentParamsSeidr);
       mountComponent(currentComponent!);
     }
   };

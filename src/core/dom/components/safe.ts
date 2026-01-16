@@ -1,9 +1,9 @@
-import { isSeidrComponentFactory } from "../../util/is";
 import { component, type SeidrComponent } from "../component";
 import { createScope } from "../component-scope";
 import { getCurrentComponent } from "../component-stack";
 import type { SeidrNode } from "../element";
 import { useScope } from "../use-scope";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Creates a component with error boundary protection.
@@ -23,7 +23,7 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
     const scope = useScope();
 
     try {
-      return (isSeidrComponentFactory(factory) ? factory() : component(factory)()) as T;
+      return wrapComponent(factory)() as T;
     } catch (err) {
       // Destroy scope from failed component
       scope.destroy();
@@ -41,9 +41,7 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
         currentComp.scope = newScope;
       }
 
-      return isSeidrComponentFactory(errorBoundaryFactory)
-        ? errorBoundaryFactory(err as Error)
-        : component(errorBoundaryFactory)(err as Error);
+      return wrapComponent(errorBoundaryFactory)(err as Error);
     }
   })();
 }

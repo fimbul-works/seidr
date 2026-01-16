@@ -1,7 +1,8 @@
 import type { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
-import { component, type SeidrComponent } from "../component";
+import { uid } from "../../util/uid";
+import type { SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Switches between different components based on an observable value.
@@ -26,7 +27,7 @@ export function mountSwitch<T extends string, C extends SeidrNode>(
   container: HTMLElement,
   defaultCase?: (val: T) => C,
 ): () => void {
-  const marker = $comment("mount-switch-marker");
+  const marker = $comment(`seidr-mount-switch:${uid()}`);
   container.appendChild(marker);
 
   let currentComponent: SeidrComponent | null = null;
@@ -42,9 +43,7 @@ export function mountSwitch<T extends string, C extends SeidrNode>(
     }
 
     if (factory) {
-      currentComponent = (
-        isSeidrComponentFactory(factory) ? factory(value) : component<T>(factory as any)(value)
-      ) as SeidrComponent;
+      currentComponent = wrapComponent<typeof value>(factory)(value);
       container.insertBefore(currentComponent.element, marker);
     }
   };

@@ -1,8 +1,6 @@
-import { component } from "../core/dom/component";
 import { clearPathCache } from "../core/dom/router";
-import type { SeidrComponent, SeidrNode } from "../core/index";
+import { type SeidrNode, wrapComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
-import { isSeidrComponentFactory } from "../core/util/is";
 import { runWithRenderContext } from "../render-context.node";
 import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
@@ -71,7 +69,7 @@ export async function renderToString<C extends SeidrNode>(
 
     try {
       // Create component (Seidr instances will auto-register during creation)
-      const comp = (isSeidrComponentFactory(factory) ? factory() : component<void>(factory as any)()) as SeidrComponent;
+      const comp = wrapComponent(factory)();
 
       // Wait for any async work registered via inServer()
       await activeScope.waitForPromises();
