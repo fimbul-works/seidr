@@ -1,8 +1,9 @@
 import type { Seidr } from "../../seidr";
 import { isSeidrComponentFactory } from "../../util/is";
 import { uid } from "../../util/uid";
-import { component, type SeidrComponent, useScope } from "../component";
+import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";
+import { useScope } from "../use-scope";
 
 /**
  * Switches between different components based on an observable value.

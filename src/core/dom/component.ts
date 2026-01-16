@@ -1,61 +1,11 @@
 import { getRenderContext } from "../render-context-contract";
 import { isHTMLElement, isSeidrComponent } from "../util/is";
 import { type ComponentScope, createScope } from "./component-scope";
+import { getComponentStack } from "./component-stack";
 import type { SeidrNode } from "./element";
 
 // Check if we're in SSR mode
 const isSSR = typeof window === "undefined" || (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);
-
-export { createScope };
-
-/** Map of SeidrComponent stack by render context ID */
-const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
-
-/**
- * Get the component stack for a render context.
- * @returns {SeidrComponent[]} SeidrComponent stack
- */
-export const getComponentStack = (): SeidrComponent[] => {
-  const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.renderContextID : 0;
-
-  // Initialize component stack if needed
-  if (!renderScopeComponentStacks.has(renderScopeID)) {
-    renderScopeComponentStacks.set(renderScopeID, []);
-  }
-  return renderScopeComponentStacks.get(renderScopeID) as SeidrComponent[];
-};
-
-/**
- * Get the current component from the component stack
- * @returns {SeidrComponent | null} Current SeidrComponent, or null if stack is empty
- */
-export const getCurrentComponent = (): SeidrComponent | null => {
-  const stack = getComponentStack();
-  if (stack.length > 0) {
-    return stack[stack.length - 1];
-  }
-  return null;
-};
-
-/**
- * Gets the scope of the current component.
- *
- * This is a convenience helper that provides access to the current component's scope
- * for tracking cleanup functions and child components. It must be called within a component.
- *
- * @throws {Error} If called outside of a component context
- * @returns {ComponentScope} The scope of the current component
- *
-
- */
-export const useScope = (): ComponentScope => {
-  const current = getCurrentComponent();
-  if (!current) {
-    throw new Error("useScope() must be called within a component");
-  }
-  return current.scope;
-};
 
 /**
  * Represents a Seidr component with automatic lifecycle management.

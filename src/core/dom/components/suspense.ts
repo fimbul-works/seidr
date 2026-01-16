@@ -1,7 +1,8 @@
 import { Seidr } from "../../seidr";
 import { isSeidr } from "../../util/is";
-import { component, type SeidrComponent, useScope } from "../component";
+import { component, type SeidrComponent } from "../component";
 import type { SeidrNode } from "../element";
+import { useScope } from "../use-scope";
 import { Switch } from "./switch";
 
 /**

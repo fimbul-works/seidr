@@ -1,7 +1,8 @@
 import { Seidr } from "../../seidr";
 import { cn, isSeidr, NO_HYDRATE, unwrapSeidr } from "../../util/index";
-import { component, type SeidrComponent, useScope } from "../component";
+import { component, type SeidrComponent } from "../component";
 import { $, type ReactiveProps, type SeidrElement, type SeidrNode } from "../element";
+import { useScope } from "../use-scope";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";
 import { normalizePath } from "./normalize-path";

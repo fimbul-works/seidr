@@ -1,7 +1,8 @@
 export * from "./bind-input";
 export type { SeidrComponent } from "./component";
-export { component, useScope } from "./component";
-export type { ComponentScope } from "./component-scope";
+export { component } from "./component";
+export { type ComponentScope, createScope } from "./component-scope";
+export * from "./component-stack";
 export * from "./components/index";
 export * from "./element";
 export * from "./element-class-toggle";
@@ -10,3 +11,5 @@ export * from "./elements";
 export * from "./mount/index";
 export * from "./query/index";
 export * from "./router/index";
+export * from "./use-scope";
+export * from "./wrap-component";

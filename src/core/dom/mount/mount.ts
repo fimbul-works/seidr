@@ -1,5 +1,6 @@
 import { isSeidrComponent, isSeidrComponentFactory } from "../../util/is";
-import { component as createComponent, getCurrentComponent, type SeidrComponent } from "../component";
+import { component as createComponent, type SeidrComponent } from "../component";
+import { getCurrentComponent } from "../component-stack";
 import type { SeidrNode } from "../element";
 
 /**

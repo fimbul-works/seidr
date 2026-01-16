@@ -1,6 +1,9 @@
 import { isSeidrComponentFactory } from "../../util/is";
-import { component, createScope, getCurrentComponent, type SeidrComponent, useScope } from "../component";
+import { component, type SeidrComponent } from "../component";
+import { createScope } from "../component-scope";
+import { getCurrentComponent } from "../component-stack";
 import type { SeidrNode } from "../element";
+import { useScope } from "../use-scope";
 
 /**
  * Creates a component with error boundary protection.

@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { useScope } from "../component";
 import { $ } from "../element";
+import { useScope } from "../use-scope";
 import { Safe } from "./safe";
 
 describe("Safe", () => {
