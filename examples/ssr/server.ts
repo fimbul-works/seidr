@@ -1,7 +1,9 @@
 import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
 import type { ViteDevServer } from "vite";
+import { matchRoute } from "../../src/core/dom/router/index.js";
 import { getPost, getPosts } from "./blog-api.js"; // Note: extension will be resolved by Vite/Node
+import { routes } from "./routes.js";
 import type { BlogPost } from "./types.js";
 
 // Constants
@@ -70,12 +72,16 @@ app.get("*", async (req, res) => {
     let posts: BlogPost[] | undefined;
     let currentPost: BlogPost | null | undefined;
 
-    if (url === "/" || url === "") {
-      const fullPosts = await getPosts();
-      posts = fullPosts.map((p) => ({ ...p, content: "" }));
-    } else if (url.startsWith("/post/")) {
-      const slug = url.split("/post/")[1];
-      currentPost = await getPost(slug);
+    // Dynamic Route Matching using the shared route definitions
+    const match = matchRoute(url, routes);
+
+    if (match) {
+      if (match.route.pattern === "/") {
+        const fullPosts = await getPosts();
+        posts = fullPosts.map((p) => ({ ...p, content: "" }));
+      } else if (match.route.pattern === "/post/:slug") {
+        currentPost = await getPost(match.params.slug);
+      }
     }
 
     const rendered = await render(url, posts, currentPost);

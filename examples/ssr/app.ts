@@ -9,7 +9,6 @@ import {
   $nav,
   $p,
   $ul,
-  Conditional,
   createRoute,
   createStateKey,
   getState,
@@ -22,6 +21,7 @@ import {
   setState,
 } from "../../src/core/index.js";
 import { inBrowser } from "../../src/ssr/env.js";
+import { routes } from "./routes.js";
 import type { BlogPost } from "./types.js";
 
 // State keys
@@ -46,7 +46,7 @@ const PostCard = (post: BlogPost) =>
     Link({ to: `/post/${post.slug}`, className: "read-more", textContent: "Read more →" }),
   ]);
 
-const HomePage = () => {
+export const HomePage = () => {
   const posts = getState(postsKey);
 
   // Client-side fetch if empty (SPA navigation scenario)
@@ -75,7 +75,7 @@ const DangerousHTML = (html: Seidr<string> | string) => {
   return el;
 };
 
-const PostPage = (params?: Seidr<{ slug: string }>) => {
+export const PostPage = (params?: Seidr<{ slug: string }>) => {
   const currentPost = getState(currentPostKey);
   const slug = params?.as((p) => p.slug);
 
@@ -151,7 +151,7 @@ export const BlogApp = (props?: { posts?: BlogPost[]; currentPost?: BlogPost | n
     Header(),
     $div({ className: "main-content" }, [
       Router({
-        routes: [createRoute("/", HomePage), createRoute("/post/:slug", PostPage)],
+        routes,
         fallback: () => $div({ textContent: "404 Not Found" }),
       }),
     ]),

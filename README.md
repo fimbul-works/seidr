@@ -28,8 +28,10 @@
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - 🎥 **Animations** - Tweening engine with comprehensive easing functions
-- 📦 **Tiny Footprint** - ~1.7KB for hello world, ~7.4KB for full library (minified + gzipped)
-- 🌲 **Tree-Shakable** - Import only what you need
+- 📦 **Tiny Footprint**
+  - Hello World: **1.7KB**
+  - Full Stack (Router + SSR + Animations): **7.4KB**
+  - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
 

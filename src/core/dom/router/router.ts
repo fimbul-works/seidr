@@ -9,7 +9,7 @@ import { useScope } from "../use-scope";
 import { wrapComponent } from "../wrap-component";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
-import { parseRouteParams } from "./parse-route-params";
+import { matchRoute } from "./match-route";
 
 /**
  * Router component props.
@@ -92,19 +92,11 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
     let params: Record<string, string> | false = false;
 
     // 1. Find matching route
-    for (let i = 0; i < routes.length; i++) {
-      const route = routes[i];
-      if (route.pattern instanceof RegExp) {
-        const match = path.match(route.pattern);
-        params = match ? (match.groups ?? {}) : false;
-      } else {
-        params = parseRouteParams(route.pattern, path);
-      }
+    const match = matchRoute(path, routes);
 
-      if (params) {
-        matchedIndex = i;
-        break;
-      }
+    if (match) {
+      matchedIndex = match.index;
+      params = match.params;
     }
 
     const routeChanged = matchedIndex !== currentRouteIndex;

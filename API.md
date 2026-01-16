@@ -909,25 +909,35 @@ Navigation link component that updates the URL reactively and can show active st
 ```typescript
 import { Link, $nav } from '@fimbul-works/seidr';
 
-const Navigation = () => $nav({}, [
-  Link({ to: '/' }, ['Home']),
-  Link({ to: '/about' }, ['About']),
-  Link({ to: '/contact' }, ['Contact']),
+$nav({}, [
+  Link({ to: '/', textContent: 'Home' }),
+  Link({ to: '/about', textContent: 'About', activeClass: 'text-bold' })
 ]);
+```
 
-// Custom active class
-Link({ to: '/dashboard', activeClass: 'is-current' }, ['Dashboard']);
+---
 
-// Use aria-current for accessibility
-Link({
-  to: '/page',
-  activeProp: 'aria-current',
-  activeValue: 'page',
-}, ['Page']);
+### parseRouteParams()
 
-// Reactive target path
-const currentPath = new Seidr('/home');
-Link({ to: currentPath }, ['Home']);
+Low-level utility to match a pattern against a path and extract parameter values. Useful for SSR or manual routing logic.
+
+**Parameters:**
+- `pattern` - Path pattern string (e.g. `/user/:id`)
+- `path` - Optional path string to match against (defaults to current location value)
+
+**Returns:** `Record<string, string> | false` - A map of parameter values if matched, or `false` if no match.
+
+```typescript
+import { parseRouteParams } from '@fimbul-works/seidr';
+
+// Match against explicit path (SSR approach)
+const params = parseRouteParams('/user/:id', '/user/123');
+if (params) {
+  console.log(params.id); // "123"
+}
+
+// Match against current browser path (Client)
+const currentParams = parseRouteParams('/blog/:slug');
 ```
 
 **Active State:** The link automatically shows the active class/prop when `currentPath` matches the `to` prop.

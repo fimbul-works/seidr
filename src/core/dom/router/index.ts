@@ -2,6 +2,8 @@ export * from "./create-route";
 export * from "./get-current-path";
 export * from "./init-router";
 export * from "./link";
+export * from "./match-route";
 export * from "./navigate";
+export * from "./parse-route-params";
 export * from "./route";
 export * from "./router";
