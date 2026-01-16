@@ -40,7 +40,7 @@ app.get("/api/posts", async (_req: Request, res: Response) => {
 });
 
 app.get("/api/posts/:slug", async (req: Request, res: Response) => {
-  const post = await getPost(req.params.slug);
+  const post = await getPost(req.params.slug as any);
   if (post) {
     res.json(post);
   } else {

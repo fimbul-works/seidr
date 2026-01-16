@@ -1,8 +1,8 @@
 import { Seidr } from "../../seidr";
-import { isSeidrComponentFactory } from "../../util/is";
-import { uid } from "../../util/uid";
+import { isSeidr } from "../../util/is";
 import { component, type SeidrComponent, useScope } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import type { SeidrNode } from "../element";
+import { Switch } from "./switch";
 
 /**
  * Creates a component that handles Promise resolution with loading and error states.
@@ -24,8 +24,6 @@ export function Suspense<T, R extends SeidrNode>(
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
-    const marker = $comment(`seidr-suspense:${uid()}`);
-    let currentComponent: SeidrComponent | null = null;
 
     // State to track promise status
     const status = new Seidr<"pending" | "resolved" | "error">("pending");
@@ -58,59 +56,17 @@ export function Suspense<T, R extends SeidrNode>(
     };
 
     // Initialize
-    if (promiseOrSeidr instanceof Seidr) {
+    if (isSeidr<Promise<T>>(promiseOrSeidr)) {
       scope.track(promiseOrSeidr.observe(handlePromise));
       handlePromise(promiseOrSeidr.value);
     } else {
       handlePromise(promiseOrSeidr);
     }
 
-    // Update logic
-    const update = () => {
-      if (currentComponent) {
-        currentComponent.destroy();
-        currentComponent = null;
-      }
-
-      const parent = marker.parentNode;
-      if (!parent) return; // Should be attached
-
-      let newContent: SeidrNode;
-
-      if (status.value === "error") {
-        // Error State
-        newContent = error(errorValue!);
-      } else if (status.value === "resolved") {
-        // Resolved State
-        newContent = factory(resolvedValue!);
-      } else {
-        // Loading State
-        newContent = loading();
-      }
-
-      // Create component wrapping the content
-      // We wrap it to ensure we get a SeidrComponent we can destroy
-      // Actually, factory might return a Node or a String.
-      // If it's pure node, we should wrap it or just append it and track it.
-      // Reusing 'component' wrapper handles this normalization.
-      currentComponent = (
-        isSeidrComponentFactory(() => newContent) ? (() => newContent)() : component(() => newContent as any)()
-      ) as SeidrComponent;
-
-      parent.insertBefore(currentComponent.element, marker);
-    };
-
-    // Initial render
-    scope.onAttached = () => update();
-
-    // React to changes
-    scope.track(status.observe(() => update()));
-
-    // Cleanup
-    scope.track(() => {
-      if (currentComponent) currentComponent.destroy();
+    return Switch(status, {
+      resolved: () => factory(resolvedValue!),
+      error: () => error(errorValue!),
+      pending: loading,
     });
-
-    return marker;
   })();
 }

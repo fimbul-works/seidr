@@ -49,7 +49,7 @@ export const isObj = (v: any): v is object => typeof v === "object" && !Array.is
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr class instance, `false` otherwise
  */
-export const isSeidr = (v: any): v is Seidr<any> => v instanceof Seidr;
+export const isSeidr = <T = any>(v: any): v is Seidr<T> => v instanceof Seidr;
 
 /**
  * Check if a value is a SeidrElement extending HTMLElement.

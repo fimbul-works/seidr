@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
-import { component, type SeidrComponent } from "../component";
-import { $div } from "../elements";
 import { mount } from "../mount";
 import { Suspense } from "./suspense";
 
@@ -61,7 +59,7 @@ describe("Suspense", () => {
         promise,
         factory,
         () => document.createTextNode(""),
-        (err) => document.createTextNode(""),
+        (_err) => document.createTextNode(""),
       ),
       container,
     );
