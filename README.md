@@ -29,7 +29,7 @@
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - 🎥 **Animations** - Tweening engine with comprehensive easing functions
 - 📦 **Tiny Footprint**
-  - Hello World: **1.7KB**
+  - Hello World: **1.9KB**
   - Full Stack (Router + SSR + Animations): **7.7KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
@@ -684,7 +684,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~1.8KB (minified + gzipped)
+- **Seidr counter app**: ~2.0KB (minified + gzipped)
 
 > **Note on Tree-Shaking:** The ~7.7KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
