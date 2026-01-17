@@ -2,7 +2,7 @@ import { clearPathCache } from "../core/dom/router";
 import { type SeidrNode, wrapComponent } from "../core/index";
 import { getRenderContext } from "../core/render-context-contract";
 import { runWithRenderContext } from "../render-context.node";
-import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
+import { clearSSRScope, getActiveSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
 
@@ -63,6 +63,9 @@ export async function renderToString<C extends SeidrNode>(
 
     // Create new scope if not provided
     const activeScope = options.scope ?? new SSRScope();
+
+    // Set promise tracker to allow deeply nested components to register async work
+    ctx.onPromise = (p) => activeScope.addPromise(p);
 
     // Set scope as active to enable auto-registration in Seidr constructor
     setActiveSSRScope(activeScope);

@@ -32,6 +32,9 @@ export function Suspense<T, R extends SeidrNode>(
     let currentPromiseId = 0;
 
     const handlePromise = async (prom: Promise<T>) => {
+      // Register with scope for SSR waiting
+      scope.waitFor(prom);
+
       status.value = "pending";
 
       const myId = ++currentPromiseId;

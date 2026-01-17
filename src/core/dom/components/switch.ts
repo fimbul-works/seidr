@@ -1,4 +1,5 @@
 import type { Seidr } from "../../seidr";
+
 import { uid } from "../../util/uid";
 import { component, type SeidrComponent } from "../component";
 import { $comment, type SeidrNode } from "../element";

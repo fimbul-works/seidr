@@ -57,6 +57,17 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
   } else {
     startMarker = $comment(`router-start:${routerId}`);
     endMarker = $comment(`router-end:${routerId}`);
+
+    if (isSSR) {
+      const wrapper = new ServerHTMLElement("div");
+
+      // Append markers using the internal children array or cast to any,
+      // as ServerHTMLElement.appendChild signature might be strict
+      (wrapper as any).appendChild(startMarker);
+      (wrapper as any).appendChild(endMarker);
+
+      (startMarker as any)._ssrWrapper = wrapper;
+    }
   }
 
   const currentPath = getCurrentPath();
@@ -166,24 +177,26 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
     endMarker.remove();
   });
 
-  if (isSSR) {
-    // In SSR, we wrap markers in a temporary ServerHTMLElement so renderToString can capture them.
-    const wrapper = new ServerHTMLElement("div", {}, [startMarker as any, endMarker as any]);
-    (startMarker as any)._ssrWrapper = wrapper;
-    updateRoutes();
-    return startMarker as any;
-  } else {
-    // On client, ensure markers are in the DOM before initial route update
-    scope.onAttached = (parent) => {
-      // If we found markers during hydration, we shouldn't re-insert them
-      const inDOM = startMarker.parentNode && endMarker.parentNode;
-      if (!inDOM && parent) {
+  // Ensure markers and content are mounted when parent is ready
+  scope.onAttached = (parent) => {
+    // Insert endMarker if not present
+    // In SSR, parent is ServerHTMLElement. In Client, it's HTMLElement.
+    const inDOM = endMarker.parentNode;
+    if (!inDOM && parent) {
+      if (startMarker.nextSibling) {
         parent.insertBefore(endMarker, startMarker.nextSibling);
+      } else {
+        parent.appendChild(endMarker);
       }
-      updateRoutes();
-    };
-    return startMarker as any;
+    }
+    updateRoutes();
+  };
+
+  if (isSSR) {
+    updateRoutes();
   }
+
+  return startMarker as any;
 });
 
 /**

@@ -79,7 +79,7 @@ export class SSRScope {
    *
    * @param {Promise<any>} promise - The promise to track
    */
-  trackPromise(promise: Promise<any>): void {
+  addPromise(promise: Promise<any>): void {
     this.promises.push(promise);
   }
 

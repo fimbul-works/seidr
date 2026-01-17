@@ -1,3 +1,4 @@
+import { getRenderContext } from "../render-context-contract";
 import type { SeidrComponent } from "./component";
 
 /**
@@ -18,6 +19,12 @@ export interface ComponentScope {
    * @param {() => void} cleanup - The cleanup function to execute
    */
   track(cleanup: () => void): void;
+
+  /**
+   * Register a promise to wait for (SSR integration).
+   * @param promise - The promise to track
+   */
+  waitFor(promise: Promise<any>): void;
 
   /**
    * Tracks a child component for automatic cleanup when this component is destroyed.
@@ -73,6 +80,20 @@ export function createScope(): ComponentScope {
     cleanups.push(cleanup);
   }
 
+  function waitFor(promise: Promise<any>): void {
+    // Use the RenderContext to track promises, allowing for SSR waiting without global state
+    try {
+      const ctx = getRenderContext();
+      if (ctx?.onPromise) {
+        ctx.onPromise(promise);
+      }
+    } catch (_e) {
+      // getRenderContext might throw if not initialized (though unusual in app usage)
+      // or return null/undefined depending on implementation.
+      // In either case, we just ignore promise tracking in those environments.
+    }
+  }
+
   function child(component: SeidrComponent): SeidrComponent {
     track(() => component.destroy());
     return component;
@@ -95,6 +116,7 @@ export function createScope(): ComponentScope {
 
   return {
     track,
+    waitFor,
     child,
     destroy,
     get isDestroyed() {

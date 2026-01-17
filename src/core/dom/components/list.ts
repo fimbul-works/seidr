@@ -30,7 +30,9 @@ export function List<T, I extends string | number, C extends SeidrNode>(
 
     const update = (items: T[]) => {
       const parent = marker.parentNode;
-      if (!parent) return;
+      if (!parent) {
+        return;
+      }
 
       const newKeys = new Set(items.map(getKey));
 

@@ -1,5 +1,4 @@
 import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element";
-import { getActiveSSRScope } from "../../ssr/ssr-scope";
 import { getRenderContext } from "../render-context-contract";
 import type { Seidr } from "../seidr";
 import { unwrapSeidr } from "../util";

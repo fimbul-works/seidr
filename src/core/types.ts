@@ -41,4 +41,7 @@ export interface RenderContext {
 
   /** Current URL path for routing (isolated per request in SSR) */
   currentPath: string;
+
+  /** Callback to track promises for SSR waiting (optional) */
+  onPromise?: (p: Promise<any>) => void;
 }

@@ -56,7 +56,7 @@ export function inServer<T>(fn: () => T): T {
     if (result instanceof Promise) {
       const scope = getActiveSSRScope();
       if (scope) {
-        scope.trackPromise(result);
+        scope.addPromise(result);
       }
     }
 
