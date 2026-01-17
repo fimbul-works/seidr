@@ -86,13 +86,40 @@ function createTween(durationMs: number, easing = (t: number) => t): AnimationFu
  * @param {(t: number) => number} easing The easing function to use
  * @returns {() => void} A function to stop the tween
  */
-export function tween(seidr: Seidr<number>, to: number, durationMs: number, easing = (t: number) => t): () => void {
-  // Disable in SSR
+export function tween(
+  seidr: Seidr<number>,
+  to: number,
+  durationMs: number,
+  easing = (t: number) => t,
+): Promise<void> & { stop: () => void } {
+  // SSR Guard
   if (typeof window === "undefined") {
-    return () => {};
+    const noop = Object.assign(Promise.resolve(), { stop: () => {} });
+    return noop;
   }
-  const tween = createTween(durationMs, easing);
+
+  const tweenFn = createTween(durationMs, easing);
   const from = seidr.value;
-  let t = 0;
-  return animate((deltaMs: number) => ((t = tween(deltaMs)), (seidr.value = from + (to - from) * t), t));
+  let stopRef: () => void;
+  let resolveRef: () => void;
+
+  const promise = new Promise<void>((resolve) => {
+    resolveRef = resolve;
+    stopRef = animate((deltaMs: number) => {
+      const t = tweenFn(deltaMs);
+      seidr.value = from + (to - from) * t;
+
+      if (t >= 1) {
+        resolve();
+      }
+      return t;
+    });
+  });
+
+  return Object.assign(promise, {
+    stop: () => {
+      stopRef();
+      resolveRef();
+    },
+  });
 }

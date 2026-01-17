@@ -1444,7 +1444,7 @@ Animates a `Seidr<number>` observable from its current value to a target value o
 - `durationMs` - Animation duration in milliseconds
 - `easing` - Optional easing function (defaults to `linear`)
 
-**Returns:** Stop function (signature `() => void`)
+**Returns:** `Promise<void> & { stop: () => void }` - Resolves when the animation finishes or is stopped.
 
 ```typescript
 import { $div, Seidr, tween, easeInOutQuad, mount } from '@fimbul-works/seidr';
@@ -1457,7 +1457,8 @@ const box = $div({
 mount(box, document.body);
 
 // Fade in over 500ms
-tween(opacity, 1, 500, easeInOutQuad);
+await tween(opacity, 1, 500, easeInOutQuad);
+console.log('Fade in complete');
 ```
 
 ---

@@ -88,7 +88,7 @@ describe("Animation Utilities", () => {
     it("should use easing function", () => {
       const val = new Seidr(0);
       // easeInQuad: t * t
-      tween(val, 100, 100, (t) => t * t);
+      const t = tween(val, 100, 100, (t) => t * t);
 
       // Advance to frame 4: current time 4 * 16.666 = 66.664
       // Accumulated delta: (0) + 16.6 + 16.6 + 16.6 = 49.998
@@ -96,6 +96,38 @@ describe("Animation Utilities", () => {
       // val = 100 * (0.5 * 0.5) = 25
       vi.advanceTimersByTime(17 * 4);
       expect(val.value).toBeCloseTo(25, 0);
+      // Cleanup
+      t.stop();
+    });
+
+    it("should return a promise that resolves when finished", async () => {
+      const val = new Seidr(0);
+      const promise = tween(val, 100, 100);
+
+      vi.advanceTimersByTime(150);
+      await expect(promise).resolves.toBeUndefined();
+      expect(val.value).toBe(100);
+    });
+
+    it("should resolve and stop animation when stop() is called", async () => {
+      const val = new Seidr(0);
+      const t = tween(val, 100, 100);
+
+      // Advance a bit
+      vi.advanceTimersByTime(50);
+      const currentValue = val.value;
+      expect(currentValue).toBeGreaterThan(0);
+      expect(currentValue).toBeLessThan(100);
+
+      // Manually stop
+      t.stop();
+
+      // Should resolve immediately
+      await expect(t).resolves.toBeUndefined();
+
+      // Should not update further
+      vi.advanceTimersByTime(100);
+      expect(val.value).toBe(currentValue);
     });
   });
 });
