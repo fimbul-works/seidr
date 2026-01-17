@@ -30,7 +30,7 @@
 - 🎥 **Animations** - Tweening engine with comprehensive easing functions
 - 📦 **Tiny Footprint**
   - Hello World: **1.7KB**
-  - Full Stack (Router + SSR + Animations): **7.5KB**
+  - Full Stack (Router + SSR + Animations): **7.7KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -537,6 +537,39 @@ todos.value = [{ id: 1, text: 'Learn Seidr', completed: true }];
 
 **Learn more:** [withStorage()](API.md#withstorage)
 
+### Global State Management
+Seidr provides a simple, type-safe global state management system. Use `getSetState()` to create a single accessor function that acts as both a getter and a setter.
+
+```typescript
+import { getSetState, Seidr, $button, $span } from '@fimbul-works/seidr';
+
+// 1. Define the accessor globally (Safe for SSR!)
+// This creates a handle, but doesn't resolve the state until called.
+const userCount = getSetState<number>('user-count');
+
+const Counter = () => {
+  // 2. Initialize locally
+  // Always check if it's undefined to prevent resetting shared state
+  if (userCount() === undefined) {
+      userCount(0);
+  }
+
+  // 3. Use it
+  return $button({
+    textContent: `Users: ${userCount()}`,
+    onclick: () => {
+      // Updates state and returns previous value
+      const prev = userCount(userCount()! + 1);
+      console.log('Previous count:', prev);
+    }
+  });
+};
+```
+
+**SSR Best Practice:** You can define the accessor (`userCount`) anywhere, but you must only **call** it (e.g. `userCount()`) inside components or async server functions. This ensures the state is correctly isolated for each server request.
+
+**Learn more:** [getSetState()](API.md#getsetstate)
+
 ### Custom Element Factories
 
 Create reusable element creators with default props:
@@ -564,7 +597,7 @@ Quick links:
 - **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
 - **Animations:** [tween()](API.md#tween) | [animate()](API.md#animate) | [Easing Functions](API.md#easing-functions)
 - **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
-- **State:** [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
+- **State:** [getSetState()](API.md#getsetstate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
 - **Environment:** [inBrowser() / inServer()](API.md#environment-utilities)
 
 ---
@@ -653,7 +686,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **Vue counter app**: ~35KB (Vue runtime)
 - **Seidr counter app**: ~1.8KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The ~7.5KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The ~7.7KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:

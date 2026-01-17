@@ -35,6 +35,7 @@
   - [`hasState()`](#hasstate)
   - [`setState()`](#setstate)
   - [`getState()`](#getstate)
+  - [`getSetState()`](#getsetstate)
 - [Utilities](#utilities)
   - [`elementClassToggle()`](#elementclasstoggle)
   - [`bindInput()`](#bindinput)
@@ -1057,6 +1058,49 @@ setState(COUNTER, 42);
 const counter = getState(COUNTER); // Type: number
 
 console.log(counter); // 42
+```
+
+---
+
+### getSetState()
+
+Creates a simplified getter/setter function for a specific state variable.
+
+**Generic Type:** `T` - The type of value that will be stored
+
+**Parameters:**
+- `key` - Unique string key for the state
+
+**Returns:** A function `(value?: T) => T | undefined`
+
+The returned function **always returns the current state value** (the value *before* any update occurs). This allows you to set a new value while receiving the previous one for comparison.
+
+```typescript
+import { getSetState } from '@fimbul-works/seidr';
+
+// Create the accessor
+const count = getSetState<number>('count');
+
+// Set value (updates state to 42, returns the PREVIOUS value)
+const previous = count(42);
+
+// Compare:
+// Compare:
+const current = count();
+console.log(`Changed from ${previous} to ${current}`);
+```
+
+**SSR Note:**
+While you can export the accessor function from a module (global scope), you must always **call** it inside a component or async server context when running on the server. The state key is resolved lazily, which allows Seidr to bind the state to the correct Request Context during SSR.
+
+```typescript
+// Safe pattern for SSR:
+const globalState = getSetState('key'); // Defined globally
+
+export const App = () => {
+  globalState(123); // Used locally
+  return ...
+}
 ```
 
 ---

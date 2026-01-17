@@ -237,9 +237,29 @@ export const Counter = () => {
 };
 ```
 
+### ✅ Pattern 3: Global Accessors with `getSetState`
+
+**Best for:** Shared application state
+
+Seidr's `getSetState` creates a global accessor function. While the *definition* of this accessor can be global (outside components), the *execution* of it must happen **inside** components or async server functions.
+
+This is safe because `getSetState` resolves the state context lazily when called, ensuring that state is isolated per-request during SSR.
+
+```typescript
+// Defined globally - SAFE
+const globalCounter = getSetState<number>('global-count');
+
+export const App = () => {
+  // Accessed/Initialized locally - SAFE
+  if (globalCounter() === undefined) globalCounter(0);
+
+  return $div({ textContent: globalCounter() });
+};
+```
+
 ### ❌ Anti-Pattern: Global Scope Observables
 
-**Never create Seidr instances in global module scope:**
+**Never create Seidr instances OR call getSetState accessors in global module scope:**
 
 ```typescript
 // ❌ THIS WILL FAIL
