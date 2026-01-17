@@ -12,12 +12,9 @@ import { setState } from "./set";
  * @example
  * ```ts
  * const count = getSetState<number>("count");
- *
- * // Get current value
- * const val = count();
- *
- * // Set new value (returns the PREVIOUS value)
- * const oldVal = count(5);
+ * count(0);              // Initialize state
+ * const prev = count(5); // prev = 0 (the old value)
+ * const curr = count();  // curr = 5 (the new value)
  * ```
  *
  * @template T - The type of the state value
