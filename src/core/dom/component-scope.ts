@@ -23,8 +23,9 @@ export interface ComponentScope {
   /**
    * Register a promise to wait for (SSR integration).
    * @param promise - The promise to track
+   * @returns {Promise<T>} The same promise, for chaining
    */
-  waitFor(promise: Promise<any>): void;
+  waitFor<T>(promise: Promise<T>): Promise<T>;
 
   /**
    * Tracks a child component for automatic cleanup when this component is destroyed.
@@ -80,7 +81,7 @@ export function createScope(): ComponentScope {
     cleanups.push(cleanup);
   }
 
-  function waitFor(promise: Promise<any>): void {
+  function waitFor<T>(promise: Promise<T>): Promise<T> {
     // Use the RenderContext to track promises, allowing for SSR waiting without global state
     try {
       const ctx = getRenderContext();
@@ -92,6 +93,7 @@ export function createScope(): ComponentScope {
       // or return null/undefined depending on implementation.
       // In either case, we just ignore promise tracking in those environments.
     }
+    return promise;
   }
 
   function child(component: SeidrComponent): SeidrComponent {

@@ -140,6 +140,28 @@ export const UserList = () => {
 };
 ```
 
+### Async Data with Chaining
+
+You can clean up async data loading by chaining the promise returned by `scope.waitFor()` (which `inServer` uses internally) directly into a Seidr observable.
+
+```typescript
+export const UserList = () => {
+  const scope = useScope();
+
+  // Wait for data, then initialize state with it
+  // This avoids typescript complaints about uninitialized values
+  const users = new Seidr(
+    await scope.waitFor(
+      inServer(() => db.users.findMany())
+    )
+  );
+
+  return $ul({}, [
+    List(users, u => u.id, u => $li({ textContent: u.name }))
+  ]);
+};
+```
+
 ---
 
 ## 🗂️ Architecture: Runtime Graph Reconstruction
