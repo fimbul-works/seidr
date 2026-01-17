@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
 import type { ViteDevServer } from "vite";
 import { matchRoute } from "../../src/core/dom/router/index.js";
-import { getPost, getPosts } from "./blog-api.js"; // Note: extension will be resolved by Vite/Node
+import { getPost, getPosts } from "./data.js";
 import { routes } from "./routes.js";
 import type { BlogPost } from "./types.js";
 
@@ -51,9 +51,16 @@ app.get("/api/posts/:slug", async (req: Request, res: Response) => {
 });
 
 // Serve HTML
-app.get("*", async (req, res) => {
+app.get(/.*/, async (req, res) => {
   try {
-    const url = req.originalUrl.replace(base, "");
+    let url = req.originalUrl.replace(base, "");
+    if (!url.startsWith("/")) url = "/" + url;
+
+    // Ignore weird requests (source maps, devtools, favicon, etc)
+    if (url.match(/\.(json|map|ico|png|svg)$/)) {
+      res.status(404).end();
+      return;
+    }
 
     let template: string;
     let render: (url: string, posts?: BlogPost[], currentPost?: BlogPost | null) => any;
@@ -68,23 +75,8 @@ app.get("*", async (req, res) => {
       render = (await import("./entry-server.js")).render;
     }
 
-    // SSR Data Fetching
-    let posts: BlogPost[] | undefined;
-    let currentPost: BlogPost | null | undefined;
-
-    // Dynamic Route Matching using the shared route definitions
-    const match = matchRoute(url, routes);
-
-    if (match) {
-      if (match.route.pattern === "/") {
-        const fullPosts = await getPosts();
-        posts = fullPosts.map((p) => ({ ...p, content: "" }));
-      } else if (match.route.pattern === "/post/:slug") {
-        currentPost = await getPost(match.params.slug);
-      }
-    }
-
-    const rendered = await render(url, posts, currentPost);
+    // Data is now fetched by components themselves using inServer/inBrowser
+    const rendered = await render(url);
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")

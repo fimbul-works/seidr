@@ -9,7 +9,6 @@ npx rollup -c rollup.bundles.js  > /dev/null 2>&1 || true
 # Create temporary minified versions using terser
 npx terser dist/seidr.js -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m -o dist/seidr.min.js --module  > /dev/null 2>&1 || true
 npx terser dist/bundle/router.js -o dist/bundle/router.min.js --toplevel -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m --module  > /dev/null 2>&1 || true
-npx terser dist/bundle/animation.js -o dist/bundle/animation.min.js --toplevel -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m --module  > /dev/null 2>&1 || true
 npx terser dist/bundle/ssr.js -o dist/bundle/ssr.min.js --toplevel -c passes=2 -c ecma=2023 -c pure_funcs=[isUndefined,isBool,isNum,isStr,isFn,isObj,isSeidr,isSeidrElement,isSeidrComponent,isHTMLElement,isServer,isBrowser] -m --module  > /dev/null 2>&1 || true
 
 # Compress the bundles

@@ -18,19 +18,19 @@
 - [Core Concepts](#-core-concepts)
 - [API Reference](#-api-reference)
 - [Server-Side Rendering](#-server-side-rendering-experimental)
+- [Animation](#-animation)
 - [Performance](#-performance)
 - [Browser Support](#-browser-support)
 
 ## ✨ Features
 
-- 🔋 **Batteries Included** - Built-in Router, SSR engine, Animations, and Global State
+- 🔋 **Batteries Included** - Built-in Router, SSR engine, and Global State
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
-- 🎥 **Animations** - Tweening engine with comprehensive easing functions
 - 📦 **Tiny Footprint**
   - Hello World: **1.9KB**
-  - Full Stack (Router + SSR + Animations): **7.7KB**
+  - Full Stack (Router + SSR): **6.8KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -595,7 +595,6 @@ Quick links:
 - **Mounting:** [mount()](API.md#mount) | [Conditional()](API.md#conditional) | [List()](API.md#list) | [Switch()](API.md#switch)
 - **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined Elements](API.md#predefined-element-creators)
 - **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
-- **Animations:** [tween()](API.md#tween) | [animate()](API.md#animate) | [Easing Functions](API.md#easing-functions)
 - **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
 - **State:** [getSetState()](API.md#getsetstate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
 - **Environment:** [inBrowser() / inServer()](API.md#environment-utilities)
@@ -663,6 +662,26 @@ hydrate(App, document.getElementById('app'), hydrationData);
 
 **Learn more:** **[SSR.md](SSR.md)** - Complete SSR documentation with examples, best practices, and gotchas.
 
+## 🌊 Animation
+
+For high-performance animations, I recommend **[flaedi](https://www.npmjs.com/package/@fimbul-works/flaedi)**, my sub-1KB promise-based animation engine. It is designed to work seamlessly with Seidr observables.
+
+```bash
+npm install @fimbul-works/flaedi
+```
+
+```typescript
+import { Seidr } from '@fimbul-works/seidr';
+import { tween, easeOutExpo } from '@fimbul-works/flaedi';
+
+const opacity = new Seidr(0);
+
+// Smoothly animate observable value from 0 to 1
+await tween(opacity, 'value', 1, 500, easeOutExpo);
+```
+
+**[Read the full documentation](https://www.npmjs.com/package/@fimbul-works/flaedi)**
+
 ## ⚡ Performance
 
 Seidr's direct DOM manipulation approach offers several performance advantages:
@@ -686,7 +705,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **Vue counter app**: ~35KB (Vue runtime)
 - **Seidr counter app**: ~2.0KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The ~7.7KB footprint includes the entire library (Router, SSR engine, animations, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The ~6.8KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
