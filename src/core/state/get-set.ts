@@ -29,8 +29,8 @@ import { setState } from "./set";
  * The returned function **always returns the current state value** (the value *before* any update occurs).
  * This allows you to set a new value while receiving the previous one for comparison.
  */
-export function getSetState<T>(key: string): (value?: T) => T | undefined {
-  return (value?: T) => {
+export function getSetState<T>(key: string): (...args: T[]) => T | undefined {
+  return (...args: T[]) => {
     // Resolve key lazily to ensure we use the correct RenderContext in SSR
     const typedKey = createStateKey<T>(key);
 
@@ -39,8 +39,8 @@ export function getSetState<T>(key: string): (value?: T) => T | undefined {
       currentValue = getState(typedKey);
     }
 
-    if (value !== undefined) {
-      setState(typedKey, value);
+    if (args.length > 0) {
+      setState(typedKey, args[0]);
     }
     return currentValue;
   };
