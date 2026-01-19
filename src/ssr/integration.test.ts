@@ -281,7 +281,6 @@ describe("SSR Integration Tests", () => {
 
     it("should handle data attributes", () => {
       const div = $("div", {
-        // @ts-expect-error
         "data-id": "123",
         "data-name": "test",
       });
@@ -293,7 +292,6 @@ describe("SSR Integration Tests", () => {
 
     it("should escape HTML in attributes", () => {
       const div = $("div", {
-        // @ts-expect-error
         "data-html": '<script>alert("xss")</script>',
       });
 
@@ -303,12 +301,11 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle boolean attributes", () => {
-      // @ts-expect-error
-      const input = $("input", { disabled: true, readonly: true, required: false });
+      const input = $("input", { disabled: true, readOnly: true, required: false });
 
       const html = input.toString();
       expect(html).toContain("disabled");
-      expect(html).toContain("readonly");
+      expect(html).toContain("readOnly");
       expect(html).not.toContain("required");
     });
   });

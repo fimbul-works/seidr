@@ -62,7 +62,6 @@ export function hydrate<T extends SeidrNode>(
   const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
-  console.log("hydrate", factory);
   // Mount the component in the container
   const unmount = mount(factory, container);
 

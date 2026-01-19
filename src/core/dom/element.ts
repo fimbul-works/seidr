@@ -48,7 +48,7 @@ type WritableKeys<T> = {
  *
  * @template T - The underlying scalar type
  */
-export type ReactiveValue<T> = [T] extends string ? T | Seidr<Scalar> : [T] extends [Scalar] ? T | Seidr<T> : T;
+export type ReactiveValue<T> = [T] extends [Scalar] ? T | Seidr<T> : T;
 
 /**
  * Type definition for reactive HTML element properties.
@@ -76,6 +76,13 @@ export type ReactiveProps<
  */
 export type ReactiveARIAMixin = {
   [K in keyof ARIAMixin]-?: ReactiveValue<ARIAMixin[K]>;
+};
+
+/**
+ * Type definition for reactive data-* attributes.
+ */
+export type ReactiveDataMixin = {
+  [K in `data-${string}`]?: ReactiveValue<string>;
 };
 
 /**
@@ -170,7 +177,7 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  */
 export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
-  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>,
+  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveDataMixin>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> {
   // Helper function to check props for a Seidr instance
@@ -272,7 +279,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
         // Special handling for Router/SSR wrapper: if node has _ssrWrapper,
         // append all its children instead of just the node itself
-        if (node && node._ssrWrapper) {
+        if (node?._ssrWrapper) {
           const wrapper = node._ssrWrapper;
           // Move all children from wrapper to this element
           for (const c of [...wrapper.children]) {

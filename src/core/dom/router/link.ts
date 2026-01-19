@@ -76,7 +76,6 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     scope.track(
       el.on("click", (e: Event) => {
         e.preventDefault();
-        console.log("navigate to", toValue.value);
         navigate(unwrapSeidr(toValue));
       }),
     );

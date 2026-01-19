@@ -44,7 +44,7 @@ describe("cn (className utility)", () => {
 
   it("should evaluate functions with current values", () => {
     const isActive = true;
-    const size = "large";
+    const size: string = "large";
 
     expect(
       cn(
@@ -58,7 +58,6 @@ describe("cn (className utility)", () => {
       cn(
         "base",
         () => !isActive && "inactive",
-        // @ts-expect-error
         () => size === "small" && "size-small",
       ),
     ).toBe("base");
