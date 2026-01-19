@@ -1,3 +1,4 @@
+import "../style.css";
 import { $getById, hydrate } from "../../src/index.browser.js";
 import { BlogApp } from "./app.js";
 

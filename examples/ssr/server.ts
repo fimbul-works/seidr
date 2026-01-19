@@ -4,7 +4,7 @@ import type { ViteDevServer } from "vite";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";
 
-export type PageContext = { posts?: BlogPost[]; currentPost?: BlogPost | null };
+export type PageContext = { posts?: BlogPost[]; currentPost?: BlogPost };
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";

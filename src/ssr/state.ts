@@ -1,6 +1,6 @@
 import { getRenderContext } from "../core/render-context-contract";
 import { Seidr } from "../core/seidr";
-import { globalStates, symbolNames } from "../core/state";
+import { createStateKey, globalStates, symbolNames } from "../core/state";
 import { unwrapSeidr } from "../core/util";
 import { isSeidr } from "../core/util/is";
 
@@ -27,32 +27,31 @@ export const clearRenderContextState = (renderContextID: number) => globalStates
  */
 export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
   const ctxStates = globalStates.get(renderContextID);
-  console.log("captureRenderContextState", renderContextID, ctxStates);
   if (!ctxStates) {
     return {};
   }
 
   const captured: Record<string, unknown> = {};
 
-  // Get all symbol names in order to map symbols to numeric IDs
-  const symbolNamesArray = Array.from(symbolNames.entries());
+  // Get reverse mapping of symbol to name
+  const symbolToName = new Map<symbol, string>();
+  for (const [name, sym] of symbolNames.entries()) {
+    symbolToName.set(sym, name);
+  }
 
-  console.log("Server captured", symbolNamesArray.length, "Seidr");
   // Iterate through all state values
   for (const [symbol, value] of ctxStates.entries()) {
     // Skip derived Seidr instances
     if (isSeidr(value) && value.isDerived) continue;
 
-    // Find the numeric ID for this symbol
-    const id = symbolNamesArray.findIndex(([, sym]) => sym === symbol);
-    if (id === -1) continue;
+    // Find the name for this symbol
+    const name = symbolToName.get(symbol);
+    if (!name) continue;
 
     // Prefix Seidr observable keys with "$/"
-    const stateKey = isSeidr(value) ? `${SEIDR_PREFIX}${id}` : String(id);
+    const stateKey = isSeidr(value) ? `${SEIDR_PREFIX}${name}` : name;
     captured[stateKey] = unwrapSeidr(value);
   }
-
-  console.log("Server captured", Object.values(captured).length, "Seidr total");
 
   return captured;
 }
@@ -77,22 +76,14 @@ export function restoreGlobalState(state: Record<string, unknown>): void {
 
   const ctxStates = globalStates.get(renderContextID)!;
 
-  // Get all symbol names in order to map numeric IDs to symbols
-  const symbolNamesArray = Array.from(symbolNames.entries());
-
   // Iterate through the captured state
   for (const [key, value] of Object.entries(state)) {
     // Check if key is prefixed with "$/" (Seidr observable)
     const isSeidrValue = key.startsWith(SEIDR_PREFIX);
-    const idStr = isSeidrValue ? key.slice(SEIDR_PREFIX.length) : key;
-    const id = parseInt(idStr, 10);
+    const name = isSeidrValue ? key.slice(SEIDR_PREFIX.length) : key;
 
-    // Find the symbol for this numeric ID
-    if (Number.isNaN(id) || id < 0 || id >= symbolNamesArray.length) {
-      continue;
-    }
-
-    const [, targetSymbol] = symbolNamesArray[id];
+    // Resolve or create symbol for this name
+    const targetSymbol = createStateKey(name);
 
     // Check if there's already a state value for this symbol
     const existingValue = ctxStates.get(targetSymbol);

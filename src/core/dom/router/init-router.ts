@@ -5,10 +5,12 @@ import { getCurrentPath } from "./get-current-path";
  * @param {string} path - Current URL path
  * @returns {() => void} Cleanup function that stops listening to path change events.
  */
-export function initRouter(path: string = typeof window !== "undefined" ? window.location.pathname : "/"): () => void {
+export function initRouter(path?: string): () => void {
   // Set the initial path value
   const currentPath = getCurrentPath();
-  currentPath.value = path;
+  if (path !== undefined) {
+    currentPath.value = path;
+  }
 
   // Return noop in SSR
   if (typeof window === "undefined") {

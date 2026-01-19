@@ -268,13 +268,20 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         // Skip null/undefined/false
         if (item === null || item === undefined || item === false || item === true) return;
 
-        const node = isSeidrComponent(item) ? item.element : item;
+        const node = (isSeidrComponent(item) ? item.element : item) as any;
 
-        // Handle number
-        if (typeof node === "number") {
+        // Special handling for Router/SSR wrapper: if node has _ssrWrapper,
+        // append all its children instead of just the node itself
+        if (node && node._ssrWrapper) {
+          const wrapper = node._ssrWrapper;
+          // Move all children from wrapper to this element
+          for (const c of [...wrapper.children]) {
+            el.appendChild(c);
+          }
+        } else if (typeof node === "number") {
           el.appendChild(String(node));
-        } else {
-          el.appendChild(node as any);
+        } else if (node) {
+          el.appendChild(node);
         }
 
         if (isSeidrComponent(item) && item.scope.onAttached) {

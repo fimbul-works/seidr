@@ -6,20 +6,17 @@ import {
   $li,
   $p,
   $ul,
-  Conditional,
   createStateKey,
   hasState,
   Link,
   List,
-  Seidr,
+  type Seidr,
   Suspense,
-  Switch,
   useScope,
   useState,
 } from "../../src/core/index.js";
-import { inBrowser, inServer, isBrowser, isServer } from "../../src/ssr/env.js";
+import { inBrowser, inServer, isServer } from "../../src/ssr/env.js";
 import { getPost, getPosts } from "./data.js";
-import { getSetCurrentPost, getSetPosts } from "./state.js";
 import type { BlogPost } from "./types.js";
 
 const PostCard = (post: BlogPost) =>
@@ -32,15 +29,11 @@ const PostCard = (post: BlogPost) =>
 
 export const HomePage = () => {
   const scope = useScope();
-  // let posts: Seidr<BlogPost[]> = getSetPosts()!;
   let postsPromise: Promise<Seidr<BlogPost[]>>;
-
   let [posts, setPosts] = useState<BlogPost[]>("posts");
-  console.log("homepage render", posts);
 
   if (isServer()) {
     // Server-side fetch (direct DB access)
-    console.log("on server");
     postsPromise = inServer(async () => {
       setPosts(await getPosts());
       return posts;
@@ -48,9 +41,7 @@ export const HomePage = () => {
     scope.waitFor(postsPromise);
   } else {
     // Client-side fetch if empty
-    console.log("in browser", hasState(createStateKey("posts"))); // This is false, despite hydration data having it!
     postsPromise = inBrowser(async () => {
-      console.log("browser got", posts?.value);
       if (posts?.value.length > 0) {
         return posts;
       } else {
@@ -62,7 +53,6 @@ export const HomePage = () => {
   }
 
   return Suspense(postsPromise, (posts) => {
-    console.log("suspense resolved", posts);
     return $div({ className: "home-page" }, [
       $h1({ textContent: "Latest Posts" }),
       $ul({ className: "post-list" }, [List(posts, (p) => p.slug, PostCard)]),
@@ -71,75 +61,39 @@ export const HomePage = () => {
 };
 
 export const PostPage = (params: Seidr<{ slug: string }>) => {
-  const post: Seidr<BlogPost> = getSetCurrentPost()!;
+  const scope = useScope();
+  const slug = params.value.slug;
+  const [post, setPost] = useState<BlogPost>("currentPost");
   let postPromise: Promise<Seidr<BlogPost>>;
 
-  return $div({ textContent: "TODO" });
-  const slug = params.as((p) => p.slug);
-  const loading = new Seidr(false);
-  const error = new Seidr<string | null>(null);
-
-  function fetchPost(s: string) {
-    const current = currentPostState.value;
-    // If we have the post in state and it matches, use it immediately
-    if (current?.slug === s) {
-      loading.value = false;
-      return;
-    }
-
-    loading.value = true;
-    error.value = null;
-
-    // Client-side: Fetch from API
-    inBrowser(async () => {
-      try {
-        const res = await fetch(`/api/posts/${s}`);
-        if (!res.ok) throw new Error("Post not found");
-        currentPostState.value = await res.json();
-        loading.value = false;
-      } catch (err: any) {
-        error.value = err.message;
-        loading.value = false;
-      }
+  if (isServer()) {
+    postPromise = inServer(async () => {
+      const data = await getPost(slug);
+      if (data) setPost(data);
+      return post;
     });
-
-    // Server-side: Fetch directly
-    inServer(async () => {
-      try {
-        const data = await getPost(s);
-        if (!data) throw new Error("Post not found");
-        currentPostState.value = data;
-        loading.value = false;
-      } catch (err: any) {
-        error.value = err.message;
-        loading.value = false;
+    scope.waitFor(postPromise);
+  } else {
+    postPromise = inBrowser(async () => {
+      if (post.value?.slug === slug) {
+        return post;
       }
+      const res = await fetch(`/api/posts/${slug}`);
+      if (res.ok) {
+        setPost(await res.json());
+      }
+      return post;
     });
   }
 
-  slug.observe(fetchPost);
+  return Suspense(postPromise, (post) => {
+    const p = post.value;
+    if (!p) return $div({ textContent: "Post not found" });
 
-  // Compute view state
-  const viewState = Seidr.computed(() => {
-    if (loading.value) return "loading";
-    if (error.value) return "error";
-    if (!currentPostState.value) return "not-found";
-    return "content";
-  }, [loading, error, currentPostState]);
-
-  return $article({ className: "post-page" }, [
-    Switch(viewState, {
-      loading: () => $div({ textContent: "Loading..." }),
-      error: () => $div({ textContent: `Error: ${error.value}` }),
-      "not-found": () => $div({ textContent: "Post not found" }),
-      content: () => {
-        const post = currentPostState.value!;
-        return $div({}, [
-          $h1({ textContent: post.title }),
-          $div({ className: "meta", textContent: new Date(post.date).toLocaleDateString() }),
-          DangerousHTML(post.content),
-        ]);
-      },
-    }),
-  ]);
+    return $article({ className: "post-page" }, [
+      $h1({ textContent: p.title }),
+      $div({ className: "meta", textContent: new Date(p.date).toLocaleDateString() }),
+      $div({ className: "markdown-body", innerHTML: p.content }),
+    ]);
+  });
 };
