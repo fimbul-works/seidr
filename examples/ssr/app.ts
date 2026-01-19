@@ -1,6 +1,20 @@
-import { $a, $div, $footer, $nav, initRouter, Link, Router, Seidr, setState } from "../../src/core/index.js";
+import {
+  $a,
+  $div,
+  $footer,
+  $nav,
+  getSetState,
+  initRouter,
+  Link,
+  Router,
+  setState,
+  useScope,
+  useState,
+} from "../../src/core/index.js";
+import { inServer } from "../../src/ssr/env.js";
 import { routes } from "./routes.js";
-import { currentPostKey, postsKey } from "./state.js";
+import type { PageContext } from "./server.js";
+import { getSetCurrentPost, getSetPosts } from "./state.js";
 import type { BlogPost } from "./types.js";
 
 // Components
@@ -14,22 +28,18 @@ const Header = () =>
   ]);
 
 // Main App
-export const BlogApp = (props?: { posts?: BlogPost[]; currentPost?: BlogPost | null }) => {
+export const BlogApp = ({ posts = [], currentPost = null }: PageContext) => {
   initRouter();
 
-  const posts = new Seidr<BlogPost[]>([]);
-  const currentPost = new Seidr<BlogPost | null>(null);
+  inServer(() => {
+    if (posts.length) {
+      setState("posts", posts);
+    }
 
-  if (props) {
-    if (props.posts) posts.value = props.posts;
-    if (props.currentPost) currentPost.value = props.currentPost;
-
-    setState(postsKey, posts);
-    setState(currentPostKey, currentPost);
-  } else {
-    setState(postsKey, posts);
-    setState(currentPostKey, currentPost);
-  }
+    if (currentPost) {
+      setState("currentPost", currentPost);
+    }
+  });
 
   return $div({ className: "app-container" }, [
     Header(),

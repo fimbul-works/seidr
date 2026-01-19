@@ -24,7 +24,7 @@ describe("getState", () => {
   it("should throw error if state not found", () => {
     const key = createStateKey<number>("nonexistent");
 
-    expect(() => getState(key)).toThrow("State not found for key");
+    expect(getState(key)).toBeUndefined();
   });
 
   it("should preserve type information", () => {

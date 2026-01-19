@@ -1,10 +1,10 @@
 import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
 import type { ViteDevServer } from "vite";
-import { matchRoute } from "../../src/core/dom/router/index.js";
 import { getPost, getPosts } from "./data.js";
-import { routes } from "./routes.js";
 import type { BlogPost } from "./types.js";
+
+export type PageContext = { posts?: BlogPost[]; currentPost?: BlogPost | null };
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
@@ -63,7 +63,7 @@ app.get(/.*/, async (req, res) => {
     }
 
     let template: string;
-    let render: (url: string, posts?: BlogPost[], currentPost?: BlogPost | null) => any;
+    let render: (url: string, ctx: PageContext) => any;
 
     if (!isProduction) {
       // Always read fresh template in development
@@ -76,7 +76,7 @@ app.get(/.*/, async (req, res) => {
     }
 
     // Data is now fetched by components themselves using inServer/inBrowser
-    const rendered = await render(url);
+    const rendered = await render(url, {});
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")

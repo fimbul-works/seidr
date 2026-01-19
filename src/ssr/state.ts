@@ -27,6 +27,7 @@ export const clearRenderContextState = (renderContextID: number) => globalStates
  */
 export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
   const ctxStates = globalStates.get(renderContextID);
+  console.log("captureRenderContextState", renderContextID, ctxStates);
   if (!ctxStates) {
     return {};
   }
@@ -36,6 +37,7 @@ export function captureRenderContextState(renderContextID: number): Record<strin
   // Get all symbol names in order to map symbols to numeric IDs
   const symbolNamesArray = Array.from(symbolNames.entries());
 
+  console.log("Server captured", symbolNamesArray.length, "Seidr");
   // Iterate through all state values
   for (const [symbol, value] of ctxStates.entries()) {
     // Skip derived Seidr instances
@@ -49,6 +51,8 @@ export function captureRenderContextState(renderContextID: number): Record<strin
     const stateKey = isSeidr(value) ? `${SEIDR_PREFIX}${id}` : String(id);
     captured[stateKey] = unwrapSeidr(value);
   }
+
+  console.log("Server captured", Object.values(captured).length, "Seidr total");
 
   return captured;
 }

@@ -6,17 +6,20 @@ import {
   $li,
   $p,
   $ul,
-  getState,
+  Conditional,
+  createStateKey,
   hasState,
   Link,
   List,
   Seidr,
   Suspense,
   Switch,
+  useScope,
+  useState,
 } from "../../src/core/index.js";
-import { inBrowser, inServer } from "../../src/ssr/env.js";
+import { inBrowser, inServer, isBrowser, isServer } from "../../src/ssr/env.js";
 import { getPost, getPosts } from "./data.js";
-import { currentPostKey, postsKey } from "./state.js";
+import { getSetCurrentPost, getSetPosts } from "./state.js";
 import type { BlogPost } from "./types.js";
 
 const PostCard = (post: BlogPost) =>
@@ -28,51 +31,58 @@ const PostCard = (post: BlogPost) =>
   ]);
 
 export const HomePage = () => {
-  const posts = getState(postsKey);
+  const scope = useScope();
+  // let posts: Seidr<BlogPost[]> = getSetPosts()!;
+  let postsPromise: Promise<Seidr<BlogPost[]>>;
 
-  // Client-side fetch if empty
-  inBrowser(async () => {
-    if (posts.value.length === 0) {
-      const res = await fetch("/api/posts");
-      posts.value = await res.json();
-    }
-  });
+  let [posts, setPosts] = useState<BlogPost[]>("posts");
+  console.log("homepage render", posts);
 
-  // Server-side fetch (direct DB access)
-  inServer(async () => {
-    if (posts.value.length === 0) {
-      posts.value = await getPosts();
-    }
-  });
-
-  return $div({ className: "home-page" }, [
-    $h1({ textContent: "Latest Posts" }),
-    $ul({ className: "post-list" }, [List(posts, (p) => p.slug, PostCard)]),
-  ]);
-};
-
-// Helper to manually create 'unsafe' HTML content
-const DangerousHTML = (html: Seidr<string> | string) => {
-  const el = $div({ className: "markdown-body" });
-  if (html instanceof Seidr) {
-    el.innerHTML = html.value;
-    html.observe((v) => (el.innerHTML = v));
+  if (isServer()) {
+    // Server-side fetch (direct DB access)
+    console.log("on server");
+    postsPromise = inServer(async () => {
+      setPosts(await getPosts());
+      return posts;
+    });
+    scope.waitFor(postsPromise);
   } else {
-    el.innerHTML = html;
+    // Client-side fetch if empty
+    console.log("in browser", hasState(createStateKey("posts"))); // This is false, despite hydration data having it!
+    postsPromise = inBrowser(async () => {
+      console.log("browser got", posts?.value);
+      if (posts?.value.length > 0) {
+        return posts;
+      } else {
+        const res = await fetch("/api/posts");
+        posts = setPosts(await res.json());
+        return postsPromise;
+      }
+    });
   }
-  return el;
+
+  return Suspense(postsPromise, (posts) => {
+    console.log("suspense resolved", posts);
+    return $div({ className: "home-page" }, [
+      $h1({ textContent: "Latest Posts" }),
+      $ul({ className: "post-list" }, [List(posts, (p) => p.slug, PostCard)]),
+    ]);
+  });
 };
 
 export const PostPage = (params: Seidr<{ slug: string }>) => {
-  const currentPost = getState(currentPostKey);
+  const post: Seidr<BlogPost> = getSetCurrentPost()!;
+  let postPromise: Promise<Seidr<BlogPost>>;
+
+  return $div({ textContent: "TODO" });
   const slug = params.as((p) => p.slug);
   const loading = new Seidr(false);
   const error = new Seidr<string | null>(null);
 
   function fetchPost(s: string) {
-    const current = currentPost.value;
+    const current = currentPostState.value;
     // If we have the post in state and it matches, use it immediately
-    if (current && current.slug === s) {
+    if (current?.slug === s) {
       loading.value = false;
       return;
     }
@@ -85,8 +95,7 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
       try {
         const res = await fetch(`/api/posts/${s}`);
         if (!res.ok) throw new Error("Post not found");
-        const data = await res.json();
-        currentPost.value = data;
+        currentPostState.value = await res.json();
         loading.value = false;
       } catch (err: any) {
         error.value = err.message;
@@ -99,7 +108,7 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
       try {
         const data = await getPost(s);
         if (!data) throw new Error("Post not found");
-        currentPost.value = data;
+        currentPostState.value = data;
         loading.value = false;
       } catch (err: any) {
         error.value = err.message;
@@ -110,18 +119,13 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
 
   slug.observe(fetchPost);
 
-  // Initial Check
-  if (!(hasState(currentPostKey) && currentPost.value && currentPost.value.slug === slug.value)) {
-    fetchPost(slug.value);
-  }
-
   // Compute view state
   const viewState = Seidr.computed(() => {
     if (loading.value) return "loading";
     if (error.value) return "error";
-    if (!currentPost.value) return "not-found";
+    if (!currentPostState.value) return "not-found";
     return "content";
-  }, [loading, error, currentPost]);
+  }, [loading, error, currentPostState]);
 
   return $article({ className: "post-page" }, [
     Switch(viewState, {
@@ -129,7 +133,7 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
       error: () => $div({ textContent: `Error: ${error.value}` }),
       "not-found": () => $div({ textContent: "Post not found" }),
       content: () => {
-        const post = currentPost.value!;
+        const post = currentPostState.value!;
         return $div({}, [
           $h1({ textContent: post.title }),
           $div({ className: "meta", textContent: new Date(post.date).toLocaleDateString() }),

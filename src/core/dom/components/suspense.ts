@@ -1,9 +1,13 @@
 import { Seidr } from "../../seidr";
-import { isSeidr } from "../../util/is";
+import { isSeidr, unwrapSeidr } from "../../util";
 import { component, type SeidrComponent } from "../component";
 import type { SeidrNode } from "../element";
 import { useScope } from "../use-scope";
 import { Switch } from "./switch";
+
+const PROMISE_PENDING = "pending";
+const PROMISE_RESOLVED = "resolved";
+const PROMISE_ERROR = "error";
 
 /**
  * Creates a component that handles Promise resolution with loading and error states.
@@ -25,17 +29,21 @@ export function Suspense<T, R extends SeidrNode>(
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
-    const status = new Seidr<"pending" | "resolved" | "error">("pending");
+    const promise = unwrapSeidr(promiseOrSeidr);
+    const status = new Seidr<"pending" | "resolved" | "error">(PROMISE_PENDING);
 
     let resolvedValue: T | null = null;
     let errorValue: Error | null = null;
     let currentPromiseId = 0;
 
+    // Handle already resolved promise values
+    promise.then((v) => ((resolvedValue = v), (status.value = PROMISE_RESOLVED)));
+    promise.catch((err) => ((errorValue = err), (status.value = PROMISE_ERROR)));
+
     const handlePromise = async (prom: Promise<T>) => {
       // Register with scope for SSR waiting
       scope.waitFor(prom);
-
-      status.value = "pending";
+      status.value = PROMISE_PENDING;
 
       const myId = ++currentPromiseId;
 
@@ -43,21 +51,24 @@ export function Suspense<T, R extends SeidrNode>(
         const value = await prom;
         if (!scope.isDestroyed && myId === currentPromiseId) {
           resolvedValue = value;
-          status.value = "resolved";
+          status.value = PROMISE_RESOLVED;
         }
       } catch (err) {
         if (!scope.isDestroyed && myId === currentPromiseId) {
           errorValue = err instanceof Error ? err : new Error(String(err));
-          status.value = "error";
+          status.value = PROMISE_ERROR;
         }
       }
     };
 
-    if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      scope.track(promiseOrSeidr.observe(handlePromise));
-      handlePromise(promiseOrSeidr.value);
-    } else {
-      handlePromise(promiseOrSeidr);
+    // Handle unresolved promise
+    if (status.value === PROMISE_PENDING) {
+      if (isSeidr<Promise<T>>(promiseOrSeidr)) {
+        scope.track(promiseOrSeidr.observe(handlePromise));
+        handlePromise(promiseOrSeidr.value);
+      } else {
+        handlePromise(promiseOrSeidr);
+      }
     }
 
     return Switch(status, {

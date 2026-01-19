@@ -1,4 +1,5 @@
 import { getRenderContext } from "../render-context-contract";
+import { createStateKey } from "./create-key";
 import { globalStates } from "./storage";
 import type { StateKey } from "./types";
 
@@ -7,17 +8,23 @@ import type { StateKey } from "./types";
  *
  * @template T - state type
  *
- * @param {StateKey<T>} key - Key for the state
- * @returns {T} State value
- * @throws {Error} if state is not set
+ * @param {StateKey<T> | string} key - Key for the state
+ * @returns {T | undefined} State value, or `undefined` if not set
  */
-export function getState<T>(key: StateKey<T>): T {
+export function getState<T>(key: StateKey<T> | string): T | undefined {
   const ctx = getRenderContext();
   const renderScopeID = ctx ? ctx.renderContextID : 0;
 
   const ctxStates = globalStates.get(renderScopeID);
+
+  // Resolve key lazily to ensure we use the correct RenderContext in SSR
+  if (typeof key === "string") {
+    key = createStateKey<T>(key);
+  }
+
+  // No state found for key
   if (!ctxStates?.has(key)) {
-    throw new Error(`State not found for key: ${String(key)}`);
+    return undefined;
   }
 
   return ctxStates.get(key) as T;

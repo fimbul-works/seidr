@@ -21,6 +21,7 @@ const posts: BlogPost[] = [
 ];
 
 export async function getPosts(): Promise<BlogPost[]> {
+  console.log("getPosts called");
   return posts;
 }
 

@@ -1,6 +1,7 @@
-import type { SeidrNode } from "../core/dom";
+import { type SeidrNode, wrapComponent } from "../core/dom";
 import { mount } from "../core/dom/mount";
 import { $query } from "../core/dom/query";
+import { isFn } from "../core/util";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
@@ -61,9 +62,9 @@ export function hydrate<T extends SeidrNode>(
   const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
-  const comp = factory();
+  console.log("hydrate", factory);
   // Mount the component in the container
-  const unmount = mount(comp, container);
+  const unmount = mount(factory, container);
 
   // Remove existing root component if found
   if (existingRoot) {
