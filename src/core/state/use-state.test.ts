@@ -56,21 +56,18 @@ describe("useState", () => {
   });
 
   it("should warn when called outside component hierarchy", () => {
-    const traceSpy = vi.spyOn(console, "trace").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     runWithRenderContextStore(() => {
       useState("outside");
     });
 
-    expect(traceSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Calling useState outside of component hierarchy"),
-      expect.any(Number),
-    );
-    traceSpy.mockRestore();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Calling useState outside of component hierarchy"));
+    warnSpy.mockRestore();
   });
 
   it("should not warn when called inside component hierarchy", () => {
-    const traceSpy = vi.spyOn(console, "trace").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     runWithRenderContextStore(() => {
       const MyComp = component(() => {
@@ -80,8 +77,8 @@ describe("useState", () => {
       MyComp();
     });
 
-    expect(traceSpy).not.toHaveBeenCalled();
-    traceSpy.mockRestore();
+    expect(warnSpy).not.toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 
   it("should interact correctly with plain setState", () => {

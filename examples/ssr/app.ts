@@ -3,7 +3,6 @@ import {
   $div,
   $footer,
   $nav,
-  getSetState,
   initRouter,
   Link,
   Router,
@@ -14,7 +13,6 @@ import {
 import { inServer } from "../../src/ssr/env.js";
 import { routes } from "./routes.js";
 import type { PageContext } from "./server.js";
-import { getSetCurrentPost, getSetPosts } from "./state.js";
 import type { BlogPost } from "./types.js";
 
 // Components

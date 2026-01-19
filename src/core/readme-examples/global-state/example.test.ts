@@ -1,19 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { getSetState } from "../../state";
+import { useState } from "../../state";
 
 describe("Global State Management Example", () => {
-  it("should demonstrate getSetState usage", () => {
-    // 1. Create a global state accessor
-    const userCount = getSetState<number>("readme-user-count");
+  it("should demonstrate useState usage", () => {
+    // 1. Initialize state with the useState hook
+    const [userCount, setUserCount] = useState<number>("readme-user-count");
 
-    // 2. Initialize
-    userCount(0);
-    expect(userCount()).toBe(0);
+    // 2. Initial state (undefined by default if not set elsewhere)
+    setUserCount(0);
+    expect(userCount.value).toBe(0);
 
-    // 3. Update and get previous value
-    const prev = userCount(userCount()! + 1);
+    // 3. Update state
+    setUserCount(userCount.value! + 1);
 
-    expect(prev).toBe(0); // Previous value
-    expect(userCount()).toBe(1); // New value
+    expect(userCount.value).toBe(1); // New value
   });
 });

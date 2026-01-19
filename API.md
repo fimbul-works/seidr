@@ -35,7 +35,7 @@
   - [`hasState()`](#hasstate)
   - [`setState()`](#setstate)
   - [`getState()`](#getstate)
-  - [`getSetState()`](#getsetstate)
+  - [`useState()`](#usestate)
 - [Utilities](#utilities)
   - [`elementClassToggle()`](#elementclasstoggle)
   - [`bindInput()`](#bindinput)
@@ -1058,46 +1058,43 @@ console.log(counter); // 42
 
 ---
 
-### getSetState()
+### useState()
 
-Creates a simplified getter/setter function for a specific state variable.
+A hook for managing shared application state as a global Seidr singleton.
 
-**Generic Type:** `T` - The type of value that will be stored
+> 💡 **Comparison to React:** While it shares a similar name, Seidr's `useState` is **Global**, not local. It implements a singleton pattern: every call with the same key returns the exact same observable instance. Use this to share state across multiple independent components.
+
+**Generic Type:** `T` - The type of value stored
 
 **Parameters:**
-- `key` - Unique string key for the state
+- `key` - Unique string key for the state, or a `StateKey<T>`
 
-**Returns:** A function `(value?: T) => T | undefined`
-
-The returned function **always returns the current state value** (the value *before* any update occurs). This allows you to set a new value while receiving the previous one for comparison.
+**Returns:** `[Seidr<T>, (v: T | Seidr<T>) => Seidr<T>]` - A tuple with the shared Seidr observable and a setter function.
 
 ```typescript
-import { getSetState } from '@fimbul-works/seidr';
+import { useState } from '@fimbul-works/seidr';
 
-// Create the accessor
-const count = getSetState<number>('count');
+const MyComponent = () => {
+  // 1. Get shared state and setter
+  const [count, setCount] = useState<number>('count');
 
-// Set value (updates state to 42, returns the PREVIOUS value)
-const previous = count(42);
+  // 2. Initialize if needed
+  if (count.value === undefined) {
+    setCount(10);
+  }
 
-// Compare:
-// Compare:
-const current = count();
-console.log(`Changed from ${previous} to ${current}`);
+  return $button({
+    textContent: count.as(n => `Count: ${n}`),
+    onclick: () => setCount(count.value! + 1)
+  });
+};
 ```
+
+**Singleton Pattern:**
+The first time `useState` is called for a key, it creates the `Seidr` instance. All subsequent calls with the same key (in any component) return that same instance. This simplifies cross-component synchronization.
 
 **SSR Note:**
-While you can export the accessor function from a module (global scope), you must always **call** it inside a component or async server context when running on the server. The state key is resolved lazily, which allows Seidr to bind the state to the correct Request Context during SSR.
-
-```typescript
-// Safe pattern for SSR:
-const globalState = getSetState('key'); // Defined globally
-
-export const App = () => {
-  globalState(123); // Used locally
-  return ...
-}
-```
+`useState` is safe for SSR because it resolves the state context lazily. During server rendering, state is automatically isolated to the specific request context.
 
 ---
 

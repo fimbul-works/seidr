@@ -14,7 +14,6 @@ export function wrapComponent<P = void, T extends SeidrNode = SeidrNode>(
   factory: (P extends void ? () => T : (props: P) => T) | SeidrComponentFactory<P>,
 ): SeidrComponentFactory<P> {
   if (isSeidrComponentFactory<P>(factory)) {
-    console.log("IS FACTORY", factory);
     return factory;
   }
   return component<P>(factory);

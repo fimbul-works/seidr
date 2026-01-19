@@ -538,37 +538,33 @@ todos.value = [{ id: 1, text: 'Learn Seidr', completed: true }];
 **Learn more:** [withStorage()](API.md#withstorage)
 
 ### Global State Management
-Seidr provides a simple, type-safe global state management system. Use `getSetState()` to create a single accessor function that acts as both a getter and a setter.
+Seidr provides a simple, type-safe global state management system via the `useState()` hook.
+
+> ⚠️ **Crucial Difference from React:** Unlike React's `useState` which is local to a specific component instance, Seidr's `useState` is **Global**. It uses a singleton pattern: every call with the same key returns the exact same observable instance, effectively acting as "Shared State" across your entire application.
 
 ```typescript
-import { getSetState, Seidr, $button, $span } from '@fimbul-works/seidr';
+import { useState, $button, $span } from '@fimbul-works/seidr';
 
-// 1. Define the accessor globally (Safe for SSR!)
-// This creates a handle, but doesn't resolve the state until called.
-const userCount = getSetState<number>('user-count');
-
+// 1. Use the hook with a unique key
 const Counter = () => {
-  // 2. Initialize locally
-  // Always check if it's undefined to prevent resetting shared state
-  if (userCount() === undefined) {
-      userCount(0);
+  const [userCount, setUserCount] = useState<number>('user-count');
+
+  // 2. Initialize if needed (or let it be undefined)
+  if (userCount.value === undefined) {
+      setUserCount(0);
   }
 
-  // 3. Use it
+  // 3. Bind and update
   return $button({
-    textContent: `Users: ${userCount()}`,
-    onclick: () => {
-      // Updates state and returns previous value
-      const prev = userCount(userCount()! + 1);
-      console.log('Previous count:', prev);
-    }
+    textContent: userCount.as(n => `Users: ${n}`),
+    onclick: () => setUserCount(userCount.value! + 1)
   });
 };
 ```
 
-**SSR Best Practice:** You can define the accessor (`userCount`) anywhere, but you must only **call** it (e.g. `userCount()`) inside components or async server functions. This ensures the state is correctly isolated for each server request.
+**SSR Best Practice:** The `useState` hook is safe for SSR because it resolves the state context lazily when called, ensuring that state is isolated per-request during server rendering.
 
-**Learn more:** [getSetState()](API.md#getsetstate)
+**Learn more:** [useState()](API.md#usestate)
 
 ### Custom Element Factories
 
@@ -596,7 +592,7 @@ Quick links:
 - **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined Elements](API.md#predefined-element-creators)
 - **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
 - **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
-- **State:** [getSetState()](API.md#getsetstate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
+- **State:** [useState()](API.md#usestate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
 - **Environment:** [inBrowser() / inServer()](API.md#environment-utilities)
 
 ---
@@ -703,7 +699,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~2.0KB (minified + gzipped)
+- **Seidr counter app**: ~2.1KB (minified + gzipped)
 
 > **Note on Tree-Shaking:** The ~6.9KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
