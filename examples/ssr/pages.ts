@@ -6,8 +6,6 @@ import {
   $li,
   $p,
   $ul,
-  createStateKey,
-  hasState,
   Link,
   List,
   type Seidr,
@@ -30,7 +28,7 @@ const PostCard = (post: BlogPost) =>
 export const HomePage = () => {
   const scope = useScope();
   let postsPromise: Promise<Seidr<BlogPost[]>>;
-  let [posts, setPosts] = useState<BlogPost[]>("posts");
+  const [posts, setPosts] = useState<BlogPost[]>("posts");
 
   if (isServer()) {
     // Server-side fetch (direct DB access)
@@ -42,12 +40,12 @@ export const HomePage = () => {
   } else {
     // Client-side fetch if empty
     postsPromise = inBrowser(async () => {
-      if (posts?.value.length > 0) {
+      if (posts?.value?.length > 0) {
         return posts;
       } else {
         const res = await fetch("/api/posts");
-        posts = setPosts(await res.json());
-        return postsPromise;
+        const data = await res.json();
+        return setPosts(data);
       }
     });
   }

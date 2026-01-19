@@ -1,8 +1,9 @@
+import { ServerHTMLElement } from "../../ssr/server-html-element";
 import { getRenderContext } from "../render-context-contract";
-import { isHTMLElement, isSeidrComponent } from "../util/is";
+import { isHTMLElement, isNum, isSeidrComponent, isStr } from "../util/is";
 import { type ComponentScope, createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
-import type { SeidrNode } from "./element";
+import { $comment, $text, type SeidrNode } from "./element";
 
 // Check if we're in SSR mode
 const isSSR = typeof window === "undefined" || (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);
@@ -111,6 +112,19 @@ export function component<P = void>(
       // Call factory with props (or undefined if no props)
       const result = factory(props as P);
 
+      // Helper to normalize SeidrNode to DOM Node (or string in SSR)
+      const toNode = (item: any): any => {
+        if (isSeidrComponent(item)) return item.element;
+        if (item === null || item === undefined || item === false || item === true) {
+          return $comment("");
+        }
+        if (isStr(item) || isNum(item)) {
+          if (isSSR) return String(item);
+          return $text(String(item));
+        }
+        return item;
+      };
+
       // Track child SeidrComponents to propagate onAttached
       const childComponents: SeidrComponent[] = [];
 
@@ -119,24 +133,22 @@ export function component<P = void>(
         if (isSSR) {
           // In SSR, we can't use DocumentFragment because ServerComment instances
           // can't be appended to real DOM fragments. Instead, create a wrapper div.
-          const wrapper = document.createElement("div");
+          const wrapper = new ServerHTMLElement("div");
           result.forEach((item) => {
-            // Unwrap SeidrComponents to their elements
-            const node = isSeidrComponent(item) ? item.element : item;
+            const node = toNode(item);
             // Track child components for onAttached propagation
             if (isSeidrComponent(item)) {
               childComponents.push(item);
             }
-            // ServerHTMLElement.appendChild knows how to handle ServerComment
+            // ServerHTMLElement.appendChild knows how to handle strings and ServerComments
             (wrapper as any).appendChild(node);
           });
-          comp.element = wrapper;
+          comp.element = wrapper as any;
         } else {
           // Client-side: Use DocumentFragment as normal
           const fragment = document.createDocumentFragment();
           result.forEach((item) => {
-            // Unwrap SeidrComponents to their elements
-            const node = isSeidrComponent(item) ? item.element : item;
+            const node = toNode(item);
             // Track child components for onAttached propagation
             if (isSeidrComponent(item)) {
               childComponents.push(item);
@@ -146,8 +158,8 @@ export function component<P = void>(
           comp.element = fragment as any;
         }
       } else {
-        // Unwrap SeidrComponents to their elements
-        comp.element = isSeidrComponent(result) ? result.element : result;
+        // Unwrap SeidrComponents to their elements, or normalize primitives
+        comp.element = toNode(result);
         // Track child component for onAttached propagation
         if (isSeidrComponent(result)) {
           childComponents.push(result);

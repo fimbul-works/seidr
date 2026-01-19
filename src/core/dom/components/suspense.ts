@@ -29,20 +29,14 @@ export function Suspense<T, R extends SeidrNode>(
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
-    const promise = unwrapSeidr(promiseOrSeidr);
     const status = new Seidr<"pending" | "resolved" | "error">(PROMISE_PENDING);
 
     let resolvedValue: T | null = null;
     let errorValue: Error | null = null;
     let currentPromiseId = 0;
 
-    // Handle already resolved promise values
-    promise.then((v) => ((resolvedValue = v), (status.value = PROMISE_RESOLVED)));
-    promise.catch((err) => ((errorValue = err), (status.value = PROMISE_ERROR)));
-
     const handlePromise = async (prom: Promise<T>) => {
-      // Register with scope for SSR waiting
-      scope.waitFor(prom);
+      if (!prom) return;
       status.value = PROMISE_PENDING;
 
       const myId = ++currentPromiseId;
@@ -61,14 +55,19 @@ export function Suspense<T, R extends SeidrNode>(
       }
     };
 
-    // Handle unresolved promise
-    if (status.value === PROMISE_PENDING) {
-      if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-        scope.track(promiseOrSeidr.observe(handlePromise));
-        handlePromise(promiseOrSeidr.value);
-      } else {
-        handlePromise(promiseOrSeidr);
-      }
+    // Track initial promise
+    const initialProm = unwrapSeidr(promiseOrSeidr);
+    if (initialProm) {
+      scope.waitFor(handlePromise(initialProm));
+    }
+
+    // Handle reactive promise changes
+    if (isSeidr<Promise<T>>(promiseOrSeidr)) {
+      scope.track(
+        promiseOrSeidr.observe((prom) => {
+          scope.waitFor(handlePromise(prom));
+        }),
+      );
     }
 
     return Switch(status, {

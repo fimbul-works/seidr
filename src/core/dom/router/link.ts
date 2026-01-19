@@ -59,10 +59,6 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     const props: Record<string, any> = {
       ...restProps,
       href: toValue,
-      onclick: (e: Event) => {
-        e.preventDefault();
-        navigate(unwrapSeidr(toValue));
-      },
     };
 
     // Handle className reactively if activeProp is className
@@ -76,6 +72,14 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
       props[activeProp] = activeValueBinding;
     }
 
-    return $(tagName as K, props as any, children);
+    const el = $(tagName as K, props as any, children);
+    scope.track(
+      el.on("click", (e: Event) => {
+        e.preventDefault();
+        console.log("navigate to", toValue.value);
+        navigate(unwrapSeidr(toValue));
+      }),
+    );
+    return el;
   })();
 }

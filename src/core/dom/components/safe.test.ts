@@ -243,8 +243,8 @@ describe("Safe", () => {
         },
       );
 
-      // Component will have null element - user's responsibility to return valid element
-      expect(comp.element).toBeNull();
+      // Component will have a comment node as placeholder instead of null
+      expect(comp.element.nodeType).toBe(8); // Node.COMMENT_NODE
     });
 
     it("should handle errors during child component registration", () => {

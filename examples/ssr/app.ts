@@ -28,7 +28,7 @@ const Header = () =>
   ]);
 
 // Main App
-export const BlogApp = ({ posts = [], currentPost = null }: PageContext) => {
+export const BlogApp = ({ posts = [], currentPost = undefined }: PageContext = {}) => {
   initRouter();
 
   inServer(() => {
