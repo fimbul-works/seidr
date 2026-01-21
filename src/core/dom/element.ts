@@ -48,7 +48,9 @@ type WritableKeys<T> = {
  *
  * @template T - The underlying scalar type
  */
-export type ReactiveValue<T> = [T] extends [Scalar] ? T | Seidr<T> : T;
+export type ReactiveValue<T> = [T] extends [Scalar]
+  ? T | Seidr<string> | Seidr<string | null> | Seidr<number> | Seidr<number | null> | Seidr<boolean>
+  : T;
 
 /**
  * Type definition for reactive HTML element properties.

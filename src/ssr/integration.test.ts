@@ -103,7 +103,6 @@ describe("SSR Integration Tests", () => {
 
       const card = $("div", {
         className: theme.as((t) => `card theme-${t}`),
-        // @ts-expect-error
         "data-count": count,
       });
 

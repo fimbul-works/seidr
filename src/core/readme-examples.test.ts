@@ -59,7 +59,6 @@ describe("README.md Examples Validation", () => {
             style: "padding: 20px; border: 1px solid #ccc;",
           },
           [
-            // @ts-expect-error
             $span({ textContent: count }),
             $button({
               textContent: "Increment",

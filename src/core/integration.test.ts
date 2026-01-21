@@ -399,7 +399,6 @@ describe("ReactiveProps - Seidr bindings", () => {
 
     it("should handle null and undefined values for string observables", () => {
       const text = new Seidr<string | null>("initial");
-      // @ts-expect-error
       const span = $span({ textContent: text });
 
       expect(span.textContent).toBe("initial");
