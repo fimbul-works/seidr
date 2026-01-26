@@ -1,3 +1,4 @@
+import { getCurrentComponent } from "./dom/component-stack";
 import type { Seidr } from "./seidr";
 
 /**
@@ -65,7 +66,7 @@ export function withStorage<T extends Seidr<any>>(
   }
 
   // Observe changes and save to storage
-  seidr.observe((value) => {
+  const cleanup = seidr.observe((value) => {
     try {
       storage.setItem(key, JSON.stringify(value));
     } catch (error) {
@@ -77,6 +78,9 @@ export function withStorage<T extends Seidr<any>>(
       }
     }
   });
+
+  // Cleanup on component unmount
+  getCurrentComponent()?.scope.track(cleanup);
 
   return seidr;
 }
