@@ -40,6 +40,18 @@ type WritableKeys<T> = {
 }[keyof T];
 
 /**
+ * Removes the `style` property from a type.
+ *
+ * @template T - The type to remove the `style` property from
+ */
+type NoStyle<T> = Omit<T, "style">;
+
+/**
+ * Type definition for reactive CSS style properties.
+ */
+type FlexibleCSSStyleDeclaration = Partial<CSSStyleDeclaration>;
+
+/**
  * Union type representing either a scalar value or a reactive Seidr observable.
  *
  * This type enables automatic reactive binding - if a property receives a Seidr
@@ -66,7 +78,7 @@ export type ReactiveProps<
   K extends keyof HTMLElementTagNameMap,
   T extends HTMLElementTagNameMap[K] = HTMLElementTagNameMap[K],
 > = {
-  [K in WritableKeys<T>]?: ReactiveValue<T[K]>;
+  [K in WritableKeys<NoStyle<T>>]?: ReactiveValue<T[K]>;
 };
 
 /**
@@ -81,11 +93,20 @@ export type ReactiveARIAMixin = {
 };
 
 /**
- * Type definition for reactive data-* attributes.
+ * Type definition for reactive data-* and aria-* attributes.
  */
-export type ReactiveDataMixin = {
-  [K in `data-${string}`]?: ReactiveValue<string>;
+export type ReactiveDataOrARIAMixin = {
+  [K in `${"data" | "aria"}-${string}`]?: ReactiveValue<string>;
 };
+
+/**
+ * Props for SeidrElement.
+ *
+ * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ */
+export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = Partial<
+  ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveDataOrARIAMixin
+> & { style?: FlexibleCSSStyleDeclaration };
 
 /**
  * Union type representing allowed child nodes for Seidr elements.
@@ -159,7 +180,7 @@ export interface SeidrElementInterface {
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  */
 export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
-  HTMLElementTagNameMap[K];
+  NoStyle<HTMLElementTagNameMap[K]> & { style: FlexibleCSSStyleDeclaration };
 
 /**
  * Creates an HTML element with automatic reactive binding capabilities.
@@ -172,14 +193,14 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * @template {keyof HTMLElementTagNameMap[K]} P - Property type inference (internal use)
  *
  * @param {K} tagName - The HTML tag name to create
- * @param {Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin>} [props] - Element properties supporting reactive bindings
+ * @param {SeidrElementProps<K>} [props] - Element properties supporting reactive bindings
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Child elements or functions returning elements
  * @returns {SeidrElement<K>} A Seidr-enhanced HTML element with additional methods
  * @throws {Error} When attempting to use reserved properties ('on', 'clear', 'destroy')
  */
 export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLElementTagNameMap[K]>(
   tagName: K,
-  props?: Partial<ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveDataMixin>,
+  props?: SeidrElementProps<K>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> {
   // Helper function to check props for a Seidr instance
@@ -339,10 +360,8 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         // CSS style string
         if (isStr(value)) {
           if (isSeidr(value)) {
-            cleanups.push(
-              value.bind(el, (val, element) => element.style = val),
-            );
-          } else if (value !== null && value !== undefined){
+            cleanups.push(value.bind(el, (val, element) => (element.style = val)));
+          } else if (value !== null && value !== undefined) {
             el.style = value;
           }
         } else if (typeof value === "object" && value !== null) {
@@ -375,7 +394,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       } else {
         // For non-Seidr values
         if (useAttribute && value !== null && value !== undefined) {
-          el.setAttribute(prop, value);
+          el.setAttribute(prop, value as any);
         } else {
           el[prop as P] = value as HTMLElementTagNameMap[K][P];
         }
@@ -473,7 +492,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     });
   }
 
-  return el as SeidrElement<K>;
+  return el as unknown as SeidrElement<K>;
 }
 
 /**

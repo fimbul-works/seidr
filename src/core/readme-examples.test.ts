@@ -55,7 +55,6 @@ describe("README.md Examples Validation", () => {
         return $div(
           {
             className: "counter",
-            // @ts-expect-error
             style: "padding: 20px; border: 1px solid #ccc;",
           },
           [

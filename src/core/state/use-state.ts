@@ -1,4 +1,4 @@
-import { getCurrentComponent } from "../dom";
+import { getCurrentComponent } from "../dom/component-stack";
 import { getRenderContext } from "../render-context-contract";
 import { Seidr } from "../seidr";
 import { unwrapSeidr } from "../util";
