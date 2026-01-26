@@ -334,8 +334,35 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     for (const [prop, value] of Object.entries(props)) {
       // For aria-* and data-* attributes, use setAttribute
       const useAttribute = prop.startsWith("aria-") || prop.startsWith("data-");
-      // Set up reactive binding
-      if (isSeidr(value)) {
+      // Special handling for style object
+      if (prop === "style") {
+        // CSS style string
+        if (isStr(value)) {
+          if (isSeidr(value)) {
+            cleanups.push(
+              value.bind(el, (val, element) => element.style = val),
+            );
+          } else if (value !== null && value !== undefined){
+            el.style = value;
+          }
+        } else if (typeof value === "object" && value !== null) {
+          // Style object
+          const styleObj = value as Partial<CSSStyleDeclaration>;
+          for (const [styleProp, styleValue] of Object.entries(styleObj)) {
+            // Handle reactive style values
+            if (isSeidr(styleValue)) {
+              cleanups.push(
+                styleValue.bind(el, (val, element) => {
+                  (element.style as any)[styleProp] = val;
+                }),
+              );
+            } else {
+              (el.style as any)[styleProp] = styleValue;
+            }
+          }
+        }
+      } else if (isSeidr(value)) {
+        // Set up reactive binding
         cleanups.push(
           value.bind(el, (value, element) => {
             if (useAttribute) {
