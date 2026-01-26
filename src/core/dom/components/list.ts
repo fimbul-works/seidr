@@ -58,7 +58,13 @@ export function List<T, I extends string | number, C extends SeidrNode>(
 
         // Move to correct position if needed
         if (comp.element.nextSibling !== currentAnchor) {
+          const needsAttachment = !comp.element.parentNode;
           parent.insertBefore(comp.element as Node, currentAnchor);
+
+          // Trigger onAttached if component was newly added to DOM
+          if (needsAttachment && comp.scope.onAttached) {
+            comp.scope.onAttached(parent);
+          }
         }
 
         currentAnchor = comp.element as Node;

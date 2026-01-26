@@ -50,16 +50,23 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
       const key = getKey(item);
-      let comp = componentMap.get(key) as C;
+      let comp = componentMap.get(key);
 
       if (!comp) {
-        comp = wrapComponent<typeof item>(factory as any)(item) as C;
+        comp = wrapComponent<typeof item>(factory as any)(item);
         componentMap.set(key, comp as SeidrComponent);
       }
 
       // Move to correct position if needed
       if ((comp as SeidrComponent).element.nextSibling !== currentAnchor) {
+        const needsAttachment = !comp.element.parentNode;
+
         container.insertBefore((comp as SeidrComponent).element, currentAnchor);
+
+        // Trigger onAttached if component was newly added to DOM
+        if (needsAttachment && comp.scope.onAttached) {
+          comp.scope.onAttached(container);
+        }
       }
 
       currentAnchor = (comp as SeidrComponent).element;

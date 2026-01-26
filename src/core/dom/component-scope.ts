@@ -83,15 +83,9 @@ export function createScope(): ComponentScope {
 
   function waitFor<T>(promise: Promise<T>): Promise<T> {
     // Use the RenderContext to track promises, allowing for SSR waiting without global state
-    try {
-      const ctx = getRenderContext();
-      if (ctx?.onPromise) {
-        ctx.onPromise(promise);
-      }
-    } catch (_e) {
-      // getRenderContext might throw if not initialized (though unusual in app usage)
-      // or return null/undefined depending on implementation.
-      // In either case, we just ignore promise tracking in those environments.
+    const ctx = getRenderContext();
+    if (ctx?.onPromise) {
+      ctx.onPromise(promise);
     }
     return promise;
   }

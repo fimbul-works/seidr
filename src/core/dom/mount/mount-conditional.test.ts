@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $ } from "../element";
+import { useScope } from "../use-scope";
 import { mountConditional } from "./mount-conditional";
 
 describe("mountConditional", () => {
@@ -135,5 +136,25 @@ describe("mountConditional", () => {
 
     condition.value = true;
     expect(textA.observerCount()).toBe(1);
+  });
+
+  it("should call onAttached when component is shown", () => {
+    const condition = new Seidr(false);
+    const onAttached = vi.fn();
+
+    mountConditional(
+      condition,
+      component(() => {
+        const scope = useScope();
+        scope.onAttached = onAttached;
+        return $("div");
+      }),
+      container,
+    );
+
+    expect(onAttached).not.toHaveBeenCalled();
+
+    condition.value = true;
+    expect(onAttached).toHaveBeenCalled();
   });
 });

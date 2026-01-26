@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $ } from "../element";
 import { mount } from "../mount/mount";
+import { useScope } from "../use-scope";
 import { Switch } from "./switch";
 
 describe("Switch Component", () => {
@@ -41,5 +42,38 @@ describe("Switch Component", () => {
     mode.value = "C"; // No match
     expect(parentEl.innerHTML).not.toContain("View B");
     expect(parentEl.innerHTML).toContain("<!--seidr-switch");
+  });
+
+  it("should call onAttached when switching components", () => {
+    const onAttached = vi.fn();
+    const mode = new Seidr("A");
+
+    const CompA = component(() => {
+      const scope = useScope();
+      scope.onAttached = () => onAttached("A");
+      return $("span", { textContent: "View A" });
+    });
+
+    const CompB = component(() => {
+      const scope = useScope();
+      scope.onAttached = () => onAttached("B");
+      return $("span", { textContent: "View B" });
+    });
+
+    const Parent = component(() => {
+      return $("div", { className: "parent" }, [
+        Switch(mode, {
+          A: CompA,
+          B: CompB,
+        }),
+      ]);
+    });
+
+    mount(Parent(), container);
+    expect(onAttached).toHaveBeenCalledWith("A");
+
+    onAttached.mockClear();
+    mode.value = "B";
+    expect(onAttached).toHaveBeenCalledWith("B");
   });
 });

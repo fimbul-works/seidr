@@ -43,6 +43,11 @@ export function Switch<T, C extends SeidrNode>(
       if (factory && parent) {
         currentComponent = wrapComponent<typeof value>(factory)(value);
         parent.insertBefore(currentComponent.element as Node, marker);
+
+        // Trigger onAttached when component is added to DOM
+        if (currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(parent);
+        }
       }
     };
 

@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $ } from "../element";
+import { useScope } from "../use-scope";
 import { mountList } from "./mount-list";
 
 describe("mountList", () => {
@@ -224,5 +225,29 @@ describe("mountList", () => {
     list.value = [{ id: 2 }];
     expect(text1.observerCount()).toBe(0);
     expect(text2.observerCount()).toBe(1);
+  });
+
+  it("should call onAttached when components are added", () => {
+    const onAttached = vi.fn();
+    const items = new Seidr([{ id: 1 }]);
+
+    mountList(
+      items,
+      (item) => item.id,
+      (item) => {
+        return component(() => {
+          const scope = useScope();
+          scope.onAttached = (parent) => onAttached(item.id, parent);
+          return $("div");
+        })();
+      },
+      container,
+    );
+
+    expect(onAttached).toHaveBeenCalledWith(1, expect.anything());
+    onAttached.mockClear();
+
+    items.value = [{ id: 1 }, { id: 2 }];
+    expect(onAttached).toHaveBeenCalledWith(2, expect.anything());
   });
 });

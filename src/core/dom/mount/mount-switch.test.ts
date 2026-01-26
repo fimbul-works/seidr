@@ -1,7 +1,8 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $ } from "../element";
+import { useScope } from "../use-scope";
 import { mountSwitch } from "./mount-switch";
 
 describe("mountSwitch", () => {
@@ -233,5 +234,33 @@ describe("mountSwitch", () => {
     mode.value = "A";
     expect(textA.observerCount()).toBe(1);
     expect(textB.observerCount()).toBe(0);
+  });
+
+  it("should call onAttached when switching components", () => {
+    const mode = new Seidr<"A" | "B">("A");
+    const onAttached = vi.fn();
+
+    mountSwitch(
+      mode,
+      {
+        A: component(() => {
+          const scope = useScope();
+          scope.onAttached = () => onAttached("A");
+          return $("div");
+        }),
+        B: component(() => {
+          const scope = useScope();
+          scope.onAttached = () => onAttached("B");
+          return $("div");
+        }),
+      },
+      container,
+    );
+
+    expect(onAttached).toHaveBeenCalledWith("A");
+    onAttached.mockClear();
+
+    mode.value = "B";
+    expect(onAttached).toHaveBeenCalledWith("B");
   });
 });

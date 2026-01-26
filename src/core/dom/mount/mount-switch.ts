@@ -45,6 +45,11 @@ export function mountSwitch<T extends string, C extends SeidrNode>(
     if (factory) {
       currentComponent = wrapComponent<typeof value>(factory)(value);
       container.insertBefore(currentComponent.element, marker);
+
+      // Trigger onAttached when component is added to DOM
+      if (currentComponent.scope.onAttached) {
+        currentComponent.scope.onAttached(container);
+      }
     }
   };
 

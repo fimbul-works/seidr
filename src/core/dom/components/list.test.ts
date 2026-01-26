@@ -1,8 +1,9 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "../../seidr";
 import { component } from "../component";
 import { $ } from "../element";
 import { mount } from "../mount/mount";
+import { useScope } from "../use-scope";
 import { List } from "./list";
 
 describe("List Component", () => {
@@ -60,5 +61,36 @@ describe("List Component", () => {
     const spans = parentEl.querySelectorAll("span");
     expect(spans[0].textContent).toBe("C");
     expect(spans[1].textContent).toBe("B");
+  });
+
+  it("should call onAttached when components are added to the list", () => {
+    const onAttached = vi.fn();
+    const items = new Seidr([{ id: 1, text: "A" }]);
+
+    const Item = component((props: { id: number }) => {
+      const scope = useScope();
+      scope.onAttached = (parent) => onAttached(props.id, parent);
+      return $("span", { textContent: `Item ${props.id}` });
+    });
+
+    const Parent = component(() => {
+      return $("div", { className: "parent" }, [
+        List(
+          items,
+          (i) => i.id,
+          (i) => Item(i),
+        ),
+      ]);
+    });
+
+    mount(Parent(), container);
+
+    // Should be called for the first item
+    expect(onAttached).toHaveBeenCalledWith(1, expect.anything());
+    onAttached.mockClear();
+
+    // Add another item
+    items.value = [...items.value, { id: 2, text: "B" }];
+    expect(onAttached).toHaveBeenCalledWith(2, expect.anything());
   });
 });

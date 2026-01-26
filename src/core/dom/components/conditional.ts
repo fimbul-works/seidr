@@ -33,6 +33,11 @@ export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, fact
         currentComponent = wrapComponent(factory)();
         if (marker.parentNode) {
           marker.parentNode.insertBefore(currentComponent.element, marker);
+
+          // Trigger onAttached when component is added to DOM
+          if (currentComponent.scope.onAttached) {
+            currentComponent.scope.onAttached(marker.parentNode);
+          }
         }
       } else if (!shouldShow && currentComponent) {
         currentComponent.destroy();

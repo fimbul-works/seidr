@@ -35,6 +35,11 @@ export function mountConditional<T extends SeidrNode>(
     if (shouldShow && !currentComponent) {
       currentComponent = wrapComponent(factory)();
       container.insertBefore(currentComponent.element, marker);
+
+      // Trigger onAttached when component is added to DOM
+      if (currentComponent.scope.onAttached) {
+        currentComponent.scope.onAttached(container);
+      }
     } else if (!shouldShow && currentComponent) {
       currentComponent.destroy();
       currentComponent = null;
