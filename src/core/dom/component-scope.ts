@@ -10,6 +10,11 @@ import type { SeidrComponent } from "./component";
  */
 export interface ComponentScope {
   /**
+   * Whether the scope has been destroyed.
+   */
+  readonly isDestroyed: boolean;
+
+  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    *
    * Use this method to register any cleanup logic that should run when
@@ -53,11 +58,6 @@ export interface ComponentScope {
    * @internal
    */
   onAttached?: (parent: Node) => void;
-
-  /**
-   * Whether the scope has been destroyed.
-   */
-  readonly isDestroyed: boolean;
 }
 
 /**
@@ -117,13 +117,13 @@ export function createScope(): ComponentScope {
   }
 
   return {
+    get isDestroyed() {
+      return destroyed;
+    },
     track,
     waitFor,
     child,
     destroy,
-    get isDestroyed() {
-      return destroyed;
-    },
     onAttached: undefined,
   };
 }
