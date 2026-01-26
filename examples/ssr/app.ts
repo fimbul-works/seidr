@@ -29,6 +29,7 @@ const Header = () =>
 export const BlogApp = ({ posts = [], currentPost = undefined }: PageContext = {}) => {
   initRouter();
 
+  // Initialize state from props on the server
   inServer(() => {
     if (posts.length) {
       setState("posts", posts);

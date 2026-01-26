@@ -26,7 +26,6 @@ const PostCard = (post: BlogPost) =>
   ]);
 
 export const HomePage = () => {
-  const scope = useScope();
   let postsPromise: Promise<Seidr<BlogPost[]>>;
   const [posts, setPosts] = useState<BlogPost[]>("posts");
 
@@ -36,7 +35,6 @@ export const HomePage = () => {
       setPosts(await getPosts());
       return posts;
     });
-    scope.waitFor(postsPromise);
   } else {
     // Client-side fetch if empty
     postsPromise = inBrowser(async () => {
@@ -59,7 +57,6 @@ export const HomePage = () => {
 };
 
 export const PostPage = (params: Seidr<{ slug: string }>) => {
-  const scope = useScope();
   const slug = params.value.slug;
   const [post, setPost] = useState<BlogPost>("currentPost");
   let postPromise: Promise<Seidr<BlogPost>>;
@@ -70,7 +67,6 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
       if (data) setPost(data);
       return post;
     });
-    scope.waitFor(postPromise);
   } else {
     postPromise = inBrowser(async () => {
       if (post.value?.slug === slug) {
