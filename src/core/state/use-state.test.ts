@@ -1,11 +1,23 @@
-import { describe, expect, it, vi } from "vitest";
-import { runWithRenderContextStore } from "../../render-context.node";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+import { runWithRenderContextStore, setMockRenderContextForTests } from "../../render-context.node";
 import { component } from "../dom/component";
 import { Seidr } from "../seidr";
 import { setState } from "./set";
 import { useState } from "./use-state";
 
 describe("useState", () => {
+  let cleanupEnv: () => void;
+
+  beforeAll(() => {
+    // Mock render context for each test
+    cleanupEnv = setMockRenderContextForTests();
+  });
+
+  afterAll(() => {
+    // Restore original environment
+    cleanupEnv();
+  });
+
   it("should return a singleton Seidr instance for a given key", () => {
     runWithRenderContextStore(() => {
       const [state1] = useState<number>("count");
