@@ -92,19 +92,19 @@ export async function renderToString<C extends SeidrNode>(
       const hydrationData = {
         ...activeScope.captureHydrationData(),
         // Capture state values for this render context
-        state: captureRenderContextState(ctx.renderContextID),
+        state: captureRenderContextState(ctx.ctxID),
         // Capture render context ID for client-side marker matching
-        renderContextID: ctx.renderContextID,
+        ctxID: ctx.ctxID,
       };
 
       // Destroy component to clean up scope bindings
       comp.destroy();
 
       // Clear the render context state
-      clearRenderContextState(ctx.renderContextID);
+      clearRenderContextState(ctx.ctxID);
 
       // Clear the path cache for this render context
-      clearPathCache(ctx.renderContextID);
+      clearPathCache(ctx.ctxID);
 
       return { html, hydrationData };
     } finally {
@@ -112,7 +112,7 @@ export async function renderToString<C extends SeidrNode>(
       setActiveSSRScope(undefined);
 
       // Always clean up scope from global map to prevent memory leaks
-      clearSSRScope(ctx.renderContextID);
+      clearSSRScope(ctx.ctxID);
 
       // Clear scope if we created it (captureState already cleared observables)
       if (!options.scope) {

@@ -11,8 +11,8 @@ const pathCache = new Map<number, Seidr<string>>();
 let clientPathState: Seidr<string> | undefined;
 
 /** Clear cached path for a render context */
-export function clearPathCache(renderContextID: number): void {
-  pathCache.delete(renderContextID);
+export function clearPathCache(ctxID: number): void {
+  pathCache.delete(ctxID);
 }
 
 /** Reset client-side path state (for testing) */
@@ -33,12 +33,12 @@ export function getCurrentPath(): Seidr<string> {
 
   // Server-side: Get or create Seidr for this render context
   if (ctx) {
-    let pathSeidr = pathCache.get(ctx.renderContextID);
+    let pathSeidr = pathCache.get(ctx.ctxID);
 
     if (!pathSeidr) {
       // Create a new Seidr for this render context
       pathSeidr = new Seidr(ctx.currentPath, { ...NO_HYDRATE, id });
-      pathCache.set(ctx.renderContextID, pathSeidr);
+      pathCache.set(ctx.ctxID, pathSeidr);
 
       // Keep context synchronized with observable changes
       // This is important for SSR navigation and hydration tests

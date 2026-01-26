@@ -3,7 +3,7 @@ import type { RenderContext } from "./core/types";
 
 /** @type {RenderContext} Client-side render context */
 const clientRenderContext: RenderContext = {
-  renderContextID: 0,
+  ctxID: 0,
   idCounter: 0,
   seidrIdCounter: 0,
   randomCounter: 0,
@@ -16,7 +16,7 @@ const clientRenderContext: RenderContext = {
  * @internal
  */
 export function setRenderContextID(id: number): void {
-  clientRenderContext.renderContextID = id;
+  clientRenderContext.ctxID = id;
 }
 
 /**

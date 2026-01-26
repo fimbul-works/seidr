@@ -26,9 +26,9 @@ export function setActiveSSRScope(scope: SSRScope | undefined): void {
 
   // Normal case: use render context ID
   if (scope) {
-    scopes.set(ctx.renderContextID, scope);
+    scopes.set(ctx.ctxID, scope);
   } else {
-    scopes.delete(ctx.renderContextID);
+    scopes.delete(ctx.ctxID);
   }
 }
 
@@ -47,17 +47,17 @@ export function getActiveSSRScope(): SSRScope | undefined {
     return scopes.get(-1);
   }
 
-  return scopes.get(ctx.renderContextID);
+  return scopes.get(ctx.ctxID);
 }
 
 /**
  * Removes the SSR scope for a specific render context ID.
  * Called after rendering to prevent memory leaks.
  *
- * @param {number} renderContextID - The render context ID to clear
+ * @param {number} ctxID - The render context ID to clear
  */
-export function clearSSRScope(renderContextID: number): void {
-  scopes.delete(renderContextID);
+export function clearSSRScope(ctxID: number): void {
+  scopes.delete(ctxID);
 }
 
 /**

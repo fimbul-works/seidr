@@ -336,7 +336,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // During hydration, we don't assign new IDs - we only match SSR elements
   let elementId: string | undefined;
-  if (typeof process !== "undefined" && hasSeidrBindings() && ctx && !isUndefined(ctx.renderContextID)) {
+  if (typeof process !== "undefined" && hasSeidrBindings() && ctx && !isUndefined(ctx.ctxID)) {
     elementId = String(ctx.idCounter++);
   }
 

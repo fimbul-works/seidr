@@ -13,7 +13,7 @@ import type { StateKey } from "./types";
  */
 export function hasState<T>(key: StateKey<T> | string): boolean {
   const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.renderContextID : 0;
+  const renderScopeID = ctx ? ctx.ctxID : 0;
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   if (typeof key === "string") {

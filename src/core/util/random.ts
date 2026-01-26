@@ -26,7 +26,7 @@ export function random(): number {
   if (!ctx.randomState) {
     // We use the ID and initial counter to seed the sequence
     // Adding an offset ensures high entropy even for seed 0
-    const seed = ctx.renderContextID + ctx.randomCounter + LCG_M / 1;
+    const seed = ctx.ctxID + ctx.randomCounter + LCG_M / 1;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;

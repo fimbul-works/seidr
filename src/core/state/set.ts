@@ -16,7 +16,7 @@ import type { StateKey } from "./types";
  */
 export function setState<T>(key: StateKey<T> | string, value: T | Seidr<T>): void {
   const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.renderContextID : 0;
+  const renderScopeID = ctx ? ctx.ctxID : 0;
   // Create render context state
   if (!globalStates.has(renderScopeID)) {
     globalStates.set(renderScopeID, new Map());

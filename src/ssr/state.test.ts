@@ -18,7 +18,7 @@ describe("SSR State Serialization", () => {
 
   const captureState = () => {
     const ctx = getRenderContext();
-    return captureRenderContextState(ctx!.renderContextID);
+    return captureRenderContextState(ctx!.ctxID);
   };
 
   describe("captureRenderContextState", () => {

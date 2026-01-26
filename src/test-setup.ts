@@ -5,7 +5,7 @@ import type { RenderContext } from "./core/types";
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object
 export const browserContext: RenderContext = {
-  renderContextID: 0,
+  ctxID: 0,
   idCounter: 0,
   seidrIdCounter: 0,
   randomCounter: 0,

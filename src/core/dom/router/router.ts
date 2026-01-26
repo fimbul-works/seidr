@@ -35,7 +35,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
   // Use a unique ID for this router instance
   // During SSR, we use a counter to ensure deterministic IDs for hydration
   const instanceId = ctx ? ctx.idCounter++ : uid();
-  const routerId = ctx ? `ctx-${ctx.renderContextID}-${instanceId}` : uid();
+  const routerId = ctx ? `ctx-${ctx.ctxID}-${instanceId}` : uid();
 
   // Detect SSR mode
   const isSSR = typeof window === "undefined" || (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);

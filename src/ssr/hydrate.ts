@@ -34,7 +34,7 @@ export function resetHydratingFlag() {
  *
  * @param {(...args: any[]) => T} factory - Function that returns a Seidr Component
  * @param {HTMLElement} container - The HTMLElement to mount the hydrated component into
- * @param {HydrationData} hydrationData - The previously captured hydration data with renderContextID
+ * @param {HydrationData} hydrationData - The previously captured hydration data with ctxID
  * @returns {() => void} A cleanup function that unmounts the component when called
  */
 export function hydrate<T extends SeidrNode>(
@@ -45,9 +45,9 @@ export function hydrate<T extends SeidrNode>(
   isHydrating = true;
 
   // Set the client render context ID from the server to ensure matching context
-  const hasRenderContextID = hydrationData.renderContextID !== undefined;
+  const hasRenderContextID = hydrationData.ctxID !== undefined;
   if (hasRenderContextID) {
-    setRenderContextID(hydrationData.renderContextID!);
+    setRenderContextID(hydrationData.ctxID!);
   }
 
   // Restore state values from the server
@@ -59,7 +59,7 @@ export function hydrate<T extends SeidrNode>(
   setHydrationData(hydrationData);
 
   // Find existing root component after SSR
-  const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.renderContextID : "true"}"]`);
+  const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.ctxID : "true"}"]`);
 
   // Create the component (Seidr instances will auto-hydrate)
   // Mount the component in the container

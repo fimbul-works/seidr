@@ -8,7 +8,7 @@ export interface SSRRenderResult {
 
 /**
  * Internal hydration data captured by SSRScope.
- * This is combined with renderContextID to form the complete HydrationData.
+ * This is combined with ctxID to form the complete HydrationData.
  */
 export interface SSRScopeCapture {
   /**
@@ -49,5 +49,5 @@ export interface HydrationData extends SSRScopeCapture {
    * During hydration, the client-side render context is updated to use this ID
    * instead of the default 0, enabling proper SSR/client marker matching.
    */
-  renderContextID?: number;
+  ctxID?: number;
 }

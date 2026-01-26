@@ -17,7 +17,7 @@ import type { StateKey } from "./types";
  */
 export function useState<T>(key: StateKey<T> | string): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] {
   const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.renderContextID : 0;
+  const renderScopeID = ctx ? ctx.ctxID : 0;
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   if (typeof key === "string") {

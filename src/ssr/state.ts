@@ -10,10 +10,10 @@ const SEIDR_PREFIX = "$/";
  * Clear all States for a render context.
  * This fucntion should be called at the end of a SSR request.
  *
- * @param {number} renderContextID - Render context ID
+ * @param {number} ctxID - Render context ID
  * @returns {boolean} `true` if the renderScopeState existed, `false` otherwise
  */
-export const clearRenderContextState = (renderContextID: number) => globalStates.delete(renderContextID);
+export const clearRenderContextState = (ctxID: number) => globalStates.delete(ctxID);
 
 /**
  * Captures all state values for a render context during SSR.
@@ -22,11 +22,11 @@ export const clearRenderContextState = (renderContextID: number) => globalStates
  * and captures both Seidr observables and plain values. Seidr observable keys are
  * prefixed with "$/" and use numeric IDs, while plain values use their numeric IDs directly.
  *
- * @param {number} renderContextID - Render context ID
+ * @param {number} ctxID - Render context ID
  * @returns {Record<string, unknown>} Object mapping numeric IDs to values (Seidr keys prefixed with "$/")
  */
-export function captureRenderContextState(renderContextID: number): Record<string, unknown> {
-  const ctxStates = globalStates.get(renderContextID);
+export function captureRenderContextState(ctxID: number): Record<string, unknown> {
+  const ctxStates = globalStates.get(ctxID);
   if (!ctxStates) {
     return {};
   }
@@ -67,14 +67,14 @@ export function captureRenderContextState(renderContextID: number): Record<strin
  */
 export function restoreGlobalState(state: Record<string, unknown>): void {
   const ctx = getRenderContext();
-  const { renderContextID = 0 } = ctx ?? {};
+  const { ctxID = 0 } = ctx ?? {};
 
   // Ensure the render context has a state storage
-  if (!globalStates.has(renderContextID)) {
-    globalStates.set(renderContextID, new Map());
+  if (!globalStates.has(ctxID)) {
+    globalStates.set(ctxID, new Map());
   }
 
-  const ctxStates = globalStates.get(renderContextID)!;
+  const ctxStates = globalStates.get(ctxID)!;
 
   // Iterate through the captured state
   for (const [key, value] of Object.entries(state)) {

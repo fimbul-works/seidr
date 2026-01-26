@@ -205,7 +205,7 @@ export function component<P = void>(
 
     // Apply root element attributes
     if (isRootComponent && isHTMLElement(comp.element)) {
-      comp.element.dataset.seidrRoot = String(getRenderContext()?.renderContextID ?? true);
+      comp.element.dataset.seidrRoot = String(getRenderContext()?.ctxID ?? true);
     }
 
     // Root component must clear out component stack

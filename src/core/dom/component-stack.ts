@@ -10,7 +10,7 @@ const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
  */
 export const getComponentStack = (): SeidrComponent[] => {
   const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.renderContextID : 0;
+  const renderScopeID = ctx ? ctx.ctxID : 0;
 
   // Initialize component stack if needed
   if (!renderScopeComponentStacks.has(renderScopeID)) {

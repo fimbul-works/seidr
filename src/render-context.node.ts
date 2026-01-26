@@ -49,10 +49,10 @@ setInternalContext(getRenderContext);
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
   const store = managerLocalStorage.getStore() || globalRenderContextStore;
-  const renderContextID = store.idCounter++;
+  const ctxID = store.idCounter++;
 
   const context: RenderContext = {
-    renderContextID,
+    ctxID,
     idCounter: 0,
     seidrIdCounter: 0,
     randomCounter: 0,
@@ -85,7 +85,7 @@ export function runWithRenderContextStore<T>(callback: () => T, store: RenderCon
  */
 export const setMockRenderContextForTests = (): (() => void) => {
   const mockContext: RenderContext = {
-    renderContextID: 0,
+    ctxID: 0,
     idCounter: 0,
     seidrIdCounter: 0,
     randomCounter: 0,

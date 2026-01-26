@@ -92,7 +92,7 @@ describe("getState", () => {
       const key = createStateKey<number>("test");
 
       // Simulate different render contexts
-      // Default context has renderContextID: 0
+      // Default context has ctxID: 0
       setState(key, 100);
       expect(getState(key)).toBe(100);
 

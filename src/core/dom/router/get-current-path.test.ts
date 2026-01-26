@@ -32,7 +32,7 @@ describe("getCurrentPath", () => {
 
   it("should use render context on server-side", () => {
     const mockContext = {
-      renderContextID: 1,
+      ctxID: 1,
       idCounter: 0,
       seidrIdCounter: 0,
       currentPath: "/server-path",
@@ -49,14 +49,14 @@ describe("getCurrentPath", () => {
 
   it("should isolate paths between different render contexts on server-side", () => {
     const ctx1 = {
-      renderContextID: 1,
+      ctxID: 1,
       idCounter: 0,
       seidrIdCounter: 0,
       currentPath: "/path-1",
     };
 
     const ctx2 = {
-      renderContextID: 2,
+      ctxID: 2,
       idCounter: 0,
       seidrIdCounter: 0,
       currentPath: "/path-2",

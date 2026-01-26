@@ -25,7 +25,7 @@ export interface RenderContextStore {
  */
 export interface RenderContext {
   /** Render context ID is used to differentiate render context between requests */
-  renderContextID: number;
+  ctxID: number;
 
   /** Counter incremented when elements are reused during hydration */
   idCounter: number;

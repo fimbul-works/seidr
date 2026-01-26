@@ -436,7 +436,7 @@ inBrowser(() => {
 
 ```typescript
 interface HydrationData {
-  renderContextID?: number;
+  ctxID?: number;
   observables: Record<number, any>; // Root values by numeric ID
   state?: Record<string, any>;      // Global state
 }
@@ -446,7 +446,7 @@ interface HydrationData {
 
 ```json
 {
-  "renderContextID": 0,
+  "ctxID": 0,
   "observables": {
     "0": 42,
     "1": "hello"
