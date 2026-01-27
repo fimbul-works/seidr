@@ -1,4 +1,4 @@
-import type { Seidr } from "../seidr";
+import type { Seidr } from "../../state/seidr";
 
 export type BindInputInterface = {
   value: Seidr<string>;

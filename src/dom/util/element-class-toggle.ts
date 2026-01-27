@@ -1,4 +1,4 @@
-import type { Seidr } from "../seidr";
+import type { Seidr } from "../../seidr/seidr";
 
 /**
  * Reactively toggles a CSS class on an element based on a boolean observable.

@@ -1,8 +1,8 @@
-import { isFn } from "../../util/is";
-import type { SeidrComponent } from "../component";
-import { getCurrentComponent } from "../component-stack";
-import type { SeidrNode } from "../element";
-import { wrapComponent } from "../wrap-component";
+import type { SeidrComponent } from "../../../dom/component/component";
+import { getCurrentComponent } from "../../../dom/component/component-stack";
+import { wrapComponent } from "../../../dom/component/wrap-component";
+import type { SeidrNode } from "../../../dom/element/element";
+import { isFn } from "../../../util/type-guards/is";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.

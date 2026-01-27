@@ -1,5 +1,5 @@
 import { setInternalContext } from "./core/render-context-contract";
-import type { RenderContext } from "./core/types";
+import type { RenderContext } from "./types";
 
 /** @type {RenderContext} Client-side render context */
 const clientRenderContext: RenderContext = {

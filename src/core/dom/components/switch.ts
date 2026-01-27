@@ -1,10 +1,9 @@
-import type { Seidr } from "../../seidr";
-
-import { uid } from "../../util/uid";
-import { component, type SeidrComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { component, type SeidrComponent } from "../../../dom/component/component";
+import { wrapComponent } from "../../../dom/component/wrap-component";
+import { $comment, type SeidrNode } from "../../../dom/element/element";
+import type { Seidr } from "../../../state/seidr";
+import { uid } from "../../../util/uid";
 import { useScope } from "../use-scope";
-import { wrapComponent } from "../wrap-component";
 
 /**
  * Switches between different components based on an observable value.

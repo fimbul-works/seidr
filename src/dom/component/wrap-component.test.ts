@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { $div } from "../../core/dom/elements";
 import { isSeidrComponentFactory } from "../util/is";
 import { component } from "./component";
-import { $div } from "./elements";
 import { wrapComponent } from "./wrap-component";
 
 describe("wrapComponent", () => {

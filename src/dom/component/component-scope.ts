@@ -1,5 +1,5 @@
-import { getRenderContext } from "../render-context-contract";
-import type { SeidrComponent } from "./component";
+import { getRenderContext } from "../../core/render-context-contract";
+import type { SeidrComponent } from "./types";
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.

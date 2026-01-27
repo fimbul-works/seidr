@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../seidr";
-import { $ } from "./element";
+import { Seidr } from "../../seidr/seidr";
+import { $, type SeidrElement } from "../element/element";
+import { $div } from "../element/elements";
 import { elementClassToggle } from "./element-class-toggle";
-import { $div } from "./elements";
 
 describe("elementClassToggle", () => {
-  let element: HTMLElement;
+  let element: SeidrElement;
   let observable: Seidr<boolean>;
 
   beforeEach(() => {

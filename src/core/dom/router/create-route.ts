@@ -1,5 +1,5 @@
-import type { Seidr } from "../../seidr";
-import type { SeidrNode } from "../element";
+import type { SeidrNode } from "../../../dom/element/element";
+import type { Seidr } from "../../../state/seidr";
 
 /**
  * Route definition for Router.

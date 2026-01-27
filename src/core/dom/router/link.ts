@@ -1,7 +1,7 @@
-import { Seidr } from "../../seidr";
-import { cn, isSeidr, NO_HYDRATE, unwrapSeidr } from "../../util/index";
-import { component, type SeidrComponent } from "../component";
-import { $, type SeidrElement, type SeidrElementProps, type SeidrNode } from "../element";
+import { component, type SeidrComponent } from "../../../dom/component/component";
+import { $, type SeidrElement, type SeidrElementProps, type SeidrNode } from "../../../dom/element/element";
+import { Seidr } from "../../../state/seidr";
+import { cn, isSeidr, NO_HYDRATE, unwrapSeidr } from "../../../util/index";
 import { useScope } from "../use-scope";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";

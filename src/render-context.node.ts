@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { setInternalContext } from "./core/render-context-contract";
-import type { RenderContext, RenderContextStore } from "./core/types";
+import type { RenderContext, RenderContextStore } from "./types";
 
 /** Global fallback store for ID generation */
 const globalRenderContextStore: RenderContextStore = { idCounter: 0 };

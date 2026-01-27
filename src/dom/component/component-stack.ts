@@ -1,4 +1,4 @@
-import { getRenderContext } from "../render-context-contract";
+import { getRenderContext } from "../../core/render-context-contract";
 import type { SeidrComponent } from "./component";
 
 /** Map of SeidrComponent stack by render context ID */

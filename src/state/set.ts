@@ -1,7 +1,7 @@
+import type { Seidr } from "../../state/seidr";
+import { unwrapSeidr } from "../../util";
+import { isSeidr } from "../../util/type-guards/is";
 import { getRenderContext } from "../render-context-contract";
-import type { Seidr } from "../seidr";
-import { unwrapSeidr } from "../util";
-import { isSeidr } from "../util/is";
 import { createStateKey } from "./create-key";
 import { globalStates } from "./storage";
 import type { StateKey } from "./types";

@@ -1,6 +1,7 @@
-import { isSeidrComponentFactory } from "../util/is";
-import { component, type SeidrComponentFactory } from "./component";
-import type { SeidrNode } from "./element";
+import type { SeidrNode } from "../element/element";
+import { component } from "./component";
+import { isSeidrComponentFactory } from "./is-seidr-component-factory";
+import type { SeidrComponentFactory } from "./types";
 
 /**
  * Ensures a factory function is wrapped as a SeidrComponentFactory.

@@ -1,6 +1,6 @@
+import { Seidr } from "../../../state/seidr";
+import { NO_HYDRATE } from "../../../util/index";
 import { getRenderContext } from "../../render-context-contract";
-import { Seidr } from "../../seidr";
-import { NO_HYDRATE } from "../../util/index";
 
 const id = "router-path";
 

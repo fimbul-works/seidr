@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import type { SeidrComponent } from "./component";
 import { createScope } from "./component-scope";
+import type { SeidrComponent } from "./types";
 
 describe("ComponentScope", () => {
   it("should track and execute cleanups", () => {

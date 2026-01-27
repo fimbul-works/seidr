@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Seidr } from "../seidr";
-import { $, SeidrNode, type SeidrElement } from "./element";
-import { elementClassToggle } from "./element-class-toggle";
+import { Seidr } from "../../seidr/seidr";
+import { elementClassToggle } from "../util/element-class-toggle";
+import { $, type SeidrElement, type SeidrNode } from "./element";
 
 describe("$ (createElement)", () => {
   it("should create basic HTML element", () => {

@@ -1,4 +1,4 @@
-import type { RenderContext } from "./types";
+import type { RenderContext } from "../types";
 
 /**
  * Cross-environment getRenderContext.

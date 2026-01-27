@@ -1,6 +1,6 @@
-import type { Seidr } from "../../seidr";
+import type { SeidrNode } from "../../../dom/element/element";
+import type { Seidr } from "../../../state/seidr";
 import { Conditional } from "../components/conditional";
-import type { SeidrNode } from "../element";
 import { getCurrentPath } from "./get-current-path";
 import { parseRouteParams } from "./parse-route-params";
 

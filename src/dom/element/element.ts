@@ -1,9 +1,9 @@
+import { getRenderContext } from "../../core/render-context-contract";
 import { ServerComment, ServerHTMLElement } from "../../ssr/server-html-element";
-import { getRenderContext } from "../render-context-contract";
-import type { Seidr } from "../seidr";
-import { unwrapSeidr } from "../util";
-import { isFn, isSeidr, isSeidrComponent, isStr, isUndefined } from "../util/is";
-import type { SeidrComponent } from "./component";
+import type { Seidr } from "../../state/seidr";
+import { unwrapSeidr } from "../../util";
+import { isFn, isSeidr, isSeidrComponent, isStr, isUndefined } from "../../util/type-guards/is";
+import type { SeidrComponent } from "../component/component";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Seidr } from "../seidr";
+import { mount } from "../../core/dom/mount";
+import { useScope } from "../../core/dom/use-scope";
+import { Seidr } from "../../seidr/seidr";
+import { $ } from "../element/element";
 import { component } from "./component";
 import { createScope } from "./component-scope";
-import { $ } from "./element";
-import { mount } from "./mount";
-import { useScope } from "./use-scope";
 
 describe("component", () => {
   it("should create a component with element and destroy method", () => {
@@ -584,16 +584,7 @@ describe("Documentation Examples", () => {
     it("should cleanup child component reactive bindings", () => {
       const Child = component(() => {
         const scope = useScope();
-        const count = new (class {
-          value = 0;
-          listeners: Array<(val: number) => void> = [];
-          bind(_element: HTMLElement, callback: (value: number, element: HTMLElement) => void) {
-            this.listeners.push((val) => callback(val, _element));
-            return () => {
-              this.listeners = this.listeners.filter((l) => l !== callback);
-            };
-          }
-        })();
+        const count = new Seidr(0);
         const span = $("span", { textContent: `Count: ${count.value}` });
 
         scope.track(

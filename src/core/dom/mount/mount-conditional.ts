@@ -1,8 +1,8 @@
-import type { Seidr } from "../../seidr";
-import { uid } from "../../util/uid";
-import type { SeidrComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
-import { wrapComponent } from "../wrap-component";
+import type { SeidrComponent } from "../../../dom/component/component";
+import { wrapComponent } from "../../../dom/component/wrap-component";
+import { $comment, type SeidrNode } from "../../../dom/element/element";
+import type { Seidr } from "../../../state/seidr";
+import { uid } from "../../../util/uid";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
