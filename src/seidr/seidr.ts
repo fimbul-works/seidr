@@ -2,6 +2,14 @@ import type { CleanupFunction, ErrorHandler, EventHandler } from "../types";
 import { isSeidr } from "./is-seidr";
 
 /**
+ * Options to opt-out of hydration for Seidr instances.
+ * Use this constant to avoid creating new objects (garbage collection).
+ *
+ * **NOTICE:** This is currently not being used.
+ */
+export const NO_HYDRATE = { hydrate: false };
+
+/**
  * Represents a reactive value that can be observed for changes.
  *
  * Seidr is the core reactive primitive that enables automatic UI updates and
@@ -69,7 +77,8 @@ export class Seidr<T = any> {
     this.v = initialvalue;
     if (Seidr.DEBUG)
       console.log(
-        `Seidr (${this.id}) created${this.p.length ? `(derived with ${this.p.length} parent${this.p.length > 1 ? "s" : ""})` : ""}`,
+        `Seidr (${this.id}) created${this.p.length ? `(derived with ${this.p.length} parent${this.p.length > 1 ? "s" : ""})` : ""}:`,
+        this.v,
       );
   }
 
@@ -133,6 +142,20 @@ export class Seidr<T = any> {
    */
   get parents(): ReadonlyArray<Seidr<any>> {
     return this.p.slice(0);
+  }
+
+  /**
+   * Returns the number of active observers subscribed to this observable.
+   *
+   * Useful for debugging and performance monitoring to understand how many
+   * components or parts of your application are listening to changes.
+   *
+   * @readonly
+   * @returns {number} - The number of active observers
+   * @memberof Seidr
+   */
+  get observerCount(): number {
+    return this.f.size;
   }
 
   /**
@@ -233,16 +256,17 @@ export class Seidr<T = any> {
   }
 
   /**
-   * Returns the number of active observers subscribed to this observable.
+   * Adds a cleanup function that will be called when this observable is destroyed.
    *
-   * Useful for debugging and performance monitoring to understand how many
-   * components or parts of your application are listening to changes.
+   * Cleanup functions are essential for preventing memory leaks and ensuring
+   * proper resource management. They are automatically called when destroy()
+   * is invoked on this observable.
    *
-   * @returns {number} - The number of active observers
+   * @param {CleanupFunction} fn - The cleanup function to register
    * @memberof Seidr
    */
-  observerCount(): number {
-    return this.f.size;
+  addCleanup(fn: CleanupFunction): void {
+    this.c.push(fn);
   }
 
   /**
@@ -282,20 +306,5 @@ export class Seidr<T = any> {
   protected setParents(parents: Seidr<any>[]): void {
     this.p = parents;
     this.register();
-  }
-
-  /**
-   * Adds a cleanup function that will be called when this observable is destroyed.
-   *
-   * Cleanup functions are essential for preventing memory leaks and ensuring
-   * proper resource management. They are automatically called when destroy()
-   * is invoked on this observable.
-   *
-   * @proctected
-   * @param {() => void} fn - The cleanup function to register
-   * @memberof Seidr
-   */
-  protected addCleanup(fn: () => void): void {
-    this.c.push(fn);
   }
 }

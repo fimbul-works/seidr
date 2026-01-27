@@ -7,4 +7,4 @@ import { Seidr } from "./seidr";
  * @param {T | Seidr<T>} v - Value or Seidr with value
  * @returns {Seidr<T>} Seidr wrapped vaue
  */
-export const wrapSeidr = <T>(v: T | Seidr<T>): Seidr<T> => (isSeidr<T>(v) ? v : new Seidr(v));
+export const wrapSeidr = <T>(v: T | Seidr<T>): Seidr<T> => (isSeidr<T>(v) ? v : new Seidr<T>(v));

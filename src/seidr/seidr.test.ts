@@ -7,14 +7,14 @@ describe("Seidr", () => {
       const s = new Seidr(10);
       expect(s.value).toBe(10);
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should allow custom ID", () => {
       const s = new Seidr(0, "custom-id");
       expect(s.id).toBe("custom-id");
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should generate unique auto-incrementing IDs", () => {
@@ -31,7 +31,7 @@ describe("Seidr", () => {
       s.value = 20;
       expect(s.value).toBe(20);
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should not notify if value is same (Object.is)", () => {
@@ -41,7 +41,7 @@ describe("Seidr", () => {
       s.value = 10;
       expect(cb).not.toHaveBeenCalled();
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should handle Object.is edge cases", () => {
@@ -71,26 +71,26 @@ describe("Seidr", () => {
       s.value = 20;
       expect(cb).toHaveBeenCalledWith(20);
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should return cleanup function from observe", () => {
       const s = new Seidr(10);
       const cb = vi.fn();
       const unsub = s.observe(cb);
-      expect(s.observerCount()).toBe(1);
+      expect(s.observerCount).toBe(1);
 
       s.value = 20;
       expect(cb).toHaveBeenCalledTimes(1);
 
       unsub();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
 
       s.value = 30;
       expect(cb).toHaveBeenCalledTimes(1);
 
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
   });
 
@@ -101,7 +101,7 @@ describe("Seidr", () => {
       const binder = vi.fn((v, t) => (t.text = v));
 
       const unsub = s.bind(target, binder);
-      expect(s.observerCount()).toBe(1);
+      expect(s.observerCount).toBe(1);
       expect(target.text).toBe("a");
       expect(binder).toHaveBeenCalledWith("a", target);
 
@@ -110,13 +110,13 @@ describe("Seidr", () => {
       expect(binder).toHaveBeenCalledWith("b", target);
 
       unsub();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
 
       s.value = "c";
       expect(target.text).toBe("b");
 
       s.destroy();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
   });
 
@@ -126,19 +126,19 @@ describe("Seidr", () => {
       const derived = root.as((v) => v * 2);
 
       expect(derived.value).toBe(2);
-      expect(root.observerCount()).toBe(1);
+      expect(root.observerCount).toBe(1);
 
       root.value = 2;
       expect(derived.value).toBe(4);
 
       derived.destroy();
-      expect(derived.observerCount()).toBe(0);
+      expect(derived.observerCount).toBe(0);
 
       // Important: parent should have no observers after child is destroyed
-      expect(root.observerCount()).toBe(0);
+      expect(root.observerCount).toBe(0);
 
       root.destroy();
-      expect(root.observerCount()).toBe(0);
+      expect(root.observerCount).toBe(0);
     });
 
     it("should support multiple derivations", () => {
@@ -146,15 +146,15 @@ describe("Seidr", () => {
       const b = a.as((v) => v + 1);
       const c = a.as((v) => v + 2);
 
-      expect(a.observerCount()).toBe(2);
+      expect(a.observerCount).toBe(2);
       expect(b.value).toBe(2);
       expect(c.value).toBe(3);
 
       b.destroy();
-      expect(a.observerCount()).toBe(1);
+      expect(a.observerCount).toBe(1);
 
       c.destroy();
-      expect(a.observerCount()).toBe(0);
+      expect(a.observerCount).toBe(0);
 
       a.destroy();
     });
@@ -167,8 +167,8 @@ describe("Seidr", () => {
       const c = Seidr.computed(() => a.value + b.value, [a, b]);
 
       expect(c.value).toBe(3);
-      expect(a.observerCount()).toBe(1);
-      expect(b.observerCount()).toBe(1);
+      expect(a.observerCount).toBe(1);
+      expect(b.observerCount).toBe(1);
 
       a.value = 10;
       expect(c.value).toBe(12);
@@ -177,11 +177,11 @@ describe("Seidr", () => {
       expect(c.value).toBe(30);
 
       c.destroy();
-      expect(c.observerCount()).toBe(0);
+      expect(c.observerCount).toBe(0);
 
       // Computed should unsubscribe from parents on destroy
-      expect(a.observerCount()).toBe(0);
-      expect(b.observerCount()).toBe(0);
+      expect(a.observerCount).toBe(0);
+      expect(b.observerCount).toBe(0);
 
       a.destroy();
       b.destroy();
@@ -213,7 +213,7 @@ describe("Seidr", () => {
 
       s.destroy();
       expect(cleanup).toHaveBeenCalled();
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should handle error in cleanup functions", () => {
@@ -235,7 +235,7 @@ describe("Seidr", () => {
       s.destroy(onError);
 
       expect(onError).toHaveBeenCalledWith(error);
-      expect(s.observerCount()).toBe(0);
+      expect(s.observerCount).toBe(0);
     });
 
     it("should default to console.error if no onError provided", () => {
