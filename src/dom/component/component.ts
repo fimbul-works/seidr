@@ -1,7 +1,7 @@
 import { getRenderContext } from "../../core/render-context-contract";
 import { isHTMLElement, isNum, isStr } from "../../util/type-guards";
 import { isSeidrComponent } from "../../util/type-guards/is-seidr-component";
-import { $comment, $text, type SeidrNode } from "../element/element";
+import { $comment, $text, type SeidrNode } from "../element/index";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
