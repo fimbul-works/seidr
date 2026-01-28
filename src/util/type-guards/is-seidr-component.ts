@@ -1,4 +1,4 @@
-import type { SeidrComponent } from "./types";
+import type { SeidrComponent } from "../../dom/component/types";
 
 /**
  * Check if a value is a Seidr component.

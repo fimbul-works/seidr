@@ -1,4 +1,4 @@
-import type { SeidrComponentFactory } from "./types";
+import type { SeidrComponentFactory } from "../../dom/component/types";
 
 /**
  * Check if a value is a Seidr component factory.

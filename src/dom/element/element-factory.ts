@@ -1,4 +1,5 @@
-import { $, type SeidrElement, type SeidrElementProps, type SeidrNode } from "./element";
+import { $ } from "./element";
+import type { SeidrElement, SeidrElementProps, SeidrNode } from "./types";
 
 /**
  * Creates a specialized HTML element creator function for a specific tag type.

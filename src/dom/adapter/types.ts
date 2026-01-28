@@ -1,4 +1,4 @@
-import type { SeidrElement } from "../types";
+import type { SeidrElement } from "../element/types";
 
 export interface DOMAdapter {
   createElement(tag: string): SeidrElement;

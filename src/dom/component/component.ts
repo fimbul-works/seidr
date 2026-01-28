@@ -1,9 +1,9 @@
 import { getRenderContext } from "../../core/render-context-contract";
 import { isHTMLElement, isNum, isStr } from "../../util/type-guards";
+import { isSeidrComponent } from "../../util/type-guards/is-seidr-component";
 import { $comment, $text, type SeidrNode } from "../element/element";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
-import { isSeidrComponent } from "./is-seidr-component";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
 
 // Check if we're in SSR mode

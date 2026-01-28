@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr/seidr";
-import { $, type SeidrElement } from "../element/element";
-import { $div } from "../element/elements";
+import { $, $div, type SeidrElement } from "../element/index";
 import { elementClassToggle } from "./element-class-toggle";
 
 describe("elementClassToggle", () => {

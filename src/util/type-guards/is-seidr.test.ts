@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { isSeidr, Seidr } from "./index";
+import { Seidr } from "../../seidr/seidr";
+import { isSeidr } from "./is-seidr";
 
 describe("isSeidr", () => {
   it("should return true for Seidr instances", () => {

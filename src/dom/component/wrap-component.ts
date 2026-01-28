@@ -1,6 +1,6 @@
-import type { SeidrNode } from "../element/element";
+import { isSeidrComponentFactory } from "../../util/type-guards/is-seidr-component-factory";
+import type { SeidrNode } from "../element/types";
 import { component } from "./component";
-import { isSeidrComponentFactory } from "./is-seidr-component-factory";
 import type { SeidrComponentFactory } from "./types";
 
 /**
