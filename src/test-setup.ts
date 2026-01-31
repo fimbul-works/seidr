@@ -1,5 +1,6 @@
 import { afterEach } from "vitest";
 import { type RenderContext, setInternalContext } from "./render-context";
+import type { CleanupFunction } from "./types";
 
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object
@@ -51,7 +52,7 @@ interface TestEnvironmentState {
   window: any;
 }
 
-export function enableSSRMode(): () => void {
+export function enableSSRMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
@@ -68,7 +69,7 @@ export function enableSSRMode(): () => void {
   };
 }
 
-export function enableClientMode(): () => void {
+export function enableClientMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,

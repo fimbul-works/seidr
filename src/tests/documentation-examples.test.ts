@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $div, bindInput, Safe, Seidr, withStorage } from "../index.core";
+import { $div, bindInput, type CleanupFunction, Safe, Seidr, withStorage } from "../index.core";
 import { inServer, renderToString } from "../ssr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 
@@ -69,7 +69,7 @@ describe("Documentation Verification", () => {
   });
 
   describe("SSR Async", () => {
-    let cleanup: () => void;
+    let cleanup: CleanupFunction;
 
     beforeEach(() => {
       cleanup = enableSSRMode();

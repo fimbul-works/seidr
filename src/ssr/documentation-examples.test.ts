@@ -4,6 +4,7 @@ import { $div } from "../element";
 import { Seidr } from "../seidr";
 import { createStateKey, getState, setState } from "../state";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { isUndefined } from "../util/type-guards";
 import { inBrowser, inServer } from "./env";
 import { hydrate } from "./hydrate";
@@ -19,7 +20,7 @@ import { renderToString } from "./render-to-string";
  */
 
 describe("SSR.md Documentation Examples - Server-Side", () => {
-  let cleanupMode: () => void;
+  let cleanupMode: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();
@@ -265,7 +266,7 @@ describe("SSR.md Documentation Examples - Server-Side", () => {
 });
 
 describe("SSR.md Documentation Examples - Client-Side Hydration", () => {
-  let cleanupMode: () => void;
+  let cleanupMode: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableClientMode();

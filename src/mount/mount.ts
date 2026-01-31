@@ -1,3 +1,4 @@
+import type { CleanupFunction } from "src/types";
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrElement, SeidrNode } from "../element";
@@ -20,12 +21,12 @@ import { isFn } from "../util/type-guards";
  *
  * @param {C | (() => C)} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement | SeidrElement} container - The DOM container element to mount into
- * @returns {() => void} A cleanup function that unmounts the component when called
+ * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
 export function mount<C extends SeidrNode | SeidrComponent>(
   componentOrFactory: C | (() => C),
   container: HTMLElement | SeidrElement,
-): () => void {
+): CleanupFunction {
   const factory: any = isFn(componentOrFactory) ? componentOrFactory : () => componentOrFactory;
 
   const component: SeidrComponent = wrapComponent(factory)();

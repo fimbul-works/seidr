@@ -3,13 +3,14 @@ import { $ } from "../element";
 import { runWithRenderContext } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 describe("SSR Reactive Bindings Integration", () => {
-  let cleanupMode: () => void;
+  let cleanupMode: CleanupFunction;
 
   describe("Server-Side Rendering with Reactive Props", () => {
     beforeEach(() => {

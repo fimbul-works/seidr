@@ -1,3 +1,5 @@
+import type { CleanupFunction } from "src/types";
+
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
  *
@@ -18,9 +20,9 @@ export interface ComponentScope {
    * the component is no longer needed, such as removing event listeners,
    * cleaning up reactive bindings, or clearing timeouts.
    *
-   * @param {() => void} cleanup - The cleanup function to execute
+   * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
-  track(cleanup: () => void): void;
+  track(cleanup: CleanupFunction): void;
 
   /**
    * Register a promise to wait for (SSR integration).
@@ -97,7 +99,7 @@ export interface SeidrComponent<T extends Node = any> {
    * - Removes all event listeners
    * - Cleans up all reactive bindings
    * - Executes all tracked cleanup functions
-   * @type {() => void}
+   * @type {CleanupFunction}
    */
   destroy(): void;
 }

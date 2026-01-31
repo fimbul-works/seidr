@@ -1,6 +1,7 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { $comment, type SeidrElement, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
 
 /**
@@ -18,14 +19,14 @@ import { uid } from "../util/uid";
  * @param {Seidr<T>} observable - Observable containing the current switch key
  * @param {Map<T, (val: T) => SeidrNode> | Record<string, (val: T) => SeidrNode>} factories - Mapping from keys to component factory functions
  * @param {HTMLElement | SeidrElement} container - The DOM container for the active component
- * @returns {() => void} A cleanup function that removes the reactive binding and active component
+ * @returns {CleanupFunction} A cleanup function that removes the reactive binding and active component
  */
 export function mountSwitch<T extends string = string, C extends SeidrNode = SeidrNode>(
   observable: Seidr<T>,
   factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
   container: HTMLElement | SeidrElement,
   defaultCase?: (val: T) => C,
-): () => void {
+): CleanupFunction {
   const marker = $comment(`seidr-mount-switch:${uid()}`);
   container.appendChild(marker);
 

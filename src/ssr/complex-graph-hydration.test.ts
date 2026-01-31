@@ -2,12 +2,13 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 
 describe("Complex Graph Hydration (4+ levels)", () => {
-  let cleanupMode: () => void;
+  let cleanupMode: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();

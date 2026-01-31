@@ -1,5 +1,6 @@
 import type { SeidrComponent } from "../component";
 import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -152,13 +153,13 @@ export interface SeidrElementInterface {
    * @param {E} event - The event type to listen for
    * @param {(ev: HTMLElementEventMap[E]) => void} handler - The event handler function
    * @param {boolean | AddEventListenerOptions} [options] - Optional event listener options
-   * @returns {() => void} A cleanup function that removes the event listener
+   * @returns {CleanupFunction} A cleanup function that removes the event listener
    */
   on<E extends keyof HTMLElementEventMap>(
     event: E,
     handler: (ev: HTMLElementEventMap[E]) => void,
     options?: boolean | AddEventListenerOptions,
-  ): () => void;
+  ): CleanupFunction;
 
   /**
    * Remove all child elements.

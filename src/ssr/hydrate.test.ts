@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { hydrate, isHydrating as isHydratingFlag, resetHydratingFlag } from "./hydrate";
 import { clearHydrationData, hasHydrationData, setHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
@@ -12,7 +13,7 @@ import type { HydrationData } from "./types";
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
 
 describe("Client-Side Hydration", () => {
-  let cleanupClientMode: () => void;
+  let cleanupClientMode: CleanupFunction;
 
   beforeEach(() => {
     // Ensure we're in CLIENT mode, not SSR mode

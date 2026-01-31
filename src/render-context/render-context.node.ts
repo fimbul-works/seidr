@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import type { CleanupFunction } from "../types";
 import { setInternalContext } from "./render-context";
 import type { RenderContext, RenderContextStore } from "./types";
 
@@ -81,9 +82,9 @@ export function runWithRenderContextStore<T>(callback: () => T, store: RenderCon
  *
  * Use this in tests that need a render context but don't need full SSR functionality.
  *
- * @returns {() => void} Cleanup function to restore the original context
+ * @returns {CleanupFunction} Cleanup function to restore the original context
  */
-export const setMockRenderContextForTests = (): (() => void) => {
+export const setMockRenderContextForTests = (): CleanupFunction => {
   const mockContext: RenderContext = {
     ctxID: 0,
     idCounter: 0,

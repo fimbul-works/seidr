@@ -1,4 +1,5 @@
 import type { Seidr } from "../seidr/seidr";
+import type { CleanupFunction } from "../types";
 
 /**
  * Reactively toggles a CSS class on an element based on a boolean observable.
@@ -10,7 +11,7 @@ import type { Seidr } from "../seidr/seidr";
  * @param {Element} element - The DOM element to toggle the class on
  * @param {string} className - The CSS class name to toggle
  * @param {Seidr<boolean>} active - Boolean Seidr that controls the class
- * @returns {() => void} A cleanup function that removes the binding when called
+ * @returns {CleanupFunction} A cleanup function that removes the binding when called
  */
-export const elementClassToggle = (element: Element, className: string, active: Seidr<boolean>): (() => void) =>
+export const elementClassToggle = (element: Element, className: string, active: Seidr<boolean>): CleanupFunction =>
   active.bind(element, (active, el) => el.classList.toggle(className, active));

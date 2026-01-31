@@ -1,6 +1,7 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { $comment, type SeidrElement, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
 
 /**
@@ -18,13 +19,13 @@ import { uid } from "../util/uid";
  * @param {Seidr<boolean>} condition - Boolean observable that controls component visibility
  * @param {() => C} componentFactory - Function that creates the component when needed
  * @param {HTMLElement | SeidrElement} container - The DOM container element
- * @returns {(() => void)} A cleanup function that removes the reactive binding and any active component
+ * @returns {CleanupFunction} A cleanup function that removes the reactive binding and any active component
  */
 export function mountConditional<T extends SeidrNode>(
   condition: Seidr<boolean>,
   factory: () => T,
   container: HTMLElement | SeidrElement,
-): () => void {
+): CleanupFunction {
   const marker = $comment(`seidr-mount-conditional:${uid()}`);
   container.appendChild(marker);
 

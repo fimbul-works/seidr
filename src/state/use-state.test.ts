@@ -2,11 +2,12 @@ import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { component } from "../component";
 import { runWithRenderContextStore, setMockRenderContextForTests } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { setState } from "./set";
 import { useState } from "./use-state";
 
 describe("useState", () => {
-  let cleanupEnv: () => void;
+  let cleanupEnv: CleanupFunction;
 
   beforeAll(() => {
     // Mock render context for each test

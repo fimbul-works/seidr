@@ -3,6 +3,7 @@ import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { renderToString } from "./render-to-string";
 
 /**
@@ -17,7 +18,7 @@ import { renderToString } from "./render-to-string";
  * registration/hydration system.
  */
 describe("Seidr Registration Logic - Comprehensive Tests", () => {
-  let cleanupSSR: () => void;
+  let cleanupSSR: CleanupFunction;
 
   beforeEach(() => {
     cleanupSSR = enableSSRMode();

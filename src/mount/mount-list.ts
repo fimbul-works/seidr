@@ -1,6 +1,7 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { $comment, type SeidrElement, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
 
 /**
@@ -21,14 +22,14 @@ import { uid } from "../util/uid";
  * @param {(item: T) => I} getKey - Function to extract unique keys from list items
  * @param {(item: T) => C} factory - Function that creates components for individual items
  * @param {HTMLElement | SeidrElement} container - The DOM container for the list
- * @returns {(() => void)} A cleanup function that removes all components and reactive bindings
+ * @returns {CleanupFunction} A cleanup function that removes all components and reactive bindings
  */
 export function mountList<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   factory: (item: T) => C,
   container: HTMLElement | SeidrElement,
-): () => void {
+): CleanupFunction {
   const marker = $comment(`seidr-mount-list:${uid()}`);
   container.appendChild(marker);
   const componentMap = new Map<I, SeidrComponent>();

@@ -1,4 +1,5 @@
 import { getCurrentComponent } from "../component/component-stack";
+import { wrapError } from "../util/wrap-error";
 import type { Seidr } from "./seidr";
 
 /**
@@ -57,7 +58,7 @@ export function withStorage<T extends Seidr<any>>(
       seidr.value = JSON.parse(initial);
     }
   } catch (error) {
-    const err = error instanceof Error ? error : new Error(String(error));
+    const err = wrapError(error);
     if (onError) {
       onError(err, "read");
     } else {
@@ -70,7 +71,7 @@ export function withStorage<T extends Seidr<any>>(
     try {
       storage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
+      const err = wrapError(error);
       if (onError) {
         onError(err, "write");
       } else {

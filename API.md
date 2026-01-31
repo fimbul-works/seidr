@@ -5,6 +5,8 @@
 - [Core Reactive](#core-reactive)
   - [`Seidr<T>` class](#seidrt-class)
   - [`withStorage()`](#withstorage)
+  - [`wrapSeidr()`](#wrapseidr)
+  - [`unwrapSeidr()`](#unwrapseidr)
 - [DOM Elements](#dom-elements)
   - [`SeidrElement` type](#seidrelement-type)
   - [`$` - Create DOM elements](#---create-dom-elements)
@@ -12,6 +14,7 @@
   - [Predefined Element Creators](#predefined-element-creators)
 - [Components](#components)
   - [`component()`](#component)
+  - [`wrapComponent()`](#wrapcomponent)
 - [Mounting Components](#mounting-components)
   - [`mount()`](#mount)
 - [Declarative Components](#declarative-components)
@@ -44,10 +47,8 @@
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
   - [`random()`](#random)
-  - [`wrapSeidr()`](#wrapseidr)
-  - [`unwrapSeidr()`](#unwrapseidr)
-  - [`wrapComponent()`](#wrapcomponent)
-  - [Query Functions`](#query-functions)
+  - [`wrapError()`](#wraperror)
+  - [Query Functions](#query-functions)
 - [Type Guards](#type-guards)
   - [`isUndefined`](#isUndefined)
   - [`isBool`](#isbool)
@@ -239,6 +240,52 @@ const sessionData = withStorage(
 ```
 
 ---
+
+### wrapSeidr()
+
+Ensures a value is wrapped in a `Seidr` observable. If the value is already a `Seidr` instance, it is returned as-is. If it is a raw value, a new `Seidr` instance is created with that value.
+
+**Parameters:**
+- `v` - The value to wrap: `T | Seidr<T>`
+
+**Returns:** `Seidr<T>`
+
+```typescript
+import { wrapSeidr, Seidr } from '@fimbul-works/seidr';
+
+const s1 = wrapSeidr(10); // Returns new Seidr with value 10
+const s2 = wrapSeidr(s1); // Returns s1 directly
+```
+
+---
+
+### unwrapSeidr()
+
+Utility to safely extract the value from a Seidr observable or return non-Seidr values as-is.
+
+**Generic Type:** `T` - Type of value to unwrap
+
+**Parameters:**
+- `value` - A Seidr observable or a plain value
+
+**Returns:** The unwrapped value of type `T`
+
+This utility is particularly useful when working with functions that accept both Seidr observables and plain values, and you need to access the underlying value without checking types manually.
+
+```typescript
+import { unwrapSeidr, Seidr } from '@fimbul-works/seidr';
+
+// Unwrap a Seidr observable
+const count = new Seidr(5);
+console.log(unwrapSeidr(count)); // 5
+
+// Unwrap a plain value
+const name = "Alice";
+console.log(unwrapSeidr(name)); // "Alice"
+```
+
+---
+
 ## DOM Elements
 
 ### `SeidrElement` type
@@ -426,30 +473,30 @@ const unmount = mount(UserProfile, document.body);
 unmount(); // Cleans up all reactive bindings automatically
 ```
 
- ### Component Props
+### Component Props
 
- Components accept parameters for configuration and initial state. Using plain function arguments is the recommended way to handle "props":
+Components accept parameters for configuration and initial state. Using plain function arguments is the recommended way to handle "props":
 
- ```typescript
- import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
+```typescript
+import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
 
- const Counter = ({ initialCount = 0, step = 1, label = 'Counter' } = {}) => {
-   const count = new Seidr(initialCount);
+const Counter = ({ initialCount = 0, step = 1, label = 'Counter' } = {}) => {
+  const count = new Seidr(initialCount);
 
-   return $div({ className: 'counter' }, [
-     $span({ textContent: label }),
-     $span({ textContent: count.as(n => `: ${n}`) }),
-     $button({
-       textContent: `+${step}`,
-       onclick: () => count.value += step
-     })
-   ]);
- };
+  return $div({ className: 'counter' }, [
+    $span({ textContent: label }),
+    $span({ textContent: count.as(n => `: ${n}`) }),
+    $button({
+      textContent: `+${step}`,
+      onclick: () => count.value += step
+    })
+  ]);
+};
 
- // Using the component in different contexts
- mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
- mount(() => Counter({ initialCount: 0 }), container2);
- ```
+// Using the component in different contexts
+mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
+mount(() => Counter({ initialCount: 0 }), container2);
+```
 
 **Props Best Practices:**
 - Destructure props with defaults for optional parameters: `{ prop = default } = {}`
@@ -472,6 +519,27 @@ const UserProfile = () => {
 };
 
 mount(UserProfile, document.body);
+```
+
+---
+
+
+### wrapComponent()
+
+Wraps a component factory to ensure it creates a proper SeidrComponent structure. This utility normalizes both function components and raw DOM nodes into a consistent component interface.
+
+**Parameters:**
+- `factory` - A component factory function, a SeidrComponent factory, or a raw DOM node.
+
+**Returns**: A function that returns a `SeidrComponent`
+
+```typescript
+import { wrapComponent, $div } from '@fimbul-works/seidr';
+
+// Wraps a simple function component
+const SimpleComp = () => $div({ textContent: 'Hello' });
+const factory = wrapComponent(SimpleComp);
+const component = factory(); // returns SeidrComponent
 ```
 
 ---
@@ -1260,71 +1328,39 @@ const initialRotation = random() * 360;
 
 ---
 
-### wrapSeidr()
+### wrapError()
 
-Ensures a value is wrapped in a `Seidr` observable. If the value is already a `Seidr` instance, it is returned as-is. If it is a raw value, a new `Seidr` instance is created with that value.
+Wraps a value as an `Error` instance if it is not already an instance of the provided constructor. This is useful for normalizing errors caught in `try/catch` blocks, where `catch` can receive any value.
+
+**Generic Type:** `E` extends `Error` (defaults to `Error`)
 
 **Parameters:**
-- `v` - The value to wrap: `T | Seidr<T>`
+- `err` - The value to wrap (can be `unknown`)
+- `Constructor` - Optional Error constructor (defaults to `Error`)
 
-**Returns:** `Seidr<T>`
+**Returns:** An instance of the provided constructor. If the input is already an instance, it is returned as-is. Otherwise, a new instance is created with the original value as the `cause`.
 
 ```typescript
-import { wrapSeidr, Seidr } from '@fimbul-works/seidr';
+import { wrapError } from '@fimbul-works/seidr';
 
-const s1 = wrapSeidr(10); // Returns new Seidr with value 10
-const s2 = wrapSeidr(s1); // Returns s1 directly
+try {
+  throw "something went wrong";
+} catch (e) {
+  const err = wrapError(e);
+  console.log(err.message); // "something went wrong"
+  console.log(err.cause);   // "something went wrong"
+}
+
+// With custom error classes
+class AppError extends Error {}
+
+const e1 = new Error("fail");
+const appErr = wrapError(e1, AppError);
+console.log(appErr instanceof AppError); // true
+console.log(appErr.cause === e1);        // true
 ```
 
 ---
-
-### unwrapSeidr()
-
-Utility to safely extract the value from a Seidr observable or return non-Seidr values as-is.
-
-**Generic Type:** `T` - Type of value to unwrap
-
-**Parameters:**
-- `value` - A Seidr observable or a plain value
-
-**Returns:** The unwrapped value of type `T`
-
-This utility is particularly useful when working with functions that accept both Seidr observables and plain values, and you need to access the underlying value without checking types manually.
-
-```typescript
-import { unwrapSeidr, Seidr } from '@fimbul-works/seidr';
-
-// Unwrap a Seidr observable
-const count = new Seidr(5);
-console.log(unwrapSeidr(count)); // 5
-
-// Unwrap a plain value
-const name = "Alice";
-console.log(unwrapSeidr(name)); // "Alice"
-```
-
----
-
-### wrapComponent()
-
-Wraps a component factory to ensure it creates a proper SeidrComponent structure. This utility normalizes both function components and raw DOM nodes into a consistent component interface.
-
-**Parameters:**
-- `factory` - A component factory function, a SeidrComponent factory, or a raw DOM node.
-
-**Returns**: A function that returns a `SeidrComponent`
-
-```typescript
-import { wrapComponent, $div } from '@fimbul-works/seidr';
-
-// Wraps a simple function component
-const SimpleComp = () => $div({ textContent: 'Hello' });
-const factory = wrapComponent(SimpleComp);
-const component = factory(); // returns SeidrComponent
-```
-
----
-
 
 ### Query Functions
 

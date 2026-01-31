@@ -2,6 +2,7 @@ import { component, type SeidrComponent, useScope, wrapComponent } from "../comp
 import { createScope } from "../component/component-scope";
 import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrNode } from "../element";
+import { wrapError } from "../util/wrap-error";
 
 /**
  * Creates a component with error boundary protection.
@@ -39,7 +40,7 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
         currentComp.scope = newScope;
       }
 
-      return wrapComponent(errorBoundaryFactory)(err as Error);
+      return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }
   })();
 }

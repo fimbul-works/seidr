@@ -6,13 +6,14 @@ import { hydrate, resetHydratingFlag } from "../ssr/hydrate";
 import { clearHydrationData } from "../ssr/hydration-context";
 import { renderToString } from "../ssr/render-to-string";
 import { browserContext, enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { initRouter } from "./init-router";
 import { Router } from "./router";
 
 describe("Router Hydration Unmounting", () => {
-  let cleanupClientMode: () => void;
+  let cleanupClientMode: CleanupFunction;
 
   beforeEach(() => {
     cleanupClientMode = enableClientMode();

@@ -4,13 +4,14 @@ import { clearHydrationData } from "../ssr/hydration-context";
 import { renderToString } from "../ssr/render-to-string";
 import { setActiveSSRScope } from "../ssr/ssr-scope";
 import { enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
 import { navigate } from "./navigate";
 import { Route } from "./route";
 import { Router } from "./router";
 
 describe("Router SSR", () => {
-  let cleanupEnv: () => void;
+  let cleanupEnv: CleanupFunction;
 
   beforeEach(() => {
     // Enable SSR mode

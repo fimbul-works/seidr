@@ -2,6 +2,7 @@ import { component, type SeidrComponent, useScope } from "../component";
 import type { SeidrNode } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { isSeidr } from "../util/type-guards";
+import { wrapError } from "../util/wrap-error";
 import { Switch } from "./switch";
 
 const PROMISE_PENDING = "pending";
@@ -48,7 +49,7 @@ export function Suspense<T, R extends SeidrNode>(
         }
       } catch (err) {
         if (!scope.isDestroyed && myId === currentPromiseId) {
-          errorValue = err instanceof Error ? err : new Error(String(err));
+          errorValue = wrapError(err);
           status.value = PROMISE_ERROR;
         }
       }

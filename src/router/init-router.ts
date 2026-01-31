@@ -1,11 +1,12 @@
+import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";
 
 /**
  * Initialize Seidr router.
  * @param {string} path - Current URL path
- * @returns {() => void} Cleanup function that stops listening to path change events.
+ * @returns {CleanupFunction} Cleanup function that stops listening to path change events.
  */
-export function initRouter(path?: string): () => void {
+export function initRouter(path?: string): CleanupFunction {
   // Set the initial path value
   const currentPath = getCurrentPath();
   if (path !== undefined) {

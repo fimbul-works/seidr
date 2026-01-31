@@ -4,13 +4,14 @@ import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types.js";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 
 describe("SSR Utilities", () => {
   let observables: Seidr<any>[] = [];
-  let cleanupEnv: () => void;
+  let cleanupEnv: CleanupFunction;
 
   beforeEach(() => {
     // Enable SSR mode for all tests

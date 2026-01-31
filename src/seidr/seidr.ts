@@ -1,8 +1,7 @@
 import { getRenderContext } from "../render-context";
 import { registerHydratedSeidr } from "../ssr/hydration-context";
 import { getActiveSSRScope } from "../ssr/ssr-scope";
-import type { CleanupFunction, ErrorHandler, EventHandler } from "../types";
-import { wrapError } from "../util/wrap-error";
+import type { CleanupFunction, EventHandler } from "../types";
 
 let seidrIdCounter: number = 0;
 
@@ -258,13 +257,13 @@ export class Seidr<T> {
    * Cleanup functions are executed in a try-catch block to ensure that
    * errors in one cleanup function don't prevent others from running.
    */
-  destroy(onError?: ErrorHandler): void {
+  destroy(): void {
     this.f.clear();
     this.c.forEach((cleanup) => {
       try {
         cleanup();
       } catch (error) {
-        (onError ?? console.error)(wrapError(error));
+        console.error(error);
       }
     });
     this.c = [];

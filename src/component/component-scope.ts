@@ -1,3 +1,4 @@
+import type { CleanupFunction } from "src/types";
 import { getRenderContext } from "../render-context";
 import type { ComponentScope, SeidrComponent } from "./types";
 
@@ -10,10 +11,10 @@ import type { ComponentScope, SeidrComponent } from "./types";
  * @returns {ComponentScope} A new ComponentScope instance with cleanup tracking capabilities
  */
 export function createScope(): ComponentScope {
-  let cleanups: (() => void)[] = [];
+  let cleanups: CleanupFunction[] = [];
   let destroyed = false;
 
-  function track(cleanup: () => void): void {
+  function track(cleanup: CleanupFunction): void {
     if (destroyed) {
       console.warn("Tracking cleanup on already destroyed scope");
       cleanup();

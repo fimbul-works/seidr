@@ -3,10 +3,11 @@ import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { renderToString } from "./render-to-string";
 
 describe("Concurrent SSR Request Isolation", () => {
-  let cleanupMode: () => void;
+  let cleanupMode: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();

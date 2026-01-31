@@ -2,6 +2,7 @@ import type { SeidrComponent } from "../component";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
 import { ServerComment, ServerHTMLElement } from "../ssr/server-html-element";
+import type { CleanupFunction } from "../types";
 import { isFn, isSeidr, isSeidrComponent, isStr, isUndefined } from "../util/type-guards";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
 
@@ -62,7 +63,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // Handle SSR element
   if (isServerSide) {
     const el = new ServerHTMLElement(tagName, {}, []);
-    let cleanups: (() => void)[] = [];
+    let cleanups: CleanupFunction[] = [];
 
     // Properties that should be set directly on the element
     const directProps = new Set<string>([
@@ -165,7 +166,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // Create a new HTMLElement if not found
   const el = document.createElement(tagName);
-  let cleanups: (() => void)[] = [];
+  let cleanups: CleanupFunction[] = [];
   if (typeof process !== "undefined" && typeof elementId !== "undefined") {
     el.dataset[SEIDR_ID_CAME_CASE] = elementId;
   }
@@ -234,7 +235,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       event: E,
       handler: (ev: HTMLElementEventMap[E]) => any,
       options?: boolean | AddEventListenerOptions,
-    ): () => void {
+    ): CleanupFunction {
       el.addEventListener(event, handler as EventListener, options);
       return () => el.removeEventListener(event, handler as EventListener, options);
     },

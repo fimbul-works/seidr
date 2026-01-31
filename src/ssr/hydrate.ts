@@ -2,6 +2,7 @@ import type { SeidrNode } from "../element";
 import { $query } from "../helper";
 import { mount } from "../mount";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context/render-context.browser";
+import type { CleanupFunction } from "../types";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
@@ -34,13 +35,13 @@ export function resetHydratingFlag() {
  * @param {(...args: any[]) => T} factory - Function that returns a Seidr Component
  * @param {HTMLElement} container - The HTMLElement to mount the hydrated component into
  * @param {HydrationData} hydrationData - The previously captured hydration data with ctxID
- * @returns {() => void} A cleanup function that unmounts the component when called
+ * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
 export function hydrate<T extends SeidrNode>(
   factory: () => T,
   container: HTMLElement,
   hydrationData: HydrationData,
-): () => void {
+): CleanupFunction {
   isHydrating = true;
 
   // Set the client render context ID from the server to ensure matching context

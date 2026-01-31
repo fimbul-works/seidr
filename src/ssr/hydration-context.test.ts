@@ -1,9 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { clearHydrationData, hasHydrationData, setHydrationData } from "./hydration-context";
 
 describe("Hydration Context", () => {
-  let cleanupSSRMode: () => void;
+  let cleanupSSRMode: CleanupFunction;
 
   beforeEach(() => {
     // Enable SSR mode for all tests
@@ -23,8 +24,6 @@ describe("Hydration Context", () => {
 
     setHydrationData({
       observables: {},
-      bindings: {},
-      graph: { nodes: [], rootIds: [] },
     });
 
     expect(hasHydrationData()).toBe(true);
