@@ -1,4 +1,5 @@
 import { component, type SeidrComponent } from "../../../dom/component/component";
+import { useScope } from "../../../dom/component/use-scope";
 import { wrapComponent } from "../../../dom/component/wrap-component";
 import { $comment, type SeidrNode } from "../../../dom/element/element";
 import { isHydrating } from "../../../ssr/hydrate";
@@ -6,7 +7,6 @@ import { ServerHTMLElement } from "../../../ssr/server-html-element";
 import { Seidr } from "../../../state/seidr";
 import { NO_HYDRATE, uid } from "../../../util/index";
 import { getRenderContext } from "../../render-context-contract";
-import { useScope } from "../use-scope";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { matchRoute } from "./match-route";

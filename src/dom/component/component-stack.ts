@@ -1,5 +1,5 @@
 import { getRenderContext } from "../../core/render-context-contract";
-import type { SeidrComponent } from "./component";
+import type { SeidrComponent } from "./types";
 
 /** Map of SeidrComponent stack by render context ID */
 const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();

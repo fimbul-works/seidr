@@ -1,5 +1,5 @@
-import type { ComponentScope } from "../../dom/component/component-scope";
-import { getCurrentComponent } from "../../dom/component/component-stack";
+import type { ComponentScope } from "./component-scope";
+import { getCurrentComponent } from "./component-stack";
 
 /**
  * Gets the scope of the current component.

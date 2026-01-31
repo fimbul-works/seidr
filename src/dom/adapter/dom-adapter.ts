@@ -1,7 +1,7 @@
 import type { DOMFactoryAdapter } from "./types";
 
 export class DOMAdapter implements DOMFactoryAdapter<HTMLElement, Node, DocumentFragment> {
-  createElement<T extends keyof HTMLElementTagNameMap>(tag: T): HTMLElementTagNameMap[T] {
+  createElement<T extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>(tag: T): HTMLElementTagNameMap[T] {
     return document.createElement(tag);
   }
   createTextNode(text: string): Text {

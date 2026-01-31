@@ -1,8 +1,8 @@
 import { component, type SeidrComponent } from "../../../dom/component/component";
+import { useScope } from "../../../dom/component/use-scope";
 import type { SeidrNode } from "../../../dom/element/element";
 import { Seidr } from "../../../state/seidr";
 import { isSeidr, unwrapSeidr } from "../../../util";
-import { useScope } from "../use-scope";
 import { Switch } from "./switch";
 
 const PROMISE_PENDING = "pending";

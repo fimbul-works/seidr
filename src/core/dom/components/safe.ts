@@ -1,9 +1,9 @@
 import { component, type SeidrComponent } from "../../../dom/component/component";
 import { createScope } from "../../../dom/component/component-scope";
 import { getCurrentComponent } from "../../../dom/component/component-stack";
+import { useScope } from "../../../dom/component/use-scope";
 import { wrapComponent } from "../../../dom/component/wrap-component";
 import type { SeidrNode } from "../../../dom/element/element";
-import { useScope } from "../use-scope";
 
 /**
  * Creates a component with error boundary protection.

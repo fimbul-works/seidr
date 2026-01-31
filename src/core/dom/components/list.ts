@@ -1,9 +1,9 @@
 import { component, type SeidrComponent } from "../../../dom/component/component";
+import { useScope } from "../../../dom/component/use-scope";
 import { wrapComponent } from "../../../dom/component/wrap-component";
 import { $comment, type SeidrNode } from "../../../dom/element/element";
 import type { Seidr } from "../../../state/seidr";
 import { uid } from "../../../util/uid";
-import { useScope } from "../use-scope";
 
 /**
  * Renders an efficient list of components from an observable array.

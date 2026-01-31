@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { mount } from "../../core/dom/mount";
-import { useScope } from "../../core/dom/use-scope";
 import { Seidr } from "../../seidr/seidr";
 import { $ } from "../element/element";
 import { component } from "./component";
 import { createScope } from "./component-scope";
+import { useScope } from "./use-scope";
 
 describe("component", () => {
   it("should create a component with element and destroy method", () => {
