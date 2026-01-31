@@ -1,13 +1,13 @@
-import { $comment, $text, type SeidrNode } from "../element";
+import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
-import { ServerHTMLElement } from "../ssr/server-html-element";
-import { isHTMLElement, isNum, isSeidrComponent, isStr } from "../util/type-guards";
+import { ServerFragment } from "../ssr/dom/server-fragment";
+import { ServerHTMLElement } from "../ssr/dom/server-html-element";
+import { isHydrating, isSSR } from "../util/env";
+import { isHTMLElement, isNum, isSeidrComponent, isSeidrFragment, isStr } from "../util/type-guards";
+import { uid } from "../util/uid";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
-
-// Check if we're in SSR mode
-const isSSR = typeof window === "undefined" || (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -60,42 +60,42 @@ export function component<P = void>(
           return $comment("");
         }
         if (isStr(item) || isNum(item)) {
-          if (isSSR) return String(item);
+          if (isSSR()) return String(item);
           return $text(String(item));
         }
+        if (isSeidrFragment(item)) return item;
         return item;
       };
 
       // Track child SeidrComponents to propagate onAttached
       const childComponents: SeidrComponent[] = [];
+      const isSSRNow = isSSR();
 
       // Support for array returns (multiple root nodes)
       if (Array.isArray(result)) {
-        if (isSSR) {
-          // In SSR, we can't use DocumentFragment because ServerComment instances
-          // can't be appended to real DOM fragments. Instead, create a wrapper div.
-          const wrapper = new ServerHTMLElement("div");
+        const ctx = getRenderContext();
+        const instanceId = ctx ? ctx.idCounter++ : uid();
+        const id = ctx ? `ctx-${ctx.ctxID}-${instanceId}` : uid();
+        const isSSRNow = isSSR();
+
+        if (isSSRNow) {
+          const fragment = new ServerFragment(id);
           result.forEach((item) => {
             const node = toNode(item);
-            // Track child components for onAttached propagation
             if (isSeidrComponent(item)) {
               childComponents.push(item);
             }
-            // ServerHTMLElement.appendChild knows how to handle strings and ServerComments
-            (wrapper as any).appendChild(node);
+            fragment.appendChild(node);
           });
-          comp.element = wrapper as any;
+          comp.element = fragment as any;
         } else {
-          // Client-side: Use DocumentFragment as normal
-          const fragment = document.createDocumentFragment();
-          result.forEach((item) => {
-            const node = toNode(item);
-            // Track child components for onAttached propagation
-            if (isSeidrComponent(item)) {
-              childComponents.push(item);
-            }
-            fragment.appendChild(node as Node);
-          });
+          // Check if hydrating and
+          const isHydratingNow = isHydrating();
+          let markers: [Comment | null, Comment | null] = [null, null];
+          if (isHydratingNow) {
+            markers = findMarkers(id);
+          }
+          const fragment = $fragment(result as any[], id, markers[0] || undefined, markers[1] || undefined);
           comp.element = fragment as any;
         }
       } else {

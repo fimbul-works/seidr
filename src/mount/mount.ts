@@ -2,7 +2,7 @@ import type { CleanupFunction } from "src/types";
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrElement, SeidrNode } from "../element";
-import { isFn } from "../util/type-guards";
+import { isFn, isSeidrFragment } from "../util/type-guards";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -32,10 +32,16 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   const component: SeidrComponent = wrapComponent(factory)();
 
   // Check if element is already in the container (happens during hydration with DOM reuse)
-  const isAlreadyMounted = container.contains(component.element as Node);
+  const isAlreadyMounted = isSeidrFragment(component.element)
+    ? container.contains(component.element.start)
+    : container.contains(component.element as Node);
 
   if (!isAlreadyMounted) {
-    container.appendChild(component.element as Node);
+    if (isSeidrFragment(component.element)) {
+      component.element.appendTo(container);
+    } else {
+      container.appendChild(component.element as Node);
+    }
   }
 
   if (component.scope.onAttached) {

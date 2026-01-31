@@ -13,6 +13,13 @@ export const browserContext: RenderContext = {
 };
 
 /**
+ * Set the render context ID for tests.
+ */
+export function setRenderContextID(id: number): void {
+  browserContext.ctxID = id;
+}
+
+/**
  * Robust getRenderContext for tests.
  * Prefers AsyncLocalStorage if available (SSR), falls back to browserContext.
  */

@@ -1,5 +1,5 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { $comment, type SeidrElement, type SeidrNode } from "../element";
+import { createFragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
@@ -26,19 +26,21 @@ export function mountConditional<T extends SeidrNode>(
   factory: () => T,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const marker = $comment(`seidr-mount-conditional:${uid()}`);
-  container.appendChild(marker);
+  const fragment = createFragment(`mount-conditional:${uid()}`);
+  if ("appendChild" in container) {
+    fragment.appendTo(container as any);
+  }
 
   let currentComponent: SeidrComponent | null = null;
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {
       currentComponent = wrapComponent(factory)();
-      container.insertBefore(currentComponent.element, marker);
+      fragment.appendChild(currentComponent.element as any);
 
       // Trigger onAttached when component is added to DOM
       if (currentComponent.scope.onAttached) {
-        currentComponent.scope.onAttached(container);
+        currentComponent.scope.onAttached(container as any);
       }
     } else if (!shouldShow && currentComponent) {
       currentComponent.destroy();
@@ -58,8 +60,6 @@ export function mountConditional<T extends SeidrNode>(
     if (currentComponent) {
       currentComponent.destroy();
     }
-    if (container.contains(marker)) {
-      container.removeChild(marker);
-    }
+    fragment.remove();
   };
 }

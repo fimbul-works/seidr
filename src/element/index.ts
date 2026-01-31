@@ -1,4 +1,4 @@
 export * from "./element";
 export * from "./element-factory";
-export * from "./elements";
+export { $fragment, createFragment, findMarkers } from "./fragment";
 export * from "./types";

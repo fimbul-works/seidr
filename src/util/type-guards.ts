@@ -1,5 +1,5 @@
 import type { SeidrComponent, SeidrComponentFactory } from "../component/types";
-import type { SeidrElement } from "../element/types";
+import type { SeidrElement, SeidrFragment } from "../element/types";
 import { Seidr } from "../seidr/seidr";
 
 /**
@@ -39,10 +39,12 @@ export const isFn = (v: any): v is (...args: any[]) => any => typeof v === "func
 
 /**
  * Check if a value is an object.
+ * @template {object} T - Type of the object
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is an object, `false` otherwise
  */
-export const isObj = (v: any): v is object => typeof v === "object" && !Array.isArray(v) && v !== null;
+export const isObj = <T extends object = object>(v: any): v is T =>
+  v !== null && typeof v === "object" && !Array.isArray(v);
 
 /**
  * Check if a value is a Seidr class instance.
@@ -60,10 +62,19 @@ export const isSeidrElement = (v: any): v is SeidrElement => v && v.isSeidrEleme
 
 /**
  * Check if a value is a Seidr component.
+ * @template {Node} T - Type of the component's Root Node
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr component, `false` otherwise
  */
-export const isSeidrComponent = (v: any): v is SeidrComponent => v && v.isSeidrComponent === true;
+export const isSeidrComponent = <T extends Node = any>(v: any): v is SeidrComponent<T> =>
+  v && v.isSeidrComponent === true;
+
+/**
+ * Check if a value is a Seidr fragment.
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a Seidr fragment, `false` otherwise
+ */
+export const isSeidrFragment = (v: any): v is SeidrFragment => v && v.isSeidrFragment === true;
 
 /**
  * Check if a value is a Seidr component factory.
@@ -82,5 +93,5 @@ export const isHTMLElement = (v: any): v is HTMLElement => {
     return true;
   }
   // Fallback for SSR/ServerHTMLElement which may not inherit from global HTMLElement
-  return isObj(v) && "tagName" in v && "dataset" in v;
+  return isObj(v) && "tagName" in v && "nodeType" in v && v.nodeType === 1; // Node.ELEMENT_NODE
 };

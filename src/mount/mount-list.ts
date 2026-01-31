@@ -1,5 +1,5 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { $comment, type SeidrElement, type SeidrNode } from "../element";
+import { createFragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
@@ -30,8 +30,10 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   factory: (item: T) => C,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const marker = $comment(`seidr-mount-list:${uid()}`);
-  container.appendChild(marker);
+  const fragment = createFragment(`mount-list:${uid()}`);
+  if ("appendChild" in container) {
+    fragment.appendTo(container as any);
+  }
   const componentMap = new Map<I, SeidrComponent>();
 
   const update = (items: T[]) => {
@@ -45,8 +47,8 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
       }
     }
 
-    // Add or reorder components by iterating backwards from marker
-    let currentAnchor: Node = marker;
+    // Add or reorder components by iterating backwards from end marker
+    let currentAnchor: Node = fragment.end;
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
       const key = getKey(item);
@@ -59,13 +61,13 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
 
       // Move to correct position if needed
       if ((comp as SeidrComponent).element.nextSibling !== currentAnchor) {
-        const needsAttachment = !comp.element.parentNode;
+        const needsAttachment = !(comp as any).element.parentNode;
 
-        container.insertBefore((comp as SeidrComponent).element, currentAnchor);
+        fragment.insertBefore((comp as SeidrComponent).element as any, currentAnchor);
 
         // Trigger onAttached if component was newly added to DOM
         if (needsAttachment && comp.scope.onAttached) {
-          comp.scope.onAttached(container);
+          comp.scope.onAttached(container as any);
         }
       }
 
@@ -86,8 +88,6 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
       comp.destroy();
     }
     componentMap.clear();
-    if (container.contains(marker)) {
-      container.removeChild(marker);
-    }
+    fragment.remove();
   };
 }

@@ -1,6 +1,9 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
+import { ServerFragment } from "../ssr/dom/server-fragment";
+import { isHydrating, isSSR } from "../util/env";
 import { uid } from "../util/uid";
 
 /**
@@ -14,12 +17,28 @@ import { uid } from "../util/uid";
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls visibility
  * @param {() => T} factory - Function that creates the component or element when needed
- * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
+ * @returns {SeidrComponent<SeidrFragment>} A component whose root is a SeidrFragment
  */
-export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, factory: () => T): SeidrComponent<Comment> {
+export function Conditional<T extends SeidrNode>(
+  condition: Seidr<boolean>,
+  factory: () => T,
+): SeidrComponent<SeidrFragment> {
   return component(() => {
     const scope = useScope();
-    const marker = $comment(`seidr-conditional:${uid()}`);
+    const ctx = getRenderContext();
+    const instanceId = ctx ? ctx.idCounter++ : uid();
+    const id = ctx ? `conditional-${ctx.ctxID}-${instanceId}` : uid();
+
+    let fragment: SeidrFragment;
+    if (isSSR()) {
+      fragment = new ServerFragment(id) as any;
+    } else if (isHydrating()) {
+      const [s, e] = findMarkers(id);
+      fragment = $fragment([], id, s || undefined, e || undefined);
+    } else {
+      fragment = $fragment([], id);
+    }
+
     let currentComponent: SeidrComponent | null = null;
 
     /**
@@ -28,28 +47,32 @@ export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, fact
      */
     const update = (shouldShow: boolean) => {
       if (shouldShow && !currentComponent) {
+        fragment.clear();
         currentComponent = wrapComponent(factory)();
-        if (marker.parentNode) {
-          marker.parentNode.insertBefore(currentComponent.element, marker);
+        fragment.appendChild(currentComponent.element as any);
 
-          // Trigger onAttached when component is added to DOM
-          if (currentComponent.scope.onAttached) {
-            currentComponent.scope.onAttached(marker.parentNode);
-          }
+        // Trigger onAttached when component is added to DOM
+        if (fragment.parentNode && currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(fragment.parentNode);
         }
       } else if (!shouldShow && currentComponent) {
         currentComponent.destroy();
         currentComponent = null;
+        fragment.clear();
       }
     };
 
-    // Initial render / attachment sync
-    scope.onAttached = () => {
-      update(condition.value);
+    // Initial render
+    update(condition.value);
+
+    // Ensure onAttached is propagated
+    scope.onAttached = (parent) => {
+      if (currentComponent?.scope.onAttached) {
+        currentComponent.scope.onAttached(parent);
+      }
     };
 
-    // Reactive updates
-    scope.track(condition.observe((val) => update(val)));
+    scope.track(condition.observe(update));
 
     // Cleanup active component
     scope.track(() => {
@@ -58,6 +81,6 @@ export function Conditional<T extends SeidrNode>(condition: Seidr<boolean>, fact
       }
     });
 
-    return marker;
+    return fragment;
   })();
 }

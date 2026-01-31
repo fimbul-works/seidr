@@ -117,6 +117,7 @@ export type SeidrNode =
   | Element
   | Text
   | Comment
+  | SeidrFragment
   | string
   | number
   | boolean
@@ -178,3 +179,18 @@ export interface SeidrElementInterface {
  */
 export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
   NoStyle<HTMLElementTagNameMap[K]> & { style: FlexibleCSSStyleDeclaration };
+
+/**
+ * SeidrFragment manages a range of DOM nodes without a wrapper element.
+ * It uses a start and end marker (HTML Comments) to track its boundaries.
+ */
+export interface SeidrFragment extends DocumentFragment {
+  readonly isSeidrFragment: true;
+  readonly id: string;
+  readonly start: Comment;
+  readonly end: Comment;
+  readonly nodes: Node[];
+  clear(): void;
+  appendTo(parent: Element): void;
+  toString(): string;
+}

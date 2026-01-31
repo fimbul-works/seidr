@@ -1,6 +1,9 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
+import { ServerFragment } from "../ssr/dom/server-fragment";
+import { isHydrating, isSSR } from "../util/env";
 import { uid } from "../util/uid";
 
 /**
@@ -14,24 +17,33 @@ import { uid } from "../util/uid";
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
  * @param {(item: T) => C} factory - Component creation function (raw or wrapped)
- * @returns {SeidrComponent<Comment>} List component
+ * @returns {SeidrComponent<SeidrFragment>} List component
  */
 export function List<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   factory: (item: T) => C,
-): SeidrComponent<Comment> {
+): SeidrComponent<SeidrFragment> {
   return component(() => {
     const scope = useScope();
-    const marker = $comment(`seidr-list:${uid()}`);
+    const ctx = getRenderContext();
+    const instanceId = ctx ? ctx.idCounter++ : uid();
+    const id = ctx ? `list-${ctx.ctxID}-${instanceId}` : uid();
+
+    let fragment: SeidrFragment;
+    if (isSSR()) {
+      fragment = new ServerFragment(id) as any;
+    } else if (isHydrating()) {
+      const [s, e] = findMarkers(id);
+      fragment = $fragment([], id, s || undefined, e || undefined);
+    } else {
+      fragment = $fragment([], id);
+    }
+
     const componentMap = new Map<I, SeidrComponent>();
 
     const update = (items: T[]) => {
-      const parent = marker.parentNode;
-      if (!parent) {
-        return;
-      }
-
+      const parent = fragment.parentNode;
       const newKeys = new Set(items.map(getKey));
 
       // Remove components no longer in list
@@ -42,8 +54,8 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         }
       }
 
-      // Add or reorder components by iterating backwards from marker
-      let currentAnchor: Node = marker;
+      // Add or reorder components by iterating backwards from end marker
+      let currentAnchor: Node = fragment.end;
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
@@ -56,11 +68,11 @@ export function List<T, I extends string | number, C extends SeidrNode>(
 
         // Move to correct position if needed
         if (comp.element.nextSibling !== currentAnchor) {
-          const needsAttachment = !comp.element.parentNode;
-          parent.insertBefore(comp.element as Node, currentAnchor);
+          const needsAttachment = isSSR() || !comp.element.parentNode;
+          fragment.insertBefore(comp.element as Node, currentAnchor);
 
           // Trigger onAttached if component was newly added to DOM
-          if (needsAttachment && comp.scope.onAttached) {
+          if (needsAttachment && parent && comp.scope.onAttached) {
             comp.scope.onAttached(parent);
           }
         }
@@ -69,8 +81,15 @@ export function List<T, I extends string | number, C extends SeidrNode>(
       }
     };
 
-    scope.onAttached = () => {
-      update(observable.value);
+    // Initial render
+    fragment.clear();
+    update(observable.value);
+
+    // Ensure onAttached is propagated
+    scope.onAttached = (parent) => {
+      for (const comp of componentMap.values()) {
+        if (comp.scope.onAttached) comp.scope.onAttached(parent);
+      }
     };
 
     scope.track(observable.observe(update));
@@ -83,6 +102,6 @@ export function List<T, I extends string | number, C extends SeidrNode>(
       componentMap.clear();
     });
 
-    return marker;
+    return fragment;
   })();
 }

@@ -1,6 +1,9 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
+import { ServerFragment } from "../ssr/dom/server-fragment";
+import { isHydrating, isSSR } from "../util/env";
 import { uid } from "../util/uid";
 
 /**
@@ -12,24 +15,33 @@ import { uid } from "../util/uid";
  * @param {Seidr<T>} observable - Observable value to switch on
  * @param {Map<T, (val: T) => C> | Record<string, (val: T) => C>} factories - Map or object of cases to component factories (raw or wrapped)
  * @param {(val: T) => C} [defaultCase] - Optional fallback component factory
- * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
+ * @returns {SeidrComponent<SeidrFragment>} A component whose root is a SeidrFragment
  */
 export function Switch<T, C extends SeidrNode>(
   observable: Seidr<T>,
   factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
   defaultCase?: (val: T) => C,
-): SeidrComponent<Comment> {
+): SeidrComponent<SeidrFragment> {
   return component(() => {
     const scope = useScope();
-    const marker = $comment(`seidr-switch:${uid()}`);
+    const ctx = getRenderContext();
+    const instanceId = ctx ? ctx.idCounter++ : uid();
+    const id = ctx ? `switch-${ctx.ctxID}-${instanceId}` : uid();
+
+    let fragment: SeidrFragment;
+    if (isSSR()) {
+      fragment = new ServerFragment(id) as any;
+    } else if (isHydrating()) {
+      const [s, e] = findMarkers(id);
+      fragment = $fragment([], id, s || undefined, e || undefined);
+    } else {
+      fragment = $fragment([], id);
+    }
+
     let currentComponent: SeidrComponent | null = null;
 
     const update = (value: T) => {
-      const parent = marker.parentNode;
-      if (!parent) return;
-
       const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
-
       const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
@@ -37,19 +49,27 @@ export function Switch<T, C extends SeidrNode>(
         currentComponent = null;
       }
 
-      if (factory && parent) {
+      fragment.clear();
+
+      if (factory) {
         currentComponent = wrapComponent<typeof value>(factory)(value);
-        parent.insertBefore(currentComponent.element as Node, marker);
+        fragment.appendChild(currentComponent.element as any);
 
         // Trigger onAttached when component is added to DOM
-        if (currentComponent.scope.onAttached) {
-          currentComponent.scope.onAttached(parent);
+        if (fragment.parentNode && currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(fragment.parentNode);
         }
       }
     };
 
-    scope.onAttached = () => {
-      update(observable.value);
+    // Initial render
+    update(observable.value);
+
+    scope.onAttached = (parent) => {
+      // Re-trigger onAttached for current component if it exists
+      if (currentComponent?.scope.onAttached) {
+        currentComponent.scope.onAttached(parent);
+      }
     };
 
     scope.track(observable.observe(update));
@@ -61,6 +81,6 @@ export function Switch<T, C extends SeidrNode>(
       }
     });
 
-    return marker;
+    return fragment;
   })();
 }

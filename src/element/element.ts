@@ -1,9 +1,9 @@
 import type { SeidrComponent } from "../component";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
-import { ServerComment, ServerHTMLElement } from "../ssr/server-html-element";
+import { ServerComment, ServerHTMLElement } from "../ssr/dom/server-html-element";
 import type { CleanupFunction } from "../types";
-import { isFn, isSeidr, isSeidrComponent, isStr, isUndefined } from "../util/type-guards";
+import { isFn, isSeidr, isSeidrComponent, isSeidrFragment, isStr, isUndefined } from "../util/type-guards";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
 
 /**
@@ -134,6 +134,9 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           }
         } else if (typeof node === "number") {
           el.appendChild(String(node));
+        } else if (isSeidrFragment(node)) {
+          // In SSR, fragments are serialized with markers
+          el.appendChild(node);
         } else if (node) {
           el.appendChild(node);
         }
@@ -281,7 +284,18 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           if (item === null || item === undefined || item === false || item === true) return;
 
           let newNode: Node;
-          if (isSeidrComponent(item)) {
+          if (isSeidrFragment(item)) {
+            // Append markers and nodes
+            const fragment = item;
+            if (anchor.parentNode) {
+              anchor.parentNode.insertBefore(fragment.start, anchor);
+              anchor.parentNode.insertBefore(fragment.end, anchor);
+              // Store start marker as "currentNode" for reference if needed,
+              // though fragments manage their own range.
+              currentNode = fragment.start;
+            }
+            // if (item.scope?.onAttached) item.scope.onAttached(el); // SeidrFragmnet is not a component, and thus has no scope!
+          } else if (isSeidrComponent(item)) {
             newNode = item.element as Node;
             currentComponent = item;
             if (item.scope.onAttached) item.scope.onAttached(el);
@@ -291,9 +305,11 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
             newNode = item as Node;
           }
 
-          currentNode = newNode;
-          if (anchor.parentNode) {
-            anchor.parentNode.insertBefore(newNode, anchor);
+          if (newNode!) {
+            currentNode = newNode;
+            if (anchor.parentNode) {
+              anchor.parentNode.insertBefore(newNode, anchor);
+            }
           }
         };
 
@@ -307,8 +323,15 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       // Skip null/undefined/boolean static children
       if (item === null || item === undefined || item === false || item === true) return;
 
-      if (isSeidrComponent(item)) {
-        el.appendChild(item.element);
+      if (isSeidrFragment(item)) {
+        item.append(el);
+        // if (item.scope?.onAttached) item.scope.onAttached(el); // SeidrFragment is not a component, and thus has no scope!
+      } else if (isSeidrComponent(item)) {
+        if (isSeidrFragment(item.element)) {
+          item.element.append(el);
+        } else {
+          el.appendChild(item.element);
+        }
         if (item.scope.onAttached) item.scope.onAttached(el);
       } else {
         el.appendChild(isStr(item) || typeof item === "number" ? $text(String(item)) : (item as Node));
