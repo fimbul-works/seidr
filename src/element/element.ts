@@ -169,22 +169,15 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         if (item === null || item === undefined || item === false || item === true) return;
 
         const node = (isSeidrComponent(item) ? item.element : item) as any;
-
-        // Special handling for Router/SSR wrapper: if node has _ssrWrapper,
-        // append all its children instead of just the node itself
-        if (node?._ssrWrapper) {
-          const wrapper = node._ssrWrapper;
-          // Move all children from wrapper to this element
-          for (const c of [...wrapper.children]) {
-            el.appendChild(c);
-          }
-        } else if (typeof node === "number") {
+        if (typeof node === "number") {
           el.appendChild(String(node));
-        } else if (isSeidrFragment(node)) {
-          // In SSR, fragments are serialized with markers
-          el.appendChild(node);
-        } else if (node) {
-          el.appendChild(node);
+        } else {
+          if (isSeidrFragment(node)) {
+            // Use appendTo to handle fragment logic (moving markers and nodes)
+            node.appendTo(el as any);
+          } else if (node) {
+            el.appendChild(node);
+          }
         }
 
         if (isSeidrComponent(item) && item.scope.onAttached) {
@@ -384,11 +377,11 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       if (item === null || item === undefined || item === false || item === true) return;
 
       if (isSeidrFragment(item)) {
-        item.append(el);
+        item.appendTo(el);
         // if (item.scope?.onAttached) item.scope.onAttached(el); // SeidrFragment is not a component, and thus has no scope!
       } else if (isSeidrComponent(item)) {
         if (isSeidrFragment(item.element)) {
-          item.element.append(el);
+          item.element.appendTo(el);
         } else {
           el.appendChild(item.element);
         }

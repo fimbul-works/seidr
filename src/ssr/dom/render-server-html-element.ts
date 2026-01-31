@@ -46,7 +46,7 @@ export function renderElementToString(
   if (classAttr) attrParts.push(classAttr);
 
   const styleStr = renderStyle(props.style);
-  const styleAttr = styleStr ? `style="${escapeHTML(styleStr)}"` : null;
+  const styleAttr = styleStr ? `style="${styleStr}"` : null;
   if (styleAttr) attrParts.push(styleAttr);
 
   // 2. Dataset

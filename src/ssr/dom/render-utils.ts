@@ -38,8 +38,8 @@ export function renderStyle(style: any): string {
   if (typeof resolved === "object") {
     return Object.entries(resolved)
       .filter(([_, v]) => v != null)
-      .map(([k, v]) => `${camelToKebab(k)}: ${unwrapSeidr(v)}`)
-      .join("; ");
+      .map(([k, v]) => `${camelToKebab(k)}:${unwrapSeidr(v)}`)
+      .join(";");
   }
   return String(resolved);
 }

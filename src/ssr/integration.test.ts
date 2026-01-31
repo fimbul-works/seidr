@@ -299,11 +299,11 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle boolean attributes", () => {
-      const input = $("input", { disabled: true, readOnly: true, required: false });
+      const input = $("input", { disabled: true, readonly: true, required: false });
 
       const html = input.toString();
       expect(html).toContain("disabled");
-      expect(html).toContain("readOnly");
+      expect(html).toContain("readonly");
       expect(html).not.toContain("required");
     });
   });
@@ -349,19 +349,19 @@ describe("SSR Integration Tests", () => {
   describe("Style Handling in SSR", () => {
     it("should handle inline styles", () => {
       const div = $("div");
-      (div as any)._style = "color: red; background: blue";
+      div.style = "color: red; background: blue";
 
       const html = div.toString();
-      expect(html).toContain('style="color: red; background: blue"');
+      expect(html).toContain('style="color:red;background:blue;"');
     });
 
-    it("should escape CSS in style attributes", () => {
+    it("should not escape CSS in style attributes", () => {
       const div = $("div");
-      (div as any)._style = 'content: "test";';
+      div.style = 'content: "test";';
 
       const html = div.toString();
-      // CSS content property should be escaped in HTML
-      expect(html).toContain('style="content: &quot;test&quot;;"');
+      // CSS content property should NOT be escaped in HTML as per request
+      expect(html).toContain('style="content:"test";"');
     });
   });
 

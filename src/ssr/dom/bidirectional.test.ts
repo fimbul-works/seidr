@@ -59,13 +59,38 @@ describe("SSR Bidirectional Mapping", () => {
   describe("Style bidirectional", () => {
     it("should handle style as object in constructor", () => {
       const el = createServerHTMLElement("div", { style: { color: "red", marginTop: "10px" } });
-      expect(el.style.toString()).toBe("color: red; margin-top: 10px");
-      expect(el.toString()).toBe('<div style="color: red; margin-top: 10px"></div>');
+      expect(el.style.toString()).toBe("color:red;margin-top:10px;");
+      expect(el.toString()).toBe('<div style="color:red;margin-top:10px;"></div>');
     });
 
     it("should handle style as string in constructor", () => {
       const el = createServerHTMLElement("div", { style: "color: blue;" });
-      expect(el.style.toString()).toBe("color: blue;");
+      expect(el.style.toString()).toBe("color:blue;");
+    });
+
+    it("should support property access and modification via style object", () => {
+      const el = createServerHTMLElement("div");
+      (el.style as any).backgroundColor = "blue";
+      expect((el.style as any).backgroundColor).toBe("blue");
+      expect(el.style.toString()).toBe("background-color:blue;");
+      expect(el.toString()).toContain('style="background-color:blue;"');
+    });
+
+    it("should sync setAttribute('style', ...) with style object", () => {
+      const el = createServerHTMLElement("div");
+      el.setAttribute("style", "color: red; margin: 10px;");
+      expect((el.style as any).color).toBe("red");
+      expect((el.style as any).margin).toBe("10px");
+
+      (el.style as any).margin = "20px";
+      expect(el.getAttribute("style")).toBe("color:red;margin:20px;");
+    });
+
+    it("should not escape style values", () => {
+      const el = createServerHTMLElement("div");
+      const url = "url('foo.png?a=1&b=2')";
+      (el.style as any).backgroundImage = url;
+      expect(el.toString()).toContain(`style="background-image:${url};"`);
     });
   });
 });

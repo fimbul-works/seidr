@@ -223,19 +223,18 @@ describe("ServerHTMLElement", () => {
   describe("style (ServerCSSStyleDeclaration)", () => {
     it("should set style as string", () => {
       element.setAttribute("style", "color: red; background: blue");
-      expect(element.style.toString()).toBe("color: red; background: blue");
-      expect(element.style.toString()).toBe("color: red; background: blue");
+      expect(element.style.toString()).toBe("color:red;background:blue;");
     });
 
     it("should get style as string", () => {
       element.setAttribute("style", "color: red");
       const styleStr = element.style.toString();
-      expect(styleStr).toBe("color: red");
+      expect(styleStr).toBe("color:red;");
     });
 
     it("should set individual style property with setProperty", () => {
       element.style.setProperty("color", "red");
-      expect(element.style.toString()).toBe("color: red");
+      expect(element.style.toString()).toBe("color:red;");
     });
 
     it("should get individual style property with getPropertyValue", () => {
@@ -248,8 +247,8 @@ describe("ServerHTMLElement", () => {
       element.style.setProperty("color", "red");
       element.style.setProperty("font-size", "14px");
       const styleStr = element.style.toString();
-      expect(styleStr).toContain("color: red");
-      expect(styleStr).toContain("font-size: 14px");
+      expect(styleStr).toContain("color:red;");
+      expect(styleStr).toContain("font-size:14px;");
     });
   });
 
@@ -481,7 +480,7 @@ describe("ServerHTMLElement", () => {
 
     it("should generate element with style", () => {
       element.setAttribute("style", "color: red");
-      expect(element.toString()).toBe('<div style="color: red"></div>');
+      expect(element.toString()).toBe('<div style="color:red;"></div>');
     });
 
     it("should generate element with textContent", () => {

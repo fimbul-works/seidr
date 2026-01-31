@@ -53,8 +53,77 @@ export function createServerHTMLElement(
   }
 
   const _attributes: Record<string, any> = {};
-  let _style = "";
+  const _styleObj: Record<string, string> = {};
   const originalRemove = (base as any).remove;
+
+  const parseStyle = (style: string) => {
+    // Clear existing
+    for (const k in _styleObj) delete _styleObj[k];
+    style.split(";").forEach((s) => {
+      const firstColon = s.indexOf(":");
+      if (firstColon === -1) return;
+      const k = s.slice(0, firstColon).trim();
+      const v = s.slice(firstColon + 1).trim();
+      if (k && v) _styleObj[k] = v;
+    });
+  };
+
+  const flattenStyle = () => {
+    const entries = Object.entries(_styleObj);
+    if (entries.length === 0) return "";
+    return entries.map(([k, v]) => `${k}:${v}`).join(";") + ";";
+  };
+
+  const syncStyle = () => {
+    _attributes["style"] = flattenStyle();
+  };
+
+  const styleProxy = new Proxy(_styleObj, {
+    get(target, prop) {
+      if (prop === "setProperty") {
+        return (p: string, v: string) => {
+          target[camelToKebab(p)] = String(v);
+          syncStyle();
+        };
+      }
+      if (prop === "getPropertyValue") {
+        return (p: string) => target[camelToKebab(p)] || "";
+      }
+      if (prop === "removeProperty") {
+        return (p: string) => {
+          delete target[camelToKebab(p)];
+          syncStyle();
+        };
+      }
+      if (prop === "toString") {
+        return () => flattenStyle();
+      }
+      if (typeof prop === "string") {
+        return target[camelToKebab(prop)];
+      }
+      return undefined;
+    },
+    set(target, prop, value) {
+      if (typeof prop === "string") {
+        target[camelToKebab(prop)] = String(value);
+        syncStyle();
+        return true;
+      }
+      return false;
+    },
+    ownKeys(target) {
+      return Object.keys(target).map((k) => kebabToCamel(k));
+    },
+    getOwnPropertyDescriptor(target, prop) {
+      if (typeof prop === "string") {
+        const kebab = camelToKebab(prop);
+        if (kebab in target) {
+          return { enumerable: true, configurable: true, value: target[kebab] };
+        }
+      }
+      return undefined;
+    },
+  });
 
   const datasetProxy = new Proxy(_attributes, {
     get(target, prop) {
@@ -118,7 +187,7 @@ export function createServerHTMLElement(
           ServerElementMap.set(newId, this);
         } else if (name === "style") {
           const val = String(resolved);
-          _style = val;
+          parseStyle(val);
           _attributes["style"] = val;
         } else if (name === "class" || name === "className") {
           const val = String(resolved);
@@ -137,7 +206,7 @@ export function createServerHTMLElement(
           if (oldId) ServerElementMap.delete(oldId);
           delete _attributes["id"];
         } else if (name === "style") {
-          _style = "";
+          for (const k in _styleObj) delete _styleObj[k];
           delete _attributes["style"];
         } else if (name === "class" || name === "className") {
           delete _attributes["class"];
@@ -170,30 +239,20 @@ export function createServerHTMLElement(
     style: {
       enumerable: true,
       get() {
-        return {
-          setProperty(p: string, v: string) {
-            const props = _style
-              .split(";")
-              .map((s) => s.trim())
-              .filter(Boolean);
-            const idx = props.findIndex((s) => s.startsWith(`${p}:`));
-            if (idx >= 0) props[idx] = `${p}: ${v}`;
-            else props.push(`${p}: ${v}`);
-            _style = props.join("; ");
-          },
-          getPropertyValue(p: string) {
-            const regex = new RegExp(`${p}:\\s*([^;]+)`);
-            const match = _style.match(regex);
-            return match ? match[1].trim() : "";
-          },
-          toString() {
-            return _style.trim();
-          },
-        };
+        return styleProxy;
       },
       set(v: any) {
-        _style = renderStyle(v);
-        _attributes["style"] = _style;
+        const resolved = unwrapSeidr(v);
+        if (typeof resolved === "string") {
+          parseStyle(resolved);
+          _attributes["style"] = resolved;
+        } else if (typeof resolved === "object" && resolved !== null) {
+          for (const k in _styleObj) delete _styleObj[k];
+          for (const [k, val] of Object.entries(resolved)) {
+            _styleObj[camelToKebab(k)] = String(unwrapSeidr(val));
+          }
+          syncStyle();
+        }
       },
     },
     classList: {
@@ -239,7 +298,7 @@ export function createServerHTMLElement(
         return renderElementToString(this.tagName, {
           id: this.id,
           className: this.className,
-          style: _style,
+          style: flattenStyle(),
           dataset: datasetProxy,
           attributes: _attributes,
           innerHTML: this.innerHTML,

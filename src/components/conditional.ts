@@ -66,11 +66,7 @@ export function Conditional<T extends SeidrNode>(
     update(condition.value);
 
     // Ensure onAttached is propagated
-    scope.onAttached = (parent) => {
-      if (currentComponent?.scope.onAttached) {
-        currentComponent.scope.onAttached(parent);
-      }
-    };
+    scope.onAttached = (parent) => currentComponent?.scope.onAttached?.(parent);
 
     scope.track(condition.observe(update));
 

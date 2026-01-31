@@ -1,10 +1,6 @@
 import { isDocumentFragment, isObj, isStr } from "../../util";
 import { createTextNode } from "./character-data";
-import {
-  type BaseServerNodeInterface,
-  type NodeTypeWithChildNodes,
-  type ServerNodeType,
-} from "./types";
+import type { BaseServerNodeInterface, NodeTypeWithChildNodes, ServerNodeType } from "./types";
 import type { ServerNodeWithParent } from "./with-parent";
 
 export interface ServerNodeWithChildNodes<T extends NodeTypeWithChildNodes = NodeTypeWithChildNodes>
@@ -47,7 +43,7 @@ export function nodeWithChildNodesExtension<
         }
         return;
       }
-      const n = (isStr(child) ? createTextNode(child) : child) as ServerNodeWithParent;
+      const n = (!isObj(child) ? createTextNode(String(child)) : child) as ServerNodeWithParent;
 
       if (_childNodes.includes(n)) {
         // Already a child, move to end
@@ -68,7 +64,7 @@ export function nodeWithChildNodesExtension<
     },
     contains(child: ServerNodeType) {
       if (child === node) return true;
-      const n = (isStr(child) ? createTextNode(child) : child) as ServerNodeWithParent;
+      const n = (!isObj(child) ? createTextNode(String(child)) : child) as ServerNodeWithParent;
 
       // Check for direct parent
       if (n.parentNode !== null && (n as any).parentNode === node) {
@@ -92,7 +88,7 @@ export function nodeWithChildNodesExtension<
         }
         return;
       }
-      const n = (isStr(newChild) ? createTextNode(newChild) : newChild) as ServerNodeWithParent;
+      const n = (!isObj(newChild) ? createTextNode(String(newChild)) : newChild) as ServerNodeWithParent;
 
       const existingIdx = _childNodes.indexOf(n);
       if (existingIdx !== -1) {

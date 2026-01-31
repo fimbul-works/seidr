@@ -26,7 +26,7 @@ export function mountConditional<T extends SeidrNode>(
   factory: () => T,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = $fragment(`mount-conditional:${uid()}`);
+  const fragment = $fragment([], `mount-conditional:${uid()}`);
   if ("appendChild" in container) {
     fragment.appendTo(container as any);
   }

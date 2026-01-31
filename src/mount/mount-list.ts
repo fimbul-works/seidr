@@ -30,7 +30,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   factory: (item: T) => C,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = $fragment(`mount-list:${uid()}`);
+  const fragment = $fragment([], `mount-list:${uid()}`);
   if ("appendChild" in container) {
     fragment.appendTo(container as any);
   }

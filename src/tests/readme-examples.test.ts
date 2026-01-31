@@ -25,11 +25,13 @@ import {
   Switch,
   useScope,
 } from "../index.core";
+import { enableClientMode } from "../test-setup";
 
 describe("README.md Examples Validation", () => {
   let observables: Seidr<any>[] = [];
 
   beforeEach(() => {
+    enableClientMode();
     // Clear DOM before each test
     document.body.innerHTML = "";
     observables = [];

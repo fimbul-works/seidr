@@ -92,7 +92,9 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
     end: e,
 
     get nodes() {
-      if (!isProd || (s.parentNode && e.parentNode)) {
+      if (!isProd) return _nodes;
+
+      if (s.parentNode && e.parentNode) {
         const result: Node[] = [];
         let current = s.nextSibling;
         while (current && current !== e) {
@@ -101,7 +103,7 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
         }
         return result;
       }
-      return _nodes;
+      return [];
     },
 
     get parentNode() {
@@ -119,17 +121,15 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
         for (const node of nodes) {
           const n = typeof node === "string" ? document.createTextNode(node) : node;
           p.insertBefore(n, ref);
-          if (isProd) _nodes.push(n);
+          _nodes.push(n);
         }
       } else if (df) {
-        df.append(...nodes);
-        if (isProd) {
-          // Manual sync for prod track if needed, but normally df is pre-attachment
-          for (const node of nodes) {
-            const n = typeof node === "string" ? document.createTextNode(node) : node;
-            _nodes.push(n);
-          }
+        // Manual sync for prod track if needed, but normally df is pre-attachment
+        for (const node of nodes) {
+          const n = typeof node === "string" ? document.createTextNode(node) : node;
+          _nodes.push(n);
         }
+        df.append(...nodes);
       }
     },
 
@@ -140,18 +140,16 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
         for (const node of nodes) {
           const n = typeof node === "string" ? document.createTextNode(node) : node;
           p.insertBefore(n, ref || (e.parentNode ? e : nextAnchor));
-          if (isProd) {
-            const idx = ref ? _nodes.indexOf(ref) : _nodes.length;
-            if (idx !== -1) _nodes.splice(idx, 0, n);
-            else _nodes.unshift(n);
-          }
+          // if (isProd) {
+          const idx = ref ? _nodes.indexOf(ref) : _nodes.length;
+          if (idx !== -1) _nodes.splice(idx, 0, n);
+          else _nodes.unshift(n);
+          // }
         }
       } else if (df) {
         df.prepend(...nodes);
-        if (isProd) {
-          const nodeObjects = nodes.map((n) => (typeof n === "string" ? document.createTextNode(n) : n));
-          _nodes.unshift(...nodeObjects);
-        }
+        const nodeObjects = nodes.map((n) => (typeof n === "string" ? document.createTextNode(n) : n));
+        _nodes.unshift(...nodeObjects);
       }
     },
 
@@ -209,18 +207,18 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
       const actualRef = ref || (e.parentNode ? e : nextAnchor);
       if (p) {
         p.insertBefore(node, actualRef);
-        if (isProd) {
-          const idx = ref ? _nodes.indexOf(ref) : -1;
-          if (idx !== -1) _nodes.splice(idx, 0, node);
-          else _nodes.push(node);
-        }
+        // if (isProd) {
+        const idx = ref ? _nodes.indexOf(ref) : -1;
+        if (idx !== -1) _nodes.splice(idx, 0, node);
+        else _nodes.push(node);
+        // }
       } else if (df) {
         df.insertBefore(node, ref || e);
-        if (isProd) {
-          const idx = ref ? _nodes.indexOf(ref) : -1;
-          if (idx !== -1) _nodes.splice(idx, 0, node);
-          else _nodes.push(node);
-        }
+        // if (isProd) {
+        const idx = ref ? _nodes.indexOf(ref) : -1;
+        if (idx !== -1) _nodes.splice(idx, 0, node);
+        else _nodes.push(node);
+        // }
       }
     },
 
@@ -247,7 +245,9 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
       if (!isProd) {
         parent.appendChild(s);
       }
-      this.nodes.forEach((n) => parent.appendChild(n));
+      this.nodes.forEach((n) => {
+        parent.appendChild(n);
+      });
       if (!isProd) {
         parent.appendChild(e);
       } else {

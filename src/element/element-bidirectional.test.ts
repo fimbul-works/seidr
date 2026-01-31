@@ -35,10 +35,10 @@ describe("$ Bidirectional Mapping", () => {
     it("should handle reactive style object", () => {
       const color = new Seidr("red");
       const el = $("div", { style: { color } } as any);
-      expect(el.style.toString()).toBe("color: red");
+      expect(el.style.toString()).toBe("color:red");
 
       color.value = "blue";
-      expect(el.style.toString()).toBe("color: blue");
+      expect(el.style.toString()).toBe("color:blue");
     });
   });
 

@@ -3,7 +3,9 @@ import { $query } from "../helper";
 import { mount } from "../mount";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context/render-context.browser";
 import type { CleanupFunction } from "../types";
-import { setHydrating } from "../util/env";
+import { isHydrating, setHydrating } from "../util/env";
+export { isHydrating };
+
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";

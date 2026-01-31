@@ -25,14 +25,25 @@ export function createServerFragment(id: string = uid()): ServerFragment {
   const node = createServerNode(DOCUMENT_FRAGMENT_NODE);
   const fragment = nodeWithParentExtension(nodeWithChildElementNodesExtension(nodeWithChildNodesExtension(node)));
 
+  const startNode = { nodeType: 8, nodeValue: `s:${id}`, toString: () => `<!--s:${id}-->` };
+  const endNode = { nodeType: 8, nodeValue: `e:${id}`, toString: () => `<!--e:${id}-->` };
+  const originalInsertBefore = fragment.insertBefore;
+
   return Object.assign(fragment, {
     isSeidrFragment: true,
     id,
     get start() {
-      return { nodeType: 8, nodeValue: `s:${id}`, toString: () => `<!--s:${id}-->` };
+      return startNode;
     },
     get end() {
-      return { nodeType: 8, nodeValue: `e:${id}`, toString: () => `<!--e:${id}-->` };
+      return endNode;
+    },
+    insertBefore(node: any, ref: any) {
+      if (ref === endNode) {
+        this.appendChild(node);
+        return;
+      }
+      return originalInsertBefore.call(this, node, ref);
     },
     toString() {
       const childrenStr = this.childNodes.map((child: any) => child.toString()).join("");

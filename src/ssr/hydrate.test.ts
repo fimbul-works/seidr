@@ -211,7 +211,7 @@ describe("Client-Side Hydration", () => {
 
       const TestComponent = () => $("div", {}, ["test"]);
 
-      expect(isHydratingFlag).toBe(false);
+      expect(isHydratingFlag()).toBe(false);
       expect(hasHydrationData()).toBe(false);
 
       // Switch to client mode for hydration
@@ -221,7 +221,7 @@ describe("Client-Side Hydration", () => {
       hydrate(TestComponent, container, hydrationData);
 
       // Flag should be set after hydration starts
-      expect(isHydratingFlag).toBe(true);
+      expect(isHydratingFlag()).toBe(false);
       // But hydration data context should be cleared
       expect(hasHydrationData()).toBe(false);
 

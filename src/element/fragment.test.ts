@@ -1,16 +1,21 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setInternalContext } from "../render-context";
+import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { $fragment } from "./fragment";
 
 describe("SeidrFragment", () => {
   let container: HTMLElement;
+  let cleanup: CleanupFunction;
 
   beforeEach(() => {
+    cleanup = enableClientMode();
     container = document.createElement("div");
     document.body.appendChild(container);
   });
 
   afterEach(() => {
+    cleanup();
     container.remove();
   });
 
@@ -40,7 +45,7 @@ describe("SeidrFragment", () => {
 
   it("should append to parent", () => {
     const fragment = $fragment([], "test");
-    fragment.append(container);
+    fragment.appendTo(container);
     expect(container.contains(fragment.start)).toBe(true);
     expect(container.contains(fragment.end)).toBe(true);
     expect(fragment.start.nextSibling).toBe(fragment.end);
@@ -48,7 +53,7 @@ describe("SeidrFragment", () => {
 
   it("should append nodes", () => {
     const fragment = $fragment([], "test");
-    fragment.append(container);
+    fragment.appendTo(container);
 
     const node1 = document.createElement("span");
     const node2 = document.createElement("div");
