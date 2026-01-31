@@ -1,6 +1,5 @@
 import type { SeidrElementInterface } from "../element/types";
 import { unwrapSeidr } from "../seidr";
-import type { CleanupFunction } from "../types";
 import { isFn, isObj, isStr } from "../util/type-guards";
 
 /**
@@ -655,9 +654,9 @@ export class ServerHTMLElement implements SeidrElementInterface {
    * @param {string} _event - Event name (ignored)
    * @param {Function} _handler - Event handler (ignored)
    * @param {any} _options - Event listener options (ignored)
-   * @returns {CleanupFunction} No-op cleanup function
+   * @returns {() => void} No-op cleanup function
    */
-  on(_event: string, _handler: (ev: any) => any, _options?: any): CleanupFunction {
+  on(_event: string, _handler: (ev: any) => any, _options?: any): () => void {
     return () => {};
   }
 

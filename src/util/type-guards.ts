@@ -92,6 +92,41 @@ export const isHTMLElement = (v: any): v is HTMLElement => {
   if (typeof HTMLElement !== "undefined" && v instanceof HTMLElement) {
     return true;
   }
-  // Fallback for SSR/ServerHTMLElement which may not inherit from global HTMLElement
-  return isObj(v) && "tagName" in v && "nodeType" in v && v.nodeType === 1; // Node.ELEMENT_NODE
+  return isObj(v) && "nodeType" in v && v.nodeType === 1; // Node.ELEMENT_NODE
+};
+
+/**
+ * Check if a value is a Comment node.
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a Comment, `false` otherwise
+ */
+export const isComment = (v: any): v is Comment => {
+  if (typeof Comment !== "undefined" && v instanceof Comment) {
+    return true;
+  }
+  return isObj(v) && "nodeType" in v && v.nodeType === 8; // Node.COMMENT_NODE
+};
+
+/**
+ * Check if a value is a Text node.
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a Text node, `false` otherwise
+ */
+export const isTextNode = (v: any): v is Text => {
+  if (typeof Text !== "undefined" && v instanceof Text) {
+    return true;
+  }
+  return isObj(v) && "nodeType" in v && v.nodeType === 3; // Node.TEXT_NODE
+};
+
+/**
+ * Check if a value is a DocumentFragment.
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a DocumentFragment, `false` otherwise
+ */
+export const isDocumentFragment = (v: any): v is DocumentFragment => {
+  if (typeof DocumentFragment !== "undefined" && v instanceof DocumentFragment) {
+    return true;
+  }
+  return isObj(v) && "nodeType" in v && v.nodeType === 11; // Node.DOCUMENT_FRAGMENT_NODE
 };

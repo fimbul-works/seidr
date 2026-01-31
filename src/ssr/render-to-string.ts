@@ -78,15 +78,11 @@ export async function renderToString<C extends SeidrNode>(
       // Wait for any async work registered via inServer()
       await activeScope.waitForPromises();
 
-      // Add data-seidr-id attribute to root element for hydration
       // Convert to HTML string
-      // Special handling for Router: if element is a comment with _ssrWrapper, use wrapper's innerHTML
-      let html: string;
-      if ((comp.element as any)._ssrWrapper) {
-        // Router component: return the wrapper's innerHTML (markers + content, no wrapper div)
-        html = (comp.element as any)._ssrWrapper.innerHTML;
-      } else {
-        html = String(comp.element);
+      // console.log("DEBUG: comp.element type:", typeof comp.element, comp.element.constructor?.name);
+      const html = String(comp.element);
+      if (html === "[object Object]") {
+        console.error("DEBUG: comp.element serialized to [object Object]", comp.element);
       }
 
       // Capture hydration data (observables, bindings, graph) BEFORE destroying component

@@ -3,21 +3,33 @@ import { $query } from "../helper";
 import { mount } from "../mount";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context/render-context.browser";
 import type { CleanupFunction } from "../types";
+import { setHydrating } from "../util/env";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
 
 // Use browser implementation or no-op for Node
-const setRenderContextID = typeof window !== "undefined" ? setRenderContextIDBrowser : () => {};
+// Use browser implementation or no-op for Node
+let setRenderContextID = typeof window !== "undefined" ? setRenderContextIDBrowser : () => {};
 
-export let isHydrating: boolean = false;
+// For tests, we might need to override it
+if (typeof process !== "undefined" && (process.env as any).VITEST) {
+  try {
+    const testSetup = require("../test-setup");
+    if (testSetup.setRenderContextID) {
+      setRenderContextID = testSetup.setRenderContextID;
+    }
+  } catch (e) {
+    // Ignore if test-setup not found
+  }
+}
 
 /**
  * Resets the isHydrating flag (for testing).
  * @internal
  */
 export function resetHydratingFlag() {
-  isHydrating = false;
+  setHydrating(false);
 }
 
 /**
@@ -42,7 +54,7 @@ export function hydrate<T extends SeidrNode>(
   container: HTMLElement,
   hydrationData: HydrationData,
 ): CleanupFunction {
-  isHydrating = true;
+  setHydrating(true);
 
   // Set the client render context ID from the server to ensure matching context
   const hasRenderContextID = hydrationData.ctxID !== undefined;
@@ -72,6 +84,7 @@ export function hydrate<T extends SeidrNode>(
 
   // Clear the hydration context
   clearHydrationData();
+  setHydrating(false);
 
   return unmount;
 }

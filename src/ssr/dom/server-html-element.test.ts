@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { ServerElementMap, ServerHTMLElement } from "./server-html-element";
+import { ServerElementMap, createServerHTMLElement as ServerHTMLElement } from "./server-html-element";
 
 describe("ServerHTMLElement", () => {
-  let element: ServerHTMLElement;
+  let element: any;
 
   beforeEach(() => {
-    element = new ServerHTMLElement("div");
+    element = ServerHTMLElement("div");
     ServerElementMap.clear();
   });
 
@@ -19,22 +19,22 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should initialize with empty children array", () => {
-      expect(element.children).toEqual([]);
+      expect(element.childNodes).toEqual([]);
     });
 
     it("should accept attributes in constructor", () => {
-      const el = new ServerHTMLElement("div", { id: "test", "data-value": "123" });
+      const el = ServerHTMLElement("div", { id: "test", "data-value": "123" });
       expect(el.getAttribute("id")).toBe("test");
       expect(el.getAttribute("data-value")).toBe("123");
     });
 
     it("should accept children in constructor", () => {
-      const child1 = new ServerHTMLElement("span");
+      const child1 = ServerHTMLElement("span");
       const child2 = "text content";
-      const el = new ServerHTMLElement("div", {}, [child1, child2]);
-      expect(el.children).toHaveLength(2);
-      expect(el.children[0]).toBe(child1);
-      expect(el.children[1]).toBe(child2);
+      const el = ServerHTMLElement("div", {}, [child1, child2]);
+      expect(el.childNodes).toHaveLength(2);
+      expect(el.childNodes[0]).toBe(child1);
+      expect(el.childNodes[1].textContent).toBe(child2);
     });
   });
 
@@ -120,13 +120,13 @@ describe("ServerHTMLElement", () => {
 
     describe("Form element properties", () => {
       it("should handle value property", () => {
-        const input = new ServerHTMLElement("input");
+        const input = ServerHTMLElement("input");
         input.value = "test value";
         expect(input.value).toBe("test value");
       });
 
       it("should handle checked property", () => {
-        const checkbox = new ServerHTMLElement("input");
+        const checkbox = ServerHTMLElement("input");
         checkbox.checked = true;
         expect(checkbox.checked).toBe(true);
         checkbox.checked = false;
@@ -134,13 +134,13 @@ describe("ServerHTMLElement", () => {
       });
 
       it("should handle disabled property", () => {
-        const button = new ServerHTMLElement("button");
+        const button = ServerHTMLElement("button");
         button.disabled = true;
         expect(button.disabled).toBe(true);
       });
 
       it("should handle type property", () => {
-        const input = new ServerHTMLElement("input");
+        const input = ServerHTMLElement("input");
         input.type = "text";
         expect(input.type).toBe("text");
       });
@@ -148,13 +148,13 @@ describe("ServerHTMLElement", () => {
 
     describe("Link and media properties", () => {
       it("should handle href property", () => {
-        const link = new ServerHTMLElement("a");
+        const link = ServerHTMLElement("a");
         link.href = "https://example.com";
         expect(link.href).toBe("https://example.com");
       });
 
       it("should handle src property", () => {
-        const img = new ServerHTMLElement("img");
+        const img = ServerHTMLElement("img");
         img.src = "/image.png";
         expect(img.src).toBe("/image.png");
       });
@@ -222,24 +222,24 @@ describe("ServerHTMLElement", () => {
 
   describe("style (ServerCSSStyleDeclaration)", () => {
     it("should set style as string", () => {
-      (element as any)._style = "color: red; background: blue";
-      expect((element as any)._style).toBe("color: red; background: blue");
+      element.setAttribute("style", "color: red; background: blue");
+      expect(element.style.toString()).toBe("color: red; background: blue");
       expect(element.style.toString()).toBe("color: red; background: blue");
     });
 
     it("should get style as string", () => {
-      (element as any)._style = "color: red";
+      element.setAttribute("style", "color: red");
       const styleStr = element.style.toString();
       expect(styleStr).toBe("color: red");
     });
 
     it("should set individual style property with setProperty", () => {
       element.style.setProperty("color", "red");
-      expect((element as any)._style).toBe("color: red");
+      expect(element.style.toString()).toBe("color: red");
     });
 
     it("should get individual style property with getPropertyValue", () => {
-      (element as any)._style = "color: red; background: blue";
+      element.setAttribute("style", "color: red; background: blue");
       expect(element.style.getPropertyValue("color")).toBe("red");
       expect(element.style.getPropertyValue("background")).toBe("blue");
     });
@@ -247,7 +247,7 @@ describe("ServerHTMLElement", () => {
     it("should handle multiple style properties", () => {
       element.style.setProperty("color", "red");
       element.style.setProperty("font-size", "14px");
-      const styleStr = (element as any)._style;
+      const styleStr = element.style.toString();
       expect(styleStr).toContain("color: red");
       expect(styleStr).toContain("font-size: 14px");
     });
@@ -298,16 +298,16 @@ describe("ServerHTMLElement", () => {
     let child3: ServerHTMLElement;
 
     beforeEach(() => {
-      child1 = new ServerHTMLElement("span");
-      child2 = new ServerHTMLElement("span");
-      child3 = new ServerHTMLElement("span");
+      child1 = ServerHTMLElement("span");
+      child2 = ServerHTMLElement("span");
+      child3 = ServerHTMLElement("span");
     });
 
     describe("appendChild", () => {
       it("should append child element", () => {
         element.appendChild(child1);
-        expect(element.children).toHaveLength(1);
-        expect(element.children[0]).toBe(child1);
+        expect(element.childNodes).toHaveLength(1);
+        expect(element.childNodes[0]).toBe(child1);
       });
 
       it("should set parentElement on child", () => {
@@ -317,15 +317,15 @@ describe("ServerHTMLElement", () => {
 
       it("should append text child", () => {
         element.appendChild("text content");
-        expect(element.children).toHaveLength(1);
-        expect(element.children[0]).toBe("text content");
+        expect(element.childNodes).toHaveLength(1);
+        expect(element.childNodes[0].textContent).toBe("text content");
       });
 
       it("should append multiple children", () => {
         element.appendChild(child1);
         element.appendChild(child2);
         element.appendChild(child3);
-        expect(element.children).toHaveLength(3);
+        expect(element.childNodes).toHaveLength(3);
       });
     });
 
@@ -337,7 +337,7 @@ describe("ServerHTMLElement", () => {
 
       it("should insert before existing child", () => {
         element.insertBefore(child2, child3);
-        expect(element.children).toEqual([child1, child2, child3]);
+        expect(element.childNodes).toEqual([child1, child2, child3]);
       });
 
       it("should set parentElement on inserted child", () => {
@@ -347,11 +347,11 @@ describe("ServerHTMLElement", () => {
 
       it("should insert before first child", () => {
         element.insertBefore(child2, child1);
-        expect(element.children).toEqual([child2, child1, child3]);
+        expect(element.childNodes).toEqual([child2, child1, child3]);
       });
 
       it("should throw error if reference child not found", () => {
-        const unknownChild = new ServerHTMLElement("p");
+        const unknownChild = ServerHTMLElement("p");
         expect(() => element.insertBefore(child2, unknownChild)).toThrow("Cannot insert before non-existing child");
       });
     });
@@ -365,36 +365,36 @@ describe("ServerHTMLElement", () => {
 
       it("should remove child", () => {
         element.removeChild(child2);
-        expect(element.children).toEqual([child1, child3]);
+        expect(element.childNodes).toEqual([child1, child3]);
       });
 
       it("should clear parentElement on removed child", () => {
         element.removeChild(child2);
-        expect(child2.parentElement).toBeUndefined();
+        expect(child2.parentElement).toBeNull();
       });
 
       it("should throw error when removing non-existent child", () => {
-        const unknownChild = new ServerHTMLElement("p");
+        const unknownChild = ServerHTMLElement("p");
         element.removeChild(unknownChild); // Should not throw, just do nothing
-        expect(element.children).toHaveLength(3);
+        expect(element.childNodes).toHaveLength(3);
       });
     });
 
     describe("remove", () => {
       beforeEach(() => {
-        const parent = new ServerHTMLElement("div");
+        const parent = ServerHTMLElement("div");
         parent.appendChild(element);
         element.appendChild(child1);
       });
 
       it("should remove element from parent", () => {
         element.remove();
-        expect(element.parentElement).toBeUndefined();
+        expect(element.parentElement).toBeNull();
       });
 
       it("should clear all children", () => {
         element.remove();
-        expect(element.children).toEqual([]);
+        expect(element.childNodes).toEqual([]);
       });
     });
 
@@ -407,7 +407,7 @@ describe("ServerHTMLElement", () => {
 
       it("should remove all children", () => {
         element.clear();
-        expect(element.children).toEqual([]);
+        expect(element.childNodes).toEqual([]);
       });
 
       it("should call remove on child elements", () => {
@@ -441,16 +441,16 @@ describe("ServerHTMLElement", () => {
 
   describe("Seidr Methods", () => {
     it("should have destroy method", () => {
-      element.appendChild(new ServerHTMLElement("span"));
+      element.appendChild(ServerHTMLElement("span"));
       element.remove();
-      expect(element.children).toEqual([]);
-      expect(element.parentElement).toBeUndefined();
+      expect(element.childNodes).toEqual([]);
+      expect(element.parentElement).toBeNull();
     });
 
     it("should have clear method", () => {
-      element.appendChild(new ServerHTMLElement("span"));
+      element.appendChild(ServerHTMLElement("span"));
       element.clear();
-      expect(element.children).toEqual([]);
+      expect(element.childNodes).toEqual([]);
     });
   });
 
@@ -480,7 +480,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate element with style", () => {
-      (element as any)._style = "color: red";
+      element.setAttribute("style", "color: red");
       expect(element.toString()).toBe('<div style="color: red"></div>');
     });
 
@@ -501,9 +501,9 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate element with children", () => {
-      const child1 = new ServerHTMLElement("span");
+      const child1 = ServerHTMLElement("span");
       child1.textContent = "Child 1";
-      const child2 = new ServerHTMLElement("span");
+      const child2 = ServerHTMLElement("span");
       child2.textContent = "Child 2";
       element.appendChild(child1);
       element.appendChild(child2);
@@ -511,7 +511,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate element with mixed text and element children", () => {
-      const child = new ServerHTMLElement("span");
+      const child = ServerHTMLElement("span");
       child.textContent = "Nested";
       element.appendChild("Text before ");
       element.appendChild(child);
@@ -520,13 +520,13 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate self-closing tags", () => {
-      const img = new ServerHTMLElement("img");
+      const img = ServerHTMLElement("img");
       img.src = "/image.png";
       expect(img.toString()).toBe('<img src="/image.png" />');
     });
 
     it("should generate void elements without closing tag", () => {
-      const input = new ServerHTMLElement("input");
+      const input = ServerHTMLElement("input");
       input.type = "text";
       input.value = "test";
       const html = input.toString();
@@ -552,7 +552,7 @@ describe("ServerHTMLElement", () => {
         "wbr",
       ];
       voidTags.forEach((tag) => {
-        const el = new ServerHTMLElement(tag);
+        const el = ServerHTMLElement(tag);
         const html = el.toString();
         expect(html).toContain("/>");
         expect(html).not.toContain(`</${tag}>`);
@@ -568,7 +568,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate boolean attributes", () => {
-      const input = new ServerHTMLElement("input");
+      const input = ServerHTMLElement("input");
       input.checked = true;
       input.disabled = true;
       const html = input.toString();
@@ -577,7 +577,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should not include false boolean attributes", () => {
-      const input = new ServerHTMLElement("input");
+      const input = ServerHTMLElement("input");
       input.checked = false;
       input.disabled = false;
       const html = input.toString();
@@ -586,7 +586,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate form element with value, type, checked, disabled", () => {
-      const input = new ServerHTMLElement("input");
+      const input = ServerHTMLElement("input");
       input.type = "checkbox";
       input.value = "yes";
       input.checked = true;
@@ -599,7 +599,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate link with href", () => {
-      const link = new ServerHTMLElement("a");
+      const link = ServerHTMLElement("a");
       link.href = "https://example.com";
       link.textContent = "Click me";
       const html = link.toString();
@@ -614,7 +614,7 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should handle className in attributes", () => {
-      const el = new ServerHTMLElement("div", { className: "test-class" });
+      const el = ServerHTMLElement("div", { className: "test-class" });
       expect(el.toString()).toContain('class="test-class"');
     });
 
@@ -643,16 +643,16 @@ describe("ServerHTMLElement", () => {
     });
 
     it("should generate complex nested structure", () => {
-      const container = new ServerHTMLElement("div");
+      const container = ServerHTMLElement("div");
       container.className = "container";
 
-      const header = new ServerHTMLElement("h1");
+      const header = ServerHTMLElement("h1");
       header.textContent = "Title";
 
-      const content = new ServerHTMLElement("p");
+      const content = ServerHTMLElement("p");
       content.textContent = "Paragraph";
 
-      const link = new ServerHTMLElement("a");
+      const link = ServerHTMLElement("a");
       link.href = "/link";
       link.textContent = "Click";
 
@@ -677,34 +677,34 @@ describe("ServerHTMLElement", () => {
 
   describe("Edge Cases", () => {
     it("should handle setting className via attributes in constructor", () => {
-      const el = new ServerHTMLElement("div", { className: "test-class" });
+      const el = ServerHTMLElement("div", { className: "test-class" });
       expect(el.className).toBe("test-class");
       expect(el.classList.contains("test-class")).toBe(true);
     });
 
     it("should handle empty attributes object", () => {
-      const el = new ServerHTMLElement("div", {});
+      const el = ServerHTMLElement("div", {});
       expect(el.toString()).toBe("<div></div>");
     });
 
     it("should handle no constructor arguments", () => {
-      const el = new ServerHTMLElement("div");
+      const el = ServerHTMLElement("div");
       expect(el.tagName).toBe("DIV");
-      expect(el.children).toEqual([]);
+      expect(el.childNodes).toEqual([]);
     });
 
     it("should handle removing child that has already been removed", () => {
-      const child = new ServerHTMLElement("span");
+      const child = ServerHTMLElement("span");
       element.appendChild(child);
       element.removeChild(child);
       element.removeChild(child); // Should not throw
-      expect(element.children).toEqual([]);
+      expect(element.childNodes).toEqual([]);
     });
 
     it("should handle inserting before child that doesn't exist", () => {
-      const child1 = new ServerHTMLElement("span");
-      const child2 = new ServerHTMLElement("span");
-      const unknown = new ServerHTMLElement("p");
+      const child1 = ServerHTMLElement("span");
+      const child2 = ServerHTMLElement("span");
+      const unknown = ServerHTMLElement("p");
       element.appendChild(child1);
       expect(() => element.insertBefore(child2, unknown)).toThrow();
     });

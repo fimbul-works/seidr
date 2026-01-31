@@ -1,7 +1,7 @@
 import type { SeidrComponent } from "../component";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
-import { ServerComment, ServerHTMLElement } from "../ssr/dom/server-html-element";
+import { camelToKebab, createCommentNode, createServerHTMLElement } from "../ssr/dom";
 import type { CleanupFunction } from "../types";
 import { isFn, isSeidr, isSeidrComponent, isSeidrFragment, isStr, isUndefined } from "../util/type-guards";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
@@ -62,7 +62,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // Handle SSR element
   if (isServerSide) {
-    const el = new ServerHTMLElement(tagName, {}, []);
+    const el = createServerHTMLElement(tagName, {});
     let cleanups: CleanupFunction[] = [];
 
     // Properties that should be set directly on the element
@@ -97,18 +97,64 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           continue;
         }
 
+        let target: any = el;
+        let effectiveProp = prop;
+        let useAttribute = prop.startsWith("aria-") || prop.startsWith("data-");
+
+        if (!useAttribute) {
+          if (prop.startsWith("data") && prop.length > 4 && prop[4] === prop[4].toUpperCase()) {
+            target = el.dataset;
+            effectiveProp = prop[4].toLowerCase() + prop.slice(5);
+          } else if (prop.startsWith("aria") && prop.length > 4 && prop[4] === prop[4].toUpperCase()) {
+            if (!(prop in el)) {
+              effectiveProp = camelToKebab(prop);
+              useAttribute = true;
+            }
+          }
+        }
+        if (prop === "style") {
+          // CSS style string
+          if (isStr(value)) {
+            if (isSeidr(value)) {
+              cleanups.push(value.bind(el, (val, element) => (element.style = val as string)));
+            } else if (value !== null && value !== undefined) {
+              el.style = value;
+            }
+          } else if (typeof value === "object" && value !== null) {
+            // Style object
+            const styleObj = value as any;
+            for (const [styleProp, styleValue] of Object.entries(styleObj)) {
+              // Handle reactive style values
+              if (isSeidr(styleValue)) {
+                cleanups.push(
+                  styleValue.bind(el, (val, element) => {
+                    element.style.setProperty(styleProp, String(val));
+                  }),
+                );
+              } else {
+                el.style.setProperty(styleProp, String(styleValue));
+              }
+            }
+          }
+          continue;
+        }
+
         // Set up reactive binding
         if (isSeidr(value)) {
           cleanups.push(
-            value.bind(el, (value, element) =>
-              directProps.has(prop) ? ((element as any)[prop] = value) : element.setAttribute(prop, String(value)),
-            ),
+            value.bind(el, (val, _element) => {
+              if (useAttribute) {
+                val === null ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
+              } else {
+                target[effectiveProp] = val;
+              }
+            }),
           );
         } else {
-          if (directProps.has(prop)) {
-            (el as any)[prop] = value;
+          if (useAttribute) {
+            el.setAttribute(effectiveProp, value);
           } else {
-            el.setAttribute(prop, value);
+            target[effectiveProp] = value;
           }
         }
       }
@@ -180,8 +226,22 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   // Assign properties
   if (props) {
     for (const [prop, value] of Object.entries(props)) {
-      // For aria-* and data-* attributes, use setAttribute
-      const useAttribute = prop.startsWith("aria-") || prop.startsWith("data-");
+      let target: any = el;
+      let effectiveProp = prop;
+      let useAttribute = prop.startsWith("aria-") || prop.startsWith("data-");
+
+      if (!useAttribute) {
+        if (prop.startsWith("data") && prop.length > 4 && prop[4] === prop[4].toUpperCase()) {
+          target = el.dataset;
+          effectiveProp = prop[4].toLowerCase() + prop.slice(5);
+        } else if (prop.startsWith("aria") && prop.length > 4 && prop[4] === prop[4].toUpperCase()) {
+          if (!(prop in el)) {
+            effectiveProp = camelToKebab(prop);
+            useAttribute = true;
+          }
+        }
+      }
+
       // Special handling for style object
       if (prop === "style") {
         // CSS style string
@@ -210,20 +270,20 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       } else if (isSeidr(value)) {
         // Set up reactive binding
         cleanups.push(
-          value.bind(el, (value, element) => {
+          value.bind(el, (val, _element) => {
             if (useAttribute) {
-              value === null ? element.removeAttribute(prop) : element.setAttribute(prop, value as string);
+              val === null ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, val as string);
             } else {
-              (element as any)[prop] = value;
+              target[effectiveProp] = val;
             }
           }),
         );
       } else {
         // For non-Seidr values
         if (useAttribute && value !== null && value !== undefined) {
-          el.setAttribute(prop, value as any);
+          el.setAttribute(effectiveProp, value as any);
         } else {
-          el[prop as P] = value as HTMLElementTagNameMap[K][P];
+          target[effectiveProp] = value;
         }
       }
     }
@@ -356,7 +416,7 @@ export const $text = (text: string): Text => document.createTextNode(text);
  */
 export const $comment = (text: string): Comment => {
   if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
-    return new ServerComment(text) as any;
+    return createCommentNode(text) as any;
   }
   return document.createComment(text);
 };
