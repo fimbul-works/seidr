@@ -308,6 +308,3 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
 
   return fragment as unknown as SeidrFragment;
 }
-
-/** @deprecated Use $fragment */
-export const createFragment = $fragment;

@@ -1,7 +1,7 @@
 import type { SeidrComponent } from "../component";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
-import { camelToKebab, createCommentNode, createServerHTMLElement } from "../ssr/dom";
+import { camelToKebab, createCommentNode, createServerHTMLElement, createTextNode } from "../ssr/dom";
 import type { CleanupFunction } from "../types";
 import { isFn, isSeidr, isSeidrComponent, isSeidrFragment, isStr, isUndefined } from "../util/type-guards";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
@@ -404,10 +404,15 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
 /**
  * Creates a new DOM Text node.
- * @param {string} text - String to convert into Dom Text node
+ * @param {unknown} text - String to convert into Dom Text node
  * @returns {Text} DOM Text node
  */
-export const $text = (text: string): Text => document.createTextNode(text);
+export const $text = (text: unknown): Text => {
+  if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
+    return createTextNode(String(text)) as Text;
+  }
+  return document.createTextNode(String(text));
+};
 
 /**
  * Creates a new DOM Comment node.
@@ -416,7 +421,7 @@ export const $text = (text: string): Text => document.createTextNode(text);
  */
 export const $comment = (text: string): Comment => {
   if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
-    return createCommentNode(text) as any;
+    return createCommentNode(text) as Comment;
   }
   return document.createComment(text);
 };

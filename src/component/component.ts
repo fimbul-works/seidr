@@ -1,7 +1,6 @@
-import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $comment, $fragment, $text, findMarkers, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
-import { ServerFragment } from "../ssr/dom/server-fragment";
-import { ServerHTMLElement } from "../ssr/dom/server-html-element";
+import { createServerFragment } from "../ssr/dom/server-fragment";
 import { isHydrating, isSSR } from "../util/env";
 import { isHTMLElement, isNum, isSeidrComponent, isSeidrFragment, isStr } from "../util/type-guards";
 import { uid } from "../util/uid";
@@ -69,7 +68,6 @@ export function component<P = void>(
 
       // Track child SeidrComponents to propagate onAttached
       const childComponents: SeidrComponent[] = [];
-      const isSSRNow = isSSR();
 
       // Support for array returns (multiple root nodes)
       if (Array.isArray(result)) {
@@ -79,7 +77,7 @@ export function component<P = void>(
         const isSSRNow = isSSR();
 
         if (isSSRNow) {
-          const fragment = new ServerFragment(id);
+          const fragment = createServerFragment(id) as any;
           result.forEach((item) => {
             const node = toNode(item);
             if (isSeidrComponent(item)) {

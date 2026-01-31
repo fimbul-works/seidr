@@ -1,5 +1,5 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { createFragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
@@ -30,7 +30,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   factory: (item: T) => C,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = createFragment(`mount-list:${uid()}`);
+  const fragment = $fragment(`mount-list:${uid()}`);
   if ("appendChild" in container) {
     fragment.appendTo(container as any);
   }

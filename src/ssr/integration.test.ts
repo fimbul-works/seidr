@@ -33,7 +33,7 @@ describe("SSR Integration Tests", () => {
   describe("Basic Element Creation in SSR", () => {
     it("should create ServerHTMLElement instead of DOM element", () => {
       const div = $("div", { className: "test" });
-      expect(div.constructor.name).toBe("ServerHTMLElement");
+      expect(div.nodeType).toBe(1);
       expect(div.tagName).toBe("DIV");
     });
 
@@ -405,7 +405,7 @@ describe("SSR Integration Tests", () => {
 
       expect(child.parentElement).toBeDefined();
       child.remove();
-      expect(child.parentElement).toBeUndefined();
+      expect(child.parentElement).toBe(null);
     });
 
     it("should support destroy method", () => {

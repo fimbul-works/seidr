@@ -1,5 +1,5 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { createFragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { uid } from "../util/uid";
@@ -26,7 +26,7 @@ export function mountConditional<T extends SeidrNode>(
   factory: () => T,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = createFragment(`mount-conditional:${uid()}`);
+  const fragment = $fragment(`mount-conditional:${uid()}`);
   if ("appendChild" in container) {
     fragment.appendTo(container as any);
   }

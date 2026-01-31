@@ -2,7 +2,7 @@ import { component, type SeidrComponent, useScope, wrapComponent } from "../comp
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import { ServerFragment } from "../ssr/dom/server-fragment";
+import { createServerFragment } from "../ssr/dom/server-fragment";
 import { isHydrating, isSSR } from "../util/env";
 import { uid } from "../util/uid";
 
@@ -31,7 +31,7 @@ export function Conditional<T extends SeidrNode>(
 
     let fragment: SeidrFragment;
     if (isSSR()) {
-      fragment = new ServerFragment(id) as any;
+      fragment = createServerFragment(id) as any;
     } else if (isHydrating()) {
       const [s, e] = findMarkers(id);
       fragment = $fragment([], id, s || undefined, e || undefined);
