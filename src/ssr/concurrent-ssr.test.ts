@@ -1,7 +1,7 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../core/dom/component";
-import { $ } from "../core/dom/element";
-import { Seidr } from "../core/seidr";
+import { component } from "../component";
+import { $ } from "../element";
+import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import { renderToString } from "./render-to-string";
 

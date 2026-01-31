@@ -1,8 +1,7 @@
-import { getRenderContext } from "../core/render-context-contract";
-import { Seidr } from "../core/seidr";
-import { createStateKey, globalStates, symbolNames } from "../core/state";
-import { unwrapSeidr } from "../core/util";
-import { isSeidr } from "../core/util/is";
+import { getRenderContext } from "../render-context";
+import { Seidr, unwrapSeidr } from "../seidr";
+import { createStateKey, globalStates, symbolNames } from "../state";
+import { isSeidr } from "../util/type-guards";
 
 const SEIDR_PREFIX = "$/";
 

@@ -27,7 +27,7 @@ export async function getPosts(): Promise<BlogPost[]> {
           title: attributes.title,
           date: attributes.date,
           content: html,
-          excerpt: body.substring(0, 150) + "...",
+          excerpt: `${body.substring(0, 150)}...`,
         };
       }),
   );
@@ -48,7 +48,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
       date: attributes.date,
       content: html,
     };
-  } catch (e) {
+  } catch (_e) {
     return null;
   }
 }

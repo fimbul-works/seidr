@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../core/dom/component";
-import { $ } from "../core/dom/element";
-import { Seidr } from "../core/seidr";
-import { runWithRenderContext } from "../render-context.node";
+import { $ } from "../element";
+import { runWithRenderContext } from "../render-context/render-context.node";
+import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";

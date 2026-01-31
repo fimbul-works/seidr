@@ -1,5 +1,5 @@
-import type { RenderContext, Seidr } from "../core/index";
-import { getRenderContext } from "../core/render-context-contract";
+import { getRenderContext, type RenderContext } from "../render-context";
+import type { Seidr } from "../seidr";
 import type { SSRScopeCapture } from "./types";
 
 /**

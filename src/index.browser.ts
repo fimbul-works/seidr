@@ -1,4 +1,4 @@
-export * from "./core/index";
-export * from "./render-context.browser";
+export * from "./index.core";
+export * from "./render-context/render-context.browser";
 export * from "./ssr/env";
 export * from "./ssr/hydrate";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { useState } from "../core/state";
-import { runWithRenderContext } from "../render-context.node";
+import { runWithRenderContext } from "../render-context/render-context.node";
+import { useState } from "../state";
 
 describe("SSR useState isolation", () => {
   it("should isolate state between different render contexts", async () => {

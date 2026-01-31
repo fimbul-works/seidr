@@ -1,5 +1,6 @@
-import type { SeidrElementInterface } from "../core/index";
-import { isFn, isObj, isStr, unwrapSeidr } from "../core/util";
+import type { SeidrElementInterface } from "../element/types";
+import { unwrapSeidr } from "../seidr";
+import { isFn, isObj, isStr } from "../util/type-guards";
 
 /**
  * Global map of server-side HTML elements indexed by their ID attribute.

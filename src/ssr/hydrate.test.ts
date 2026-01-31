@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../core/dom/component";
-import { $ } from "../core/dom/element";
-import { Seidr } from "../core/seidr";
+import { $ } from "../element";
+import { Seidr } from "../seidr";
 import { enableClientMode } from "../test-setup";
 import { hydrate, isHydrating as isHydratingFlag, resetHydratingFlag } from "./hydrate";
 import { clearHydrationData, hasHydrationData, setHydrationData } from "./hydration-context";
@@ -178,11 +177,10 @@ describe("Client-Side Hydration", () => {
     });
 
     it("should restore observable values during hydration", async () => {
-      const TestComponent = () =>
-        component(() => {
-          const count = new Seidr(42);
-          return $("div", { textContent: count.as((n) => `Count: ${n}`) });
-        })();
+      const TestComponent = () => {
+        const count = new Seidr(42);
+        return $("div", { textContent: count.as((n) => `Count: ${n}`) });
+      };
 
       // Server-side capture
       const scope = new SSRScope();
@@ -210,10 +208,7 @@ describe("Client-Side Hydration", () => {
         observables: {},
       };
 
-      const TestComponent = () =>
-        component(() => {
-          return $("div", {}, ["test"]);
-        })();
+      const TestComponent = () => $("div", {}, ["test"]);
 
       expect(isHydratingFlag).toBe(false);
       expect(hasHydrationData()).toBe(false);
@@ -244,10 +239,7 @@ describe("Client-Side Hydration", () => {
 
       setHydrationData(originalData);
 
-      const TestComponent = () =>
-        component(() => {
-          return $("div", {}, ["test"]);
-        })();
+      const TestComponent = () => $("div", {}, ["test"]);
 
       // Switch to client mode for hydration
       const cleanupClientMode2 = enableClientMode();

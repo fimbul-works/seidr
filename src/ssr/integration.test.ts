@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $ } from "../core/dom/element";
-import { Seidr } from "../core/seidr";
+import { $ } from "../element/element";
+import { Seidr } from "../seidr/seidr";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
@@ -268,7 +268,6 @@ describe("SSR Integration Tests", () => {
   describe("Attribute Handling in SSR", () => {
     it("should handle aria attributes", () => {
       const button = $("button", {
-        // @ts-expect-error
         "aria-label": "Close dialog",
         "aria-expanded": "false",
       });

@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../examples/todo.js";
-import { component } from "../core/dom/component";
-import { $ } from "../core/dom/element";
-import { Seidr } from "../core/seidr";
+import { component } from "../component";
+import { $ } from "../element";
+import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";

@@ -1,8 +1,7 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
-import { component, mount } from "../src/core/dom";
-import { $query, $queryAll } from "../src/index.browser.ts";
-import { Counter } from "./counter.ts";
+import { $query, $queryAll, component, mount } from "../src/index.browser.js";
+import { Counter } from "./counter.js";
 
 describe("Counter Example", () => {
   let dom: JSDOM;

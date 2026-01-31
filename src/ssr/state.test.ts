@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRenderContext } from "../core/render-context-contract";
-import { Seidr } from "../core/seidr";
-import { createStateKey, getState, globalStates, hasState, setState, symbolNames } from "../core/state";
-import { runWithRenderContext } from "../render-context.node";
+import { getRenderContext } from "../render-context";
+import { runWithRenderContext } from "../render-context/render-context.node";
+import { Seidr } from "../seidr";
+import { createStateKey, getState, globalStates, hasState, setState, symbolNames } from "../state";
 import { captureRenderContextState, restoreGlobalState } from "./state";
 
 describe("SSR State Serialization", () => {
@@ -116,8 +116,8 @@ describe("SSR State Serialization", () => {
           "$/count": 42,
         });
 
-        const user = getState<Seidr<string>>(userKey);
-        const count = getState<Seidr<number>>(countKey);
+        const user = getState<Seidr<string>>(userKey)!;
+        const count = getState<Seidr<number>>(countKey)!;
 
         expect(user).toBeInstanceOf(Seidr);
         expect(user.value).toBe("Alice");
@@ -158,9 +158,9 @@ describe("SSR State Serialization", () => {
           "$/count": 100,
         });
 
-        const user = getState<Seidr<string>>(userKey);
-        const settings = getState<{ theme: string }>(settingsKey);
-        const count = getState<Seidr<number>>(countKey);
+        const user = getState<Seidr<string>>(userKey)!;
+        const settings = getState<{ theme: string }>(settingsKey)!;
+        const count = getState<Seidr<number>>(countKey)!;
 
         expect(user.value).toBe("Bob");
         expect(settings).toEqual({ theme: "light" });
@@ -178,7 +178,7 @@ describe("SSR State Serialization", () => {
           "$/user": "Updated",
         });
 
-        const user = getState<Seidr<string>>(userKey);
+        const user = getState<Seidr<string>>(userKey)!;
         expect(user.value).toBe("Updated");
       });
     });
@@ -194,7 +194,7 @@ describe("SSR State Serialization", () => {
         });
 
         expect(hasState(userKey)).toBe(true);
-        const user = getState<Seidr<string>>(userKey);
+        const user = getState<Seidr<string>>(userKey)!;
         expect(user.value).toBe("New User");
       });
     });
@@ -225,7 +225,7 @@ describe("SSR State Serialization", () => {
           "$/user": "Alice",
         });
 
-        const user = getState<Seidr<string>>(userKey);
+        const user = getState<Seidr<string>>(userKey)!;
         expect(user.value).toBe("Alice");
       });
     });
@@ -246,9 +246,9 @@ describe("SSR State Serialization", () => {
 
         restoreGlobalState(serialized);
 
-        const user = getState<Seidr<string>>(userKey);
+        const user = getState<Seidr<string>>(userKey)!;
         const settings = getState<{ theme: string }>(settingsKey);
-        const count = getState<Seidr<number>>(countKey);
+        const count = getState<Seidr<number>>(countKey)!;
 
         expect(user.value).toBe("Alice");
         expect(settings).toEqual({ theme: "dark" });
@@ -296,7 +296,7 @@ describe("SSR State Serialization", () => {
           "$/todos": todoProps,
         });
 
-        const todos = getState<Seidr<Todo[]>>(todosKey);
+        const todos = getState<Seidr<Todo[]>>(todosKey)!;
 
         expect(todos).toBeInstanceOf(Seidr);
         expect(todos.value).toEqual(todoProps);
@@ -319,7 +319,7 @@ describe("SSR State Serialization", () => {
 
         restoreGlobalState(serverState);
 
-        const todos = getState<Seidr<Todo[]>>(todosKey);
+        const todos = getState<Seidr<Todo[]>>(todosKey)!;
 
         expect(todos).toBeInstanceOf(Seidr);
         expect(todos.value).toEqual(todoProps);

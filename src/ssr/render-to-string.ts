@@ -1,8 +1,9 @@
-import { clearPathCache } from "../core/dom/router";
-import { type SeidrNode, wrapComponent } from "../core/index";
-import { getRenderContext } from "../core/render-context-contract";
-import { runWithRenderContext } from "../render-context.node";
-import { clearSSRScope, getActiveSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
+import { wrapComponent } from "../component";
+import type { SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
+import { runWithRenderContext } from "../render-context/render-context.node";
+import { clearPathCache } from "../router";
+import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
 

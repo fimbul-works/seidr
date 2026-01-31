@@ -1,8 +1,7 @@
-import { type SeidrNode, wrapComponent } from "../core/dom";
-import { mount } from "../core/dom/mount";
-import { $query } from "../core/dom/query";
-import { isFn } from "../core/util";
-import { setRenderContextID as setRenderContextIDBrowser } from "../render-context.browser";
+import type { SeidrNode } from "../element";
+import { $query } from "../helper";
+import { mount } from "../mount";
+import { setRenderContextID as setRenderContextIDBrowser } from "../render-context/render-context.browser";
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";

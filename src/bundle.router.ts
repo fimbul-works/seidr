@@ -1,1 +1,1 @@
-export * from "./core/dom/router";
+export * from "./router";

@@ -1,6 +1,5 @@
 import { afterEach } from "vitest";
-import { setInternalContext } from "./core/render-context-contract";
-import type { RenderContext } from "./core/types";
+import { type RenderContext, setInternalContext } from "./render-context";
 
 // Initialize browser render context for all tests
 // Set up a simple browser render context that returns a valid context object

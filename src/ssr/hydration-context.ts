@@ -1,4 +1,4 @@
-import type { Seidr } from "../core/seidr";
+import type { Seidr } from "../seidr/seidr";
 import type { HydrationData } from "./types";
 
 /**

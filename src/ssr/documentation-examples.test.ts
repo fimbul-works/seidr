@@ -1,7 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $div, component, createStateKey, getState, isUndefined, setState } from "../core/index";
-import { Seidr } from "../core/seidr";
+import { component } from "../component";
+import { $div } from "../element";
+import { Seidr } from "../seidr";
+import { createStateKey, getState, setState } from "../state";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import { isUndefined } from "../util/type-guards";
 import { inBrowser, inServer } from "./env";
 import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";

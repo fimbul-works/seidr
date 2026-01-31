@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
-import { component, mount } from "../src/core/dom";
+import { component, mount } from "../src/index.browser";
 import { TodoApp } from "./todo.ts";
 
 describe("TODO Example", () => {

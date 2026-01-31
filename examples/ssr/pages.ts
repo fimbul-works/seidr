@@ -10,9 +10,8 @@ import {
   List,
   type Seidr,
   Suspense,
-  useScope,
   useState,
-} from "../../src/core/index.js";
+} from "../../src/index.core.js";
 import { inBrowser, inServer, isServer } from "../../src/ssr/env.js";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";

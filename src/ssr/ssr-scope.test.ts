@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
+import { Seidr } from "../seidr";
 import { clearHydrationData } from "./hydration-context";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
 

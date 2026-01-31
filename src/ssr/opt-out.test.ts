@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { Seidr } from "../core/seidr";
-import { NO_HYDRATE } from "../core/util/index";
+import { Seidr } from "../seidr";
+import { NO_HYDRATE } from "../seidr/constants";
 import { renderToString } from "./render-to-string";
 
 describe("Seidr Hydration Opt-out", () => {

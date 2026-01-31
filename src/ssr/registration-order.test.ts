@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $, component } from "../core/index";
-import { Seidr } from "../core/seidr";
+import { component } from "../component";
+import { $ } from "../element";
+import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import { renderToString } from "./render-to-string";
 
@@ -35,12 +36,10 @@ describe("Seidr Registration Logic - Comprehensive Tests", () => {
 
     // Use it INSIDE renderToString
     const { html } = await renderToString(() => {
-      return component(() => {
-        outsideCount.observe(() => {
-          // Just observing to trigger registration
-        });
-        return $("div", {}, [`Count: ${outsideCount.value}`]);
-      })();
+      outsideCount.observe(() => {
+        // Just observing to trigger registration
+      });
+      return $("div", {}, [`Count: ${outsideCount.value}`]);
     });
 
     // Should render correctly
