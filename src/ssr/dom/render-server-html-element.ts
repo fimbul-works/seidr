@@ -1,3 +1,4 @@
+import { isStr } from "src/util";
 import { escapeHTML } from "../../util/html";
 import { camelToKebab, renderAttribute, renderDataset, renderStyle } from "./render-utils";
 import type { ServerHTMLElement } from "./server-html-element";
@@ -25,7 +26,9 @@ export const VOID_ELEMENTS = new Set([
 /**
  * Renders the full element to string.
  */
-export function renderElementToString(el: ServerHTMLElement): string {
+export function renderElementToString<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>(
+  el: ServerHTMLElement<K>,
+): string {
   const tagName = el.tagName.toLowerCase();
   const attrParts: string[] = [];
 

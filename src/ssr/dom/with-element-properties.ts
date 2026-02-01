@@ -1,14 +1,15 @@
-import { escapeHTML } from "../../util/html";
-import { isStr } from "../../util/type-guards";
+import type { ReactiveValue } from "../../element";
+import type { Seidr } from "../../seidr";
 import { renderElementToString } from "./render-server-html-element";
-import { type BaseServerNodeInterface, ELEMENT_NODE, type NodeTypeElement } from "./types";
+import type { ServerHTMLElement } from "./server-html-element";
+import type { BaseServerNodeInterface, NodeTypeElement } from "./types";
 import type { ServerNodeWithChildNodes } from "./with-child-nodes";
 
 export interface ServerElementPropertiesExtension {
   tagName: string;
-  id?: string;
-  className?: string;
-  textContent?: string | null;
+  id?: ReactiveValue<string>;
+  className?: ReactiveValue<string>;
+  textContent?: ReactiveValue<string | null>;
   innerHTML?: string;
   toString(): string;
 }
@@ -23,7 +24,7 @@ export function nodeWithElementPropertiesExtension<
       get() {
         return node.childNodes.map((c: any) => c.textContent ?? "").join("");
       },
-      set(value: string) {
+      set(value: string | Seidr<string>) {
         node.childNodes.forEach((c) => c.remove());
         node.appendChild(value);
       },
@@ -49,7 +50,7 @@ export function nodeWithElementPropertiesExtension<
       configurable: true,
       writable: true,
       value: function (this: N & ServerElementPropertiesExtension) {
-        return renderElementToString(this);
+        return renderElementToString(this as unknown as ServerHTMLElement<any>);
       },
     },
   };

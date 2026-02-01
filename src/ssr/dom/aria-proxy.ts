@@ -1,18 +1,15 @@
 import type { ReactiveARIAKebabCase, ReactiveARIAMixin } from "src/element";
-import { createCaseProxy } from "./case-proxy";
-
-/**
- * The storage for the ARIA proxy.
- */
-export type ARIAProxyStorage = ReactiveARIAKebabCase & ReactiveARIAMixin;
+import { type CaseProxyResult, createCaseProxy } from "./case-proxy";
 
 /**
  * Creates a proxy for ARIA attributes.
- * @param {ARIAProxyStorage} storage The storage for the ARIA proxy.
- * @returns {ARIAProxyStorage} A proxy for ARIA attributes.
+ * @param {ReactiveARIAKebabCase} storage The storage for the ARIA proxy.
+ * @returns {CaseProxyResult<ReactiveARIAMixin, ReactiveARIAKebabCase>} A proxy for ARIA attributes.
  */
-export function createAriaProxy(storage: ARIAProxyStorage = {} as ARIAProxyStorage) {
-  return createCaseProxy<ARIAProxyStorage>({
+export function createAriaProxy(
+  storage: ReactiveARIAKebabCase = {} as ReactiveARIAKebabCase,
+): CaseProxyResult<ReactiveARIAMixin, ReactiveARIAKebabCase> {
+  return createCaseProxy<ReactiveARIAMixin, ReactiveARIAKebabCase>({
     prefix: "aria-",
     dropPrefix: false,
     storage,

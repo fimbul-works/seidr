@@ -29,7 +29,7 @@ export function nodeWithParentExtension<
   const { onAttached, onRemove } = options;
   let _parent: ServerNodeWithChildNodes | null = null;
 
-  const ext: ServerNodeWithParent<T["nodeType"]> = {
+  const ext = {
     get parentNode(): ServerNodeWithChildNodes | null {
       return _parent;
     },
@@ -94,7 +94,8 @@ export function nodeWithParentExtension<
       onRemove?.(_parent);
       _parent.removeChild(node as any);
     },
-  } as any;
+  } as ServerNodeWithParent<T["nodeType"]>;
 
-  return Object.defineProperties(node, Object.getOwnPropertyDescriptors(ext)) as any;
+  return Object.defineProperties(node, Object.getOwnPropertyDescriptors(ext)) as T &
+    ServerNodeWithParent<T["nodeType"]>;
 }

@@ -1,6 +1,6 @@
 import type { SeidrComponent } from "../component";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction } from "../types";
+import type { CleanupFunction, IsCamelCase } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -47,17 +47,6 @@ type NoStyle<T> = Omit<T, "style">;
  * Type definition for reactive CSS style properties.
  */
 type FlexibleCSSStyleDeclaration = Partial<CSSStyleDeclaration>;
-
-/**
- * A stricter CamelCase check for the Index Signature.
- */
-export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
-  ? false
-  : S extends `${infer First}${string}`
-    ? First extends Lowercase<First>
-      ? true
-      : false
-    : false;
 
 /**
  * Union type representing either a scalar value or a reactive Seidr observable.

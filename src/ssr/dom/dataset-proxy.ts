@@ -1,13 +1,13 @@
-import type { IsCamelCase, ReactiveCamelCaseProps, ReactiveDataKebabCase } from "../../element/types";
+import type { ReactiveCamelCaseProps, ReactiveDataKebabCase } from "../../element/types";
 import { camelToKebab } from "../../util/string";
-import { createCaseProxy } from "./case-proxy";
+import { type CaseProxyResult, createCaseProxy } from "./case-proxy";
 
 export type { ReactiveDataKebabCase };
 
 /**
  * The storage for the Dataset proxy.
  */
-export type DatasetProxy = ReactiveDataKebabCase & ReactiveCamelCaseProps;
+export type DatasetProxy = CaseProxyResult<ReactiveDataKebabCase & ReactiveCamelCaseProps, ReactiveDataKebabCase>;
 
 /**
  * Converts a camelCase string to kebab-case.
@@ -23,11 +23,11 @@ const dataToKebab = (str: string): string => {
 
 /**
  * Creates a proxy for data attributes.
- * @param {ReactiveDataKebabCase} storage The storage for the data proxy.
- * @returns {DatasetProxy} A proxy for data attributes.
+ * @param {ReactiveDataKebabCase} storage The storage for the data proxy
+ * @returns {DatasetProxy} A proxy for data attributes
  */
-export function createDatasetProxy(storage: ReactiveDataKebabCase = {} as ReactiveDataKebabCase) {
-  return createCaseProxy<DatasetProxy>({
+export function createDatasetProxy(storage: ReactiveDataKebabCase = {} as ReactiveDataKebabCase): DatasetProxy {
+  return createCaseProxy<ReactiveDataKebabCase & ReactiveCamelCaseProps, ReactiveDataKebabCase>({
     prefix: "data-",
     dropPrefix: true,
     storage,

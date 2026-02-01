@@ -1,4 +1,6 @@
+import type { ReactiveValue } from "../../element/types";
 import { unwrapSeidr } from "../../seidr";
+import type { IsCamelCase, KebabCase, StripPrefix } from "../../types";
 import { escapeHTML } from "../../util/html";
 import {
   camelToKebab as defaultCamelToKebab,
@@ -7,26 +9,18 @@ import {
   isKebabCase,
 } from "../../util/string";
 
+type StorageKey<K extends string, P extends string> = `${P}${KebabCase<K>}`;
+
 /**
  * The options for the case proxy.
- *
- * @property {string} prefix The prefix for the storage keys.
- * @property {boolean} dropPrefix Whether to drop the prefix from the public path.
- * @property {Record<string, any>} storage The storage for the case proxy.
- * @method onUpdate Callback function to be called when a property is updated.
- * @method serialize Function to serialize the storage to a string.
- * @method parse Function to parse a string to the storage.
- * @method escapeKeyValue Function to escape a key-value pair.
- * @method toKebab Function to convert a string to kebab-case.
- * @method toCamel Function to convert a string to camelCase.
  */
-export interface CaseProxyOptions {
+export interface CaseProxyOptions<S extends Record<string, ReactiveValue<any>>> {
   prefix?: string;
   dropPrefix?: boolean;
-  storage?: Record<string, any>;
+  storage?: S;
   onUpdate?: (key: string, value: any) => void;
-  serialize?: (storage: Record<string, any>) => string;
-  parse?: (value: string) => Record<string, any>;
+  serialize?: (storage: S) => string;
+  parse?: (value: string) => S;
   escapeKeyValue?: (key: string, value: any) => string;
   toKebab?: (str: string) => string;
   toCamel?: (str: string) => string;
@@ -35,15 +29,13 @@ export interface CaseProxyOptions {
 /**
  * Case proxy result.
  *
- * @template {Record<string, any>} T The type of the case proxy
- * @property {T} proxy The proxy for the case proxy.
- * @property {Record<string, any>} storage The storage for the case proxy.
- * @method toString Converts the case proxy to a string.
- * @method fromString Converts a string to the case proxy.
  */
-export interface CaseProxyResult<T extends Record<string, any>> {
+export interface CaseProxyResult<
+  T extends Record<string, ReactiveValue<any>>,
+  S extends Record<string, ReactiveValue<any>>,
+> {
   proxy: T;
-  storage: Record<string, any>;
+  storage: S;
   toString(): string;
   fromString(value: string): void;
 }
@@ -52,11 +44,14 @@ export interface CaseProxyResult<T extends Record<string, any>> {
  * Creates a proxy that maps camelCase property access to kebab-case storage.
  * Useful for dataset (data-*), aria (aria-*), and style attributes.
  */
-export function createCaseProxy<T extends Record<string, any>>(options: CaseProxyOptions = {}): CaseProxyResult<T> {
+export function createCaseProxy<
+  T extends Record<string, ReactiveValue<any>>,
+  S extends Record<string, ReactiveValue<any>>,
+>(options: CaseProxyOptions<S> = {}): CaseProxyResult<T, S> {
   const {
     prefix = "",
     dropPrefix = false,
-    storage = {},
+    storage = {} as S,
     onUpdate,
     serialize,
     parse,
@@ -65,10 +60,10 @@ export function createCaseProxy<T extends Record<string, any>>(options: CaseProx
     toCamel = defaultKebabToCamel,
   } = options;
 
-  let result: CaseProxyResult<T>;
+  let result: CaseProxyResult<T, S>;
 
-  const getStorageKey = (prop: string): string => {
-    if (prop === "className") return `${prefix}class`;
+  const getStorageKey = <SK extends keyof S & string = keyof S & string>(prop: string): SK => {
+    if (prop === "className") return `${prefix}class` as SK;
 
     const isCamel = isCamelCase(prop);
     const isKebab = isKebabCase(prop);
@@ -78,16 +73,16 @@ export function createCaseProxy<T extends Record<string, any>>(options: CaseProx
     }
 
     // If it already matches the storage format (has prefix and is kebab)
-    if (prefix && prop.startsWith(prefix) && isKebab) return prop;
+    if (prefix && prop.startsWith(prefix) && isKebab) return prop as SK;
 
     // Convert to kebab-case
     const kebab = toKebab(prop);
 
     // If it's already a valid storage key with prefix
-    if (prefix && kebab.startsWith(prefix)) return kebab;
+    if (prefix && kebab.startsWith(prefix)) return kebab as SK;
 
     // If we're using a prefix but the property was accessed without it (typical for dataset/aria)
-    return prefix + kebab;
+    return (prefix + kebab) as SK;
   };
 
   const getPublicPath = (key: string): string => {
@@ -177,7 +172,7 @@ export function createCaseProxy<T extends Record<string, any>>(options: CaseProx
         });
         // Apply new values
         Object.entries(parsed).forEach(([k, v]) => {
-          storage[k] = v;
+          (storage as any)[k] = v;
         });
         // We don't call onUpdate for every key here as it might be expensive
         // but individual logic can be added if needed.

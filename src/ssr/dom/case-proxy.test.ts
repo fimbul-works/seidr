@@ -39,7 +39,7 @@ describe("CaseProxy", () => {
   });
 
   it("should support dropPrefix: true", () => {
-    const storage = { "data-foo": "bar" };
+    const storage: Record<string, any> = { "data-foo": "bar" };
     const { proxy } = createCaseProxy({ prefix: "data-", dropPrefix: true, storage });
 
     expect(proxy.foo).toBe("bar");
