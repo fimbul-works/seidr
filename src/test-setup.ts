@@ -1,7 +1,7 @@
 import { afterEach } from "vitest";
 import { type DOMFactory, getDOMFactory, setInternalDOMFactory } from "./dom-factory";
-import { getDOMFactory as getDOMFactoryBrowser } from "./dom-factory/dom-factory.browser";
-import { getDOMFactory as getDOMFactoryNode } from "./dom-factory/dom-factory.node";
+import { getBrowserDOMFactory } from "./dom-factory/dom-factory.browser";
+import { getSSRDOMFactory } from "./dom-factory/dom-factory.node";
 import { type RenderContext, setInternalContext } from "./render-context";
 import type { CleanupFunction } from "./types";
 
@@ -34,7 +34,7 @@ function testGetRenderContext(): RenderContext {
 }
 
 setInternalContext(testGetRenderContext);
-setInternalDOMFactory(typeof window === "undefined" ? getDOMFactoryNode : getDOMFactoryBrowser);
+setInternalDOMFactory(typeof window === "undefined" ? getSSRDOMFactory : getBrowserDOMFactory);
 
 afterEach(() => {
   // Reset browser context counters for next test
@@ -72,7 +72,7 @@ export function enableSSRMode(): CleanupFunction {
     getDOMFactory: getDOMFactory,
   };
   process.env.SEIDR_TEST_SSR = "true";
-  setInternalDOMFactory(getDOMFactoryNode);
+  setInternalDOMFactory(getSSRDOMFactory);
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
@@ -99,7 +99,7 @@ export function enableClientMode(): CleanupFunction {
   }
 
   setInternalContext(testGetRenderContext);
-  setInternalDOMFactory(getDOMFactoryBrowser);
+  setInternalDOMFactory(getBrowserDOMFactory);
 
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;

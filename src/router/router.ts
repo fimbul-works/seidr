@@ -139,7 +139,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
   // Ensure markers and content are mounted when parent is ready
   scope.onAttached = (parent) => {
     if (!isSSRMode && !fragment.parentNode && parent) {
-      fragment.appendTo(parent);
+      fragment.appendTo(parent as any);
     }
     updateRoutes();
   };

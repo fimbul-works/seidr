@@ -85,8 +85,7 @@ export function nodeWithChildNodesExtension<
     },
     insertBefore(newChild: ServerNodeType, referenceNode: ServerNodeWithParent | null) {
       if (isDocumentFragment(newChild) && !(newChild as any).isSeidrFragment) {
-        const fragment = newChild as ServerNodeWithChildNodes;
-        const children = [...fragment.childNodes];
+        const children = [...newChild.childNodes];
         for (const c of children) {
           this.insertBefore(c, referenceNode);
         }

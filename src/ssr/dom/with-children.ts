@@ -113,8 +113,7 @@ export function nodeWithChildrenExtension<
 
     appendChild(child: ServerNodeType) {
       if (isDocumentFragment(child) && !(child as any).isSeidrFragment) {
-        const fragment = child as ServerNodeWithChildren;
-        const childrenToMove = [...fragment.childNodes];
+        const childrenToMove = [...child.childNodes];
         for (const grandchild of childrenToMove) {
           this.appendChild(grandchild);
         }
@@ -178,7 +177,7 @@ export function nodeWithChildrenExtension<
       const n = child as ServerNodeWithParent;
 
       // Check for direct parent
-      if (n.parentNode === node) {
+      if ((n as any).parentNode === node) {
         return true;
       }
 
@@ -193,8 +192,7 @@ export function nodeWithChildrenExtension<
 
     insertBefore(newChild: ServerNodeType, referenceNode: ServerNodeWithParent | null) {
       if (isDocumentFragment(newChild) && !(newChild as any).isSeidrFragment) {
-        const fragment = newChild as ServerNodeWithChildren;
-        const childrenToMove = [...fragment.childNodes];
+        const childrenToMove = [...newChild.childNodes];
         for (const c of childrenToMove) {
           this.insertBefore(c, referenceNode);
         }

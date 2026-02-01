@@ -6,13 +6,15 @@ import {
   $li,
   $p,
   $ul,
+  inBrowser,
+  inServer,
+  isServer,
   Link,
   List,
   type Seidr,
   Suspense,
   useState,
-} from "../../src/index.core.js";
-import { inBrowser, inServer, isServer } from "../../src/ssr/env.js";
+} from "../../src/index.browser.js";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";
 

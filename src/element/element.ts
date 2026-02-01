@@ -1,5 +1,5 @@
 import type { SeidrComponent } from "../component";
-import { getDOMFactory } from "../dom-factory/index";
+import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
 import type { CleanupFunction } from "../types";

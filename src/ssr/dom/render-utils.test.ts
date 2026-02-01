@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { wrapSeidr } from "../../seidr";
-import { camelToKebab, renderAttribute, renderDataset, renderStyle } from "./render-utils";
+import { camelToKebab } from "../../util/string";
+import { renderAttribute, renderDataset, renderStyle } from "./render-utils";
 
 describe("SSR Render Utils", () => {
   describe("camelToKebab", () => {

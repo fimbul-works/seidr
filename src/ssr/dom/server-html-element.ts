@@ -150,7 +150,7 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
         const children = [...(this as any).childNodes];
         for (const child of children) {
           if (child.remove) child.remove();
-          else this.removeChild(child);
+          else (this as any).removeChild(child);
         }
       },
       enumerable: true,

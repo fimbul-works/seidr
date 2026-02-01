@@ -1,5 +1,4 @@
-import { $a, $div, $footer, $nav, initRouter, Link, Router, setState } from "../../src/index.browser.js";
-import { inServer } from "../../src/ssr/env.js";
+import { $a, $div, $footer, $nav, initRouter, inServer, Link, Router, setState } from "../../src/index.browser.js";
 import { routes } from "./routes.js";
 import type { PageContext } from "./server.js";
 
