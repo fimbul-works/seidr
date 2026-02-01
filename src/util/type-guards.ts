@@ -3,6 +3,13 @@ import type { SeidrElement, SeidrFragment } from "../element/types";
 import { Seidr } from "../seidr/seidr";
 
 /**
+ * Check if a value is empty (`null`, or `undefined`).
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is empty, `false` otherwise
+ */
+export const isEmpty = (v: any): v is null | undefined => v === null || typeof v === "undefined";
+
+/**
  * Check if a value is undefined.
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is undefined, `false` otherwise

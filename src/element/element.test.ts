@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import "../dom-factory/dom-factory.browser";
 import { elementClassToggle } from "../helper/element-class-toggle";
 import { Seidr } from "../seidr";
 import { $ } from "./element";

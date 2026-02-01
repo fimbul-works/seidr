@@ -1,12 +1,24 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $ } from "../element";
 import { mount } from "../mount";
 import { Seidr } from "../seidr";
+import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { component } from "./component";
 import { createScope } from "./component-scope";
 import { useScope } from "./use-scope";
 
 describe("component", () => {
+  let restoreClientMode: CleanupFunction;
+
+  beforeEach(() => {
+    restoreClientMode = enableClientMode();
+  });
+
+  afterEach(() => {
+    restoreClientMode();
+  });
+
   it("should create a component with element and destroy method", () => {
     const mockElement = $("div");
     const comp = component(() => {

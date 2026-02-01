@@ -1,16 +1,22 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $, $div, type SeidrElement } from "../element";
 import { Seidr } from "../seidr";
+import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { elementClassToggle } from "./element-class-toggle";
 
 describe("elementClassToggle", () => {
   let element: SeidrElement;
   let observable: Seidr<boolean>;
+  let restore: CleanupFunction;
 
   beforeEach(() => {
+    restore = enableClientMode();
     element = $div({ className: "base-element" });
     observable = new Seidr(false);
   });
+
+  afterEach(() => restore());
 
   describe("Basic Functionality", () => {
     it("should add class when observable becomes true", () => {

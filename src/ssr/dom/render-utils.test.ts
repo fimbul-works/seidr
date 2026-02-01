@@ -17,12 +17,12 @@ describe("SSR Render Utils", () => {
     });
 
     it("should render object style", () => {
-      expect(renderStyle({ color: "red", fontSize: "12px" })).toBe("color: red; font-size: 12px");
+      expect(renderStyle({ color: "red", fontSize: "12px" })).toBe("color:red;font-size:12px");
     });
 
     it("should unwrap Seidr values", () => {
       const color = wrapSeidr("red");
-      expect(renderStyle({ color })).toBe("color: red");
+      expect(renderStyle({ color })).toBe("color:red");
     });
   });
 

@@ -76,7 +76,7 @@ export type ServerTextNode = BaseServerNodeInterface<NodeTypeText> &
  * @param text - The text content of the node
  * @returns The created node
  */
-export function createTextNode(text: string): ServerTextNode {
+export function createServerTextNode(text: string): ServerTextNode {
   const textNode = createServerNode<NodeTypeText, ServerTextNode>(
     TEXT_NODE,
     characterDataNodeExtension(text, (text) => escapeHTML(text)),
@@ -93,10 +93,10 @@ export type ServerCommentNode = BaseServerNodeInterface<NodeTypeComment> &
  * @param text - The comment content of the node
  * @returns The created node
  */
-export function createCommentNode(text: string): ServerCommentNode {
+export function createServerCommentNode(text: string): ServerCommentNode {
   const commentNode = createServerNode<NodeTypeComment, ServerCommentNode>(
     COMMENT_NODE,
-    characterDataNodeExtension(text, (text) => `<!--${text}-->`),
+    characterDataNodeExtension(text, (text) => `<!--${escapeHTML(text)}-->`),
   );
   return nodeWithParentExtension(commentNode);
 }

@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { createCommentNode, createTextNode } from "./character-data";
+import { createServerCommentNode, createServerTextNode } from "./character-data";
 import { COMMENT_NODE, TEXT_NODE } from "./types";
 
 describe("CharacterData Nodes", () => {
   describe("createTextNode", () => {
     it("should create a text node with correct properties", () => {
-      const node = createTextNode("hello");
+      const node = createServerTextNode("hello");
       expect(node.nodeType).toBe(TEXT_NODE);
       expect(node.nodeName).toBe("#text");
       expect(node.nodeValue).toBe("hello");
@@ -14,12 +14,12 @@ describe("CharacterData Nodes", () => {
     });
 
     it("should escape HTML in toString()", () => {
-      const node = createTextNode("<script>alert(1)</script>");
+      const node = createServerTextNode("<script>alert(1)</script>");
       expect(node.toString()).toBe("&lt;script&gt;alert(1)&lt;/script&gt;");
     });
 
     it("should update values via data property", () => {
-      const node = createTextNode("init");
+      const node = createServerTextNode("init");
       node.data = "updated";
       expect(node.nodeValue).toBe("updated");
       expect(node.textContent).toBe("updated");
@@ -27,13 +27,13 @@ describe("CharacterData Nodes", () => {
     });
 
     it("should update values via nodeValue property", () => {
-      const node = createTextNode("init");
+      const node = createServerTextNode("init");
       node.nodeValue = "updated";
       expect(node.data).toBe("updated");
     });
 
     it("should provide data manipulation methods", () => {
-      const node = createTextNode("Hello World");
+      const node = createServerTextNode("Hello World");
       expect(node.length).toBe(11);
 
       node.appendData("!");
@@ -52,7 +52,7 @@ describe("CharacterData Nodes", () => {
 
   describe("createCommentNode", () => {
     it("should create a comment node with correct properties", () => {
-      const node = createCommentNode("comment");
+      const node = createServerCommentNode("comment");
       expect(node.nodeType).toBe(COMMENT_NODE);
       expect(node.nodeName).toBe("#comment");
       expect(node.nodeValue).toBe("comment");
@@ -60,7 +60,7 @@ describe("CharacterData Nodes", () => {
     });
 
     it("should render correctly in toString()", () => {
-      const node = createCommentNode("secret");
+      const node = createServerCommentNode("secret");
       expect(node.toString()).toBe("<!--secret-->");
     });
   });

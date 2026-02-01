@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createServerFragment as ServerFragment } from "./server-fragment";
+import { createServerDocumentFragment as ServerFragment } from "./server-fragment";
 import { createServerHTMLElement as ServerHTMLElement } from "./server-html-element";
 
 describe("ServerFragment", () => {

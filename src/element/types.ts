@@ -90,6 +90,13 @@ export type ReactiveARIAMixin = {
 };
 
 /**
+ * Type definition for reactive CSS style properties.
+ */
+export type ReactiveCSSStyleDeclaration = {
+  [K in keyof CSSStyleDeclaration]-?: ReactiveValue<CSSStyleDeclaration[K]>;
+};
+
+/**
  * Type definition for reactive data-* and aria-* attributes.
  */
 export type ReactiveDataOrARIAMixin = {
@@ -103,7 +110,7 @@ export type ReactiveDataOrARIAMixin = {
  */
 export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = Partial<
   ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveDataOrARIAMixin
-> & { style?: FlexibleCSSStyleDeclaration };
+> & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string> };
 
 /**
  * Union type representing allowed child nodes for Seidr elements.
@@ -189,9 +196,9 @@ export interface SeidrFragment extends DocumentFragment {
   readonly id: string;
   readonly start: Comment;
   readonly end: Comment;
+  readonly parentNode: Element | null;
   readonly nodes: Node[];
   remove(): void;
   clear(): void;
   appendTo(parent: Element): void;
-  toString(): string;
 }

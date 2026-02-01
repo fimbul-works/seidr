@@ -8,6 +8,7 @@ import { hydrate } from "./hydrate";
 import { clearHydrationData } from "./hydration-context";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setActiveSSRScope } from "./ssr-scope";
+import "../dom-factory/dom-factory.node";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: CleanupFunction;

@@ -9,6 +9,7 @@ import { getCurrentPath } from "./get-current-path";
 export function initRouter(path?: string): CleanupFunction {
   // Set the initial path value
   const currentPath = getCurrentPath();
+  console.log("CURRENT PATH:", path ?? currentPath.value);
   if (path !== undefined) {
     currentPath.value = path;
   }

@@ -1,8 +1,6 @@
 import { unwrapSeidr } from "../../seidr";
-import { escapeHTML } from "../../util/html";
-import { isHTMLElement, isObj, isStr } from "../../util/type-guards";
 import { renderElementToString } from "./render-server-html-element";
-import { camelToKebab, kebabToCamel, renderStyle } from "./render-utils";
+import { camelToKebab, kebabToCamel } from "./render-utils";
 import { createServerNode } from "./server-node";
 import { ELEMENT_NODE, type NodeTypeElement, type ServerNodeType } from "./types";
 import { nodeWithChildElementNodesExtension, type ServerNodeWithChildElementNodes } from "./with-child-elements";
@@ -17,11 +15,12 @@ export const ServerElementMap = new Map<string, any>();
 
 export type Attributes = Record<string, any>;
 
-export interface ServerHTMLElement
+export interface ServerHTMLElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>
   extends ServerNodeWithParent<NodeTypeElement>,
     ServerNodeWithChildElementNodes<NodeTypeElement>,
     ServerElementPropertiesExtension {
-  tagName: string;
+  readonly isSeidrElement: true;
+  tagName: K;
   id?: string;
   className: string;
   classList: any;
@@ -30,18 +29,18 @@ export interface ServerHTMLElement
   getAttribute(name: string): string | null;
   setAttribute(name: string, value: any): void;
   removeAttribute(name: string): void;
+  attributes: Record<string, any>;
   hasAttribute(name: string): boolean;
   on(event: string, handler: (ev: any) => any, options?: any): () => void;
   addEventListener(event: string, handler: any, options?: any): void;
   removeEventListener(event: string, handler: any, options?: any): void;
-  isSeidrElement: true;
 }
 
-export function createServerHTMLElement(
-  tag: string,
+export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>(
+  tag: K,
   attrs: Attributes = {},
   children: ServerNodeType[] = [],
-): ServerHTMLElement {
+): ServerHTMLElement<K> {
   const node = createServerNode(ELEMENT_NODE, { tagName: tag.toUpperCase() });
   const base = nodeWithParentExtension(
     nodeWithElementPropertiesExtension(nodeWithChildElementNodesExtension(nodeWithChildNodesExtension(node)) as any),
@@ -56,19 +55,23 @@ export function createServerHTMLElement(
   const _styleObj: Record<string, string> = {};
   const originalRemove = (base as any).remove;
 
-  const parseStyle = (style: string) => {
+  const parseStyle = (style: string): Record<string, string> => {
     // Clear existing
     for (const k in _styleObj) delete _styleObj[k];
-    style.split(";").forEach((s) => {
-      const firstColon = s.indexOf(":");
-      if (firstColon === -1) return;
-      const k = s.slice(0, firstColon).trim();
-      const v = s.slice(firstColon + 1).trim();
-      if (k && v) _styleObj[k] = v;
-    });
+    return style.split(";").reduce(
+      (acc, s) => {
+        const firstColon = s.indexOf(":");
+        if (firstColon === -1) return acc;
+        const k = s.slice(0, firstColon).trim();
+        const v = s.slice(firstColon + 1).trim();
+        if (k && v) acc[k] = v;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
   };
 
-  const flattenStyle = () => {
+  const flattenStyle = (): string => {
     const entries = Object.entries(_styleObj);
     if (entries.length === 0) return "";
     return entries.map(([k, v]) => `${k}:${v}`).join(";") + ";";
@@ -160,7 +163,7 @@ export function createServerHTMLElement(
         return _attributes["id"] ?? "";
       },
       set(v: string) {
-        this.setAttribute("id", v);
+        (this as any).setAttribute("id", v);
       },
       enumerable: true,
       configurable: true,
@@ -170,7 +173,7 @@ export function createServerHTMLElement(
         return _attributes["class"] ?? "";
       },
       set(v: string) {
-        this.setAttribute("class", v);
+        (this as any).setAttribute("class", v);
       },
       enumerable: true,
       configurable: true,
@@ -223,13 +226,6 @@ export function createServerHTMLElement(
       value: function () {
         if ((this as any).clear) (this as any).clear();
         originalRemove.call(this);
-      },
-      enumerable: true,
-      configurable: true,
-    },
-    destroy: {
-      value: function () {
-        this.remove();
       },
       enumerable: true,
       configurable: true,
@@ -295,14 +291,7 @@ export function createServerHTMLElement(
       configurable: true,
       writable: true,
       value: function (this: ServerHTMLElement) {
-        return renderElementToString(this.tagName, {
-          id: this.id,
-          className: this.className,
-          style: flattenStyle(),
-          dataset: datasetProxy,
-          attributes: _attributes,
-          innerHTML: this.innerHTML,
-        });
+        return renderElementToString(this);
       },
     },
   };

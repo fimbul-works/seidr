@@ -9,14 +9,13 @@ const renderScopeComponentStacks = new Map<number, SeidrComponent[]>();
  * @returns {SeidrComponent[]} SeidrComponent stack
  */
 export const getComponentStack = (): SeidrComponent[] => {
-  const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.ctxID : 0;
+  const ctxID = getRenderContext().ctxID;
 
   // Initialize component stack if needed
-  if (!renderScopeComponentStacks.has(renderScopeID)) {
-    renderScopeComponentStacks.set(renderScopeID, []);
+  if (!renderScopeComponentStacks.has(ctxID)) {
+    renderScopeComponentStacks.set(ctxID, []);
   }
-  return renderScopeComponentStacks.get(renderScopeID) as SeidrComponent[];
+  return renderScopeComponentStacks.get(ctxID) as SeidrComponent[];
 };
 
 /**

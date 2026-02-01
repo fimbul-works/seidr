@@ -1,15 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $, type SeidrElement } from "../element";
+import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { Seidr } from "./seidr";
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
+  let restore: CleanupFunction;
 
   beforeEach(() => {
+    restore = enableClientMode();
     consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
+    restore();
     consoleErrorSpy.mockRestore();
   });
 

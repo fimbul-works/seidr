@@ -2,6 +2,7 @@ import type { CleanupFunction } from "src/types";
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrElement, SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import { isFn, isSeidrFragment } from "../util/type-guards";
 
 /**
@@ -27,8 +28,13 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   componentOrFactory: C | (() => C),
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const factory: any = isFn(componentOrFactory) ? componentOrFactory : () => componentOrFactory;
+  // Bind the container to the render context if not already bound
+  const ctx = getRenderContext();
+  if (!ctx.rootNode) {
+    ctx.rootNode = container;
+  }
 
+  const factory: any = isFn(componentOrFactory) ? componentOrFactory : () => componentOrFactory;
   const component: SeidrComponent = wrapComponent(factory)();
 
   // Check if element is already in the container (happens during hydration with DOM reuse)

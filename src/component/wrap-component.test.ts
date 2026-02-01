@@ -1,10 +1,22 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $div } from "../element/elements";
+import { enableClientMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { isSeidrComponentFactory } from "../util/type-guards";
 import { component } from "./component";
 import { wrapComponent } from "./wrap-component";
 
 describe("wrapComponent", () => {
+  let restore: CleanupFunction;
+
+  beforeEach(() => {
+    restore = enableClientMode();
+  });
+
+  afterEach(() => {
+    restore();
+  });
+
   it("should return existing factory if already wrapped", () => {
     const factory = component(() => $div({ textContent: "test" }));
     const wrapped = wrapComponent(factory);

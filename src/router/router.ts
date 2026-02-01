@@ -1,4 +1,5 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
+import { getDOMFactory } from "../dom-factory";
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import { Seidr } from "../seidr";
@@ -43,7 +44,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
   let fragment: SeidrFragment;
 
   if (isSSRMode) {
-    fragment = new ServerFragment(routerId) as any;
+    fragment = $fragment([], routerId);
   } else if (isHydrating()) {
     const [s, e] = findMarkers(routerId);
     fragment = $fragment([], routerId, s || undefined, e || undefined);

@@ -1,15 +1,18 @@
+import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
-import { uid } from "../util/uid";
-import type { SeidrFragment, SeidrNode } from "./types";
+import { createServerDocumentFragment } from "../ssr";
+import { isHydrating } from "../ssr/env";
+import type { SeidrFragment } from "./types";
 
 /**
  * Find existing start and end markers in the DOM by ID.
  * Throws if markers exist but are not in the same parent node.
  *
  * @param {string} id - The fragment ID to find
+ * @param {Node} [root=document.documentElement] - The root node to search in
  * @returns {[Comment | null, Comment | null]}
  */
-export function findMarkers(id: string): [Comment | null, Comment | null] {
+export function findMarkers(id: string, root: Node = document.documentElement): [Comment | null, Comment | null] {
   if (typeof document === "undefined") return [null, null];
 
   const sPattern = `s:${id}`;
@@ -19,7 +22,7 @@ export function findMarkers(id: string): [Comment | null, Comment | null] {
   let e: Comment | null = null;
 
   // Optimized search using TreeWalker
-  const walker = document.createTreeWalker(document.documentElement, NodeFilter.SHOW_COMMENT);
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
   let node: Comment | null;
   while ((node = walker.nextNode() as Comment | null)) {
     const val = node.nodeValue;
@@ -48,30 +51,20 @@ export function findMarkers(id: string): [Comment | null, Comment | null] {
  */
 export function $fragment(children: Node[] = [], id?: string, start?: Comment, end?: Comment): SeidrFragment {
   // Actual deterministic ID logic
-  let finalId = id;
-  if (!finalId) {
-    try {
-      const rc = getRenderContext();
-      finalId = `f-${rc.idCounter++}`;
-    } catch (e) {
-      finalId = uid();
-    }
-  }
+  const ctx = getRenderContext();
+  id = `f-${ctx.idCounter++}`;
+  const domFactory = getDOMFactory();
 
-  const s = start || (document.createComment(`s:${finalId}`) as Comment);
-  const e = end || (document.createComment(`e:${finalId}`) as Comment);
+  const s = start || domFactory.createComment(`s:${id}`);
+  const e = end || domFactory.createComment(`e:${id}`);
 
   const isProd = typeof process !== "undefined" && process.env.NODE_ENV === "production";
 
   // Use DocumentFragment for efficient initial assembly if creating from scratch
-  const df = !start && !end && typeof document !== "undefined" ? document.createDocumentFragment() : null;
-  if (df) {
-    df.appendChild(s);
-    children.forEach((child) => {
-      if (child) df.appendChild(child);
-    });
-    df.appendChild(e);
-  }
+  const df = typeof window !== "undefined" ? domFactory.createDocumentFragment() : createServerDocumentFragment(id);
+  df.appendChild(s);
+  children.forEach((child) => child && df.appendChild(child));
+  df.appendChild(e);
 
   // Seidr-specific fragment state and methods
   let lastParent = s.parentNode;
@@ -80,11 +73,55 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
 
   // Initial children
   if (children.length > 0) {
-    children.forEach((c) => {
-      if (c) _nodes.push(c as Node);
-    });
+    df.append(...children);
   }
 
+  const extension = {
+    get isSeidrFragment() {
+      return true;
+    },
+    id: id,
+    start: s,
+    end: e,
+    get parentNode(): Node | null {
+      return s.parentNode || lastParent;
+    },
+    get nodes(): Node[] {
+      return [...df.childNodes] as Node[];
+    },
+    appendTo(parent: Element) {
+      lastParent = parent;
+      if (!isProd) {
+        parent.appendChild(s);
+      }
+      this.nodes.forEach((n) => {
+        parent.appendChild(n);
+      });
+      if (!isProd) {
+        parent.appendChild(e);
+      } else {
+        nextAnchor = e.nextSibling;
+      }
+    },
+    remove() {
+      this.clear();
+      if (s.parentNode) s.remove();
+      if (e.parentNode) e.remove();
+    },
+    clear() {
+      const nodes = this.nodes;
+      for (const node of nodes) {
+        if ((node as any).remove) {
+          (node as any).remove();
+        } else {
+          node.parentNode?.removeChild(node);
+        }
+      }
+      if (isProd) _nodes.length = 0;
+    },
+  };
+
+  /*
   const extension = {
     isSeidrFragment: true as const,
     id: finalId,
@@ -267,6 +304,7 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
       return `<!--s:${finalId}-->${childrenStr}<!--e:${finalId}-->`;
     },
   };
+  */
 
   // If in production and we have identified markers from SSR, we can remove them
   if (isProd && start && end && s.parentNode) {

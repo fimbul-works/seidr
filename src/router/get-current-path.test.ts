@@ -1,20 +1,23 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type RenderContext, setInternalContext } from "../render-context";
 import { clearHydrationData } from "../ssr/hydration-context";
+import { enableClientMode, enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { clearPathCache, getCurrentPath, resetClientPathState } from "./get-current-path";
 import { initRouter } from "./init-router";
 
 describe("getCurrentPath", () => {
+  let restoreClientMode: CleanupFunction;
+
   beforeEach(() => {
-    setInternalContext(() => undefined as any);
-    resetClientPathState();
+    restoreClientMode = enableClientMode();
     clearHydrationData();
     initRouter("/");
   });
 
   afterEach(() => {
-    // Reset the internal context after each test
-    setInternalContext(() => undefined as any);
+    resetClientPathState();
+    restoreClientMode();
     clearHydrationData();
     vi.restoreAllMocks();
   });
@@ -38,6 +41,7 @@ describe("getCurrentPath", () => {
       currentPath: "/server-path",
     } as RenderContext;
 
+    // const restoreSSRMode = enableSSRMode();
     setInternalContext(() => mockContext);
 
     // Clear cache to ensure we use our mock context
@@ -45,6 +49,7 @@ describe("getCurrentPath", () => {
 
     const path = getCurrentPath();
     expect(path.value).toBe("/server-path");
+    // restoreSSRMode();
   });
 
   it("should isolate paths between different render contexts on server-side", () => {

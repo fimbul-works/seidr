@@ -1,5 +1,6 @@
 import { escapeHTML } from "../../util/html";
 import { renderAttribute, renderDataset, renderStyle } from "./render-utils";
+import type { ServerHTMLElement } from "./server-html-element";
 
 /**
  * Void elements that do not have a closing tag.
@@ -25,16 +26,19 @@ export const VOID_ELEMENTS = new Set([
  * Renders the full element to string.
  */
 export function renderElementToString(
-  tag: string,
-  props: {
-    id?: string;
-    className?: string;
-    style?: any;
-    dataset?: Record<string, any>;
-    attributes?: Record<string, any>;
-    innerHTML?: string;
-  },
+  el: ServerHTMLElement,
+  // tag: string,
+  // props: {
+  //   id?: string;
+  //   className?: string;
+  //   style?: any;
+  //   dataset?: Record<string, any>;
+  //   attributes?: Record<string, any>;
+  //   innerHTML?: string;
+  // },
 ): string {
+  const { tagName: tag, ...props } = el;
+
   const tagName = tag.toLowerCase();
   const attrParts: string[] = [];
 

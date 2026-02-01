@@ -1,8 +1,8 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { $fragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, type SeidrElement, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { uid } from "../util/uid";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -30,10 +30,14 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   factory: (item: T) => C,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = $fragment([], `mount-list:${uid()}`);
-  if ("appendChild" in container) {
-    fragment.appendTo(container as any);
+  // Bind the container to the render context if not already bound
+  const ctx = getRenderContext();
+  if (!ctx.rootNode) {
+    ctx.rootNode = container;
   }
+
+  const fragment = $fragment([], `mount-list:${ctx.ctxID}-:${ctx.idCounter++}`);
+  fragment.appendTo(container as any);
   const componentMap = new Map<I, SeidrComponent>();
 
   const update = (items: T[]) => {

@@ -21,7 +21,7 @@ export type ServerFragment = ServerNodeWithChildElementNodes<NodeTypeDocumentFra
  * @returns The created server fragment
  * @internal
  */
-export function createServerFragment(id: string = uid()): ServerFragment {
+export function createServerDocumentFragment(id: string = uid()): ServerFragment {
   const node = createServerNode(DOCUMENT_FRAGMENT_NODE);
   const fragment = nodeWithParentExtension(nodeWithChildElementNodesExtension(nodeWithChildNodesExtension(node)));
 
@@ -40,13 +40,13 @@ export function createServerFragment(id: string = uid()): ServerFragment {
     },
     insertBefore(node: any, ref: any) {
       if (ref === endNode) {
-        this.appendChild(node);
+        (this as any).appendChild(node);
         return;
       }
       return originalInsertBefore.call(this, node, ref);
     },
     toString() {
-      const childrenStr = this.childNodes.map((child: any) => child.toString()).join("");
+      const childrenStr = (this as any).childNodes.map((child: any) => child.toString()).join("");
       return `<!--s:${this.id}-->${childrenStr}<!--e:${this.id}-->`;
     },
   }) as ServerFragment;

@@ -1,8 +1,8 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { $fragment, type SeidrElement, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, type SeidrElement, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { uid } from "../util/uid";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -26,7 +26,13 @@ export function mountConditional<T extends SeidrNode>(
   factory: () => T,
   container: HTMLElement | SeidrElement,
 ): CleanupFunction {
-  const fragment = $fragment([], `mount-conditional:${uid()}`);
+  // Bind the container to the render context if not already bound
+  const ctx = getRenderContext();
+  if (!ctx.rootNode) {
+    ctx.rootNode = container;
+  }
+
+  const fragment = $fragment([], `mount-conditional:${ctx.ctxID}-:${ctx.idCounter++}`);
   if ("appendChild" in container) {
     fragment.appendTo(container as any);
   }

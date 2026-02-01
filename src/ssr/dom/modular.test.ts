@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createCommentNode, createTextNode } from "./character-data";
+import { createServerCommentNode, createServerTextNode } from "./character-data";
 import { createServerNode } from "./server-node";
 import { ELEMENT_NODE } from "./types";
 import { nodeWithChildElementNodesExtension } from "./with-child-elements";
@@ -10,7 +10,7 @@ import { nodeWithParentExtension } from "./with-parent";
 describe("Modular SSR DOM", () => {
   describe("CharacterData", () => {
     it("should create text nodes", () => {
-      const node = createTextNode("hello");
+      const node = createServerTextNode("hello");
       expect(node.nodeType).toBe(3);
       expect(node.nodeName).toBe("#text");
       expect(node.data).toBe("hello");
@@ -18,7 +18,7 @@ describe("Modular SSR DOM", () => {
     });
 
     it("should create comment nodes", () => {
-      const node = createCommentNode("secret");
+      const node = createServerCommentNode("secret");
       expect(node.nodeType).toBe(8);
       expect(node.nodeName).toBe("#comment");
       expect(node.data).toBe("secret");
@@ -31,7 +31,7 @@ describe("Modular SSR DOM", () => {
       const parent = nodeWithElementPropertiesExtension(
         nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
       );
-      const child = createTextNode("child");
+      const child = createServerTextNode("child");
 
       parent.appendChild(child);
       expect(parent.childNodes).toContain(child);
@@ -43,7 +43,7 @@ describe("Modular SSR DOM", () => {
     it("should move node to new parent", () => {
       const p1 = nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "p1" }));
       const p2 = nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "p2" }));
-      const child = createTextNode("moving");
+      const child = createServerTextNode("moving");
 
       p1.appendChild(child);
       expect(p1.childNodes).toContain(child);
@@ -59,9 +59,9 @@ describe("Modular SSR DOM", () => {
       const parent = nodeWithElementPropertiesExtension(
         nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
       );
-      const c1 = createTextNode("1");
-      const c2 = createTextNode("2");
-      const c3 = createTextNode("3");
+      const c1 = createServerTextNode("1");
+      const c2 = createServerTextNode("2");
+      const c3 = createServerTextNode("3");
 
       parent.appendChild(c1);
       parent.appendChild(c3);

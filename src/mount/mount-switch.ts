@@ -1,8 +1,8 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { $comment, type SeidrElement, type SeidrNode } from "../element";
+import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { uid } from "../util/uid";
 
 /**
  * Switches between different components based on an observable value.
@@ -27,7 +27,13 @@ export function mountSwitch<T extends string = string, C extends SeidrNode = Sei
   container: HTMLElement | SeidrElement,
   defaultCase?: (val: T) => C,
 ): CleanupFunction {
-  const marker = $comment(`seidr-mount-switch:${uid()}`);
+  // Bind the container to the render context if not already bound
+  const ctx = getRenderContext();
+  if (!ctx.rootNode) {
+    ctx.rootNode = container;
+  }
+
+  const marker = $comment(`seidr-mount-switch:${ctx.ctxID}-:${ctx.idCounter++}`);
   container.appendChild(marker);
 
   let currentComponent: SeidrComponent | null = null;

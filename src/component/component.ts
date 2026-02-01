@@ -1,9 +1,7 @@
-import { $comment, $fragment, $text, findMarkers, type SeidrNode } from "../element";
+import { $fragment, $text, findMarkers, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
-import { createServerFragment } from "../ssr/dom/server-fragment";
 import { isHydrating, isSSR } from "../util/env";
-import { isHTMLElement, isNum, isSeidrComponent, isSeidrFragment, isStr } from "../util/type-guards";
-import { uid } from "../util/uid";
+import { isBool, isEmpty, isHTMLElement, isNum, isSeidrComponent, isStr } from "../util/type-guards";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
@@ -50,59 +48,53 @@ export function component<P = void>(
     // Render the component via factory
     try {
       // Call factory with props (or undefined if no props)
-      const result = factory(props as P);
-
-      // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-      const toNode = (item: any): any => {
-        if (isSeidrComponent(item)) return item.element;
-        if (item === null || item === undefined || item === false || item === true) {
-          return $comment("");
-        }
-        if (isStr(item) || isNum(item)) {
-          if (isSSR()) return String(item);
-          return $text(String(item));
-        }
-        if (isSeidrFragment(item)) return item;
-        return item;
-      };
+      let result = factory(props as P);
 
       // Track child SeidrComponents to propagate onAttached
       const childComponents: SeidrComponent[] = [];
 
+      // Helper to normalize SeidrNode to DOM Node (or string in SSR)
+      const toNode = (item: any): any => {
+        if (isEmpty(item) || isBool(item)) {
+          return null;
+        }
+        // Track child component for onAttached propagation
+        if (isSeidrComponent(item)) {
+          childComponents.push(item);
+          return item.element;
+        }
+        if (isStr(item) || isNum(item)) {
+          return $text(item);
+        }
+        return item;
+      };
+
+      // Generate unique ID for this component instance
+      const ctx = getRenderContext();
+      const instanceId = ctx.idCounter++;
+      const id = `ctx-${ctx.ctxID}-${instanceId}`;
+
       // Support for array returns (multiple root nodes)
       if (Array.isArray(result)) {
-        const ctx = getRenderContext();
-        const instanceId = ctx ? ctx.idCounter++ : uid();
-        const id = ctx ? `ctx-${ctx.ctxID}-${instanceId}` : uid();
+        result = $fragment(result.map(toNode), id);
+
         const isSSRNow = isSSR();
 
         if (isSSRNow) {
-          const fragment = createServerFragment(id) as any;
-          result.forEach((item) => {
-            const node = toNode(item);
-            if (isSeidrComponent(item)) {
-              childComponents.push(item);
-            }
-            fragment.appendChild(node);
-          });
-          comp.element = fragment as any;
+          comp.element = result as any;
         } else {
           // Check if hydrating and
           const isHydratingNow = isHydrating();
           let markers: [Comment | null, Comment | null] = [null, null];
           if (isHydratingNow) {
             markers = findMarkers(id);
+            result = $fragment([toNode(result)], id, markers[0] || undefined, markers[1] || undefined);
           }
-          const fragment = $fragment(result as any[], id, markers[0] || undefined, markers[1] || undefined);
-          comp.element = fragment as any;
+          comp.element = result;
         }
       } else {
         // Unwrap SeidrComponents to their elements, or normalize primitives
         comp.element = toNode(result);
-        // Track child component for onAttached propagation
-        if (isSeidrComponent(result)) {
-          childComponents.push(result);
-        }
       }
 
       // Set up destroy method
@@ -111,7 +103,7 @@ export function component<P = void>(
         const el = comp.element as any;
         if (el?.remove) {
           el.remove();
-        } else if (el?.parentNode) {
+        } else if (el?.parentNode?.removeChild) {
           try {
             el.parentNode.removeChild(el);
           } catch (_e) {
@@ -144,7 +136,7 @@ export function component<P = void>(
 
     // Apply root element attributes
     if (isRootComponent && isHTMLElement(comp.element)) {
-      comp.element.dataset.seidrRoot = String(getRenderContext()?.ctxID ?? true);
+      comp.element.dataset.seidrRoot = String(getRenderContext().ctxID);
     }
 
     // Root component must clear out component stack

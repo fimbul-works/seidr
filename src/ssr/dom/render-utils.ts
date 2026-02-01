@@ -1,5 +1,6 @@
-import { unwrapSeidr } from "../../seidr";
+import { type Seidr, unwrapSeidr } from "../../seidr";
 import { escapeHTML } from "../../util/html";
+import { isEmpty, isStr } from "../../util/type-guards";
 
 /**
  * Converts camelCase string to kebab-case.
@@ -31,17 +32,39 @@ export function kebabToCamel(str: string): string {
 /**
  * Renders a style value (string or object) to a semicolon-separated string.
  */
-export function renderStyle(style: any): string {
+export function renderStyle(style: string | Seidr<string> | Record<string, string>): string {
   if (!style) return "";
-  const resolved = unwrapSeidr(style);
+  const resolved = unwrapSeidr<any>(style);
   if (typeof resolved === "string") return resolved.trim();
   if (typeof resolved === "object") {
     return Object.entries(resolved)
-      .filter(([_, v]) => v != null)
-      .map(([k, v]) => `${camelToKebab(k)}:${unwrapSeidr(v)}`)
-      .join(";");
+      .map(([k, v]) => [camelToKebab(k), unwrapSeidr(v)])
+      .filter(([_, v]) => !isEmpty(v))
+      .map(([k, v]) => `${k}:${v}`)
+      .join(";")
+      .replace(/;$/, "");
   }
   return String(resolved);
+}
+
+export function parseStyleString(style: string): Record<string, string> {
+  return style.split(";").reduce(
+    (acc, s) => {
+      const firstColon = s.indexOf(":");
+      if (firstColon === -1) return acc;
+      const k = s.slice(0, firstColon).trim();
+      const v = s.slice(firstColon + 1).trim();
+      if (k && v) acc[k] = v;
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
+}
+
+export function flattenStyleObject(style: Record<string, string | Seidr<string>>): string {
+  const entries = Object.entries(style);
+  if (entries.length === 0) return "";
+  return entries.map(([k, v]) => `${k}:${unwrapSeidr(v)}`).join(";") + ";";
 }
 
 /**

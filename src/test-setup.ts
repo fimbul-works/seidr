@@ -1,4 +1,7 @@
 import { afterEach } from "vitest";
+import { type DOMFactory, getDOMFactory, setInternalDOMFactory } from "./dom-factory";
+import { getDOMFactory as getDOMFactoryBrowser } from "./dom-factory/dom-factory.browser";
+import { getDOMFactory as getDOMFactoryNode } from "./dom-factory/dom-factory.node";
 import { type RenderContext, setInternalContext } from "./render-context";
 import type { CleanupFunction } from "./types";
 
@@ -31,6 +34,7 @@ function testGetRenderContext(): RenderContext {
 }
 
 setInternalContext(testGetRenderContext);
+setInternalDOMFactory(typeof window === "undefined" ? getDOMFactoryNode : getDOMFactoryBrowser);
 
 afterEach(() => {
   // Reset browser context counters for next test
@@ -57,6 +61,7 @@ interface TestEnvironmentState {
   seidrSSR?: string;
   vitest?: boolean;
   window: any;
+  getDOMFactory?: () => DOMFactory;
 }
 
 export function enableSSRMode(): CleanupFunction {
@@ -64,8 +69,10 @@ export function enableSSRMode(): CleanupFunction {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
     window: (global as any).window,
+    getDOMFactory: getDOMFactory,
   };
   process.env.SEIDR_TEST_SSR = "true";
+  setInternalDOMFactory(getDOMFactoryNode);
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
@@ -73,6 +80,7 @@ export function enableSSRMode(): CleanupFunction {
     else delete (process.env as any).VITEST;
     if (currentState.window !== undefined) (global as any).window = currentState.window;
     setInternalContext(testGetRenderContext);
+    if (currentState.getDOMFactory !== undefined) setInternalDOMFactory(currentState.getDOMFactory);
   };
 }
 
@@ -81,6 +89,7 @@ export function enableClientMode(): CleanupFunction {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
     window: (global as any).window,
+    getDOMFactory: getDOMFactory,
   };
   delete process.env.SEIDR_TEST_SSR;
   delete (process.env as any).VITEST;
@@ -90,6 +99,7 @@ export function enableClientMode(): CleanupFunction {
   }
 
   setInternalContext(testGetRenderContext);
+  setInternalDOMFactory(getDOMFactoryBrowser);
 
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
@@ -97,5 +107,6 @@ export function enableClientMode(): CleanupFunction {
     if (currentState.vitest !== undefined) (process.env as any).VITEST = currentState.vitest;
     else delete (process.env as any).VITEST;
     if (currentState.window !== undefined) (global as any).window = currentState.window;
+    if (currentState.getDOMFactory !== undefined) setInternalDOMFactory(currentState.getDOMFactory);
   };
 }

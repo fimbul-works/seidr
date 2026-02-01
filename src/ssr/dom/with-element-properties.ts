@@ -49,11 +49,7 @@ export function nodeWithElementPropertiesExtension<
       configurable: true,
       writable: true,
       value: function (this: N & ServerElementPropertiesExtension) {
-        return renderElementToString(this.tagName, {
-          id: this.id,
-          className: this.className,
-          innerHTML: this.innerHTML,
-        });
+        return renderElementToString(this);
       },
     },
   };

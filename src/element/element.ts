@@ -1,9 +1,20 @@
 import type { SeidrComponent } from "../component";
+import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
-import { camelToKebab, createCommentNode, createServerHTMLElement, createTextNode } from "../ssr/dom";
+import { camelToKebab } from "../ssr/dom";
 import type { CleanupFunction } from "../types";
-import { isFn, isSeidr, isSeidrComponent, isSeidrFragment, isStr, isUndefined } from "../util/type-guards";
+import {
+  isBool,
+  isEmpty,
+  isFn,
+  isNum,
+  isSeidr,
+  isSeidrComponent,
+  isSeidrFragment,
+  isStr,
+  isUndefined,
+} from "../util/type-guards";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
 
 /**
@@ -27,6 +38,8 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   props?: SeidrElementProps<K>,
   children?: (SeidrNode | (() => SeidrNode))[],
 ): SeidrElement<K> {
+  const domFactory = getDOMFactory();
+
   // Helper function to check props for a Seidr instance
   const hasSeidrBindings = () => {
     // No props passed
@@ -62,7 +75,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
 
   // Handle SSR element
   if (isServerSide) {
-    const el = createServerHTMLElement(tagName, {});
+    const el = domFactory.createElement(tagName);
     let cleanups: CleanupFunction[] = [];
 
     // Properties that should be set directly on the element
@@ -112,6 +125,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
             }
           }
         }
+
         if (prop === "style") {
           // CSS style string
           if (isStr(value)) {
@@ -152,7 +166,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           );
         } else {
           if (useAttribute) {
-            el.setAttribute(effectiveProp, value);
+            el.setAttribute(effectiveProp, value as string);
           } else {
             target[effectiveProp] = value;
           }
@@ -166,11 +180,11 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         const item = unwrapSeidr(isFn(child) ? (child as any)() : child);
 
         // Skip null/undefined/false
-        if (item === null || item === undefined || item === false || item === true) return;
+        if (isEmpty(item) || isBool(item)) return;
 
         const node = (isSeidrComponent(item) ? item.element : item) as any;
-        if (typeof node === "number") {
-          el.appendChild(String(node));
+        if (isNum(node)) {
+          el.appendChild($text(node));
         } else {
           if (isSeidrFragment(node)) {
             // Use appendTo to handle fragment logic (moving markers and nodes)
@@ -207,7 +221,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
   }
 
   // Create a new HTMLElement if not found
-  const el = document.createElement(tagName);
+  const el = domFactory.createElement(tagName);
   let cleanups: CleanupFunction[] = [];
   if (typeof process !== "undefined" && typeof elementId !== "undefined") {
     el.dataset[SEIDR_ID_CAME_CASE] = elementId;
@@ -334,7 +348,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           const item = isFn(val) ? val() : val;
 
           // Skip if null/undefined/boolean
-          if (item === null || item === undefined || item === false || item === true) return;
+          if (isEmpty(item) || isBool(item)) return;
 
           let newNode: Node;
           if (isSeidrFragment(item)) {
@@ -351,9 +365,11 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
           } else if (isSeidrComponent(item)) {
             newNode = item.element as Node;
             currentComponent = item;
-            if (item.scope.onAttached) item.scope.onAttached(el);
-          } else if (isStr(item) || typeof item === "number") {
-            newNode = $text(String(item));
+            if (item.scope.onAttached) {
+              item.scope.onAttached(el);
+            }
+          } else if (isStr(item) || isNum(item)) {
+            newNode = $text(item);
           } else {
             newNode = item as Node;
           }
@@ -374,7 +390,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
       // Handle static child
       const item = initialItem;
       // Skip null/undefined/boolean static children
-      if (item === null || item === undefined || item === false || item === true) return;
+      if (isEmpty(item) || isBool(item)) return;
 
       if (isSeidrFragment(item)) {
         item.appendTo(el);
@@ -387,7 +403,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
         }
         if (item.scope.onAttached) item.scope.onAttached(el);
       } else {
-        el.appendChild(isStr(item) || typeof item === "number" ? $text(String(item)) : (item as Node));
+        el.appendChild(isStr(item) || isNum(item) ? $text(item) : (item as Node));
       }
     });
   }
@@ -401,10 +417,8 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
  * @returns {Text} DOM Text node
  */
 export const $text = (text: unknown): Text => {
-  if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
-    return createTextNode(String(text)) as Text;
-  }
-  return document.createTextNode(String(text));
+  const domFactory = getDOMFactory();
+  return domFactory.createTextNode(String(text));
 };
 
 /**
@@ -413,8 +427,6 @@ export const $text = (text: unknown): Text => {
  * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
-  if (typeof window === "undefined" || (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)) {
-    return createCommentNode(text) as Comment;
-  }
-  return document.createComment(text);
+  const domFactory = getDOMFactory();
+  return domFactory.createComment(text);
 };
