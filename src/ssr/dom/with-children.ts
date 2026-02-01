@@ -1,13 +1,6 @@
 import { isDocumentFragment, isHTMLElement, isObj } from "../../util/type-guards";
 import { createServerTextNode } from "./character-data";
-import {
-  type BaseServerNodeInterface,
-  DOCUMENT_FRAGMENT_NODE,
-  ELEMENT_NODE,
-  type NodeTypeWithChildNodes,
-  SET_PARENT,
-  type ServerNodeType,
-} from "./types";
+import type { BaseServerNodeInterface, NodeTypeWithChildNodes, ServerNodeType } from "./types";
 import type { ServerNodeWithParent } from "./with-parent";
 
 /**
@@ -148,10 +141,10 @@ export function nodeWithChildrenExtension<
       }
       _internalChildNodes.push(n);
 
-      if (n[SET_PARENT]) {
+      if ("parent" in n) {
         const potentialParent = "nodeType" in node ? node : (node as any).parentNode;
         if (potentialParent) {
-          n[SET_PARENT](potentialParent as any);
+          n.parent = potentialParent as any;
         }
       }
     },
@@ -173,8 +166,8 @@ export function nodeWithChildrenExtension<
       const idx = _internalChildNodes.indexOf(child);
       if (idx >= 0) {
         _internalChildNodes.splice(idx, 1);
-        if (child[SET_PARENT]) {
-          child[SET_PARENT](null);
+        if ("parent" in child) {
+          child.parent = null;
         }
       }
     },
@@ -234,10 +227,10 @@ export function nodeWithChildrenExtension<
       }
 
       _internalChildNodes.splice(idx, 0, n);
-      if (n[SET_PARENT]) {
+      if ("parent" in n) {
         const potentialParent = "nodeType" in node ? node : (node as any).parentNode;
         if (potentialParent) {
-          n[SET_PARENT](potentialParent as any);
+          n.parent = potentialParent as any;
         }
       }
     },

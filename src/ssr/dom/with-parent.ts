@@ -4,15 +4,14 @@ import {
   DOCUMENT_FRAGMENT_NODE,
   ELEMENT_NODE,
   type NodeTypeWithChildNodes,
-  SET_PARENT,
   type SupportedNodeTypes,
 } from "./types";
 import type { ServerNodeWithChildren } from "./with-children";
 
 export interface ServerNodeWithParent<T extends SupportedNodeTypes = SupportedNodeTypes>
   extends BaseServerNodeInterface<T> {
+  parent: ServerNodeWithChildren<NodeTypeWithChildNodes> | null;
   readonly parentNode: ServerNodeWithChildren<NodeTypeWithChildNodes> | null;
-  [SET_PARENT](newParent: ServerNodeWithChildren<NodeTypeWithChildNodes> | null): void;
   readonly parentElement: ServerHTMLElement | null;
   readonly nextSibling: ServerNodeWithParent | null;
   readonly previousSibling: ServerNodeWithParent | null;
@@ -32,10 +31,10 @@ export function nodeWithParentExtension<
   let _parent: ServerNodeWithChildren | null = null;
 
   const ext = {
-    get parentNode(): ServerNodeWithChildren | null {
+    get parent(): ServerNodeWithChildren<NodeTypeWithChildNodes> | null {
       return _parent;
     },
-    [SET_PARENT](newParent: ServerNodeWithChildren | null) {
+    set parent(newParent: ServerNodeWithChildren<NodeTypeWithChildNodes> | null) {
       // Do nothing when the parent is the same
       if (newParent === _parent) return;
 
@@ -61,6 +60,9 @@ export function nodeWithParentExtension<
           _parent.appendChild(node as any);
         }
       }
+    },
+    get parentNode(): ServerNodeWithChildren | null {
+      return _parent;
     },
     get parentElement() {
       // Return parent if it is an element

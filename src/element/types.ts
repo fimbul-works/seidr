@@ -212,9 +212,9 @@ export interface SeidrFragment extends DocumentFragment {
   readonly id: string;
   readonly start: Comment;
   readonly end: Comment;
-  readonly parentNode: Element | null;
+  readonly parent: Element | DocumentFragment | null;
   readonly nodes: Node[];
   remove(): void;
   clear(): void;
-  appendTo(parent: Element): void;
+  appendTo(parent: Element | DocumentFragment): void;
 }

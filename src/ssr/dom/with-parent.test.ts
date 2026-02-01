@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createServerNode } from "./server-node";
-import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, SET_PARENT, TEXT_NODE } from "./types";
+import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE } from "./types";
 import { nodeWithChildrenExtension } from "./with-children";
 import { nodeWithParentExtension } from "./with-parent";
 
@@ -88,25 +88,25 @@ describe("nodeWithParentExtension", () => {
     const child = createChild();
 
     expect(() => {
-      child[SET_PARENT](textNode as any);
+      child.parent = textNode as any;
     }).toThrow("Parent node must be an element or a document fragment");
   });
 
-  it("should handle parentNode assignment via SET_PARENT", () => {
+  it("should handle parentNode assignment via parent", () => {
     const p1 = createParent("p1");
     const p2 = createParent("p2");
     const child = createChild();
 
-    child[SET_PARENT](p1 as any);
+    child.parent = p1;
     expect(p1.childNodes).toContain(child);
     expect(child.parentNode).toBe(p1);
 
-    child[SET_PARENT](p2 as any);
+    child.parent = p2;
     expect(p1.childNodes).not.toContain(child);
     expect(p2.childNodes).toContain(child);
     expect(child.parentNode).toBe(p2);
 
-    child[SET_PARENT](null);
+    child.parent = null;
     expect(p2.childNodes).not.toContain(child);
     expect(child.parentNode).toBe(null);
   });
