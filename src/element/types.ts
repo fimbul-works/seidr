@@ -49,6 +49,17 @@ type NoStyle<T> = Omit<T, "style">;
 type FlexibleCSSStyleDeclaration = Partial<CSSStyleDeclaration>;
 
 /**
+ * A stricter CamelCase check for the Index Signature.
+ */
+export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
+  ? false
+  : S extends `${infer First}${string}`
+    ? First extends Lowercase<First>
+      ? true
+      : false
+    : false;
+
+/**
  * Union type representing either a scalar value or a reactive Seidr observable.
  *
  * This type enables automatic reactive binding - if a property receives a Seidr
@@ -90,6 +101,13 @@ export type ReactiveARIAMixin = {
 };
 
 /**
+ * Type definition for reactive aria-* attributes.
+ */
+export type ReactiveARIAKebabCase = {
+  [K in `aria-${string}`]?: ReactiveValue<string>;
+};
+
+/**
  * Type definition for reactive CSS style properties.
  */
 export type ReactiveCSSStyleDeclaration = {
@@ -97,10 +115,19 @@ export type ReactiveCSSStyleDeclaration = {
 };
 
 /**
- * Type definition for reactive data-* and aria-* attributes.
+ * Type definition for reactive data-* attributes.
  */
-export type ReactiveDataOrARIAMixin = {
-  [K in `${"data" | "aria"}-${string}`]?: ReactiveValue<string>;
+export type ReactiveDataKebabCase = {
+  [K in `data-${string}`]?: ReactiveValue<string>;
+};
+
+/**
+ * Reactive camelCase props type.
+ * It uses a "Template Literal Index Signature" to allow any
+ * valid-looking camelCase key dynamically.
+ */
+export type ReactiveCamelCaseProps = {
+  [K in string]: IsCamelCase<K> extends true ? ReactiveValue<string> : never;
 };
 
 /**
@@ -109,7 +136,7 @@ export type ReactiveDataOrARIAMixin = {
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  */
 export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = Partial<
-  ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveDataOrARIAMixin
+  ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveARIAKebabCase & ReactiveDataKebabCase
 > & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string> };
 
 /**

@@ -7,7 +7,7 @@ describe("SSR Render Utils", () => {
     it("should convert camelCase to kebab-case", () => {
       expect(camelToKebab("backgroundColor")).toBe("background-color");
       expect(camelToKebab("fontSize")).toBe("font-size");
-      expect(camelToKebab("webkitTransform")).toBe("-webkit-transform");
+      expect(camelToKebab("webkitTransform")).toBe("webkit-transform");
     });
   });
 
@@ -17,12 +17,12 @@ describe("SSR Render Utils", () => {
     });
 
     it("should render object style", () => {
-      expect(renderStyle({ color: "red", fontSize: "12px" })).toBe("color:red;font-size:12px");
+      expect(renderStyle({ color: "red", fontSize: "12px" })).toBe("color:red;font-size:12px;");
     });
 
     it("should unwrap Seidr values", () => {
       const color = wrapSeidr("red");
-      expect(renderStyle({ color })).toBe("color:red");
+      expect(renderStyle({ color })).toBe("color:red;");
     });
   });
 

@@ -47,6 +47,10 @@
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
   - [`random()`](#random)
+  - [`camelToKebab()`](#cameltokebab)
+  - [`kebabToCamel()`](#kebabtocamel)
+  - [`isCamelCase()`](#iscamelcase)
+  - [`isKebabCase()`](#iskebabcase)
   - [`wrapError()`](#wraperror)
   - [Query Functions](#query-functions)
 - [Type Guards](#type-guards)
@@ -1324,6 +1328,80 @@ import { random } from '@fimbul-works/seidr';
 
 // This value will be the same on server and client during hydration
 const initialRotation = random() * 360;
+```
+
+---
+
+### camelToKebab()
+
+Converts a camelCase string to kebab-case.
+
+**Parameters:**
+- `str` - The string to convert
+
+**Returns:** Kebab-case version of the input string
+
+```typescript
+import { camelToKebab } from '@fimbul-works/seidr';
+
+console.log(camelToKebab('backgroundColor')); // "background-color"
+```
+
+---
+
+### kebabToCamel()
+
+Converts a kebab-case string to camelCase.
+
+**Parameters:**
+- `str` - The string to convert
+
+**Returns:** CamelCase version of the input string
+
+```typescript
+import { kebabToCamel } from '@fimbul-works/seidr';
+
+console.log(kebabToCamel('background-color')); // "backgroundColor"
+```
+
+---
+
+### isCamelCase()
+
+Checks if a string is in valid camelCase. A single lowercase word is considered valid.
+
+**Parameters:**
+- `str` - The string to test
+
+**Returns:** `boolean`
+
+```typescript
+import { isCamelCase } from '@fimbul-works/seidr';
+
+console.log(isCamelCase('fooBar'));     // true
+console.log(isCamelCase('foo'));        // true
+console.log(isCamelCase('foo-bar'));    // false
+console.log(isCamelCase('FooBar'));     // false
+```
+
+---
+
+### isKebabCase()
+
+Checks if a string is in valid kebab-case. A single lowercase word is considered valid.
+
+**Parameters:**
+- `str` - The string to test
+
+**Returns:** `boolean`
+
+```typescript
+import { isKebabCase } from '@fimbul-works/seidr';
+
+console.log(isKebabCase('foo-bar'));    // true
+console.log(isKebabCase('foo'));        // true
+console.log(isKebabCase('fooBar'));     // false
+console.log(isKebabCase('foo--bar'));   // false
 ```
 
 ---

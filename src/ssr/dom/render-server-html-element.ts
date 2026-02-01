@@ -1,5 +1,5 @@
 import { escapeHTML } from "../../util/html";
-import { renderAttribute, renderDataset, renderStyle } from "./render-utils";
+import { camelToKebab, renderAttribute, renderDataset, renderStyle } from "./render-utils";
 import type { ServerHTMLElement } from "./server-html-element";
 
 /**
@@ -25,48 +25,39 @@ export const VOID_ELEMENTS = new Set([
 /**
  * Renders the full element to string.
  */
-export function renderElementToString(
-  el: ServerHTMLElement,
-  // tag: string,
-  // props: {
-  //   id?: string;
-  //   className?: string;
-  //   style?: any;
-  //   dataset?: Record<string, any>;
-  //   attributes?: Record<string, any>;
-  //   innerHTML?: string;
-  // },
-): string {
-  const { tagName: tag, ...props } = el;
-
-  const tagName = tag.toLowerCase();
+export function renderElementToString(el: ServerHTMLElement): string {
+  const tagName = el.tagName.toLowerCase();
   const attrParts: string[] = [];
 
-  // 1. Core attributes
-  const idAttr = props.id ? `id="${escapeHTML(props.id)}"` : null;
-  if (idAttr) attrParts.push(idAttr);
+  const attributesProxy = (el as any).attributes;
+  if (attributesProxy && typeof attributesProxy.toString === "function") {
+    const attrs = attributesProxy.toString();
+    if (attrs) attrParts.push(attrs);
+  } else {
+    // Fallback for modular nodes or nodes without a CaseProxy
+    if (el.id) {
+      const idAttr = renderAttribute("id", el.id);
+      if (idAttr) attrParts.push(idAttr);
+    }
+    if (el.className) {
+      const classAttr = renderAttribute("className", el.className);
+      if (classAttr) attrParts.push(classAttr);
+    }
+    const styleStr = renderStyle((el as any).style);
+    if (styleStr) attrParts.push(`style="${styleStr}"`);
 
-  const classAttr = props.className ? `class="${escapeHTML(props.className)}"` : null;
-  if (classAttr) attrParts.push(classAttr);
+    if ((el as any).dataset) {
+      attrParts.push(...renderDataset((el as any).dataset));
+    }
 
-  const styleStr = renderStyle(props.style);
-  const styleAttr = styleStr ? `style="${styleStr}"` : null;
-  if (styleAttr) attrParts.push(styleAttr);
-
-  // 2. Dataset
-  if (props.dataset) {
-    attrParts.push(...renderDataset(props.dataset));
-  }
-
-  // 3. Other attributes
-  if (props.attributes) {
-    for (const [name, value] of Object.entries(props.attributes)) {
-      if (["id", "class", "className", "style"].includes(name)) continue;
-      // Skip data attributes as they are handled by props.dataset
-      if (props.dataset && name.startsWith("data-")) continue;
-
-      const attr = renderAttribute(name, value);
-      if (attr) attrParts.push(attr);
+    // Other common attributes that might be directly on the node
+    const common = ["href", "src", "type", "value", "name", "title", "placeholder"];
+    for (const key of common) {
+      const val = (el as any)[key];
+      if (val !== undefined && val !== null) {
+        const attr = renderAttribute(key, val);
+        if (attr) attrParts.push(attr);
+      }
     }
   }
 
@@ -76,7 +67,7 @@ export function renderElementToString(
     return `<${tagName}${attrs} />`;
   }
 
-  return `<${tagName}${attrs}>${props.innerHTML || ""}</${tagName}>`;
+  return `<${tagName}${attrs}>${el.innerHTML || ""}</${tagName}>`;
 }
 
 /**

@@ -1,33 +1,9 @@
 import { type Seidr, unwrapSeidr } from "../../seidr";
 import { escapeHTML } from "../../util/html";
-import { isEmpty, isStr } from "../../util/type-guards";
+import { camelToKebab, kebabToCamel } from "../../util/string";
+import { isEmpty } from "../../util/type-guards";
 
-/**
- * Converts camelCase string to kebab-case.
- */
-export function camelToKebab(str: string): string {
-  if (str.startsWith("data") && str.length > 4 && str[4] === str[4].toUpperCase()) {
-    return (
-      "data-" +
-      str
-        .slice(4)
-        .replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)
-        .replace(/^-/, "")
-    );
-  }
-  const kebab = str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-  if (kebab.startsWith("webkit-") || kebab.startsWith("moz-") || kebab.startsWith("ms-")) {
-    return "-" + kebab;
-  }
-  return kebab;
-}
-
-/**
- * Converts kebab-case string to camelCase.
- */
-export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-}
+export { camelToKebab, kebabToCamel };
 
 /**
  * Renders a style value (string or object) to a semicolon-separated string.
@@ -37,12 +13,13 @@ export function renderStyle(style: string | Seidr<string> | Record<string, strin
   const resolved = unwrapSeidr<any>(style);
   if (typeof resolved === "string") return resolved.trim();
   if (typeof resolved === "object") {
-    return Object.entries(resolved)
-      .map(([k, v]) => [camelToKebab(k), unwrapSeidr(v)])
-      .filter(([_, v]) => !isEmpty(v))
-      .map(([k, v]) => `${k}:${v}`)
-      .join(";")
-      .replace(/;$/, "");
+    return (
+      Object.entries(resolved)
+        .map(([k, v]) => [camelToKebab(k), unwrapSeidr(v)])
+        .filter(([_, v]) => !isEmpty(v))
+        .map(([k, v]) => `${k}:${v}`)
+        .join(";") + (Object.keys(resolved).length > 0 ? ";" : "")
+    );
   }
   return String(resolved);
 }

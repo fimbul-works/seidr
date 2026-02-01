@@ -15,11 +15,7 @@ export const DOCUMENT_FRAGMENT_NODE = 11;
 export type NodeTypeDocumentFragment = typeof DOCUMENT_FRAGMENT_NODE;
 
 /** Suppoted DOM node types for SSR */
-export type SupportedNodeTypes =
-  | NodeTypeElement
-  | NodeTypeText
-  | NodeTypeComment
-  | NodeTypeDocumentFragment
+export type SupportedNodeTypes = NodeTypeElement | NodeTypeText | NodeTypeComment | NodeTypeDocumentFragment;
 
 /** node has child nodes */
 export type NodeTypeWithChildNodes = NodeTypeElement | NodeTypeDocumentFragment;

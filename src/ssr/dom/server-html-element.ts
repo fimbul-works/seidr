@@ -1,7 +1,12 @@
 import { unwrapSeidr } from "../../seidr";
+import { escapeHTML } from "../../util/html";
+import { createAriaProxy } from "./aria-proxy";
+import { createCaseProxy } from "./case-proxy";
+import { createDatasetProxy } from "./dataset-proxy";
 import { renderElementToString } from "./render-server-html-element";
 import { camelToKebab, kebabToCamel } from "./render-utils";
 import { createServerNode } from "./server-node";
+import { createStyleProxy } from "./style-proxy";
 import { ELEMENT_NODE, type NodeTypeElement, type ServerNodeType } from "./types";
 import { nodeWithChildElementNodesExtension, type ServerNodeWithChildElementNodes } from "./with-child-elements";
 import { nodeWithChildNodesExtension } from "./with-child-nodes";
@@ -52,108 +57,21 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
   }
 
   const _attributes: Record<string, any> = {};
-  const _styleObj: Record<string, string> = {};
+  const styleProxyObj: any = createStyleProxy({
+    onUpdate: () => {
+      _attributes["style"] = styleProxyObj.toString();
+    },
+  });
+  const { proxy: styleProxy, fromString: parseStyle } = styleProxyObj;
+
+  const { proxy: datasetProxy } = createDatasetProxy(_attributes);
+  const { proxy: ariaProxy } = createAriaProxy(_attributes);
+  const { proxy: attributesProxy } = createCaseProxy({
+    storage: _attributes,
+    escapeKeyValue: (key, val) => (key === "style" ? String(val) : escapeHTML(String(val))),
+  });
+
   const originalRemove = (base as any).remove;
-
-  const parseStyle = (style: string): Record<string, string> => {
-    // Clear existing
-    for (const k in _styleObj) delete _styleObj[k];
-    return style.split(";").reduce(
-      (acc, s) => {
-        const firstColon = s.indexOf(":");
-        if (firstColon === -1) return acc;
-        const k = s.slice(0, firstColon).trim();
-        const v = s.slice(firstColon + 1).trim();
-        if (k && v) acc[k] = v;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  };
-
-  const flattenStyle = (): string => {
-    const entries = Object.entries(_styleObj);
-    if (entries.length === 0) return "";
-    return entries.map(([k, v]) => `${k}:${v}`).join(";") + ";";
-  };
-
-  const syncStyle = () => {
-    _attributes["style"] = flattenStyle();
-  };
-
-  const styleProxy = new Proxy(_styleObj, {
-    get(target, prop) {
-      if (prop === "setProperty") {
-        return (p: string, v: string) => {
-          target[camelToKebab(p)] = String(v);
-          syncStyle();
-        };
-      }
-      if (prop === "getPropertyValue") {
-        return (p: string) => target[camelToKebab(p)] || "";
-      }
-      if (prop === "removeProperty") {
-        return (p: string) => {
-          delete target[camelToKebab(p)];
-          syncStyle();
-        };
-      }
-      if (prop === "toString") {
-        return () => flattenStyle();
-      }
-      if (typeof prop === "string") {
-        return target[camelToKebab(prop)];
-      }
-      return undefined;
-    },
-    set(target, prop, value) {
-      if (typeof prop === "string") {
-        target[camelToKebab(prop)] = String(value);
-        syncStyle();
-        return true;
-      }
-      return false;
-    },
-    ownKeys(target) {
-      return Object.keys(target).map((k) => kebabToCamel(k));
-    },
-    getOwnPropertyDescriptor(target, prop) {
-      if (typeof prop === "string") {
-        const kebab = camelToKebab(prop);
-        if (kebab in target) {
-          return { enumerable: true, configurable: true, value: target[kebab] };
-        }
-      }
-      return undefined;
-    },
-  });
-
-  const datasetProxy = new Proxy(_attributes, {
-    get(target, prop) {
-      if (typeof prop !== "string") return undefined;
-      const attrName = "data-" + camelToKebab(prop).replace(/^data-/, "");
-      return target[attrName];
-    },
-    set(target, prop, value) {
-      if (typeof prop !== "string") return false;
-      const attrName = "data-" + camelToKebab(prop).replace(/^data-/, "");
-      target[attrName] = value;
-      return true;
-    },
-    ownKeys(target) {
-      return Object.keys(target)
-        .filter((k) => k.startsWith("data-"))
-        .map((k) => kebabToCamel(k.slice(5)));
-    },
-    getOwnPropertyDescriptor(target, prop) {
-      if (typeof prop !== "string") return undefined;
-      const attrName = "data-" + camelToKebab(prop).replace(/^data-/, "");
-      if (attrName in target) {
-        return { enumerable: true, configurable: true, value: target[attrName] };
-      }
-      return undefined;
-    },
-  });
 
   const elementProperties = {
     isSeidrElement: { value: true, enumerable: true },
@@ -178,6 +96,7 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
       enumerable: true,
       configurable: true,
     },
+    attributes: { value: attributesProxy, enumerable: true },
     getAttribute: { value: (name: string) => _attributes[name] ?? null, enumerable: true },
     setAttribute: {
       value: function (name: string, value: any) {
@@ -189,13 +108,9 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
           _attributes["id"] = newId;
           ServerElementMap.set(newId, this);
         } else if (name === "style") {
-          const val = String(resolved);
-          parseStyle(val);
-          _attributes["style"] = val;
+          parseStyle(String(resolved));
         } else if (name === "class" || name === "className") {
-          const val = String(resolved);
-          _attributes["class"] = val;
-          _attributes["className"] = val;
+          _attributes["class"] = String(resolved);
         } else {
           _attributes[name] = resolved;
         }
@@ -209,11 +124,9 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
           if (oldId) ServerElementMap.delete(oldId);
           delete _attributes["id"];
         } else if (name === "style") {
-          for (const k in _styleObj) delete _styleObj[k];
-          delete _attributes["style"];
+          parseStyle("");
         } else if (name === "class" || name === "className") {
           delete _attributes["class"];
-          delete _attributes["className"];
         } else {
           delete _attributes[name];
         }
@@ -241,13 +154,11 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
         const resolved = unwrapSeidr(v);
         if (typeof resolved === "string") {
           parseStyle(resolved);
-          _attributes["style"] = resolved;
         } else if (typeof resolved === "object" && resolved !== null) {
-          for (const k in _styleObj) delete _styleObj[k];
+          parseStyle(""); // clear first
           for (const [k, val] of Object.entries(resolved)) {
-            _styleObj[camelToKebab(k)] = String(unwrapSeidr(val));
+            (styleProxy as any)[k] = val;
           }
-          syncStyle();
         }
       },
     },
@@ -342,13 +253,12 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
   }
 
   for (const prop of ariaProps) {
-    const attrName = camelToKebab(prop);
     Object.defineProperty(element, prop, {
       get() {
-        return this.getAttribute(attrName);
+        return (ariaProxy as any)[prop];
       },
       set(v) {
-        this.setAttribute(attrName, v);
+        (ariaProxy as any)[prop] = v;
       },
       enumerable: true,
       configurable: true,

@@ -2,10 +2,11 @@ import { describe, expect, it } from "vitest";
 import { setRenderContextID } from "../render-context/render-context.browser";
 import { resetIdCounter, runWithRenderContext } from "../render-context/render-context.node";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { random } from "./random";
 
 describe("random", () => {
-  let cleanup: () => void;
+  let cleanup: CleanupFunction;
 
   it("should return a number between 0 and 1", () => {
     cleanup = enableClientMode();
