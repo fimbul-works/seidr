@@ -1,6 +1,7 @@
 import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
-import { createServerDocumentFragment } from "../ssr";
+import { createServerDocumentFragment } from "../ssr/dom/server-fragment";
+import { nodeWithChildrenExtension } from "../ssr/dom/with-children";
 import { isHydrating } from "../ssr/env";
 import type { SeidrFragment } from "./types";
 
@@ -52,42 +53,34 @@ export function findMarkers(id: string, root: Node = document.documentElement): 
 export function $fragment(children: Node[] = [], id?: string, start?: Comment, end?: Comment): SeidrFragment {
   // Actual deterministic ID logic
   const ctx = getRenderContext();
-  id = `f-${ctx.idCounter++}`;
+  const finalId = id || `f-${ctx.idCounter++}`;
   const domFactory = getDOMFactory();
 
-  const s = start || domFactory.createComment(`s:${id}`);
-  const e = end || domFactory.createComment(`e:${id}`);
+  const s = start || domFactory.createComment(`s:${finalId}`);
+  const e = end || domFactory.createComment(`e:${finalId}`);
 
   const isProd = typeof process !== "undefined" && process.env.NODE_ENV === "production";
 
   // Use DocumentFragment for efficient initial assembly if creating from scratch
-  const df = typeof window !== "undefined" ? domFactory.createDocumentFragment() : createServerDocumentFragment(id);
-  df.appendChild(s);
-  children.forEach((child) => child && df.appendChild(child));
-  df.appendChild(e);
+  const df =
+    typeof window !== "undefined" ? domFactory.createDocumentFragment() : createServerDocumentFragment(finalId);
 
   // Seidr-specific fragment state and methods
   let lastParent = s.parentNode;
   let nextAnchor = e.nextSibling;
-  const _nodes: Node[] = [];
-
-  // Initial children
-  if (children.length > 0) {
-    df.append(...children);
-  }
 
   const extension = {
     get isSeidrFragment() {
       return true;
     },
-    id: id,
+    id: finalId,
     start: s,
     end: e,
     get parentNode(): Node | null {
       return s.parentNode || lastParent;
     },
     get nodes(): Node[] {
-      return [...df.childNodes] as Node[];
+      return (this as any).childNodes;
     },
     appendTo(parent: Element) {
       lastParent = parent;
@@ -117,9 +110,28 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
           node.parentNode?.removeChild(node);
         }
       }
-      if (isProd) _nodes.length = 0;
+    },
+    toString(): string {
+      const nodes = (this as any).nodes;
+      const content = nodes
+        .map((n: any) => {
+          if (n.nodeType === 1) return n.outerHTML ?? (n.toString ? n.toString() : "");
+          if (n.nodeType === 3) return n.nodeValue ?? "";
+          if (n.nodeType === 8) return `<!--${n.nodeValue}-->`;
+          if (n.toString && n.toString().indexOf("[object") === -1) {
+            return n.toString();
+          }
+          return String(n);
+        })
+        .join("");
+      return `<!--s:${finalId}-->${content}<!--e:${finalId}-->`;
     },
   };
+
+  nodeWithChildrenExtension(extension as any);
+
+  // Initial children are added to extension (range aware)
+  children.forEach((child) => child && (extension as any).appendChild(child));
 
   /*
   const extension = {

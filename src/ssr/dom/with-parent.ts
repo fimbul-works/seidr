@@ -4,13 +4,15 @@ import {
   DOCUMENT_FRAGMENT_NODE,
   ELEMENT_NODE,
   type NodeTypeWithChildNodes,
+  SET_PARENT,
   type SupportedNodeTypes,
 } from "./types";
-import type { ServerNodeWithChildNodes } from "./with-child-nodes";
+import type { ServerNodeWithChildren } from "./with-children";
 
 export interface ServerNodeWithParent<T extends SupportedNodeTypes = SupportedNodeTypes>
   extends BaseServerNodeInterface<T> {
-  parentNode: ServerNodeWithChildNodes<NodeTypeWithChildNodes> | null;
+  readonly parentNode: ServerNodeWithChildren<NodeTypeWithChildNodes> | null;
+  [SET_PARENT](newParent: ServerNodeWithChildren<NodeTypeWithChildNodes> | null): void;
   readonly parentElement: ServerHTMLElement | null;
   readonly nextSibling: ServerNodeWithParent | null;
   readonly previousSibling: ServerNodeWithParent | null;
@@ -22,18 +24,18 @@ export function nodeWithParentExtension<
 >(
   node: T,
   options: {
-    onAttached?: (parent: ServerNodeWithChildNodes) => void;
-    onRemove?: (parent: ServerNodeWithChildNodes) => void;
+    onAttached?: (parent: ServerNodeWithChildren) => void;
+    onRemove?: (parent: ServerNodeWithChildren) => void;
   } = {},
 ): T & ServerNodeWithParent<T["nodeType"]> {
   const { onAttached, onRemove } = options;
-  let _parent: ServerNodeWithChildNodes | null = null;
+  let _parent: ServerNodeWithChildren | null = null;
 
   const ext = {
-    get parentNode(): ServerNodeWithChildNodes | null {
+    get parentNode(): ServerNodeWithChildren | null {
       return _parent;
     },
-    set parentNode(newParent: ServerNodeWithChildNodes | null) {
+    [SET_PARENT](newParent: ServerNodeWithChildren | null) {
       // Do nothing when the parent is the same
       if (newParent === _parent) return;
 

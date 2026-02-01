@@ -100,3 +100,16 @@ export function createServerCommentNode(text: string): ServerCommentNode {
   );
   return nodeWithParentExtension(commentNode);
 }
+/**
+ * Creates a server-side raw HTML node.
+ * This node will not be escaped when rendered to string.
+ * @param html - The raw HTML content
+ * @returns The created node
+ */
+export function createServerRawHTMLNode(html: string): ServerTextNode {
+  const textNode = createServerNode<NodeTypeText, ServerTextNode>(
+    TEXT_NODE,
+    characterDataNodeExtension(html, (text) => text),
+  );
+  return nodeWithParentExtension(textNode);
+}

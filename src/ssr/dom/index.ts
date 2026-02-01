@@ -4,7 +4,6 @@ export * from "./server-fragment";
 export * from "./server-html-element";
 export * from "./server-node";
 export * from "./types";
-export * from "./with-child-elements";
-export * from "./with-child-nodes";
+export * from "./with-children";
 export * from "./with-element-properties";
 export * from "./with-parent";

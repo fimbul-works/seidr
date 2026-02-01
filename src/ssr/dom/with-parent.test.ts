@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
 import { createServerNode } from "./server-node";
-import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE } from "./types";
-import { nodeWithChildNodesExtension } from "./with-child-nodes";
+import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, SET_PARENT, TEXT_NODE } from "./types";
+import { nodeWithChildrenExtension } from "./with-children";
 import { nodeWithParentExtension } from "./with-parent";
 
 describe("nodeWithParentExtension", () => {
   const createParent = (tag = "div") => {
-    return nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: tag }));
+    return nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: tag }));
   };
 
   const createChild = (tag = "span") => {
@@ -17,6 +17,14 @@ describe("nodeWithParentExtension", () => {
     const child = createChild();
     expect(child.parentNode).toBe(null);
     expect(child.parentElement).toBe(null);
+  });
+
+  it("should have read-only parentNode", () => {
+    const child = createChild();
+    const parent = createParent();
+    expect(() => {
+      (child as any).parentNode = parent;
+    }).toThrow();
   });
 
   it("should update parentNode when parent appends child", () => {
@@ -80,25 +88,25 @@ describe("nodeWithParentExtension", () => {
     const child = createChild();
 
     expect(() => {
-      child.parentNode = textNode as any;
+      child[SET_PARENT](textNode as any);
     }).toThrow("Parent node must be an element or a document fragment");
   });
 
-  it("should handle parentNode assignment", () => {
+  it("should handle parentNode assignment via SET_PARENT", () => {
     const p1 = createParent("p1");
     const p2 = createParent("p2");
     const child = createChild();
 
-    child.parentNode = p1 as any;
+    child[SET_PARENT](p1 as any);
     expect(p1.childNodes).toContain(child);
     expect(child.parentNode).toBe(p1);
 
-    child.parentNode = p2 as any;
+    child[SET_PARENT](p2 as any);
     expect(p1.childNodes).not.toContain(child);
     expect(p2.childNodes).toContain(child);
     expect(child.parentNode).toBe(p2);
 
-    child.parentNode = null;
+    child[SET_PARENT](null);
     expect(p2.childNodes).not.toContain(child);
     expect(child.parentNode).toBe(null);
   });

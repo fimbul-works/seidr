@@ -1,11 +1,10 @@
 import { uid } from "../../util/uid";
 import { createServerNode } from "./server-node";
 import { DOCUMENT_FRAGMENT_NODE, type NodeTypeDocumentFragment } from "./types";
-import { nodeWithChildElementNodesExtension, type ServerNodeWithChildElementNodes } from "./with-child-elements";
-import { nodeWithChildNodesExtension } from "./with-child-nodes";
+import { nodeWithChildrenExtension, type ServerNodeWithChildren } from "./with-children";
 import { nodeWithParentExtension, type ServerNodeWithParent } from "./with-parent";
 
-export type ServerFragment = ServerNodeWithChildElementNodes<NodeTypeDocumentFragment> &
+export type ServerFragment = ServerNodeWithChildren<NodeTypeDocumentFragment> &
   ServerNodeWithParent<NodeTypeDocumentFragment> & {
     readonly isSeidrFragment: true;
     readonly id: string;
@@ -23,7 +22,7 @@ export type ServerFragment = ServerNodeWithChildElementNodes<NodeTypeDocumentFra
  */
 export function createServerDocumentFragment(id: string = uid()): ServerFragment {
   const node = createServerNode(DOCUMENT_FRAGMENT_NODE);
-  const fragment = nodeWithParentExtension(nodeWithChildElementNodesExtension(nodeWithChildNodesExtension(node)));
+  const fragment = nodeWithParentExtension(nodeWithChildrenExtension(node));
 
   const startNode = { nodeType: 8, nodeValue: `s:${id}`, toString: () => `<!--s:${id}-->` };
   const endNode = { nodeType: 8, nodeValue: `e:${id}`, toString: () => `<!--e:${id}-->` };
@@ -45,8 +44,25 @@ export function createServerDocumentFragment(id: string = uid()): ServerFragment
       }
       return originalInsertBefore.call(this, node, ref);
     },
+    appendTo(parent: any) {
+      parent.appendChild(startNode);
+      for (const child of (this as any).childNodes) {
+        parent.appendChild(child);
+      }
+      parent.appendChild(endNode);
+    },
     toString() {
-      const childrenStr = (this as any).childNodes.map((child: any) => child.toString()).join("");
+      const childrenStr = (this as any).childNodes
+        .map((child: any) => {
+          if (child.nodeType === 1) return child.outerHTML ?? (child.toString ? child.toString() : "");
+          if (child.nodeType === 3) return child.nodeValue ?? "";
+          if (child.nodeType === 8) return `<!--${child.nodeValue}-->`;
+          if (child.toString && child.toString().indexOf("[object") === -1) {
+            return child.toString();
+          }
+          return child.toString ? child.toString() : String(child);
+        })
+        .join("");
       return `<!--s:${this.id}-->${childrenStr}<!--e:${this.id}-->`;
     },
   }) as ServerFragment;

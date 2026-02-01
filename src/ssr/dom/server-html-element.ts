@@ -1,16 +1,20 @@
-import type { ReactiveCSSStyleDeclaration, ReactiveValue } from "../../element";
+import type {
+  ReactiveCamelCaseProps,
+  ReactiveCSSStyleDeclaration,
+  ReactiveDataKebabCase,
+  ReactiveValue,
+} from "../../element";
 import { unwrapSeidr } from "../../seidr";
 import { escapeHTML } from "../../util/html";
 import { createAriaProxy } from "./aria-proxy";
 import { createCaseProxy } from "./case-proxy";
-import { createServerTextNode } from "./character-data";
+import { createServerRawHTMLNode, createServerTextNode } from "./character-data";
 import { createDatasetProxy } from "./dataset-proxy";
 import { renderElementToString } from "./render-server-html-element";
 import { createServerNode } from "./server-node";
 import { createStyleProxy } from "./style-proxy";
 import { ELEMENT_NODE, type NodeTypeElement, type ServerNodeType, TEXT_NODE } from "./types";
-import { nodeWithChildElementNodesExtension, type ServerNodeWithChildElementNodes } from "./with-child-elements";
-import { nodeWithChildNodesExtension } from "./with-child-nodes";
+import { nodeWithChildrenExtension, type ServerNodeWithChildren } from "./with-children";
 import { nodeWithElementPropertiesExtension, type ServerElementPropertiesExtension } from "./with-element-properties";
 import { nodeWithParentExtension, type ServerNodeWithParent } from "./with-parent";
 
@@ -22,8 +26,9 @@ export const ServerElementMap = new Map<string, any>();
 export type Attributes = Record<string, any>;
 
 export interface ServerHTMLElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>
-  extends HTMLElement, ServerNodeWithParent<NodeTypeElement>,
-    ServerNodeWithChildElementNodes<NodeTypeElement>,
+  extends HTMLElement,
+    ServerNodeWithParent<NodeTypeElement>,
+    ServerNodeWithChildren<NodeTypeElement>,
     ServerElementPropertiesExtension {
   readonly isSeidrElement: true;
   tagName: K;
@@ -34,11 +39,11 @@ export interface ServerHTMLElement<K extends keyof HTMLElementTagNameMap = keyof
   textContent?: string;
   classList: any;
   style: ReactiveCSSStyleDeclaration;
-  dataset: Record<string, string>;
+  dataset: ReactiveCamelCaseProps & ReactiveDataKebabCase & Record<string, any>;
   getAttribute(name: string): string | null;
   setAttribute(name: string, value: any): void;
   removeAttribute(name: string): void;
-  attributes: Record<string, any>;
+  attributes: Record<string, any> & ReactiveDataKebabCase;
   hasAttribute(name: string): boolean;
   on(event: string, handler: (ev: any) => any, options?: any): () => void;
   addEventListener(event: string, handler: any, options?: any): void;
@@ -53,9 +58,7 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
   children: ServerNodeType[] = [],
 ): ServerHTMLElement<K> {
   const node = createServerNode(ELEMENT_NODE, { tagName: tag.toUpperCase() });
-  const base = nodeWithParentExtension(
-    nodeWithElementPropertiesExtension(nodeWithChildElementNodesExtension(nodeWithChildNodesExtension(node)) as any),
-  );
+  const base = nodeWithParentExtension(nodeWithElementPropertiesExtension(nodeWithChildrenExtension(node) as any));
 
   const _attributes: Record<string, any> = {};
 
@@ -74,7 +77,7 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
   const { proxy: ariaProxy } = createAriaProxy(_attributes);
   const { proxy: attributesProxy } = createCaseProxy({
     storage: _attributes,
-    escapeKeyValue: (key, val) => (key === "style" ? String(val) : escapeHTML(String(val))),
+    escapeKeyValue: (key, val) => String(val),
   });
 
   const originalRemove = (base as any).remove;
@@ -145,8 +148,10 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
     on: { value: () => () => {}, enumerable: true },
     clear: {
       value: function () {
-        while (this.firstChild) {
-          this.removeChild(this.firstChild);
+        const children = [...(this as any).childNodes];
+        for (const child of children) {
+          if (child.remove) child.remove();
+          else this.removeChild(child);
         }
       },
       enumerable: true,
@@ -236,7 +241,7 @@ export function createServerHTMLElement<K extends keyof HTMLElementTagNameMap = 
       set(v: string) {
         (this as any).clear();
         if (v) {
-          (this as any).appendChild(createServerTextNode(v));
+          (this as any).appendChild(createServerRawHTMLNode(v));
         }
       },
       enumerable: true,

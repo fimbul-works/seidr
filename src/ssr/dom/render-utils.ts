@@ -47,17 +47,20 @@ export function flattenStyleObject(style: Record<string, string | Seidr<string>>
 /**
  * Renders dataset object to data-* attributes string.
  */
-export function renderDataset(dataset: Record<string, any>): string[] {
+export function renderDataset(dataset: Record<string, any>): string {
   const parts: string[] = [];
-  for (const [key, value] of Object.entries(dataset)) {
+  const keys = Object.keys(dataset).sort();
+  for (const key of keys) {
+    const value = dataset[key];
     const resolved = unwrapSeidr(value);
     if (resolved == null || resolved === false) continue;
 
     const attrName = key.startsWith("data-") ? key : `data-${camelToKebab(key)}`;
+
     if (resolved === true) {
       parts.push(attrName);
     } else {
-      parts.push(`${attrName}="${escapeHTML(String(resolved))}"`);
+      parts.push(`${attrName}="${String(resolved)}"`);
     }
   }
   return parts;
@@ -73,5 +76,5 @@ export function renderAttribute(name: string, value: any): string | null {
   const attrName = name === "className" ? "class" : camelToKebab(name);
 
   if (resolved === true) return attrName;
-  return `${attrName}="${escapeHTML(String(resolved))}"`;
+  return `${attrName}="${String(resolved)}"`;
 }

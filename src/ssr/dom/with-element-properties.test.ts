@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createServerNode } from "./server-node";
 import { ELEMENT_NODE } from "./types";
-import { nodeWithChildNodesExtension } from "./with-child-nodes";
+import { nodeWithChildrenExtension } from "./with-children";
 import { nodeWithElementPropertiesExtension } from "./with-element-properties";
 
 describe("nodeWithElementPropertiesExtension", () => {
@@ -9,7 +9,7 @@ describe("nodeWithElementPropertiesExtension", () => {
 
   beforeEach(() => {
     const baseNode = createServerNode(ELEMENT_NODE, { tagName: "DIV" });
-    node = nodeWithElementPropertiesExtension(nodeWithChildNodesExtension(baseNode));
+    node = nodeWithElementPropertiesExtension(nodeWithChildrenExtension(baseNode));
   });
 
   it("should have correct tagName", () => {
@@ -39,7 +39,7 @@ describe("nodeWithElementPropertiesExtension", () => {
 
   it("should compute innerHTML from child nodes", () => {
     const span = createServerNode(ELEMENT_NODE, { tagName: "span" });
-    const spanWithProps = nodeWithElementPropertiesExtension(nodeWithChildNodesExtension(span));
+    const spanWithProps = nodeWithElementPropertiesExtension(nodeWithChildrenExtension(span));
     spanWithProps.textContent = "Inner";
 
     node.appendChild(spanWithProps);
@@ -58,7 +58,7 @@ describe("nodeWithElementPropertiesExtension", () => {
 
   it("should handle void elements correctly in toString()", () => {
     const br = createServerNode(ELEMENT_NODE, { tagName: "br" });
-    const brNode = nodeWithElementPropertiesExtension(nodeWithChildNodesExtension(br));
+    const brNode = nodeWithElementPropertiesExtension(nodeWithChildrenExtension(br));
     expect(brNode.toString()).toBe("<br />");
   });
 });

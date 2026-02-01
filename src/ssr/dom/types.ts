@@ -14,6 +14,9 @@ export type NodeTypeComment = typeof COMMENT_NODE;
 export const DOCUMENT_FRAGMENT_NODE = 11;
 export type NodeTypeDocumentFragment = typeof DOCUMENT_FRAGMENT_NODE;
 
+/** Symbol for internal parent node assignment */
+export const SET_PARENT = Symbol("SET_PARENT");
+
 /** Suppoted DOM node types for SSR */
 export type SupportedNodeTypes = NodeTypeElement | NodeTypeText | NodeTypeComment | NodeTypeDocumentFragment;
 

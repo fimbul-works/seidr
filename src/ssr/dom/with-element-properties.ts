@@ -3,7 +3,7 @@ import type { Seidr } from "../../seidr";
 import { renderElementToString } from "./render-server-html-element";
 import type { ServerHTMLElement } from "./server-html-element";
 import type { BaseServerNodeInterface, NodeTypeElement } from "./types";
-import type { ServerNodeWithChildNodes } from "./with-child-nodes";
+import type { ServerNodeWithChildren } from "./with-children";
 
 export interface ServerElementPropertiesExtension {
   tagName: string;
@@ -15,7 +15,7 @@ export interface ServerElementPropertiesExtension {
 }
 
 export function nodeWithElementPropertiesExtension<
-  N extends BaseServerNodeInterface<NodeTypeElement> & ServerNodeWithChildNodes<NodeTypeElement>,
+  N extends BaseServerNodeInterface<NodeTypeElement> & ServerNodeWithChildren<NodeTypeElement>,
 >(node: N): N & ServerElementPropertiesExtension {
   const properties: PropertyDescriptorMap = {
     textContent: {

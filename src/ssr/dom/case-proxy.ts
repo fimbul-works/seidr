@@ -146,7 +146,9 @@ export function createCaseProxy<
       if (serialize) return serialize(storage);
 
       const parts: string[] = [];
-      for (const [key, value] of Object.entries(storage)) {
+      const keys = Object.keys(storage).sort();
+      for (const key of keys) {
+        const value = storage[key];
         if (prefix && !key.startsWith(prefix)) continue;
 
         const resolved = unwrapSeidr(value);
@@ -155,7 +157,7 @@ export function createCaseProxy<
         if (resolved === true) {
           parts.push(key);
         } else {
-          const escaped = escapeKeyValue ? escapeKeyValue(key, resolved) : escapeHTML(String(resolved));
+          const escaped = escapeKeyValue ? escapeKeyValue(key, resolved) : String(resolved);
           parts.push(`${key}="${escaped}"`);
         }
       }

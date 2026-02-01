@@ -99,7 +99,7 @@ export function $<K extends keyof HTMLElementTagNameMap, P extends keyof HTMLEle
     let elementId: string | undefined;
     if (hasSeidrBindings()) {
       elementId = String(ctx!.idCounter++);
-      el.dataset[SEIDR_ID] = elementId;
+      el.dataset[SEIDR_ID_CAME_CASE] = elementId;
     }
 
     // Process props and register bindings

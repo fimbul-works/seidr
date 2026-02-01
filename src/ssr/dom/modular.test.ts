@@ -2,8 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createServerCommentNode, createServerTextNode } from "./character-data";
 import { createServerNode } from "./server-node";
 import { ELEMENT_NODE } from "./types";
-import { nodeWithChildElementNodesExtension } from "./with-child-elements";
-import { nodeWithChildNodesExtension } from "./with-child-nodes";
+import { nodeWithChildrenExtension } from "./with-children";
 import { nodeWithElementPropertiesExtension } from "./with-element-properties";
 import { nodeWithParentExtension } from "./with-parent";
 
@@ -29,7 +28,7 @@ describe("Modular SSR DOM", () => {
   describe("Parenting and Child Management", () => {
     it("should handle basic parenting", () => {
       const parent = nodeWithElementPropertiesExtension(
-        nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
+        nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
       );
       const child = createServerTextNode("child");
 
@@ -41,8 +40,8 @@ describe("Modular SSR DOM", () => {
     });
 
     it("should move node to new parent", () => {
-      const p1 = nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "p1" }));
-      const p2 = nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "p2" }));
+      const p1 = nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: "p1" }));
+      const p2 = nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: "p2" }));
       const child = createServerTextNode("moving");
 
       p1.appendChild(child);
@@ -57,7 +56,7 @@ describe("Modular SSR DOM", () => {
 
     it("should support insertBefore", () => {
       const parent = nodeWithElementPropertiesExtension(
-        nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
+        nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: "div" })) as any,
       );
       const c1 = createServerTextNode("1");
       const c2 = createServerTextNode("2");
@@ -76,9 +75,7 @@ describe("Modular SSR DOM", () => {
     const createEl = (tag: string, id?: string, className?: string) => {
       const el = nodeWithParentExtension(
         nodeWithElementPropertiesExtension(
-          nodeWithChildElementNodesExtension(
-            nodeWithChildNodesExtension(createServerNode(ELEMENT_NODE, { tagName: tag, id, className })),
-          ) as any,
+          nodeWithChildrenExtension(createServerNode(ELEMENT_NODE, { tagName: tag, id, className })) as any,
         ),
       );
       return el;

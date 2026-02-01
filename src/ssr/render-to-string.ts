@@ -79,8 +79,7 @@ export async function renderToString<C extends SeidrNode>(
       await activeScope.waitForPromises();
 
       // Convert to HTML string
-      // console.log("DEBUG: comp.element type:", typeof comp.element, comp.element.constructor?.name);
-      const html = String(comp.element);
+      const html = (comp.element as any).outerHTML ?? String(comp.element);
       if (html === "[object Object]") {
         console.error("DEBUG: comp.element serialized to [object Object]", comp.element);
       }
