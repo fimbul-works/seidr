@@ -1,8 +1,8 @@
-import type { CleanupFunction } from "src/types";
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrElement, SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
+import type { CleanupFunction } from "../types";
 import { isFn, isSeidrFragment } from "../util/type-guards";
 
 /**

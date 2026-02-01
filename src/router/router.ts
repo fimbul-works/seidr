@@ -1,6 +1,6 @@
 import { component } from "../component/component";
 import { type SeidrComponent, useScope, wrapComponent } from "../component/index";
-import { getDOMFactory } from "../dom-factory";
+import { getDOMFactory } from "../dom-factory/index";
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import { Seidr } from "../seidr";

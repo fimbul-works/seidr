@@ -10,7 +10,7 @@ import type { DOMFactory } from "./types";
 /**
  * Node DOMFactory implementation.
  */
-export const domFactory = {
+const domFactorySSR = {
   createElement<K extends keyof HTMLElementTagNameMap>(
     tag: K,
     options?: ElementCreationOptions,
@@ -32,6 +32,6 @@ export const domFactory = {
  * Get the node DOMFactory implementation.
  * @returns {DOMFactory} Node DOMFactory implementation.
  */
-export const getDOMFactory = (): DOMFactory => domFactory;
+export const getSSRDOMFactory = (): DOMFactory => domFactorySSR;
 
-setInternalDOMFactory(getDOMFactory);
+setInternalDOMFactory(getSSRDOMFactory);

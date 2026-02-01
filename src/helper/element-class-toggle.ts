@@ -1,4 +1,4 @@
-import type { Seidr } from "../seidr/seidr";
+import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 
 /**

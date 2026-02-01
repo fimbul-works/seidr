@@ -1,4 +1,4 @@
-import type { SeidrComponent } from "../component";
+import type { SeidrComponent } from "../component/types";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction, IsCamelCase } from "../types";
 

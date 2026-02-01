@@ -1,5 +1,5 @@
-import type { CleanupFunction } from "src/types";
 import { getRenderContext } from "../render-context";
+import type { CleanupFunction } from "../types";
 import type { ComponentScope, SeidrComponent } from "./types";
 
 /**

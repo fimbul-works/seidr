@@ -1,6 +1,4 @@
-import { isStr } from "src/util";
-import { escapeHTML } from "../../util/html";
-import { camelToKebab, renderAttribute, renderDataset, renderStyle } from "./render-utils";
+import { renderAttribute, renderDataset, renderStyle } from "./render-utils";
 import type { ServerHTMLElement } from "./server-html-element";
 
 /**

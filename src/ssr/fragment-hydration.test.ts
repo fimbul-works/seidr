@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Conditional, List, Switch } from "../components";
+import { type DOMFactory, getDOMFactory } from "../dom-factory";
 import { $ } from "../element";
 import { resetIdCounter } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
@@ -12,10 +13,12 @@ import { setActiveSSRScope } from "./ssr-scope";
 
 describe("Fragment Hydration", () => {
   let cleanupClientMode: CleanupFunction;
+  let domFactory: DOMFactory;
 
   beforeEach(() => {
     cleanupClientMode = enableClientMode();
     setRenderContextID(0); // Reset ID for client
+    domFactory = getDOMFactory();
   });
 
   afterEach(() => {

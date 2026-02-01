@@ -2,8 +2,7 @@ import { component, type SeidrComponent, useScope, wrapComponent } from "../comp
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import { createServerDocumentFragment } from "../ssr";
-import { isHydrating, isSSR } from "../util/env";
+import { isSSR } from "../util/env";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -29,15 +28,8 @@ export function List<T, I extends string | number, C extends SeidrNode>(
     const instanceId = ctx.idCounter++;
     const id = `list-${ctx.ctxID}-${instanceId}`;
 
-    let fragment: SeidrFragment;
-    if (isSSR()) {
-      fragment = createServerDocumentFragment(id) as any;
-    } else if (isHydrating()) {
-      const [s, e] = findMarkers(id);
-      fragment = $fragment([], id, s || undefined, e || undefined);
-    } else {
-      fragment = $fragment([], id);
-    }
+    const [s, e] = findMarkers(id);
+    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
 
     const componentMap = new Map<I, SeidrComponent>();
 

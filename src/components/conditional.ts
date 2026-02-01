@@ -2,8 +2,6 @@ import { component, type SeidrComponent, useScope, wrapComponent } from "../comp
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import { createServerDocumentFragment } from "../ssr/dom/server-fragment";
-import { isHydrating, isSSR } from "../util/env";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -28,15 +26,8 @@ export function Conditional<T extends SeidrNode>(
     const instanceId = ctx.idCounter++;
     const id = `conditional-${ctx.ctxID}-${instanceId}`;
 
-    let fragment: SeidrFragment;
-    if (isSSR()) {
-      fragment = createServerDocumentFragment(id) as any;
-    } else if (isHydrating()) {
-      const [s, e] = findMarkers(id);
-      fragment = $fragment([], id, s || undefined, e || undefined);
-    } else {
-      fragment = $fragment([], id);
-    }
+    const [s, e] = findMarkers(id);
+    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
 
     let currentComponent: SeidrComponent | null = null;
 

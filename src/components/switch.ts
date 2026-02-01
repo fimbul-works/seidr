@@ -2,8 +2,6 @@ import { component, type SeidrComponent, useScope, wrapComponent } from "../comp
 import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import { createServerDocumentFragment } from "../ssr/dom/server-fragment";
-import { isHydrating, isSSR } from "../util/env";
 
 /**
  * Switches between different components based on an observable value.
@@ -27,19 +25,13 @@ export function Switch<T, C extends SeidrNode>(
     const instanceId = ctx.idCounter++;
     const id = `switch-${ctx.ctxID}-${instanceId}`;
 
-    let fragment: SeidrFragment;
-    if (isSSR()) {
-      fragment = createServerDocumentFragment(id) as any;
-    } else if (isHydrating()) {
-      const [s, e] = findMarkers(id);
-      fragment = $fragment([], id, s || undefined, e || undefined);
-    } else {
-      fragment = $fragment([], id);
-    }
+    const [s, e] = findMarkers(id);
+    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
 
     let currentComponent: SeidrComponent | null = null;
 
     const update = (value: T) => {
+      console.log("Switcch update", value, "has current?", !!currentComponent);
       const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
       const factory = caseFactory || defaultCase;
 

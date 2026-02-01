@@ -1,4 +1,4 @@
-import type { CleanupFunction } from "src/types";
+import type { CleanupFunction } from "../types";
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.

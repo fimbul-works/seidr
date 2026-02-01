@@ -26,8 +26,7 @@ export const ServerElementMap = new Map<string, any>();
 export type Attributes = Record<string, any>;
 
 export interface ServerHTMLElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>
-  extends HTMLElement,
-    ServerNodeWithParent<NodeTypeElement>,
+  extends ServerNodeWithParent<NodeTypeElement>,
     ServerNodeWithChildren<NodeTypeElement>,
     ServerElementPropertiesExtension {
   readonly isSeidrElement: true;

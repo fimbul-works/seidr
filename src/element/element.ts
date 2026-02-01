@@ -1,9 +1,9 @@
 import type { SeidrComponent } from "../component";
-import { getDOMFactory } from "../dom-factory";
+import { getDOMFactory } from "../dom-factory/index";
 import { getRenderContext } from "../render-context";
 import { unwrapSeidr } from "../seidr";
-import { camelToKebab } from "../ssr/dom";
 import type { CleanupFunction } from "../types";
+import { camelToKebab } from "../util/string";
 import {
   isBool,
   isEmpty,

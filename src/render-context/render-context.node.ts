@@ -30,14 +30,14 @@ if (typeof global !== "undefined") {
  *
  * @return {RenderContext}
  */
-export const getRenderContext = (): RenderContext => {
+export const getSSRRenderContext = (): RenderContext => {
   const store = contextLocalStorage.getStore();
   if (!store) throw new Error("RenderContext not initialized");
   return store;
 };
 
 // Pass the SSR getRenderContext to contract
-setInternalContext(getRenderContext);
+setInternalContext(getSSRRenderContext);
 
 /**
  * Run a function within a new render context.
@@ -92,7 +92,7 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
     randomCounter: 0,
     currentPath: "/",
   };
-  const originalGetRenderContext = getRenderContext;
+  const originalGetRenderContext = getSSRRenderContext;
 
   // Override with a simple function that always returns the mock context
   setInternalContext(() => mockContext);

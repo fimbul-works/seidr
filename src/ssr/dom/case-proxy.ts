@@ -1,7 +1,6 @@
 import type { ReactiveValue } from "../../element/types";
 import { unwrapSeidr } from "../../seidr";
 import type { IsCamelCase, KebabCase, StripPrefix } from "../../types";
-import { escapeHTML } from "../../util/html";
 import {
   camelToKebab as defaultCamelToKebab,
   kebabToCamel as defaultKebabToCamel,

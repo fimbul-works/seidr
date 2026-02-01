@@ -1,5 +1,5 @@
-import type { KebabCase } from "src/types";
 import type { ReactiveCSSStyleDeclaration, ReactiveValue } from "../../element";
+import type { KebabCase } from "../../types";
 import { camelToKebab } from "../../util/string";
 import { type CaseProxyOptions, createCaseProxy } from "./case-proxy";
 import { flattenStyleObject, parseStyleString } from "./render-utils";

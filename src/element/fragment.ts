@@ -1,6 +1,5 @@
-import { getDOMFactory } from "../dom-factory";
+import { getDOMFactory } from "../dom-factory/index";
 import { getRenderContext } from "../render-context";
-import { isHydrating } from "../ssr/env";
 import type { SeidrFragment } from "./types";
 
 /**

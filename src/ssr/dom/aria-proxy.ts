@@ -1,4 +1,4 @@
-import type { ReactiveARIAKebabCase, ReactiveARIAMixin } from "src/element";
+import type { ReactiveARIAKebabCase, ReactiveARIAMixin } from "../../element";
 import { type CaseProxyResult, createCaseProxy } from "./case-proxy";
 
 /**

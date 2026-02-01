@@ -4,7 +4,7 @@ import type { DOMFactory } from "./types";
 /**
  * Browser DOMFactory implementation.
  */
-export const domFactory = {
+const domFactoryBrowser = {
   createElement<K extends keyof HTMLElementTagNameMap>(
     tag: K,
     options?: ElementCreationOptions,
@@ -26,6 +26,6 @@ export const domFactory = {
  * Get the browser DOMFactory implementation.
  * @returns {DOMFactory} Browser DOMFactory implementation.
  */
-export const getDOMFactory = (): DOMFactory => domFactory;
+export const getBrowserDOMFactory = (): DOMFactory => domFactoryBrowser;
 
-setInternalDOMFactory(getDOMFactory);
+setInternalDOMFactory(getBrowserDOMFactory);

@@ -25,7 +25,7 @@ export function setRenderContextID(id: number): void {
  *
  * @returns {RenderContext} The client-side RenderContext
  */
-export const getRenderContext = (): RenderContext => clientRenderContext;
+export const getBrowserRenderContext = (): RenderContext => clientRenderContext;
 
 // Pass the client-side getRenderContext to contract
-setInternalContext(getRenderContext);
+setInternalContext(getBrowserRenderContext);

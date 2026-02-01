@@ -3,8 +3,6 @@ import { escapeHTML } from "../../util/html";
 import { camelToKebab, kebabToCamel } from "../../util/string";
 import { isEmpty } from "../../util/type-guards";
 
-export { camelToKebab, kebabToCamel };
-
 /**
  * Renders a style value (string or object) to a semicolon-separated string.
  */
@@ -63,7 +61,8 @@ export function renderDataset(dataset: Record<string, any>): string {
       parts.push(`${attrName}="${String(resolved)}"`);
     }
   }
-  return parts;
+
+  return parts.join(" ");
 }
 
 /**
