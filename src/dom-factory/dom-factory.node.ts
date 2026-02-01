@@ -1,7 +1,7 @@
 import {
-  createServerCommentNode,
+  createServerComment,
   createServerDocumentFragment,
-  createServerHTMLElement,
+  createServerElement,
   createServerTextNode,
 } from "../ssr/dom";
 import { setInternalDOMFactory } from "./dom-factory";
@@ -11,11 +11,8 @@ import type { DOMFactory } from "./types";
  * Node DOMFactory implementation.
  */
 const domFactorySSR = {
-  createElement<K extends keyof HTMLElementTagNameMap>(
-    tag: K,
-    options?: ElementCreationOptions,
-  ): HTMLElementTagNameMap[K] {
-    return createServerHTMLElement(tag, options) as unknown as HTMLElementTagNameMap[K];
+  createElement<K extends keyof HTMLElementTagNameMap>(tag: K): HTMLElementTagNameMap[K] {
+    return createServerElement(tag) as unknown as HTMLElementTagNameMap[K];
   },
   createDocumentFragment(): DocumentFragment {
     return createServerDocumentFragment() as unknown as DocumentFragment;
@@ -24,7 +21,7 @@ const domFactorySSR = {
     return createServerTextNode(data) as unknown as Text;
   },
   createComment(data: string): Comment {
-    return createServerCommentNode(data) as unknown as Comment;
+    return createServerComment(data) as unknown as Comment;
   },
 } as DOMFactory;
 

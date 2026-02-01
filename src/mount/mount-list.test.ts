@@ -134,10 +134,10 @@ describe("mountList", () => {
           el.textContent = item.name;
           return el;
         })();
-        const originalDestroy = comp.destroy;
-        comp.destroy = () => {
+        const originalRemove = comp.element.remove.bind(comp);
+        comp.element.remove = () => {
           componentDestroyed = true;
-          originalDestroy();
+          originalRemove();
         };
         return comp;
       },

@@ -46,7 +46,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
     // Remove components no longer in list
     for (const [key, comp] of componentMap.entries()) {
       if (!newKeys.has(key)) {
-        comp.destroy();
+        comp.element.remove();
         componentMap.delete(key);
       }
     }
@@ -64,10 +64,13 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
       }
 
       // Move to correct position if needed
-      if ((comp as SeidrComponent).element.nextSibling !== currentAnchor) {
-        const needsAttachment = !(comp as any).element.parentNode;
+      const el = (comp as SeidrComponent).element as any;
+      const targetAnchor = (el as any).start || el;
 
-        fragment.insertBefore((comp as SeidrComponent).element as any, currentAnchor);
+      if (el.nextSibling !== currentAnchor) {
+        const needsAttachment = !el.parentNode;
+
+        fragment.insertBefore(el, currentAnchor);
 
         // Trigger onAttached if component was newly added to DOM
         if (needsAttachment && comp.scope.onAttached) {
@@ -75,7 +78,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
         }
       }
 
-      currentAnchor = (comp as SeidrComponent).element;
+      currentAnchor = targetAnchor;
     }
   };
 
@@ -89,7 +92,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   return () => {
     cleanup();
     for (const comp of componentMap.values()) {
-      comp.destroy();
+      comp.element.remove();
     }
     componentMap.clear();
     fragment.remove();

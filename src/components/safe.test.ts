@@ -136,7 +136,7 @@ describe("Safe", () => {
         },
       );
 
-      comp.destroy();
+      comp.element.remove();
 
       // Error boundary cleanup should run
       expect(errorBoundaryDestroyed).toBe(true);
@@ -167,7 +167,7 @@ describe("Safe", () => {
       // Factory cleanup should have run
       expect(cleanupLog).toContain("factory cleanup");
 
-      comp.destroy();
+      comp.element.remove();
 
       // Both cleanups should have run
       expect(cleanupLog).toEqual(["factory cleanup", "error boundary cleanup"]);
@@ -198,7 +198,7 @@ describe("Safe", () => {
 
       expect(eventListenerCalled).toBe(true);
 
-      comp.destroy();
+      comp.element.remove();
     });
   });
 
@@ -325,8 +325,10 @@ describe("Safe", () => {
             const scope = useScope();
             // Simulate resource subscription
             scope.track(() => {
+              console.log("setting subscriptionActive to false");
               subscriptionActive = false;
             });
+            console.log("setting subscriptionActive to true");
             subscriptionActive = true;
 
             throw new Error("Failed during initialization");

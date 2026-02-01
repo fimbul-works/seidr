@@ -67,11 +67,11 @@ describe("mountConditional", () => {
       condition,
       () => {
         const comp = component(() => mockElement)();
-        // Override destroy to track if it was called
-        const originalDestroy = comp.destroy;
-        comp.destroy = () => {
+        // Override remove to track if it was called
+        const originalRemove = comp.element.remove.bind(comp.element);
+        comp.element.remove = () => {
           componentDestroyed = true;
-          originalDestroy();
+          originalRemove();
         };
         return comp;
       },

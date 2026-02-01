@@ -58,6 +58,8 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
     seidrIdCounter: 0,
     randomCounter: 0,
     currentPath: "/",
+    fragmentOwners: new WeakMap(),
+    fragmentChildren: new WeakMap(),
   };
 
   return contextLocalStorage.run(context, callback);
@@ -91,6 +93,8 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
     seidrIdCounter: 0,
     randomCounter: 0,
     currentPath: "/",
+    fragmentOwners: new WeakMap(),
+    fragmentChildren: new WeakMap(),
   };
   const originalGetRenderContext = getSSRRenderContext;
 

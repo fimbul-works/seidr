@@ -39,12 +39,12 @@ describe("ComponentScope", () => {
 
   it("should track child components", () => {
     const scope = createScope();
-    const childComponent = { destroy: vi.fn() } as unknown as SeidrComponent;
+    const childComponent = { element: { remove: vi.fn() } } as unknown as SeidrComponent;
 
     scope.child(childComponent);
-    expect(childComponent.destroy).not.toHaveBeenCalled();
+    expect(childComponent.element.remove).not.toHaveBeenCalled();
 
     scope.destroy();
-    expect(childComponent.destroy).toHaveBeenCalled();
+    expect(childComponent.element.remove).toHaveBeenCalled();
   });
 });

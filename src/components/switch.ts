@@ -36,7 +36,7 @@ export function Switch<T, C extends SeidrNode>(
       const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
-        currentComponent.destroy();
+        currentComponent.element.remove();
         currentComponent = null;
       }
 
@@ -68,7 +68,7 @@ export function Switch<T, C extends SeidrNode>(
     // Cleanup active component
     scope.track(() => {
       if (currentComponent) {
-        currentComponent.destroy();
+        currentComponent.element.remove();
       }
     });
 

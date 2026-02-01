@@ -92,7 +92,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
     }
 
     // 2. Handle component updates (Full swap)
-    currentComponent?.destroy();
+    currentComponent?.element.remove();
     clearContent();
 
     currentRouteIndex = matchedIndex;
@@ -130,7 +130,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
 
   // Cleanup: destroy active component
   scope.track(() => {
-    currentComponent?.destroy();
+    currentComponent?.element.remove();
     currentComponent = null;
     currentParamsSeidr = null;
     fragment.remove();

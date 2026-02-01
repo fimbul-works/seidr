@@ -94,7 +94,7 @@ export async function renderToString<C extends SeidrNode>(
       };
 
       // Destroy component to clean up scope bindings
-      comp.destroy();
+      comp.element.remove();
 
       // Clear the render context state
       clearRenderContextState(ctx.ctxID);

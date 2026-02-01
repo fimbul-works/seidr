@@ -24,16 +24,16 @@ describe("Conditional Component", () => {
     mount(Parent, container);
 
     const parentEl = container.querySelector(".parent")!;
-    expect(parentEl.innerHTML).toContain("<!--seidr-conditional");
+    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
     expect(parentEl.innerHTML).not.toContain("Visible");
 
     isVisible.value = true;
     expect(parentEl.innerHTML).toContain("Visible");
-    expect(parentEl.innerHTML).toContain("<!--seidr-conditional");
+    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
 
     isVisible.value = false;
     expect(parentEl.innerHTML).not.toContain("Visible");
-    expect(parentEl.innerHTML).toContain("<!--seidr-conditional");
+    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
   });
 
   it("should call onAttached when component is shown", () => {

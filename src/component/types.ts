@@ -90,18 +90,6 @@ export interface SeidrComponent<T extends Node = any> {
    * @type {ComponentScope}
    */
   scope: ComponentScope;
-
-  /**
-   * Destroys the component and all its resources.
-   *
-   * This method performs comprehensive cleanup:
-   * - Destroys the root element and all children
-   * - Removes all event listeners
-   * - Cleans up all reactive bindings
-   * - Executes all tracked cleanup functions
-   * @type {CleanupFunction}
-   */
-  destroy(): void;
 }
 
 /**

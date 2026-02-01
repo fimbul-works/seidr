@@ -8,6 +8,8 @@ const clientRenderContext: RenderContext = {
   seidrIdCounter: 0,
   randomCounter: 0,
   currentPath: typeof window !== "undefined" ? window.location.pathname : "/",
+  fragmentOwners: new WeakMap(),
+  fragmentChildren: new WeakMap(),
 };
 
 /**

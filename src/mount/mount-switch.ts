@@ -44,7 +44,7 @@ export function mountSwitch<T extends string = string, C extends SeidrNode = Sei
     const factory = caseFactory || defaultCase;
 
     if (currentComponent) {
-      currentComponent.destroy();
+      currentComponent.element.remove();
       currentComponent = null;
     }
 
@@ -69,7 +69,7 @@ export function mountSwitch<T extends string = string, C extends SeidrNode = Sei
   return () => {
     cleanup();
     if (currentComponent) {
-      currentComponent.destroy();
+      currentComponent.element.remove();
     }
     if (container.contains(marker)) {
       container.removeChild(marker);

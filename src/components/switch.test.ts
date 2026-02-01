@@ -31,7 +31,7 @@ describe("Switch Component", () => {
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("View A");
-    expect(parentEl.innerHTML).toContain("<!--seidr-switch");
+    expect(parentEl.innerHTML).toContain("<!--s:switch-");
 
     mode.value = "B";
     expect(parentEl.innerHTML).toContain("View B");
@@ -39,7 +39,7 @@ describe("Switch Component", () => {
 
     mode.value = "C"; // No match
     expect(parentEl.innerHTML).not.toContain("View B");
-    expect(parentEl.innerHTML).toContain("<!--seidr-switch");
+    expect(parentEl.innerHTML).toContain("<!--s:switch-");
   });
 
   it("should call onAttached when switching components", () => {

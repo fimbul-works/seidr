@@ -55,7 +55,7 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   }
 
   const cleanup = () => {
-    component.destroy();
+    component.element.remove();
   };
 
   // Automatically track cleanup if called within a component's render function

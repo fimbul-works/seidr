@@ -49,7 +49,7 @@ export function mountConditional<T extends SeidrNode>(
         currentComponent.scope.onAttached(container as any);
       }
     } else if (!shouldShow && currentComponent) {
-      currentComponent.destroy();
+      currentComponent.element.remove();
       currentComponent = null;
     }
   };
@@ -64,7 +64,7 @@ export function mountConditional<T extends SeidrNode>(
   return () => {
     cleanup();
     if (currentComponent) {
-      currentComponent.destroy();
+      currentComponent.element.remove();
     }
     fragment.remove();
   };

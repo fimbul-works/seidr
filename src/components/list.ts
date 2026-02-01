@@ -40,7 +40,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
       // Remove components no longer in list
       for (const [key, comp] of componentMap.entries()) {
         if (!newKeys.has(key)) {
-          comp.destroy();
+          comp.element.remove();
           componentMap.delete(key);
         }
       }
@@ -58,9 +58,12 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         }
 
         // Move to correct position if needed
-        if (comp.element.nextSibling !== currentAnchor) {
-          const needsAttachment = isSSR() || !comp.element.parentNode;
-          fragment.insertBefore(comp.element as Node, currentAnchor);
+        const el = comp.element as any;
+        const targetAnchor = el.start || el;
+
+        if (el.nextSibling !== currentAnchor) {
+          const needsAttachment = isSSR() || !el.parentNode;
+          fragment.insertBefore(el, currentAnchor);
 
           // Trigger onAttached if component was newly added to DOM
           if (needsAttachment && parent && comp.scope.onAttached) {
@@ -68,7 +71,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
           }
         }
 
-        currentAnchor = comp.element as Node;
+        currentAnchor = targetAnchor;
       }
     };
 
@@ -88,7 +91,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
     // Secondary cleanup tracking for map contents
     scope.track(() => {
       for (const comp of componentMap.values()) {
-        comp.destroy();
+        comp.element.remove();
       }
       componentMap.clear();
     });

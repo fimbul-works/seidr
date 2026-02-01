@@ -127,7 +127,7 @@ describe("SeidrFragment", () => {
     fragment.append(span);
     expect(fragment.querySelector("span")).toBe(span);
     expect(fragment.getElementById("my-span")).toBe(span);
-    expect(fragment.querySelectorAll("span")).toEqual([span]);
+    expect(Array.from(fragment.querySelectorAll("span"))).toEqual([span]);
   });
 
   it("should remove markers and nodes", () => {

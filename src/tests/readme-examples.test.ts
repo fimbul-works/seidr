@@ -95,7 +95,7 @@ describe("README.md Examples Validation", () => {
       resetBtn?.click();
       expect(span?.textContent).toBe("0");
 
-      counter.destroy();
+      counter.element.remove();
     });
   });
 
@@ -220,7 +220,7 @@ describe("README.md Examples Validation", () => {
       expect(container).toBeTruthy();
       expect(container?.className).toBe("user-profile");
 
-      profile.destroy();
+      profile.element.remove();
     });
   });
 

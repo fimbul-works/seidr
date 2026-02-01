@@ -3,6 +3,13 @@ import type { Seidr } from "../seidr";
 import type { CleanupFunction, IsCamelCase } from "../types";
 
 /**
+ * Internal Symbol used for recursive lifecycle cleanup.
+ * This allows Seidr to trigger cleanup on detached sub-trees without
+ * performing DOM detachment on every individual node.
+ */
+export const SEIDR_CLEANUP = Symbol("SeidrCleanup");
+
+/**
  * Accepted types for reactive binding to HTML element attributes.
  *
  * Only scalar types (string, number, boolean) can be reactively bound to
@@ -146,7 +153,8 @@ export type SeidrNode =
   | boolean
   | null
   | undefined
-  | Seidr<SeidrNode>;
+  | Seidr<SeidrNode>
+  | SeidrNode[];
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
@@ -212,9 +220,8 @@ export interface SeidrFragment extends DocumentFragment {
   readonly id: string;
   readonly start: Comment;
   readonly end: Comment;
-  readonly parent: Element | DocumentFragment | null;
   readonly nodes: Node[];
   remove(): void;
   clear(): void;
-  appendTo(parent: Element | DocumentFragment): void;
+  appendTo(parent: Element | DocumentFragment, anchor?: Node | null): void;
 }

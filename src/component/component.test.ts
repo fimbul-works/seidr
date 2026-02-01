@@ -19,16 +19,14 @@ describe("component", () => {
     restoreClientMode();
   });
 
-  it("should create a component with element and destroy method", () => {
+  it("should create a component with an element", () => {
     const mockElement = $("div");
     const comp = component(() => {
       return mockElement;
     })();
 
     expect(comp).toHaveProperty("element");
-    expect(comp).toHaveProperty("destroy");
     expect(comp.element).toBe(mockElement);
-    expect(typeof comp.destroy).toBe("function");
   });
 
   it("should call destroy on scope when component is destroyed", () => {
@@ -47,7 +45,7 @@ describe("component", () => {
 
     expect(scopeDestroyed).toBe(false);
 
-    comp.destroy();
+    comp.element.remove();
 
     expect(scopeDestroyed).toBe(true);
   });
@@ -89,7 +87,7 @@ describe("Documentation Examples", () => {
       expect(comp.element.textContent).toBe("Count: 2");
 
       // Cleanup
-      comp.destroy();
+      comp.element.remove();
       if (document.body.contains(comp.element)) {
         document.body.removeChild(comp.element);
       }
@@ -146,8 +144,8 @@ describe("Documentation Examples", () => {
       expect(spans2[1].textContent).toBe(": 0");
 
       // Cleanup
-      counter1.destroy();
-      counter2.destroy();
+      counter1.element.remove();
+      counter2.element.remove();
       if (document.body.contains(counter1.element)) {
         document.body.removeChild(counter1.element);
       }
@@ -219,7 +217,7 @@ describe("Documentation Examples", () => {
       })();
 
       // Destroy component
-      comp.destroy();
+      comp.element.remove();
 
       // Verify all cleanup functions were called
       expect(customCleanup).toHaveBeenCalled();
@@ -238,11 +236,11 @@ describe("Documentation Examples", () => {
         // Grandchild will be automatically tracked when created
         const grandchild = Grandchild();
 
-        // Override destroy for testing AFTER creation
-        const originalDestroy = grandchild.destroy;
-        grandchild.destroy = () => {
+        // Override remove for testing AFTER creation
+        const originalRemove = grandchild.element.remove.bind(grandchild.element);
+        grandchild.element.remove = () => {
           grandchildDestroyed = true;
-          originalDestroy();
+          originalRemove();
         };
 
         return $("div", { textContent: "Child" }, [grandchild.element]);
@@ -251,11 +249,11 @@ describe("Documentation Examples", () => {
         // Child will be automatically tracked when created
         const child = Child();
 
-        // Override destroy for testing AFTER creation
-        const originalDestroy = child.destroy;
-        child.destroy = () => {
+        // Override remove for testing AFTER creation
+        const originalRemove = child.element.remove.bind(child.element);
+        child.element.remove = () => {
           childDestroyed = true;
-          originalDestroy();
+          originalRemove();
         };
 
         return $("div", { textContent: "Parent" }, [child.element]);
@@ -266,7 +264,7 @@ describe("Documentation Examples", () => {
       expect(grandchildDestroyed).toBe(false);
 
       // Destroy parent should destroy all descendants
-      parent.destroy();
+      parent.element.remove();
 
       expect(childDestroyed).toBe(true);
       expect(grandchildDestroyed).toBe(true);
@@ -283,17 +281,17 @@ describe("Documentation Examples", () => {
         const child1 = createChild("Child 1");
         const child2 = createChild("Child 2");
 
-        // Override destroy for testing AFTER creation
-        const originalDestroy1 = child1.destroy;
-        child1.destroy = () => {
+        // Override remove for testing AFTER creation
+        const originalRemove1 = child1.element.remove.bind(child1.element);
+        child1.element.remove = () => {
           child1Destroyed = true;
-          originalDestroy1();
+          originalRemove1();
         };
 
-        const originalDestroy2 = child2.destroy;
-        child2.destroy = () => {
+        const originalRemove2 = child2.element.remove.bind(child2.element);
+        child2.element.remove = () => {
           child2Destroyed = true;
-          originalDestroy2();
+          originalRemove2();
         };
 
         return $("div", {}, [child1.element, child2.element]);
@@ -303,7 +301,7 @@ describe("Documentation Examples", () => {
       expect(child1Destroyed).toBe(false);
       expect(child2Destroyed).toBe(false);
 
-      parent.destroy();
+      parent.element.remove();
 
       expect(child1Destroyed).toBe(true);
       expect(child2Destroyed).toBe(true);
@@ -338,7 +336,7 @@ describe("Documentation Examples", () => {
       // Components are created outer-to-inner: Root, Trunk, Branch, Leaf
       expect(creationOrder).toEqual(["Root", "Trunk", "Branch", "Leaf"]);
 
-      root.destroy();
+      root.element.remove();
     });
 
     it("should clear component stack after root component creation", () => {
@@ -355,31 +353,31 @@ describe("Documentation Examples", () => {
       });
       const parent1 = Parent();
 
-      // Override destroy to track which parent
-      const originalDestroy1 = parent1.destroy;
-      parent1.destroy = () => {
+      // Override remove to track which parent
+      const originalRemove1 = parent1.element.remove.bind(parent1.element);
+      parent1.element.remove = () => {
         parent1Destroyed = true;
-        originalDestroy1();
+        originalRemove1();
       };
 
       const parent2 = Parent();
 
-      // Override destroy to track which parent
-      const originalDestroy2 = parent2.destroy;
-      parent2.destroy = () => {
+      // Override remove to track which parent
+      const originalRemove2 = parent2.element.remove.bind(parent2.element);
+      parent2.element.remove = () => {
         parent2Destroyed = true;
-        originalDestroy2();
+        originalRemove2();
       };
 
       expect(parent1Destroyed).toBe(false);
       expect(parent2Destroyed).toBe(false);
 
       // Destroy first parent - should not affect second parent
-      parent1.destroy();
+      parent1.element.remove();
       expect(parent1Destroyed).toBe(true);
       expect(parent2Destroyed).toBe(false);
 
-      parent2.destroy();
+      parent2.element.remove();
       expect(parent2Destroyed).toBe(true);
     });
   });
@@ -425,7 +423,7 @@ describe("Documentation Examples", () => {
         return $("div", {}, [level2.element]);
       });
       const root = Level1();
-      root.destroy();
+      root.element.remove();
 
       // All components should be destroyed
       expect(destructionOrder).toHaveLength(3);
@@ -453,7 +451,7 @@ describe("Documentation Examples", () => {
         return $("div", {}, [child1.element, child2.element, child3.element]);
       });
       const parent = Parent();
-      parent.destroy();
+      parent.element.remove();
 
       expect(destroyedChildren).toHaveLength(3);
       expect(destroyedChildren).toContain("Child1");
@@ -488,7 +486,7 @@ describe("Documentation Examples", () => {
       const parent = Parent();
 
       // Destroy should not throw
-      expect(() => parent.destroy()).not.toThrow();
+      expect(() => parent.element.remove()).not.toThrow();
 
       // Parent cleanup should still execute
       expect(childCleanupCalled).toBe(true);
@@ -525,7 +523,7 @@ describe("Documentation Examples", () => {
         return $("div", {}, [child1.element, child2.element]);
       });
       const parent = Parent();
-      parent.destroy();
+      parent.element.remove();
 
       // Second child should still be destroyed
       expect(sibling2Destroyed).toBe(true);
@@ -578,7 +576,7 @@ describe("Documentation Examples", () => {
       expect(parentClickListenerCalled).toBe(true);
 
       // Destroy component
-      parent.destroy();
+      parent.element.remove();
 
       // Reset flags
       childClickListenerCalled = false;
@@ -618,11 +616,11 @@ describe("Documentation Examples", () => {
       expect(parent.element.textContent).toBe("Count: 0");
 
       // Destroy parent
-      parent.destroy();
+      parent.element.remove();
 
       // Binding should be cleaned up (no memory leak)
       // This is hard to test directly, but we can verify no errors occur
-      expect(() => parent.destroy()).not.toThrow();
+      expect(() => parent.element.remove()).not.toThrow();
     });
   });
 
@@ -655,7 +653,7 @@ describe("Documentation Examples", () => {
       expect(profile.element.children[1].textContent).toBe("Avatar Component");
 
       // Destroy parent
-      profile.destroy();
+      profile.element.remove();
 
       // Verify children were destroyed
       expect(destructionLog).toEqual(["Header destroyed", "Avatar destroyed"]);
@@ -700,7 +698,7 @@ describe("Documentation Examples", () => {
         return $("main", {}, [post.element]);
       });
       const feed = Feed();
-      feed.destroy();
+      feed.element.remove();
 
       // All components should be cleaned up
       expect(cleanupLog).toContain("Feed");
@@ -721,16 +719,16 @@ describe("Documentation Examples", () => {
         const leaf = Leaf(); // Automatically tracked
 
         // Override destroy for testing
-        const originalDestroy = leaf.destroy;
-        leaf.destroy = () => {
+        const originalRemove = leaf.element.remove.bind(leaf.element);
+        leaf.element.remove = () => {
           destroyed = true;
-          originalDestroy();
+          originalRemove();
         };
 
         return $("div", {}, [leaf.element]);
       });
       const parent = Parent();
-      parent.destroy();
+      parent.element.remove();
 
       expect(destroyed).toBe(true);
     });
@@ -746,7 +744,7 @@ describe("Documentation Examples", () => {
         return $("div", { textContent: "Parent" });
       });
       const parent = Parent();
-      parent.destroy();
+      parent.element.remove();
 
       expect(destroyed).toBe(true);
     });
@@ -780,7 +778,7 @@ describe("Documentation Examples", () => {
         ),
       )();
 
-      root.destroy();
+      root.element.remove();
 
       expect(destructions).toHaveLength(7);
       expect(destructions).toEqual(["root", "level1", "level2", "level3", "level4", "level5", "level6"]);
@@ -806,7 +804,7 @@ describe("Documentation Examples", () => {
         return $("div", {}, children);
       });
       const parent = Parent();
-      parent.destroy();
+      parent.element.remove();
 
       expect(destroyed).toHaveLength(5);
       expect(destroyed).toContain("child-0");
@@ -844,7 +842,7 @@ describe("Documentation Examples", () => {
         expect(profile.element.children[1].textContent).toBe("Avatar Component");
 
         // Destroy parent
-        profile.destroy();
+        profile.element.remove();
 
         // Verify children were destroyed
         expect(destructionLog).toEqual(["Header destroyed", "Avatar destroyed"]);
@@ -889,7 +887,7 @@ describe("Documentation Examples", () => {
           return $("main", {}, [post.element]);
         });
         const feed = Feed();
-        feed.destroy();
+        feed.element.remove();
 
         // All components should be cleaned up
         expect(cleanupLog).toContain("Feed");
@@ -918,7 +916,7 @@ describe("Documentation Examples", () => {
       expect(parentEl).toBeTruthy();
       expect(parentEl?.innerHTML).toBe("<span>Child</span>");
 
-      parent.destroy();
+      parent.element.remove();
     });
 
     it("should allow multiple SeidrComponents as children", () => {
@@ -935,7 +933,7 @@ describe("Documentation Examples", () => {
       const parentEl = document.querySelector(".parent");
       expect(parentEl?.innerHTML).toBe("<span>A</span><span>B</span>");
 
-      parent.destroy();
+      parent.element.remove();
     });
   });
 });

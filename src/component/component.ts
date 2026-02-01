@@ -1,7 +1,7 @@
 import { $fragment, $text, findMarkers, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import { isHydrating, isSSR } from "../util/env";
-import { isBool, isEmpty, isHTMLElement, isNum, isSeidrComponent, isStr } from "../util/type-guards";
+import { isBool, isEmpty, isHTMLElement, isNum, isSeidrComponent, isSeidrFragment, isStr } from "../util/type-guards";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
@@ -34,7 +34,6 @@ export function component<P = void>(
     const comp = {
       isSeidrComponent: true,
       scope,
-      destroy: () => scope.destroy(),
     } as SeidrComponent;
 
     // Register as child component
@@ -48,7 +47,7 @@ export function component<P = void>(
     // Render the component via factory
     try {
       // Call factory with props (or undefined if no props)
-      let result = factory(props as P);
+      const result = factory(props as P);
 
       // Track child SeidrComponents to propagate onAttached
       const childComponents: SeidrComponent[] = [];
@@ -69,48 +68,45 @@ export function component<P = void>(
         return item;
       };
 
-      // Generate unique ID for this component instance
+      // Process final render result
       const ctx = getRenderContext();
       const instanceId = ctx.idCounter++;
       const id = `ctx-${ctx.ctxID}-${instanceId}`;
 
-      // Support for array returns (multiple root nodes)
-      if (Array.isArray(result)) {
-        result = $fragment(result.map(toNode), id);
+      const isHydratingNow = isHydrating();
+      const isSSRNow = isSSR();
 
-        const isSSRNow = isSSR();
-
-        if (isSSRNow) {
-          comp.element = result as any;
+      // Normalize result: wrap arrays, null, and undefined in a fragment
+      if (Array.isArray(result) || isEmpty(result) || isBool(result)) {
+        const children = Array.isArray(result) ? result.map(toNode).filter(Boolean) : [];
+        if (!isSSRNow && isHydratingNow) {
+          const [s, e] = findMarkers(id);
+          comp.element = $fragment(children, id, s || undefined, e || undefined);
         } else {
-          // Check if hydrating and
-          const isHydratingNow = isHydrating();
-          let markers: [Comment | null, Comment | null] = [null, null];
-          if (isHydratingNow) {
-            markers = findMarkers(id);
-            result = $fragment([toNode(result)], id, markers[0] || undefined, markers[1] || undefined);
-          }
-          comp.element = result;
+          comp.element = $fragment(children, id);
         }
       } else {
-        // Unwrap SeidrComponents to their elements, or normalize primitives
-        comp.element = toNode(result);
+        // Single node or component
+        const node = toNode(result);
+        if (isSeidrFragment(node)) {
+          // If it's already a fragment, use it as is but ensure ID is tracked?
+          // Actually, fragments from $fragment already have IDs.
+          comp.element = node;
+        } else {
+          comp.element = node;
+        }
       }
 
-      // Set up destroy method
-      comp.destroy = () => {
-        comp.scope.destroy();
-        const el = comp.element as any;
-        if (el?.remove) {
-          el.remove();
-        } else if (el?.parentNode?.removeChild) {
-          try {
-            el.parentNode.removeChild(el);
-          } catch (_e) {
-            // Ignore if node was already removed or parent changed
-          }
-        }
-      };
+      // Unified Lifecycle: Wrap the root element's remove to trigger scope destruction
+      if (comp.element) {
+        const el = comp.element as ChildNode;
+        const oR = el.remove.bind(el);
+        el.remove = () => {
+          comp.scope.destroy();
+          if (oR) oR();
+          else if (el.parentNode) el.parentNode.removeChild(el);
+        };
+      }
 
       // Propagate onAttached from scope to child components
       if (childComponents.length > 0) {

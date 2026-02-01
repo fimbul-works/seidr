@@ -82,10 +82,10 @@ describe("mountSwitch", () => {
       {
         list: () => {
           const comp = component(() => listElement)();
-          const originalDestroy = comp.destroy;
-          comp.destroy = () => {
+          const originalRemove = comp.element.remove.bind(comp.element);
+          comp.element.remove = () => {
             componentDestroyed = true;
-            originalDestroy();
+            originalRemove();
           };
           return comp;
         },

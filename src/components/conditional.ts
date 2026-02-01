@@ -46,7 +46,7 @@ export function Conditional<T extends SeidrNode>(
           currentComponent.scope.onAttached(fragment.parentNode);
         }
       } else if (!shouldShow && currentComponent) {
-        currentComponent.destroy();
+        currentComponent.element.remove();
         currentComponent = null;
         fragment.clear();
       }
@@ -63,7 +63,7 @@ export function Conditional<T extends SeidrNode>(
     // Cleanup active component
     scope.track(() => {
       if (currentComponent) {
-        currentComponent.destroy();
+        currentComponent.element.remove();
       }
     });
 

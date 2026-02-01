@@ -33,7 +33,7 @@ export function createScope(): ComponentScope {
   }
 
   function child(component: SeidrComponent): SeidrComponent {
-    track(() => component.destroy());
+    track(() => component.element?.remove());
     return component;
   }
 
