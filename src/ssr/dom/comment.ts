@@ -1,6 +1,7 @@
 import { escapeText } from "../../element/escape-utils";
+import { COMMENT_NODE } from "../../types";
 import { createServerNode, type InternalServerNode } from "./node";
-import { COMMENT_NODE, type ServerNode } from "./types";
+import type { ServerNode } from "./types";
 
 export type ServerCommentNode = ServerNode &
   InternalServerNode & {

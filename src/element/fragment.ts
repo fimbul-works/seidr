@@ -1,7 +1,7 @@
 import { getDOMFactory } from "../dom-factory/index";
 import { getRenderContext } from "../render-context";
+import { SEIDR_CLEANUP, TYPE, TYPE_PROP } from "../types";
 import type { SeidrFragment } from "./types";
-import { SEIDR_CLEANUP } from "./types";
 
 /**
  * Find existing start and end markers in the DOM by ID.
@@ -82,7 +82,7 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
   };
 
   Object.defineProperties(fragment, {
-    isSeidrFragment: { value: true, enumerable: true },
+    [TYPE_PROP]: { value: TYPE.FRAGMENT, enumerable: true },
     id: { value: finalId, enumerable: true },
     start: { value: s, enumerable: true },
     end: { value: e, enumerable: true },
@@ -149,12 +149,12 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
     let actualAnchor = anchor === null && s.parentNode === null ? nextAnchor : anchor;
 
     // Normalize anchor if it's a SeidrFragment
-    if (actualAnchor && (actualAnchor as any).isSeidrFragment) {
+    if (actualAnchor && (actualAnchor as any)[TYPE_PROP] === TYPE.FRAGMENT) {
       actualAnchor = (actualAnchor as any).start;
     }
 
     if (parent) {
-      const isFrag = (node as any).isSeidrFragment;
+      const isFrag = (node as any)[TYPE_PROP] === TYPE.FRAGMENT;
 
       // Safety check for anchor
       if (actualAnchor && actualAnchor.parentNode !== parent) {
@@ -176,7 +176,7 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
         ctx.fragmentChildren.set(fragment, tracked);
       }
     } else {
-      const isFrag = (node as any).isSeidrFragment;
+      const isFrag = (node as any)[TYPE_PROP] === TYPE.FRAGMENT;
       if (isFrag) {
         (node as any).appendTo(fragment, anchor);
       } else {
@@ -279,11 +279,17 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
 
     // Instead of just removing from DOM, move them back into the fragment bucket
     // to preserve them for potential re-attachment.
-    fragment.appendChild(s);
+    const proto = (fragment as any).constructor.prototype;
+    const append = proto.appendChild;
+
+    append.call(fragment, s);
     for (const node of currentNodes) {
-      fragment.appendChild(node);
+      append.call(fragment, node);
     }
-    fragment.appendChild(e);
+    append.call(fragment, e);
+
+    // Clear lastParent so subsequent appendTo works correctly (it sets lastParent)
+    lastParent = null;
 
     // Clean up owners
     for (const node of currentNodes) {

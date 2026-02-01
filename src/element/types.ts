@@ -1,13 +1,7 @@
 import type { SeidrComponent } from "../component/types";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction, IsCamelCase } from "../types";
-
-/**
- * Internal Symbol used for recursive lifecycle cleanup.
- * This allows Seidr to trigger cleanup on detached sub-trees without
- * performing DOM detachment on every individual node.
- */
-export const SEIDR_CLEANUP = Symbol("SeidrCleanup");
+import type { CleanupFunction, IsCamelCase, TYPE } from "../types";
+import { SEIDR_CLEANUP, TYPE_PROP } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -169,9 +163,9 @@ export interface SeidrElementInterface {
    *
    * This property can be used to quickly identify if an element was created
    * by Seidr and has the enhanced functionality available.
-   * @type {true}
+   * @type {typeof TYPE.ELEMENT}
    */
-  readonly isSeidrElement: true;
+  readonly [TYPE_PROP]: typeof TYPE.ELEMENT;
 
   /**
    * Adds an event listener with automatic cleanup functionality.
@@ -216,7 +210,7 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
  * It uses a start and end marker (HTML Comments) to track its boundaries.
  */
 export interface SeidrFragment extends DocumentFragment {
-  readonly isSeidrFragment: true;
+  readonly [TYPE_PROP]: typeof TYPE.FRAGMENT;
   readonly id: string;
   readonly start: Comment;
   readonly end: Comment;

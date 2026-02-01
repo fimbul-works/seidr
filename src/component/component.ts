@@ -1,5 +1,6 @@
 import { $fragment, $text, findMarkers, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
+import { TYPE, TYPE_PROP } from "../types";
 import { isHydrating, isSSR } from "../util/env";
 import { isBool, isEmpty, isHTMLElement, isNum, isSeidrComponent, isSeidrFragment, isStr } from "../util/type-guards";
 import { createScope } from "./component-scope";
@@ -32,7 +33,7 @@ export function component<P = void>(
     // Create the scope and partial SeidrComponent
     const scope = createScope();
     const comp = {
-      isSeidrComponent: true,
+      [TYPE_PROP]: TYPE.COMPONENT,
       scope,
     } as SeidrComponent;
 
@@ -144,6 +145,6 @@ export function component<P = void>(
   }) as SeidrComponentFactory<P>;
 
   // Add component factory flag
-  componentFactory.isComponentFactory = true;
+  componentFactory[TYPE_PROP] = TYPE.COMPONENT_FACTORY;
   return componentFactory;
 }

@@ -1,6 +1,7 @@
 import type { SeidrComponent, SeidrComponentFactory } from "../component/types";
 import type { SeidrElement, SeidrFragment } from "../element/types";
 import { Seidr } from "../seidr/seidr";
+import { COMMENT_NODE, DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE, TYPE, TYPE_PROP } from "../types";
 
 /**
  * Check if a value is empty (`null`, or `undefined`).
@@ -65,7 +66,7 @@ export const isSeidr = <T = any>(v: any): v is Seidr<T> => v instanceof Seidr;
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a SeidrElement, `false` otherwise
  */
-export const isSeidrElement = (v: any): v is SeidrElement => v && v.isSeidrElement === true;
+export const isSeidrElement = (v: any): v is SeidrElement => v && v[TYPE_PROP] === TYPE.ELEMENT;
 
 /**
  * Check if a value is a Seidr component.
@@ -74,21 +75,22 @@ export const isSeidrElement = (v: any): v is SeidrElement => v && v.isSeidrEleme
  * @returns {boolean} `true` if the value is a Seidr component, `false` otherwise
  */
 export const isSeidrComponent = <T extends Node = any>(v: any): v is SeidrComponent<T> =>
-  v && v.isSeidrComponent === true;
+  v && v[TYPE_PROP] === TYPE.COMPONENT;
 
 /**
  * Check if a value is a Seidr fragment.
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr fragment, `false` otherwise
  */
-export const isSeidrFragment = (v: any): v is SeidrFragment => v && v.isSeidrFragment === true;
+export const isSeidrFragment = (v: any): v is SeidrFragment => v && v[TYPE_PROP] === TYPE.FRAGMENT;
 
 /**
  * Check if a value is a Seidr component factory.
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr component factory, `false` otherwise
  */
-export const isSeidrComponentFactory = <P>(v: any): v is SeidrComponentFactory<P> => v && v.isComponentFactory === true;
+export const isSeidrComponentFactory = <P>(v: any): v is SeidrComponentFactory<P> =>
+  v && v[TYPE_PROP] === TYPE.COMPONENT_FACTORY;
 
 /**
  * Check if a value is an HTMLElement (safely works in Node.js/SSR environments).
@@ -99,7 +101,7 @@ export const isHTMLElement = (v: any): v is HTMLElement => {
   if (typeof HTMLElement !== "undefined" && v instanceof HTMLElement) {
     return true;
   }
-  return isObj(v) && "nodeType" in v && v.nodeType === 1; // Node.ELEMENT_NODE
+  return isObj(v) && "nodeType" in v && v.nodeType === ELEMENT_NODE;
 };
 
 /**
@@ -111,7 +113,7 @@ export const isComment = (v: any): v is Comment => {
   if (typeof Comment !== "undefined" && v instanceof Comment) {
     return true;
   }
-  return isObj(v) && "nodeType" in v && v.nodeType === 8; // Node.COMMENT_NODE
+  return isObj(v) && "nodeType" in v && v.nodeType === COMMENT_NODE;
 };
 
 /**
@@ -123,7 +125,7 @@ export const isTextNode = (v: any): v is Text => {
   if (typeof Text !== "undefined" && v instanceof Text) {
     return true;
   }
-  return isObj(v) && "nodeType" in v && v.nodeType === 3; // Node.TEXT_NODE
+  return isObj(v) && "nodeType" in v && v.nodeType === TEXT_NODE;
 };
 
 /**
@@ -135,5 +137,5 @@ export const isDocumentFragment = (v: any): v is DocumentFragment => {
   if (typeof DocumentFragment !== "undefined" && v instanceof DocumentFragment) {
     return true;
   }
-  return isObj(v) && "nodeType" in v && v.nodeType === 11; // Node.DOCUMENT_FRAGMENT_NODE
+  return isObj(v) && "nodeType" in v && v.nodeType === DOCUMENT_FRAGMENT_NODE;
 };

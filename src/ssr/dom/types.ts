@@ -1,25 +1,12 @@
+import type {
+  NodeTypeComment,
+  NodeTypeDocument,
+  NodeTypeDocumentFragment,
+  NodeTypeElement,
+  NodeTypeText,
+} from "../../types";
 import type { ServerDocument } from "./document";
 import type { ServerElement } from "./element";
-
-/** node is an element. */
-export const ELEMENT_NODE = 1;
-export type NodeTypeElement = typeof ELEMENT_NODE;
-
-/** node is a Text node. */
-export const TEXT_NODE = 3;
-export type NodeTypeText = typeof TEXT_NODE;
-
-/** node is a Comment node. */
-export const COMMENT_NODE = 8;
-export type NodeTypeComment = typeof COMMENT_NODE;
-
-/** node is a Document node. */
-export const DOCUMENT_NODE = 9;
-export type NodeTypeDocument = typeof DOCUMENT_NODE;
-
-/** node is a DocumentFragment node. */
-export const DOCUMENT_FRAGMENT_NODE = 11;
-export type NodeTypeDocumentFragment = typeof DOCUMENT_FRAGMENT_NODE;
 
 /** Suppoted DOM node types for SSR */
 export type SupportedNodeTypes =

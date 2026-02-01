@@ -1,9 +1,10 @@
 import { escapeAttribute, escapeText } from "../../element/escape-utils";
+import { ELEMENT_NODE } from "../../types";
 import { createCaseProxy } from "./case-proxy";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import { createServerTextNode } from "./text";
-import { ELEMENT_NODE, type ServerNode, type ServerNodeType } from "./types";
+import type { ServerNode, ServerNodeType } from "./types";
 
 export type ServerElement = ServerNode &
   InternalServerNode & {
@@ -109,6 +110,15 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
           contains: (cls: string) => node.className.split(/\s+/).includes(cls),
           toString: () => node.className,
         };
+      },
+    },
+    textContent: {
+      get: () => node._childNodes.map((c) => c.toString()).join(""),
+      set: (val: string | null) => {
+        node._childNodes.length = 0;
+        if (val !== null) {
+          node.appendChild(createServerTextNode(String(val)));
+        }
       },
     },
   });

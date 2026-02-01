@@ -1,10 +1,9 @@
 import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
-import type { CleanupFunction } from "../types";
+import { type CleanupFunction, SEIDR_CLEANUP, TYPE, TYPE_PROP } from "../types";
 import { isSeidr } from "../util/type-guards";
 import { appendChildNode, assignProp } from "./dom-utils";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
-import { SEIDR_CLEANUP } from "./types";
 
 /**
  * Creates an HTML element with automatic reactive binding capabilities.
@@ -37,7 +36,7 @@ export function $<K extends keyof HTMLElementTagNameMap>(
 
   // Assign properties
   if (props) {
-    const reserved = ["on", "clear", "isSeidrElement"];
+    const reserved = ["on", "clear", "isSeidrElement", TYPE_PROP];
     for (const [prop, value] of Object.entries(props)) {
       if (reserved.includes(prop)) {
         throw new Error(`Unallowed property "${prop}"`);
@@ -48,8 +47,8 @@ export function $<K extends keyof HTMLElementTagNameMap>(
 
   // Add extra Seidr features
   Object.assign(el, {
-    get isSeidrElement() {
-      return true;
+    get [TYPE_PROP]() {
+      return TYPE.ELEMENT;
     },
     on<E extends keyof HTMLElementEventMap>(
       event: E,

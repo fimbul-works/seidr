@@ -1,6 +1,7 @@
+import { DOCUMENT_FRAGMENT_NODE } from "../../types";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
-import { DOCUMENT_FRAGMENT_NODE, type ServerNode, type ServerNodeType } from "./types";
+import type { ServerNode, ServerNodeType } from "./types";
 
 export type ServerDocumentFragment = ServerNode &
   InternalServerNode & {

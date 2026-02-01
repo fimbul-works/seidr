@@ -1,6 +1,7 @@
 import { escapeText } from "../../element/escape-utils";
+import { TEXT_NODE } from "../../types";
 import { createServerNode, type InternalServerNode } from "./node";
-import { type ServerNode, TEXT_NODE } from "./types";
+import type { ServerNode } from "./types";
 
 export type ServerTextNode = ServerNode &
   InternalServerNode & {

@@ -1,10 +1,11 @@
+import { DOCUMENT_NODE } from "../../types";
 import { createServerComment } from "./comment";
 import { createServerDocumentFragment } from "./document-fragment";
 import { createServerElement } from "./element";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import { createServerTextNode } from "./text";
-import { DOCUMENT_NODE, type ServerNode } from "./types";
+import type { ServerNode } from "./types";
 
 export type ServerDocument = ServerNode &
   InternalServerNode & {

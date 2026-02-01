@@ -1,6 +1,7 @@
+import { ELEMENT_NODE } from "../../types";
 import type { ServerElement } from "./element";
 import type { InternalServerNode } from "./node";
-import { ELEMENT_NODE, type ServerNode, type ServerParentNode } from "./types";
+import type { ServerNode, ServerParentNode } from "./types";
 
 /**
  * Enhances a node with ParentNode-like methods and properties.

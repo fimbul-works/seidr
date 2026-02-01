@@ -1,15 +1,8 @@
+import { COMMENT_NODE, DOCUMENT_FRAGMENT_NODE, DOCUMENT_NODE, ELEMENT_NODE, TEXT_NODE } from "../../types";
 import type { ServerDocument } from "./document";
 import type { ServerElement } from "./element";
 import { createServerNodeList } from "./node-list";
-import {
-  COMMENT_NODE,
-  DOCUMENT_FRAGMENT_NODE,
-  DOCUMENT_NODE,
-  ELEMENT_NODE,
-  type ServerNode,
-  type SupportedNodeTypes,
-  TEXT_NODE,
-} from "./types";
+import type { ServerNode, SupportedNodeTypes } from "./types";
 
 /**
  * Interface for internal SSR node state.

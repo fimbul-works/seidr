@@ -1,4 +1,5 @@
-import type { CleanupFunction } from "../types";
+import type { CleanupFunction, TYPE } from "../types";
+import { TYPE_PROP } from "../types";
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
@@ -72,9 +73,9 @@ export interface ComponentScope {
 export interface SeidrComponent<T extends Node = any> {
   /**
    * Read-only identifier for Seidr components.
-   * @type {true}
+   * @type {typeof TYPE.COMPONENT}
    */
-  readonly isSeidrComponent: true;
+  readonly [TYPE_PROP]: typeof TYPE.COMPONENT;
 
   /**
    * The root element of the component.
@@ -96,7 +97,7 @@ export interface SeidrComponent<T extends Node = any> {
  * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
  */
 interface SeidrComponentFactoryInterface {
-  isComponentFactory: true;
+  [TYPE_PROP]: typeof TYPE.COMPONENT_FACTORY;
 }
 
 /**
