@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { useScope } from "../component";
 import { $ } from "../element";
+import { DOCUMENT_FRAGMENT_NODE } from "../types";
 import { Safe } from "./safe";
 
 describe("Safe", () => {
@@ -243,8 +244,8 @@ describe("Safe", () => {
         },
       );
 
-      // Component will have a comment node as placeholder instead of null
-      expect(comp.element.nodeType).toBe(8); // Node.COMMENT_NODE
+      // Component will have a fragment (Persistent Range) as placeholder instead of null
+      expect(comp.element.nodeType).toBe(DOCUMENT_FRAGMENT_NODE);
     });
 
     it("should handle errors during child component registration", () => {

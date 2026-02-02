@@ -5,10 +5,11 @@ import { createServerElement } from "./element";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import { createServerTextNode } from "./text";
-import type { ServerNode } from "./types";
+import type { ServerNode, ServerParentNode } from "./types";
 
 export type ServerDocument = ServerNode &
-  InternalServerNode & {
+  InternalServerNode &
+  ServerParentNode & {
     body: any;
     head: any;
     documentElement: any;
@@ -16,38 +17,58 @@ export type ServerDocument = ServerNode &
     createTextNode(text: string): any;
     createComment(text: string): any;
     createDocumentFragment(): any;
-    appendChild(node: ServerNode): void;
   };
 
 /**
  * Creates a server-side document.
+ * Minimalist version to avoid heavy tree setup.
  */
 export function createServerDocument(): ServerDocument {
-  const node = createServerNode(DOCUMENT_NODE) as ServerDocument;
+  const node = createServerNode(DOCUMENT_NODE) as InternalServerNode & ServerNode;
+  const augmented = applyParentNodeMethods(node) as ServerDocument;
 
-  node.createElement = (tagName: string) => createServerElement(tagName as any);
-  node.createTextNode = (text: string) => createServerTextNode(text);
-  node.createComment = (text: string) => createServerComment(text);
-  node.createDocumentFragment = () => createServerDocumentFragment();
+  augmented.createElement = (tagName: string) => createServerElement(tagName as any, augmented);
+  augmented.createTextNode = (text: string) => createServerTextNode(text, augmented);
+  augmented.createComment = (text: string) => createServerComment(text, augmented);
+  augmented.createDocumentFragment = () => createServerDocumentFragment(augmented);
 
-  node.appendChild = (child: ServerNode) => {
-    const c = child as any;
-    c._parentNode = node;
-    node._childNodes.push(c);
-  };
+  // Lazy structure properties
+  let _head: any = null;
+  let _body: any = null;
+  let _html: any = null;
 
-  // Create basic document structure
-  const html = createServerElement("html");
-  node.appendChild(html);
-  node.documentElement = html;
+  Object.defineProperties(augmented, {
+    documentElement: {
+      get: () => {
+        if (!_html) {
+          _html = augmented.createElement("html");
+          augmented.appendChild(_html);
+        }
+        return _html;
+      },
+      enumerable: true,
+    },
+    head: {
+      get: () => {
+        if (!_head) {
+          _head = augmented.createElement("head");
+          augmented.documentElement.prepend(_head);
+        }
+        return _head;
+      },
+      enumerable: true,
+    },
+    body: {
+      get: () => {
+        if (!_body) {
+          _body = augmented.createElement("body");
+          augmented.documentElement.appendChild(_body);
+        }
+        return _body;
+      },
+      enumerable: true,
+    },
+  });
 
-  const head = createServerElement("head");
-  html.appendChild(head);
-  node.head = head;
-
-  const body = createServerElement("body");
-  html.appendChild(body);
-  node.body = body;
-
-  return applyParentNodeMethods(node);
+  return augmented;
 }

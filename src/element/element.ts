@@ -23,6 +23,7 @@ export function $<K extends keyof HTMLElementTagNameMap>(
   const domFactory = getDOMFactory();
   const ctx = getRenderContext();
   const el = domFactory.createElement(tagName);
+  (el as any)._originalRemove = el.remove.bind(el);
   let cleanups: CleanupFunction[] = [];
 
   // Reuse the string for hydration
@@ -74,10 +75,8 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     },
     remove(): void {
       (this as any)[SEIDR_CLEANUP]();
-      // Use original proto to avoid recursion
-      const proto = (el as any).constructor.prototype;
-      if (proto.remove) {
-        proto.remove.call(el);
+      if ((el as any)._originalRemove) {
+        (el as any)._originalRemove();
       } else if (el.parentNode) {
         el.parentNode.removeChild(el);
       }

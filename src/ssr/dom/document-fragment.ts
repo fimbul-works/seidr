@@ -1,4 +1,5 @@
 import { DOCUMENT_FRAGMENT_NODE } from "../../types";
+import type { ServerDocument } from "./document";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import type { ServerNode, ServerNodeType } from "./types";
@@ -13,8 +14,8 @@ export type ServerDocumentFragment = ServerNode &
 /**
  * Creates a server-side document fragment.
  */
-export function createServerDocumentFragment(): ServerDocumentFragment {
-  const node = createServerNode(DOCUMENT_FRAGMENT_NODE) as ServerDocumentFragment;
+export function createServerDocumentFragment(ownerDocument: ServerDocument | null = null): ServerDocumentFragment {
+  const node = createServerNode(DOCUMENT_FRAGMENT_NODE, ownerDocument) as ServerDocumentFragment;
 
   applyParentNodeMethods(node);
 

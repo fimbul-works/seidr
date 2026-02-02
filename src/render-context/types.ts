@@ -43,4 +43,7 @@ export interface RenderContext {
 
   /** WeakMap to track children of a fragment when detached (Context-Aware Fragment Tracking) */
   fragmentChildren: WeakMap<any, Node[]>;
+
+  /** WeakMap to track the parent of a fragment (Context-Aware Fragment Tracking) */
+  fragmentParents: WeakMap<any, Node>;
 }

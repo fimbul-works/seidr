@@ -15,6 +15,7 @@ export const browserContext: RenderContext = {
   currentPath: "/",
   fragmentOwners: new WeakMap(),
   fragmentChildren: new WeakMap(),
+  fragmentParents: new WeakMap(),
 };
 
 /**
@@ -29,10 +30,8 @@ export function setRenderContextID(id: number): void {
  * Prefers AsyncLocalStorage if available (SSR), falls back to browserContext.
  */
 function testGetRenderContext(): RenderContext {
-  // This is essentially what render-context.node.ts does but with a fallback
-  // We try to get it from the contract-assigned function first if it's set to something else,
-  // but here we just want a reliable fallback.
-  return (global as any).__SEIDR_CONTEXT_STORE__?.getStore() || browserContext;
+  const ssrStore = (global as any).__SEIDR_CONTEXT_STORE__?.getStore();
+  return ssrStore || browserContext;
 }
 
 setInternalContext(testGetRenderContext);
@@ -78,6 +77,7 @@ export function enableSSRMode(): CleanupFunction {
   };
   process.env.SEIDR_TEST_SSR = "true";
   setInternalDOMFactory(getSSRDOMFactory);
+  setInternalContext(testGetRenderContext);
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;

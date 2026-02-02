@@ -8,11 +8,12 @@ import type { SeidrFragment } from "./types";
  * Throws if markers exist but are not in the same parent node.
  *
  * @param {string} id - The fragment ID to find
- * @param {Node} [root=document.documentElement] - The root node to search in
+ * @param {Node} [root] - The root node to search in
  * @returns {[Comment | null, Comment | null]}
  */
-export function findMarkers(id: string, root: Node = document.documentElement): [Comment | null, Comment | null] {
+export function findMarkers(id: string, root?: Node): [Comment | null, Comment | null] {
   if (typeof document === "undefined") return [null, null];
+  const actualRoot = root || document.documentElement;
 
   const sPattern = `s:${id}`;
   const ePattern = `e:${id}`;
@@ -21,7 +22,12 @@ export function findMarkers(id: string, root: Node = document.documentElement): 
   let e: Comment | null = null;
 
   // Optimized search using TreeWalker
-  const walker = document.createTreeWalker(root, NodeFilter.SHOW_COMMENT);
+  if (typeof (document as any).createTreeWalker !== "function") {
+    // Return early in environments without TreeWalker (SSR)
+    return [null, null];
+  }
+
+  const walker = document.createTreeWalker(actualRoot, NodeFilter.SHOW_COMMENT);
   let node: Comment | null;
   while ((node = walker.nextNode() as Comment | null)) {
     const val = node.nodeValue;
@@ -56,97 +62,85 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
   const s = start || domFactory.createComment(`s:${finalId}`);
   const e = end || domFactory.createComment(`e:${finalId}`);
 
-  // Inherit from DocumentFragment
-  const fragment = domFactory.createDocumentFragment() as SeidrFragment;
+  // 1. Create the base fragment node
+  const fragment = domFactory.createDocumentFragment();
 
-  /**
-   * Helper to get nodes currently between markers in the DOM.
-   */
-  const getRangeNodes = (): Node[] => {
-    const nodes: Node[] = [];
-    let current = s.nextSibling;
-    while (current && current !== e) {
-      nodes.push(current);
-      current = current.nextSibling;
-    }
-    return nodes;
-  };
-
-  /**
-   * Helper to update node ownership in the RenderContext.
-   */
-  const trackNodes = (nodes: Node[]) => {
-    for (const node of nodes) {
-      ctx.fragmentOwners.set(node, fragment);
-    }
-  };
-
-  Object.defineProperties(fragment, {
-    [TYPE_PROP]: { value: TYPE.FRAGMENT, enumerable: true },
-    id: { value: finalId, enumerable: true },
-    start: { value: s, enumerable: true },
-    end: { value: e, enumerable: true },
-    nodes: {
-      get() {
-        // If markers are in the DOM, return the current live range.
-        if (s.parentNode) {
-          return getRangeNodes();
-        }
-        // If markers are missing but we have tracked children (e.g. production elision)
-        const tracked = ctx.fragmentChildren.get(fragment);
-        if (tracked) return tracked;
-
-        // Fallback to DocumentFragment's childNodes
-        return Array.from(fragment.childNodes);
-      },
-      enumerable: true,
-    },
-    parentNode: {
-      get: () => s.parentNode,
-      enumerable: true,
-    },
-    nextSibling: {
-      get: () => e.nextSibling,
-      enumerable: true,
-    },
-    previousSibling: {
-      get: () => s.previousSibling,
-      enumerable: true,
-    },
-  });
-
+  // 2. Internal state trackers (captured via closure)
   let lastParent: Node | null = null;
   let nextAnchor: Node | null = null;
 
-  // This is a new method, and thus we can keep
-  fragment.appendTo = (parent: Element | DocumentFragment, anchor: Node | null = null) => {
+  // 3. Helper logic
+  const getRangeNodes = (): Node[] => {
+    // Check tracked children first (connected or persistent state)
+    const tracked = ctx.fragmentChildren.get(fragment);
+    if (tracked) return tracked;
+
+    // Disconnected state: Use native DocumentFragment children, excluding markers
+    return Array.from(fragment.childNodes).filter((n) => n !== s && n !== e);
+  };
+
+  const trackNodes = (nodes: Node[]) => {
+    const current = ctx.fragmentChildren.get(fragment) || [];
+    for (const node of nodes) {
+      if (node !== s && node !== e && !current.includes(node)) {
+        current.push(node);
+      }
+      ctx.fragmentOwners.set(node, fragment);
+    }
+    ctx.fragmentChildren.set(fragment, current);
+  };
+
+  // 4. Capture original methods (unbound for flexible use with .call)
+  const _insertBefore = fragment.insertBefore.bind(fragment);
+  const _appendChild = fragment.appendChild.bind(fragment);
+  const _querySelector = fragment.querySelector.bind(fragment);
+  const _querySelectorAll = fragment.querySelectorAll.bind(fragment);
+  const _getElementById = fragment.getElementById.bind(fragment);
+
+  // 5. SeidrFragment method implementations
+  // We use regular functions to ensure proper 'this' binding when called as methods.
+
+  function appendTo(this: SeidrFragment, parent: Element | DocumentFragment, anchor: Node | null = null) {
     const isProd = typeof process !== "undefined" && process.env.NODE_ENV === "production";
+    ctx.fragmentParents.set(this, parent);
     lastParent = parent;
 
-    const currentNodes = fragment.nodes;
+    const currentNodes = this.nodes;
+    ctx.fragmentChildren.set(this, currentNodes);
 
     if (!isProd) {
       parent.insertBefore(s, anchor);
+      ctx.fragmentOwners.set(s, this);
     }
 
     for (const node of currentNodes) {
+      if (node === (this as any)) continue;
       parent.insertBefore(node, anchor);
+      ctx.fragmentOwners.set(node, this);
     }
 
     if (!isProd) {
       parent.insertBefore(e, anchor);
+      ctx.fragmentOwners.set(e, this);
     } else {
-      ctx.fragmentChildren.set(fragment, currentNodes);
       nextAnchor = anchor;
     }
+  }
 
-    // Track ownership once connected
-    trackNodes([s, e, ...currentNodes]);
-  };
+  function insertBefore<T extends Node>(this: SeidrFragment, node: T, anchor: Node | null): T {
+    const parent = ctx.fragmentParents.get(this) || s.parentNode || lastParent;
+    let actualAnchor =
+      anchor === null &&
+      (s.parentNode === null || (typeof process !== "undefined" && process.env.NODE_ENV === "production"))
+        ? nextAnchor
+        : anchor;
 
-  fragment.insertBefore = <T extends Node>(node: T, anchor: Node | null): T => {
-    const parent = s.parentNode || lastParent;
-    let actualAnchor = anchor === null && s.parentNode === null ? nextAnchor : anchor;
+    // Default anchor to end marker if connected and anchor is null
+    if (actualAnchor === null && s.parentNode) actualAnchor = e;
+
+    if (node === (this as any)) {
+      throw new Error("Cannot insert a fragment into itself.");
+    }
 
     // Normalize anchor if it's a SeidrFragment
     if (actualAnchor && (actualAnchor as any)[TYPE_PROP] === TYPE.FRAGMENT) {
@@ -157,104 +151,135 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
       const isFrag = (node as any)[TYPE_PROP] === TYPE.FRAGMENT;
 
       // Safety check for anchor
-      if (actualAnchor && actualAnchor.parentNode !== parent) {
-        actualAnchor = null;
+      // In SSR, we need to account for Proxies when comparing parents
+      if (actualAnchor) {
+        const anchorParent = actualAnchor.parentNode;
+        const matchesParent =
+          anchorParent === parent || ((parent as any).__isProxy && anchorParent === (parent as any).__target);
+        if (!matchesParent) {
+          actualAnchor = null;
+        }
       }
 
       if (isFrag) {
+        // Prevent infinite recursion if node is this same fragment
+        if (node === (this as any) || node === parent) {
+          return node;
+        }
         (node as any).appendTo(parent as any, actualAnchor);
       } else {
-        parent.insertBefore(node, actualAnchor);
+        // If parent is also a fragment, bypass its enhanced insertBefore to avoid recursion
+        const parentAsAny = parent as any;
+        if (parentAsAny === this) {
+          _insertBefore.call(this, node, actualAnchor);
+        } else if (parentAsAny._originalInsertBefore && parentAsAny[TYPE_PROP] === TYPE.FRAGMENT) {
+          parentAsAny._originalInsertBefore.call(parent, node, actualAnchor);
+        } else {
+          parent.insertBefore(node, actualAnchor);
+        }
       }
 
-      // Update tracked children if markers are elided
-      if (!s.parentNode && !e.parentNode) {
-        const tracked = ctx.fragmentChildren.get(fragment) || [];
-        const index = anchor ? tracked.indexOf(anchor) : -1;
-        if (index === -1) tracked.push(node);
-        else tracked.splice(index, 0, node);
-        ctx.fragmentChildren.set(fragment, tracked);
-      }
+      // Update tracked children
+      const tracked = ctx.fragmentChildren.get(this) || [];
+      const index = actualAnchor ? tracked.indexOf(actualAnchor) : -1;
+      if (index === -1) tracked.push(node);
+      else tracked.splice(index, 0, node);
+      ctx.fragmentChildren.set(this, tracked);
     } else {
+      // Disconnected: use native DocumentFragment logic
       const isFrag = (node as any)[TYPE_PROP] === TYPE.FRAGMENT;
       if (isFrag) {
-        (node as any).appendTo(fragment, anchor);
+        (node as any).appendTo(this, anchor);
       } else {
-        (fragment as any).constructor.prototype.insertBefore.call(fragment, node, anchor);
+        _insertBefore.call(this, node, anchor);
       }
+
+      // Sync tracked child list for disconnected state
+      const tracked = ctx.fragmentChildren.get(this) || Array.from(this.childNodes).filter((n) => n !== s && n !== e);
+      const index = anchor ? tracked.indexOf(anchor) : -1;
+      if (index === -1) tracked.push(node);
+      else tracked.splice(index, 0, node);
+      ctx.fragmentChildren.set(this, tracked);
     }
-    ctx.fragmentOwners.set(node, fragment);
+    ctx.fragmentOwners.set(node, this);
     return node;
-  };
+  }
 
-  fragment.appendChild = <T extends Node>(node: T): T => {
+  function appendChild<T extends Node>(this: SeidrFragment, node: T): T {
     const anchor = s.parentNode ? e : s.parentNode === null && lastParent ? nextAnchor : null;
-    return fragment.insertBefore(node, anchor);
-  };
+    return this.insertBefore(node, anchor);
+  }
 
-  fragment.append = (...nodes: (Node | string)[]) => {
+  function append(this: SeidrFragment, ...nodes: (Node | string)[]) {
     nodes.forEach((node) => {
       const n = typeof node === "string" ? domFactory.createTextNode(node) : node;
-      fragment.appendChild(n);
+      this.appendChild(n);
     });
-  };
+  }
 
-  fragment.prepend = (...nodes: (Node | string)[]) => {
+  function prepend(this: SeidrFragment, ...nodes: (Node | string)[]) {
     nodes.reverse().forEach((node) => {
       const n = typeof node === "string" ? domFactory.createTextNode(node) : node;
-      fragment.insertBefore(n, s.parentNode ? s.nextSibling : fragment.firstChild);
+      this.insertBefore(n, s.parentNode ? s.nextSibling : this.firstChild);
     });
-  };
+  }
 
-  fragment.replaceChildren = (...nodes: (Node | string)[]) => {
-    fragment.clear();
-    fragment.append(...nodes);
-  };
+  function replaceChildren(this: SeidrFragment, ...nodes: (Node | string)[]) {
+    this.clear();
+    this.append(...nodes);
+  }
 
-  fragment.querySelector = (selector: string): any => {
+  function querySelector(this: SeidrFragment, selector: string): any {
     if (s.parentNode || lastParent) {
-      for (const node of fragment.nodes) {
-        if (node instanceof Element) {
-          if (node.matches(selector)) return node;
-          const found = node.querySelector(selector);
+      for (const node of this.nodes) {
+        if (node.nodeType === 1) {
+          // ELEMENT_NODE
+          const el = node as any;
+          if (el.id === selector.substring(1) && selector.startsWith("#")) return node;
+          if (el.matches && el.matches(selector)) return node;
+          const found = el.querySelector(selector);
           if (found) return found;
         }
       }
       return null;
     }
-    return (fragment as any).constructor.prototype.querySelector.call(fragment, selector);
-  };
+    return _querySelector ? _querySelector.call(this, selector) : null;
+  }
 
-  fragment.querySelectorAll = (selector: string): any => {
+  function querySelectorAll(this: SeidrFragment, selector: string): any {
     if (s.parentNode || lastParent) {
-      const results: Element[] = [];
-      for (const node of fragment.nodes) {
-        if (node instanceof Element) {
-          if (node.matches(selector)) results.push(node);
-          results.push(...Array.from(node.querySelectorAll(selector)));
+      const results: any[] = [];
+      for (const node of this.nodes) {
+        if (node.nodeType === 1) {
+          // ELEMENT_NODE
+          const el = node as any;
+          if (el.matches && el.matches(selector)) results.push(node);
+          results.push(...Array.from(el.querySelectorAll(selector)));
         }
       }
       return results;
     }
-    return (fragment as any).constructor.prototype.querySelectorAll.call(fragment, selector);
-  };
+    return _querySelectorAll ? _querySelectorAll.call(this, selector) : [];
+  }
 
-  fragment.getElementById = (id: string): any => {
+  function getElementById(this: SeidrFragment, id: string): any {
     if (s.parentNode || lastParent) {
-      for (const node of fragment.nodes) {
-        if (node instanceof Element) {
-          if (node.id === id) return node;
-          const found = node.querySelector(`#${id}`);
+      for (const node of this.nodes) {
+        if (node.nodeType === 1) {
+          // ELEMENT_NODE
+          const el = node as any;
+          if (el.id === id) return node;
+          const found = el.querySelector(`#${id}`);
           if (found) return found;
         }
       }
       return null;
     }
-    return (fragment as any).constructor.prototype.getElementById.call(fragment, id);
-  };
+    return _getElementById ? _getElementById.call(this, id) : null;
+  }
 
-  fragment.clear = () => {
-    const currentNodes = fragment.nodes;
+  function clear(this: SeidrFragment) {
+    const currentNodes = this.nodes;
     for (const node of currentNodes) {
       if ((node as any).remove) {
         (node as any).remove();
@@ -263,33 +288,24 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
       }
       ctx.fragmentOwners.delete(node);
     }
-    ctx.fragmentChildren.delete(fragment);
-  };
+    ctx.fragmentChildren.set(this, []);
+  }
 
-  (fragment as any)[SEIDR_CLEANUP] = () => {
-    for (const node of fragment.nodes) {
-      if ((node as any)[SEIDR_CLEANUP]) (node as any)[SEIDR_CLEANUP]();
-    }
-    ctx.fragmentChildren.delete(fragment);
-  };
-
-  fragment.remove = () => {
-    const currentNodes = fragment.nodes;
-    (fragment as any)[SEIDR_CLEANUP]();
+  function remove(this: SeidrFragment) {
+    const currentNodes = this.nodes;
+    if ((this as any)[SEIDR_CLEANUP]) (this as any)[SEIDR_CLEANUP]();
 
     // Instead of just removing from DOM, move them back into the fragment bucket
     // to preserve them for potential re-attachment.
-    const proto = (fragment as any).constructor.prototype;
-    const append = proto.appendChild;
-
-    append.call(fragment, s);
+    _appendChild.call(this, s);
     for (const node of currentNodes) {
-      append.call(fragment, node);
+      _appendChild.call(this, node);
     }
-    append.call(fragment, e);
+    _appendChild.call(this, e);
 
-    // Clear lastParent so subsequent appendTo works correctly (it sets lastParent)
+    // Clear tracking
     lastParent = null;
+    ctx.fragmentParents.delete(this);
 
     // Clean up owners
     for (const node of currentNodes) {
@@ -297,31 +313,97 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
     }
     ctx.fragmentOwners.delete(s);
     ctx.fragmentOwners.delete(e);
-  };
+  }
 
-  fragment.toString = (): string => {
-    const content = fragment.nodes.map((n: any) => n.toString()).join("");
-    return `<!--s:${finalId}-->${content}<!--e:${finalId}-->`;
-  };
+  function toString(this: SeidrFragment): string {
+    return this.nodes.map((n: any) => (n.toString ? n.toString() : String(n))).join("");
+  }
 
-  // Initial children
+  const f = fragment as unknown as SeidrFragment;
+
+  // 6. Augment the fragment object
+  Object.defineProperties(f, {
+    [TYPE_PROP]: { value: TYPE.FRAGMENT, enumerable: true },
+    id: { value: finalId, enumerable: true },
+    start: { value: s, enumerable: true },
+    end: { value: e, enumerable: true },
+    nodes: {
+      get: getRangeNodes,
+      enumerable: true,
+    },
+    parentNode: {
+      get: () => ctx.fragmentParents.get(fragment) || s.parentNode,
+      enumerable: true,
+    },
+    nextSibling: {
+      get: () => e.nextSibling,
+      enumerable: true,
+    },
+    previousSibling: {
+      get: () => s.previousSibling,
+      enumerable: true,
+    },
+    // Captured originals for internal/external bypass
+    _originalInsertBefore: { value: _insertBefore, enumerable: false },
+    _originalAppendChild: { value: _appendChild, enumerable: false },
+  });
+
+  // Assign bound methods
+  Object.assign(f, {
+    appendTo: appendTo.bind(f),
+    insertBefore: insertBefore.bind(f),
+    appendChild: appendChild.bind(f),
+    append: append.bind(f),
+    prepend: prepend.bind(f),
+    replaceChildren: replaceChildren.bind(f),
+    querySelector: querySelector.bind(f),
+    querySelectorAll: querySelectorAll.bind(f),
+    getElementById: getElementById.bind(f),
+    clear: clear.bind(f),
+    remove: remove.bind(f),
+    toString: toString.bind(f),
+    [SEIDR_CLEANUP]: () => {
+      for (const node of f.nodes) {
+        if ((node as any)[SEIDR_CLEANUP]) (node as any)[SEIDR_CLEANUP]();
+      }
+      ctx.fragmentChildren.delete(f);
+      ctx.fragmentParents.delete(f);
+    },
+  });
+
+  // 7. Initial Assembly
+  if (!s.parentNode) _appendChild.call(fragment, s);
+  if (e.parentNode !== fragment && !e.parentNode) _appendChild.call(fragment, e);
+
+  // 8. Process initial children
   for (const child of children) {
     if (child) {
-      fragment.appendChild(child);
-      ctx.fragmentOwners.set(child, fragment);
+      f.appendChild(child);
+      ctx.fragmentOwners.set(child, f);
     }
   }
 
-  // Hydration support: If markers already exist, track them and the nodes between them
+  // 9. Hydration support: If markers already exist, track them and the nodes between them
   if (start && end && s.parentNode) {
     const isProd = typeof process !== "undefined" && process.env.NODE_ENV === "production";
-    const nodes = getRangeNodes();
+    const nodesFromDOM = (): Node[] => {
+      const res: Node[] = [];
+      let curr = s.nextSibling;
+      while (curr && curr !== e) {
+        res.push(curr as Node);
+        curr = curr.nextSibling;
+      }
+      return res;
+    };
+
+    const nodes = nodesFromDOM();
 
     if (isProd) {
       // In production, elide the markers for hydration if they were found
       lastParent = s.parentNode;
+      ctx.fragmentParents.set(f, lastParent);
       nextAnchor = e.nextSibling;
-      ctx.fragmentChildren.set(fragment, nodes);
+      ctx.fragmentChildren.set(f, nodes);
       s.remove();
       e.remove();
     }
@@ -329,5 +411,5 @@ export function $fragment(children: Node[] = [], id?: string, start?: Comment, e
     trackNodes([s, e, ...nodes]);
   }
 
-  return fragment;
+  return f;
 }

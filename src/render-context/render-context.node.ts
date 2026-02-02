@@ -60,6 +60,7 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
     currentPath: "/",
     fragmentOwners: new WeakMap(),
     fragmentChildren: new WeakMap(),
+    fragmentParents: new WeakMap(),
   };
 
   return contextLocalStorage.run(context, callback);
@@ -95,6 +96,7 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
     currentPath: "/",
     fragmentOwners: new WeakMap(),
     fragmentChildren: new WeakMap(),
+    fragmentParents: new WeakMap(),
   };
   const originalGetRenderContext = getSSRRenderContext;
 

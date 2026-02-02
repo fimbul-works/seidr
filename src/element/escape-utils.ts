@@ -15,7 +15,7 @@ export function escapeText(text: string): string {
  * Same as escapeText but specifically for attributes.
  */
 export function escapeAttribute(value: string): string {
-  return escapeText(value);
+  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 }
 
 /**

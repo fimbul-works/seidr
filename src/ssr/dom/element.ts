@@ -1,6 +1,7 @@
 import { escapeAttribute } from "../../element/escape-utils";
 import { ELEMENT_NODE } from "../../types";
 import { createCaseProxy } from "./case-proxy";
+import type { ServerDocument } from "./document";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import { createServerTextNode } from "./text";
@@ -21,13 +22,21 @@ export type ServerElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElem
     getAttribute(name: string): string | null;
     hasAttribute(name: string): boolean;
     removeAttribute(name: string): void;
+    addEventListener(event: string, handler: EventListener): void;
+    removeEventListener(event: string, handler: EventListener): void;
+    matches(selector: string): boolean;
   };
+
+const boolProps = ["disabled", "checked", "selected", "readOnly", "required", "multiple", "hidden", "autofocus"];
 
 /**
  * Creates a server-side element.
  */
-export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagName: K): ServerElement {
-  const node = createServerNode(ELEMENT_NODE) as ServerElement;
+export function createServerElement<K extends keyof HTMLElementTagNameMap>(
+  tagName: K,
+  ownerDocument: ServerDocument | null = null,
+): ServerElement {
+  const node = createServerNode(ELEMENT_NODE, ownerDocument) as ServerElement;
   node.tagName = tagName.toUpperCase() as K;
 
   const _attributes: Record<string, string> = {};
@@ -46,17 +55,35 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
   const styleProxy = createCaseProxy({
     storage: styleStorage as any,
     serialize: (s) => {
-      return Object.entries(s)
+      const parts = Object.entries(s)
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([k, v]) => `${k}: ${v}`)
-        .join("; ");
+        .map(([k, v]) => `${k}: ${v}`);
+      return parts.length > 0 ? parts.join("; ") + ";" : "";
+    },
+    parse: (val) => {
+      const obj: Record<string, string> = {};
+      if (!val) return obj;
+      val.split(";").forEach((s) => {
+        const parts = s.split(":");
+        if (parts.length >= 2) {
+          const k = parts[0].trim();
+          const v = parts.slice(1).join(":").trim();
+          if (k && v) obj[k] = v;
+        }
+      });
+      return obj;
     },
   });
-  node.style = new Proxy(styleProxy.proxy, {
+
+  const styleObj = new Proxy(styleProxy.proxy, {
     get(target, prop, receiver) {
       if (prop === "setProperty") {
         return (key: string, value: string) => {
-          target[key as any] = value;
+          if (key === "cssText") {
+            styleProxy.fromString(value);
+          } else {
+            target[key as any] = value;
+          }
         };
       }
       if (prop === "getPropertyValue") {
@@ -68,9 +95,16 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
           return "";
         };
       }
+      if (prop === "cssText") {
+        return styleProxy.toString();
+      }
       return Reflect.get(target, prop, receiver);
     },
     set(target, prop, value, receiver) {
+      if (prop === "cssText") {
+        styleProxy.fromString(value);
+        return true;
+      }
       return Reflect.set(target, prop, value, receiver);
     },
   });
@@ -143,6 +177,18 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
         }
       },
     },
+    style: {
+      get: () => styleObj,
+      set: (val: any) => {
+        if (typeof val === "string") {
+          styleProxy.fromString(val);
+        } else if (typeof val === "object" && val !== null) {
+          // Clear and copy
+          Object.keys(styleStorage).forEach((k) => delete styleStorage[k]);
+          Object.assign(styleProxy.proxy, val);
+        }
+      },
+    },
   });
 
   node.setAttribute = (name, value) => {
@@ -164,17 +210,34 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
     delete _attributes[name.toLowerCase()];
   };
 
-  node.toString = () => {
+  node.matches = (selector: string): boolean => {
+    if (!selector) return false;
+    if (selector === "*") return true;
+
+    // Very basic selector parser
+    if (selector.startsWith("#")) {
+      return node.id === selector.slice(1);
+    }
+    if (selector.startsWith(".")) {
+      return node.classList.contains(selector.slice(1));
+    }
+
+    const tagName = node.tagName;
+    return tagName?.toLowerCase() === selector.toLowerCase();
+  };
+
+  node.toString = function () {
     const styleStr = styleProxy.toString();
     if (styleStr) {
       _attributes["style"] = styleStr;
     }
 
-    const boolProps = ["disabled", "checked", "selected", "readOnly", "required", "multiple", "hidden", "autofocus"];
-    const activeBoolAttributes = boolProps.filter((p) => (node as any)[p] === true).map((p) => p.toLowerCase());
+    const activeBoolAttributes = boolProps.filter((p) => (this as any)[p] === true).map((p) => p.toLowerCase());
 
     const attrs = [
-      ...Object.entries(_attributes).map(([name, value]) => `${name}="${escapeAttribute(value)}"`),
+      ...Object.entries(_attributes)
+        .filter(([name]) => !boolProps.some((p) => p.toLowerCase() === name.toLowerCase()))
+        .map(([name, value]) => `${name}="${escapeAttribute(value)}"`),
       ...activeBoolAttributes,
     ]
       .sort() // Deterministic output for testing
@@ -207,5 +270,82 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
     return `<${tagName}${attrStr}>${children}</${tagName}>`;
   };
 
-  return applyParentNodeMethods(node);
+  node.addEventListener = () => {};
+  node.removeEventListener = () => {};
+
+  const element = applyParentNodeMethods(node);
+
+  const internalProps = new Set([
+    "_childNodes",
+    "_parentNode",
+    "_ownerDocument",
+    "nodeType",
+    "tagName",
+    "attributes",
+    "dataset",
+    "style",
+    "id",
+    "className",
+    "innerHTML",
+    "classList",
+    "textContent",
+    "setAttribute",
+    "getAttribute",
+    "hasAttribute",
+    "removeAttribute",
+    "addEventListener",
+    "removeEventListener",
+    "toString",
+    "appendChild",
+    "insertBefore",
+    "removeChild",
+    "append",
+    "prepend",
+    "replaceChildren",
+    "getElementById",
+    "getElementsByTagName",
+    "getElementsByClassName",
+    "querySelector",
+    "querySelectorAll",
+    "isConnected",
+    "parentElement",
+    "nextSibling",
+    "previousSibling",
+    "on",
+    "clear",
+    "remove",
+    "_originalRemove",
+    "$type",
+  ]);
+
+  return new Proxy(element, {
+    get(target, prop, receiver) {
+      if (prop === "__isProxy") return true;
+      if (prop === "__target") return target;
+      if (prop === "style") return styleProxy;
+      if (typeof prop === "string" && !internalProps.has(prop) && !(prop in target)) {
+        const val = target.getAttribute(prop);
+        if (boolProps.map((p) => p.toLowerCase()).includes(prop.toLowerCase())) {
+          return val === "true" || val === "" || target.hasAttribute(prop);
+        }
+        return val;
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+    set(target, prop, value, receiver) {
+      if (typeof prop === "string" && !internalProps.has(prop) && !(prop in target)) {
+        if (boolProps.map((p) => p.toLowerCase()).includes(prop.toLowerCase())) {
+          if (value === true || value === "true" || value === "") {
+            target.setAttribute(prop, "true");
+          } else {
+            target.removeAttribute(prop);
+          }
+          return true;
+        }
+        target.setAttribute(prop, String(value));
+        return true;
+      }
+      return Reflect.set(target, prop, value, receiver);
+    },
+  });
 }

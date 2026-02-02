@@ -24,9 +24,6 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
     try {
       return wrapComponent(factory)() as T;
     } catch (err) {
-      // Destroy scope from failed component
-      scope.destroy();
-
       const newScope = createScope();
 
       // Ensure onAttached events propagate through the new scope to the original scope's handler

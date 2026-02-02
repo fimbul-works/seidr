@@ -37,7 +37,7 @@ describe("List Component", () => {
     expect(parentEl.querySelectorAll("span").length).toBe(2);
     expect(parentEl.innerHTML).toContain("A");
     expect(parentEl.innerHTML).toContain("B");
-    expect(parentEl.innerHTML).toContain("<!--seidr-list");
+    expect(parentEl.innerHTML).toContain("<!--s:list-");
 
     // Update list
     items.value = [

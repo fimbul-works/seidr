@@ -16,7 +16,10 @@ export interface InternalServerNode {
 /**
  * Creates a base server-side node.
  */
-export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerNode<T> & InternalServerNode {
+export function createServerNode<T extends SupportedNodeTypes>(
+  type: T,
+  ownerDocument: ServerDocument | null = null,
+): ServerNode<T> & InternalServerNode {
   const _nodes: ServerNode[] = [];
   const _list = createServerNodeList(_nodes);
 
@@ -24,7 +27,7 @@ export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerN
     nodeType: type,
     _parentNode: null,
     _childNodes: _nodes,
-    _ownerDocument: null,
+    _ownerDocument: ownerDocument,
 
     get nodeName(): string {
       switch (type) {
@@ -58,13 +61,29 @@ export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerN
 
     get ownerDocument(): ServerDocument | null {
       if (node._ownerDocument) return node._ownerDocument;
-      let p = node._parentNode;
-      while (p?._parentNode) p = p._parentNode;
-      return p?.nodeType === DOCUMENT_NODE ? (p as ServerDocument) : null;
+      return node._parentNode?.ownerDocument ?? null;
     },
 
     get baseURI(): string {
       return "/";
+    },
+
+    get nextSibling(): ServerNode | null {
+      const p = node._parentNode;
+      if (!p) return null;
+      // We need to find this SPECIFIC node instance's index, but indexOf uses equality.
+      // Since ServerNode is a plain object/proxy, we should ensure it's not present multiple times.
+      const index = p._childNodes.indexOf(node as any);
+      if (index === -1) return null;
+      return p._childNodes[index + 1] ?? null;
+    },
+    
+    get previousSibling(): ServerNode | null {
+      const p = node._parentNode;
+      if (!p) return null;
+      const index = p._childNodes.indexOf(node as any);
+      if (index === -1) return null;
+      return p._childNodes[index - 1] ?? null;
     },
 
     get childNodes(): NodeList {
@@ -103,6 +122,12 @@ export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerN
       }
     },
 
+    remove(): void {
+      const self = this as any;
+      if (self.parentNode) {
+        self.parentNode.removeChild(self);
+      }
+    },
     toString(): string {
       return node._childNodes.map((n) => n.toString()).join("");
     },

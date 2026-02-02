@@ -68,7 +68,14 @@ export function createCaseProxy<
     const isKebab = isKebabCase(prop);
 
     if (!isCamel && !isKebab) {
-      throw new Error(`Invalid property name: "${prop}". Must be camelCase or kebab-case.`);
+      // Allow internal/symbol-like properties (starts with $ or _)
+      // or common vitest/node properties like 'constructor', 'toJSON', etc.
+      if (prop.startsWith("$") || prop.startsWith("_") || prop === "constructor" || prop === "toJSON") {
+        return prop as SK;
+      }
+      // For anything else, return a special key that won't exist in storage
+      // but don't throw, as it crashes Vitest's pretty-print/inspect
+      return `__invalid__${prop}` as SK;
     }
 
     // If it already matches the storage format (has prefix and is kebab)

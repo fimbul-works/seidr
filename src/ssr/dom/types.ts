@@ -41,10 +41,14 @@ export interface ServerNode<T extends SupportedNodeTypes = SupportedNodeTypes> {
   readonly parentElement: ServerElement | null;
   readonly baseURI: string;
 
+  readonly nextSibling: ServerNode | null;
+  readonly previousSibling: ServerNode | null;
+
   readonly childNodes: NodeList;
   contains(other: ServerNode): boolean;
 
   textContent?: string | null;
+  remove(): void;
   toString(): string;
 }
 

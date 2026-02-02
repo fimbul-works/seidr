@@ -126,6 +126,9 @@ export function component<P = void>(
           }
         };
       }
+    } catch (err) {
+      scope.destroy();
+      throw err;
     } finally {
       // Remove from stack
       stack.pop();

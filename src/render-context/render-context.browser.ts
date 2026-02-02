@@ -10,6 +10,7 @@ const clientRenderContext: RenderContext = {
   currentPath: typeof window !== "undefined" ? window.location.pathname : "/",
   fragmentOwners: new WeakMap(),
   fragmentChildren: new WeakMap(),
+  fragmentParents: new WeakMap(),
 };
 
 /**
