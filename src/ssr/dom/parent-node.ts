@@ -1,7 +1,7 @@
-import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, type NodeTypeDocumentFragment } from "../../types";
+import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE } from "../../types";
 import type { ServerElement } from "./element";
 import type { InternalServerNode } from "./node";
-import type { ServerNode, ServerNodeType, ServerParentNode } from "./types";
+import type { ServerNode, ServerParentNode } from "./types";
 
 /**
  * Enhances a node with ParentNode-like methods and properties.
@@ -43,7 +43,7 @@ export function applyParentNodeMethods<T extends InternalServerNode & ServerNode
     // 2. Fragment flattening
     if (newNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
       // DOCUMENT_FRAGMENT_NODE
-      for (const child of newNode.childNodes) {
+      for (const child of [...newNode.childNodes]) {
         insertRaw(child as unknown as ServerNode, referenceNode);
       }
 
@@ -60,17 +60,46 @@ export function applyParentNodeMethods<T extends InternalServerNode & ServerNode
       if (index !== -1) oldNodes.splice(index, 1);
     }
 
-    n._parentNode = augmented;
+    // Determine target parent instance (Proxy if available, else augmented)
+    const targetParent = (augmented as any)._proxy || augmented;
 
     // 4. Update local children list
     if (referenceNode === null) {
-      _nodes.push(n);
+      const prev = _nodes[_nodes.length - 1];
+      if (prev && prev.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) {
+        // Merge text: append new content to previous node
+        (prev as any).textContent += (newNode as any).textContent;
+        // The newNode is effectively "consumed", it doesn't get a new parent and isn't added.
+        n._parentNode = null; // Ensure it's detached
+      } else {
+        n._parentNode = targetParent;
+        _nodes.push(n);
+      }
     } else {
       const index = _nodes.indexOf(referenceNode as any);
       if (index === -1) {
-        // Fallback or error? Standard DOM throws
         throw new Error("The node before which the new node is to be inserted is not a child of this node.");
       }
+
+      const prev = _nodes[index - 1];
+      // Check previous sibling
+      if (prev && prev.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) {
+         // Merge into previous
+         (prev as any).textContent += (newNode as any).textContent;
+         n._parentNode = null;
+         return newNode;
+      }
+
+      const next = _nodes[index]; // == referenceNode
+      if (next.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) {
+         // Merge into next (prepend)
+          (next as any).textContent = (newNode as any).textContent + (next as any).textContent;
+          n._parentNode = null;
+          return newNode;
+      }
+
+      // If no merge happened:
+      n._parentNode = targetParent;
       _nodes.splice(index, 0, n);
     }
     return newNode;

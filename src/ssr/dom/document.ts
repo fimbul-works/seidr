@@ -30,7 +30,7 @@ export function createServerDocument(): ServerDocument {
   augmented.createElement = (tagName: string) => createServerElement(tagName as any, augmented);
   augmented.createTextNode = (text: string) => createServerTextNode(text, augmented);
   augmented.createComment = (text: string) => createServerComment(text, augmented);
-  augmented.createDocumentFragment = () => createServerDocumentFragment(augmented);
+  augmented.createDocumentFragment = () => createServerDocumentFragment();
 
   // Lazy structure properties
   let _head: any = null;

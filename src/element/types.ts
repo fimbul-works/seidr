@@ -1,7 +1,7 @@
 import type { SeidrComponent } from "../component/types";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction, IsCamelCase, TYPE } from "../types";
-import { SEIDR_CLEANUP, TYPE_PROP } from "../types";
+import { TYPE_PROP } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -206,16 +206,12 @@ export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLEleme
   NoStyle<HTMLElementTagNameMap[K]> & { style: FlexibleCSSStyleDeclaration };
 
 /**
- * SeidrFragment manages a range of DOM nodes without a wrapper element.
- * It uses a start and end marker (HTML Comments) to track its boundaries.
+ * SeidrFragment is a DocumentFragment with internal marker tracking.
+ * It is ephemeral in nature.
  */
 export interface SeidrFragment extends DocumentFragment {
   readonly [TYPE_PROP]: typeof TYPE.FRAGMENT;
   readonly id: string;
   readonly start: Comment;
   readonly end: Comment;
-  readonly nodes: Node[];
-  remove(): void;
-  clear(): void;
-  appendTo(parent: Element | DocumentFragment, anchor?: Node | null): void;
 }

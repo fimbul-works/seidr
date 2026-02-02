@@ -23,7 +23,7 @@ export function $<K extends keyof HTMLElementTagNameMap>(
   const domFactory = getDOMFactory();
   const ctx = getRenderContext();
   const el = domFactory.createElement(tagName);
-  (el as any)._originalRemove = el.remove.bind(el);
+  const originalRemove = el.remove.bind(el);
   let cleanups: CleanupFunction[] = [];
 
   // Reuse the string for hydration
@@ -37,7 +37,7 @@ export function $<K extends keyof HTMLElementTagNameMap>(
 
   // Assign properties
   if (props) {
-    const reserved = ["on", "clear", "isSeidrElement", TYPE_PROP];
+    const reserved = [TYPE_PROP, "on", "clear", SEIDR_CLEANUP];
     for (const [prop, value] of Object.entries(props)) {
       if (reserved.includes(prop)) {
         throw new Error(`Unallowed property "${prop}"`);
@@ -69,17 +69,13 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     [SEIDR_CLEANUP](): void {
       for (const cleanup of cleanups) cleanup();
       cleanups = [];
-      for (const child of Array.from(el.childNodes)) {
+      for (const child of el.childNodes) {
         if ((child as any)[SEIDR_CLEANUP]) (child as any)[SEIDR_CLEANUP]();
       }
     },
     remove(): void {
       (this as any)[SEIDR_CLEANUP]();
-      if ((el as any)._originalRemove) {
-        (el as any)._originalRemove();
-      } else if (el.parentNode) {
-        el.parentNode.removeChild(el);
-      }
+      originalRemove();
     },
   } as SeidrElementInterface);
 

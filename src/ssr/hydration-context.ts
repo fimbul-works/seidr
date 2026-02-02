@@ -20,8 +20,9 @@ const hydrationSet = new Set<Seidr<any>>();
  *
  * @param {HydrationData} data - The hydration data containing observables
  */
-export function setHydrationData(data: HydrationData): void {
+export function setHydrationData(data: HydrationData, root?: HTMLElement): void {
   hydrationData = data;
+  if (root) hydrationData.root = root;
   // Clear registry when setting new context
   hydrationRegistry = [];
   hydrationSet.clear();
@@ -44,6 +45,14 @@ export function clearHydrationData(): void {
  */
 export function hasHydrationData(): boolean {
   return hydrationData !== undefined;
+}
+
+/**
+ * Gets the current hydration data.
+ * @returns {HydrationData | undefined}
+ */
+export function getHydrationData(): HydrationData | undefined {
+  return hydrationData;
 }
 
 /**

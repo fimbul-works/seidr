@@ -314,11 +314,10 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
     "on",
     "clear",
     "remove",
-    "_originalRemove",
     "$type",
   ]);
 
-  return new Proxy(element, {
+  const proxy = new Proxy(element, {
     get(target, prop, receiver) {
       if (prop === "__isProxy") return true;
       if (prop === "__target") return target;
@@ -348,4 +347,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
       return Reflect.set(target, prop, value, receiver);
     },
   });
+
+  (element as any)._proxy = proxy;
+  return proxy;
 }

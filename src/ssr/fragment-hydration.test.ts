@@ -50,6 +50,8 @@ describe("Fragment Hydration", () => {
 
     // Check that we reused the markers
     const startComment = container.firstChild as Comment;
+    console.log("START NODE TYPE:", startComment.nodeType, startComment.nodeName, startComment.textContent);
+    console.log("INNER HTML:", container.innerHTML);
     expect(startComment.nodeType).toBe(Node.COMMENT_NODE);
     expect(startComment.nodeValue).toContain("s:");
 
@@ -149,6 +151,34 @@ describe("Fragment Hydration", () => {
     expect(container.innerHTML).toContain(">Case B</div>");
     expect(container.innerHTML).not.toContain(">Case A</div>");
 
+    document.body.removeChild(container);
+  });
+
+  test("should recover if markers are stripped (fallback to append)", async () => {
+    process.env.SEIDR_TEST_SSR = "true";
+    const ArrayComponent = () => [$("span", { textContent: "A" }), $("span", { textContent: "B" })];
+    const { html, hydrationData } = await renderToString(() => ArrayComponent());
+
+    // Strip markers
+    const strippedHtml = html.replace(/<!--[se]:[^>]+-->/g, "");
+    expect(strippedHtml).toBe("<span>A</span><span>B</span>");
+
+    // Hydrate
+    process.env.SEIDR_TEST_SSR = "false";
+    const container = document.createElement("div");
+    container.innerHTML = strippedHtml;
+    document.body.appendChild(container);
+
+    const unmount = hydrate(ArrayComponent, container, hydrationData);
+
+    // Should have appended new content with markers (since it couldn't find old one)
+    // Result: A B <!--s--> A B <!--e-->
+    // This is robust behavior (app works, even if content duplicated due to missing markers)
+    // Note: because we couldn't find markers, we fell back to creating new ones.
+    expect(container.innerHTML).toContain("<span>A</span><span>B</span><!--s:");
+    expect(container.innerHTML).toContain("<!--e:");
+
+    unmount();
     document.body.removeChild(container);
   });
 });

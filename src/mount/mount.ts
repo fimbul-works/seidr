@@ -1,6 +1,6 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
-import type { SeidrElement, SeidrNode } from "../element";
+import { findMarkers, type SeidrElement, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { CleanupFunction } from "../types";
 import { isFn, isSeidrFragment } from "../util/type-guards";
@@ -38,16 +38,17 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   const component: SeidrComponent = wrapComponent(factory)();
 
   // Check if element is already in the container (happens during hydration with DOM reuse)
-  const isAlreadyMounted = isSeidrFragment(component.element)
-    ? container.contains(component.element.start)
-    : container.contains(component.element as Node);
+  let isAlreadyMounted = false;
+  if (isSeidrFragment(component.element)) {
+    const [s] = findMarkers(component.element.id, container);
+    isAlreadyMounted = !!(s && container.contains(s));
+  } else {
+    isAlreadyMounted = container.contains(component.element as Node);
+  }
 
   if (!isAlreadyMounted) {
-    if (isSeidrFragment(component.element)) {
-      component.element.appendTo(container);
-    } else {
-      container.appendChild(component.element as Node);
-    }
+    // Both Element and DocumentFragment (SeidrFragment) support appendChild
+    container.appendChild(component.element as Node);
   }
 
   if (component.scope.onAttached) {
@@ -55,7 +56,7 @@ export function mount<C extends SeidrNode | SeidrComponent>(
   }
 
   const cleanup = () => {
-    component.element.remove();
+    component.unmount();
   };
 
   // Automatically track cleanup if called within a component's render function

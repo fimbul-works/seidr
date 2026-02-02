@@ -98,12 +98,48 @@ export function component<P = void>(
         }
       }
 
-      // Unified Lifecycle: Wrap the root element's remove to trigger scope destruction
-      if (comp.element) {
+      // Implement unmount
+      comp.unmount = () => {
+        if (comp.scope.isDestroyed) return;
+        comp.scope.destroy();
+
+        const el = comp.element;
+        if (isSeidrFragment(el)) {
+          // Fragment: Find markers and remove range
+          // We must use 'findMarkers' dynamically because they might be in DOM
+          // or passed in. If fragment was just created, markers are in it?
+          // If mounted, they are in parent.
+          // We use the ID to be sure.
+          const [s, e] = findMarkers(el.id);
+          if (s && e) {
+            // clearBetween equivalent
+            if (s.parentNode) {
+              let curr = s.nextSibling;
+              while (curr && curr !== e) {
+                const next = curr.nextSibling;
+                if (curr.parentNode) curr.parentNode.removeChild(curr);
+                curr = next;
+              }
+              // Remove markers themselves
+              if (e.parentNode) e.parentNode.removeChild(e);
+              if (s.parentNode) s.parentNode.removeChild(s);
+            }
+          }
+        } else if (el && (el as any).remove) {
+          // Standard Element / Text / Comment
+          (el as ChildNode).remove();
+        }
+      };
+
+      // Unified Lifecycle: Monkey-patch element.remove() only for non-Fragments
+      // This maintains compatibility with direct DOM manipulation for single roots.
+      if (comp.element && !isSeidrFragment(comp.element)) {
         const el = comp.element as ChildNode;
         const oR = el.remove.bind(el);
         el.remove = () => {
-          comp.scope.destroy();
+          // If remove called directly, trigger unmount logic (scope destroy)
+          // But valid only if not destroyed
+          if (!comp.scope.isDestroyed) comp.scope.destroy();
           if (oR) oR();
           else if (el.parentNode) el.parentNode.removeChild(el);
         };

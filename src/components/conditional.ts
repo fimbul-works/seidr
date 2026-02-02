@@ -1,5 +1,5 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 
@@ -27,7 +27,10 @@ export function Conditional<T extends SeidrNode>(
     const id = `conditional-${ctx.ctxID}-${instanceId}`;
 
     const [s, e] = findMarkers(id);
-    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
+    const fragment = $fragment([], id, s || undefined, e || undefined);
+    // Access created markers if not found initially
+    const start = (fragment as any).start as Comment;
+    const end = (fragment as any).end as Comment;
 
     let currentComponent: SeidrComponent | null = null;
 
@@ -37,18 +40,25 @@ export function Conditional<T extends SeidrNode>(
      */
     const update = (shouldShow: boolean) => {
       if (shouldShow && !currentComponent) {
-        fragment.clear();
-        currentComponent = wrapComponent(factory)();
-        fragment.appendChild(currentComponent.element as any);
+        // Ensure clean state (though logically should be empty if currentComponent was null)
+        clearBetween(start, end);
 
-        // Trigger onAttached when component is added to DOM
-        if (fragment.parentNode && currentComponent.scope.onAttached) {
-          currentComponent.scope.onAttached(fragment.parentNode);
+        currentComponent = wrapComponent(factory)();
+        const el = currentComponent.element as any;
+
+        // Direct insertion into DOM
+        if (end.parentNode) {
+          end.parentNode.insertBefore(el, end);
+        }
+
+        // Trigger onAttached
+        if (end.parentNode && currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(end.parentNode);
         }
       } else if (!shouldShow && currentComponent) {
-        currentComponent.element.remove();
+        currentComponent.unmount();
         currentComponent = null;
-        fragment.clear();
+        clearBetween(start, end);
       }
     };
 

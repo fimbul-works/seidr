@@ -70,19 +70,14 @@ export function hydrate<T extends SeidrNode>(
   }
 
   // Set the hydration context so Seidr instances get their server values
-  setHydrationData(hydrationData);
-
-  // Find existing root component after SSR
-  const existingRoot = $query(`[data-seidr-root="${hasRenderContextID ? hydrationData.ctxID : "true"}"]`);
+  setHydrationData(hydrationData, container);
 
   // Create the component (Seidr instances will auto-hydrate)
   // Mount the component in the container
   const unmount = mount(factory, container);
 
-  // Remove existing root component if found
-  if (existingRoot) {
-    existingRoot.remove();
-  }
+  // Note: We do NOT remove the existing root.
+  // True hydration reuses the existing DOM nodes found in the container.
 
   // Clear the hydration context
   clearHydrationData();

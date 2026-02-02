@@ -1,5 +1,5 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import { isSSR } from "../util/env";
@@ -29,24 +29,28 @@ export function List<T, I extends string | number, C extends SeidrNode>(
     const id = `list-${ctx.ctxID}-${instanceId}`;
 
     const [s, e] = findMarkers(id);
-    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
+    const fragment = $fragment([], id, s || undefined, e || undefined);
+    const start = (fragment as any).start as Comment;
+    const end = (fragment as any).end as Comment;
 
     const componentMap = new Map<I, SeidrComponent>();
 
     const update = (items: T[]) => {
-      const parent = fragment.parentNode;
+      const parent = end.parentNode; // Anchor to end marker parent
+      if (!parent) return; // Not mounted yet?
+
       const newKeys = new Set(items.map(getKey));
 
       // Remove components no longer in list
       for (const [key, comp] of componentMap.entries()) {
         if (!newKeys.has(key)) {
-          comp.element.remove();
+          comp.unmount();
           componentMap.delete(key);
         }
       }
 
       // Add or reorder components by iterating backwards from end marker
-      let currentAnchor: Node = fragment.end;
+      let currentAnchor: Node = end;
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
@@ -59,14 +63,15 @@ export function List<T, I extends string | number, C extends SeidrNode>(
 
         // Move to correct position if needed
         const el = comp.element as any;
-        const targetAnchor = el.start || el;
+        const targetAnchor = el.start || el; // Handle if child is fragment? SeidrFragment start or Text/Element
 
         if (el.nextSibling !== currentAnchor) {
           const needsAttachment = isSSR() || !el.parentNode;
-          fragment.insertBefore(el, currentAnchor);
+          // Use parent.insertBefore explicitly
+          parent.insertBefore(el, currentAnchor);
 
           // Trigger onAttached if component was newly added to DOM
-          if (needsAttachment && parent && comp.scope.onAttached) {
+          if (needsAttachment && comp.scope.onAttached) {
             comp.scope.onAttached(parent);
           }
         }
@@ -76,7 +81,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
     };
 
     // Initial render
-    fragment.clear();
+    clearBetween(start, end);
     update(observable.value);
 
     // Ensure onAttached is propagated
@@ -91,7 +96,7 @@ export function List<T, I extends string | number, C extends SeidrNode>(
     // Secondary cleanup tracking for map contents
     scope.track(() => {
       for (const comp of componentMap.values()) {
-        comp.element.remove();
+        comp.unmount();
       }
       componentMap.clear();
     });

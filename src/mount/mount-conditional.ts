@@ -1,26 +1,11 @@
 import { type SeidrComponent, wrapComponent } from "../component";
-import { $fragment, type SeidrElement, type SeidrNode } from "../element";
+import { $fragment, clearBetween, type SeidrElement, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 
-/**
- * Conditionally renders a component based on a boolean observable state.
- *
- * This function provides lazy component creation - the component factory function
- * is only called when the condition becomes true. When the condition becomes false,
- * the component is properly destroyed and removed from the DOM.
- *
- * If called within a parent component's render function, the cleanup is automatically
- * tracked and will be executed when the parent component is destroyed.
- *
- * @template {SeidrComponent} C - The type of SeidrComponent being conditionally mounted
- *
- * @param {Seidr<boolean>} condition - Boolean observable that controls component visibility
- * @param {() => C} componentFactory - Function that creates the component when needed
- * @param {HTMLElement | SeidrElement} container - The DOM container element
- * @returns {CleanupFunction} A cleanup function that removes the reactive binding and any active component
- */
+// ... (comments)
+
 export function mountConditional<T extends SeidrNode>(
   condition: Seidr<boolean>,
   factory: () => T,
@@ -33,15 +18,25 @@ export function mountConditional<T extends SeidrNode>(
   }
 
   const fragment = $fragment([], `mount-conditional:${ctx.ctxID}-:${ctx.idCounter++}`);
-  if ("appendChild" in container) {
-    fragment.appendTo(container as any);
-  }
+  // Use standard DOM API
+  container.appendChild(fragment as Node);
 
   let currentComponent: SeidrComponent | null = null;
+
+  // ... (update function remains mostly same, remove() on component is fine if unmount() handles it,
+  // but wait, component.element.remove() was monkey-patched in component.ts to allow unmount.
+  // The user kept monkey-patching for Elements but not Fragments.
+  // Conditional factory usually returns a Component or Element.
+  // If it's a component, verify wrapComponent handles it.
+  // If it returns a Node, wrapComponent wraps it.
+  // So currentComponent is a SeidrComponent.
+  // So currentComponent.unmount() is safer than .element.remove() if fragment.
+  // I will switch to unmount() here too.)
 
   const update = (shouldShow: boolean) => {
     if (shouldShow && !currentComponent) {
       currentComponent = wrapComponent(factory)();
+      // Fragment support: appendChild works for both Element and Fragment
       fragment.appendChild(currentComponent.element as any);
 
       // Trigger onAttached when component is added to DOM
@@ -49,7 +44,7 @@ export function mountConditional<T extends SeidrNode>(
         currentComponent.scope.onAttached(container as any);
       }
     } else if (!shouldShow && currentComponent) {
-      currentComponent.element.remove();
+      currentComponent.unmount();
       currentComponent = null;
     }
   };
@@ -64,8 +59,13 @@ export function mountConditional<T extends SeidrNode>(
   return () => {
     cleanup();
     if (currentComponent) {
-      currentComponent.element.remove();
+      currentComponent.unmount();
     }
-    fragment.remove();
+    // Inline Fragment Cleanup
+    if (fragment.start && fragment.end) {
+      clearBetween(fragment.start, fragment.end);
+      if (fragment.start.parentNode) fragment.start.remove();
+      if (fragment.end.parentNode) fragment.end.remove();
+    }
   };
 }

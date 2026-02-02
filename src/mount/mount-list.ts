@@ -37,7 +37,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   }
 
   const fragment = $fragment([], `mount-list:${ctx.ctxID}-:${ctx.idCounter++}`);
-  fragment.appendTo(container as any);
+  container.appendChild(fragment as Node);
   const componentMap = new Map<I, SeidrComponent>();
 
   const update = (items: T[]) => {
@@ -46,7 +46,7 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
     // Remove components no longer in list
     for (const [key, comp] of componentMap.entries()) {
       if (!newKeys.has(key)) {
-        comp.element.remove();
+        comp.unmount();
         componentMap.delete(key);
       }
     }
@@ -65,12 +65,20 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
 
       // Move to correct position if needed
       const el = (comp as SeidrComponent).element as any;
+      // Use helper or property to get start node.
+      // SeidrFragment has 'start', SeidrElement (Node) is itself.
       const targetAnchor = (el as any).start || el;
 
       if (el.nextSibling !== currentAnchor) {
         const needsAttachment = !el.parentNode;
 
-        fragment.insertBefore(el, currentAnchor);
+        // SeidrFragment (if el is one) handles insertBefore naturally via documentFragment behavior
+        // But if it's ALREADY in dom, insertBefore moves it.
+        // `fragment.insertBefore`? No, we insert into `container` (fragment parent).
+        // `fragment` variable here refers to the wrapper, but the *content* is in `container`.
+        if (currentAnchor.parentNode) {
+          currentAnchor.parentNode.insertBefore(el, currentAnchor);
+        }
 
         // Trigger onAttached if component was newly added to DOM
         if (needsAttachment && comp.scope.onAttached) {
@@ -92,9 +100,8 @@ export function mountList<T, I extends string | number, C extends SeidrNode>(
   return () => {
     cleanup();
     for (const comp of componentMap.values()) {
-      comp.element.remove();
+      comp.unmount();
     }
     componentMap.clear();
-    fragment.remove();
   };
 }

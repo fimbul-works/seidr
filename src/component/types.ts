@@ -91,6 +91,12 @@ export interface SeidrComponent<T extends Node = any> {
    * @type {ComponentScope}
    */
   scope: ComponentScope;
+
+  /**
+   * Unmounts the component, destroying its scope and removing its elements from the DOM.
+   * Handles both single elements and fragments.
+   */
+  unmount(): void;
 }
 
 /**

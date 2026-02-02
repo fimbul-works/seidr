@@ -1,7 +1,7 @@
 import { component } from "../component/component";
 import { type SeidrComponent, useScope, wrapComponent } from "../component/index";
 import { getDOMFactory } from "../dom-factory/index";
-import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
@@ -62,7 +62,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
    * Clears all nodes within the router fragment.
    */
   const clearContent = () => {
-    fragment.clear();
+    clearBetween(fragment.start, fragment.end);
   };
 
   /**
@@ -92,7 +92,7 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
     }
 
     // 2. Handle component updates (Full swap)
-    currentComponent?.element.remove();
+    currentComponent?.unmount(); // Use unmount
     clearContent();
 
     currentRouteIndex = matchedIndex;
@@ -119,7 +119,11 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
    */
   const mountComponent = (comp: SeidrComponent) => {
     if (!comp.element) return;
-    fragment.appendChild(comp.element as any);
+    // Insert before end marker
+    if (fragment.end.parentNode) {
+      fragment.end.parentNode.insertBefore(comp.element as any, fragment.end);
+    }
+
     if (!isSSRMode && fragment.parentNode && comp.scope.onAttached) {
       comp.scope.onAttached(fragment.parentNode);
     }
@@ -130,16 +134,22 @@ export const Router = component(({ routes, fallback }: RouterProps): SeidrCompon
 
   // Cleanup: destroy active component
   scope.track(() => {
-    currentComponent?.element.remove();
+    currentComponent?.unmount();
     currentComponent = null;
     currentParamsSeidr = null;
-    fragment.remove();
+
+    // Inline Fragment Cleanup
+    if (fragment.start && fragment.end) {
+      clearBetween(fragment.start, fragment.end);
+      if (fragment.start.parentNode) fragment.start.remove();
+      if (fragment.end.parentNode) fragment.end.remove();
+    }
   });
 
   // Ensure markers and content are mounted when parent is ready
   scope.onAttached = (parent) => {
-    if (!isSSRMode && !fragment.parentNode && parent) {
-      fragment.appendTo(parent as any);
+    if (!isSSRMode && !fragment.start.parentNode && parent) {
+      parent.appendChild(fragment); // Use appendChild via standard DOM
     }
     updateRoutes();
   };

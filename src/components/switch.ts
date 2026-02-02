@@ -1,5 +1,5 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $fragment, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 
@@ -26,7 +26,9 @@ export function Switch<T, C extends SeidrNode>(
     const id = `switch-${ctx.ctxID}-${instanceId}`;
 
     const [s, e] = findMarkers(id);
-    const fragment: SeidrFragment = $fragment([], id, s || undefined, e || undefined);
+    const fragment = $fragment([], id, s || undefined, e || undefined);
+    const start = (fragment as any).start as Comment;
+    const end = (fragment as any).end as Comment;
 
     let currentComponent: SeidrComponent | null = null;
 
@@ -36,19 +38,21 @@ export function Switch<T, C extends SeidrNode>(
       const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
-        currentComponent.element.remove();
+        currentComponent.unmount();
         currentComponent = null;
       }
 
-      fragment.clear();
+      clearBetween(start, end);
 
       if (factory) {
         currentComponent = wrapComponent<typeof value>(factory)(value);
-        fragment.appendChild(currentComponent.element as any);
+        if (end.parentNode) {
+          end.parentNode.insertBefore(currentComponent.element as any, end);
+        }
 
         // Trigger onAttached when component is added to DOM
-        if (fragment.parentNode && currentComponent.scope.onAttached) {
-          currentComponent.scope.onAttached(fragment.parentNode);
+        if (end.parentNode && currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(end.parentNode);
         }
       }
     };

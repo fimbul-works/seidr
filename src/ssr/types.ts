@@ -50,4 +50,15 @@ export interface HydrationData extends SSRScopeCapture {
    * instead of the default 0, enabling proper SSR/client marker matching.
    */
   ctxID?: number;
+
+  /**
+   * Application fragment paths for hydration verification and fallback.
+   * Maps fragment ID -> Path from root (array of child indices).
+   */
+  fragments?: Record<string, number[]>;
+
+  /**
+   * Root container for path traversal relative lookup (client-side only).
+   */
+  root?: any;
 }
