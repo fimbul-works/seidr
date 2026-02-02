@@ -17,6 +17,9 @@ export interface RenderContext {
   /** The root node for the current render context */
   rootNode?: Node;
 
+  /** The global document object for this render context (SSR isolation) */
+  document?: Document;
+
   /** Counter incremented when elements are reused during hydration */
   idCounter: number;
 

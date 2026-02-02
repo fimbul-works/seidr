@@ -47,6 +47,7 @@ afterEach(() => {
   browserContext.currentPath = "/";
   browserContext.fragmentOwners = new WeakMap();
   browserContext.fragmentChildren = new WeakMap();
+  browserContext.document = undefined;
 
   // Clean up DOM after each test
   document.body.innerHTML = "";

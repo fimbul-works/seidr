@@ -3,12 +3,7 @@ import { $ } from "../element/element";
 import { Seidr } from "../seidr/seidr";
 import { enableSSRMode } from "../test-setup";
 
-// Store original SSR env var
-const originalSSREnv = process.env.SEIDR_TEST_SSR;
-
 describe("SSR Integration Tests", () => {
-  const originalWindow = global.window;
-
   let cleanup: () => void;
   beforeEach(() => {
     cleanup = enableSSRMode();
@@ -289,7 +284,7 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle boolean attributes", () => {
-      const input = $("input", { disabled: true, readonly: true, required: false });
+      const input = $("input", { disabled: true, readOnly: true, required: false });
 
       const html = input.toString();
       expect(html).toContain("disabled");

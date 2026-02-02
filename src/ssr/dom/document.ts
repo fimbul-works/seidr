@@ -36,5 +36,18 @@ export function createServerDocument(): ServerDocument {
     node._childNodes.push(c);
   };
 
+  // Create basic document structure
+  const html = createServerElement("html");
+  node.appendChild(html);
+  node.documentElement = html;
+
+  const head = createServerElement("head");
+  html.appendChild(head);
+  node.head = head;
+
+  const body = createServerElement("body");
+  html.appendChild(body);
+  node.body = body;
+
   return applyParentNodeMethods(node);
 }

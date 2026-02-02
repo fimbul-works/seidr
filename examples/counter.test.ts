@@ -75,7 +75,7 @@ describe("Counter Example", () => {
     const counterComponent = component(Counter)();
     mount(counterComponent, document.body);
 
-    counterComponent.destroy();
+    counterComponent.element.remove();
 
     expect(document.body.children.length).toBe(0);
   });

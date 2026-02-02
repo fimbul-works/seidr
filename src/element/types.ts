@@ -100,9 +100,9 @@ export type ReactiveARIAKebabCase = {
 /**
  * Type definition for reactive CSS style properties.
  */
-export type ReactiveCSSStyleDeclaration = {
+export type ReactiveCSSStyleDeclaration = Partial<{
   [K in keyof CSSStyleDeclaration]-?: ReactiveValue<CSSStyleDeclaration[K]>;
-};
+}>;
 
 /**
  * Type definition for reactive data-* attributes.

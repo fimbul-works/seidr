@@ -1,24 +1,25 @@
-import { escapeAttribute, escapeText } from "../../element/escape-utils";
+import { escapeAttribute } from "../../element/escape-utils";
 import { ELEMENT_NODE } from "../../types";
 import { createCaseProxy } from "./case-proxy";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
 import { createServerTextNode } from "./text";
-import type { ServerNode, ServerNodeType } from "./types";
+import type { ServerNode, ServerParentNode } from "./types";
 
-export type ServerElement = ServerNode &
+export type ServerElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = ServerParentNode &
+  ServerNode &
   InternalServerNode & {
-    tagName: string;
+    tagName: K;
     id: string;
     className: string;
     style: any;
     dataset: any;
     attributes: Record<string, string>;
     classList: DOMTokenList;
-    appendChild(node: ServerNodeType): void;
-    append(...nodes: ServerNodeType[]): void;
+    innerHTML: string;
     setAttribute(name: string, value: string): void;
     getAttribute(name: string): string | null;
+    hasAttribute(name: string): boolean;
     removeAttribute(name: string): void;
   };
 
@@ -27,7 +28,7 @@ export type ServerElement = ServerNode &
  */
 export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagName: K): ServerElement {
   const node = createServerNode(ELEMENT_NODE) as ServerElement;
-  node.tagName = tagName;
+  node.tagName = tagName.toUpperCase() as K;
 
   const _attributes: Record<string, string> = {};
   node.attributes = _attributes;
@@ -47,11 +48,32 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
     serialize: (s) => {
       return Object.entries(s)
         .sort(([a], [b]) => a.localeCompare(b))
-        .map(([k, v]) => `${k}:${v}`)
-        .join(";");
+        .map(([k, v]) => `${k}: ${v}`)
+        .join("; ");
     },
   });
-  node.style = styleProxy.proxy;
+  node.style = new Proxy(styleProxy.proxy, {
+    get(target, prop, receiver) {
+      if (prop === "setProperty") {
+        return (key: string, value: string) => {
+          target[key as any] = value;
+        };
+      }
+      if (prop === "getPropertyValue") {
+        return (key: string) => target[key as any];
+      }
+      if (prop === "removeProperty") {
+        return (key: string) => {
+          delete target[key as any];
+          return "";
+        };
+      }
+      return Reflect.get(target, prop, receiver);
+    },
+    set(target, prop, value, receiver) {
+      return Reflect.set(target, prop, value, receiver);
+    },
+  });
 
   Object.defineProperties(node, {
     id: {
@@ -109,11 +131,11 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
           },
           contains: (cls: string) => node.className.split(/\s+/).includes(cls),
           toString: () => node.className,
-        };
+        } as DOMTokenList;
       },
     },
     textContent: {
-      get: () => node._childNodes.map((c) => c.toString()).join(""),
+      get: () => node._childNodes.map((c) => c.textContent || "").join(""),
       set: (val: string | null) => {
         node._childNodes.length = 0;
         if (val !== null) {
@@ -128,14 +150,19 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
   };
 
   node.getAttribute = (name) => {
+    if (name.toLowerCase() === "style") {
+      return styleProxy.toString() || null;
+    }
     return _attributes[name.toLowerCase()] ?? null;
+  };
+
+  node.hasAttribute = (name) => {
+    return name.toLowerCase() in _attributes;
   };
 
   node.removeAttribute = (name) => {
     delete _attributes[name.toLowerCase()];
   };
-
-  applyParentNodeMethods(node);
 
   node.toString = () => {
     const styleStr = styleProxy.toString();
@@ -173,12 +200,12 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(tagNa
       "wbr",
     ];
     if (selfClosing.includes(tagName.toLowerCase())) {
-      return `<${tagName}${attrStr}>`;
+      return `<${tagName}${attrStr} />`;
     }
 
     const children = node._childNodes.map((c) => c.toString()).join("");
     return `<${tagName}${attrStr}>${children}</${tagName}>`;
   };
 
-  return node;
+  return applyParentNodeMethods(node);
 }

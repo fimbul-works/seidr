@@ -61,7 +61,7 @@ describe("TODO Example", () => {
     const todoComponent = component(TodoApp)([]);
     mount(todoComponent, document.body);
 
-    todoComponent.destroy();
+    todoComponent.element.remove();
 
     expect(document.body.children.length).toBe(0);
   });

@@ -10,6 +10,7 @@ import type { ServerNode, SupportedNodeTypes } from "./types";
 export interface InternalServerNode {
   _parentNode: (ServerNode & InternalServerNode) | null;
   _childNodes: ServerNode[];
+  _ownerDocument: ServerDocument | null;
 }
 
 /**
@@ -23,6 +24,7 @@ export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerN
     nodeType: type,
     _parentNode: null,
     _childNodes: _nodes,
+    _ownerDocument: null,
 
     get nodeName(): string {
       switch (type) {
@@ -55,6 +57,7 @@ export function createServerNode<T extends SupportedNodeTypes>(type: T): ServerN
     },
 
     get ownerDocument(): ServerDocument | null {
+      if (node._ownerDocument) return node._ownerDocument;
       let p = node._parentNode;
       while (p?._parentNode) p = p._parentNode;
       return p?.nodeType === DOCUMENT_NODE ? (p as ServerDocument) : null;

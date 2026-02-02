@@ -20,6 +20,9 @@ const domFactoryBrowser = {
   createComment(data: string): Comment {
     return document.createComment(data);
   },
+  getDocument(): Document {
+    return document;
+  },
 } as DOMFactory;
 
 /**

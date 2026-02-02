@@ -17,4 +17,5 @@ export interface DOMFactory<
   createDocumentFragment(): FType;
   createTextNode(data: string): TType;
   createComment(data: string): CType;
+  getDocument(): Document;
 }

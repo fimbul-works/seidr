@@ -44,14 +44,15 @@ export function assignProp(el: any, prop: string, value: any, cleanups: CleanupF
       }
     } else if (typeof value === "object" && value !== null) {
       for (const [styleProp, styleValue] of Object.entries(value)) {
+        const kebabProp = camelToKebab(styleProp);
         if (isSeidr(styleValue)) {
           cleanups.push(
             styleValue.bind(el, (val, element) => {
-              element.style.setProperty(styleProp, String(val));
+              element.style.setProperty(kebabProp, String(val));
             }),
           );
         } else {
-          el.style.setProperty(styleProp, String(styleValue));
+          el.style.setProperty(kebabProp, String(styleValue));
         }
       }
     }
