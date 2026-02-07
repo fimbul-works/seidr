@@ -13,9 +13,6 @@ export const browserContext: RenderContext = {
   seidrIdCounter: 0,
   randomCounter: 0,
   currentPath: "/",
-  fragmentOwners: new WeakMap(),
-  fragmentChildren: new WeakMap(),
-  fragmentParents: new WeakMap(),
 };
 
 /**
@@ -44,8 +41,6 @@ afterEach(() => {
   browserContext.randomCounter = 0;
   browserContext.randomState = undefined;
   browserContext.currentPath = "/";
-  browserContext.fragmentOwners = new WeakMap();
-  browserContext.fragmentChildren = new WeakMap();
   browserContext.document = undefined;
 
   // Clean up DOM after each test

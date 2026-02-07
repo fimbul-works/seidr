@@ -1,27 +1,16 @@
 import { getRenderContext } from "../render-context";
-import {
-  createServerComment,
-  createServerDocument,
-  createServerDocumentFragment,
-  createServerElement,
-  createServerTextNode,
-} from "../ssr/dom";
+import { createServerComment, createServerDocument, createServerElement, createServerTextNode } from "../ssr/dom";
 import { setInternalDOMFactory } from "./dom-factory";
 import type { DOMFactory } from "./types";
 
 /**
  * Node DOMFactory implementation.
  */
-const domFactorySSR = {
+const domFactorySSR: DOMFactory = {
   createElement<K extends keyof HTMLElementTagNameMap>(tag: K): HTMLElementTagNameMap[K] {
     const el = createServerElement(tag);
     (el as any)._ownerDocument = this.getDocument();
     return el as unknown as HTMLElementTagNameMap[K];
-  },
-  createDocumentFragment(): DocumentFragment {
-    const frag = createServerDocumentFragment();
-    (frag as any)._ownerDocument = this.getDocument();
-    return frag as unknown as DocumentFragment;
   },
   createTextNode(data: string): Text {
     const node = createServerTextNode(data);

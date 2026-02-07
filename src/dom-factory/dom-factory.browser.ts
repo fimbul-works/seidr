@@ -4,15 +4,12 @@ import type { DOMFactory } from "./types";
 /**
  * Browser DOMFactory implementation.
  */
-const domFactoryBrowser = {
+const domFactoryBrowser: DOMFactory = {
   createElement<K extends keyof HTMLElementTagNameMap>(
     tag: K,
     options?: ElementCreationOptions,
   ): HTMLElementTagNameMap[K] {
     return document.createElement(tag, options);
-  },
-  createDocumentFragment(): DocumentFragment {
-    return document.createDocumentFragment();
   },
   createTextNode(data: string): Text {
     return document.createTextNode(data);
@@ -23,7 +20,7 @@ const domFactoryBrowser = {
   getDocument(): Document {
     return document;
   },
-} as DOMFactory;
+};
 
 /**
  * Get the browser DOMFactory implementation.

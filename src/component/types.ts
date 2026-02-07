@@ -1,3 +1,4 @@
+import type { SeidrNode } from "src/element";
 import type { CleanupFunction, TYPE } from "../types";
 import { TYPE_PROP } from "../types";
 
@@ -70,12 +71,17 @@ export interface ComponentScope {
  *
  * @template {Node} T - The type of SeidrElement this component contains
  */
-export interface SeidrComponent<T extends Node = any> {
+export interface SeidrComponent<T extends SeidrNode | SeidrNode[] = SeidrNode | SeidrNode[]> {
   /**
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}
    */
   readonly [TYPE_PROP]: typeof TYPE.COMPONENT;
+
+  /**
+   * The unique identifier of the component.
+   */
+  id: string;
 
   /**
    * The root element of the component.
@@ -87,6 +93,18 @@ export interface SeidrComponent<T extends Node = any> {
   element: T;
 
   /**
+   * The start marker of the component.
+   * @type {Comment | undefined}
+   */
+  start?: Comment;
+
+  /**
+   * The end marker of the component.
+   * @type {Comment | undefined}
+   */
+  end?: Comment;
+
+  /**
    * The ComponentScope of this element.
    * @type {ComponentScope}
    */
@@ -94,7 +112,6 @@ export interface SeidrComponent<T extends Node = any> {
 
   /**
    * Unmounts the component, destroying its scope and removing its elements from the DOM.
-   * Handles both single elements and fragments.
    */
   unmount(): void;
 }

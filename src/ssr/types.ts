@@ -1,3 +1,5 @@
+import type { ServerElement } from "./dom";
+
 /**
  * Result of SSR rendering containing HTML and hydration data.
  */
@@ -28,6 +30,17 @@ export interface SSRScopeCapture {
  */
 export interface HydrationData extends SSRScopeCapture {
   /**
+   * Render context ID from the server.
+   *
+   * This ID is used to ensure deterministic marker IDs for components like Router,
+   * allowing the client-side hydration to match SSR-rendered markers.
+   *
+   * During hydration, the client-side render context is updated to use this ID
+   * instead of the default 0, enabling proper SSR/client marker matching.
+   */
+  ctxID?: number;
+
+  /**
    * State values from the server.
    *
    * This record contains all non-derived Seidr instances that were stored
@@ -41,24 +54,7 @@ export interface HydrationData extends SSRScopeCapture {
   state?: Record<string, unknown>;
 
   /**
-   * Render context ID from the server.
-   *
-   * This ID is used to ensure deterministic marker IDs for components like Router,
-   * allowing the client-side hydration to match SSR-rendered markers.
-   *
-   * During hydration, the client-side render context is updated to use this ID
-   * instead of the default 0, enabling proper SSR/client marker matching.
-   */
-  ctxID?: number;
-
-  /**
-   * Application fragment paths for hydration verification and fallback.
-   * Maps fragment ID -> Path from root (array of child indices).
-   */
-  fragments?: Record<string, number[]>;
-
-  /**
    * Root container for path traversal relative lookup (client-side only).
    */
-  root?: any;
+  root?: Element | ServerElement;
 }

@@ -135,20 +135,7 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
  * Children can be regular DOM elements, Seidr-enhanced elements, Comments, or text nodes.
  * This type ensures type safety when building DOM structures.
  */
-export type SeidrNode =
-  | SeidrComponent
-  | SeidrElement<any>
-  | Element
-  | Text
-  | Comment
-  | SeidrFragment
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | Seidr<SeidrNode>
-  | SeidrNode[];
+export type SeidrNode = SeidrComponent | SeidrElement<any> | Element | Text | Comment | string;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.
@@ -204,14 +191,3 @@ export interface SeidrElementInterface {
  */
 export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
   NoStyle<HTMLElementTagNameMap[K]> & { style: FlexibleCSSStyleDeclaration };
-
-/**
- * SeidrFragment is a DocumentFragment with internal marker tracking.
- * It is ephemeral in nature.
- */
-export interface SeidrFragment extends DocumentFragment {
-  readonly [TYPE_PROP]: typeof TYPE.FRAGMENT;
-  readonly id: string;
-  readonly start: Comment;
-  readonly end: Comment;
-}

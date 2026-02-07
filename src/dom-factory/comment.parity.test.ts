@@ -1,12 +1,13 @@
 import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup/dual-mode";
+import { COMMENT_NODE } from "../types";
 
 describeDualMode("Comment Parity", ({ getDOMFactory }) => {
   it("should create comment node", () => {
     const factory = getDOMFactory();
     const comment = factory.createComment("my comment");
     expect(comment.textContent).toBe("my comment");
-    expect(comment.nodeType).toBe(8); // COMMENT_NODE
+    expect(comment.nodeType).toBe(COMMENT_NODE);
     expect(comment.nodeName).toBe("#comment");
   });
 

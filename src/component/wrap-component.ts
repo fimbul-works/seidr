@@ -8,10 +8,10 @@ import type { SeidrComponentFactory } from "./types";
  * If already wrapped, returns as-is. Otherwise wraps with component().
  *
  * @template P - The props type of the factory
- * @param {(P extends void ? () => SeidrNode : (props: P) => SeidrNode) | SeidrComponentFactory<P>} factory - Factory function or component factory
+ * @param {(P extends void ? () => SeidrNode | SeidrNode[] : (props: P) => SeidrNode | SeidrNode[]) | SeidrComponentFactory<P>} factory - Factory function or component factory
  * @returns {SeidrComponentFactory<P>} A SeidrComponentFactory
  */
-export function wrapComponent<P = void, T extends SeidrNode = SeidrNode>(
+export function wrapComponent<P = void, T extends SeidrNode | SeidrNode[] = SeidrNode | SeidrNode[]>(
   factory: (P extends void ? () => T : (props: P) => T) | SeidrComponentFactory<P>,
 ): SeidrComponentFactory<P> {
   if (isSeidrComponentFactory<P>(factory)) {

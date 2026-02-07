@@ -1,5 +1,6 @@
 import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup/dual-mode";
+import { ELEMENT_NODE } from "../types";
 
 describeDualMode("Element Parity", ({ getDOMFactory, isSSR }) => {
   it("should create element with correct tagName", () => {
@@ -7,7 +8,7 @@ describeDualMode("Element Parity", ({ getDOMFactory, isSSR }) => {
     const el = factory.createElement("div");
     expect(el.tagName).toBe("DIV");
     expect(el.nodeName).toBe("DIV");
-    expect(el.nodeType).toBe(1); // ELEMENT_NODE
+    expect(el.nodeType).toBe(ELEMENT_NODE);
   });
 
   it("should have correct ownerDocument", () => {

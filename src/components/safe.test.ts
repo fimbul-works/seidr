@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { useScope } from "../component";
 import { $ } from "../element";
-import { DOCUMENT_FRAGMENT_NODE } from "../types";
 import { Safe } from "./safe";
 
 describe("Safe", () => {
@@ -232,20 +231,6 @@ describe("Safe", () => {
       }).toThrow("Error boundary failed");
 
       consoleSpy.mockRestore();
-    });
-
-    it("should handle error boundary returning null/undefined", () => {
-      const comp = Safe(
-        () => {
-          throw new Error("Error");
-        },
-        () => {
-          return null as any;
-        },
-      );
-
-      // Component will have a fragment (Persistent Range) as placeholder instead of null
-      expect(comp.element.nodeType).toBe(DOCUMENT_FRAGMENT_NODE);
     });
 
     it("should handle errors during child component registration", () => {

@@ -1,8 +1,8 @@
 import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
 import { type CleanupFunction, SEIDR_CLEANUP, TYPE, TYPE_PROP } from "../types";
-import { isSeidr } from "../util/type-guards";
-import { appendChildNode, assignProp } from "./dom-utils";
+import { isArr, isDOMNode, isSeidr, isStr } from "../util/type-guards";
+import { assignProp } from "./assign-prop";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
 
 /**
@@ -18,7 +18,7 @@ import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode 
 export function $<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
   props?: SeidrElementProps<K>,
-  children?: (SeidrNode | (() => SeidrNode))[],
+  children?: SeidrNode[],
 ): SeidrElement<K> {
   const domFactory = getDOMFactory();
   const ctx = getRenderContext();
@@ -80,9 +80,13 @@ export function $<K extends keyof HTMLElementTagNameMap>(
   } as SeidrElementInterface);
 
   // Append children
-  if (Array.isArray(children)) {
+  if (isArr(children)) {
     children.forEach((child) => {
-      appendChildNode(el, child, cleanups, $text);
+      if (!isDOMNode(child)) {
+        el.appendChild($text(child));
+      } else {
+        el.appendChild(child);
+      }
     });
   }
 
@@ -94,17 +98,11 @@ export function $<K extends keyof HTMLElementTagNameMap>(
  * @param {unknown} text - String to convert into Dom Text node
  * @returns {Text} DOM Text node
  */
-export const $text = (text: unknown): Text => {
-  const domFactory = getDOMFactory();
-  return domFactory.createTextNode(String(text));
-};
+export const $text = (text: unknown): Text => getDOMFactory().createTextNode(String(text));
 
 /**
  * Creates a new DOM Comment node.
  * @param {string} text - String to convert into Dom Comment node
  * @returns {Comment} DOM Comment node
  */
-export const $comment = (text: string): Comment => {
-  const domFactory = getDOMFactory();
-  return domFactory.createComment(text);
-};
+export const $comment = (text: string): Comment => getDOMFactory().createComment(text);

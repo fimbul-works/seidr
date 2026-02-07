@@ -37,8 +37,6 @@ export function createServerNode<T extends SupportedNodeTypes>(
           return "#text";
         case COMMENT_NODE:
           return "#comment";
-        case DOCUMENT_FRAGMENT_NODE:
-          return "#document-fragment";
         case DOCUMENT_NODE:
           return "#document";
         default:
@@ -77,7 +75,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
       if (index === -1) return null;
       return p._childNodes[index + 1] ?? null;
     },
-    
+
     get previousSibling(): ServerNode | null {
       const p = node._parentNode;
       if (!p) return null;
@@ -115,10 +113,6 @@ export function createServerNode<T extends SupportedNodeTypes>(
         // Clear and add a single text node?
         // For SSR, nested textContent updates are rare but we should be correct.
         node._childNodes.length = 0;
-        if (value !== null) {
-          // This creates a circular dependency if we import createServerTextNode here.
-          // We'll handle this in the Element/Fragment implementations or via a registry.
-        }
       }
     },
 

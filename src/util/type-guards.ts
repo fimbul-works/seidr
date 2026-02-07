@@ -1,7 +1,7 @@
 import type { SeidrComponent, SeidrComponentFactory } from "../component/types";
-import type { SeidrElement, SeidrFragment } from "../element/types";
+import type { SeidrElement, SeidrNode } from "../element/types";
 import { Seidr } from "../seidr/seidr";
-import { COMMENT_NODE, DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE, TYPE, TYPE_PROP } from "../types";
+import { COMMENT_NODE, ELEMENT_NODE, TEXT_NODE, TYPE, TYPE_PROP } from "../types";
 
 /**
  * Check if a value is empty (`null`, or `undefined`).
@@ -43,7 +43,14 @@ export const isStr = (v: any): v is string => typeof v === "string";
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a function, `false` otherwise
  */
-export const isFn = (v: any): v is (...args: any[]) => any => typeof v === "function";
+export const isFn = <T extends (...args: any[]) => any>(v: any): v is T => typeof v === "function";
+
+/**
+ * Check if a value is an array.
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is an array, `false` otherwise
+ */
+export const isArr = <T extends any[]>(v: any): v is T => Array.isArray(v);
 
 /**
  * Check if a value is an object.
@@ -51,8 +58,7 @@ export const isFn = (v: any): v is (...args: any[]) => any => typeof v === "func
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is an object, `false` otherwise
  */
-export const isObj = <T extends object = object>(v: any): v is T =>
-  v !== null && typeof v === "object" && !Array.isArray(v);
+export const isObj = <T extends object>(v: any): v is T => v !== null && typeof v === "object" && !isArr(v);
 
 /**
  * Check if a value is a Seidr class instance.
@@ -66,23 +72,17 @@ export const isSeidr = <T = any>(v: any): v is Seidr<T> => v instanceof Seidr;
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a SeidrElement, `false` otherwise
  */
-export const isSeidrElement = (v: any): v is SeidrElement => v && v[TYPE_PROP] === TYPE.ELEMENT;
+export const isSeidrElement = <T extends keyof HTMLElementTagNameMap>(v: any): v is SeidrElement<T> =>
+  v && v[TYPE_PROP] === TYPE.ELEMENT;
 
 /**
  * Check if a value is a Seidr component.
- * @template {Node} T - Type of the component's Root Node
+ * @template {SeidrNode} T - Type of the component's Root Node
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr component, `false` otherwise
  */
-export const isSeidrComponent = <T extends Node = any>(v: any): v is SeidrComponent<T> =>
+export const isSeidrComponent = <T extends SeidrNode = SeidrNode>(v: any): v is SeidrComponent<T> =>
   v && v[TYPE_PROP] === TYPE.COMPONENT;
-
-/**
- * Check if a value is a Seidr fragment.
- * @param {any} v - Value to check
- * @returns {boolean} `true` if the value is a Seidr fragment, `false` otherwise
- */
-export const isSeidrFragment = (v: any): v is SeidrFragment => v && v[TYPE_PROP] === TYPE.FRAGMENT;
 
 /**
  * Check if a value is a Seidr component factory.
@@ -129,13 +129,8 @@ export const isTextNode = (v: any): v is Text => {
 };
 
 /**
- * Check if a value is a DocumentFragment.
+ * Check if a value is a DOM node.
  * @param {any} v - Value to check
- * @returns {boolean} `true` if the value is a DocumentFragment, `false` otherwise
+ * @returns {boolean} `true` if the value is a DOM node, `false` otherwise
  */
-export const isDocumentFragment = (v: any): v is DocumentFragment => {
-  if (typeof DocumentFragment !== "undefined" && v instanceof DocumentFragment) {
-    return true;
-  }
-  return isObj(v) && "nodeType" in v && v.nodeType === DOCUMENT_FRAGMENT_NODE;
-};
+export const isDOMNode = (v: any): v is Node => isHTMLElement(v) || isComment(v) || isTextNode(v);

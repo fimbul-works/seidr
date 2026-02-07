@@ -40,18 +40,6 @@ export function applyParentNodeMethods<T extends InternalServerNode & ServerNode
     if ((newNode as any) === augmented) throw new Error("Cycle detected: cannot insert node into itself");
     if (newNode.contains(augmented)) throw new Error("Hierarchy error: cannot insert a node into its own descendant");
 
-    // 2. Fragment flattening
-    if (newNode.nodeType === DOCUMENT_FRAGMENT_NODE) {
-      // DOCUMENT_FRAGMENT_NODE
-      for (const child of [...newNode.childNodes]) {
-        insertRaw(child as unknown as ServerNode, referenceNode);
-      }
-
-      // Note: Standard DOM behavior is that the fragment itself is now empty
-      (newNode as any)._childNodes.length = 0;
-      return newNode;
-    }
-
     const n = newNode as any;
     // 3. Move from existing parent
     if (n._parentNode) {
@@ -84,18 +72,18 @@ export function applyParentNodeMethods<T extends InternalServerNode & ServerNode
       const prev = _nodes[index - 1];
       // Check previous sibling
       if (prev && prev.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) {
-         // Merge into previous
-         (prev as any).textContent += (newNode as any).textContent;
-         n._parentNode = null;
-         return newNode;
+        // Merge into previous
+        (prev as any).textContent += (newNode as any).textContent;
+        n._parentNode = null;
+        return newNode;
       }
 
       const next = _nodes[index]; // == referenceNode
       if (next.nodeType === TEXT_NODE && newNode.nodeType === TEXT_NODE) {
-         // Merge into next (prepend)
-          (next as any).textContent = (newNode as any).textContent + (next as any).textContent;
-          n._parentNode = null;
-          return newNode;
+        // Merge into next (prepend)
+        (next as any).textContent = (newNode as any).textContent + (next as any).textContent;
+        n._parentNode = null;
+        return newNode;
       }
 
       // If no merge happened:

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { type DOMFactory, getDOMFactory } from "../dom-factory";
-import type { SeidrElement } from "../element";
 import { enableClientMode, enableSSRMode } from "../test-setup";
+import { isArr } from "../util";
 
 /**
  * Interface for the context provided to dual-mode tests.
@@ -123,7 +123,7 @@ export function renderToHtml(node: any, depth = 0): string {
   }
 
   // Handle fragments without native clones (SSR or SeidrFragment)
-  if (node && typeof node === "object" && "nodes" in node && Array.isArray(node.nodes)) {
+  if (node && typeof node === "object" && "nodes" in node && isArr(node.nodes)) {
     return node.nodes.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 

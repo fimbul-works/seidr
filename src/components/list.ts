@@ -1,8 +1,8 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
+import { $comment, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import { isSSR } from "../util/env";
+import { uid } from "../util/uid";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -15,29 +15,25 @@ import { isSSR } from "../util/env";
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
  * @param {(item: T) => C} factory - Component creation function (raw or wrapped)
- * @returns {SeidrComponent<SeidrFragment>} List component
+ * @returns {SeidrComponent<Comment>} List component
  */
 export function List<T, I extends string | number, C extends SeidrNode>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   factory: (item: T) => C,
-): SeidrComponent<SeidrFragment> {
+): SeidrComponent {
+  const ctx = getRenderContext();
+  const id = `list-${ctx.ctxID}-${ctx.idCounter++}`;
   return component(() => {
     const scope = useScope();
-    const ctx = getRenderContext();
-    const instanceId = ctx.idCounter++;
-    const id = `list-${ctx.ctxID}-${instanceId}`;
-
-    const [s, e] = findMarkers(id);
-    const fragment = $fragment([], id, s || undefined, e || undefined);
-    const start = (fragment as any).start as Comment;
-    const end = (fragment as any).end as Comment;
-
+    const marker = $comment(`seidr-list:${uid()}`);
     const componentMap = new Map<I, SeidrComponent>();
 
     const update = (items: T[]) => {
-      const parent = end.parentNode; // Anchor to end marker parent
-      if (!parent) return; // Not mounted yet?
+      const parent = marker.parentNode;
+      if (!parent) {
+        return;
+      }
 
       const newKeys = new Set(items.map(getKey));
 
@@ -49,8 +45,8 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         }
       }
 
-      // Add or reorder components by iterating backwards from end marker
-      let currentAnchor: Node = end;
+      // Add or reorder components by iterating backwards from marker
+      let currentAnchor: Node = marker;
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
@@ -62,13 +58,9 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         }
 
         // Move to correct position if needed
-        const el = comp.element as any;
-        const targetAnchor = el.start || el; // Handle if child is fragment? SeidrFragment start or Text/Element
-
-        if (el.nextSibling !== currentAnchor) {
-          const needsAttachment = isSSR() || !el.parentNode;
-          // Use parent.insertBefore explicitly
-          parent.insertBefore(el, currentAnchor);
+        if (comp.element.nextSibling !== currentAnchor) {
+          const needsAttachment = !comp.element.parentNode;
+          parent.insertBefore(comp.element as Node, currentAnchor);
 
           // Trigger onAttached if component was newly added to DOM
           if (needsAttachment && comp.scope.onAttached) {
@@ -76,19 +68,12 @@ export function List<T, I extends string | number, C extends SeidrNode>(
           }
         }
 
-        currentAnchor = targetAnchor;
+        currentAnchor = comp.element as Node;
       }
     };
 
-    // Initial render
-    clearBetween(start, end);
-    update(observable.value);
-
-    // Ensure onAttached is propagated
-    scope.onAttached = (parent) => {
-      for (const comp of componentMap.values()) {
-        if (comp.scope.onAttached) comp.scope.onAttached(parent);
-      }
+    scope.onAttached = () => {
+      update(observable.value);
     };
 
     scope.track(observable.observe(update));
@@ -101,6 +86,6 @@ export function List<T, I extends string | number, C extends SeidrNode>(
       componentMap.clear();
     });
 
-    return fragment;
-  })();
+    return Array.from(componentMap.values());
+  }, id)();
 }

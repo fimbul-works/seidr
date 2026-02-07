@@ -1,4 +1,4 @@
-import { isFn, isObj, isSeidr } from "./type-guards";
+import { isArr, isFn, isObj, isSeidr } from "./type-guards";
 
 const B = Boolean;
 
@@ -20,7 +20,7 @@ export const cn = (...classes: unknown[]): string =>
         .flatMap((c: unknown): string =>
           isSeidr(c)
             ? cn([c.value])
-            : Array.isArray(c)
+            : isArr(c)
               ? cn(...c)
               : isFn(c)
                 ? cn([c()])

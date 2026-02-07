@@ -1,16 +1,14 @@
 import type { SeidrNode } from "../element";
-import { $query } from "../helper";
 import { mount } from "../mount";
 import { setRenderContextID as setRenderContextIDBrowser } from "../render-context/render-context.browser";
 import type { CleanupFunction } from "../types";
-import { isHydrating, setHydrating } from "../util/env";
-export { isHydrating };
 
 import { clearHydrationData, setHydrationData } from "./hydration-context";
 import { restoreGlobalState } from "./state";
 import type { HydrationData } from "./types";
 
-// Use browser implementation or no-op for Node
+let hydrationFlag = false;
+
 // Use browser implementation or no-op for Node
 let setRenderContextID = typeof window !== "undefined" ? setRenderContextIDBrowser : () => {};
 
@@ -27,12 +25,25 @@ if (typeof process !== "undefined" && (process.env as any).VITEST) {
 }
 
 /**
+ * Checks if the framework is currently in hydration mode.
+ *
+ * @returns {boolean} True if hydrating
+ */
+export const isHydrating = (): boolean => hydrationFlag;
+
+/**
+ * Sets the hydration mode flag.
+ * @param {boolean} value - Hydration mode status
+ */
+export const setHydrating = (value: boolean): void => {
+  hydrationFlag = value;
+};
+
+/**
  * Resets the isHydrating flag (for testing).
  * @internal
  */
-export function resetHydratingFlag() {
-  setHydrating(false);
-}
+export const resetHydratingFlag = () => setHydrating(false);
 
 /**
  * Hydrates a component with previously captured SSR hydration data.
@@ -69,17 +80,10 @@ export function hydrate<T extends SeidrNode>(
     restoreGlobalState(hydrationData.state);
   }
 
-  // Set the hydration context so Seidr instances get their server values
   setHydrationData(hydrationData, container);
 
-  // Create the component (Seidr instances will auto-hydrate)
-  // Mount the component in the container
   const unmount = mount(factory, container);
 
-  // Note: We do NOT remove the existing root.
-  // True hydration reuses the existing DOM nodes found in the container.
-
-  // Clear the hydration context
   clearHydrationData();
   setHydrating(false);
 

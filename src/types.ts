@@ -62,10 +62,6 @@ export type NodeTypeComment = typeof COMMENT_NODE;
 export const DOCUMENT_NODE = 9;
 export type NodeTypeDocument = typeof DOCUMENT_NODE;
 
-/** node is a DocumentFragment node. */
-export const DOCUMENT_FRAGMENT_NODE = 11;
-export type NodeTypeDocumentFragment = typeof DOCUMENT_FRAGMENT_NODE;
-
 /**
  * Internal Symbol used for recursive lifecycle cleanup.
  * This allows Seidr to trigger cleanup on detached sub-trees without
@@ -82,8 +78,7 @@ export const TYPE_PROP = "$type";
  * Seidr internal object types.
  */
 export const TYPE = {
-  ELEMENT: "el",
-  COMPONENT: "comp",
-  FRAGMENT: "frag",
+  ELEMENT: "element",
+  COMPONENT: "component",
   COMPONENT_FACTORY: "factory",
 } as const;

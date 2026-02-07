@@ -15,6 +15,7 @@ export const getComponentStack = (): SeidrComponent[] => {
   if (!renderScopeComponentStacks.has(ctxID)) {
     renderScopeComponentStacks.set(ctxID, []);
   }
+
   return renderScopeComponentStacks.get(ctxID) as SeidrComponent[];
 };
 

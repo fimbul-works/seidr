@@ -1,7 +1,7 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $fragment, clearBetween, findMarkers, type SeidrFragment, type SeidrNode } from "../element";
-import { getRenderContext } from "../render-context";
+import { $comment, type SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
+import { uid } from "../util/uid";
 
 /**
  * Switches between different components based on an observable value.
@@ -12,59 +12,44 @@ import type { Seidr } from "../seidr";
  * @param {Seidr<T>} observable - Observable value to switch on
  * @param {Map<T, (val: T) => C> | Record<string, (val: T) => C>} factories - Map or object of cases to component factories (raw or wrapped)
  * @param {(val: T) => C} [defaultCase] - Optional fallback component factory
- * @returns {SeidrComponent<SeidrFragment>} A component whose root is a SeidrFragment
+ * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
  */
 export function Switch<T, C extends SeidrNode>(
   observable: Seidr<T>,
   factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
   defaultCase?: (val: T) => C,
-): SeidrComponent<SeidrFragment> {
+): SeidrComponent<Comment> {
   return component(() => {
     const scope = useScope();
-    const ctx = getRenderContext();
-    const instanceId = ctx.idCounter++;
-    const id = `switch-${ctx.ctxID}-${instanceId}`;
-
-    const [s, e] = findMarkers(id);
-    const fragment = $fragment([], id, s || undefined, e || undefined);
-    const start = (fragment as any).start as Comment;
-    const end = (fragment as any).end as Comment;
-
+    const marker = $comment(`seidr-switch:${uid()}`);
     let currentComponent: SeidrComponent | null = null;
 
     const update = (value: T) => {
-      console.log("Switcch update", value, "has current?", !!currentComponent);
+      const parent = marker.parentNode;
+      if (!parent) return;
+
       const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
+
       const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
-        currentComponent.unmount();
+        currentComponent.destroy();
         currentComponent = null;
       }
 
-      clearBetween(start, end);
-
-      if (factory) {
+      if (factory && parent) {
         currentComponent = wrapComponent<typeof value>(factory)(value);
-        if (end.parentNode) {
-          end.parentNode.insertBefore(currentComponent.element as any, end);
-        }
+        parent.insertBefore(currentComponent.element as Node, marker);
 
         // Trigger onAttached when component is added to DOM
-        if (end.parentNode && currentComponent.scope.onAttached) {
-          currentComponent.scope.onAttached(end.parentNode);
+        if (currentComponent.scope.onAttached) {
+          currentComponent.scope.onAttached(parent);
         }
       }
     };
 
-    // Initial render
-    update(observable.value);
-
-    scope.onAttached = (parent) => {
-      // Re-trigger onAttached for current component if it exists
-      if (currentComponent?.scope.onAttached) {
-        currentComponent.scope.onAttached(parent);
-      }
+    scope.onAttached = () => {
+      update(observable.value);
     };
 
     scope.track(observable.observe(update));
@@ -72,10 +57,10 @@ export function Switch<T, C extends SeidrNode>(
     // Cleanup active component
     scope.track(() => {
       if (currentComponent) {
-        currentComponent.element.remove();
+        currentComponent.destroy();
       }
     });
 
-    return fragment;
+    return marker;
   })();
 }

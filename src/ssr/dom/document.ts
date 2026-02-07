@@ -1,6 +1,5 @@
 import { DOCUMENT_NODE } from "../../types";
 import { createServerComment } from "./comment";
-import { createServerDocumentFragment } from "./document-fragment";
 import { createServerElement } from "./element";
 import { createServerNode, type InternalServerNode } from "./node";
 import { applyParentNodeMethods } from "./parent-node";
@@ -16,7 +15,6 @@ export type ServerDocument = ServerNode &
     createElement(tagName: string): any;
     createTextNode(text: string): any;
     createComment(text: string): any;
-    createDocumentFragment(): any;
   };
 
 /**
@@ -30,7 +28,6 @@ export function createServerDocument(): ServerDocument {
   augmented.createElement = (tagName: string) => createServerElement(tagName as any, augmented);
   augmented.createTextNode = (text: string) => createServerTextNode(text, augmented);
   augmented.createComment = (text: string) => createServerComment(text, augmented);
-  augmented.createDocumentFragment = () => createServerDocumentFragment();
 
   // Lazy structure properties
   let _head: any = null;

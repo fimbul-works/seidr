@@ -1,9 +1,9 @@
 import { type SeidrComponent, wrapComponent } from "../component";
 import { getCurrentComponent } from "../component/component-stack";
-import { findMarkers, type SeidrElement, type SeidrNode } from "../element";
+import type { SeidrElement, SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import type { CleanupFunction } from "../types";
-import { isFn, isSeidrFragment } from "../util/type-guards";
+import { isArr, isDOMNode, isFn } from "../util/type-guards";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -36,19 +36,14 @@ export function mount<C extends SeidrNode | SeidrComponent>(
 
   const factory: any = isFn(componentOrFactory) ? componentOrFactory : () => componentOrFactory;
   const component: SeidrComponent = wrapComponent(factory)();
-
-  // Check if element is already in the container (happens during hydration with DOM reuse)
-  let isAlreadyMounted = false;
-  if (isSeidrFragment(component.element)) {
-    const [s] = findMarkers(component.element.id, container);
-    isAlreadyMounted = !!(s && container.contains(s));
-  } else {
-    isAlreadyMounted = container.contains(component.element as Node);
-  }
+  const isAlreadyMounted = container.contains(component.element as Node);
 
   if (!isAlreadyMounted) {
-    // Both Element and DocumentFragment (SeidrFragment) support appendChild
-    container.appendChild(component.element as Node);
+    if (isArr(component.element)) {
+      component.element.forEach((el) => isDOMNode(el) && container.appendChild(el));
+    } else if (isDOMNode(component.element)) {
+      container.appendChild(component.element);
+    }
   }
 
   if (component.scope.onAttached) {
@@ -59,7 +54,6 @@ export function mount<C extends SeidrNode | SeidrComponent>(
     component.unmount();
   };
 
-  // Automatically track cleanup if called within a component's render function
   const parentComponent = getCurrentComponent();
   if (parentComponent) {
     parentComponent.scope.track(cleanup);

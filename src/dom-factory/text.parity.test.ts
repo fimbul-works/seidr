@@ -1,12 +1,13 @@
 import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup/dual-mode";
+import { TEXT_NODE } from "../types";
 
 describeDualMode("Text Parity", ({ getDOMFactory }) => {
   it("should create text node", () => {
     const factory = getDOMFactory();
     const text = factory.createTextNode("Hello");
     expect(text.textContent).toBe("Hello");
-    expect(text.nodeType).toBe(3); // TEXT_NODE
+    expect(text.nodeType).toBe(TEXT_NODE);
     expect(text.nodeName).toBe("#text");
   });
 
