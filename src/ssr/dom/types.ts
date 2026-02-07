@@ -1,23 +1,9 @@
-import type {
-  NodeTypeComment,
-  NodeTypeDocument,
-  NodeTypeDocumentFragment,
-  NodeTypeElement,
-  NodeTypeText,
-} from "../../types";
+import type { NodeTypeComment, NodeTypeDocument, NodeTypeElement, NodeTypeText } from "../../types";
 import type { ServerDocument } from "./document";
 import type { ServerElement } from "./element";
 
 /** Suppoted DOM node types for SSR */
-export type SupportedNodeTypes =
-  | NodeTypeElement
-  | NodeTypeText
-  | NodeTypeComment
-  | NodeTypeDocumentFragment
-  | NodeTypeDocument;
-
-/** node has child nodes */
-export type NodeTypeWithChildNodes = NodeTypeElement | NodeTypeDocumentFragment;
+export type SupportedNodeTypes = NodeTypeElement | NodeTypeText | NodeTypeComment | NodeTypeDocument;
 
 /**
  * Represents a node in the server-side DOM tree.

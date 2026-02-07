@@ -1,7 +1,8 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { getMarkerComments } from "../dom-utils";
+import type { SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
-import { uid } from "../util/uid";
+import { isArr, isDOMNode } from "../util/type-guards";
 
 /**
  * Switches between different components based on an observable value.
@@ -12,39 +13,46 @@ import { uid } from "../util/uid";
  * @param {Seidr<T>} observable - Observable value to switch on
  * @param {Map<T, (val: T) => C> | Record<string, (val: T) => C>} factories - Map or object of cases to component factories (raw or wrapped)
  * @param {(val: T) => C} [defaultCase] - Optional fallback component factory
- * @returns {SeidrComponent<Comment>} A component whose root is a Comment marker
+ * @returns {SeidrComponent} A component
  */
 export function Switch<T, C extends SeidrNode>(
   observable: Seidr<T>,
   factories: Map<T, (val: T) => C> | Record<string, (val: T) => C>,
   defaultCase?: (val: T) => C,
-): SeidrComponent<Comment> {
-  return component(() => {
+): SeidrComponent {
+  return component((_props, id) => {
     const scope = useScope();
-    const marker = $comment(`seidr-switch:${uid()}`);
+    const markers = getMarkerComments(id);
     let currentComponent: SeidrComponent | null = null;
 
     const update = (value: T) => {
-      const parent = marker.parentNode;
+      const end = markers[1];
+      const parent = end.parentNode;
       if (!parent) return;
 
       const caseFactory = factories instanceof Map ? factories.get(value) : (factories as any)[String(value)];
-
       const factory = caseFactory || defaultCase;
 
       if (currentComponent) {
-        currentComponent.destroy();
+        currentComponent.unmount();
         currentComponent = null;
       }
 
-      if (factory && parent) {
+      if (factory) {
         currentComponent = wrapComponent<typeof value>(factory)(value);
-        parent.insertBefore(currentComponent.element as Node, marker);
 
-        // Trigger onAttached when component is added to DOM
-        if (currentComponent.scope.onAttached) {
-          currentComponent.scope.onAttached(parent);
+        if (currentComponent.start) parent.insertBefore(currentComponent.start, end);
+
+        const el = currentComponent.element;
+        if (isArr(el)) {
+          el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, end));
+        } else if (isDOMNode(el)) {
+          parent.insertBefore(el, end);
         }
+
+        if (currentComponent.end) parent.insertBefore(currentComponent.end, end);
+
+        currentComponent.scope.attached(parent);
       }
     };
 
@@ -57,10 +65,10 @@ export function Switch<T, C extends SeidrNode>(
     // Cleanup active component
     scope.track(() => {
       if (currentComponent) {
-        currentComponent.destroy();
+        currentComponent.unmount();
       }
     });
 
-    return marker;
-  })();
+    return [];
+  }, "switch")();
 }

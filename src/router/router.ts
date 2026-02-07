@@ -1,11 +1,12 @@
 import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { $comment, type SeidrNode } from "../element";
+import { clearBetween, getMarkerComments } from "../dom-utils";
+import type { SeidrNode } from "../element";
 import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
+import { isArr, isDOMNode } from "../util/type-guards";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { matchRoute } from "./match-route";
-import { isServer } from "../util";
 
 /**
  * Router component props.
@@ -17,64 +18,26 @@ export interface RouterProps {
 
 /**
  * Router component - renders the first matching route or a fallback.
- *
- * Routes are evaluated in order, so more specific routes should be placed
- * before less specific ones (e.g., "/user/:id" before "/user/*").
- *
- * @param {RouterProps} props - Router props containing routes and optional fallback
- * @returns {SeidrComponent<Comment>} SeidrComponent that manages route rendering
  */
 export const Router = component(({ routes, fallback }: RouterProps, id: string) => {
   const scope = useScope();
-
-  // Markers used to delimit the router's content in the DOM
-  let startMarker: Comment;
-  let endMarker: Comment;
-
-  const [existingStart, existingEnd] = findExistingMarkers(id);
-  if (existingStart && existingEnd) {
-    startMarker = existingStart;
-    endMarker = existingEnd;
-  } else {
-    // Fallback if markers not found during hydration (should not happen normally)
-    startMarker = $comment(`router-start:${id}`);
-    endMarker = $comment(`router-end:${id}`);
-  }
-
+  const markers = getMarkerComments(id);
   const currentPath = getCurrentPath();
 
-  let currentRouteIndex = -100; // Initialize to a value that won't match any index or fallback
+  let currentRouteIndex = -100;
   let currentComponent: SeidrComponent | null = null;
   let currentParamsSeidr: Seidr<Record<string, string>> | null = null;
 
-  /**
-   * Clears all nodes between startMarker and endMarker.
-   */
-  const clearContent = () => {
-    if (!startMarker.parentNode) return;
-    let current = startMarker.nextSibling;
-    while (current && current !== endMarker) {
-      const next = current.nextSibling;
-      // We MUST call remove on the element. If it's a SeidrElement, it has remove()
-      if (current.remove) {
-        current.remove();
-      } else {
-        current.parentNode?.removeChild(current);
-      }
-      current = next;
-    }
-  };
-
-  /**
-   * Matches the current path against defined routes and updates the rendered component.
-   */
   const updateRoutes = () => {
+    const end = markers[1];
+    const parent = end.parentNode;
+    if (!parent) return;
+
     const path = currentPath.value;
+    const match = matchRoute(path, routes);
+
     let matchedIndex = -1;
     let params: Record<string, string> | false = false;
-
-    // 1. Find matching route
-    const match = matchRoute(path, routes);
 
     if (match) {
       matchedIndex = match.index;
@@ -91,104 +54,64 @@ export const Router = component(({ routes, fallback }: RouterProps, id: string) 
       return;
     }
 
-    // 2. Handle component updates (Full swap)
-    currentComponent?.unmount();
-    clearContent();
+    // Full swap
+    if (currentComponent) {
+      currentComponent.unmount();
+      currentComponent = null;
+    } else {
+      // First render: clear any existing SSR artifacts between markers
+      clearBetween(markers[0], markers[1]);
+    }
 
     currentRouteIndex = matchedIndex;
 
     if (matchedIndex === -1) {
-      // Show Fallback
-      currentParamsSeidr = null;
       if (fallback) {
+        currentParamsSeidr = null;
         const factory = typeof fallback === "function" ? fallback : () => fallback;
         currentComponent = wrapComponent(factory)();
-        mountComponent(currentComponent);
+        mountComponent(currentComponent, end);
       }
     } else {
-      // Show matched route
       currentParamsSeidr = new Seidr(params as Record<string, string>, { ...NO_HYDRATE, id: "router-params" });
       const factory = routes[matchedIndex].componentFactory;
       currentComponent = wrapComponent(factory)(currentParamsSeidr);
-      mountComponent(currentComponent!);
+      mountComponent(currentComponent, end);
     }
   };
 
-  /**
-   * Helper to insert a component's element between the markers.
-   */
-  const mountComponent = (comp: SeidrComponent) => {
-    if (!comp.element) return;
+  const mountComponent = (comp: SeidrComponent, anchor: Node) => {
+    const parent = anchor.parentNode;
+    if (!parent) return;
 
-    if (startMarker.parentElement) {
-      const parent = startMarker.parentElement as any;
-      if (parent.children) {
-        const endIndex = parent.children.indexOf(endMarker);
-        if (endIndex !== -1) {
-          parent.children.splice(endIndex, 0, comp.element);
-        }
-      }
-    } else if (startMarker.parentNode) {
-      startMarker.parentNode.insertBefore(comp.element as Node, endMarker);
-      if (comp.scope.onAttached) {
-        comp.scope.onAttached(startMarker.parentNode);
-      }
+    if (comp.start) parent.insertBefore(comp.start, anchor);
+
+    const el = comp.element;
+    if (isArr(el)) {
+      el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, anchor));
+    } else if (isDOMNode(el)) {
+      parent.insertBefore(el, anchor);
     }
+
+    if (comp.end) parent.insertBefore(comp.end, anchor);
+
+    comp.scope.attached(parent);
   };
 
   // Re-run matching whenever path changes
   scope.track(currentPath.observe(updateRoutes));
 
-  // Cleanup: destroy active component
+  // Cleanup active component
   scope.track(() => {
-    currentComponent?.unmount();
-    currentComponent = null;
-    currentParamsSeidr = null;
-    startMarker.remove();
-    endMarker.remove();
+    if (currentComponent) {
+      currentComponent.unmount();
+    }
   });
 
-  // Ensure markers and content are mounted when parent is ready
-  scope.onAttached = (parent) => {
-    // Insert endMarker if not present
-    // In SSR, parent is ServerHTMLElement. In Client, it's HTMLElement.
-    const inDOM = endMarker.parentNode;
-    if (!inDOM && parent) {
-      if (startMarker.nextSibling) {
-        parent.insertBefore(endMarker, startMarker.nextSibling);
-      } else {
-        parent.appendChild(endMarker);
-      }
-    }
+  // Ensure initial render when attached
+  scope.onAttached = () => {
     updateRoutes();
   };
 
-  if (isServer()) {
-    updateRoutes();
-  }
-
-  return startMarker as any;
-});
-
-/**
- * Find existing router markers in the DOM by router ID.
- */
-function findExistingMarkers(routerId: string): [Comment | null, Comment | null] {
-  if (typeof document === "undefined") return [null, null];
-
-  const startMarkerPattern = `router-start:${routerId}`;
-  const endMarkerPattern = `router-end:${routerId}`;
-
-  let startMarker: Comment | null = null;
-  let endMarker: Comment | null = null;
-
-  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_COMMENT);
-  let node: Comment | null;
-  while ((node = walker.nextNode() as Comment | null)) {
-    if (node.nodeValue === startMarkerPattern) startMarker = node;
-    else if (node.nodeValue === endMarkerPattern) endMarker = node;
-    if (startMarker && endMarker) break;
-  }
-
-  return [startMarker, endMarker];
-}
+  return [];
+}, "router");

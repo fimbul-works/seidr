@@ -4,19 +4,16 @@ import type { ComponentScope, SeidrComponent } from "./types";
 
 /**
  * Creates a new ComponentScope instance for tracking component cleanup logic.
- *
- * ComponentScope instances are typically created internally by the component()
- * function, but can also be created directly for advanced use cases or testing.
- *
- * @returns {ComponentScope} A new ComponentScope instance with cleanup tracking capabilities
  */
-export function createScope(): ComponentScope {
+export function createScope(id: string = "unknown"): ComponentScope {
   let cleanups: CleanupFunction[] = [];
+  const children: SeidrComponent[] = [];
   let destroyed = false;
+  let attachedParent: Node | null = null;
 
   function track(cleanup: CleanupFunction): void {
     if (destroyed) {
-      console.warn("Tracking cleanup on already destroyed scope");
+      console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
       cleanup();
       return;
     }
@@ -24,7 +21,6 @@ export function createScope(): ComponentScope {
   }
 
   function waitFor<T>(promise: Promise<T>): Promise<T> {
-    // Use the RenderContext to track promises, allowing for SSR waiting without global state
     const ctx = getRenderContext();
     if (ctx?.onPromise) {
       ctx.onPromise(promise);
@@ -32,15 +28,32 @@ export function createScope(): ComponentScope {
     return promise;
   }
 
-  function child(component: SeidrComponent): SeidrComponent {
-    track(() => component.element?.remove());
-    return component;
+  function attached(parent: Node) {
+    if (attachedParent) return; // Already attached
+    attachedParent = parent;
+
+    if (scope.onAttached) {
+      scope.onAttached(parent);
+    }
+
+    children.forEach((c) => {
+      c.scope.attached(parent);
+    });
+  }
+
+  function child(c: SeidrComponent) {
+    children.push(c);
+    track(() => c.unmount());
+
+    if (attachedParent) {
+      c.scope.attached(attachedParent);
+    }
+
+    return c;
   }
 
   function destroy() {
-    if (destroyed) {
-      return;
-    }
+    if (destroyed) return;
     destroyed = true;
     cleanups.forEach((fn) => {
       try {
@@ -50,16 +63,21 @@ export function createScope(): ComponentScope {
       }
     });
     cleanups = [];
+    children.length = 0;
+    attachedParent = null;
   }
 
-  return {
+  const scope: ComponentScope = {
     get isDestroyed() {
       return destroyed;
     },
     track,
     waitFor,
     child,
+    attached,
     destroy,
     onAttached: undefined,
   };
+
+  return scope;
 }

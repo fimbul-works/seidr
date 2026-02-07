@@ -55,8 +55,14 @@ export interface ComponentScope {
   destroy(): void;
 
   /**
+   * Notifies the scope that it has been attached to the DOM.
+   * This will trigger onAttached and propagate to child components.
+   * @param parent - The parent DOM node
+   */
+  attached(parent: Node): void;
+
+  /**
    * Optional callback triggered when the component is attached to a parent.
-   * @internal
    */
   onAttached?: (parent: Node) => void;
 }
@@ -71,7 +77,7 @@ export interface ComponentScope {
  *
  * @template {Node} T - The type of SeidrElement this component contains
  */
-export interface SeidrComponent<T extends SeidrNode | SeidrNode[] = SeidrNode | SeidrNode[]> {
+export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = SeidrNode | SeidrNode[] | null> {
   /**
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}

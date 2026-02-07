@@ -1,7 +1,7 @@
 import { getDOMFactory } from "../dom-factory";
 import { getRenderContext } from "../render-context";
 import { type CleanupFunction, SEIDR_CLEANUP, TYPE, TYPE_PROP } from "../types";
-import { isArr, isDOMNode, isSeidr, isStr } from "../util/type-guards";
+import { isArr, isDOMNode, isFn, isSeidr, isSeidrComponent, isStr } from "../util/type-guards";
 import { assignProp } from "./assign-prop";
 import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode } from "./types";
 
@@ -12,8 +12,8 @@ import type { SeidrElement, SeidrElementInterface, SeidrElementProps, SeidrNode 
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {SeidrElementProps<K>} [props] - Element properties supporting reactive bindings
- * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Child elements or functions returning elements
- * @returns {SeidrElement<K>} A Seidr-enhanced HTML element with additional methods
+ * @param {SeidrNode[]} [children] - Child elements
+ * @returns {SeidrElement<K>} A Seidr-enhanced HTML element
  */
 export function $<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
@@ -26,16 +26,12 @@ export function $<K extends keyof HTMLElementTagNameMap>(
   const originalRemove = el.remove.bind(el);
   let cleanups: CleanupFunction[] = [];
 
-  // Reuse the string for hydration
   const SEIDR_ID_CAMEL_CASE = "seidrId";
-
-  // Assign hydration ID if needed (any reactive property triggers this)
   const hasBindings = props ? Object.values(props).some(isSeidr) : false;
   if (hasBindings && ctx) {
     el.dataset[SEIDR_ID_CAMEL_CASE] = String(ctx.idCounter++);
   }
 
-  // Assign properties
   if (props) {
     const reserved = [TYPE_PROP, "on", "clear", SEIDR_CLEANUP];
     for (const [prop, value] of Object.entries(props)) {
@@ -46,7 +42,6 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     }
   }
 
-  // Add extra Seidr features
   Object.assign(el, {
     get [TYPE_PROP]() {
       return TYPE.ELEMENT;
@@ -69,7 +64,7 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     [SEIDR_CLEANUP](): void {
       for (const cleanup of cleanups) cleanup();
       cleanups = [];
-      for (const child of el.childNodes) {
+      for (const child of Array.from(el.childNodes)) {
         if ((child as any)[SEIDR_CLEANUP]) (child as any)[SEIDR_CLEANUP]();
       }
     },
@@ -79,15 +74,64 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     },
   } as SeidrElementInterface);
 
-  // Append children
-  if (isArr(children)) {
-    children.forEach((child) => {
-      if (!isDOMNode(child)) {
-        el.appendChild($text(child));
-      } else {
-        el.appendChild(child);
+  /**
+   * Appends a child node to a parent node.
+   *
+   * @param {Node} parent - The parent node to append the child to
+   * @param {SeidrNode} child - The child node to append
+   */
+  function appendChild(parent: Node, child: SeidrNode) {
+    if (!child) {
+      return;
+    }
+
+    if (isStr(child)) {
+      parent.appendChild($text(child));
+      return;
+    }
+
+    if (isArr(child)) {
+      child.forEach((c) => appendChild(parent, c));
+      return;
+    }
+
+    if (isFn(child)) {
+      appendChild(parent, child());
+      return;
+    }
+
+    if (isSeidrComponent(child)) {
+      if (child.start) parent.appendChild(child.start);
+
+      const el = child.element;
+      if (isArr(el)) {
+        el.forEach((n) => {
+          if (isDOMNode(n) && n !== child.start && n !== child.end) {
+            parent.appendChild(n);
+          }
+        });
+      } else if (isDOMNode(el)) {
+        if (el !== child.start && el !== child.end) {
+          parent.appendChild(el);
+        }
       }
-    });
+
+      if (child.end) parent.appendChild(child.end);
+      cleanups.push(() => child.unmount());
+      return;
+    }
+
+    if (isDOMNode(child)) {
+      parent.appendChild(child);
+    } else {
+      parent.appendChild($text(child));
+    }
+  }
+
+  if (isArr(children)) {
+    children.forEach((child) => appendChild(el, child));
+  } else if (children != null) {
+    appendChild(el, children);
   }
 
   return el as unknown as SeidrElement<K>;

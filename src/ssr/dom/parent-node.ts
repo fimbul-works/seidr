@@ -1,4 +1,4 @@
-import { DOCUMENT_FRAGMENT_NODE, ELEMENT_NODE, TEXT_NODE } from "../../types";
+import { ELEMENT_NODE, TEXT_NODE } from "../../types";
 import type { ServerElement } from "./element";
 import type { InternalServerNode } from "./node";
 import type { ServerNode, ServerParentNode } from "./types";

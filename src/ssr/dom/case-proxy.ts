@@ -1,14 +1,11 @@
 import type { ReactiveValue } from "../../element/types";
 import { unwrapSeidr } from "../../seidr";
-import type { IsCamelCase, KebabCase, StripPrefix } from "../../types";
 import {
   camelToKebab as defaultCamelToKebab,
   kebabToCamel as defaultKebabToCamel,
   isCamelCase,
   isKebabCase,
-} from "../../util/string";
-
-type StorageKey<K extends string, P extends string> = `${P}${KebabCase<K>}`;
+} from "../../util";
 
 /**
  * The options for the case proxy.

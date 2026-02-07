@@ -5,6 +5,7 @@ import type { SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
 import { runWithRenderContext } from "../render-context/render-context.node";
 import { clearPathCache } from "../router";
+import { isArr, isDOMNode, isStr } from "../util/type-guards";
 import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
 import { captureRenderContextState, clearRenderContextState } from "./state";
 import type { SSRRenderResult } from "./types";
@@ -24,23 +25,14 @@ export interface RenderToStringOptions {
  * Renders a component to an HTML string with hydration data capture.
  *
  * @param {() => C} factory - Component function to render
- * @param {RenderToStringOptions | SSRScope} [optionsOrScope] - Options object or legacy scope parameter
+ * @param {RenderToStringOptions} [options] - Optiona options object
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
 export async function renderToString<C extends SeidrNode>(
   factory: () => C,
-  optionsOrScope?: RenderToStringOptions | SSRScope,
+  options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
-  // Normalize options
-  let options: RenderToStringOptions;
-  if (optionsOrScope && typeof optionsOrScope === "object" && "captureHydrationData" in optionsOrScope) {
-    options = { scope: optionsOrScope };
-  } else {
-    options = (optionsOrScope as RenderToStringOptions) ?? {};
-  }
-
   return await runWithRenderContext(async () => {
-    // Ensure we're using the SSR DOM factory during renderToString
     const prevFactory = getDOMFactory;
     setInternalDOMFactory(getSSRDOMFactory);
 
@@ -50,7 +42,7 @@ export async function renderToString<C extends SeidrNode>(
         throw new Error("No render context available.");
       }
 
-      if (options.path !== undefined) {
+      if (isStr(options.path)) {
         ctx.currentPath = options.path;
       }
 
@@ -60,9 +52,20 @@ export async function renderToString<C extends SeidrNode>(
 
       try {
         const comp = wrapComponent(factory)();
+
+        // Ensure root is attached to something so it can render content (especially for marker-based components)
+        // We use a temporary div as a container for initial rendering.
+        const doc = getDOMFactory().createElement("div");
+        const nodes = isArr(comp.element) ? comp.element : [comp.element];
+        nodes.filter(isDOMNode).forEach((n) => doc.appendChild(n as any));
+
+        // Trigger attachment life-cycle
+        comp.scope.attached(doc as any);
+
         await activeScope.waitForPromises();
 
-        const html = (comp.element as any).outerHTML ?? String(comp.element);
+        // Use innerHTML to get the stringified content without the wrapping div
+        const html = doc.innerHTML;
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
@@ -78,6 +81,9 @@ export async function renderToString<C extends SeidrNode>(
       } finally {
         setActiveSSRScope(undefined);
         clearSSRScope(ctx.ctxID);
+        if (ctx.markerCache) {
+          ctx.markerCache.clear();
+        }
         if (!options.scope) {
           activeScope.clear();
         }

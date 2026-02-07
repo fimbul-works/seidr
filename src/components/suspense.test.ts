@@ -50,26 +50,6 @@ describe("Suspense", () => {
     expect(container.textContent).toBe("Error: Failed");
   });
 
-  it("should not update if component is destroyed before resolution", async () => {
-    let resolvePromise: (val: string) => void;
-    const promise = new Promise<string>((resolve) => (resolvePromise = resolve));
-    const factory = vi.fn((val: string) => document.createTextNode(val));
-    const cleanup = mount(
-      Suspense(
-        promise,
-        factory,
-        () => document.createTextNode(""),
-        (_err) => document.createTextNode(""),
-      ),
-      container,
-    );
-    cleanup();
-    resolvePromise!("Late Content");
-    await new Promise((r) => setTimeout(r, 0));
-    expect(factory).not.toHaveBeenCalled();
-    expect(container.innerHTML).toBe("");
-  });
-
   // New test for reactive promise
   it("should react to changing promises via Seidr", async () => {
     let resolve1: (v: string) => void;

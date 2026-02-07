@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element";
-import { getRenderContext } from "../render-context";
 import { clearHydrationData } from "../ssr/hydration-context";
 import { renderToString } from "../ssr/render-to-string";
 import { setActiveSSRScope } from "../ssr/ssr-scope";

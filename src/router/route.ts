@@ -26,24 +26,21 @@ export function Route<C extends SeidrNode, P extends Seidr<any>>(
   factory: (params?: P) => C,
   pathState: Seidr<string> = getCurrentPath(),
 ) {
-  // Match pathState.value against RegExp pattern (no parameters extracted)
+  let routeParams: Seidr<Record<string, string> | false>;
+
   if (pattern instanceof RegExp) {
-    const routeParams = pathState.as((path) => {
+    // Match pathState.value against RegExp pattern
+    routeParams = pathState.as((path) => {
       const match = path.match(pattern);
       if (!match) return false;
-
       // Extract named groups as params
       return match.groups ?? {};
     });
-
-    const isMatch = routeParams.as((params) => !!params);
-    return Conditional(isMatch, () => factory(routeParams as P));
+  } else {
+    // Attempt to match path with pattern
+    routeParams = pathState.as((path) => parseRouteParams(pattern, path));
   }
 
-  // Attempt to match path with pattern (parseRouteParams handles normalization)
-  const routeParams = pathState.as((path) => parseRouteParams(pattern, path));
-
-  // Mount if params are truthy
-  const match = routeParams.as((params) => !!params);
-  return Conditional(match, () => factory(routeParams as P));
+  const isMatch = routeParams.as((params) => !!params);
+  return Conditional(isMatch, () => factory(routeParams as P), "router");
 }

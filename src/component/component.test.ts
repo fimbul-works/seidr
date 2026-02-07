@@ -33,8 +33,8 @@ describe("component", () => {
     })();
 
     expect(comp).toHaveProperty("element");
-    expect(comp.element[0]).toBe(mockElement[0]);
-    expect(comp.element[1]).toBe(mockElement[1]);
+    expect(comp.element).toHaveLength(4);
+    expect(comp.element).toEqual([comp.start, mockElement[0], mockElement[1], comp.end]);
   });
 
   it("should create a component returning null", () => {
@@ -43,7 +43,8 @@ describe("component", () => {
     })();
 
     expect(comp).toHaveProperty("element");
-    expect(comp.element).toBe(null);
+    expect(comp.element).toHaveLength(2);
+    expect(comp.element).toEqual([comp.start, comp.end]);
   });
 
   it("should call destroy on scope when component is destroyed", () => {

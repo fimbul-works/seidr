@@ -94,5 +94,5 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
 
 // Mount component only in browser environment (not in tests)
 if (typeof window !== "undefined") {
-  mount(() => TodoApp([]), document.body);
+  mount(TodoApp, document.body);
 }

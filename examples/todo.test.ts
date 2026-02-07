@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
 import { component, mount } from "../src/index.browser";
-import { TodoApp } from "./todo.ts";
+import { TodoApp } from "./todo";
 
 describe("TODO Example", () => {
   let dom: JSDOM;
@@ -17,8 +17,7 @@ describe("TODO Example", () => {
   });
 
   it("should render form with input and button", async () => {
-    const todoComponent = TodoApp([]);
-    mount(todoComponent, document.body);
+    mount(TodoApp, document.body);
 
     const form = document.querySelector(".todo-form");
     const input = document.querySelector(".todo-input") as HTMLInputElement;
@@ -30,12 +29,11 @@ describe("TODO Example", () => {
   });
 
   it("should render with empty todo list", async () => {
-    const todoComponent = TodoApp([]);
-    mount(todoComponent, document.body);
+    mount(TodoApp, document.body);
 
     const todoList = document.querySelector(".todo-list");
-    // List component uses a comment marker nodes (in childNodes, not children)
-    expect(todoList?.childNodes.length).toBe(1);
+    // List component uses comment markers (in childNodes, not children)
+    expect(todoList?.childNodes.length).toBe(2);
     // No actual todo items
     const listItems = todoList?.querySelectorAll("li");
     expect(listItems?.length).toBe(0);
@@ -46,22 +44,22 @@ describe("TODO Example", () => {
       { id: 1, text: "Learn Seidr", completed: false },
       { id: 2, text: "Build apps", completed: false },
     ];
-    const todoComponent = TodoApp(initialTodos);
-    mount(todoComponent, document.body);
+    mount(() => TodoApp(initialTodos), document.body);
 
     const todoList = document.querySelector(".todo-list");
-    // 2 todo items + 1 marker comment node = 3 childNodes
-    expect(todoList?.childNodes.length).toBe(3);
-    // Count actual list items (not the marker)
+    // 2 todo items + 2 marker comment nodes = 4 childNodes
+    expect(todoList?.childNodes.length).toBe(4);
+    // Count actual list items (not the markers)
     const listItems = todoList?.querySelectorAll("li");
     expect(listItems?.length).toBe(2);
   });
 
   it("should cleanup properly when destroyed", async () => {
     const todoComponent = component(TodoApp)([]);
+
     mount(todoComponent, document.body);
 
-    todoComponent.element.remove();
+    todoComponent.unmount();
 
     expect(document.body.children.length).toBe(0);
   });

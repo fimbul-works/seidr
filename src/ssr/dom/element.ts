@@ -321,7 +321,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
     get(target, prop, receiver) {
       if (prop === "__isProxy") return true;
       if (prop === "__target") return target;
-      if (prop === "style") return styleProxy;
+      if (prop === "style") return target.style;
       if (typeof prop === "string" && !internalProps.has(prop) && !(prop in target)) {
         const val = target.getAttribute(prop);
         if (boolProps.map((p) => p.toLowerCase()).includes(prop.toLowerCase())) {

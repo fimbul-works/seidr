@@ -1,5 +1,5 @@
 import { component, type SeidrComponent, useScope } from "../component";
-import { $, type SeidrElement, type SeidrElementProps, type SeidrNode } from "../element";
+import { $, type SeidrElementProps, type SeidrNode } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { cn, isSeidr } from "../util";
@@ -23,7 +23,7 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  * Link component for Route.
  * @param {LinkProps & SeidrElementProps<K>} props - Link props with reactive bindings
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
- * @returns {SeidrComponent<K, SeidrElement<K>>} SeidrComponent that wraps an anchor element
+ * @returns {SeidrComponent} SeidrComponent that wraps an anchor element
  */
 export function Link<K extends keyof HTMLElementTagNameMap = "a">(
   {
@@ -35,8 +35,8 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     className,
     ...restProps
   }: LinkProps<K> & SeidrElementProps<K>,
-  children: (SeidrNode | (() => SeidrNode))[] = [],
-): SeidrComponent<SeidrElement<K>> {
+  children: SeidrNode[] = [],
+): SeidrComponent {
   return component(() => {
     const scope = useScope();
 
@@ -77,6 +77,7 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
         navigate(unwrapSeidr(toValue));
       }),
     );
+
     return el;
   })();
 }

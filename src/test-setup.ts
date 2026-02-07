@@ -42,6 +42,7 @@ afterEach(() => {
   browserContext.randomState = undefined;
   browserContext.currentPath = "/";
   browserContext.document = undefined;
+  browserContext.markerCache = new Map();
 
   // Clean up DOM after each test
   document.body.innerHTML = "";

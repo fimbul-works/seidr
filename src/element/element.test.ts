@@ -212,45 +212,15 @@ describe("element on method", () => {
         const container = $("div", { className: "container" }, [
           $("h1", { textContent: "Title" }),
           $("p", { textContent: "Description" }),
-          () => $("button", { textContent: "Dynamic" }), // Function child
         ]);
 
         expect(container.className).toBe("container");
-        expect(container.children.length).toBe(3);
+        expect(container.children.length).toBe(2);
         expect(container.children[0].tagName).toBe("H1");
         expect(container.children[0].textContent).toBe("Title");
         expect(container.children[1].tagName).toBe("P");
         expect(container.children[1].textContent).toBe("Description");
-        expect(container.children[2].tagName).toBe("BUTTON");
-        expect(container.children[2].textContent).toBe("Dynamic");
-        expect(container.childNodes.length).toBe(3); // Including button from function
-      });
-
-      it("should accept Seidr<SeidrNode> as child and update reactively", () => {
-        const childState = new Seidr<SeidrNode>("Initial Text");
-        const container = $("div", {}, [childState]);
-
-        // Should initially render text node
-        expect(container.textContent).toBe("Initial Text");
-        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
-
-        // Update to different text
-        childState.value = "Updated Text";
-        expect(container.textContent).toBe("Updated Text");
-        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
-
-        // Update to an HTMLElement
-        const span = $("span", { textContent: "I am a span" });
-        childState.value = span;
-
-        expect(container.textContent).toBe("I am a span");
-        expect(container.firstChild).toBe(span);
-        expect(container.firstChild?.nodeType).toBe(Node.ELEMENT_NODE);
-
-        // Update back to text
-        childState.value = "Back to text";
-        expect(container.textContent).toBe("Back to text");
-        expect(container.firstChild?.nodeType).toBe(Node.TEXT_NODE);
+        expect(container.childNodes.length).toBe(2);
       });
     });
 

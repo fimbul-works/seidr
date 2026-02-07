@@ -95,7 +95,7 @@ export function renderToHtml(node: any, depth = 0): string {
     node = node.element;
   }
 
-  // Handle SSR nodes and SeidrFragments which have a custom toString()
+  // Handle SSR nodes
   // We check if it's NOT a native DOM node that returns [object ...]
   if (typeof node.toString === "function") {
     const str = node.toString();
@@ -115,16 +115,11 @@ export function renderToHtml(node: any, depth = 0): string {
     if (node instanceof Comment) {
       return `<!--${node.nodeValue}-->`;
     }
-    if (node instanceof DocumentFragment) {
-      const div = document.createElement("div");
-      div.appendChild(node.cloneNode(true));
-      return div.innerHTML;
-    }
   }
 
-  // Handle fragments without native clones (SSR or SeidrFragment)
-  if (node && typeof node === "object" && "nodes" in node && isArr(node.nodes)) {
-    return node.nodes.map((n: any) => renderToHtml(n, depth + 1)).join("");
+  // Handle arrays (SSR)
+  if (isArr(node)) {
+    return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 
   return String(node);

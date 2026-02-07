@@ -48,13 +48,13 @@ describe("Switch Component", () => {
 
     const CompA = () => {
       const scope = useScope();
-      scope.onAttached = () => onAttached("A");
+      scope.onAttached = (parent) => onAttached("A", parent);
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
       const scope = useScope();
-      scope.onAttached = () => onAttached("B");
+      scope.onAttached = (parent) => onAttached("B", parent);
       return $("span", { textContent: "View B" });
     };
 
@@ -68,10 +68,37 @@ describe("Switch Component", () => {
     };
 
     mount(Parent, container);
-    expect(onAttached).toHaveBeenCalledWith("A");
+    expect(onAttached).toHaveBeenCalledWith("A", expect.anything());
 
     onAttached.mockClear();
     mode.value = "B";
-    expect(onAttached).toHaveBeenCalledWith("B");
+    expect(onAttached).toHaveBeenCalledWith("B", expect.anything());
+  });
+
+  it("should destroy scope of previous component when switching", () => {
+    const mode = new Seidr("A");
+    let scopeADestroyed = false;
+    let scopeBDestroyed = false;
+
+    const CompA = () => {
+      const scope = useScope();
+      scope.track(() => (scopeADestroyed = true));
+      return $("span", { textContent: "View A" });
+    };
+
+    const CompB = () => {
+      const scope = useScope();
+      scope.track(() => (scopeBDestroyed = true));
+      return $("span", { textContent: "View B" });
+    };
+
+    mount(() => Switch(mode, { A: CompA, B: CompB }), container);
+
+    mode.value = "B";
+    expect(scopeADestroyed).toBe(true);
+    expect(scopeBDestroyed).toBe(false);
+
+    mode.value = "A";
+    expect(scopeBDestroyed).toBe(true);
   });
 });

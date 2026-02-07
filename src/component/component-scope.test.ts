@@ -32,19 +32,24 @@ describe("ComponentScope", () => {
     scope.track(cleanup);
 
     expect(cleanup).toHaveBeenCalled();
-    expect(consoleSpy).toHaveBeenCalledWith("Tracking cleanup on already destroyed scope");
+    expect(cleanup).toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith("[unknown] Tracking cleanup on already destroyed scope");
 
     consoleSpy.mockRestore();
   });
 
   it("should track child components", () => {
     const scope = createScope();
-    const childComponent = { element: { remove: vi.fn() } } as unknown as SeidrComponent;
+    const childComponent = {
+      id: "child",
+      unmount: vi.fn(),
+      scope: { attached: vi.fn() },
+    } as unknown as SeidrComponent;
 
     scope.child(childComponent);
-    expect(childComponent.element.remove).not.toHaveBeenCalled();
+    expect(childComponent.unmount).not.toHaveBeenCalled();
 
     scope.destroy();
-    expect(childComponent.element.remove).toHaveBeenCalled();
+    expect(childComponent.unmount).toHaveBeenCalled();
   });
 });

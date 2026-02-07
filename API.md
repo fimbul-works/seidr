@@ -440,8 +440,8 @@ While most components can be plain functions, the `component()` wrapper is used 
 
 ```typescript
 {
-  element: HTMLElement | DocumentFragment; // The element or fragment
-  destroy: () => void;                    // Cleanup function
+  element: HTMLElement | Array<HTMLElement>; // The element or an array of elements
+  destroy: () => void;                       // Cleanup function
 }
 ```
 
@@ -575,7 +575,7 @@ unmount();
 
  ## Declarative Components
 
- Seidr provides declarative components for handling conditional logic and lists. These components use **Marker Nodes** (HTML comments) internally, allowing them to act like "Fragments" that don't introduce extra wrapper elements into the DOM.
+ Seidr provides declarative components for handling conditional logic and lists.
 
  ### Conditional()
 

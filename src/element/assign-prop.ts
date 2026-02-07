@@ -1,6 +1,6 @@
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { camelToKebab, isObj, isSeidr, isSSR, isStr } from "../util";
+import { camelToKebab, isObj, isSeidr, isServer, isStr } from "../util";
 
 /**
  * Assigns a property to an element, handling reactive Seidr bindings.
@@ -41,7 +41,7 @@ export function assignProp(el: HTMLElement, prop: string, value: any, cleanups: 
     };
 
     const setCSSStyleProperty = <K extends keyof CSSStyleDeclaration>(style: K, value: CSSStyleDeclaration[K]) => {
-      if (isSSR()) {
+      if (isServer()) {
         style = camelToKebab(style as string) as K;
       }
       if (isSeidr(value)) {

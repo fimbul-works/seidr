@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { $, $text } from "../element";
+import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup/dual-mode";
 import { TYPE, TYPE_PROP } from "../types";

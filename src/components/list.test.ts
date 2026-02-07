@@ -46,7 +46,6 @@ describe("List Component", () => {
     ];
     expect(parentEl.querySelectorAll("span").length).toBe(2);
 
-    // Check that "A" element was removed (not just textContent, to avoid false positives from UIDs in comments)
     const spanTexts = Array.from(parentEl.querySelectorAll("span")).map((s) => s.textContent);
     expect(spanTexts).not.toContain("A");
     expect(spanTexts).toContain("B");
@@ -84,12 +83,79 @@ describe("List Component", () => {
 
     mount(Parent, container);
 
-    // Should be called for the first item
     expect(onAttached).toHaveBeenCalledWith(1, expect.anything());
     onAttached.mockClear();
 
     // Add another item
     items.value = [...items.value, { id: 2, text: "B" }];
     expect(onAttached).toHaveBeenCalledWith(2, expect.anything());
+  });
+
+  it("should destroy scopes of removed items", () => {
+    const items = new Seidr([
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+    ]);
+    const destroyedIds: number[] = [];
+
+    const Item = (props: { id: number }) => {
+      const scope = useScope();
+      scope.track(() => destroyedIds.push(props.id));
+      return $("span", { textContent: `Item ${props.id}` });
+    };
+
+    const Parent = () =>
+      $("div", {}, [
+        List(
+          items,
+          (i) => i.id,
+          (i) => Item(i),
+        ),
+      ]);
+
+    mount(Parent, container);
+
+    // Remove item 1
+    items.value = [{ id: 2, text: "B" }];
+    expect(destroyedIds).toContain(1);
+    expect(destroyedIds).not.toContain(2);
+
+    // Remove item 2
+    items.value = [];
+    expect(destroyedIds).toContain(2);
+  });
+
+  it("should respond to observable changes immediately by re-rendering", () => {
+    const items = new Seidr([{ id: 1, text: "Initial" }]);
+    const Item = (props: { text: string }) => $("span", { textContent: props.text });
+
+    mount(
+      List(
+        items,
+        (i) => i.id,
+        (i) => Item(i),
+      ),
+      container,
+    );
+
+    expect(container.textContent).toBe("Initial");
+
+    // Immediate update (change IDs to trigger new components)
+    items.value = [
+      { id: 3, text: "Updated" },
+      { id: 2, text: "New" },
+    ];
+    expect(container.textContent).toBe("UpdatedNew");
+
+    // Removal
+    items.value = [{ id: 4, text: "Only New" }];
+    expect(container.textContent).toBe("Only New");
+
+    // Reorder
+    items.value = [
+      { id: 1, text: "One" },
+      { id: 2, text: "Two" },
+    ];
+    expect(container.textContent).toBe("OneTwo");
   });
 });

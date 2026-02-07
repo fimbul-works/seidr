@@ -1,18 +1,8 @@
 import { getMarkerComments } from "../dom-utils";
 import { $text, type SeidrNode } from "../element";
 import { getRenderContext } from "../render-context";
-import { TYPE, TYPE_PROP } from "../types";
-import {
-  isArr,
-  isBool,
-  isComment,
-  isEmpty,
-  isHTMLElement,
-  isNum,
-  isSeidrComponent,
-  isStr,
-  isTextNode,
-} from "../util/type-guards";
+import { SEIDR_CLEANUP, TYPE, TYPE_PROP } from "../types";
+import { isArr, isBool, isEmpty, isHTMLElement, isNum, isSeidrComponent, isStr } from "../util/type-guards";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
 import type { SeidrComponent, SeidrComponentFactory } from "./types";
@@ -44,11 +34,32 @@ export function component<P = void>(
     const isRootComponent = stack.length === 0;
 
     // Create the scope and partial SeidrComponent
-    const scope = createScope();
+    const scope = createScope(id);
     const comp = {
       [TYPE_PROP]: TYPE.COMPONENT,
       id,
       scope,
+      unmount: () => {
+        if (comp.scope.isDestroyed) return;
+        comp.scope.destroy();
+
+        if (comp.start && (comp.start as any).remove) (comp.start as any).remove();
+
+        const el = comp.element;
+        if (isArr(el)) {
+          el.forEach((child) => {
+            if (isSeidrComponent(child)) {
+              child.unmount();
+            } else if (child && (child as any).remove) {
+              (child as any).remove();
+            }
+          });
+        } else if (el && (el as any).remove) {
+          (el as ChildNode).remove();
+        }
+
+        if (comp.end && (comp.end as any).remove) (comp.end as any).remove();
+      },
     } as SeidrComponent;
 
     // Register as child component
@@ -64,18 +75,13 @@ export function component<P = void>(
       // Call factory with props (or undefined if no props)
       const result = factory(props as P, id);
 
-      // Track child SeidrComponents to propagate onAttached
-      const childComponents: SeidrComponent[] = [];
-
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: any): any => {
         if (isEmpty(item) || isBool(item)) {
           return null;
         }
-        // Track child component for onAttached propagation
         if (isSeidrComponent(item)) {
-          childComponents.push(item);
-          return item.element;
+          return item; // Keep component in array if possible? No, we return element for consistency with older code
         }
         if (isStr(item) || isNum(item)) {
           return $text(item);
@@ -83,57 +89,45 @@ export function component<P = void>(
         return item;
       };
 
-      // Normalize result: wrap arrays, null, and undefined
-      if (isArr(result) || isEmpty(result) || isBool(result)) {
-        const children = isArr(result) ? result.map(toNode).filter(Boolean) : [];
-        const [startMarker, endMarker] = getMarkerComments(id);
-        comp.element = children;
-        comp.start = startMarker;
-        comp.end = endMarker;
-      } else {
-        // Single node or component
-        comp.element = toNode(result);
-      }
-
-      // Implement unmount
-      comp.unmount = () => {
-        if (comp.scope.isDestroyed) return;
-        comp.scope.destroy();
-
-        const el = comp.element;
-        if (isArr(el)) {
-          el.forEach((child) => {
-            if (isSeidrComponent(child)) {
-              child.unmount();
-            } else if (isHTMLElement(child) || isTextNode(child) || isComment(child)) {
-              child.remove();
-            }
-          });
-        } else if (el && (el as any).remove) {
-          // Standard Element / Text / Comment
-          (el as ChildNode).remove();
-        }
+      // In component.ts, toNode should probably return the element if we want it to be a DOM node
+      const toNodeResult = (item: any): any => {
+        const node = toNode(item);
+        return isSeidrComponent(node) ? node.element : node;
       };
 
-      // Propagate onAttached from scope to child components
-      if (childComponents.length > 0) {
-        // Always wrap scope.onAttached (or create one) to call child components' onAttached
-        const originalOnAttached = scope.onAttached;
-        scope.onAttached = (parent: Node) => {
-          // Call onAttached for all child components first
-          for (const child of childComponents) {
-            if (child.scope.onAttached) {
-              child.scope.onAttached(parent);
-            }
-          }
-          // Then call this component's scope.onAttached (if it exists)
-          if (originalOnAttached) {
-            originalOnAttached(parent);
-          }
+      // Normalize result: wrap arrays, null, and undefined
+      const [startMarker, endMarker] = getMarkerComments(id);
+      comp.start = startMarker;
+      comp.end = endMarker;
+
+      if (isArr(result)) {
+        const children = result.map(toNodeResult).filter(Boolean);
+        comp.element = [startMarker, ...children, endMarker];
+      } else if (isEmpty(result) || isBool(result)) {
+        comp.element = [startMarker, endMarker];
+      } else {
+        // Single node or component
+        const node = toNode(result);
+        if (isSeidrComponent(node)) {
+          // If result is a single component, we delegate markers to it if it has them
+          // But actually we should wrap it to be safe or just follow existing pattern
+          comp.element = node.element;
+        } else {
+          comp.element = node;
+        }
+      }
+
+      // Link element cleanup to scope destroy
+      if (comp.element && !isArr(comp.element)) {
+        const el = comp.element as any;
+        const originalCleanup = el[SEIDR_CLEANUP];
+        el[SEIDR_CLEANUP] = () => {
+          if (originalCleanup) originalCleanup();
+          comp.unmount();
         };
       }
     } catch (err) {
-      scope.destroy();
+      comp.unmount();
       throw err;
     } finally {
       // Remove from stack

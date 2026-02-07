@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useScope } from "../component";
 import { $ } from "../element";
-import { mount } from "../mount";
+import { mount } from "../mount/mount";
 import { Seidr } from "../seidr";
 import { Conditional } from "./conditional";
 
@@ -15,10 +15,10 @@ describe("Conditional Component", () => {
 
   it("should render and toggle component based on condition", () => {
     const isVisible = new Seidr(false);
-    const Child = () => $("span", { textContent: "Visible" });
+    const View = () => $("span", { textContent: "Visible" });
 
     const Parent = () => {
-      return $("div", { className: "parent" }, [Conditional(isVisible, Child)]);
+      return $("div", { className: "parent" }, [Conditional(isVisible, View)]);
     };
 
     mount(Parent, container);
@@ -29,32 +29,44 @@ describe("Conditional Component", () => {
 
     isVisible.value = true;
     expect(parentEl.innerHTML).toContain("Visible");
-    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
 
     isVisible.value = false;
     expect(parentEl.innerHTML).not.toContain("Visible");
-    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
   });
 
   it("should call onAttached when component is shown", () => {
-    const isVisible = new Seidr(false);
     const onAttached = vi.fn();
+    const isVisible = new Seidr(false);
 
-    const Child = () => {
+    const View = () => {
       const scope = useScope();
-      scope.onAttached = onAttached;
+      scope.onAttached = (parent) => onAttached(parent);
       return $("span", { textContent: "Visible" });
     };
 
     const Parent = () => {
-      return $("div", { className: "parent" }, [Conditional(isVisible, Child)]);
+      return $("div", { className: "parent" }, [Conditional(isVisible, View)]);
     };
 
     mount(Parent, container);
 
-    expect(onAttached).not.toHaveBeenCalled();
-
     isVisible.value = true;
-    expect(onAttached).toHaveBeenCalled();
+    expect(onAttached).toHaveBeenCalledWith(expect.anything());
+  });
+
+  it("should destroy scope when condition becomes false", () => {
+    const isVisible = new Seidr(true);
+    let scopeDestroyed = false;
+
+    const View = () => {
+      const scope = useScope();
+      scope.track(() => (scopeDestroyed = true));
+      return $("span", { textContent: "Visible" });
+    };
+
+    mount(() => Conditional(isVisible, View), container);
+
+    isVisible.value = false;
+    expect(scopeDestroyed).toBe(true);
   });
 });

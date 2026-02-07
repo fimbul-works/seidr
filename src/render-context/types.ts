@@ -35,6 +35,9 @@ export interface RenderContext {
   /** Current URL path for routing (isolated per request in SSR) */
   currentPath: string;
 
+  /** Cache for marker comments indexed by component ID */
+  markerCache?: Map<string, [Comment, Comment]>;
+
   /** Callback to track promises for SSR waiting (optional) */
   onPromise?: (p: Promise<any>) => void;
 }

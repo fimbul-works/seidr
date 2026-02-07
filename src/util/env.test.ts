@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { enableSSRMode } from "../test-setup";
-import { inBrowser, inServer, isBrowser, isServer } from "./env";
+import { inBrowser, inServer, isBrowser, isServer } from "../util";
 
 describe("Environment detection and execution guards", () => {
   describe("isServer", () => {

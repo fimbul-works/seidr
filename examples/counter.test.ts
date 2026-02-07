@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import { beforeEach, describe, expect, it } from "vitest";
-import { $query, $queryAll, component, mount } from "../src/index.browser.js";
-import { Counter } from "./counter.js";
+import { $query, $queryAll, component, mount } from "../src/index.browser";
+import { Counter } from "./counter";
 
 describe("Counter Example", () => {
   let dom: JSDOM;
@@ -16,16 +16,14 @@ describe("Counter Example", () => {
   });
 
   it("should render counter with initial value of 0", async () => {
-    const counterComponent = Counter();
-    mount(counterComponent, document.body);
+    mount(Counter, document.body);
 
     const span = document.querySelector(".counter span");
     expect(span?.textContent).toBe("0");
   });
 
   it("should increment counter when increment button is clicked", async () => {
-    const counterComponent = Counter();
-    mount(counterComponent, document.body);
+    mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -38,8 +36,7 @@ describe("Counter Example", () => {
   });
 
   it("should disable increment button when count reaches 10", async () => {
-    const counterComponent = Counter();
-    mount(counterComponent, document.body);
+    mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0] as HTMLButtonElement;
@@ -54,8 +51,7 @@ describe("Counter Example", () => {
   });
 
   it("should reset counter when reset button is clicked", async () => {
-    const counterComponent = Counter();
-    mount(counterComponent, document.body);
+    mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -75,8 +71,9 @@ describe("Counter Example", () => {
     const counterComponent = component(Counter)();
     mount(counterComponent, document.body);
 
-    counterComponent.element.remove();
+    counterComponent.unmount();
 
+    console.log(document.body.innerHTML);
     expect(document.body.children.length).toBe(0);
   });
 });

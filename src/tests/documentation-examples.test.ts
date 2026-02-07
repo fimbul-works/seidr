@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $div, bindInput, type CleanupFunction, Safe, Seidr, withStorage } from "../index.core";
-import { inServer, renderToString } from "../ssr";
+import { $div, bindInput, type CleanupFunction, inServer, Safe, Seidr, withStorage } from "../index.core";
+import { renderToString } from "../ssr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 
 // Mocks
