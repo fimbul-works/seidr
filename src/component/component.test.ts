@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
+import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
 import { component } from "./component";
 import { useScope } from "./use-scope";
 
-describe("component", () => {
+describeDualMode("component", () => {
   let restoreClientMode: CleanupFunction;
 
   beforeEach(() => {

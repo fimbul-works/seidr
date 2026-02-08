@@ -1,11 +1,11 @@
-import { describe, expect, it } from "vitest";
-import "../dom-factory/dom-factory.browser";
+import { expect, it } from "vitest";
 import { Seidr } from "../seidr/seidr";
+import { describeDualMode } from "../test-setup/dual-mode";
 import { assignProp } from "./assign-prop";
 
-describe("assignProp", () => {
+describeDualMode("assignProp", ({ getDOMFactory }) => {
   it("should assign static properties", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     assignProp(el, "id", "test", cleanups);
     expect(el.id).toBe("test");
@@ -13,7 +13,7 @@ describe("assignProp", () => {
   });
 
   it("should bind reactive properties", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     const obs = new Seidr("initial");
     assignProp(el, "id", obs, cleanups);
@@ -25,14 +25,14 @@ describe("assignProp", () => {
   });
 
   it("should handle style as string", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     assignProp(el, "style", "color: red;", cleanups);
     expect(el.style.color).toBe("red");
   });
 
   it("should handle style as object", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     assignProp(el, "style", { color: "blue", fontSize: "10px" }, cleanups);
     expect(el.style.color).toBe("blue");
@@ -40,7 +40,7 @@ describe("assignProp", () => {
   });
 
   it("should handle reactive style object properties", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     const color = new Seidr("red");
     assignProp(el, "style", { color }, cleanups);
@@ -51,14 +51,14 @@ describe("assignProp", () => {
   });
 
   it("should handle data attributes", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     assignProp(el, "dataTest", "value", cleanups);
     expect(el.dataset.test).toBe("value");
   });
 
   it("should handle aria attributes", () => {
-    const el = document.createElement("div");
+    const el = getDOMFactory().createElement("div");
     const cleanups: any[] = [];
     assignProp(el, "ariaLabel", "label", cleanups);
     expect(el.getAttribute("aria-label")).toBe("label");

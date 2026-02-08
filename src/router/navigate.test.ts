@@ -1,18 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { Seidr } from "../seidr";
+import { beforeEach, expect, it, vi } from "vitest";
+import { describeDualMode } from "../test-setup";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";
 
-vi.mock("./get-current-path", () => ({
-  getCurrentPath: vi.fn(),
-}));
-
-describe("navigate", () => {
-  let pathSeidr: Seidr<string>;
-
+describeDualMode("navigate", ({ mode }) => {
   beforeEach(() => {
-    pathSeidr = new Seidr("/");
-    vi.mocked(getCurrentPath).mockReturnValue(pathSeidr);
     vi.stubGlobal("window", {
       history: {
         pushState: vi.fn(),
@@ -22,16 +14,17 @@ describe("navigate", () => {
 
   it("should update currentPath value", () => {
     navigate("/about");
-    expect(pathSeidr.value).toBe("/about");
+    expect(getCurrentPath().value).toBe("/about");
   });
 
   it("should strip query params and hashes", () => {
     navigate("/about?foo=bar#baz");
-    expect(pathSeidr.value).toBe("/about");
+    expect(getCurrentPath().value).toBe("/about");
   });
 
-  it("should call window.history.pushState", () => {
-    navigate("/contact");
-    expect(window.history.pushState).toHaveBeenCalledWith({}, "", "/contact");
-  });
+  if (mode !== "SSR")
+    it("should call window.history.pushState", () => {
+      navigate("/contact");
+      expect(window.history.pushState).toHaveBeenCalledWith({}, "", "/contact");
+    });
 });

@@ -1,8 +1,11 @@
-import { component, type SeidrComponent, useScope } from "../component";
+import { component } from "../component/component";
+import type { SeidrComponent } from "../component/types";
+import { useScope } from "../component/use-scope";
 import { $, type SeidrElementProps, type SeidrNode } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
-import { cn, isSeidr } from "../util";
+import { cn } from "../util/cn";
+import { isSeidr } from "../util/type-guards";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";
 import { normalizePath } from "./normalize-path";
@@ -79,5 +82,5 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     );
 
     return el;
-  })();
+  }, "Link")();
 }

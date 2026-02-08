@@ -1,9 +1,10 @@
-import { describe, expect, it } from "vitest";
+import { expect, it } from "vitest";
 import { component } from "../component";
 import { $ } from "../element";
+import { describeDualMode } from "../test-setup";
 import { createRoute } from "./create-route";
 
-describe("createRoute", () => {
+describeDualMode("createRoute", () => {
   it("should create a route definition with string pattern", () => {
     const Home = component(() => $("div", { textContent: "Home" }));
     const route = createRoute("/", Home);

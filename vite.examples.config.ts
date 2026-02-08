@@ -1,22 +1,11 @@
 import { defineConfig } from "vite";
+import { browserReplace } from "./rollup.shared";
 
 export default defineConfig((_config) => {
   const example = process.env.EXAMPLE || "counter";
 
   return {
     root: "examples",
-    define: {
-      preventAssignment: true,
-      // Production build
-      "process.env.NODE_ENV": '"production"',
-      // Always false in browser builds
-      "process.env.SEIDR_TEST_SSR": "false",
-      // Strip away SSR
-      "process.env.CLIENT_BUNDLE": "true",
-      // Disable SSR code
-      process: "undefined",
-      window: "{}",
-    },
     build: {
       outDir: "examples/dist",
       emptyOutDir: true,
@@ -33,6 +22,9 @@ export default defineConfig((_config) => {
         },
         treeshake: "smallest",
       },
+    },
+    esbuild: {
+      define: { ...browserReplace, "process.env.NO_SSR": "'true'" },
     },
     server: {
       port: 3000,

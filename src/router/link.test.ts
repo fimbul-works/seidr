@@ -1,34 +1,26 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { component } from "../component";
-import { mount } from "../mount";
+import { beforeEach, expect, it } from "vitest";
+import { component } from "../component/internal";
+import { mount } from "../dom/internal";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { getCurrentPath } from "./get-current-path";
+import { initRouter } from "./init-router";
 import { Link } from "./link";
 import { navigate } from "./navigate";
 
-vi.mock("./get-current-path", () => ({
-  getCurrentPath: vi.fn(),
-}));
-
-vi.mock("./navigate", () => ({
-  navigate: vi.fn(),
-}));
-
-describe("Link Component", () => {
+describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
   let container: HTMLDivElement;
-  let pathSeidr: Seidr<string>;
 
   beforeEach(() => {
+    const document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
-
-    pathSeidr = new Seidr("/");
-    vi.mocked(getCurrentPath).mockReturnValue(pathSeidr);
+    initRouter("/");
   });
 
   it("should render an anchor tag by default", () => {
     const App = component(() => Link({ to: "/about" }, ["About"]));
-    mount(App(), container);
+    mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link).toBeTruthy();
@@ -38,34 +30,36 @@ describe("Link Component", () => {
 
   it("should render with custom tag name", () => {
     const App = component(() => Link({ to: "/about", tagName: "button" }, ["About"]));
-    mount(App(), container);
+    mount(App, container);
 
     const link = container.querySelector("button")!;
     expect(link).toBeTruthy();
     expect(link.textContent).toBe("About");
   });
 
-  it("should call navigate on click", () => {
-    const App = component(() => Link({ to: "/about" }, ["About"]));
-    mount(App(), container);
+  if (mode !== "SSR") {
+    it("should call navigate on click", () => {
+      const App = component(() => Link({ to: "/about" }, ["About"]));
+      mount(App, container);
 
-    const link = container.querySelector("a")!;
-    link.click();
+      const link = container.querySelector("a")!;
+      link.click();
 
-    expect(navigate).toHaveBeenCalledWith("/about");
-  });
+      expect(getCurrentPath().value).toBe("/about");
+    });
+  }
 
   it("should apply active class when path matches", () => {
     const App = component(() => Link({ to: "/about", activeClass: "is-active" }, ["About"]));
-    mount(App(), container);
+    mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.classList.contains("is-active")).toBe(false);
 
-    pathSeidr.value = "/about";
+    navigate("/about");
     expect(link.classList.contains("is-active")).toBe(true);
 
-    pathSeidr.value = "/";
+    navigate("/");
     expect(link.classList.contains("is-active")).toBe(false);
   });
 
@@ -80,19 +74,19 @@ describe("Link Component", () => {
         ["About"],
       ),
     );
-    mount(App(), container);
+    mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.getAttribute("aria-current")).toBeNull();
 
-    pathSeidr.value = "/about";
+    navigate("/about");
     expect(link.getAttribute("aria-current")).toBe("page");
   });
 
   it("should support reactive 'to' prop", () => {
     const target = new Seidr("/initial");
     const App = component(() => Link({ to: target }, ["Link"]));
-    mount(App(), container);
+    mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.getAttribute("href")).toBe("/initial");

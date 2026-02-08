@@ -1,4 +1,6 @@
 import type { CleanupFunction } from "../types";
+import { isServer } from "../util/environment/server";
+import { isUndefined } from "../util/type-guards/primitive-types";
 import { getCurrentPath } from "./get-current-path";
 
 /**
@@ -9,25 +11,18 @@ import { getCurrentPath } from "./get-current-path";
 export function initRouter(path?: string): CleanupFunction {
   // Set the initial path value
   const currentPath = getCurrentPath();
-  if (path !== undefined) {
+  if (!isUndefined(path)) {
     currentPath.value = path;
   }
 
   // Return noop in SSR
-  if (typeof window === "undefined") {
+  if (isServer()) {
     return () => {};
   }
 
   // Handle history.back
-  const popStateHandler = () => {
-    currentPath.value = window.location.pathname;
-  };
+  const popStateHandler = () => (currentPath.value = window.location.pathname);
   window.addEventListener("popstate", popStateHandler);
 
-  // Return cleanup function (capture window reference for closure)
-  return () => {
-    if (typeof window !== "undefined") {
-      window.removeEventListener("popstate", popStateHandler);
-    }
-  };
+  return () => window.removeEventListener("popstate", popStateHandler);
 }

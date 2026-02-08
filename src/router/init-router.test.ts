@@ -1,15 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setInternalContext } from "../render-context";
-import { clearHydrationData } from "../ssr/hydration-context";
+import { enableClientMode } from "../test-setup";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { initRouter } from "./init-router";
-import "../render-context/render-context.node";
 
 describe("initRouter", () => {
+  let cleanup: () => void;
+
   beforeEach(() => {
-    setInternalContext(() => undefined as any);
+    cleanup = enableClientMode();
     resetClientPathState();
-    clearHydrationData();
     vi.stubGlobal("window", {
       location: { pathname: "/" },
       addEventListener: vi.fn(),
@@ -18,7 +17,7 @@ describe("initRouter", () => {
   });
 
   afterEach(() => {
-    clearHydrationData();
+    cleanup();
     vi.restoreAllMocks();
   });
 

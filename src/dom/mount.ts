@@ -1,0 +1,63 @@
+import { getCurrentComponent } from "../component/component-stack";
+import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "../component/types";
+import { wrapComponent } from "../component/wrap-component";
+import type { SeidrElement } from "../element";
+import { getRenderContext } from "../render-context";
+import type { CleanupFunction } from "../types";
+import { isDOMNode } from "../util/type-guards/dom-node-types";
+import { isArray } from "../util/type-guards/primitive-types";
+import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
+
+/**
+ * Mounts a component or element factory into a container element with automatic cleanup.
+ *
+ * The mount function appends a component's element to the specified container
+ * and returns a cleanup function that can properly unmount the component, including
+ * destroying all child components, removing event listeners, and cleaning up
+ * reactive bindings.
+ *
+ * If a plain function is provided, Seidr automatically wraps it in a component.
+ *
+ * If called within a parent component's render function, the cleanup is automatically
+ * tracked and will be executed when the parent component is destroyed.
+ *
+ * @template {SeidrComponentChildren | SeidrComponentFactory<void>} C - The type of SeidrComponentChildren or SeidrComponentFactory being mounted
+ *
+ * @param {C | (() => C)} componentOrFactory - The component instance, or a factory function (raw or wrapped)
+ * @param {HTMLElement | SeidrElement} container - The DOM container element to mount into
+ * @returns {CleanupFunction} A cleanup function that unmounts the component when called
+ */
+export function mount<C extends (() => SeidrComponentChildren) | SeidrComponentChildren | SeidrComponentFactory<void>>(
+  componentOrFactory: C,
+  container: HTMLElement | SeidrElement,
+): CleanupFunction {
+  // Bind the container to the render context if not already bound
+  const ctx = getRenderContext();
+  if (!ctx.rootNode) {
+    ctx.rootNode = container;
+  }
+
+  const component: SeidrComponent = isSeidrComponent(componentOrFactory)
+    ? componentOrFactory
+    : wrapComponent(componentOrFactory as SeidrComponentFactory<void>)();
+
+  const isAlreadyMounted = isArray(component.element)
+    ? component.element.length > 0 && container.contains(component.element[0] as Node)
+    : component.element
+      ? container.contains(component.element as Node)
+      : false;
+
+  if (!isAlreadyMounted) {
+    if (isArray(component.element)) {
+      component.element.forEach((el) => isDOMNode(el) && container.appendChild(el));
+    } else if (isDOMNode(component.element)) {
+      container.appendChild(component.element);
+    }
+  }
+
+  const cleanup = () => component.unmount();
+  getCurrentComponent()?.scope.track(cleanup);
+  component.scope.attached(container);
+
+  return cleanup;
+}

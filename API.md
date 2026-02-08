@@ -33,12 +33,9 @@
   - [`createRoute()`](#createroute)
   - [`Link()`](#link)
   - [`parseRouteParams()`](#parserouteparams)
-- [State Management](#state-management)
-  - [`createStateKey()`](#createstatekey)
-  - [`hasState()`](#hasstate)
-  - [`setState()`](#setstate)
-  - [`getState()`](#getstate)
+- [Global State Management](#global-state-management)
   - [`useState()`](#usestate)
+  - [`createStateKey()`](#createstatekey)
 - [Utilities](#utilities)
   - [`elementClassToggle()`](#elementclasstoggle)
   - [`bindInput()`](#bindinput)
@@ -47,11 +44,6 @@
   - [`cn()`](#cn)
   - [`debounce()`](#debounce)
   - [`random()`](#random)
-  - [`camelToKebab()`](#cameltokebab)
-  - [`kebabToCamel()`](#kebabtocamel)
-  - [`isCamelCase()`](#iscamelcase)
-  - [`isKebabCase()`](#iskebabcase)
-  - [`wrapError()`](#wraperror)
   - [Query Functions](#query-functions)
 - [Type Guards](#type-guards)
   - [`isUndefined`](#isUndefined)
@@ -65,9 +57,9 @@
   - [`isSeidrElement`](#isseidrelement)
   - [`isSeidrComponent`](#isseidrcomponent)
 - [Environment Utilities](#environment-utilities)
-  - [`inBrowser()`](#inbrowser)
+  - [`inClient()`](#inbrowser)
   - [`inServer()`](#inserver)
-  - [`isBrowser()`](#isbrowser)
+  - [`isClient()`](#isbrowser)
   - [`isServer()`](#isserver)
 
 ---
@@ -299,7 +291,6 @@ An extended `HTMLElement` with reactive props support. Use [`$`](#---create-dom-
 **Returned element has additional methods:**
 - `on<E>(event, handler)` - Add event listener, returns cleanup
 - `clear()` - Remove all child elements
-- `destroy()` - Remove element and cleanup bindings
 
 ### `$` - Create DOM elements
 
@@ -429,7 +420,7 @@ mount(Counter, document.body);
 
 ### `component()`
 
-While most components can be plain functions, the `component()` wrapper is used to create a formal **Component Factory**. This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the `SeidrComponent` instance.
+While most components can be plain functions, the `component()` wrapper is used to create a formal **component factory**. This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the `SeidrComponent` instance.
 
 **Parameters:**
 - `factory` - Factory function (signature `(props) => SeidrNode`)
@@ -441,7 +432,7 @@ While most components can be plain functions, the `component()` wrapper is used 
 ```typescript
 {
   element: HTMLElement | Array<HTMLElement>; // The element or an array of elements
-  destroy: () => void;                       // Cleanup function
+  unmount: () => void;                       // Cleanup function
 }
 ```
 
@@ -558,7 +549,7 @@ Mount a component to a DOM container.
 - `component` - [`SeidrComponent`](#component) to mount
 - `container` - DOM element
 
-**Returns:** Function that unmounts and destroys the component when called.
+**Returns:** Function that unmounts and removes the component when called.
 
 ```typescript
 import { mount, $div } from '@fimbul-works/seidr';
@@ -792,7 +783,7 @@ const SafeComponent = Safe(
     // Track resources
     scope.track(() => console.log('Component cleanup'));
 
-    throw new Error('Failed');
+    throw new SeidrError('Failed');
     return $div();
   },
   (err) => {
@@ -804,7 +795,7 @@ const SafeComponent = Safe(
   }
 );
 
-SafeComponent.destroy();
+SafeComponent.unmount();
 // Logs:
 // - "Component cleanup" (from failed component)
 // - "Error boundary cleanup" (from error boundary)
@@ -1035,111 +1026,18 @@ const noMatch = parseRouteParams('/user/:id', '/other');
 
 ---
 
-## State Management
-
-### createStateKey()
-
-Create a type-safe state key for application-level state storage.
-
-```typescript
-import { createStateKey, setState, getState } from '@fimbul-works/seidr';
-
-const THEME = createStateKey<string>('theme');
-const USER_ID = createStateKey<number>('userId');
-const SETTINGS = createStateKey<{ theme: string }>('settings');
-```
-
-**Generic Type:** `T` - The type of value that will be stored
-
-**Returns:** A unique `symbol` that carries type information
-
----
-### hasState()
-
-Check if application state exists for a given key.
-
-**Generic Types:** `T` - Type of value stored in `key`
-
-**Parameters:**
-- `key` - The state key (from `createStateKey()`)
-
-**Returns:** `true` if state exists, `false` otherwise
-
-```typescript
-import { createStateKey, setState, hasState, getState } from '@fimbul-works/seidr';
-
-const SETTINGS = createStateKey<object>('settings');
-
-console.log(hasState(SETTINGS)); // false
-
-setState(SETTINGS, { theme: 'dark' });
-console.log(hasState(SETTINGS)); // true
-
-if (hasState(SETTINGS)) {
-  const settings = getState(SETTINGS);
-  console.log(settings.theme);   // 'dark'
-}
-```
-
----
-
-### setState()
-
-Store application state for a given key. State is isolated by render context for SSR.
-
-**Generic Types:** `T` - Type of value stored in `key`
-
-**Parameters:**
-- `key` - The state key (from `createStateKey()`)
-- `value` - The value to store
-
-```typescript
-import { createStateKey, setState } from '@fimbul-works/seidr';
-
-const COUNTER = createStateKey<number>('counter');
-
-setState(COUNTER, 42);
-setState(COUNTER, 100); // Overwrites previous value
-```
-
----
-
-### getState()
-
-Retrieve application state for a given key. Throws if state doesn't exist.
-
-**Generic Types:** `T` - Type of value stored in `key`
-
-**Parameters:**
-- `key` - The state key (from `createStateKey()`)
-
-**Returns:** The stored value
-
-**Throws:** Error if state doesn't exist for the key
-
-```typescript
-import { createStateKey, setState, getState } from '@fimbul-works/seidr';
-
-const COUNTER = createStateKey<number>('counter');
-
-setState(COUNTER, 42);
-const counter = getState(COUNTER); // Type: number
-
-console.log(counter); // 42
-```
-
----
+## Global State Management
 
 ### useState()
 
 A hook for managing shared application state as a global Seidr singleton.
 
-> 💡 **Comparison to React:** While it shares a similar name, Seidr's `useState` is **Global**, not local. It implements a singleton pattern: every call with the same key returns the exact same observable instance. Use this to share state across multiple independent components.
+> 💡 **Comparison to React:** While it shares a similar name, Seidr's `useState` is **global**, not local. It implements a singleton pattern: every call with the same key returns the exact same observable instance. Use this to share state across multiple independent components.
 
 **Generic Type:** `T` - The type of value stored
 
 **Parameters:**
-- `key` - Unique string key for the state, or a `StateKey<T>`
+- `key` - Unique string key for the state, or a `string | StateKey<T>`
 
 **Returns:** `[Seidr<T>, (v: T | Seidr<T>) => Seidr<T>]` - A tuple with the shared Seidr observable and a setter function.
 
@@ -1167,6 +1065,24 @@ The first time `useState` is called for a key, it creates the `Seidr` instance. 
 
 **SSR Note:**
 `useState` is safe for SSR because it resolves the state context lazily. During server rendering, state is automatically isolated to the specific request context.
+
+---
+
+### createStateKey()
+
+Create a type-safe state key for application-level state storage.
+
+```typescript
+import { createStateKey } from '@fimbul-works/seidr';
+
+const THEME = createStateKey<string>('theme');
+const USER_ID = createStateKey<number>('userId');
+const SETTINGS = createStateKey<{ theme: string }>('settings');
+```
+
+**Generic Type:** `T` - The type of value that will be stored
+
+**Returns:** A unique `symbol` that carries type information
 
 ---
 
@@ -1329,116 +1245,6 @@ import { random } from '@fimbul-works/seidr';
 // This value will be the same on server and client during hydration
 const initialRotation = random() * 360;
 ```
-
----
-
-### camelToKebab()
-
-Converts a camelCase string to kebab-case.
-
-**Parameters:**
-- `str` - The string to convert
-
-**Returns:** Kebab-case version of the input string
-
-```typescript
-import { camelToKebab } from '@fimbul-works/seidr';
-
-console.log(camelToKebab('backgroundColor')); // "background-color"
-```
-
----
-
-### kebabToCamel()
-
-Converts a kebab-case string to camelCase.
-
-**Parameters:**
-- `str` - The string to convert
-
-**Returns:** CamelCase version of the input string
-
-```typescript
-import { kebabToCamel } from '@fimbul-works/seidr';
-
-console.log(kebabToCamel('background-color')); // "backgroundColor"
-```
-
----
-
-### isCamelCase()
-
-Checks if a string is in valid camelCase. A single lowercase word is considered valid.
-
-**Parameters:**
-- `str` - The string to test
-
-**Returns:** `boolean`
-
-```typescript
-import { isCamelCase } from '@fimbul-works/seidr';
-
-console.log(isCamelCase('fooBar'));     // true
-console.log(isCamelCase('foo'));        // true
-console.log(isCamelCase('foo-bar'));    // false
-console.log(isCamelCase('FooBar'));     // false
-```
-
----
-
-### isKebabCase()
-
-Checks if a string is in valid kebab-case. A single lowercase word is considered valid.
-
-**Parameters:**
-- `str` - The string to test
-
-**Returns:** `boolean`
-
-```typescript
-import { isKebabCase } from '@fimbul-works/seidr';
-
-console.log(isKebabCase('foo-bar'));    // true
-console.log(isKebabCase('foo'));        // true
-console.log(isKebabCase('fooBar'));     // false
-console.log(isKebabCase('foo--bar'));   // false
-```
-
----
-
-### wrapError()
-
-Wraps a value as an `Error` instance if it is not already an instance of the provided constructor. This is useful for normalizing errors caught in `try/catch` blocks, where `catch` can receive any value.
-
-**Generic Type:** `E` extends `Error` (defaults to `Error`)
-
-**Parameters:**
-- `err` - The value to wrap (can be `unknown`)
-- `Constructor` - Optional Error constructor (defaults to `Error`)
-
-**Returns:** An instance of the provided constructor. If the input is already an instance, it is returned as-is. Otherwise, a new instance is created with the original value as the `cause`.
-
-```typescript
-import { wrapError } from '@fimbul-works/seidr';
-
-try {
-  throw "something went wrong";
-} catch (e) {
-  const err = wrapError(e);
-  console.log(err.message); // "something went wrong"
-  console.log(err.cause);   // "something went wrong"
-}
-
-// With custom error classes
-class AppError extends Error {}
-
-const e1 = new Error("fail");
-const appErr = wrapError(e1, AppError);
-console.log(appErr instanceof AppError); // true
-console.log(appErr.cause === e1);        // true
-```
-
----
 
 ### Query Functions
 
@@ -1748,7 +1554,7 @@ console.log(isSeidrComponent(42));       // false
 
 Utilities for managing code that runs in both browser and server (SSR) environments.
 
-### inBrowser()
+### inClient()
 
 Executes a function only in the browser environment. Useful for client-side side effects like DOM APIs, `localStorage`, or third-party libraries. Return value is `undefined` on the server.
 
@@ -1758,9 +1564,9 @@ Executes a function only in the browser environment. Useful for client-side side
 **Returns:** The result of `fn()`, or `undefined` on the server.
 
 ```typescript
-import { inBrowser } from '@fimbul-works/seidr';
+import { inClient } from '@fimbul-works/seidr';
 
-inBrowser(() => {
+inClient(() => {
   const width = window.innerWidth;
   console.log('Window width:', width);
 });
@@ -1793,14 +1599,14 @@ inServer(async () => {
 
 ---
 
-### isBrowser()
+### isClient()
 
 Returns `true` if the code is running in the browser environment.
 
 ```typescript
-import { isBrowser } from '@fimbul-works/seidr';
+import { isClient } from '@fimbul-works/seidr';
 
-if (isBrowser()) {
+if (isClient()) {
   console.log('Running in the browser');
 }
 ```

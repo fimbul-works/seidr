@@ -1,6 +1,9 @@
-import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
+import { component } from "../component/component";
 import { createScope } from "../component/component-scope";
 import { getCurrentComponent } from "../component/component-stack";
+import type { SeidrComponent } from "../component/types";
+import { useScope } from "../component/use-scope";
+import { wrapComponent } from "../component/wrap-component";
 import type { SeidrNode } from "../element";
 import { wrapError } from "../util/wrap-error";
 
@@ -25,12 +28,7 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
       return wrapComponent(factory)() as T;
     } catch (err) {
       const newScope = createScope();
-
-      // Ensure onAttached events propagate through the new scope to the original scope's handler
-      // which will be set up by the component() wrapper after this function returns.
-      newScope.onAttached = (parent) => {
-        scope.onAttached?.(parent);
-      };
+      newScope.onAttached = (parent) => scope.onAttached?.(parent);
 
       const currentComp = getCurrentComponent();
       if (currentComp) {
@@ -39,5 +37,5 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
 
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }
-  })();
+  }, "Safe")();
 }

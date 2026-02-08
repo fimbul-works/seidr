@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
-import { $ } from "./element";
+import { $ } from "./create-element";
 
 describe("$ Bidirectional Mapping", () => {
   describe("SSR Mode", () => {

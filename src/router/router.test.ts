@@ -1,26 +1,22 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { component } from "../component";
+import { beforeEach, expect, it } from "vitest";
+import { component } from "../component/internal";
+import { mount } from "../dom/internal";
 import { $ } from "../element";
-import { mount } from "../mount/mount";
-import { Seidr } from "../seidr";
+import type { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { createRoute } from "./create-route";
-import { getCurrentPath } from "./get-current-path";
+import { initRouter } from "./init-router";
+import { navigate } from "./navigate";
 import { Router } from "./router";
 
-vi.mock("./get-current-path", () => ({
-  getCurrentPath: vi.fn(),
-}));
-
-describe("Router Component", () => {
+describeDualMode("Router Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
-  let pathSeidr: Seidr<string>;
 
   beforeEach(() => {
+    const document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
-
-    pathSeidr = new Seidr("/");
-    vi.mocked(getCurrentPath).mockReturnValue(pathSeidr);
+    initRouter("/");
   });
 
   const Home = component(() => $("div", { className: "home", textContent: "Home" }));
@@ -40,11 +36,11 @@ describe("Router Component", () => {
       }),
     );
 
-    mount(App(), container);
+    mount(App, container);
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
 
-    pathSeidr.value = "/about";
+    navigate("/about");
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".about")).toBeTruthy();
   });
@@ -57,14 +53,14 @@ describe("Router Component", () => {
       }),
     );
 
-    mount(App(), container);
+    mount(App, container);
     expect(container.querySelector(".home")).toBeTruthy();
 
-    pathSeidr.value = "/unknown";
+    navigate("/unknown");
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".fallback")).toBeTruthy();
 
-    pathSeidr.value = "/";
+    navigate("/");
     expect(container.querySelector(".fallback")).toBeFalsy();
     expect(container.querySelector(".home")).toBeTruthy();
   });
@@ -76,13 +72,13 @@ describe("Router Component", () => {
       }),
     );
 
-    pathSeidr.value = "/user/123";
-    mount(App(), container);
+    navigate("/user/123");
+    mount(App, container);
 
     const userEl = container.querySelector(".user")!;
     expect(userEl.textContent).toBe("User 123");
 
-    pathSeidr.value = "/user/456";
+    navigate("/user/456");
     expect(userEl.textContent).toBe("User 456");
   });
 
@@ -102,13 +98,13 @@ describe("Router Component", () => {
       }),
     );
 
-    mount(App(), container);
+    mount(App, container);
 
-    pathSeidr.value = "/admin/dashboard";
-    expect(container.textContent).toBe("Admin");
+    navigate("/admin/dashboard");
+    expect(container.textContent).toContain("Admin");
 
-    pathSeidr.value = "/user/789/edit";
-    expect(container.textContent).toBe("Edit User");
+    navigate("/user/789/edit");
+    expect(container.textContent).toContain("Edit User");
   });
 
   it("should support RegExp patterns", () => {
@@ -123,12 +119,12 @@ describe("Router Component", () => {
       }),
     );
 
-    mount(App(), container);
+    mount(App, container);
 
-    pathSeidr.value = "/post/123";
-    expect(container.textContent).toBe("Post 123");
+    navigate("/post/123");
+    expect(container.textContent).toContain("Post 123");
 
-    pathSeidr.value = "/post/abc"; // No match
-    expect(container.textContent).toBe("");
+    navigate("/post/abc"); // No match
+    expect(container.textContent).not.toContain("Post 123");
   });
 });

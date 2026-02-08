@@ -1,27 +1,21 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import type { CleanupFunction } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { setInternalContext } from "./render-context";
-import type { RenderContext, RenderContextStore } from "./types";
+import type { RenderContext } from "./types";
 
-/** Global fallback store for ID generation */
-const globalRenderContextStore: RenderContextStore = { idCounter: 0 };
+/** Global fallback store for request ID generation */
+let requestIdCounter = 0;
 
 /** Reset the global ID counter (for testing) */
-export function resetIdCounter(): void {
-  globalRenderContextStore.idCounter = 0;
+export function resetRequestIdCounter(): void {
+  requestIdCounter = 0;
 }
 
-/**
- * Storage for the RenderContextStore (the ID generator).
- * This allows isolating groups of requests (e.g. in tests).
- */
-const managerLocalStorage = new AsyncLocalStorage<RenderContextStore>();
-
-/** Storage for the actual per-request RenderContext */
+/** Storage for per-request RenderContext */
 const contextLocalStorage = new AsyncLocalStorage<RenderContext>();
 
 // Expose store globally for test-setup access in tests
-if (typeof global !== "undefined") {
+if (process.env.VITEST && typeof global !== "undefined") {
   (global as any).__SEIDR_CONTEXT_STORE__ = contextLocalStorage;
 }
 
@@ -32,7 +26,7 @@ if (typeof global !== "undefined") {
  */
 export const getSSRRenderContext = (): RenderContext => {
   const store = contextLocalStorage.getStore();
-  if (!store) throw new Error("RenderContext not initialized");
+  if (!store) throw new SeidrError("RenderContext not initialized");
   return store;
 };
 
@@ -49,32 +43,16 @@ setInternalContext(getSSRRenderContext);
  * @return {Promise<T>}
  */
 export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promise<T> => {
-  const store = managerLocalStorage.getStore() || globalRenderContextStore;
-  const ctxID = store.idCounter++;
+  const ctxID = requestIdCounter++;
 
   const context: RenderContext = {
     ctxID,
-    idCounter: 0,
-    seidrIdCounter: 0,
-    randomCounter: 0,
     currentPath: "/",
+    markers: new Map<string, [Comment, Comment]>(),
   };
 
   return contextLocalStorage.run(context, callback);
 };
-
-/**
- * Run a sync function within a new render context store.
- * This is used to isolate ID generation (e.g. for deterministic tests).
- *
- * @template T - Return type
- * @param {() => T} callback - Function to run
- * @param {RenderContextStore} [store] - Optional store to use
- * @returns {T}
- */
-export function runWithRenderContextStore<T>(callback: () => T, store: RenderContextStore = { idCounter: 0 }): T {
-  return managerLocalStorage.run(store, callback);
-}
 
 /**
  * Set a mock render context for testing purposes.
@@ -87,10 +65,8 @@ export function runWithRenderContextStore<T>(callback: () => T, store: RenderCon
 export const setMockRenderContextForTests = (): CleanupFunction => {
   const mockContext: RenderContext = {
     ctxID: 0,
-    idCounter: 0,
-    seidrIdCounter: 0,
-    randomCounter: 0,
     currentPath: "/",
+    markers: new Map<string, [Comment, Comment]>(),
   };
   const originalGetRenderContext = getSSRRenderContext;
 
@@ -98,7 +74,5 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
   setInternalContext(() => mockContext);
 
   // Return cleanup function to restore original
-  return () => {
-    setInternalContext(originalGetRenderContext);
-  };
+  return () => setInternalContext(originalGetRenderContext);
 };

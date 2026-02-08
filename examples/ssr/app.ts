@@ -1,6 +1,7 @@
-import { $a, $div, $footer, $nav, initRouter, inServer, Link, Router, setState } from "../../src/index.browser.js";
+import { $a, $div, $footer, $nav, initRouter, inServer, Link, Router, useState } from "../../src/index.browser.js";
 import { routes } from "./routes.js";
 import type { PageContext } from "./server.js";
+import type { BlogPost } from "./types.js";
 
 // Components
 const Header = () =>
@@ -13,17 +14,19 @@ const Header = () =>
   ]);
 
 // Main App
-export const BlogApp = ({ posts = [], currentPost = undefined }: PageContext = {}) => {
+export const BlogApp = ({ initialPosts = [], initialCurrentPost = undefined }: PageContext = {}) => {
+  const [, setPosts] = useState<BlogPost[]>("posts");
+  const [, setCurrentPost] = useState<BlogPost | undefined>("currentPost");
   initRouter();
 
   // Initialize state from props on the server
   inServer(() => {
-    if (posts.length) {
-      setState("posts", posts);
+    if (initialPosts.length) {
+      setPosts(initialPosts);
     }
 
-    if (currentPost) {
-      setState("currentPost", currentPost);
+    if (initialCurrentPost) {
+      setCurrentPost(initialCurrentPost);
     }
   });
 

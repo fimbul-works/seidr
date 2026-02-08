@@ -1,8 +1,11 @@
-import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { getMarkerComments } from "../dom-utils";
-import type { SeidrNode } from "../element";
+import { component } from "../component/component";
+import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "../component/types";
+import { useScope } from "../component/use-scope";
+import { wrapComponent } from "../component/wrap-component";
+import { getMarkerComments } from "../dom/get-marker-comments";
 import type { Seidr } from "../seidr";
-import { isArr, isDOMNode } from "../util/type-guards";
+import { isDOMNode } from "../util/type-guards/dom-node-types";
+import { isArray } from "../util/type-guards/primitive-types";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -10,27 +13,28 @@ import { isArr, isDOMNode } from "../util/type-guards";
  *
  * @template T - The type of list items
  * @template {string | number} I - Unique key type
- * @template {SeidrNode} C - The type of SeidrNode for list items
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
- * @param {(item: T) => C} factory - Component creation function (raw or wrapped)
+ * @param {(item: T) => SeidrComponentChildren} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent} List component
  */
-export function List<T, I extends string | number, C extends SeidrNode>(
+export function List<T, I extends string | number>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  factory: (item: T) => C,
+  factory: (item: T) => SeidrComponentChildren,
 ): SeidrComponent {
-  return component((_props, id) => {
+  return component(() => {
     const scope = useScope();
-    const markers = getMarkerComments(id);
+    const markers = getMarkerComments(scope.id);
     const componentMap = new Map<I, SeidrComponent>();
 
     function update(items: T[]) {
       const end = markers[1];
       const parent = end.parentNode;
-      if (!parent) return;
+      if (!parent) {
+        return;
+      }
 
       const newKeys = new Set(items.map(getKey));
 
@@ -50,42 +54,37 @@ export function List<T, I extends string | number, C extends SeidrNode>(
         let comp = componentMap.get(key);
 
         if (!comp) {
-          comp = wrapComponent<typeof item>(factory as any)(item);
+          comp = wrapComponent<T>(factory as SeidrComponentFactory<T>)(item);
           componentMap.set(key, comp);
         }
 
         const el = comp.element;
-        const lastNode = isArr(el) ? el[el.length - 1] : el;
+        const lastNode = isArray(el) ? el[el.length - 1] : el;
 
         // Move to correct position if needed
         if (lastNode !== currentAnchor.previousSibling) {
-          if (comp.start) parent.insertBefore(comp.start, currentAnchor);
-          if (isArr(el)) {
+          if (comp.start) {
+            parent.insertBefore(comp.start, currentAnchor);
+          }
+
+          if (isArray(el)) {
             el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, currentAnchor));
           } else if (isDOMNode(el)) {
             parent.insertBefore(el, currentAnchor);
           }
-          if (comp.end) parent.insertBefore(comp.end, currentAnchor);
 
-          // Trigger attached (safe to call multiple times)
+          if (comp.end) {
+            parent.insertBefore(comp.end, currentAnchor);
+          }
+
           comp.scope.attached(parent);
         }
 
-        currentAnchor = (comp.start || (isArr(el) ? el[0] : el)) as Node;
+        currentAnchor = (comp.start || (isArray(el) ? el[0] : el)) as Node;
       }
     }
 
-    // Initialize map with initial items and Return them so component() can mount them
-    const initial = observable.value.map((item) => {
-      const comp = wrapComponent<typeof item>(factory as any)(item);
-      componentMap.set(getKey(item), comp);
-      return comp;
-    });
-
-    // Track future updates
     scope.track(observable.observe(update));
-
-    // Cleanup map contents on list destruction
     scope.track(() => {
       for (const comp of componentMap.values()) {
         comp.unmount();
@@ -93,6 +92,10 @@ export function List<T, I extends string | number, C extends SeidrNode>(
       componentMap.clear();
     });
 
-    return initial;
-  }, "list")();
+    return observable.value.map((item) => {
+      const comp = wrapComponent<T>(factory as SeidrComponentFactory<T>)(item);
+      componentMap.set(getKey(item), comp);
+      return comp;
+    });
+  }, "List")();
 }

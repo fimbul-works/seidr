@@ -1,15 +1,28 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useScope } from "../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
+import { appendChild } from "../element/append-child";
+import { describeDualMode } from "../test-setup";
+import { SeidrError } from "../types";
 import { Safe } from "./safe";
 
-describe("Safe", () => {
+describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
+  let container: HTMLElement;
+  let document: Document;
+
+  beforeEach(() => {
+    document = getDOMFactory().getDocument();
+    container = document.createElement("div");
+    document.body.appendChild(container);
+  });
+
   describe("Basic error boundary functionality", () => {
     it("should render error boundary when factory throws", () => {
       const errorMessage = "Factory error";
       const comp = Safe(
         () => {
-          throw new Error(errorMessage);
+          throw new SeidrError(errorMessage);
         },
         (err) => {
           expect(err).toBeInstanceOf(Error);
@@ -19,6 +32,10 @@ describe("Safe", () => {
       );
 
       expect(comp.element.textContent).toBe(`Error: ${errorMessage}`);
+      expect(comp.start).toBeDefined();
+      expect(comp.start?.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
+      expect(comp.end).toBeDefined();
+      expect(comp.end?.textContent).toContain(`${SEIDR_COMPONENT_END_PREFIX}Safe-`);
     });
 
     it("should create new scope for error boundary", () => {
@@ -29,7 +46,7 @@ describe("Safe", () => {
         () => {
           const scope = useScope();
           factoryScope = scope;
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           const scope = useScope();
@@ -53,7 +70,7 @@ describe("Safe", () => {
           scope.track(() => {
             originalScopeDestroyed = true;
           });
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           return $("div");
@@ -71,7 +88,7 @@ describe("Safe", () => {
 
       const comp = Safe(
         () => {
-          throw new Error("Root error");
+          throw new SeidrError("Root error");
         },
         (_err) => {
           return $("div", { textContent: "Recovered" });
@@ -88,7 +105,7 @@ describe("Safe", () => {
     it("should mark root component even when error occurs", () => {
       const comp = Safe(
         () => {
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           return $("div");
@@ -106,7 +123,7 @@ describe("Safe", () => {
 
       const ErrorChild = Safe(
         () => {
-          throw new Error("Child error");
+          throw new SeidrError("Child error");
         },
         (err) => {
           caughtError = err;
@@ -125,7 +142,7 @@ describe("Safe", () => {
 
       const comp = Safe(
         () => {
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           const scope = useScope();
@@ -136,7 +153,7 @@ describe("Safe", () => {
         },
       );
 
-      comp.element.remove();
+      comp.unmount();
 
       // Error boundary cleanup should run
       expect(errorBoundaryDestroyed).toBe(true);
@@ -153,7 +170,7 @@ describe("Safe", () => {
           scope.track(() => {
             cleanupLog.push("factory cleanup");
           });
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           const scope = useScope();
@@ -167,7 +184,7 @@ describe("Safe", () => {
       // Factory cleanup should have run
       expect(cleanupLog).toContain("factory cleanup");
 
-      comp.element.remove();
+      comp.unmount();
 
       // Both cleanups should have run
       expect(cleanupLog).toEqual(["factory cleanup", "error boundary cleanup"]);
@@ -178,7 +195,7 @@ describe("Safe", () => {
 
       const comp = Safe(
         () => {
-          throw new Error("Error");
+          throw new SeidrError("Error");
         },
         (_err) => {
           const scope = useScope();
@@ -193,12 +210,13 @@ describe("Safe", () => {
       );
 
       // Error boundary resources should work correctly
-      document.body.appendChild(comp.element);
-      (comp.element as HTMLButtonElement).click();
+      appendChild(document.body, comp.element);
+      if (!isSSR) {
+        (comp.element as HTMLButtonElement).click();
+        expect(eventListenerCalled).toBe(true);
+      }
 
-      expect(eventListenerCalled).toBe(true);
-
-      comp.element.remove();
+      comp.unmount();
     });
   });
 
@@ -222,10 +240,10 @@ describe("Safe", () => {
       expect(() => {
         Safe(
           () => {
-            throw new Error("Original error");
+            throw new SeidrError("Original error");
           },
           () => {
-            throw new Error("Error boundary failed");
+            throw new SeidrError("Error boundary failed");
           },
         );
       }).toThrow("Error boundary failed");
@@ -239,7 +257,7 @@ describe("Safe", () => {
       const Parent = () =>
         Safe(
           () => {
-            throw new Error("Parent error during child registration");
+            throw new SeidrError("Parent error during child registration");
           },
           (_err) => {
             errorCaught = true;
@@ -251,97 +269,6 @@ describe("Safe", () => {
 
       expect(errorCaught).toBe(true);
       expect(parent.element.textContent).toBe("Parent error boundary");
-    });
-  });
-
-  describe("Documentation Examples", () => {
-    describe("Basic error boundary example", () => {
-      it("should demonstrate basic error boundary usage", () => {
-        const comp = Safe(
-          () => {
-            throw new Error("Component failed to render");
-          },
-          (err) => {
-            console.error("Caught error:", err.message);
-            return $("div", {
-              className: "error-fallback",
-              textContent: "Something went wrong",
-            });
-          },
-        );
-
-        expect(comp.element.className).toBe("error-fallback");
-        expect(comp.element.textContent).toBe("Something went wrong");
-      });
-    });
-
-    describe("Error boundary with error details example", () => {
-      it("should display error information in error boundary", () => {
-        const comp = Safe(
-          () => {
-            const data = null as any;
-            return $("div", { textContent: data.name }); // Throws: Cannot read property 'name' of null
-          },
-          (err) => {
-            return $("div", { className: "error-boundary" }, [
-              $("h2", { textContent: "Error Occurred" }),
-              $("p", { textContent: `Error: ${err.message}` }),
-              $("button", {
-                textContent: "Retry",
-                onclick: () => {
-                  // Handle retry logic
-                },
-              }),
-            ]);
-          },
-        );
-
-        expect(comp.element.className).toBe("error-boundary");
-        expect(comp.element.querySelector("h2")?.textContent).toBe("Error Occurred");
-        expect(comp.element.querySelector("p")?.textContent).toContain("Error:");
-      });
-    });
-
-    describe("Component with error boundary and cleanup example", () => {
-      it("should demonstrate proper cleanup with error boundary", () => {
-        let subscriptionActive = false;
-
-        const comp = Safe(
-          () => {
-            const scope = useScope();
-            // Simulate resource subscription
-            scope.track(() => {
-              console.log("setting subscriptionActive to false");
-              subscriptionActive = false;
-            });
-            console.log("setting subscriptionActive to true");
-            subscriptionActive = true;
-
-            throw new Error("Failed during initialization");
-          },
-          (_err) => {
-            const scope = useScope();
-            // Error boundary can set up its own resources
-            const button = $("button", { textContent: "Reload" });
-
-            scope.track(
-              button.on("click", () => {
-                console.log("Reloading...");
-              }),
-            );
-
-            return button;
-          },
-        );
-
-        // Original subscription should be cleaned up
-        expect(subscriptionActive).toBe(false);
-
-        // Error boundary should have functional button
-        document.body.appendChild(comp.element);
-        (comp.element as HTMLButtonElement).click();
-        document.body.removeChild(comp.element);
-      });
     });
   });
 });

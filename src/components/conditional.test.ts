@@ -1,30 +1,31 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { useScope } from "../component";
+import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
-import { mount } from "../mount/mount";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { Conditional } from "./conditional";
 
-describe("Conditional Component", () => {
+describeDualMode("Conditional Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
-    container = document.createElement("div");
-    document.body.appendChild(container);
+    const doc = getDOMFactory().getDocument();
+    container = doc.createElement("div");
+    doc.body.appendChild(container);
   });
 
   it("should render and toggle component based on condition", () => {
     const isVisible = new Seidr(false);
     const View = () => $("span", { textContent: "Visible" });
 
-    const Parent = () => {
-      return $("div", { className: "parent" }, [Conditional(isVisible, View)]);
-    };
+    const Parent = () => $("div", { className: "parent" }, [Conditional(isVisible, View)]);
 
     mount(Parent, container);
 
     const parentEl = container.querySelector(".parent")!;
-    expect(parentEl.innerHTML).toContain("<!--s:conditional-");
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Conditional-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Conditional-`);
     expect(parentEl.innerHTML).not.toContain("Visible");
 
     isVisible.value = true;

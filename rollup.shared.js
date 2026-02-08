@@ -3,40 +3,29 @@ import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
 
-const browserReplace = {
-  preventAssignment: true,
+export const browserReplace = {
   // Production build
   "process.env.NODE_ENV": '"production"',
-  // Always false in browser builds
   "process.env.SEIDR_TEST_SSR": "false",
-  // Strip away SSR
-  "process.env.CLIENT_BUNDLE": "true",
-  // Disable SSR code
-  process: "undefined",
-  window: "true",
 };
 
-const nodeReplace = {
-  preventAssignment: true,
+export const nodeReplace = {
   // Production build
   "process.env.NODE_ENV": '"production"',
+  "process.env.SEIDR_TEST_SSR": "false",
   // Disable client bundle guards
-  "process.env.CLIENT_BUNDLE": "false",
-  "process.env.CORE_BUNDLE": "false",
   window: "undefined",
 };
 
 const pluginsCommon = [typescript({ tsconfig: "./tsconfig.json", declaration: false }), resolve(), commonjs()];
 
-export const pluginsNode = [...pluginsCommon, replace(nodeReplace)];
-export const pluginsFull = [...pluginsCommon, replace(browserReplace)];
 export const treeshake = {
   moduleSideEffects: false,
   propertyReadSideEffects: false,
   unknownGlobalSideEffects: false,
 };
 
-export const makeBrowserBundle = (input, output, cjs = true) => ({
+export const makeBrowserBundle = (input, output, cjs = true, replacements = {}) => ({
   input,
   output: cjs
     ? [
@@ -44,17 +33,20 @@ export const makeBrowserBundle = (input, output, cjs = true) => ({
         { file: `${output}.cjs`, format: "cjs" },
       ]
     : [{ file: `${output}.js`, format: "esm" }],
-  plugins: pluginsFull,
+  plugins: [
+    ...pluginsCommon,
+    replace({ ...browserReplace, "isServer()": "false", ...replacements, preventAssignment: true }),
+  ],
   treeshake,
 });
 
-export const makeNodeBundle = (input, output) => ({
+export const makeNodeBundle = (input, output, replacements = {}) => ({
   input,
   output: [
     { file: `${output}.js`, format: "esm" },
     { file: `${output}.cjs`, format: "cjs" },
   ],
-  plugins: pluginsNode,
+  plugins: [...pluginsCommon, replace({ ...nodeReplace, ...replacements, preventAssignment: true })],
   treeshake,
   external: ["node:async_hooks"], // Mark Node built-ins as external so they aren't bundled
 });

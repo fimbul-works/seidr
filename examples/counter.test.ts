@@ -73,7 +73,6 @@ describe("Counter Example", () => {
 
     counterComponent.unmount();
 
-    console.log(document.body.innerHTML);
     expect(document.body.children.length).toBe(0);
   });
 });

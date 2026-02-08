@@ -1,11 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { component, useScope } from "../component";
 import { $ } from "../element";
-import { resetIdCounter } from "../render-context/render-context.node";
-import { hydrate, resetHydratingFlag } from "../ssr/hydrate";
-import { clearHydrationData } from "../ssr/hydration-context";
-import { renderToString } from "../ssr/render-to-string";
-import { browserContext, enableClientMode } from "../test-setup";
+import { resetRequestIdCounter } from "../render-context/render-context.node";
+import { clearHydrationData, hydrate, renderToString } from "../ssr/internal";
+import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
@@ -15,20 +13,18 @@ import { Router } from "./router";
 describe("Router Hydration Unmounting", () => {
   let cleanupClientMode: CleanupFunction;
 
-  beforeEach(() => {
+  beforeAll(() => {
     cleanupClientMode = enableClientMode();
     resetClientPathState();
-    resetIdCounter();
+    resetRequestIdCounter();
     clearHydrationData();
-    resetHydratingFlag();
   });
 
-  afterEach(() => {
+  afterAll(() => {
     cleanupClientMode();
     resetClientPathState();
-    resetIdCounter();
+    resetRequestIdCounter();
     clearHydrationData();
-    resetHydratingFlag();
   });
 
   it("should unmount SSR fallback when navigating to a valid route", async () => {
@@ -60,7 +56,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 1. SSR a 404 page
     process.env.SEIDR_TEST_SSR = "true";
-    browserContext.idCounter = 0;
     const { html, hydrationData } = await renderToString(() => App(), { path: "/unknown" });
     delete process.env.SEIDR_TEST_SSR;
 
@@ -71,7 +66,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     initRouter("/unknown");
-    browserContext.idCounter = 0;
     hydrate(() => App(), container, hydrationData);
 
     // Verify initial state
@@ -119,7 +113,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 1. SSR Home page
     process.env.SEIDR_TEST_SSR = "true";
-    browserContext.idCounter = 0;
     const { html, hydrationData } = await renderToString(() => App(), { path: "/" });
     delete process.env.SEIDR_TEST_SSR;
 
@@ -130,7 +123,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     initRouter("/");
-    browserContext.idCounter = 0;
     hydrate(() => App(), container, hydrationData);
 
     // Verify initial state
@@ -145,7 +137,5 @@ describe("Router Hydration Unmounting", () => {
     expect(container.querySelector(".fallback")).toBeTruthy();
     expect(homeUnmounted).toBe(true);
     expect(fallbackUnmounted).toBe(false);
-
-    document.body.removeChild(container);
   });
 });

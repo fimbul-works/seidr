@@ -1,4 +1,4 @@
-import { $, mount, Seidr } from "../src/index.browser.js";
+import { $, isClient, mount, Seidr } from "../src/index.browser.js";
 
 export const HelloWorld = () => {
   const textContent = new Seidr("Click me");
@@ -11,6 +11,6 @@ export const HelloWorld = () => {
 };
 
 // Mount component only in browser environment (not in tests)
-if (typeof window !== "undefined") {
+if (isClient()) {
   mount(HelloWorld, document.body);
 }

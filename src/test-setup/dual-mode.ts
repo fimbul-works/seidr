@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { type DOMFactory, getDOMFactory } from "../dom-factory";
-import { enableClientMode, enableSSRMode } from "../test-setup";
-import { isArr } from "../util";
+import { type DOMFactory, getDOMFactory } from "../dom";
+import { isArray } from "../util/type-guards";
+import { enableClientMode, enableSSRMode } from ".";
 
 /**
  * Interface for the context provided to dual-mode tests.
@@ -68,10 +68,7 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
     fn({
       mode: mode.name,
       isSSR: mode.isSSR,
-      getDOMFactory: () => {
-        // getDOMFactory is a mutable export updated by setup()
-        return getDOMFactory();
-      },
+      getDOMFactory: () => getDOMFactory(),
     });
   });
 }
@@ -118,7 +115,7 @@ export function renderToHtml(node: any, depth = 0): string {
   }
 
   // Handle arrays (SSR)
-  if (isArr(node)) {
+  if (isArray(node)) {
     return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 
@@ -138,7 +135,7 @@ export function itHasParity(name: string, factory: () => any) {
     const cleanupClient = enableClientMode();
     let clientHtml = "";
     try {
-      clientHtml = renderToHtml(factory());
+      clientHtml = renderToHtml(factory);
     } finally {
       cleanupClient();
     }
@@ -147,7 +144,7 @@ export function itHasParity(name: string, factory: () => any) {
     const cleanupSSR = enableSSRMode();
     let ssrHtml = "";
     try {
-      ssrHtml = renderToHtml(factory());
+      ssrHtml = renderToHtml(factory);
     } finally {
       cleanupSSR();
     }

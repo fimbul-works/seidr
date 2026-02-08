@@ -1,4 +1,5 @@
-import { isArr, isFn, isObj, isSeidr } from "./type-guards";
+import { isSeidr } from "./type-guards/is-seidr";
+import { isArray, isFn, isObj } from "./type-guards/primitive-types";
 
 const B = Boolean;
 
@@ -9,18 +10,18 @@ const B = Boolean;
  * arrays, functions, and Seidr observables. It's designed to work seamlessly
  * with conditional classes, reactive class bindings, and complex class logic.
  *
- * @param {string | Record<string, boolean> | any[] | () => (string | Record<string, boolean> | any[])} classes - Variable arguments of different types for class construction
+ * @param {any[]} classes - Variable arguments of different types for class construction
  * @returns {string} A clean, space-separated string of unique class names
  */
-export const cn = (...classes: unknown[]): string =>
+export const cn = (...classes: any[]): string =>
   Array.from(
     new Set(
       classes
         .filter(B)
-        .flatMap((c: unknown): string =>
+        .flatMap((c: any): string =>
           isSeidr(c)
             ? cn([c.value])
-            : isArr(c)
+            : isArray(c)
               ? cn(...c)
               : isFn(c)
                 ? cn([c()])

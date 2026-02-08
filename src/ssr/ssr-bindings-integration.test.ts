@@ -4,11 +4,11 @@ import { runWithRenderContext } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { hydrate } from "./hydrate";
-import { clearHydrationData } from "./hydration-context";
+import { clearHydrationData, hydrate } from "./hydrate/index";
 import { renderToString } from "./render-to-string";
-import { SSRScope, setActiveSSRScope } from "./ssr-scope";
-import "../dom-factory/dom-factory.node";
+import { SSRScope, setSSRScope } from "./ssr-scope";
+import "../dom/dom-factory.node";
+import { isClient } from "../util/environment/browser";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: CleanupFunction;
@@ -16,41 +16,42 @@ describe("SSR Reactive Bindings Integration", () => {
   describe("Server-Side Rendering with Reactive Props", () => {
     beforeEach(() => {
       cleanupMode = enableSSRMode();
+      process.env.SEIDR_TEST_SSR = "true";
     });
 
     afterEach(() => {
       cleanupMode();
-      setActiveSSRScope(undefined);
+      setSSRScope(undefined);
       clearHydrationData();
     });
 
     it("should register observables for reactive props during SSR", async () => {
       await runWithRenderContext(async () => {
         const scope = new SSRScope();
-        setActiveSSRScope(scope);
+        setSSRScope(scope);
 
         const isActive = new Seidr(false);
         $("button", { disabled: isActive });
 
         const hydrationData = scope.captureHydrationData();
-        setActiveSSRScope(undefined);
+        setSSRScope(undefined);
 
         // Should have captured the observable
         expect(Object.keys(hydrationData.observables)).toHaveLength(1);
-        expect(hydrationData.observables[0]).toBe(false);
+        expect(hydrationData.observables[1]).toBe(false);
       });
     });
 
     it("should render reactive button with correct initial value", async () => {
       await runWithRenderContext(async () => {
         const scope = new SSRScope();
-        setActiveSSRScope(scope);
+        setSSRScope(scope);
 
         const isActive = new Seidr(true); // true to get disabled attribute
         const button = $("button", { disabled: isActive, textContent: "Click me" });
 
         const html = button.toString();
-        setActiveSSRScope(undefined);
+        setSSRScope(undefined);
 
         // Should render with initial value
         expect(html).toContain("disabled");
@@ -61,7 +62,7 @@ describe("SSR Reactive Bindings Integration", () => {
     it("should capture all observables used in bindings", async () => {
       await runWithRenderContext(async () => {
         const scope = new SSRScope();
-        setActiveSSRScope(scope);
+        setSSRScope(scope);
 
         const count = new Seidr(5);
         const isActive = new Seidr(true);
@@ -71,12 +72,12 @@ describe("SSR Reactive Bindings Integration", () => {
         });
 
         const hydrationData = scope.captureHydrationData();
-        setActiveSSRScope(undefined);
+        setSSRScope(undefined);
 
         // Should captured all root observables
         expect(Object.keys(hydrationData.observables)).toHaveLength(2);
-        expect(hydrationData.observables[0]).toBe(5);
-        expect(hydrationData.observables[1]).toBe(true);
+        expect(hydrationData.observables["1"]).toBe(5);
+        expect(hydrationData.observables["2"]).toBe(true);
       });
     });
 
@@ -115,44 +116,28 @@ describe("SSR Reactive Bindings Integration", () => {
 
     afterEach(() => {
       cleanupMode();
-      clearHydrationData();
     });
 
     it("should apply bindings during hydration", async () => {
-      // First, create SSR data
-      let hydrationData: any;
+      const cleanup = enableSSRMode();
 
-      {
-        const ssrMode = enableSSRMode();
-
-        // Create App with Seidr created INSIDE component (correct pattern)
-        const App = () => {
-          const count = new Seidr(42);
-          return $("button", {
-            disabled: count.as((n) => n > 100),
-            textContent: count.as((n) => `Count: ${n}`),
-          });
-        };
-
-        const { hydrationData: data } = await renderToString(App);
-        hydrationData = data;
-        ssrMode();
-      }
-
-      // Now hydrate on client - create count inside component so it gets hydrated
       const App = () => {
-        const count = new Seidr(0); // Will be overridden by hydration
+        const count = new Seidr(isClient() ? 0 : 42);
         return $("button", {
           disabled: count.as((n) => n > 100),
           textContent: count.as((n) => `Count: ${n}`),
         });
       };
 
+      const { hydrationData } = await renderToString(App);
+      cleanup();
+
       const container = document.createElement("div");
       hydrate(App, container, hydrationData);
 
       // Should have server values
-      expect(String(container.textContent)).toContain("Count: 42");
+      expect(container.textContent).toContain("Count: 42");
+      cleanupMode();
     });
   });
 });

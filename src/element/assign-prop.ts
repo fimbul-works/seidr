@@ -1,6 +1,9 @@
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { camelToKebab, isObj, isSeidr, isServer, isStr } from "../util";
+import { isServer } from "../util/environment/server";
+import { camelToKebab } from "../util/string";
+import { isSeidr } from "../util/type-guards/is-seidr";
+import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
 
 /**
  * Assigns a property to an element, handling reactive Seidr bindings.
@@ -75,7 +78,7 @@ export function assignProp(el: HTMLElement, prop: string, value: any, cleanups: 
     cleanups.push(
       value.bind(el, (val, _element) => {
         if (useAttribute) {
-          val === null ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
+          isEmpty(val) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
         } else {
           (target as any)[effectiveProp] = val;
         }
@@ -83,7 +86,7 @@ export function assignProp(el: HTMLElement, prop: string, value: any, cleanups: 
     );
   } else {
     if (useAttribute) {
-      value === null ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(value));
+      isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(value));
     } else {
       (target as any)[effectiveProp] = value;
     }

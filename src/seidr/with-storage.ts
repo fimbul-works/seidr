@@ -1,4 +1,8 @@
 import { getCurrentComponent } from "../component/component-stack";
+import { SeidrError } from "../types";
+import { isClient } from "../util/environment/browser";
+import { isServer } from "../util/environment/server";
+import { isEmpty } from "../util/type-guards/primitive-types";
 import { wrapError } from "../util/wrap-error";
 import type { Seidr } from "./seidr";
 
@@ -43,18 +47,18 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
 export function withStorage<T extends Seidr<any>>(
   key: string,
   seidr: T,
-  storage: Storage = typeof window !== "undefined" ? localStorage : ({} as Storage),
+  storage: Storage = isClient() ? localStorage : ({} as Storage),
   onError?: StorageErrorHandler,
 ): T {
   // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
-  if (typeof window === "undefined") {
+  if (isServer()) {
     return seidr;
   }
 
   // Load initial value from storage
   try {
     const initial = storage.getItem(key);
-    if (initial !== null) {
+    if (!isEmpty(initial)) {
       seidr.value = JSON.parse(initial);
     }
   } catch (error) {
@@ -62,7 +66,7 @@ export function withStorage<T extends Seidr<any>>(
     if (onError) {
       onError(err, "read");
     } else {
-      throw new Error(`Failed to read from storage (key="${key}"): ${err.message}`);
+      throw new SeidrError(`Failed to read from storage (key="${key}"): ${err.message}`);
     }
   }
 
@@ -75,7 +79,7 @@ export function withStorage<T extends Seidr<any>>(
       if (onError) {
         onError(err, "write");
       } else {
-        throw new Error(`Failed to write to storage (key="${key}"): ${err.message}`);
+        throw new SeidrError(`Failed to write to storage (key="${key}"): ${err.message}`);
       }
     }
   });

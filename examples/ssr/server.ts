@@ -4,7 +4,7 @@ import type { ViteDevServer } from "vite";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";
 
-export type PageContext = { posts?: BlogPost[]; currentPost?: BlogPost };
+export type PageContext = { initialPosts?: BlogPost[]; initialCurrentPost?: BlogPost };
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
@@ -75,7 +75,7 @@ app.get(/.*/, async (req, res) => {
       render = (await import("./entry-server.js")).render;
     }
 
-    // Data is now fetched by components themselves using inServer/inBrowser
+    // Data is now fetched by components themselves using inServer/inClient
     const rendered = await render(url, {});
 
     const html = template

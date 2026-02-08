@@ -1,7 +1,7 @@
 import type { SeidrComponent } from "../component/types";
+import { SEIDR_CLEANUP, type TYPE_ELEMENT, TYPE_PROP } from "../constants";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction, IsCamelCase, TYPE } from "../types";
-import { TYPE_PROP } from "../types";
+import type { CleanupFunction, IsCamelCase } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -152,7 +152,7 @@ export interface SeidrElementInterface {
    * by Seidr and has the enhanced functionality available.
    * @type {typeof TYPE.ELEMENT}
    */
-  readonly [TYPE_PROP]: typeof TYPE.ELEMENT;
+  readonly [TYPE_PROP]: typeof TYPE_ELEMENT;
 
   /**
    * Adds an event listener with automatic cleanup functionality.
@@ -179,10 +179,7 @@ export interface SeidrElementInterface {
    */
   clear(): void;
 
-  /**
-   * Removes the element from the DOM and cleans up all bindings.
-   */
-  remove(): void;
+  [SEIDR_CLEANUP]: CleanupFunction;
 }
 
 /**

@@ -1,7 +1,9 @@
-import { component, type SeidrComponent, useScope } from "../component";
+import { component } from "../component/component";
+import type { SeidrComponent } from "../component/types";
+import { useScope } from "../component/use-scope";
 import type { SeidrNode } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { isSeidr } from "../util/type-guards";
+import { isSeidr } from "../util/type-guards/is-seidr";
 import { wrapError } from "../util/wrap-error";
 import { Switch } from "./switch";
 
@@ -17,15 +19,15 @@ const PROMISE_ERROR = "error";
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
  * @param {(value: T) => R} factory - Function that creates the component when promise resolves
- * @param {() => SeidrNode} [loading] - Optional loading component
- * @param {(error: Error) => SeidrNode} [error] - Optional error handler component
+ * @param {() => SeidrNode} [loadingFactory] - Optional loading component
+ * @param {(error: Error) => SeidrNode} [errorBoundaryFactory] - Optional error handler component
  * @returns {SeidrComponent} A component handling the promise state
  */
 export function Suspense<T, R extends SeidrNode>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
   factory: (value: T) => R,
-  loading: () => SeidrNode = () => "Loading...",
-  error: (err: Error) => SeidrNode = (err) => `Error: ${err.message}`,
+  loadingFactory: () => SeidrNode = () => "Loading...",
+  errorBoundaryFactory: (err: Error) => SeidrNode = (err) => `Error: ${err.message}`,
 ): SeidrComponent {
   return component(() => {
     const scope = useScope();
@@ -36,19 +38,22 @@ export function Suspense<T, R extends SeidrNode>(
     let currentPromiseId = 0;
 
     const handlePromise = async (prom: Promise<T>) => {
-      if (!prom) return;
+      if (!prom || scope.isDestroyed) {
+        return;
+      }
+
       status.value = PROMISE_PENDING;
 
-      const myId = ++currentPromiseId;
+      const currentId = ++currentPromiseId;
 
       try {
         const value = await prom;
-        if (!scope.isDestroyed && myId === currentPromiseId) {
+        if (currentId === currentPromiseId) {
           resolvedValue = value;
           status.value = PROMISE_RESOLVED;
         }
       } catch (err) {
-        if (!scope.isDestroyed && myId === currentPromiseId) {
+        if (currentId === currentPromiseId) {
           errorValue = wrapError(err);
           status.value = PROMISE_ERROR;
         }
@@ -63,17 +68,13 @@ export function Suspense<T, R extends SeidrNode>(
 
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      scope.track(
-        promiseOrSeidr.observe((prom) => {
-          scope.waitFor(handlePromise(prom));
-        }),
-      );
+      scope.track(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
     }
 
     return Switch(status, {
       resolved: () => factory(resolvedValue!),
-      error: () => error(errorValue!),
-      pending: loading,
+      error: () => errorBoundaryFactory(errorValue!),
+      pending: loadingFactory,
     });
-  })();
+  }, "Suspense")();
 }

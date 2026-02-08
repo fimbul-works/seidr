@@ -1,16 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, expect, it, vi } from "vitest";
 import { component, useScope } from "../component";
+import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
-import { mount } from "../mount";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { List } from "./list";
 
-describe("List Component", () => {
+describeDualMode("List Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
 
   beforeEach(() => {
-    container = document.createElement("div");
-    document.body.appendChild(container);
+    const doc = getDOMFactory().getDocument();
+    container = doc.createElement("div");
+    doc.body.appendChild(container);
   });
 
   it("should render and update list items efficiently", () => {
@@ -37,7 +39,8 @@ describe("List Component", () => {
     expect(parentEl.querySelectorAll("span").length).toBe(2);
     expect(parentEl.innerHTML).toContain("A");
     expect(parentEl.innerHTML).toContain("B");
-    expect(parentEl.innerHTML).toContain("<!--s:list-");
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}List-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}List-`);
 
     // Update list
     items.value = [

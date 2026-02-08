@@ -1,3 +1,4 @@
+import { SeidrError } from "../types";
 import { getCurrentComponent } from "./component-stack";
 import type { ComponentScope } from "./types";
 
@@ -13,7 +14,7 @@ import type { ComponentScope } from "./types";
 export const useScope = (): ComponentScope => {
   const current = getCurrentComponent();
   if (!current) {
-    throw new Error("useScope() must be called within a component");
+    throw new SeidrError("useScope() must be called within a component");
   }
   return current.scope;
 };

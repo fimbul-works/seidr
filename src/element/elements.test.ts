@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { $text, type SeidrElement } from "./element";
+import { $text } from "../dom/internal";
 import { $a, $button, $div, $input, $span } from "./elements";
+import type { SeidrElement } from "./types";
 
 describe("predefined element creators", () => {
   it("should create elements with correct types", () => {
@@ -55,7 +56,7 @@ describe("$text", () => {
   it("should create text node with given text", () => {
     const textNode = $text("Hello World");
 
-    expect(textNode.nodeType).toBe(3); // TEXT_NODE
+    expect(textNode.nodeType).toBe(3); // TYPE_TEXT
     expect(textNode.textContent).toBe("Hello World");
   });
 

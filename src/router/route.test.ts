@@ -1,25 +1,19 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { component } from "../component";
+import { beforeEach, expect, it } from "vitest";
+import { component } from "../component/internal";
+import { mount } from "../dom/internal";
 import { $ } from "../element";
-import { mount } from "../mount";
 import { Seidr } from "../seidr";
-import { getCurrentPath } from "./get-current-path";
+import { describeDualMode } from "../test-setup";
+import { navigate } from "./navigate";
 import { Route } from "./route";
 
-vi.mock("./get-current-path", () => ({
-  getCurrentPath: vi.fn(),
-}));
-
-describe("Route Component", () => {
+describeDualMode("Route Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
-  let pathSeidr: Seidr<string>;
 
   beforeEach(() => {
+    const document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
-
-    pathSeidr = new Seidr("/");
-    vi.mocked(getCurrentPath).mockReturnValue(pathSeidr);
   });
 
   const Page = (name: string) => component(() => $("div", { className: name.toLowerCase(), textContent: name }));
@@ -33,7 +27,7 @@ describe("Route Component", () => {
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
 
-    pathSeidr.value = "/about";
+    navigate("/about");
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".about")).toBeTruthy();
   });
@@ -46,12 +40,12 @@ describe("Route Component", () => {
       return $("div", {}, [Route("/user/:id", UserPage)]);
     });
 
-    pathSeidr.value = "/user/123";
+    navigate("/user/123");
     mount(App(), container);
 
     expect(container.querySelector(".user")?.textContent).toBe("User 123");
 
-    pathSeidr.value = "/user/456";
+    navigate("/user/456");
     expect(container.querySelector(".user")?.textContent).toBe("User 456");
   });
 
@@ -63,11 +57,11 @@ describe("Route Component", () => {
       return $("div", {}, [Route(/^\/post\/(?<id>\d+)$/, PostPage)]);
     });
 
-    pathSeidr.value = "/post/123";
+    navigate("/post/123");
     mount(App(), container);
     expect(container.querySelector(".post")?.textContent).toBe("Post 123");
 
-    pathSeidr.value = "/post/abc";
+    navigate("/post/abc");
     expect(container.querySelector(".post")).toBeFalsy();
   });
 

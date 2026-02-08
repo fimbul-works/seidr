@@ -1,12 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { $div } from "../element/elements";
 import { enableClientMode } from "../test-setup";
+import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
-import { isSeidrComponentFactory } from "../util/type-guards";
+import { isSeidrComponentFactory } from "../util/type-guards/seidr-dom-types";
 import { component } from "./component";
 import { wrapComponent } from "./wrap-component";
 
-describe("wrapComponent", () => {
+describeDualMode("wrapComponent", () => {
   let restore: CleanupFunction;
 
   beforeEach(() => {

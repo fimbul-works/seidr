@@ -1,3 +1,24 @@
+import type { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "./constants";
+
+/**
+ * Error class for Seidr.
+ */
+export class SeidrError extends Error {
+  /**
+   * Creates a new SeidrError.
+   *
+   * @param {string} message - The error message
+   * @param details - Error details
+   */
+  constructor(
+    message: string,
+    public readonly details?: any,
+  ) {
+    super(message);
+    this.name = "SeidrError";
+  }
+}
+
 /**
  * Type for event handlers that can be synchronous or asynchronous.
  *
@@ -47,38 +68,13 @@ export type KebabCase<S extends string> = S extends `${infer Letter}${infer S2}`
   : S;
 
 /** node is an element. */
-export const ELEMENT_NODE = 1;
-export type NodeTypeElement = typeof ELEMENT_NODE;
+export type NodeTypeElement = typeof TYPE_ELEMENT;
 
 /** node is a Text node. */
-export const TEXT_NODE = 3;
-export type NodeTypeText = typeof TEXT_NODE;
+export type NodeTypeText = typeof TYPE_TEXT_NODE;
 
 /** node is a Comment node. */
-export const COMMENT_NODE = 8;
-export type NodeTypeComment = typeof COMMENT_NODE;
+export type NodeTypeComment = typeof TYPE_COMMENT_NODE;
 
 /** node is a Document node. */
-export const DOCUMENT_NODE = 9;
-export type NodeTypeDocument = typeof DOCUMENT_NODE;
-
-/**
- * Internal Symbol used for recursive lifecycle cleanup.
- * This allows Seidr to trigger cleanup on detached sub-trees without
- * performing DOM detachment on every individual node.
- */
-export const SEIDR_CLEANUP = Symbol("SeidrCleanup");
-
-/**
- * Property name for Seidr type identification.
- */
-export const TYPE_PROP = "$type";
-
-/**
- * Seidr internal object types.
- */
-export const TYPE = {
-  ELEMENT: "element",
-  COMPONENT: "component",
-  COMPONENT_FACTORY: "factory",
-} as const;
+export type NodeTypeDocument = typeof TYPE_DOCUMENT;

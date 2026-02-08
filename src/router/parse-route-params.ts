@@ -8,15 +8,8 @@ import { normalizePath } from "./normalize-path";
  * @returns {Record<string, string> | false} Object with matching parameters, or `false` when pattern and path do not match
  */
 export function parseRouteParams(pattern: string, path?: string): Record<string, string> | false {
-  // If no path provided, use current path
-  const pathToMatch = path ?? getCurrentPath().value;
-
-  // Normalize paths by removing trailing slashes
-  const normalizedPattern = normalizePath(pattern);
-  const normalizedPath = normalizePath(pathToMatch);
-
-  const parts = normalizedPattern.split("/");
-  const pathParts = normalizedPath.split("/");
+  const parts = normalizePath(pattern).split("/");
+  const pathParts = normalizePath(path ?? getCurrentPath().value).split("/");
 
   // Ensure path and pattern have equal number of parts
   if (parts.length !== pathParts.length) {

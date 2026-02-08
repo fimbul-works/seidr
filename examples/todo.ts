@@ -9,6 +9,7 @@ import {
   $ul,
   bindInput,
   cn,
+  isClient,
   List,
   mount,
   Seidr,
@@ -93,6 +94,6 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
 };
 
 // Mount component only in browser environment (not in tests)
-if (typeof window !== "undefined") {
+if (isClient()) {
   mount(TodoApp, document.body);
 }

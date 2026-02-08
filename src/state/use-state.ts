@@ -1,8 +1,8 @@
 import { getCurrentComponent } from "../component/component-stack";
 import { getRenderContext } from "../render-context";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { isSeidr } from "../util/type-guards";
-import { createStateKey } from "./create-key";
+import { isSeidr, isStr } from "../util/type-guards";
+import { createStateKey } from "./create-state-key";
 import { globalStates } from "./storage";
 import type { StateKey } from "./types";
 
@@ -15,11 +15,10 @@ import type { StateKey } from "./types";
  * @returns {[Seidr<T>, (v: T | Seidr<T>) => Seidr<T>]} Tuple with the Seidr observable and a setter.
  */
 export function useState<T>(key: StateKey<T> | string): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] {
-  const ctx = getRenderContext();
-  const renderScopeID = ctx ? ctx.ctxID : 0;
+  const { ctxID: renderContextID } = getRenderContext();
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
-  if (typeof key === "string") {
+  if (isStr(key)) {
     key = createStateKey<T>(key);
   }
 
@@ -29,26 +28,31 @@ export function useState<T>(key: StateKey<T> | string): [Seidr<T>, (v: T | Seidr
   }
 
   // Ensure ctx states map exists
-  if (!globalStates.has(renderScopeID)) {
-    globalStates.set(renderScopeID, new Map());
+  if (!globalStates.has(renderContextID)) {
+    globalStates.set(renderContextID, new Map());
   }
-  const ctxStates = globalStates.get(renderScopeID)!;
+  const ctxStates = globalStates.get(renderContextID)!;
 
-  let observable: Seidr<T>;
-  const existing = ctxStates.get(key);
-
-  if (isSeidr(existing)) {
-    observable = existing as Seidr<T>;
-  } else {
-    // Wrap plain value (or undefined) and save it as the singleton
-    observable = new Seidr<T>(existing as T);
+  // Ensure state exists
+  let observable = ctxStates.get(key) as Seidr<T>;
+  if (!observable) {
+    observable = new Seidr<T>(undefined as T);
     ctxStates.set(key, observable);
   }
 
-  const setter = (v: T | Seidr<T>): Seidr<T> => {
-    observable.value = unwrapSeidr(v);
+  const setValue = (v: T | Seidr<T>): Seidr<T> => {
+    // Derived are assigned directly
+    if (isSeidr(v) && v.isDerived) {
+      observable = v;
+      ctxStates.set(key, observable);
+    } else {
+      while (isSeidr(v) && !v.isDerived) {
+        v = unwrapSeidr(v);
+      }
+      observable.value = v as T;
+    }
     return observable;
   };
 
-  return [observable, setter];
+  return [observable, setValue];
 }

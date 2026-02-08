@@ -1,8 +1,12 @@
-import { component, type SeidrComponent, useScope, wrapComponent } from "../component";
-import { getMarkerComments } from "../dom-utils";
+import { component } from "../component/component";
+import type { SeidrComponent } from "../component/types";
+import { useScope } from "../component/use-scope";
+import { wrapComponent } from "../component/wrap-component";
+import { getMarkerComments } from "../dom/get-marker-comments";
 import type { SeidrNode } from "../element";
 import type { Seidr } from "../seidr";
-import { isArr, isDOMNode } from "../util/type-guards";
+import { isDOMNode } from "../util/type-guards/dom-node-types";
+import { isArray } from "../util/type-guards/primitive-types";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
@@ -19,29 +23,35 @@ export function Conditional<T extends SeidrNode>(
   factory: () => T,
   name?: string,
 ): SeidrComponent {
-  return component((_props, id) => {
+  return component(() => {
     const scope = useScope();
-    const markers = getMarkerComments(id);
+    const markers = getMarkerComments(scope.id);
     let currentComponent: SeidrComponent | null = null;
 
     const update = (shouldShow: boolean) => {
       const end = markers[1];
       const parent = end.parentNode;
-      if (!parent) return;
+      if (!parent) {
+        return;
+      }
 
       if (shouldShow && !currentComponent) {
         currentComponent = wrapComponent(factory)();
 
-        if (currentComponent.start) parent.insertBefore(currentComponent.start, end);
+        if (currentComponent.start) {
+          parent.insertBefore(currentComponent.start, end);
+        }
 
         const el = currentComponent.element;
-        if (isArr(el)) {
+        if (isArray(el)) {
           el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, end));
         } else if (isDOMNode(el)) {
           parent.insertBefore(el, end);
         }
 
-        if (currentComponent.end) parent.insertBefore(currentComponent.end, end);
+        if (currentComponent.end) {
+          parent.insertBefore(currentComponent.end, end);
+        }
 
         currentComponent.scope.attached(parent);
       } else if (!shouldShow && currentComponent) {
@@ -50,19 +60,10 @@ export function Conditional<T extends SeidrNode>(
       }
     };
 
-    scope.onAttached = () => {
-      update(condition.value);
-    };
-
     scope.track(condition.observe(update));
-
-    // Cleanup active component
-    scope.track(() => {
-      if (currentComponent) {
-        currentComponent.unmount();
-      }
-    });
+    scope.track(() => currentComponent?.unmount());
+    scope.onAttached = () => update(condition.value);
 
     return [];
-  }, name || "conditional")();
+  }, name || "Conditional")();
 }

@@ -6,7 +6,7 @@ import {
   $li,
   $p,
   $ul,
-  inBrowser,
+  inClient,
   inServer,
   isServer,
   Link,
@@ -38,7 +38,7 @@ export const HomePage = () => {
     });
   } else {
     // Client-side fetch if empty
-    postsPromise = inBrowser(async () => {
+    postsPromise = inClient(async () => {
       if (posts?.value?.length > 0) {
         return posts;
       } else {
@@ -69,7 +69,7 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
       return post;
     });
   } else {
-    postPromise = inBrowser(async () => {
+    postPromise = inClient(async () => {
       if (post.value?.slug === slug) {
         return post;
       }

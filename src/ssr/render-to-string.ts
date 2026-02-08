@@ -1,13 +1,11 @@
-import { wrapComponent } from "../component";
-import { getDOMFactory, setInternalDOMFactory } from "../dom-factory";
-import { getSSRDOMFactory } from "../dom-factory/dom-factory.node";
-import type { SeidrNode } from "../element";
+import { getDOMFactory, setInternalDOMFactory } from "../dom";
+import { getSSRDOMFactory } from "../dom/dom-factory.node";
+import { isArray, isDOMNode, isStr, SeidrError, type SeidrNode, wrapComponent } from "../index.core";
 import { getRenderContext } from "../render-context";
 import { runWithRenderContext } from "../render-context/render-context.node";
-import { clearPathCache } from "../router";
-import { isArr, isDOMNode, isStr } from "../util/type-guards";
-import { clearSSRScope, SSRScope, setActiveSSRScope } from "./ssr-scope";
-import { captureRenderContextState, clearRenderContextState } from "./state";
+import { clearPathCache } from "../router/get-current-path";
+import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope";
+import { captureGlobalState, clearGlobalState } from "./state";
 import type { SSRRenderResult } from "./types";
 
 /**
@@ -39,7 +37,7 @@ export async function renderToString<C extends SeidrNode>(
     try {
       const ctx = getRenderContext();
       if (!ctx) {
-        throw new Error("No render context available.");
+        throw new SeidrError("No render context available.");
       }
 
       if (isStr(options.path)) {
@@ -48,7 +46,7 @@ export async function renderToString<C extends SeidrNode>(
 
       const activeScope = options.scope ?? new SSRScope();
       ctx.onPromise = (p) => activeScope.addPromise(p);
-      setActiveSSRScope(activeScope);
+      setSSRScope(activeScope);
 
       try {
         const comp = wrapComponent(factory)();
@@ -56,7 +54,7 @@ export async function renderToString<C extends SeidrNode>(
         // Ensure root is attached to something so it can render content (especially for marker-based components)
         // We use a temporary div as a container for initial rendering.
         const doc = getDOMFactory().createElement("div");
-        const nodes = isArr(comp.element) ? comp.element : [comp.element];
+        const nodes = isArray(comp.element) ? comp.element : [comp.element];
         nodes.filter(isDOMNode).forEach((n) => doc.appendChild(n as any));
 
         // Trigger attachment life-cycle
@@ -69,20 +67,20 @@ export async function renderToString<C extends SeidrNode>(
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
-          state: captureRenderContextState(ctx.ctxID),
+          state: captureGlobalState(ctx.ctxID),
           ctxID: ctx.ctxID,
         };
 
         comp.unmount();
-        clearRenderContextState(ctx.ctxID);
+        clearGlobalState(ctx.ctxID);
         clearPathCache(ctx.ctxID);
 
         return { html, hydrationData };
       } finally {
-        setActiveSSRScope(undefined);
+        setSSRScope(undefined);
         clearSSRScope(ctx.ctxID);
-        if (ctx.markerCache) {
-          ctx.markerCache.clear();
+        if (ctx.markers) {
+          ctx.markers.clear();
         }
         if (!options.scope) {
           activeScope.clear();

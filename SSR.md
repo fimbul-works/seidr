@@ -103,10 +103,10 @@ Without it, the client would try to `setState(dataKey, undefined)`, overwriting 
 
 ### Environment-Specific Code
 
-Use `inServer()` and `inBrowser()` for code that should only run in one environment:
+Use `inServer()` and `inClient()` for code that should only run in one environment:
 
 ```typescript
-import { inServer, inBrowser, Seidr } from '@fimbul-works/seidr';
+import { inServer, inClient, Seidr } from '@fimbul-works/seidr';
 
 const products = new Seidr<Product[]>([]);
 
@@ -117,7 +117,7 @@ inServer(async () => {
 });
 
 // Client: Fetch from API
-inBrowser(async () => {
+inClient(async () => {
   const response = await fetch('/api/products');
   products.value = await response.json();
 });
@@ -412,7 +412,7 @@ hydrate(App, document.getElementById('app'), window.__SEIDR_HYDRATION_DATA__);
 
 ---
 
-### `inServer(fn)` / `inBrowser(fn)`
+### `inServer(fn)` / `inClient(fn)`
 
 Execute code only in specific environment.
 
@@ -422,7 +422,7 @@ inServer(async () => {
   data.value = await db.query('...');
 });
 
-inBrowser(() => {
+inClient(() => {
   // Browser APIs, localStorage, analytics
   console.log('Client initialized');
 });
@@ -500,10 +500,10 @@ Seidr uses HTML comments for `List`, `Conditional`, and `Switch`:
 
 ### No Browser APIs on Server
 
-Wrap any `window` or `document` access in `inBrowser()` to prevent errors during server-side rendering:
+Wrap any `window` or `document` access in `inClient()` to prevent errors during server-side rendering:
 
 ```typescript
-inBrowser(() => {
+inClient(() => {
   window.addEventListener('resize', handler);
 });
 ```
@@ -531,7 +531,7 @@ const id = new Seidr(capturedIdFromSSR);
 const now = new Seidr(new Date().toLocaleTimeString());
 
 // ✅ CORRECT: Use state that is captured on server
-const now = inBrowser(() => new Seidr(new Date())) || new Seidr(serverTime);
+const now = inClient(() => new Seidr(new Date())) || new Seidr(serverTime);
 ```
 
 #### Component Logic

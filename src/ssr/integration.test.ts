@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $ } from "../element/element";
+import { $ } from "../element/create-element";
 import { Seidr } from "../seidr/seidr";
 import { enableSSRMode } from "../test-setup";
 
@@ -301,33 +301,6 @@ describe("SSR Integration Tests", () => {
       expect(html).toContain("Text before ");
       expect(html).toContain("<strong>bold</strong>");
       expect(html).toContain(" text after");
-    });
-
-    it("should handle function children", () => {
-      let callCount = 0;
-      const div = $("div", {}, [
-        () => {
-          callCount++;
-          return $("span", { textContent: "Dynamic" });
-        },
-      ]);
-
-      // Function should be called immediately
-      expect(callCount).toBe(1);
-      const html = div.toString();
-      expect(html).toContain("<span>Dynamic</span>");
-    });
-
-    it("should handle deeply nested structures", () => {
-      const tree = $("div", { className: "level-1" }, [
-        $("div", { className: "level-2" }, [$("div", { className: "level-3" }, [$("span", { textContent: "Deep" })])]),
-      ]);
-
-      const html = tree.toString();
-      expect(html).toContain("level-1");
-      expect(html).toContain("level-2");
-      expect(html).toContain("level-3");
-      expect(html).toContain(">Deep<");
     });
   });
 

@@ -1,9 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { component } from "../component";
-import { runWithRenderContextStore, setMockRenderContextForTests } from "../render-context/render-context.node";
+import { runWithRenderContext, setMockRenderContextForTests } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { setState } from "./set";
 import { useState } from "./use-state";
 
 describe("useState", () => {
@@ -20,7 +19,7 @@ describe("useState", () => {
   });
 
   it("should return a singleton Seidr instance for a given key", () => {
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       const [state1] = useState<number>("count");
       const [state2] = useState<number>("count");
 
@@ -30,14 +29,14 @@ describe("useState", () => {
   });
 
   it("should initialize with undefined if not previously set", () => {
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       const [state] = useState<number>("new-key");
       expect(state.value).toBeUndefined();
     });
   });
 
   it("should pick up existing plain value and wrap it", () => {
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       // Simulate existing plain value
       const [state] = useState<string>("pre-existing");
       state.value = "hello";
@@ -49,8 +48,8 @@ describe("useState", () => {
   });
 
   it("should synchronize between multiple uses via setter", () => {
-    runWithRenderContextStore(() => {
-      const [state1, setState1] = useState<number>("shared");
+    runWithRenderContext(async () => {
+      const [, setState1] = useState<number>("shared");
       const [state2] = useState<number>("shared");
 
       setState1(10);
@@ -59,7 +58,7 @@ describe("useState", () => {
   });
 
   it("should handle Seidr instances passed to setter", () => {
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       const [state, setStateFunc] = useState<number>("test");
       const otherSeidr = new Seidr(42);
 
@@ -70,8 +69,9 @@ describe("useState", () => {
 
   it("should warn when called outside component hierarchy", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    delete process.env.VITEST; // Warning is disabled in tests
 
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       useState("outside");
     });
 
@@ -82,7 +82,7 @@ describe("useState", () => {
   it("should not warn when called inside component hierarchy", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
-    runWithRenderContextStore(() => {
+    runWithRenderContext(async () => {
       const MyComp = component(() => {
         useState("inside");
         return "div";
@@ -95,11 +95,11 @@ describe("useState", () => {
   });
 
   it("should interact correctly with plain setState", () => {
-    runWithRenderContextStore(() => {
-      const [state] = useState<number>("interact");
+    runWithRenderContext(async () => {
+      const [state, setInteract] = useState<number>("interact");
       state.value = 10;
 
-      setState("interact", 20);
+      setInteract(20);
       expect(state.value).toBe(20); // useState's singleton should have been updated
     });
   });

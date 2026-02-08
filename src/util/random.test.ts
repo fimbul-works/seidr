@@ -1,12 +1,17 @@
-import { describe, expect, it } from "vitest";
-import { setRenderContextID } from "../render-context/render-context.browser";
-import { resetIdCounter, runWithRenderContext } from "../render-context/render-context.node";
+import { beforeEach, describe, expect, it } from "vitest";
+import { resetRequestIdCounter, runWithRenderContext } from "../render-context/render-context.node";
+import { resetNextId } from "../render-context/reset-next-id";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { random } from "./random";
 
 describe("random", () => {
   let cleanup: CleanupFunction;
+
+  beforeEach(() => {
+    resetRequestIdCounter();
+    resetNextId();
+  });
 
   it("should return a number between 0 and 1", () => {
     cleanup = enableClientMode();
@@ -50,7 +55,7 @@ describe("random", () => {
   });
 
   it("should match values between SSR and hydration when IDs match", async () => {
-    resetIdCounter();
+    resetRequestIdCounter();
     // 1. "Server" render
     enableSSRMode();
     const serverValues = await runWithRenderContext(async () => {
@@ -58,9 +63,8 @@ describe("random", () => {
     });
     enableClientMode();
 
-    // 2. "Client" hydration
-    // Simulate what hydrate() does: set the ID from SSR
-    setRenderContextID(0); // The first runWithRenderContext above used ID 0 (after a reset)
+    resetRequestIdCounter();
+    resetNextId();
 
     const clientValues = [random(), random()];
 

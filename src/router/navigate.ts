@@ -1,3 +1,4 @@
+import { isServer } from "../util/environment/server";
 import { getCurrentPath } from "./get-current-path";
 
 /**
@@ -14,7 +15,7 @@ export function navigate(path: string): void {
   currentPath.value = cleanPath;
 
   // Stop in SSR
-  if (typeof window === "undefined") {
+  if (isServer()) {
     return;
   }
 

@@ -1,13 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { mount } from "../mount";
+import { beforeEach, expect, it } from "vitest";
+import { mount } from "../dom/internal";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { Suspense } from "./suspense";
 
-describe("Suspense", () => {
+describeDualMode("Suspense", ({ getDOMFactory }) => {
   let container: HTMLElement;
+  let document: Document;
 
   beforeEach(() => {
+    document = getDOMFactory().getDocument();
     container = document.createElement("div");
+    document.body.appendChild(container);
   });
 
   it("should show loading state initially", async () => {

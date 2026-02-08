@@ -1,7 +1,8 @@
 import { encodeBase62, randomString } from "./base62";
+import { isServer } from "./environment/server";
 
 /** Process ID (if available in Node.js environment) */
-const PID = typeof process !== "undefined" && typeof process.pid === "number" ? process.pid : null;
+const PID = isServer() ? process.pid : null;
 
 /**
  * Generates a timestamp component in base-62.

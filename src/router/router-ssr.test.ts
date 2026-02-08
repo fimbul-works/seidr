@@ -1,8 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
-import { clearHydrationData } from "../ssr/hydration-context";
-import { renderToString } from "../ssr/render-to-string";
-import { setActiveSSRScope } from "../ssr/ssr-scope";
+import { clearHydrationData, renderToString, setSSRScope } from "../ssr/internal";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
@@ -14,12 +13,11 @@ describe("Router SSR", () => {
   let cleanupEnv: CleanupFunction;
 
   beforeEach(() => {
-    // Enable SSR mode
     cleanupEnv = enableSSRMode();
   });
 
   afterEach(() => {
-    setActiveSSRScope(undefined);
+    setSSRScope(undefined);
     cleanupEnv();
     clearHydrationData();
   });
@@ -38,8 +36,8 @@ describe("Router SSR", () => {
     const { html, hydrationData } = await renderToString(App, { path: "/" });
     expect(html).toContain('class="home"');
     expect(html).toContain("Home");
-    expect(html).toContain(`<!--s:router-${hydrationData.ctxID}-`);
-    expect(html).toContain(`<!--e:router-${hydrationData.ctxID}-`);
+    expect(html).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Router-${hydrationData.ctxID}-`);
+    expect(html).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Router-${hydrationData.ctxID}-`);
     expect(html).not.toContain("About");
   });
 

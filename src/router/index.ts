@@ -1,5 +1,5 @@
 export * from "./create-route";
-export * from "./get-current-path";
+export { getCurrentPath } from "./get-current-path";
 export * from "./init-router";
 export * from "./link";
 export * from "./match-route";

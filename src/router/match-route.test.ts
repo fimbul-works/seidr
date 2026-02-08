@@ -1,12 +1,13 @@
-import { describe, expect, it } from "vitest";
-import { wrapComponent } from "../component";
+import { expect, it } from "vitest";
+import { wrapComponent } from "../component/internal";
+import { mount } from "../dom/internal";
 import { $div } from "../element";
-import { mount } from "../mount";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { createRoute } from "./create-route";
 import { matchRoute } from "./match-route";
 
-describe("matchRoute", () => {
+describeDualMode("matchRoute", () => {
   const comp = () => $div();
 
   it("should match simple path", () => {
@@ -77,20 +78,17 @@ describe("matchRoute", () => {
     const match = matchRoute("/user/42", [route]);
     expect(match).not.toBeNull();
 
-    if (match) {
-      // We need to simulate how Router creates the component
-      // Typically Router creates a Seidr for params and passes it
-      const paramsSeidr = new Seidr(match.params);
-
-      const container = document.createElement("div");
-      const factory = wrapComponent(match.route.componentFactory);
-
-      // Pass the reactive params to the factory wrapper
-      // wrapComponent returns (props?: any) => Component
-      const component = factory(paramsSeidr);
-      mount(component, container);
-
-      expect(container.textContent).toBe("User: 42");
+    if (!match) {
+      throw new Error("Route parameters should match");
     }
+
+    const paramsSeidr = new Seidr(match.params);
+    const container = $div();
+    const factory = wrapComponent(match.route.componentFactory);
+
+    const component = factory(paramsSeidr);
+    mount(component, container);
+
+    expect(container.textContent).toBe("User: 42");
   });
 });

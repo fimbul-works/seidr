@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { $ } from "./element";
+import { $ } from "./create-element";
 import { $factory } from "./element-factory";
 
 describe("elementFactory", () => {

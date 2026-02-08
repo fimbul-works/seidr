@@ -1,5 +1,7 @@
-import { getRenderContext, type RenderContext } from "../render-context";
+import { getRenderContext } from "../render-context/render-context";
+import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
+import { isClient } from "../util/environment/browser";
 import type { SSRScopeCapture } from "./types";
 
 /**
@@ -14,21 +16,27 @@ const scopes = new Map<number, SSRScope>();
  *
  * @param {(SSRScope | undefined)} scope - The scope to activate for the current render context
  */
-export function setActiveSSRScope(scope: SSRScope | undefined): void {
-  let ctx: RenderContext | undefined;
+export function setSSRScope(scope: SSRScope | undefined): void {
+  if (isClient()) {
+    return;
+  }
+
+  let ctx: RenderContext;
   try {
     ctx = getRenderContext();
-  } catch (_e) {
-    if (scope === undefined) return;
+  } catch {
+    if (scope === undefined) {
+      return;
+    }
     scopes.set(-1, scope);
     return;
   }
 
-  // Normal case: use render context ID
-  if (scope) {
-    scopes.set(ctx.ctxID, scope);
-  } else {
+  ctx = getRenderContext();
+  if (scope === undefined) {
     scopes.delete(ctx.ctxID);
+  } else {
+    scopes.set(ctx.ctxID, scope);
   }
 }
 
@@ -38,15 +46,8 @@ export function setActiveSSRScope(scope: SSRScope | undefined): void {
  *
  * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
-export function getActiveSSRScope(): SSRScope | undefined {
-  let ctx: RenderContext | undefined;
-  try {
-    ctx = getRenderContext();
-  } catch (_e) {
-    // Check for temporary scope (manual scope pattern)
-    return scopes.get(-1);
-  }
-
+export function getSSRScope(): SSRScope | undefined {
+  const ctx: RenderContext = getRenderContext();
   return scopes.get(ctx.ctxID);
 }
 
@@ -69,7 +70,7 @@ export function clearSSRScope(ctxID: number): void {
  */
 export class SSRScope {
   // id -> instance
-  private observables = new Map<number, Seidr<any>>();
+  private observables = new Map<string, Seidr<any>>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
 
@@ -111,21 +112,21 @@ export class SSRScope {
    * @param {Seidr<any>} seidr - The Seidr instance to register
    */
   register(seidr: Seidr<any>): void {
-    // console.log("Registering Seidr", seidr.id);
+    // console.log("Registering Seidr", seidr.id, "at scope size", this.observables.size);
     this.observables.set(seidr.id, seidr);
   }
 
   /**
    * Checks if an observable with the given ID is registered in this scope.
    */
-  has(id: number): boolean {
+  has(id: string): boolean {
     return this.observables.has(id);
   }
 
   /**
    * Gets an observable by ID from this scope.
    */
-  get(id: number): Seidr<any> | undefined {
+  get(id: string): Seidr<any> | undefined {
     return this.observables.get(id);
   }
 
@@ -149,50 +150,26 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
-    const observables: Record<number, any> = {};
-
-    // Sort by ID to ensure deterministic order matching the client-side creation order
-    const sortedObservables = Array.from(this.observables.values()).sort((a, b) => a.id - b.id);
-
-    // We only capture root observables, but we must respect the index of ALL observables
-    // to match the client-side registration order (which registers everything).
-    // Actually, client-side only looks up if hydrationData.observables[numericId] exists.
-    // If we skip derived ones in the array, the indices might mismatch if the client creates them in same order.
-
-    // Client-side `registerHydratedSeidr` uses `hydrationRegistry.length` as the ID.
-    // It pushes EVERY Seidr created to `hydrationRegistry`.
-    // So the server must provide values at the indices corresponding to root Seidrs.
-
-    sortedObservables.forEach((seidr, index) => {
+    const observables: Record<string, any> = {};
+    // console.log(
+    //   "Capturing hydration data",
+    //   Array.from(this.observables.values().map((s) => ({ id: s.id, value: s.value }))),
+    // );
+    // // Use Seidr IDs as keys to match client-side hydration registry order
+    for (const seidr of this.observables.values()) {
       if (!seidr.isDerived) {
-        observables[index] = seidr.value;
+        observables[seidr.id] = seidr.value;
       }
-    });
+    }
 
     // Clear observables map to prevent memory leaks
-    // First destroy all observables to clean up observer relationships
-    this.destroyObservables();
+    for (const seidr of this.observables.values()) {
+      seidr.destroy();
+    }
     this.observables.clear();
 
     return {
       observables,
     };
-  }
-
-  /**
-   * Destroys all registered observables recursively.
-   *
-   * This method:
-   * 1. Starts with root observables (those with no parents)
-   * 2. Calls destroy() on each observable
-   * 3. This recursively cleans up all derived observables that observe them
-   *
-   * Called after capturing hydration data to ensure proper cleanup.
-   */
-  destroyObservables(): void {
-    // Destroy all observables
-    for (const [, seidr] of this.observables) {
-      seidr.destroy();
-    }
   }
 }

@@ -4,6 +4,9 @@ import type { ComponentScope, SeidrComponent } from "./types";
 
 /**
  * Creates a new ComponentScope instance for tracking component cleanup logic.
+ *
+ * @param {string} id - The ID of the component
+ * @returns {ComponentScope} A ComponentScope instance
  */
 export function createScope(id: string = "unknown"): ComponentScope {
   let cleanups: CleanupFunction[] = [];
@@ -68,6 +71,7 @@ export function createScope(id: string = "unknown"): ComponentScope {
   }
 
   const scope: ComponentScope = {
+    id,
     get isDestroyed() {
       return destroyed;
     },

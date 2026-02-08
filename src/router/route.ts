@@ -1,3 +1,4 @@
+import type { SeidrComponent } from "src/component";
 import { Conditional } from "../components/conditional";
 import type { SeidrNode } from "../element/types";
 import type { Seidr } from "../seidr";
@@ -25,7 +26,7 @@ export function Route<C extends SeidrNode, P extends Seidr<any>>(
   pattern: string | RegExp,
   factory: (params?: P) => C,
   pathState: Seidr<string> = getCurrentPath(),
-) {
+): SeidrComponent {
   let routeParams: Seidr<Record<string, string> | false>;
 
   if (pattern instanceof RegExp) {
@@ -42,5 +43,5 @@ export function Route<C extends SeidrNode, P extends Seidr<any>>(
   }
 
   const isMatch = routeParams.as((params) => !!params);
-  return Conditional(isMatch, () => factory(routeParams as P), "router");
+  return Conditional(isMatch, () => factory(routeParams as P), "Route");
 }

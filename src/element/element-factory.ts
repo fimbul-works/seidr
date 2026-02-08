@@ -1,4 +1,4 @@
-import { $ } from "./element";
+import { $ } from "./create-element";
 import type { SeidrElement, SeidrElementProps, SeidrNode } from "./types";
 
 /**

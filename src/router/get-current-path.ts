@@ -1,8 +1,10 @@
-import { getRenderContext } from "../render-context";
+import { getRenderContext } from "../render-context/render-context";
 import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
+import { isClient } from "../util/environment/browser";
+import { isServer } from "../util/environment/server";
 
-const id = "router-path";
+const PATH_SEIDR_ID = "router-path";
 
 /** Map to cache Seidr instances per render context ID */
 const pathCache = new Map<number, Seidr<string>>();
@@ -32,12 +34,12 @@ export function getCurrentPath(): Seidr<string> {
   const ctx = getRenderContext();
 
   // Server-side: Get or create Seidr for this render context
-  if (ctx) {
+  if (isServer()) {
     let pathSeidr = pathCache.get(ctx.ctxID);
 
     if (!pathSeidr) {
       // Create a new Seidr for this render context
-      pathSeidr = new Seidr(ctx.currentPath, { ...NO_HYDRATE, id });
+      pathSeidr = new Seidr(ctx.currentPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
       pathCache.set(ctx.ctxID, pathSeidr);
 
       // Keep context synchronized with observable changes
@@ -54,10 +56,11 @@ export function getCurrentPath(): Seidr<string> {
 
   // Client-side: Use module-level state
   if (!clientPathState) {
-    clientPathState = new Seidr((typeof window !== "undefined" ? window.location.pathname : "/") || "/", {
+    clientPathState = new Seidr(isClient() ? window.location?.pathname : "/", {
       ...NO_HYDRATE,
-      id,
+      id: PATH_SEIDR_ID,
     });
   }
+
   return clientPathState;
 }

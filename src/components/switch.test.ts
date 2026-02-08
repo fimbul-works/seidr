@@ -1,14 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useScope } from "../component";
+import { beforeEach, expect, it, vi } from "vitest";
+import { useScope } from "../component/internal";
+import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
-import { mount } from "../mount/mount";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import { Switch } from "./switch";
 
-describe("Switch Component", () => {
+describeDualMode("Switch Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
+  let document: Document;
 
   beforeEach(() => {
+    document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
   });
@@ -31,7 +34,8 @@ describe("Switch Component", () => {
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("View A");
-    expect(parentEl.innerHTML).toContain("<!--s:switch-");
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
 
     mode.value = "B";
     expect(parentEl.innerHTML).toContain("View B");
@@ -39,7 +43,8 @@ describe("Switch Component", () => {
 
     mode.value = "C"; // No match
     expect(parentEl.innerHTML).not.toContain("View B");
-    expect(parentEl.innerHTML).toContain("<!--s:switch-");
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
   });
 
   it("should call onAttached when switching components", () => {

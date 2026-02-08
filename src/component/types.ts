@@ -1,6 +1,6 @@
 import type { SeidrNode } from "src/element";
-import type { CleanupFunction, TYPE } from "../types";
-import { TYPE_PROP } from "../types";
+import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import type { CleanupFunction } from "../types";
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
@@ -10,6 +10,11 @@ import { TYPE_PROP } from "../types";
  * leaks and ensures proper resource management throughout the application.
  */
 export interface ComponentScope {
+  /**
+   * The unique identifier of the component.
+   */
+  readonly id: string;
+
   /**
    * Whether the scope has been destroyed.
    */
@@ -82,7 +87,7 @@ export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = Seidr
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}
    */
-  readonly [TYPE_PROP]: typeof TYPE.COMPONENT;
+  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
 
   /**
    * The unique identifier of the component.
@@ -126,7 +131,7 @@ export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = Seidr
  * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
  */
 interface SeidrComponentFactoryInterface {
-  [TYPE_PROP]: typeof TYPE.COMPONENT_FACTORY;
+  [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
 }
 
 /**
@@ -136,3 +141,8 @@ interface SeidrComponentFactoryInterface {
  */
 export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
   SeidrComponentFactoryInterface;
+
+/**
+ * Type representing the children of a component.
+ */
+export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null;

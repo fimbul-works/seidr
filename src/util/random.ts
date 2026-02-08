@@ -1,4 +1,4 @@
-import { getRenderContext } from "../render-context";
+import { getNextId, getRenderContext } from "../render-context";
 
 /** 2^-32 - the smallest possible decimal number (1 / 4294967296) */
 const FRAC = 2 ** -32;
@@ -20,21 +20,18 @@ const ALEA_M = 2091639;
  */
 export function random(): number {
   const ctx = getRenderContext();
-  if (!ctx) return Math.random();
 
   // Initialize state if not present
-  if (!ctx.randomState) {
-    // We use the ID and initial counter to seed the sequence
-    // Adding an offset ensures high entropy even for seed 0
-    const seed = ctx.ctxID + ctx.randomCounter + LCG_M / 1;
+  if (!ctx.rngState) {
+    const seed = ctx.ctxID + getNextId() + LCG_M / 1;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
-    ctx.randomState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
+    ctx.rngState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
   }
 
   // Generate next number using the stored state
-  let [r0, r1, r2, i] = ctx.randomState;
+  let [r0, r1, r2, i] = ctx.rngState;
   const t = ALEA_M * r0 + i * FRAC;
   r0 = r1;
   r1 = r2;
@@ -42,7 +39,7 @@ export function random(): number {
   r2 = t - i;
 
   // Save the state back to context
-  ctx.randomState = [r0, r1, r2, i];
+  ctx.rngState = [r0, r1, r2, i];
 
   return r2;
 }

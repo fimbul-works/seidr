@@ -29,8 +29,8 @@
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - 📦 **Tiny Footprint**
-  - Hello World: **2.7KB**
-  - Full Stack (Router + SSR): **8.0KB**
+  - Hello World: **2.9KB**
+  - Full Stack (Router + SSR): **7.5KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -593,13 +593,13 @@ Quick links:
 - **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
 - **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
 - **State:** [useState()](API.md#usestate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
-- **Environment:** [inBrowser() / inServer()](API.md#environment-utilities)
+- **Environment:** [inClient() / inServer()](API.md#environment-utilities)
 
 ---
 
 ## 🌐 Server-Side Rendering (Experimental)
 
-> ⚠️ **Experimental** - While the SSR API is stable and likely to remain unchanged, the server-side DOM implementation is currently experimental and doesn't support all `HTMLElement` functionality. It is suitable for most UI rendering but may require environment-specific guards (`inBrowser`, `inServer`) for complex DOM manipulations.
+> ⚠️ **Experimental** - While the SSR API is stable and likely to remain unchanged, the server-side DOM implementation is currently experimental and doesn't support all `HTMLElement` functionality. It is suitable for most UI rendering but may require environment-specific guards (`inClient`, `inServer`) for complex DOM manipulations.
 
 Seidr provides SSR support with automatic state capture and client-side hydration. This allows you to render your Seidr applications on the server and make them interactive on the client.
 
@@ -699,9 +699,9 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~2.8KB (minified + gzipped)
+- **Seidr counter app**: ~3.0KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The ~8.0KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The ~7.5KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ### Efficient List Rendering
 Key-based diffing ensures minimal DOM operations:
@@ -716,7 +716,7 @@ Automatic cleanup prevents memory leaks from abandoned subscriptions:
 
 ```typescript
 const comp = MyComponent();
-comp.destroy(); // All bindings cleaned up automatically
+comp.unmount(); // All bindings cleaned up automatically
 ```
 
 ## 🌐 Browser Support
