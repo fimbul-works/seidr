@@ -2,7 +2,7 @@ import { afterEach } from "vitest";
 import { setInternalDOMFactory } from "../dom";
 import { getBrowserDOMFactory } from "../dom/dom-factory.browser";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
-import { setInternalContext } from "../render-context";
+import { setInternalRenderContext } from "../render-context/render-context";
 import { isServer } from "../util/environment/server";
 import { getRenderContext, testRenderContext } from "./render-context";
 
@@ -11,7 +11,7 @@ export { describeDualMode } from "./dual-mode";
 export { getRenderContext, setRenderContextID, testRenderContext } from "./render-context";
 export { enableSSRMode } from "./ssr-mode";
 
-setInternalContext(getRenderContext);
+setInternalRenderContext(getRenderContext);
 setInternalDOMFactory(isServer() ? getSSRDOMFactory : getBrowserDOMFactory);
 
 afterEach(() => {

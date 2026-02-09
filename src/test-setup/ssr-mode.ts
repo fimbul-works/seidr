@@ -1,6 +1,6 @@
 import { getDOMFactory, setInternalDOMFactory } from "../dom";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
-import { getRenderContext, setInternalContext } from "../render-context";
+import { getRenderContext, setInternalRenderContext } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import type { TestEnvironmentState } from "./types";
 
@@ -19,7 +19,7 @@ export function enableSSRMode(): CleanupFunction {
 
   process.env.SEIDR_TEST_SSR = "true";
   setInternalDOMFactory(getSSRDOMFactory);
-  setInternalContext(getRenderContext);
+  setInternalRenderContext(getRenderContext);
 
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
@@ -27,7 +27,7 @@ export function enableSSRMode(): CleanupFunction {
     if (currentState.vitest !== undefined) (process.env as any).VITEST = currentState.vitest;
     else delete (process.env as any).VITEST;
     if (currentState.window !== undefined) (global as any).window = currentState.window;
-    setInternalContext(getRenderContext);
+    setInternalRenderContext(getRenderContext);
     if (currentState.getDOMFactory !== undefined) setInternalDOMFactory(currentState.getDOMFactory);
   };
 }

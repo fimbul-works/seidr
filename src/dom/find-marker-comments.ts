@@ -31,7 +31,8 @@ export function findMarkerComments(id: string, root?: Node): [Comment | null, Co
         // If both markers are found, break the loop
         if (start && end) {
           // If markers are not in the same parent node, warn and return return null
-          if (start.parentNode !== end.parentNode) {
+          // @ts-expect-error
+          if (start.parentNode !== end.parentNode && process.env.CORE_DISABLE_SSR === false) {
             console.warn(
               `Hydration warning: start and end markers for component ${id} are not in the same parent node`,
             );

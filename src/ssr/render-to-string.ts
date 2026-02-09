@@ -1,9 +1,12 @@
-import { getDOMFactory, setInternalDOMFactory } from "../dom";
+import { wrapComponent } from "../component/wrap-component";
+import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
-import { isArray, isDOMNode, isStr, SeidrError, type SeidrNode, wrapComponent } from "../index.core";
+import type { SeidrNode } from "../element/types";
 import { getRenderContext } from "../render-context";
 import { runWithRenderContext } from "../render-context/render-context.node";
 import { clearPathCache } from "../router/get-current-path";
+import { SeidrError } from "../types";
+import { isArray, isDOMNode, isStr } from "../util/type-guards/index";
 import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope";
 import { captureGlobalState, clearGlobalState } from "./state";
 import type { SSRRenderResult } from "./types";

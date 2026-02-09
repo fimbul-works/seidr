@@ -32,10 +32,10 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * By default, withStorage throws on errors. Wrap components using withStorage in a
  * `<Safe>` boundary to handle errors gracefully:
  *
- * @template {Seidr} T - The Seidr instance type (inferred from the provided seidr parameter)
+ * @template T - The type of the Seidr observable to bind to storage
  *
  * @param {string} key - The storage key to use for persisting the observable value
- * @param {T} seidr - The Seidr observable to bind to storage
+ * @param {Seidr<T>} seidr - The Seidr observable to bind to storage
  * @param {Storage} [storage=localStorage] - The storage API to use (defaults to localStorage)
  * @param {StorageErrorHandler} [onError] - Optional error handler. If provided, errors
  *   will be passed to this handler instead of being thrown. Useful for custom error
@@ -44,12 +44,12 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * @returns {T} The same Seidr instance, now with storage synchronization enabled
  * @throws {Error} If storage read/write fails and no onError handler is provided
  */
-export function withStorage<T extends Seidr<any>>(
+export function withStorage<T>(
   key: string,
-  seidr: T,
+  seidr: Seidr<T>,
   storage: Storage = isClient() ? localStorage : ({} as Storage),
   onError?: StorageErrorHandler,
-): T {
+): Seidr<T> {
   // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
   if (isServer()) {
     return seidr;

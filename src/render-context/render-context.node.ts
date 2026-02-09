@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { type CleanupFunction, SeidrError } from "../types";
-import { setInternalContext } from "./render-context";
+import { setInternalRenderContext } from "./render-context";
 import type { RenderContext } from "./types";
 
 /** Global fallback store for request ID generation */
@@ -31,7 +31,7 @@ export const getSSRRenderContext = (): RenderContext => {
 };
 
 // Pass the SSR getRenderContext to contract
-setInternalContext(getSSRRenderContext);
+setInternalRenderContext(getSSRRenderContext);
 
 /**
  * Run a function within a new render context.
@@ -71,8 +71,8 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
   const originalGetRenderContext = getSSRRenderContext;
 
   // Override with a simple function that always returns the mock context
-  setInternalContext(() => mockContext);
+  setInternalRenderContext(() => mockContext);
 
   // Return cleanup function to restore original
-  return () => setInternalContext(originalGetRenderContext);
+  return () => setInternalRenderContext(originalGetRenderContext);
 };

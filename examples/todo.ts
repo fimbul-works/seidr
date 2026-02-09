@@ -13,8 +13,9 @@ import {
   List,
   mount,
   Seidr,
+  useState,
   withStorage,
-} from "../src/index.browser.js";
+} from "../src/index.core.js";
 
 type Todo = { id: number; text: string; completed: boolean };
 
@@ -47,14 +48,18 @@ const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 };
 
 export const TodoApp = (initialTodos: Todo[] = []) => {
-  const todos = withStorage("todos", new Seidr<Todo[]>(initialTodos.length > 0 ? initialTodos : []));
+  const [localTodos, setTodos] = useState<Todo[]>("todos");
+
+  const todos = withStorage<Todo[]>("todos", localTodos);
+  setTodos(initialTodos);
+
   const newTodoText = new Seidr("");
 
   const addTodo = (e: Event) => {
     e.preventDefault();
     const text = newTodoText.value.trim();
     if (text) {
-      todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
+      setTodos([...todos.value, { id: Date.now(), text, completed: false }]);
       newTodoText.value = "";
     }
   };

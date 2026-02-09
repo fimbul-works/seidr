@@ -14,7 +14,7 @@ export let getRenderContext = (): RenderContext => renderContext;
  * @param {(() => RenderContext)} fn
  * @internal
  */
-export function setInternalContext(fn: () => RenderContext) {
+export function setInternalRenderContext(fn: () => RenderContext) {
   getRenderContext = fn;
 }
 

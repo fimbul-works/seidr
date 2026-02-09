@@ -20,14 +20,7 @@ export function registerHydratingSeidr(seidr: Seidr<any>): void {
 
   const value = hydrationDataStorage.data?.observables[seidr.id];
   if (!isUndefined(value)) {
-    // console.log(
-    //   "registering ID",
-    //   seidr.id,
-    //   "value:",
-    //   seidr.value,
-    //   "data:",
-    //   hydrationDataStorage.data?.observables[seidr.id],
-    // );
+    console.log("hydrating", seidr.id, ":", seidr.value, "=>", hydrationDataStorage.data?.observables[seidr.id]);
     hydrationDataStorage.registry.add(seidr);
     seidr.value = value;
   }

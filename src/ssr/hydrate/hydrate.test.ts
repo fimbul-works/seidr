@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
+import { getRenderContext } from "../../render-context";
 import { Seidr } from "../../seidr";
 import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";

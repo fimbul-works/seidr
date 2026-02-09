@@ -59,7 +59,8 @@ export class Seidr<T> {
     this.v = initial;
 
     // Register for hydration in browser
-    if (isClient()) {
+    // @ts-expect-error
+    if (isClient() && process.env.CORE_DISABLE_SSR !== false) {
       this.register();
     }
   }
@@ -89,7 +90,7 @@ export class Seidr<T> {
    */
   set value(v: T) {
     if (!Object.is(this.v, v)) {
-      // console.log("update", this.id, "=", v);
+      // console.log("update", this.id, "=", v, "observers", this.f.size);
       this.v = v;
       this.f.forEach((fn) => fn(v));
     }
@@ -117,6 +118,12 @@ export class Seidr<T> {
    * Registers this Seidr instance with SSR/hydration systems.
    */
   private register(): void {
+    // Minimize bundle size by
+    // @ts-expect-error
+    if (process.env.CORE_DISABLE_SSR === true) {
+      return;
+    }
+
     // Registr parents first
     for (const parent of this.p) {
       if (parent.id === this.id) {
@@ -151,7 +158,10 @@ export class Seidr<T> {
    * @returns {CleanupFunction} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    this.register();
+    // @ts-expect-error
+    if (process.env.CORE_DISABLE_SSR !== false) {
+      this.register();
+    }
     this.f.add(fn);
     return () => this.f.delete(fn);
   }
@@ -162,13 +172,16 @@ export class Seidr<T> {
    *
    * @template E - The type being bound to
    * @param {E} target - The value to apply changes to
-   * @param {(value: T, target: E) => void} fn - Function to bind the observable's value to the target
+   * @param {(value: T, target: E) => void} bindFn - Function to bind the observable's value to the target
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
-  bind<E>(target: E, fn: (value: T, target: E) => void): CleanupFunction {
-    this.register();
-    fn(this.value, target);
-    return this.observe((value) => fn(value, target));
+  bind<E>(target: E, bindFn: (value: T, target: E) => void): CleanupFunction {
+    // @ts-expect-error
+    if (process.env.CORE_DISABLE_SSR !== false) {
+      this.register();
+    }
+    bindFn(this.value, target);
+    return this.observe((value) => bindFn(value, target));
   }
 
   /**
@@ -176,14 +189,14 @@ export class Seidr<T> {
    *
    * @template U - The type of the transformed/derived value
    *
-   * @param {(value: T) => U} transform - Function that transforms the source value to the derived value
+   * @param {(value: T) => U} transformFn - Function that transforms the source value to the derived value
    * @param {SeidrOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<U>} A new Seidr instance containing the transformed value
    */
-  as<U>(transform: (value: T) => U, options: SeidrOptions = {}): Seidr<U> {
-    const derived = new Seidr<U>(transform(this.v), options);
+  as<U>(transformFn: (value: T) => U, options: SeidrOptions = {}): Seidr<U> {
+    const derived = new Seidr<U>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.addCleanup(this.observe((value) => (derived.value = transform(value))));
+    this.addCleanup(this.observe((updatedValue) => (derived.value = transformFn(updatedValue))));
     return derived;
   }
 
@@ -204,7 +217,7 @@ export class Seidr<T> {
 
     const computed = new Seidr<C>(compute(), options);
     computed.setParents(parents);
-    parents.forEach((dep) => computed.addCleanup(dep.observe(() => (computed.value = compute()))));
+    parents.forEach((p) => computed.addCleanup(p.observe(() => (computed.value = compute()))));
     return computed;
   }
 
@@ -258,6 +271,9 @@ export class Seidr<T> {
    */
   private setParents(parents: Seidr<any>[]): void {
     this.p = parents;
-    this.register();
+    // @ts-expect-error
+    if (process.env.CORE_DISABLE_SSR !== false) {
+      this.register();
+    }
   }
 }

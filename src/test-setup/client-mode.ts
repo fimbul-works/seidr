@@ -1,6 +1,6 @@
 import { getDOMFactory, setInternalDOMFactory } from "../dom";
 import { getBrowserDOMFactory } from "../dom/dom-factory.browser";
-import { setInternalContext } from "../render-context";
+import { setInternalRenderContext } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import { isClient } from "../util/environment/browser";
 import { getRenderContext } from "./render-context";
@@ -26,7 +26,7 @@ export function enableClientMode(): CleanupFunction {
     (global as any).window = currentState.window || {};
   }
 
-  setInternalContext(getRenderContext);
+  setInternalRenderContext(getRenderContext);
   setInternalDOMFactory(getBrowserDOMFactory);
 
   return () => {

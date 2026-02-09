@@ -1,4 +1,4 @@
-import { $button, $div, $h1, isClient, mount, Seidr, useScope } from "../src/index.browser.js";
+import { $button, $div, $h1, isClient, mount, Seidr, useScope } from "../src/index.core.js";
 
 const PomodoroTimer = () => {
   const scope = useScope();

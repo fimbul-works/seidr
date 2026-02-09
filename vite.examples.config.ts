@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import { browserReplace } from "./rollup.shared";
+import { clientReplace } from "./rollup.shared";
 
 export default defineConfig((_config) => {
   const example = process.env.EXAMPLE || "counter";
@@ -24,7 +24,7 @@ export default defineConfig((_config) => {
       },
     },
     esbuild: {
-      define: { ...browserReplace, "process.env.NO_SSR": "'true'" },
+      define: { ...clientReplace, "process.env.CORE_DISABLE_SSR": "true" },
     },
     server: {
       port: 3000,

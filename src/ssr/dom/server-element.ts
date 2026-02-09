@@ -1,4 +1,4 @@
-import { TYPE_ELEMENT } from "../../constants";
+import { TYPE_ELEMENT, TYPE_PROP } from "../../constants";
 import { escapeAttribute } from "../../util/escape";
 import { camelToKebab } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
@@ -13,45 +13,55 @@ import type { ServerDocument, ServerElement } from "./types";
 const BOOL_ATTRIBUTES = ["disabled", "checked", "selected", "readonly", "required", "multiple", "hidden", "autofocus"];
 
 const INTERNAL_ATTRIBUTES = new Set([
-  "childNodes",
-  "parentNode",
-  "ownerDocument",
   "nodeType",
   "tagName",
-  "attributes",
-  "dataset",
-  "style",
-  "id",
-  "className",
-  "innerHTML",
-  "classList",
-  "textContent",
-  "setAttribute",
-  "getAttribute",
-  "hasAttribute",
-  "removeAttribute",
-  "addEventListener",
-  "removeEventListener",
-  "toString",
-  "appendChild",
-  "insertBefore",
-  "removeChild",
+  "ownerDocument",
+  "isConnected",
+
+  "parentNode",
+  "parentElement",
+  "nextSibling",
+  "previousSibling",
+
+  "childNodes",
+
   "append",
   "prepend",
+  "appendChild",
+  "insertBefore",
   "replaceChildren",
+  "removeChild",
+
+  "attributes",
+  "hasAttribute",
+  "getAttribute",
+  "setAttribute",
+  "removeAttribute",
+
+  "dataset",
+
+  "style",
+  "className",
+  "classList",
+
+  "innerHTML",
+  "textContent",
+
+  "addEventListener",
+  "removeEventListener",
+
+  "toString",
+
   "getElementById",
   "getElementsByTagName",
   "getElementsByClassName",
   "querySelector",
   "querySelectorAll",
-  "isConnected",
-  "parentElement",
-  "nextSibling",
-  "previousSibling",
+
+  TYPE_PROP,
   "on",
   "clear",
   "remove",
-  "$type",
 ]);
 
 /**
@@ -80,7 +90,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
       const parts = Object.entries(s)
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([k, v]) => `${k}: ${v}`);
-      return parts.length > 0 ? parts.join("; ") + ";" : "";
+      return parts.length > 0 ? `${parts.join("; ")};` : "";
     },
     parse: (val) => {
       const obj: Record<string, string> = {};
@@ -375,6 +385,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
         return Reflect.set(target, prop, value, receiver);
       }
 
+      // console.log("set", prop, value);
       if (prop in target || INTERNAL_ATTRIBUTES.has(prop)) {
         return Reflect.set(target, prop, value, receiver);
       }

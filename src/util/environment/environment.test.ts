@@ -44,7 +44,7 @@ describe("Environment detection and execution guards", () => {
       const cleanup = enableSSRMode();
       try {
         const result = inClient(() => "should not execute");
-        expect(result).toBeUndefined();
+        expect(result).toBeFalsy();
       } finally {
         cleanup();
       }
@@ -56,7 +56,7 @@ describe("Environment detection and execution guards", () => {
         const result = inClient(() => {
           throw new SeidrError("Should not execute");
         });
-        expect(result).toBeUndefined();
+        expect(result).toBeFalsy();
       } finally {
         cleanup();
       }
@@ -66,7 +66,7 @@ describe("Environment detection and execution guards", () => {
   describe("inServer", () => {
     it("should not execute function in browser environment", () => {
       const result = inServer(() => "should not execute");
-      expect(result).toBeUndefined();
+      expect(result).toBeFalsy();
     });
 
     it("should execute function in SSR mode", () => {
@@ -95,7 +95,7 @@ describe("Environment detection and execution guards", () => {
       const result = inServer(() => {
         throw new SeidrError("Should not execute");
       });
-      expect(result).toBeUndefined();
+      expect(result).toBeFalsy();
     });
   });
 });

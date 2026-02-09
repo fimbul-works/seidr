@@ -2,6 +2,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import type { SeidrElement } from "../element";
+import { appendChild } from "../element/append-child";
 import { getRenderContext } from "../render-context";
 import type { CleanupFunction } from "../types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
@@ -49,9 +50,9 @@ export function mount<C extends (() => SeidrComponentChildren) | SeidrComponentC
 
   if (!isAlreadyMounted) {
     if (isArray(component.element)) {
-      component.element.forEach((el) => isDOMNode(el) && container.appendChild(el));
+      component.element.forEach((el) => isDOMNode(el) && appendChild(container, el));
     } else if (isDOMNode(component.element)) {
-      container.appendChild(component.element);
+      appendChild(container, component.element);
     }
   }
 
