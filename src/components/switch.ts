@@ -18,11 +18,15 @@ import { isArray } from "../util/type-guards/primitive-types";
  * @param {(val: T) => SeidrComponentChildren} [defaultCase] - Optional fallback component factory
  * @returns {SeidrComponent} A component
  */
-export function Switch<
+export const Switch = <
   T,
   M extends Map<T, (val: T) => SeidrComponentChildren> | Record<string, (val: T) => SeidrComponentChildren>,
->(observable: Seidr<T>, factories: M, defaultCase?: (val: T) => SeidrComponentChildren): SeidrComponent {
-  return component(() => {
+>(
+  observable: Seidr<T>,
+  factories: M,
+  defaultCase?: (val: T) => SeidrComponentChildren,
+): SeidrComponent =>
+  component(() => {
     const scope = useScope();
     const markers = getMarkerComments(scope.id);
     let currentComponent: SeidrComponent | null = null;
@@ -71,4 +75,3 @@ export function Switch<
 
     return [];
   }, "Switch")();
-}

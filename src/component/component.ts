@@ -23,12 +23,12 @@ import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } fr
  * @param {(props: P) => SeidrComponentChildren} factory - Function that accepts props and creates the component element
  * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
  */
-export function component<P = void>(
-  factory: (props: P, id: string) => SeidrComponentChildren,
-  name: string = "component",
-): SeidrComponentFactory<P> {
+export const component = <P = void>(
+  factory: (props: P) => SeidrComponentChildren,
+  name: string = "Component",
+): SeidrComponentFactory<P> => {
   // Return a function that accepts props and creates the component
-  const componentFactory = ((props?: P) => {
+  const componentFactory = ((props: P) => {
     const ctx = getRenderContext();
     const instanceId = getNextId();
     const id = `${name}-${ctx.ctxID}-${instanceId}`;
@@ -79,7 +79,7 @@ export function component<P = void>(
     // Render the component via factory
     try {
       // Call factory with props (or undefined if no props)
-      const result = factory(props as P, id);
+      const result = factory(props);
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: any): SeidrComponentChildren => {
@@ -148,6 +148,5 @@ export function component<P = void>(
   }) as SeidrComponentFactory<P>;
 
   componentFactory[TYPE_PROP] = TYPE_COMPONENT_FACTORY;
-
   return componentFactory;
-}
+};

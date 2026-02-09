@@ -23,9 +23,9 @@ export interface RouterProps {
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = component(({ routes, fallback }: RouterProps, id: string) => {
+export const Router = component(({ routes, fallback }: RouterProps) => {
   const scope = useScope();
-  const [start, end] = getMarkerComments(id);
+  const [start, end] = getMarkerComments(scope.id);
   const currentPath = getCurrentPath();
 
   let currentRouteIndex = -100;

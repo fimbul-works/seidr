@@ -20,8 +20,8 @@ import { wrapError } from "../util/wrap-error";
  * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {SeidrComponent} A Component instance with error handling
  */
-export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent {
-  return component(() => {
+export const Safe = <T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent =>
+  component(() => {
     const scope = useScope();
 
     try {
@@ -38,4 +38,3 @@ export function Safe<T extends SeidrNode>(factory: () => T, errorBoundaryFactory
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }
   }, "Safe")();
-}

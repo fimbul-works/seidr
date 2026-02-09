@@ -14,72 +14,66 @@ export function createScope(id: string = "unknown"): ComponentScope {
   let destroyed = false;
   let attachedParent: Node | null = null;
 
-  function track(cleanup: CleanupFunction): void {
-    if (destroyed) {
-      console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
-      cleanup();
-      return;
-    }
-    cleanups.push(cleanup);
-  }
-
-  function waitFor<T>(promise: Promise<T>): Promise<T> {
-    const ctx = getRenderContext();
-    if (ctx?.onPromise) {
-      ctx.onPromise(promise);
-    }
-    return promise;
-  }
-
-  function attached(parent: Node) {
-    if (attachedParent) return; // Already attached
-    attachedParent = parent;
-
-    if (scope.onAttached) {
-      scope.onAttached(parent);
-    }
-
-    children.forEach((c) => {
-      c.scope.attached(parent);
-    });
-  }
-
-  function child(c: SeidrComponent) {
-    children.push(c);
-    track(() => c.unmount());
-
-    if (attachedParent) {
-      c.scope.attached(attachedParent);
-    }
-
-    return c;
-  }
-
-  function destroy() {
-    if (destroyed) return;
-    destroyed = true;
-    cleanups.forEach((fn) => {
-      try {
-        fn();
-      } catch (error) {
-        console.error(error);
-      }
-    });
-    cleanups = [];
-    children.length = 0;
-    attachedParent = null;
-  }
-
   const scope: ComponentScope = {
-    id,
+    get id() {
+      return id;
+    },
     get isDestroyed() {
       return destroyed;
     },
-    track,
-    waitFor,
-    child,
-    attached,
-    destroy,
+    track(cleanup: CleanupFunction): void {
+      if (destroyed) {
+        console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
+        cleanup();
+        return;
+      }
+      cleanups.push(cleanup);
+    },
+    waitFor<T>(promise: Promise<T>): Promise<T> {
+      const ctx = getRenderContext();
+      if (ctx?.onPromise) {
+        ctx.onPromise(promise);
+      }
+      return promise;
+    },
+    child(c: SeidrComponent) {
+      children.push(c);
+      scope.track(() => c.unmount());
+
+      if (attachedParent) {
+        c.scope.attached(attachedParent);
+      }
+
+      return c;
+    },
+    attached(parent: Node) {
+      if (attachedParent) {
+        return; // Already attached
+      }
+      attachedParent = parent;
+
+      if (scope.onAttached) {
+        scope.onAttached(parent);
+      }
+
+      children.forEach((c) => {
+        c.scope.attached(parent);
+      });
+    },
+    destroy() {
+      if (destroyed) return;
+      destroyed = true;
+      cleanups.forEach((fn) => {
+        try {
+          fn();
+        } catch (error) {
+          console.error(error);
+        }
+      });
+      cleanups = [];
+      children.length = 0;
+      attachedParent = null;
+    },
     onAttached: undefined,
   };
 

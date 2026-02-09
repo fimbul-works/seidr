@@ -18,12 +18,12 @@ import { isArray } from "../util/type-guards/primitive-types";
  * @param {string} name - Optional name for the component
  * @returns {SeidrComponent} The component
  */
-export function Conditional<T extends SeidrNode>(
+export const Conditional = <T extends SeidrNode>(
   condition: Seidr<boolean>,
   factory: () => T,
   name?: string,
-): SeidrComponent {
-  return component(() => {
+): SeidrComponent =>
+  component(() => {
     const scope = useScope();
     const markers = getMarkerComments(scope.id);
     let currentComponent: SeidrComponent | null = null;
@@ -66,4 +66,3 @@ export function Conditional<T extends SeidrNode>(
 
     return [];
   }, name || "Conditional")();
-}

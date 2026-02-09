@@ -10,11 +10,6 @@ import type { SeidrComponentChildren, SeidrComponentFactory } from "./types";
  * @param {(P extends void ? () => SeidrComponentChildren : (props: P) => SeidrComponentChildren) | SeidrComponentFactory<P>} factory - Factory function or component factory
  * @returns {SeidrComponentFactory<P>} A SeidrComponentFactory
  */
-export function wrapComponent<P = void, T extends SeidrComponentChildren = SeidrComponentChildren>(
+export const wrapComponent = <P = void, T extends SeidrComponentChildren = SeidrComponentChildren>(
   factory: (P extends void ? () => T : (props: P) => T) | SeidrComponentFactory<P>,
-): SeidrComponentFactory<P> {
-  if (isSeidrComponentFactory<P>(factory)) {
-    return factory as SeidrComponentFactory<P>;
-  }
-  return component<P>(factory);
-}
+): SeidrComponentFactory<P> => (isSeidrComponentFactory<P>(factory) ? factory : component<P>(factory));

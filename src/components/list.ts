@@ -19,12 +19,12 @@ import { isArray } from "../util/type-guards/primitive-types";
  * @param {(item: T) => SeidrComponentChildren} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent} List component
  */
-export function List<T, I extends string | number>(
+export const List = <T, I extends string | number>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
   factory: (item: T) => SeidrComponentChildren,
-): SeidrComponent {
-  return component(() => {
+): SeidrComponent =>
+  component(() => {
     const scope = useScope();
     const markers = getMarkerComments(scope.id);
     const componentMap = new Map<I, SeidrComponent>();
@@ -98,4 +98,3 @@ export function List<T, I extends string | number>(
       return comp;
     });
   }, "List")();
-}

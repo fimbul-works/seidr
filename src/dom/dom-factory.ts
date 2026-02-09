@@ -15,6 +15,6 @@ export let getDOMFactory: () => DOMFactory = (): DOMFactory => {
  *
  * @param {(() => DOMFactory)} fn
  */
-export function setInternalDOMFactory(fn: () => DOMFactory) {
+export const setInternalDOMFactory = (fn: () => DOMFactory): void => {
   getDOMFactory = fn;
-}
+};
