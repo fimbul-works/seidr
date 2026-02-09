@@ -4,7 +4,7 @@
 
 - [Core Reactive](#core-reactive)
   - [`Seidr<T>` class](#seidrt-class)
-  - [`withStorage()`](#withstorage)
+  - [`useStorage()`](#withstorage)
   - [`wrapSeidr()`](#wrapseidr)
   - [`unwrapSeidr()`](#unwrapseidr)
 - [DOM Elements](#dom-elements)
@@ -213,7 +213,7 @@ console.log(fullName.value);  // "Jane Smith"
 
 ---
 
-### withStorage()
+### useStorage()
 
 Bind a [`Seidr<T>`](#seidrt-class) observable to localStorage/sessionStorage with automatic persistence.
 
@@ -225,13 +225,13 @@ Bind a [`Seidr<T>`](#seidrt-class) observable to localStorage/sessionStorage wit
 **Returns:** The same [`Seidr<T>`](#seidrt-class) observable
 
 ```typescript
-const sessionData = withStorage(
+const sessionData = useStorage(
   'session-key',
   new Seidr('value'),
   sessionStorage
 );
 
-// withStorage handles parse errors gracefully by using initial value
+// useStorage handles parse errors gracefully by using initial value
 // it also ignores quota exceeded errors
 ```
 

@@ -1,7 +1,7 @@
 import { getCurrentComponent } from "../component/component-stack";
 import { getRenderContext } from "../render-context";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { isSeidr, isStr } from "../util/type-guards";
+import { isEmpty, isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
 import { globalStates } from "./storage";
 import type { StateKey } from "./types";
@@ -12,9 +12,10 @@ import type { StateKey } from "./types";
  * @template T - state type
  *
  * @param {StateKey<T> | string} key - Key for the state
+ * @param {T} value - Value for the state. If null/undefined, an existing state will be used, otherwise undefined
  * @returns {[Seidr<T>, (v: T | Seidr<T>) => Seidr<T>]} Tuple with the Seidr observable and a setter.
  */
-export function useState<T>(key: StateKey<T> | string): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] {
+export function useState<T>(key: StateKey<T> | string, value?: T): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] {
   const { ctxID: renderContextID } = getRenderContext();
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
@@ -36,8 +37,11 @@ export function useState<T>(key: StateKey<T> | string): [Seidr<T>, (v: T | Seidr
   // Ensure state exists
   let observable = ctxStates.get(key) as Seidr<T>;
   if (!observable) {
-    observable = new Seidr<T>(undefined as T);
+    observable = new Seidr<T>(value as T);
     ctxStates.set(key, observable);
+  } else if (!isEmpty(value)) {
+    // Set initial value if given value is not null/undefined
+    observable.value = value;
   }
 
   const setValue = (v: T | Seidr<T>): Seidr<T> => {

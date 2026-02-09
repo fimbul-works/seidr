@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Seidr } from "./seidr";
-import { withStorage } from "./with-storage";
+import { useStorage } from "./use-storage";
 
 declare global {
   var localStorage: Storage;
   var sessionStorage: Storage;
 }
 
-describe("withStorage", () => {
+describe("useStorage", () => {
   let localStorageMock: { [key: string]: string };
   let sessionStorageMock: { [key: string]: string };
   let originalLocalStorage: Storage;
@@ -63,7 +63,7 @@ describe("withStorage", () => {
   describe("Basic functionality", () => {
     it("should return the same Seidr instance", () => {
       const original = new Seidr("test");
-      const result = withStorage("test-key", original);
+      const result = useStorage("test-key", original);
 
       expect(result).toBe(original);
     });
@@ -72,7 +72,7 @@ describe("withStorage", () => {
       localStorageMock["test-key"] = JSON.stringify("stored-value");
       const seidr = new Seidr("initial-value");
 
-      withStorage("test-key", seidr);
+      useStorage("test-key", seidr);
 
       expect(seidr.value).toBe("stored-value");
     });
@@ -80,7 +80,7 @@ describe("withStorage", () => {
     it("should keep initial value if no stored value exists", () => {
       const seidr = new Seidr("initial-value");
 
-      withStorage("test-key", seidr);
+      useStorage("test-key", seidr);
 
       expect(seidr.value).toBe("initial-value");
     });
@@ -88,7 +88,7 @@ describe("withStorage", () => {
     it("should save changes to localStorage", () => {
       const seidr = new Seidr("initial");
 
-      withStorage("test-key", seidr);
+      useStorage("test-key", seidr);
       seidr.value = "updated";
 
       expect(localStorage.setItem).toHaveBeenCalledWith("test-key", JSON.stringify("updated"));
@@ -101,7 +101,7 @@ describe("withStorage", () => {
       localStorageMock["string-key"] = JSON.stringify("stored-string");
       const seidr = new Seidr("");
 
-      withStorage("string-key", seidr);
+      useStorage("string-key", seidr);
 
       expect(seidr.value).toBe("stored-string");
 
@@ -113,7 +113,7 @@ describe("withStorage", () => {
       localStorageMock["number-key"] = JSON.stringify(42);
       const seidr = new Seidr(0);
 
-      withStorage("number-key", seidr);
+      useStorage("number-key", seidr);
 
       expect(seidr.value).toBe(42);
 
@@ -125,7 +125,7 @@ describe("withStorage", () => {
       localStorageMock["bool-key"] = JSON.stringify(true);
       const seidr = new Seidr(false);
 
-      withStorage("bool-key", seidr);
+      useStorage("bool-key", seidr);
 
       expect(seidr.value).toBe(true);
 
@@ -137,7 +137,7 @@ describe("withStorage", () => {
       localStorageMock["null-key"] = JSON.stringify(null);
       const seidr = new Seidr("not-null");
 
-      withStorage("null-key", seidr);
+      useStorage("null-key", seidr);
 
       expect(seidr.value).toBeNull();
     });
@@ -147,7 +147,7 @@ describe("withStorage", () => {
       localStorageMock["object-key"] = JSON.stringify(storedObject);
       const seidr = new Seidr({});
 
-      withStorage("object-key", seidr);
+      useStorage("object-key", seidr);
 
       expect(seidr.value).toEqual(storedObject);
 
@@ -161,7 +161,7 @@ describe("withStorage", () => {
       localStorageMock["array-key"] = JSON.stringify(storedArray);
       const seidr = new Seidr<number[]>([]);
 
-      withStorage("array-key", seidr);
+      useStorage("array-key", seidr);
 
       expect(seidr.value).toEqual(storedArray);
 
@@ -178,7 +178,7 @@ describe("withStorage", () => {
       localStorageMock["complex-key"] = JSON.stringify(complexObject);
       const seidr = new Seidr({});
 
-      withStorage("complex-key", seidr);
+      useStorage("complex-key", seidr);
 
       expect(seidr.value).toEqual(complexObject);
     });
@@ -188,7 +188,7 @@ describe("withStorage", () => {
     it("should use localStorage by default", () => {
       const seidr = new Seidr("test");
 
-      withStorage("default-storage", seidr);
+      useStorage("default-storage", seidr);
       seidr.value = "updated";
 
       expect(localStorage.setItem).toHaveBeenCalledWith("default-storage", JSON.stringify("updated"));
@@ -198,7 +198,7 @@ describe("withStorage", () => {
     it("should use sessionStorage when specified", () => {
       const seidr = new Seidr("test");
 
-      withStorage("session-storage", seidr, sessionStorage);
+      useStorage("session-storage", seidr, sessionStorage);
       seidr.value = "updated";
 
       expect(sessionStorage.setItem).toHaveBeenCalledWith("session-storage", JSON.stringify("updated"));
@@ -209,7 +209,7 @@ describe("withStorage", () => {
       sessionStorageMock["session-key"] = JSON.stringify("session-value");
       const seidr = new Seidr("initial");
 
-      withStorage("session-key", seidr, sessionStorage);
+      useStorage("session-key", seidr, sessionStorage);
 
       expect(seidr.value).toBe("session-value");
     });
@@ -220,7 +220,7 @@ describe("withStorage", () => {
       const seidr = new Seidr(0);
       const observer = vi.fn();
 
-      withStorage("reactive-test", seidr);
+      useStorage("reactive-test", seidr);
       seidr.observe(observer);
 
       seidr.value = 5;
@@ -233,7 +233,7 @@ describe("withStorage", () => {
       const base = new Seidr(0);
       const derived = base.as((n) => n * 2);
 
-      withStorage("derived-test", derived);
+      useStorage("derived-test", derived);
 
       base.value = 5; // This should trigger derived to update and save
 
@@ -250,7 +250,7 @@ describe("withStorage", () => {
       const seidr = new Seidr("default");
 
       expect(() => {
-        withStorage("invalid-json", seidr);
+        useStorage("invalid-json", seidr);
       }).toThrow();
     });
 
@@ -258,7 +258,7 @@ describe("withStorage", () => {
       localStorageMock["empty-string"] = JSON.stringify("");
       const seidr = new Seidr("default");
 
-      withStorage("empty-string", seidr);
+      useStorage("empty-string", seidr);
 
       expect(seidr.value).toBe("");
     });
@@ -267,7 +267,7 @@ describe("withStorage", () => {
       localStorageMock["existing-key"] = JSON.stringify("original");
       const seidr = new Seidr("new-default");
 
-      withStorage("existing-key", seidr);
+      useStorage("existing-key", seidr);
 
       // Should load from storage, not save the new default
       expect(seidr.value).toBe("original");
@@ -278,7 +278,7 @@ describe("withStorage", () => {
       const seidr = new Seidr("test");
       const specialKey = "test-key-with.special@chars#and spaces";
 
-      withStorage(specialKey, seidr);
+      useStorage(specialKey, seidr);
       seidr.value = "updated";
 
       expect(localStorageMock[specialKey]).toBe(JSON.stringify("updated"));
@@ -290,8 +290,8 @@ describe("withStorage", () => {
       const seidr1 = new Seidr("value1");
       const seidr2 = new Seidr("value2");
 
-      withStorage("key1", seidr1);
-      withStorage("key2", seidr2);
+      useStorage("key1", seidr1);
+      useStorage("key2", seidr2);
 
       seidr1.value = "updated1";
       seidr2.value = "updated2";
@@ -304,7 +304,7 @@ describe("withStorage", () => {
       localStorageMock["other-key"] = JSON.stringify("other-value");
 
       const seidr = new Seidr("test");
-      withStorage("my-key", seidr);
+      useStorage("my-key", seidr);
       seidr.value = "my-value";
 
       expect(localStorageMock["my-key"]).toBe(JSON.stringify("my-value"));
@@ -320,7 +320,7 @@ describe("withStorage", () => {
       }
 
       const userSeidr = new Seidr<User>({ name: "", age: 0 });
-      const result = withStorage("user", userSeidr);
+      const result = useStorage("user", userSeidr);
 
       // TypeScript should infer the correct type
       expect(typeof result.value.name).toBe("string");
@@ -331,7 +331,7 @@ describe("withStorage", () => {
       const base = new Seidr(5);
       const derived = base.as((n) => `Number: ${n}`);
 
-      const result = withStorage("derived", derived);
+      const result = useStorage("derived", derived);
 
       expect(typeof result.value).toBe("string");
     });
@@ -340,7 +340,7 @@ describe("withStorage", () => {
   describe("Cleanup", () => {
     it("should not prevent garbage collection when observable is destroyed", () => {
       const seidr = new Seidr("test");
-      withStorage("cleanup-test", seidr);
+      useStorage("cleanup-test", seidr);
 
       seidr.value = "final-value";
       expect(localStorageMock["cleanup-test"]).toBe(JSON.stringify("final-value"));
@@ -368,7 +368,7 @@ describe("withStorage", () => {
 
       try {
         const seidr = new Seidr("test-value");
-        const result = withStorage("ssr-key", seidr);
+        const result = useStorage("ssr-key", seidr);
 
         // Should return the same Seidr instance
         expect(result).toBe(seidr);
@@ -393,7 +393,7 @@ describe("withStorage", () => {
 
       try {
         // Should not throw even with invalid key or missing storage
-        const seidr = withStorage("any-key", new Seidr({ data: "test" }));
+        const seidr = useStorage("any-key", new Seidr({ data: "test" }));
 
         expect(seidr).toBeDefined();
         expect(seidr.value).toEqual({ data: "test" });

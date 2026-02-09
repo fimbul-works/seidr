@@ -7,7 +7,7 @@ import { wrapError } from "../util/wrap-error";
 import type { Seidr } from "./seidr";
 
 /**
- * Error callback type for withStorage error handling.
+ * Error callback type for useStorage error handling.
  *
  * @param {Error} error - The error that occurred
  * @param {"read" | "write"} operation - The type of storage operation that failed ('read' or 'write')
@@ -29,7 +29,7 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * - Corrupted data (invalid JSON)
  * - Storage unavailable (older browsers, disabled storage)
  *
- * By default, withStorage throws on errors. Wrap components using withStorage in a
+ * By default, useStorage throws on errors. Wrap components using useStorage in a
  * `<Safe>` boundary to handle errors gracefully:
  *
  * @template T - The type of the Seidr observable to bind to storage
@@ -44,7 +44,7 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * @returns {T} The same Seidr instance, now with storage synchronization enabled
  * @throws {Error} If storage read/write fails and no onError handler is provided
  */
-export function withStorage<T>(
+export function useStorage<T>(
   key: string,
   seidr: Seidr<T>,
   storage: Storage = isClient() ? localStorage : ({} as Storage),
@@ -66,7 +66,7 @@ export function withStorage<T>(
     if (onError) {
       onError(err, "read");
     } else {
-      throw new SeidrError(`Failed to read from storage (key="${key}"): ${err.message}`);
+      throw new SeidrError(`Failed to read from storage (key: ${key}): ${err.message}`);
     }
   }
 
@@ -79,7 +79,7 @@ export function withStorage<T>(
       if (onError) {
         onError(err, "write");
       } else {
-        throw new SeidrError(`Failed to write to storage (key="${key}"): ${err.message}`);
+        throw new SeidrError(`Failed to write to storage (key: ${key}): ${err.message}`);
       }
     }
   });

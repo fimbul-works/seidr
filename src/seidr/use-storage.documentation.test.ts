@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "./seidr";
-import { withStorage } from "./with-storage";
+import { useStorage } from "./use-storage";
 
 // Use globalThis for better compatibility
 declare global {
@@ -9,7 +9,7 @@ declare global {
   var sessionStorage: Storage;
 }
 
-describe("withStorage - Documentation Examples", () => {
+describe("useStorage - Documentation Examples", () => {
   let localStorageMock: { [key: string]: string };
   let sessionStorageMock: { [key: string]: string };
   let originalLocalStorage: Storage;
@@ -64,7 +64,7 @@ describe("withStorage - Documentation Examples", () => {
 
   describe("Basic usage with localStorage", () => {
     it("should demonstrate basic localStorage synchronization", () => {
-      const userPreferences = withStorage("user-preferences", new Seidr({ theme: "dark", language: "en" }));
+      const userPreferences = useStorage("user-preferences", new Seidr({ theme: "dark", language: "en" }));
 
       // Value is automatically loaded from localStorage if it exists
       // Changes are automatically saved to localStorage
@@ -80,7 +80,7 @@ describe("withStorage - Documentation Examples", () => {
       // Pre-populate localStorage
       localStorageMock["user-preferences"] = JSON.stringify({ theme: "dark", language: "fr" });
 
-      const userPreferences = withStorage(
+      const userPreferences = useStorage(
         "user-preferences",
         new Seidr({ theme: "light", language: "en" }), // Initial value should be overridden
       );
@@ -91,7 +91,7 @@ describe("withStorage - Documentation Examples", () => {
 
   describe("Using sessionStorage for temporary data", () => {
     it("should demonstrate sessionStorage usage", () => {
-      const formData = withStorage(
+      const formData = useStorage(
         "checkout-form",
         new Seidr({ name: "", email: "" }),
         sessionStorage, // Data persists only for the session
@@ -111,7 +111,7 @@ describe("withStorage - Documentation Examples", () => {
       // Pre-populate sessionStorage
       sessionStorageMock["checkout-form"] = JSON.stringify({ name: "Jane", email: "jane@example.com" });
 
-      const formData = withStorage("checkout-form", new Seidr({ name: "", email: "" }), sessionStorage);
+      const formData = useStorage("checkout-form", new Seidr({ name: "", email: "" }), sessionStorage);
 
       expect(formData.value).toEqual({ name: "Jane", email: "jane@example.com" });
     });
@@ -119,7 +119,7 @@ describe("withStorage - Documentation Examples", () => {
 
   describe("Simple counter with persistence", () => {
     it("should demonstrate persistent counter", () => {
-      const counter = withStorage("visit-counter", new Seidr(0));
+      const counter = useStorage("visit-counter", new Seidr(0));
 
       // Create UI elements using $ instead of the mentioned shortcuts
       const counterDisplay = $("div", {}, [
@@ -143,7 +143,7 @@ describe("withStorage - Documentation Examples", () => {
       // Simulate existing counter value
       localStorageMock["visit-counter"] = JSON.stringify(5);
 
-      const counter = withStorage("visit-counter", new Seidr(0));
+      const counter = useStorage("visit-counter", new Seidr(0));
 
       expect(counter.value).toBe(5);
 
@@ -157,7 +157,7 @@ describe("withStorage - Documentation Examples", () => {
     it("should demonstrate array persistence", () => {
       type TodoItem = { id: number; text: string; completed: boolean };
 
-      const todos = withStorage("todo-list", new Seidr<TodoItem[]>([]));
+      const todos = useStorage("todo-list", new Seidr<TodoItem[]>([]));
 
       // Complex arrays are automatically serialized/deserialized
       todos.value = [
@@ -180,7 +180,7 @@ describe("withStorage - Documentation Examples", () => {
       // Pre-populate with existing todos
       localStorageMock["todo-list"] = JSON.stringify([{ id: 1, text: "Existing task", completed: true }]);
 
-      const todos = withStorage("todo-list", new Seidr<TodoItem[]>([]));
+      const todos = useStorage("todo-list", new Seidr<TodoItem[]>([]));
 
       expect(todos.value).toEqual([{ id: 1, text: "Existing task", completed: true }]);
     });
@@ -192,7 +192,7 @@ describe("withStorage - Documentation Examples", () => {
         history: string[];
       };
 
-      const settings = withStorage(
+      const settings = useStorage(
         "user-settings",
         new Seidr<UserSettings>({
           profile: { name: "", email: "" },
@@ -228,7 +228,7 @@ describe("withStorage - Documentation Examples", () => {
         throw mockQuotaError;
       });
 
-      const seidr = withStorage("large-data", new Seidr("test"));
+      const seidr = useStorage("large-data", new Seidr("test"));
 
       // Should throw when trying to save large data
       expect(() => {
@@ -241,15 +241,15 @@ describe("withStorage - Documentation Examples", () => {
       localStorageMock["invalid-data"] = "invalid-json-string";
 
       expect(() => {
-        withStorage("invalid-data", new Seidr("default"));
+        useStorage("invalid-data", new Seidr("default"));
       }).toThrow();
     });
   });
 
   describe("Multiple storage instances", () => {
     it("should handle multiple observables with different storage types", () => {
-      const persistentData = withStorage("persistent", new Seidr("saved-forever"), localStorage);
-      const temporaryData = withStorage("temporary", new Seidr("session-only"), sessionStorage);
+      const persistentData = useStorage("persistent", new Seidr("saved-forever"), localStorage);
+      const temporaryData = useStorage("temporary", new Seidr("session-only"), sessionStorage);
 
       persistentData.value = "updated-persistent";
       temporaryData.value = "updated-temporary";

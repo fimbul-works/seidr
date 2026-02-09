@@ -59,8 +59,7 @@ export class Seidr<T> {
     this.v = initial;
 
     // Register for hydration in browser
-    // @ts-expect-error
-    if (isClient() && process.env.CORE_DISABLE_SSR !== false) {
+    if (isClient() && !process.env.CORE_DISABLE_SSR) {
       this.register();
     }
   }
@@ -119,8 +118,7 @@ export class Seidr<T> {
    */
   private register(): void {
     // Minimize bundle size by
-    // @ts-expect-error
-    if (process.env.CORE_DISABLE_SSR === true) {
+    if (process.env.CORE_DISABLE_SSR) {
       return;
     }
 
@@ -158,8 +156,7 @@ export class Seidr<T> {
    * @returns {CleanupFunction} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    // @ts-expect-error
-    if (process.env.CORE_DISABLE_SSR !== false) {
+    if (!process.env.CORE_DISABLE_SSR) {
       this.register();
     }
     this.f.add(fn);
@@ -176,8 +173,7 @@ export class Seidr<T> {
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
   bind<E>(target: E, bindFn: (value: T, target: E) => void): CleanupFunction {
-    // @ts-expect-error
-    if (process.env.CORE_DISABLE_SSR !== false) {
+    if (!process.env.CORE_DISABLE_SSR) {
       this.register();
     }
     bindFn(this.value, target);
@@ -271,8 +267,7 @@ export class Seidr<T> {
    */
   private setParents(parents: Seidr<any>[]): void {
     this.p = parents;
-    // @ts-expect-error
-    if (process.env.CORE_DISABLE_SSR !== false) {
+    if (!process.env.CORE_DISABLE_SSR) {
       this.register();
     }
   }

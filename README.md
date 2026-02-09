@@ -521,10 +521,10 @@ const searchComponent = $div({}, [
 Automatically persist observables to localStorage/sessionStorage:
 
 ```typescript
-import { withStorage, Seidr } from '@fimbul-works/seidr';
+import { useStorage, Seidr } from '@fimbul-works/seidr';
 
 // Create observable that persists to localStorage
-const todos = withStorage(
+const todos = useStorage(
   'todo-list',
   new Seidr<TodoItem[]>([])
 );
@@ -535,7 +535,7 @@ todos.value = [{ id: 1, text: 'Learn Seidr', completed: true }];
 // On page reload, value is restored from localStorage
 ```
 
-**Learn more:** [withStorage()](API.md#withstorage)
+**Learn more:** [useStorage()](API.md#withstorage)
 
 ### Global State Management
 Seidr provides a simple, type-safe global state management system via the `useState()` hook.
@@ -591,7 +591,7 @@ Quick links:
 - **Mounting:** [mount()](API.md#mount) | [Conditional()](API.md#conditional) | [List()](API.md#list) | [Switch()](API.md#switch)
 - **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined Elements](API.md#predefined-element-creators)
 - **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
-- **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [withStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
+- **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [useStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
 - **State:** [useState()](API.md#usestate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
 - **Environment:** [inClient() / inServer()](API.md#environment-utilities)
 

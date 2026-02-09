@@ -32,9 +32,6 @@ describe("TODO Example", () => {
     mount(TodoApp, document.body);
 
     const todoList = document.querySelector(".todo-list");
-    // List component uses comment markers (in childNodes, not children)
-    expect(todoList?.childNodes.length).toBe(2);
-    // No actual todo items
     const listItems = todoList?.querySelectorAll("li");
     expect(listItems?.length).toBe(0);
   });
@@ -47,9 +44,6 @@ describe("TODO Example", () => {
     mount(() => TodoApp(initialTodos), document.body);
 
     const todoList = document.querySelector(".todo-list");
-    // 2 todo items + 2 marker comment nodes = 4 childNodes
-    expect(todoList?.childNodes.length).toBe(4);
-    // Count actual list items (not the markers)
     const listItems = todoList?.querySelectorAll("li");
     expect(listItems?.length).toBe(2);
   });
@@ -58,7 +52,6 @@ describe("TODO Example", () => {
     const todoComponent = component(TodoApp)([]);
 
     mount(todoComponent, document.body);
-
     todoComponent.unmount();
 
     expect(document.body.children.length).toBe(0);

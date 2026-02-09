@@ -7,7 +7,7 @@ export default defineConfig({
     setupFiles: ["./src/test-setup/index.ts"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/*.parity.test.ts", "**/dual-mode-*.test.ts"],
     env: {
-      CORE_DISABLE_SSR: "false",
+      // CORE_DISABLE_SSR: "false",
     },
   },
 });
