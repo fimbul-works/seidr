@@ -18,7 +18,7 @@ export const isServer = (): boolean => !isClient();
  * @param {() => T} fn - The function to execute purely on the server
  * @returns {T | false} The result of the function, or `false` if in the browser
  */
-export function inServer<T>(fn: () => T): T | false {
+export const inServer = <T>(fn: () => T): T | false => {
   if (!isServer()) {
     return false;
   }
@@ -31,4 +31,4 @@ export function inServer<T>(fn: () => T): T | false {
   }
 
   return result;
-}
+};

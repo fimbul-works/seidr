@@ -9,7 +9,7 @@ import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./mark
  * @param {Node} [root] - The root node to search in
  * @returns {[Comment | null, Comment | null]} - Tuple of start and end markers
  */
-export function findMarkerComments(id: string, root?: Node): [Comment | null, Comment | null] {
+export const findMarkerComments = (id: string, root?: Node): [Comment | null, Comment | null] => {
   const startPattern = SEIDR_COMPONENT_START_PREFIX + id;
   const endPattern = SEIDR_COMPONENT_END_PREFIX + id;
 
@@ -32,9 +32,7 @@ export function findMarkerComments(id: string, root?: Node): [Comment | null, Co
         if (start && end) {
           // If markers are not in the same parent node, warn and return return null
           if (start.parentNode !== end.parentNode && !process.env.CORE_DISABLE_SSR) {
-            if (process.env.NODE_ENV === "development") {
-              console.warn(`[${id}] Hydration warning: start and end markers not in the same parent node`);
-            }
+            console.warn(`[${id}] Hydration warning: start and end markers not in the same parent node`);
             start = null;
             end = null;
           }
@@ -52,4 +50,4 @@ export function findMarkerComments(id: string, root?: Node): [Comment | null, Co
   if (root) return searchIn(root);
 
   return [null, null];
-}
+};

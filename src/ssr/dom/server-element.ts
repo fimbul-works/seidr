@@ -385,7 +385,6 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
         return Reflect.set(target, prop, value, receiver);
       }
 
-      // console.log("set", prop, value);
       if (prop in target || INTERNAL_ATTRIBUTES.has(prop)) {
         return Reflect.set(target, prop, value, receiver);
       }

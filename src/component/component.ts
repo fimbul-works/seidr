@@ -3,42 +3,42 @@ import { getMarkerComments } from "../dom/get-marker-comments";
 import { $text } from "../dom/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
+import { tryCatchFinally } from "../util/try-catch-finally";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
-import { createScope } from "./component-scope";
-import { getComponentStack } from "./component-stack";
+import { createScope, setScopeComponent } from "./component-scope";
+import { getCurrentComponent, pop, push } from "./component-stack";
 import type {
   SeidrComponent,
   SeidrComponentChildren,
   SeidrComponentFactory,
-  SeidrComponentFunction,
-  SeidrComponentReturnValue,
+  SeidrComponentFactoryPureFunction,
 } from "./types";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
  *
- * Components are the primary building blocks in Seidr applications. They encapsulate
- * both UI elements and the reactive logic needed to manage them. The component
- * function automatically tracks cleanup functions, reactive bindings, and child
- * components to prevent memory leaks.
- *
  * @template P - Props object type (optional)
  *
- * @param {(props: P) => SeidrComponentReturnValue} factory - Function that accepts props and creates the component element
+ * @param {SeidrComponentFactoryPureFunction<P>} factory - Function that accepts props and creates the component element
  * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
  */
 export const component = <P = void>(
-  factory: SeidrComponentFunction<P>,
+  factory: SeidrComponentFactoryPureFunction<P>,
   name: string = "Component",
 ): SeidrComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
-    const id = `${name}-${getRenderContext().ctxID}-${getNextId()}`;
-    const scope = createScope(id);
-    const stack = getComponentStack();
-    const isRootComponent = stack.length === 0;
+    const ctx = getRenderContext();
+    const parent = getCurrentComponent();
+    const ctxID = String(ctx.ctxID);
+    const id = `${name}-${ctxID}-${getNextId()}`;
+    // The previous component is the current cursor, or if null, check if we have a root component context
+    // Actually, getCurrentComponent() handles it. If it returns null, we are at root.
+    // But wait, user said "Root component should be the result of getCurrentComponent() when the stack points to the root"
+    // So if getCurrentComponent() is null, we are truly at the root.
+    const scope = createScope(id, parent);
 
     // Create partial SeidrComponent
     const comp = {
@@ -48,14 +48,15 @@ export const component = <P = void>(
       unmount: () => {
         // If already destroyed, do nothing
         if (comp.scope.isDestroyed) {
-          if (process.env.NODE_ENV === "development") {
-            console.warn(`[${id}] Unmounting already destroyed component`);
-          }
+          console.warn(`[${id}] Unmounting already destroyed component`);
           return;
         }
 
-        // Destroy the scope
+        // Destroy the scope - this handles children destruction via recursion
         comp.scope.destroy();
+
+        // Remove from parent scope
+        comp.scope.parent?.scope.removeChild(comp);
 
         // Remove the start marker
         comp.startMarker?.remove();
@@ -85,48 +86,53 @@ export const component = <P = void>(
       },
     } as SeidrComponent;
 
-    // Register as child component
-    if (stack.length > 0) {
-      stack[stack.length - 1].scope.child(comp);
-    }
+    // Link scope to component instance for observe() context restoration
+    setScopeComponent(scope, comp);
 
-    // Add to component stack
-    stack.push(comp);
+    // Set as current component (Push to tree)
+    push(comp);
 
     // Render the component via factory
-    try {
-      // Call factory with props (or undefined if no props)
-      const result = factory(props);
+    tryCatchFinally(
+      () => {
+        // Call factory with props (or undefined if no props)
+        const result = factory(props);
 
-      // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-      const toNode = (item: SeidrChild): SeidrComponentChildren =>
-        isSeidrComponent(item) ? item.element : isStr(item) || isNum(item) ? $text(item) : item;
+        // Helper to normalize SeidrNode to DOM Node (or string in SSR)
+        const toNode = (item: SeidrChild): SeidrComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
 
-      const [startMarker, endMarker] = getMarkerComments(id);
-      comp.startMarker = startMarker;
-      comp.endMarker = endMarker;
-      comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as SeidrComponentChildren) : toNode(result);
-    } catch (err) {
-      comp.unmount();
-      throw err;
-    } finally {
-      // Remove from stack
-      stack.pop();
-    }
+        const [startMarker, endMarker] = getMarkerComments(id);
+        comp.startMarker = startMarker;
+        comp.endMarker = endMarker;
+        comp.element = isArray(result)
+          ? (result.map(toNode).filter(Boolean) as SeidrComponentChildren)
+          : toNode(result);
+      },
+      () => {
+        pop();
+      },
+      (err) => {
+        // Restore previous component (Pop from tree)
+        comp.unmount();
+        throw err;
+      },
+    );
 
     // Apply root element attributes
-    if (isRootComponent && isHTMLElement(comp.element)) {
-      comp.element.dataset.seidrRoot = String(getRenderContext().ctxID);
+    if (!parent) {
+      if (isHTMLElement(comp.element)) {
+        comp.element.dataset.seidrRoot = ctxID;
+      } else if (isArray(comp.element)) {
+        const firstChild = comp.element.find(isHTMLElement);
+        if (firstChild) {
+          firstChild.dataset.seidrRoot = ctxID;
+        }
+      }
     }
 
-    // Root component must clear out component stack
-    if (isRootComponent && stack.length > 0) {
-      if (process.env.NODE_ENV === "development") {
-        console.warn(`[${id}] Component stack not cleared`);
-      }
-      while (stack.length) {
-        stack.pop();
-      }
+    // Register as child component after factory runs to ensure onAttached handlers are set
+    if (parent) {
+      parent.scope.child(comp);
     }
 
     return comp;

@@ -1,8 +1,8 @@
-import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
+import type { SeidrComponent, SeidrComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import type { SeidrElement } from "../element";
 import { getRenderContext } from "../render-context";
-import type { CleanupFunction } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
 import { appendChild } from "./append-child";
 
@@ -19,29 +19,37 @@ import { appendChild } from "./append-child";
  * If called within a parent component's render function, the cleanup is automatically
  * tracked and will be executed when the parent component is destroyed.
  *
- * @template {SeidrComponentFunction<any> | SeidrComponentFactory<any> | SeidrComponent} C - Type of the component or factory
+ * @template {SeidrComponentType} C - Type of the component or factory
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement | SeidrElement} container - The DOM container element to mount into
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
-export function mount<
-  C extends SeidrComponentFunction | SeidrComponentFactory | SeidrComponent =
-    | SeidrComponentFunction<void>
-    | SeidrComponentFactory<void>
-    | SeidrComponent,
->(componentOrFactory: C, container: HTMLElement | SeidrElement): CleanupFunction {
+export const mount = <C extends SeidrComponentType = SeidrComponentType>(
+  componentOrFactory: C,
+  container: HTMLElement | SeidrElement,
+): CleanupFunction => {
   // Bind the container to the render context if not already bound
   const ctx = getRenderContext();
   if (!ctx.rootNode) {
     ctx.rootNode = container;
+  } else if (ctx.rootComponent) {
+    throw new SeidrError("Container already bound to a different root node");
   }
 
   // Create the component
   const component: SeidrComponent = isSeidrComponent(componentOrFactory)
     ? componentOrFactory
     : wrapComponent(componentOrFactory)();
+
+  ctx.rootComponent = component;
   appendChild(container, component);
 
   // Return cleanup function
-  return () => component.unmount();
-}
+  return () => {
+    component.unmount();
+    ctx.rootComponent = undefined;
+    if (ctx.rootNode === container) {
+      ctx.rootNode = undefined;
+    }
+  };
+};

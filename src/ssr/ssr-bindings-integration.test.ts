@@ -12,6 +12,11 @@ import { isClient } from "../util/environment/browser";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: CleanupFunction;
+  let unmount: CleanupFunction;
+
+  afterEach(() => {
+    unmount?.();
+  });
 
   describe("Server-Side Rendering with Reactive Props", () => {
     beforeEach(() => {
@@ -102,9 +107,8 @@ describe("SSR Reactive Bindings Integration", () => {
       // Client-side
       cleanupMode = enableClientMode();
       const container = document.createElement("div");
-      const hydratedComponent = hydrate(App, container, hydrationData);
+      unmount = hydrate(App, container, hydrationData);
 
-      expect(hydratedComponent).toBeDefined();
       expect(String(container.textContent)).toContain("Count: 42");
     });
   });
@@ -115,6 +119,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     afterEach(() => {
+      unmount?.();
       cleanupMode();
     });
 
@@ -133,7 +138,7 @@ describe("SSR Reactive Bindings Integration", () => {
       cleanup();
 
       const container = document.createElement("div");
-      hydrate(App, container, hydrationData);
+      unmount = hydrate(App, container, hydrationData);
 
       // Should have server values
       expect(container.textContent).toContain("Count: 42");

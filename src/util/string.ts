@@ -4,9 +4,7 @@
  * @param {string} str The string to convert
  * @returns {string} The kebab-case string
  */
-export function camelToKebab(str: string): string {
-  return str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
-}
+export const camelToKebab = (str: string): string => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
 
 /**
  * Converts a kebab-case string to camelCase.
@@ -14,9 +12,7 @@ export function camelToKebab(str: string): string {
  * @param {string} str The string to convert
  * @returns {string} The camelCase string
  */
-export function kebabToCamel(str: string): string {
-  return str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-}
+export const kebabToCamel = (str: string): string => str.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
 
 /**
  * Checks if a string is in kebab-case.
@@ -27,10 +23,7 @@ export function kebabToCamel(str: string): string {
  * @param {string} str The string to check
  * @returns {boolean} True if the string is in kebab-case, false otherwise
  */
-export function isKebabCase(str: string): boolean {
-  if (/[A-Z]/.test(str)) return false;
-  return /^[a-z]+(-[a-z]+)*$/.test(str);
-}
+export const isKebabCase = (str: string): boolean => (/[A-Z]/.test(str) ? false : /^[a-z]+(-[a-z]+)*$/.test(str));
 
 /**
  * Checks if a string is in camelCase.
@@ -41,7 +34,4 @@ export function isKebabCase(str: string): boolean {
  * @param {string} str The string to check
  * @returns {boolean} True if the string is in camelCase, false otherwise
  */
-export function isCamelCase(str: string): boolean {
-  if (/-|_/.test(str)) return false;
-  return /^[a-z][a-zA-Z0-9]*$/.test(str);
-}
+export const isCamelCase = (str: string): boolean => (/-|_/.test(str) ? false : /^[a-z][a-zA-Z0-9]*$/.test(str));

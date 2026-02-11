@@ -21,9 +21,7 @@ export type BindInputInterface = {
  * @param {Seidr<string>} observable - The observable to bind to the input
  * @returns {BindInputInterface} Object containing value and oninput handler
  */
-export function bindInput(observable: Seidr<string>): BindInputInterface {
-  return {
-    value: observable,
-    oninput: (e: Event) => (observable.value = (e.target as HTMLInputElement).value),
-  };
-}
+export const bindInput = (observable: Seidr<string>): BindInputInterface => ({
+  value: observable,
+  oninput: (e: Event) => (observable.value = (e.target as HTMLInputElement).value),
+});

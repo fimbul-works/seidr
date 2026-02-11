@@ -1,4 +1,4 @@
-import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../../component/types";
+import type { SeidrComponent, SeidrComponentFactoryFunction } from "../../component/types";
 import { wrapComponent } from "../../component/wrap-component";
 
 /**
@@ -13,7 +13,7 @@ import { wrapComponent } from "../../component/wrap-component";
  */
 export const getComponent = <
   T,
-  C extends SeidrComponentFunction<T> | SeidrComponentFactory<T> = SeidrComponentFunction<T> | SeidrComponentFactory<T>,
+  C extends SeidrComponentFactoryFunction<T> = SeidrComponentFactoryFunction<T>,
   M extends Map<T, C> | Record<T & string, C> = Map<T, C> | Record<T & string, C>,
 >(
   factories: M,
@@ -21,7 +21,5 @@ export const getComponent = <
   fallbackFactory?: C | null,
 ): SeidrComponent | undefined => {
   const factory = (factories instanceof Map ? factories.get(value) : factories[value as keyof M]) ?? fallbackFactory;
-  if (factory) {
-    return wrapComponent<T>(factory as SeidrComponentFactory<T>)(value);
-  }
+  return factory ? wrapComponent<T>(factory as SeidrComponentFactoryFunction<T>)(value) : undefined;
 };

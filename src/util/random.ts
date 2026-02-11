@@ -18,7 +18,7 @@ const ALEA_M = 2091639;
  *
  * @returns {number} A random float between 0 and 1
  */
-export function random(): number {
+export const random = (): number => {
   const ctx = getRenderContext();
 
   // Initialize state if not present

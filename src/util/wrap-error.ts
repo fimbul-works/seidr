@@ -5,14 +5,8 @@
  * @param {new (message: string, options?: { cause?: unknown }) => E} [Constructor=Error] - The constructor to use for creating the Error
  * @returns {E} The original Error instance or a new Error instance with the provided value as the cause
  */
-export function wrapError<E extends Error = Error>(
+export const wrapError = <E extends Error = Error>(
   err: unknown,
   Constructor: new (message: string, options?: { cause?: unknown }) => E = Error as any,
-): E {
-  if (err instanceof Constructor) {
-    return err;
-  }
-
-  const message = err instanceof Error ? err.message : String(err);
-  return new Constructor(message, { cause: err });
-}
+): E =>
+  err instanceof Constructor ? err : new Constructor(err instanceof Error ? err.message : String(err), { cause: err });

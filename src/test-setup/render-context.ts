@@ -10,14 +10,13 @@ export const testRenderContext: RenderContext = {
 /**
  * Set the render context ID for tests.
  */
-export function setRenderContextID(id: number): void {
+export const setRenderContextID = (id: number): void => {
   testRenderContext.ctxID = id;
-}
+};
 
 /**
  * Robust getRenderContext for tests.
  * Prefers AsyncLocalStorage if available (SSR), falls back to testRenderContext.
  */
-export function getRenderContext(): RenderContext {
-  return (global as any).__SEIDR_CONTEXT_STORE__?.getStore() ?? testRenderContext;
-}
+export const getRenderContext = (): RenderContext =>
+  (global as any).__SEIDR_CONTEXT_STORE__?.getStore() ?? testRenderContext;

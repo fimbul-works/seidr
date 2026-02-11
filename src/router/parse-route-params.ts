@@ -3,11 +3,15 @@ import { normalizePath } from "./normalize-path";
 
 /**
  * Try to match pattern with path, and parse Route parameters.
+ * @template {Record<string, string>} T - The type of matching route parameters
  * @param {string} pattern - Path pattern like `"/user/:id/edit"`
  * @param {string} path - Optional URL pathname to match against (default: current path)
- * @returns {Record<string, string> | false} Object with matching parameters, or `false` when pattern and path do not match
+ * @returns {T | false} Object with matching parameters, or `false` when pattern and path do not match
  */
-export function parseRouteParams(pattern: string, path?: string): Record<string, string> | false {
+export const parseRouteParams = <T extends Record<string, string> = Record<string, string>>(
+  pattern: string,
+  path?: string,
+): T | false => {
   const parts = normalizePath(pattern).split("/");
   const pathParts = normalizePath(path ?? getCurrentPath().value).split("/");
 
@@ -28,5 +32,5 @@ export function parseRouteParams(pattern: string, path?: string): Record<string,
     }
   }
 
-  return params;
-}
+  return params as T;
+};

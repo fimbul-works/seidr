@@ -3,14 +3,13 @@
  * @param {string} str - The string to escape
  * @returns {string} The escaped string
  */
-export function escapeHTML(str: string): string {
-  return String(str)
+export const escapeHTML = (str: string): string =>
+  String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
-}
 
 /**
  * Escapes attribute values for safe inclusion in HTML.
@@ -18,6 +17,4 @@ export function escapeHTML(str: string): string {
  * @param {string} value - The attribute value to escape
  * @returns {string} The escaped attribute value
  */
-export function escapeAttribute(value: string): string {
-  return String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
-}
+export const escapeAttribute = (value: string): string => String(value).replace(/&/g, "&amp;").replace(/"/g, "&quot;");

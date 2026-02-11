@@ -13,11 +13,11 @@ import type { SeidrElementProps } from "./types";
  * @param {SeidrElementProps<K>} props - The properties to assign
  * @param {CleanupFunction[]} cleanups - Array to push cleanup functions to
  */
-export function assignProps<K extends keyof HTMLElementTagNameMap>(
+export const assignProps = <K extends keyof HTMLElementTagNameMap>(
   el: HTMLElement,
   props: SeidrElementProps<K>,
   cleanups: CleanupFunction[],
-) {
+) => {
   if (Object.values(props).some(isSeidr)) {
     el.dataset.seidrId = String(getNextId());
   }
@@ -29,4 +29,4 @@ export function assignProps<K extends keyof HTMLElementTagNameMap>(
 
     assignProp(el, prop, value, cleanups);
   }
-}
+};

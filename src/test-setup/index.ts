@@ -1,5 +1,5 @@
 import { afterEach } from "vitest";
-import { setInternalDOMFactory } from "../dom";
+import { setInternalDOMFactory } from "../dom/dom-factory";
 import { getBrowserDOMFactory } from "../dom/dom-factory.browser";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
 import { setInternalRenderContext } from "../render-context/render-context";

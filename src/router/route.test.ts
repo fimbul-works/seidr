@@ -1,14 +1,18 @@
-import { beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component/internal";
 import { mount } from "../dom/internal";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { navigate } from "./navigate";
 import { Route } from "./route";
 
 describeDualMode("Route Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
+  let unmount: CleanupFunction;
+
+  type IdParams = { id: string };
 
   beforeEach(() => {
     const document = getDOMFactory().getDocument();
@@ -16,32 +20,38 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
     document.body.appendChild(container);
   });
 
-  const Page = (name: string) => component(() => $("div", { className: name.toLowerCase(), textContent: name }));
+  afterEach(() => {
+    unmount?.();
+  });
+
+  const Page = (name: string) => component(() => $("div", { className: name.toLowerCase(), textContent: name }), "Page");
 
   it("should render when path matches exactly", () => {
     const App = component(() => {
-      return $("div", {}, [Route("/", () => Page("Home")()), Route("/about", () => Page("About")())]);
-    });
+      return $("div", {}, [Route("/", Page("Home")), Route("/about", Page("About"))]);
+    }, "App");
 
-    mount(App(), container);
+    unmount = mount(App, container);
+    console.log("(A):", container.innerHTML);
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
 
     navigate("/about");
+    console.log("(B):", container.innerHTML);
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".about")).toBeTruthy();
   });
 
   it("should handle dynamic parameters", () => {
-    const UserPage = (params?: Seidr<{ id: string }>) =>
-      component(() => $("div", { className: "user", textContent: params?.as((p) => `User ${p.id}`) }))();
+    const UserPage = component((params: Seidr<IdParams>) =>
+      $("div", { className: "user", textContent: params.as((p) => `User ${p.id}`) }), "UserPage");
 
     const App = component(() => {
-      return $("div", {}, [Route("/user/:id", UserPage)]);
-    });
+      return $("div", {}, [Route<IdParams>("/user/:id", UserPage)]);
+    }, "App");
 
     navigate("/user/123");
-    mount(App(), container);
+    unmount = mount(App, container);
 
     expect(container.querySelector(".user")?.textContent).toBe("User 123");
 
@@ -50,15 +60,15 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
   });
 
   it("should support RegExp patterns", () => {
-    const PostPage = (params?: Seidr<{ id: string }>) =>
-      component(() => $("div", { className: "post", textContent: params?.as((p) => `Post ${p.id}`) }))();
+    const PostPage = component((params: Seidr<IdParams>) =>
+      $("div", { className: "post", textContent: params?.as((p) => `Post ${p.id}`) }), "PostPage");
 
     const App = component(() => {
-      return $("div", {}, [Route(/^\/post\/(?<id>\d+)$/, PostPage)]);
-    });
+      return $("div", {}, [Route<IdParams>(/^\/post\/(?<id>\d+)$/, PostPage)]);
+    }, "App");
 
     navigate("/post/123");
-    mount(App(), container);
+    unmount = mount(App, container);
     expect(container.querySelector(".post")?.textContent).toBe("Post 123");
 
     navigate("/post/abc");
@@ -68,10 +78,10 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
   it("should use provide pathState if provided", () => {
     const customPath = new Seidr("/custom");
     const App = component(() => {
-      return $("div", {}, [Route("/custom", () => Page("Custom")(), customPath)]);
-    });
+      return $("div", {}, [Route("/custom", Page("Custom"), customPath)]);
+    }, "App");
 
-    mount(App(), container);
+    unmount = mount(App, container);
     expect(container.querySelector(".custom")).toBeTruthy();
 
     customPath.value = "/other";

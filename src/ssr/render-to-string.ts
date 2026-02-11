@@ -1,3 +1,4 @@
+import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
@@ -57,11 +58,11 @@ export async function renderToString<C extends SeidrNode>(
         // Ensure root is attached to something so it can render content (especially for marker-based components)
         // We use a temporary div as a container for initial rendering.
         const doc = getDOMFactory().createElement("div");
-        const nodes = isArray(comp.element) ? comp.element : [comp.element];
-        nodes.filter(isDOMNode).forEach((n) => doc.appendChild(n as any));
+        const anchor = getDOMFactory().createComment("ssr-anchor");
+        doc.appendChild(anchor);
 
-        // Trigger attachment life-cycle
-        comp.scope.attached(doc as any);
+        // Mount the component properly using the recursive mountComponent
+        mountComponent(comp, anchor);
 
         await activeScope.waitForPromises();
 

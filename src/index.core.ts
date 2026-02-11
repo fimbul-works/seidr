@@ -1,2 +1,3 @@
-export * from "./dom/dom-factory.browser";
+import "./dom/dom-factory.browser";
+
 export * from "./index.shared";

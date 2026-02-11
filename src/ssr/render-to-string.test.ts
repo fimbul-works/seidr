@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { TodoApp } from "../../examples/todo.js";
+import { TodoApp } from "../../examples/todo";
 import { component } from "../component";
 import { $ } from "../element";
-import { resetRequestIdCounter } from "../index.node.js";
+import { resetRequestIdCounter } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
-import type { CleanupFunction } from "../types.js";
-import { clearHydrationData } from "./hydrate/clear-hydration-data.js";
+import type { CleanupFunction } from "../types";
+import { clearHydrationData } from "./hydrate/clear-hydration-data";
 import { renderToString } from "./render-to-string";
 import { setSSRScope } from "./ssr-scope";
 

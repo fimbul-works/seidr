@@ -1,7 +1,7 @@
 import { component } from "../component/component";
 import type { SeidrComponent } from "../component/types";
 import { useScope } from "../component/use-scope";
-import { $, type SeidrElementProps, type SeidrNode } from "../element";
+import { $, type SeidrChild, type SeidrElementProps } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { cn } from "../util/cn";
@@ -28,7 +28,7 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
  * @returns {SeidrComponent} SeidrComponent that wraps an anchor element
  */
-export function Link<K extends keyof HTMLElementTagNameMap = "a">(
+export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   {
     to,
     tagName = "a" as K,
@@ -38,9 +38,9 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     className,
     ...restProps
   }: LinkProps<K> & SeidrElementProps<K>,
-  children: SeidrNode[] = [],
-): SeidrComponent {
-  return component(() => {
+  children: SeidrChild[] = [],
+): SeidrComponent =>
+  component(() => {
     const scope = useScope();
 
     // If to is a Seidr, observe it; otherwise wrap it in a Seidr
@@ -83,4 +83,3 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
 
     return el;
   }, "Link")();
-}

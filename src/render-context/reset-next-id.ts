@@ -5,11 +5,10 @@ import { counters } from "./storage";
  * Resets the next available ID for the RenderContext.
  * Used in tests to ensure consistent IDs.
  */
-export function resetNextId() {
+export const resetNextId = (): void => {
   try {
-    const { ctxID } = getRenderContext();
-    counters.delete(ctxID);
+    counters.delete(getRenderContext().ctxID);
   } catch (_e) {
     // Ignore if no render context is available
   }
-}
+};

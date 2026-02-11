@@ -1,10 +1,10 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
+import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import { getMarkerComments } from "../dom/get-marker-comments";
 import type { Seidr } from "../seidr";
-import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 
 /**
@@ -12,29 +12,26 @@ import { isArray } from "../util/type-guards/primitive-types";
  * Uses marker nodes to position the list and key-based diffing for minimal DOM updates.
  *
  * @template T - The type of list items
- * @template {string | number} I - Unique key type
+ * @template K - Unique key type
+ * @template {SeidrComponentFactoryFunction<T>} C - The type of component factory
  *
  * @param {Seidr<T[]>} observable - Array observable
- * @param {(item: T) => I} getKey - Key extraction function
- * @param {SeidrComponentFactory<T>} factory - Component creation function (raw or wrapped)
+ * @param {(item: T) => K} getKey - Key extraction function
+ * @param {C} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent} List component
  */
-export const List = <
-  T,
-  I extends string | number,
-  C extends SeidrComponentFunction<T> | SeidrComponentFactory<T> = SeidrComponentFunction<T> | SeidrComponentFactory<T>,
->(
+export const List = <T, K, C extends SeidrComponentFactoryFunction<T> = SeidrComponentFactoryFunction<T>>(
   observable: Seidr<T[]>,
-  getKey: (item: T) => I,
+  getKey: (item: T) => K,
   factory: C,
   name?: string,
 ): SeidrComponent =>
   component(() => {
     const scope = useScope();
     const [, endMarker] = getMarkerComments(scope.id);
-    const componentMap = new Map<I, SeidrComponent>();
+    const componentMap = new Map<K, SeidrComponent>();
 
-    function update(items: T[]) {
+    const update = (items: T[]) => {
       const parent = endMarker.parentNode;
       if (!parent) {
         return;
@@ -52,50 +49,36 @@ export const List = <
 
       // Add or reorder components by iterating backwards from end marker
       let currentAnchor: Node = endMarker;
-
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
-        let comp = componentMap.get(key);
+        let itemComponent = componentMap.get(key);
 
-        if (!comp) {
-          comp = wrapComponent<T>(factory as SeidrComponentFactory<T>)(item);
-          componentMap.set(key, comp);
+        if (!itemComponent) {
+          itemComponent = wrapComponent<T>(factory)(item);
+          componentMap.set(key, itemComponent);
         }
 
-        const children = comp.element;
+        const children = itemComponent.element;
         const lastNode = isArray(children) ? children[children.length - 1] : children;
 
-        // Move to correct position if needed
         if (lastNode !== currentAnchor.previousSibling) {
-          parent.insertBefore(comp.startMarker, currentAnchor);
-
-          if (isArray(children)) {
-            children.forEach((n) => isDOMNode(n) && parent.insertBefore(n, currentAnchor));
-          } else if (isDOMNode(children)) {
-            parent.insertBefore(children, currentAnchor);
-          }
-
-          parent.insertBefore(comp.endMarker, currentAnchor);
-
-          comp.scope.attached(parent);
+          mountComponent(itemComponent, currentAnchor);
         }
 
-        currentAnchor = comp.startMarker;
+        currentAnchor = itemComponent.startMarker;
       }
-    }
+    };
 
-    scope.track(observable.observe(update));
+    scope.observe(observable, update);
     scope.track(() => {
-      for (const comp of componentMap.values()) {
-        comp.unmount();
-      }
+      componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();
     });
 
     return observable.value.map((item) => {
-      const comp = wrapComponent<T>(factory)(item);
-      componentMap.set(getKey(item), comp);
-      return comp;
+      const itemComponent = wrapComponent<T>(factory)(item);
+      componentMap.set(getKey(item), itemComponent);
+      return itemComponent;
     });
   }, name ?? "List")();

@@ -1,14 +1,20 @@
-import { expect, it } from "vitest";
+import { afterEach, expect, it } from "vitest";
 import { wrapComponent } from "../component/internal";
 import { mount } from "../dom/internal";
 import { $div } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
 import { matchRoute } from "./match-route";
 
 describeDualMode("matchRoute", () => {
   const comp = () => $div();
+  let unmount: CleanupFunction;
+
+  afterEach(() => {
+    unmount?.();
+  });
 
   it("should match simple path", () => {
     const route = createRoute("/home", comp);
@@ -21,7 +27,7 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should match route with parameters", () => {
-    const route = createRoute("/user/:id", (params?: Seidr<{ id: string }>) =>
+    const route = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
       $div({ textContent: params?.as((p) => p.id) }),
     );
     const match = matchRoute("/user/123", [route]);
@@ -32,7 +38,7 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should match regex route", () => {
-    const route = createRoute(/^\/post\/(?<slug>[a-z-]+)$/, (params?: Seidr<{ slug: string }>) =>
+    const route = createRoute<{ slug: string }>(/^\/post\/(?<slug>[a-z-]+)$/, (params?: Seidr<{ slug: string }>) =>
       $div({ textContent: params?.as((p) => p.slug) }),
     );
     const match = matchRoute("/post/hello-world", [route]);
@@ -44,7 +50,7 @@ describeDualMode("matchRoute", () => {
 
   it("should prioritize earlier routes", () => {
     const route1 = createRoute("/user/new", comp);
-    const route2 = createRoute("/user/:id", (params?: Seidr<{ id: string }>) =>
+    const route2 = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
       $div({ textContent: params?.as((p) => p.id) }),
     );
 
@@ -71,7 +77,7 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should render component with captured params", async () => {
-    const route = createRoute("/user/:id", (params?: Seidr<{ id: string }>) =>
+    const route = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
       $div({ textContent: params?.as((p) => `User: ${p.id}`) }),
     );
 
@@ -84,10 +90,10 @@ describeDualMode("matchRoute", () => {
 
     const paramsSeidr = new Seidr(match.params);
     const container = $div();
-    const factory = wrapComponent(match.route.componentFactory);
+    const factory = wrapComponent(match.route.factory);
 
     const component = factory(paramsSeidr);
-    mount(component, container);
+    unmount = mount(component, container);
 
     expect(container.textContent).toBe("User: 42");
   });

@@ -1,115 +1,106 @@
 import { component } from "../component/component";
-import type { SeidrComponent } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
+import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
-import { clearBetween } from "../dom/clear-between";
 import { getMarkerComments } from "../dom/get-marker-comments";
-import type { SeidrNode } from "../element";
 import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
-import { isArray, isDOMNode } from "../util/type-guards";
+import { isFn } from "../util";
 import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { matchRoute } from "./match-route";
 
+const ROUTER_PARAMS_ID = "router-params";
+
 /**
  * Router component props.
  */
-export interface RouterProps {
-  routes: Array<RouteDefinition<any, any>>;
-  fallback?: SeidrNode | (() => SeidrNode);
+export interface RouterProps<C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction> {
+  routes: Array<RouteDefinition>;
+  fallback?: C;
 }
 
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = component(({ routes, fallback }: RouterProps) => {
-  const scope = useScope();
-  const [start, end] = getMarkerComments(scope.id);
-  const currentPath = getCurrentPath();
+export const Router = <C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction>(
+  routes: Array<RouteDefinition>,
+  fallback?: C,
+): SeidrComponent =>
+  component(({ routes, fallback }: RouterProps) => {
+    const scope = useScope();
+    const [, endMarker] = getMarkerComments(scope.id);
+    const currentPath = getCurrentPath();
 
-  let currentRouteIndex = -100;
-  let currentComponent: SeidrComponent | null = null;
-  let currentParamsSeidr: Seidr<Record<string, string>> | null = null;
+    let currentRouteIndex = -100;
+    let currentParamsSeidr: Seidr<Record<string, string>> | undefined;
+    let currentComponent: SeidrComponent | undefined;
 
-  const updateRoutes = () => {
-    const parent = end.parentNode;
-    if (!parent) {
-      return;
-    }
+    const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
+      const match = matchRoute(currentPath.value, routes);
+      return match
+        ? {
+            index: match.index,
+            params: match.params,
+          }
+        : { index: -1, params: null };
+    };
 
-    const path = currentPath.value;
-    const match = matchRoute(path, routes);
-
-    let matchedIndex = -1;
-    let params: Record<string, string> | false = false;
-
-    if (match) {
-      matchedIndex = match.index;
-      params = match.params;
-    }
-
-    const routeChanged = matchedIndex !== currentRouteIndex;
-
-    // If route hasn't changed, only update params and skip re-render
-    if (!routeChanged) {
-      if (currentParamsSeidr) {
-        currentParamsSeidr.value = params as Record<string, string>;
+    const updateRouteTarget = (index: number, params: Record<string, string> | null) => {
+      currentRouteIndex = index;
+      if (currentRouteIndex === -1 || !params) {
+        currentParamsSeidr = undefined;
+      } else if (currentParamsSeidr) {
+        currentParamsSeidr.value = params;
+      } else {
+        currentParamsSeidr = new Seidr(params, { ...NO_HYDRATE, id: ROUTER_PARAMS_ID });
       }
-      return;
+    };
+
+    const updateComponent = (index: number) => {
+      currentComponent =
+        index > -1
+          ? wrapComponent(routes[index].factory)(currentParamsSeidr!)
+          : isFn(fallback)
+            ? wrapComponent(fallback)()
+            : undefined;
+    };
+
+    const { index: initialIndex, params: initialParams } = matchCurrentPath();
+
+    if (initialIndex > -1 && initialParams) {
+      updateRouteTarget(initialIndex, initialParams);
     }
+    updateComponent(currentRouteIndex);
 
-    // Full swap
-    if (currentComponent) {
-      currentComponent.unmount();
-      currentComponent = null;
-    } else {
-      // First render: clear any existing SSR artifacts between markers
-      clearBetween(start, end);
-    }
+    const updateRoutes = () => {
+      const { index: matchedIndex, params: matchedParams } = matchCurrentPath();
 
-    currentRouteIndex = matchedIndex;
+      // If route hasn't changed, only update params and skip re-render
+      if (matchedIndex === currentRouteIndex) {
+        updateRouteTarget(matchedIndex, matchedParams);
+        return;
+      }
 
-    if (matchedIndex !== -1) {
-      currentParamsSeidr = new Seidr(params as Record<string, string>, { ...NO_HYDRATE, id: "router-params" });
-      currentComponent = wrapComponent(routes[matchedIndex].componentFactory)(currentParamsSeidr);
-      mountComponent(currentComponent, end);
-    } else if (fallback) {
-      currentParamsSeidr = null;
-      currentComponent = wrapComponent(typeof fallback === "function" ? fallback : () => fallback)();
-      mountComponent(currentComponent, end);
-    }
-  };
+      // Full swap
+      if (currentComponent) {
+        currentComponent.unmount();
+        currentComponent = undefined;
+      }
 
-  const mountComponent = (comp: SeidrComponent, anchor: Node) => {
-    const parent = anchor.parentNode;
-    if (!parent) {
-      return;
-    }
+      // Update index and parameters
+      currentRouteIndex = matchedIndex;
+      updateRouteTarget(matchedIndex, matchedParams);
+      updateComponent(matchedIndex);
 
-    const { startMarker: startNode, endMarker: endNode, element: el } = comp;
+      if (currentComponent) {
+        mountComponent(currentComponent, endMarker);
+      }
+    };
 
-    if (startNode) {
-      parent.insertBefore(startNode, anchor);
-    }
+    scope.observe(currentPath, updateRoutes);
+    scope.track(() => currentComponent?.unmount());
 
-    if (isArray(el)) {
-      el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, anchor));
-    } else if (isDOMNode(el)) {
-      parent.insertBefore(el, anchor);
-    }
-
-    if (endNode) {
-      parent.insertBefore(endNode, anchor);
-    }
-
-    comp.scope.attached(parent);
-  };
-
-  scope.track(currentPath.observe(updateRoutes));
-  scope.track(() => currentComponent?.unmount());
-
-  scope.onAttached = () => updateRoutes();
-
-  return [];
-}, "Router");
+    return currentComponent;
+  }, "Router")({ routes, fallback });

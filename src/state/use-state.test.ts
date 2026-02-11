@@ -70,6 +70,8 @@ describe("useState", () => {
   it("should warn when called outside component hierarchy", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     delete process.env.VITEST; // Warning is disabled in tests
+    const oldNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = "development";
 
     runWithRenderContext(async () => {
       useState("outside");
@@ -77,6 +79,7 @@ describe("useState", () => {
 
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Calling useState outside of component hierarchy"));
     warnSpy.mockRestore();
+    process.env.NODE_ENV = oldNodeEnv;
   });
 
   it("should not warn when called inside component hierarchy", () => {

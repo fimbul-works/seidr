@@ -14,8 +14,7 @@ import { isSeidr } from "../../util/type-guards/is-seidr";
  * @param {Record<string, unknown>} state - Record of numeric IDs to values from SSR
  */
 export function restoreGlobalState(state: Record<string, unknown>): void {
-  const ctx = getRenderContext();
-  const { ctxID = 0 } = ctx ?? {};
+  const ctxID = getRenderContext().ctxID;
 
   // Ensure the render context has a state storage
   let ctxStates = globalStates.get(ctxID);

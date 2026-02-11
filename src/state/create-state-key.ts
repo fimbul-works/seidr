@@ -11,7 +11,7 @@ import type { StateKey } from "./types";
  * @param {string} key - Key for the state
  * @returns {StateKey<T>} Symbol that contains the key for the state
  */
-export function createStateKey<T>(key: string): StateKey<T> {
+export const createStateKey = <T>(key: string): StateKey<T> => {
   // Retrieve existing symbolic key
   if (symbolNames.has(key)) {
     return symbolNames.get(key) as StateKey<T>;

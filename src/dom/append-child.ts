@@ -12,11 +12,11 @@ import { $text } from "./text";
  * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to append
  * @param {CleanupFunction[]} [cleanups=[]] - Array to push cleanup functions to
  */
-export function appendChild(
+export const appendChild = (
   parent: Node,
   child: SeidrChild | SeidrChild[] | null | undefined,
   cleanups: CleanupFunction[] = [],
-) {
+) => {
   // Skip empty children
   if (!child) {
     return;
@@ -29,23 +29,13 @@ export function appendChild(
 
   // Append Seidr component
   if (isSeidrComponent(child)) {
-    // Add start marker comment
-    if (child.startMarker) {
-      parent.appendChild(child.startMarker);
-    }
-
+    appendChild(parent, child.startMarker);
     appendChild(parent, child.element);
-
-    // Add end marker comment
-    if (child.endMarker) {
-      parent.appendChild(child.endMarker);
-    }
-
-    // Invoke attached callback
+    appendChild(parent, child.endMarker);
     child.scope.attached(parent);
     return cleanups.push(() => child.unmount());
   }
 
   // Append DOM node or text node
   parent.appendChild(isDOMNode(child) ? child : $text(child));
-}
+};

@@ -1,4 +1,4 @@
-import { $button, $div, $span, isClient, mount, Seidr } from "../src/index.core.js";
+import { $button, $div, $span, mount, Seidr } from "../src/index.core.js";
 
 export const Counter = () => {
   const count = new Seidr(0);
@@ -28,6 +28,6 @@ export const Counter = () => {
 };
 
 // Mount component only in browser environment (not in tests)
-if (isClient()) {
+if (!process.env.VITEST) {
   mount(Counter, document.body);
 }

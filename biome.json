@@ -17,7 +17,8 @@
       "suspicious": {
         "noAssignInExpressions": "off",
         "noExplicitAny": "off",
-        "useIterableCallbackReturn": "off"
+        "useIterableCallbackReturn": "off",
+        "noConfusingVoidType": "off"
       }
     }
   }

@@ -33,12 +33,12 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * @returns {CleanupFunction} Cleanup function to remove the storage synchronization
  * @throws {Error} If storage read/write fails and no onError handler is provided
  */
-export function useStorage<T>(
+export const useStorage = <T>(
   key: string,
   seidr: Seidr<T>,
   storage: Storage = isClient() ? localStorage : ({} as Storage),
   onError?: StorageErrorHandler,
-): CleanupFunction {
+): CleanupFunction => {
   // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
   if (isServer()) {
     return () => {};
@@ -76,4 +76,4 @@ export function useStorage<T>(
   getCurrentComponent()?.scope.track(cleanup);
 
   return cleanup;
-}
+};

@@ -1,4 +1,3 @@
-export * from "./clear-between";
 export * from "./comment";
 export * from "./dom-factory";
 export * from "./find-marker-comments";

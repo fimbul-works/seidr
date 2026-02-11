@@ -12,13 +12,13 @@
  * @param {number} waitMs - The delay in milliseconds before executing the callback
  * @returns {(...args: Args) => void} A debounced version of the callback function
  */
-export function debounce<Args extends unknown[]>(
+export const debounce = <Args extends unknown[]>(
   callback: (...args: Args) => void,
   waitMs: number,
-): (...args: Args) => void {
+): ((...args: Args) => void) => {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   return (...args: Args) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => callback(...args), waitMs);
   };
-}
+};

@@ -1,18 +1,24 @@
-import { beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { component, useScope } from "../component";
 import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { List } from "./list";
 
 describeDualMode("List Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
+  let cleanup: CleanupFunction;
 
   beforeEach(() => {
     const doc = getDOMFactory().getDocument();
     container = doc.createElement("div");
     doc.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    cleanup?.();
   });
 
   it("should render and update list items efficiently", () => {
@@ -33,7 +39,7 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
     });
 
     const parent = Parent();
-    mount(parent, container);
+    cleanup = mount(parent, container);
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.querySelectorAll("span").length).toBe(2);
@@ -68,23 +74,23 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
     const onAttached = vi.fn();
     const items = new Seidr([{ id: 1, text: "A" }]);
 
-    const Item = (props: { id: number }) => {
+    const Item = component((props: { id: number }) => {
       const scope = useScope();
       scope.onAttached = (parent) => onAttached(props.id, parent);
       return $("span", { textContent: `Item ${props.id}` });
-    };
+    }, "Item");
 
     const Parent = () => {
       return $("div", { className: "parent" }, [
         List(
           items,
           (i) => i.id,
-          (i) => Item(i),
+          Item,
         ),
       ]);
     };
 
-    mount(Parent, container);
+    cleanup = mount(Parent, container);
 
     expect(onAttached).toHaveBeenCalledWith(1, expect.anything());
     onAttached.mockClear();
@@ -116,7 +122,7 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
         ),
       ]);
 
-    mount(Parent, container);
+    cleanup = mount(Parent, container);
 
     // Remove item 1
     items.value = [{ id: 2, text: "B" }];
@@ -132,7 +138,7 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
     const items = new Seidr([{ id: 1, text: "Initial" }]);
     const Item = (props: { text: string }) => $("span", { textContent: props.text });
 
-    mount(
+    cleanup = mount(
       List(
         items,
         (i) => i.id,

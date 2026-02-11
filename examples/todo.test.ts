@@ -1,11 +1,12 @@
 import { JSDOM } from "jsdom";
-import { beforeEach, describe, expect, it } from "vitest";
-import { component, mount } from "../src/index.browser";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { type CleanupFunction, component, mount } from "../src/index.core";
 import { TodoApp } from "./todo";
 
 describe("TODO Example", () => {
   let dom: JSDOM;
   let document: Document;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
@@ -16,8 +17,12 @@ describe("TODO Example", () => {
     global.HTMLFormElement = dom.window.HTMLFormElement;
   });
 
+  afterEach(() => {
+    unmount?.();
+  });
+
   it("should render form with input and button", async () => {
-    mount(TodoApp, document.body);
+    unmount = mount(TodoApp, document.body);
 
     const form = document.querySelector(".todo-form");
     const input = document.querySelector(".todo-input") as HTMLInputElement;
@@ -29,7 +34,7 @@ describe("TODO Example", () => {
   });
 
   it("should render with empty todo list", async () => {
-    mount(TodoApp, document.body);
+    unmount = mount(TodoApp, document.body);
 
     const todoList = document.querySelector(".todo-list");
     const listItems = todoList?.querySelectorAll("li");
@@ -41,7 +46,7 @@ describe("TODO Example", () => {
       { id: 1, text: "Learn Seidr", completed: false },
       { id: 2, text: "Build apps", completed: false },
     ];
-    mount(() => TodoApp(initialTodos), document.body);
+    unmount = mount(() => TodoApp(initialTodos), document.body);
 
     const todoList = document.querySelector(".todo-list");
     const listItems = todoList?.querySelectorAll("li");
@@ -51,8 +56,8 @@ describe("TODO Example", () => {
   it("should cleanup properly when destroyed", async () => {
     const todoComponent = component(TodoApp)([]);
 
-    mount(todoComponent, document.body);
-    todoComponent.unmount();
+    const unmount = mount(todoComponent, document.body);
+    unmount();
 
     expect(document.body.children.length).toBe(0);
   });

@@ -1,14 +1,16 @@
-import { beforeEach, expect, it, vi } from "vitest";
-import { useScope } from "../component/internal";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { component, useScope } from "../component/internal";
 import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { Switch } from "./switch";
 
 describeDualMode("Switch Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;
   let document: Document;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     document = getDOMFactory().getDocument();
@@ -16,10 +18,25 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
     document.body.appendChild(container);
   });
 
+  afterEach(() => {
+    unmount?.();
+  });
+
+  it("should render nested components with markers", () => {
+    const Child = component(() => $("span", { textContent: "Child" }), "Child");
+    const Parent = component(() => $("div", {}, [Child()]), "Parent");
+
+    unmount = mount(Parent, container);
+
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Child-`);
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Child-`);
+    expect(container.innerHTML).toContain("<span>Child</span>");
+  });
+
   it("should switch between components", () => {
     const mode = new Seidr("A");
-    const CompA = () => $("span", { textContent: "View A" });
-    const CompB = () => $("span", { textContent: "View B" });
+    const CompA = component(() => $("span", { textContent: "View A" }), "CompA");
+    const CompB = component(() => $("span", { textContent: "View B" }), "CompB");
 
     const Parent = () => {
       return $("div", { className: "parent" }, [
@@ -30,7 +47,7 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
       ]);
     };
 
-    mount(Parent, container);
+    unmount = mount(Parent, container);
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("View A");
@@ -72,7 +89,7 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
       ]);
     };
 
-    mount(Parent, container);
+    unmount = mount(Parent, container);
     expect(onAttached).toHaveBeenCalledWith("A", expect.anything());
 
     onAttached.mockClear();
@@ -97,7 +114,7 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
       return $("span", { textContent: "View B" });
     };
 
-    mount(() => Switch(mode, { A: CompA, B: CompB }), container);
+    unmount = mount(() => Switch(mode, { A: CompA, B: CompB }), container);
 
     mode.value = "B";
     expect(scopeADestroyed).toBe(true);

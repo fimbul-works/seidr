@@ -10,7 +10,7 @@ import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./mark
  * @param {string} id - The ID of the component
  * @returns {[Comment, Comment]} - Tuple of start and end markers
  */
-export function getMarkerComments(id: string): [Comment, Comment] {
+export const getMarkerComments = (id: string): [Comment, Comment] => {
   const ctx = getRenderContext();
 
   const cached = ctx.markers.get(id);
@@ -19,16 +19,13 @@ export function getMarkerComments(id: string): [Comment, Comment] {
   }
 
   const domFactory = getDOMFactory();
-  let [start, end] = findMarkerComments(id);
+  const [start, end] = findMarkerComments(id);
 
-  if (!start) {
-    start = domFactory.createComment(SEIDR_COMPONENT_START_PREFIX + id);
-  }
-  if (!end) {
-    end = domFactory.createComment(SEIDR_COMPONENT_END_PREFIX + id);
-  }
+  const markers: [Comment, Comment] = [
+    start ?? domFactory.createComment(SEIDR_COMPONENT_START_PREFIX + id),
+    end ?? domFactory.createComment(SEIDR_COMPONENT_END_PREFIX + id),
+  ];
 
-  const markers: [Comment, Comment] = [start, end];
   ctx.markers.set(id, markers);
   return markers;
-}
+};

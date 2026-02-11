@@ -1,20 +1,26 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { useScope } from "../component";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { type SeidrComponent, useScope } from "../component";
 import { appendChild } from "../dom/append-child";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
+import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
-import { SeidrError } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
 
 describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
   let container: HTMLElement;
   let document: Document;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
+  });
+
+  afterEach(() => {
+    unmount?.();
+    document.body.removeChild(container);
   });
 
   describe("Basic error boundary functionality", () => {
@@ -31,6 +37,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
+      unmount = mount(comp, container);
+
       expect((comp.element as HTMLElement).textContent).toBe(`Error: ${errorMessage}`);
       expect(comp.startMarker).toBeDefined();
       expect(comp.startMarker.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
@@ -42,7 +50,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       let errorBoundaryScope: any = null;
       let factoryScope: any = null;
 
-      const _comp = Safe(
+      const comp = Safe(
         () => {
           const scope = useScope();
           factoryScope = scope;
@@ -55,7 +63,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Error boundary should receive a different (fresh) scope than the factory
+      unmount = mount(comp, container);
+
       expect(errorBoundaryScope).not.toBe(factoryScope);
       expect(errorBoundaryScope).toBeDefined();
       expect(factoryScope).toBeDefined();
@@ -64,7 +73,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
     it("should destroy original scope before creating error boundary", () => {
       let originalScopeDestroyed = false;
 
-      const _comp = Safe(
+      const comp = Safe(
         () => {
           const scope = useScope();
           scope.track(() => {
@@ -77,7 +86,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Original scope should be destroyed
+      unmount = mount(comp, container);
+
       expect(originalScopeDestroyed).toBe(true);
     });
   });
@@ -95,7 +105,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Error boundary should render, no console error
+      unmount = mount(comp, container);
+
       expect(consoleSpy).not.toHaveBeenCalled();
       expect((comp.element as HTMLElement).textContent).toBe("Recovered");
 
@@ -112,8 +123,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Root components have data-seidr-root attribute even when error boundary is used
-      expect((comp.element as HTMLElement).dataset.seidrRoot).toBeTruthy();
+      unmount = mount(comp, container);
+      expect(((comp.element as SeidrComponent).element as HTMLElement).dataset.seidrRoot).toBeTruthy();
     });
   });
 
@@ -131,10 +142,13 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Verify Safe component caught the error
+      unmount = mount(ErrorChild, container);
+
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
-      expect((ErrorChild.element as HTMLElement).textContent).toContain("Child error caught");
+      expect(((ErrorChild.element as SeidrComponent).element as HTMLElement).textContent).toContain(
+        "Child error caught",
+      );
     });
 
     it("should track error boundary component cleanup", () => {
@@ -155,7 +169,6 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       comp.unmount();
 
-      // Error boundary cleanup should run
       expect(errorBoundaryDestroyed).toBe(true);
     });
   });
@@ -181,12 +194,10 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Factory cleanup should have run
       expect(cleanupLog).toContain("factory cleanup");
 
       comp.unmount();
 
-      // Both cleanups should have run
       expect(cleanupLog).toEqual(["factory cleanup", "error boundary cleanup"]);
     });
 
@@ -209,10 +220,9 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      // Error boundary resources should work correctly
       appendChild(document.body, comp.element);
       if (!isSSR) {
-        (comp.element as HTMLButtonElement).click();
+        (comp.element as SeidrComponent).element?.click();
         expect(eventListenerCalled).toBe(true);
       }
 
@@ -231,7 +241,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      expect((comp.element as HTMLElement).textContent).toBe("TypeError");
+      expect(((comp.element as SeidrComponent).element as HTMLElement).textContent).toBe("TypeError");
     });
 
     it("should handle error boundary that throws", () => {
@@ -268,7 +278,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       const parent = Parent();
 
       expect(errorCaught).toBe(true);
-      expect((parent.element as HTMLElement).textContent).toBe("Parent error boundary");
+      expect(((parent.element as SeidrComponent).element as HTMLElement).textContent).toBe("Parent error boundary");
     });
   });
 });

@@ -1,11 +1,12 @@
 import { JSDOM } from "jsdom";
-import { beforeEach, describe, expect, it } from "vitest";
-import { $query, $queryAll, component, mount } from "../src/index.browser";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { $query, $queryAll, type CleanupFunction, component, mount } from "../src/index.core";
 import { Counter } from "./counter";
 
 describe("Counter Example", () => {
   let dom: JSDOM;
   let document: Document;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
@@ -15,15 +16,19 @@ describe("Counter Example", () => {
     global.HTMLButtonElement = dom.window.HTMLButtonElement;
   });
 
+  afterEach(() => {
+    unmount?.();
+  });
+
   it("should render counter with initial value of 0", async () => {
-    mount(Counter, document.body);
+    unmount = mount(Counter, document.body);
 
     const span = document.querySelector(".counter span");
     expect(span?.textContent).toBe("0");
   });
 
   it("should increment counter when increment button is clicked", async () => {
-    mount(Counter, document.body);
+    unmount = mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -36,7 +41,7 @@ describe("Counter Example", () => {
   });
 
   it("should disable increment button when count reaches 10", async () => {
-    mount(Counter, document.body);
+    unmount = mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0] as HTMLButtonElement;
@@ -51,7 +56,7 @@ describe("Counter Example", () => {
   });
 
   it("should reset counter when reset button is clicked", async () => {
-    mount(Counter, document.body);
+    unmount = mount(Counter, document.body);
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
@@ -69,9 +74,9 @@ describe("Counter Example", () => {
 
   it("should cleanup properly when destroyed", async () => {
     const counterComponent = component(Counter)();
-    mount(counterComponent, document.body);
+    const unmount = mount(counterComponent, document.body);
 
-    counterComponent.unmount();
+    unmount();
 
     expect(document.body.children.length).toBe(0);
   });

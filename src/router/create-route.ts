@@ -1,12 +1,19 @@
-import type { SeidrNode } from "../element";
+import type { SeidrComponentFactoryFunction } from "../component/types";
 import type { Seidr } from "../seidr";
 
 /**
  * Route definition for Router.
+ *
+ * @template {Seidr<Record<string, string>>} P - The params observable type
+ * @template {SeidrComponentFactoryFunction<P>} C - The component or element type
  */
-export interface RouteDefinition<C extends SeidrNode, P extends Seidr> {
+export interface RouteDefinition<
+  T extends Record<string, string> = Record<string, string>,
+  P extends Seidr<T> = Seidr<T>,
+  C extends SeidrComponentFactoryFunction<P> = SeidrComponentFactoryFunction<P>,
+> {
   pattern: string | RegExp;
-  componentFactory: (params?: P) => C;
+  factory: C;
 }
 
 /**
@@ -14,15 +21,18 @@ export interface RouteDefinition<C extends SeidrNode, P extends Seidr> {
  *
  * Helper function to create type-safe route definitions with proper TypeScript inference.
  *
- * @template {SeidrNode} C - The component or element type
- * @template {Seidr} P - The params observable type
+ * @template {Seidr<Record<string, string>>} P - The params observable type
+ * @template {SeidrComponentFactoryFunction<P>} C - The component or element type
+ *
  * @param {string | RegExp} pattern - Path pattern or RegExp
- * @param {(params?: P) => C} factory - Function that creates the component or element when needed
- * @returns {RouteDefinition<C, P>} Route definition object
+ * @param {C} factory - Function that creates the component or element when needed
+ * @returns {RouteDefinition<P, C>} Route definition object
  */
-export function createRoute<C extends SeidrNode>(
+export const createRoute = <
+  T extends Record<string, string> = Record<string, string>,
+  P extends Seidr<T> = Seidr<T>,
+  C extends SeidrComponentFactoryFunction<P> = SeidrComponentFactoryFunction<P>,
+>(
   pattern: string | RegExp,
-  componentFactory: (params: Seidr) => C,
-): RouteDefinition<C, any> {
-  return { pattern, componentFactory };
-}
+  factory: C,
+): RouteDefinition<T, P, C> => ({ pattern, factory });

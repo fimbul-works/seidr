@@ -1,6 +1,5 @@
 import { TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
 import { SeidrError } from "../../types";
-import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { ServerNodeList } from "./server-node-list";
 import type { ServerElement, ServerNode, ServerParentNode } from "./types";
 
@@ -35,63 +34,69 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
   // Internal raw insertion logic that doesn't call public methods
   const insertRaw = <U extends ServerNode = ServerNode>(newNode: U, ref: ServerNode | null | undefined): U => {
     const referenceNode = ref === undefined ? null : ref;
+
+    if (referenceNode) {
+      // console.log("insertRaw", newNode.id ?? newNode.tagName ?? newNode.textContent, referenceNode.id ?? referenceNode.tagName);
+    }
+
     // 1. Cycle and hierarchy check
     if ((newNode as ServerNode) === parentNode) {
       throw new SeidrError("Cycle detected: cannot insert node into itself");
     }
 
-    if (newNode.contains(parentNode))
+    if (newNode.contains(parentNode)) {
       throw new SeidrError("Hierarchy error: cannot insert a node into its own descendant");
-
-    const n = newNode as any;
-    // 3. Move from existing parent
-    if (n.parentNode) {
-      const oldNodes = (n.parentNode.childNodes as any).serverNodes;
-      const index = oldNodes.indexOf(n);
-      if (index !== -1) oldNodes.splice(index, 1);
     }
 
-    // Determine target parent instance
-    const targetParent = parentNode;
+    // Remove from existing parent
+    if (newNode.parentNode) {
+      const oldNodes = (newNode.parentNode.childNodes as ServerNodeList).serverNodes;
+      const index = oldNodes.indexOf(newNode);
+      if (index !== -1) {
+        oldNodes.splice(index, 1);
+      }
+    }
 
-    // 4. Update local children list
-    if (isEmpty(referenceNode)) {
+    // Update local children list
+    if (!referenceNode) {
       const prev = node.childNodes[node.childNodes.length - 1];
       if (prev?.nodeType === TYPE_TEXT_NODE && newNode.nodeType === TYPE_TEXT_NODE) {
-        // Merge text: append new content to previous node
-        (prev as any).textContent += (newNode as any).textContent;
+        // Merge text
+        (prev as Text).data += (newNode as unknown as Text).data;
         // The newNode is effectively "consumed", it doesn't get a new parent and isn't added.
-        n.parentNode = null; // Ensure it's detached
+        newNode.parentNode = null; // Ensure it's detached
       } else {
-        n.parentNode = targetParent;
-        (node.childNodes as ServerNodeList).nodes.push(n);
+        newNode.parentNode = parentNode;
+        (node.childNodes as ServerNodeList).serverNodes.push(newNode);
       }
-    } else {
-      const index = (node.childNodes as ServerNodeList).nodes.indexOf(referenceNode as any);
-      if (index === -1) {
-        throw new SeidrError("The node before which the new node is to be inserted is not a child of this node.");
-      }
-
-      const prev = node.childNodes[index - 1];
-      if (prev?.nodeType === TYPE_TEXT_NODE && newNode.nodeType === TYPE_TEXT_NODE) {
-        // Merge into previous
-        (prev as any).textContent += (newNode as any).textContent;
-        n.parentNode = null;
-        return newNode;
-      }
-
-      const next = node.childNodes[index]; // == referenceNode
-      if (next?.nodeType === TYPE_TEXT_NODE && newNode.nodeType === TYPE_TEXT_NODE) {
-        // Merge into next (prepend)
-        (next as any).textContent = (newNode as any).textContent + (next as any).textContent;
-        n.parentNode = null;
-        return newNode;
-      }
-
-      // If no merge happened:
-      n.parentNode = targetParent;
-      (node.childNodes as ServerNodeList).nodes.splice(index, 0, n);
+      return newNode;
     }
+
+    const index = (node.childNodes as ServerNodeList).serverNodes.indexOf(referenceNode);
+    if (index === -1) {
+      throw new SeidrError("The node before which the new node is to be inserted is not a child of this node.");
+    }
+
+    const prev = node.childNodes[index - 1];
+    if (prev?.nodeType === TYPE_TEXT_NODE && newNode.nodeType === TYPE_TEXT_NODE) {
+      // Merge text
+      (prev as Text).data += (newNode as unknown as Text).data;
+      newNode.parentNode = null;
+      return newNode;
+    }
+
+    const next = node.childNodes[index]; // == referenceNode
+    if (next?.nodeType === TYPE_TEXT_NODE && newNode.nodeType === TYPE_TEXT_NODE) {
+      // Merge text
+      (next as Text).data = (newNode as unknown as Text).data + (next as unknown as Text).data;
+      newNode.parentNode = null;
+      return newNode;
+    }
+
+    // If no merge happened:
+    newNode.parentNode = parentNode;
+    (node.childNodes as ServerNodeList).serverNodes.splice(index, 0, newNode);
+
     return newNode;
   };
 
@@ -134,14 +139,19 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
     this.append(...nodes);
   };
 
-  parentNode.getElementById = (id: string): any | null => {
-    for (const n of node.childNodes) {
-      if (n.nodeType === TYPE_ELEMENT) {
-        if ((n as any).id === id) return n;
-        const found = (n as any).getElementById?.(id);
-        if (found) return found;
+  parentNode.getElementById = (id: string): ServerElement | null => {
+    const children = parentNode.children as ServerElement[];
+    for (const el of children) {
+      if (el.id === id) {
+        return el;
+      }
+
+      const found = el.getElementById?.(id);
+      if (found) {
+        return found;
       }
     }
+
     return null;
   };
 
@@ -150,42 +160,64 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
   };
 
   parentNode.getElementsByClassName = (className: string): ServerElement[] => {
-    const results: any[] = [];
-    for (const n of (node.childNodes as ServerNodeList).serverNodes) {
-      if (n.nodeType === TYPE_ELEMENT) {
-        const el = n as ServerElement;
-        const classes = el.className?.split(/\s+/) ?? [];
-        if (classes.includes(className)) results.push(el);
-        results.push(...(el.getElementsByClassName?.(className) || []));
+    const results: ServerElement[] = [];
+
+    const children = parentNode.children as ServerElement[];
+    for (const el of children) {
+      const classes = el.className?.split(/\s+/) ?? [];
+
+      if (classes.includes(className)) {
+        results.push(el);
       }
+
+      results.push(...(el.getElementsByClassName?.(className) || []));
     }
+
     return results;
   };
 
   parentNode.querySelector = function (selector: string): ServerElement | null {
-    if (selector.startsWith("#")) return this.getElementById(selector.slice(1));
-    if (selector.startsWith(".")) return this.getElementsByClassName(selector.slice(1))[0] ?? null;
-    for (const n of (node.childNodes as ServerNodeList).serverNodes) {
-      if (n.nodeType === TYPE_ELEMENT) {
-        const el = n as ServerElement;
-        if (el.tagName?.toLowerCase() === selector.toLowerCase()) return el;
-        const found = el.querySelector?.(selector);
-        if (found) return found;
+    if (selector.startsWith("#")) {
+      return this.getElementById(selector.slice(1));
+    }
+
+    if (selector.startsWith(".")) {
+      return this.getElementsByClassName(selector.slice(1))[0] ?? null;
+    }
+
+    const children = parentNode.children as ServerElement[];
+    for (const el of children) {
+      if (el.tagName?.toLowerCase() === selector.toLowerCase()) {
+        return el;
+      }
+
+      const found = el.querySelector?.(selector);
+      if (found) {
+        return found;
       }
     }
     return null;
   };
 
   parentNode.querySelectorAll = function (selector: string): ServerElement[] {
-    if (selector.startsWith(".")) return this.getElementsByClassName(selector.slice(1));
-    const results: any[] = [];
-    for (const n of (node.childNodes as ServerNodeList).serverNodes) {
-      if (n.nodeType === TYPE_ELEMENT) {
-        const el = n as ServerElement;
-        if (el.tagName?.toLowerCase() === selector.toLowerCase()) results.push(el);
-        results.push(...(el.querySelectorAll?.(selector) || []));
-      }
+    if (selector.startsWith("#")) {
+      return [this.getElementById(selector.slice(1))].filter(Boolean) as ServerElement[];
     }
+
+    if (selector.startsWith(".")) {
+      return this.getElementsByClassName(selector.slice(1));
+    }
+
+    const results: ServerElement[] = [];
+    const children = parentNode.children as ServerElement[];
+    for (const el of children) {
+      if (el.tagName?.toLowerCase() === selector.toLowerCase()) {
+        results.push(el);
+      }
+
+      results.push(...(el.querySelectorAll?.(selector) || []));
+    }
+
     return results;
   };
 

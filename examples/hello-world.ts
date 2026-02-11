@@ -1,4 +1,4 @@
-import { $, isClient, mount, Seidr } from "../src/index.core.js";
+import { $, mount, Seidr } from "../src/index.core.js";
 
 export const HelloWorld = () => {
   const textContent = new Seidr("Click me");
@@ -11,6 +11,6 @@ export const HelloWorld = () => {
 };
 
 // Mount component only in browser environment (not in tests)
-if (isClient()) {
+if (!process.env.VITEST) {
   mount(HelloWorld, document.body);
 }

@@ -22,9 +22,10 @@ describeDualMode("navigate", ({ mode }) => {
     expect(getCurrentPath().value).toBe("/about");
   });
 
-  if (mode !== "SSR")
+  if (mode !== "SSR") {
     it("should call window.history.pushState", () => {
       navigate("/contact");
       expect(window.history.pushState).toHaveBeenCalledWith({}, "", "/contact");
     });
+  }
 });

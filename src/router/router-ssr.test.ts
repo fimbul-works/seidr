@@ -1,10 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { component } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
 import { clearHydrationData, renderToString, setSSRScope } from "../ssr/internal";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
+import { initRouter } from "./init-router";
 import { navigate } from "./navigate";
 import { Route } from "./route";
 import { Router } from "./router";
@@ -22,31 +24,23 @@ describe("Router SSR", () => {
     clearHydrationData();
   });
 
-  const Home = () => $("div", { className: "home", textContent: "Home" });
-  const About = () => $("div", { className: "about", textContent: "About" });
-  const Fallback = () => $("div", { className: "fallback", textContent: "404" });
+  const Home = component(() => $("div", { className: "home", textContent: "Home Component" }), "Home");
+  const About = component(() => $("div", { className: "about", textContent: "About Component" }), "About");
+  const Fallback = component(() => $("div", { className: "fallback", textContent: "404 Component" }), "Fallback");
 
   it("should render matching route to string", async () => {
-    const App = () =>
-      Router({
-        routes: [createRoute("/", Home), createRoute("/about", About)],
-        fallback: Fallback,
-      });
+    const App = component(() => Router([createRoute("/", Home), createRoute("/about", About)], Fallback), "App");
 
     const { html, hydrationData } = await renderToString(App, { path: "/" });
     expect(html).toContain('class="home"');
-    expect(html).toContain("Home");
+    expect(html).toContain("Home Component");
     expect(html).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Router-${hydrationData.ctxID}-`);
     expect(html).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Router-${hydrationData.ctxID}-`);
-    expect(html).not.toContain("About");
+    expect(html).not.toContain("About Component");
   });
 
   it("should render another route to string", async () => {
-    const App = () =>
-      Router({
-        routes: [createRoute("/", Home), createRoute("/about", About)],
-        fallback: Fallback,
-      });
+    const App = component(() => Router([createRoute("/", Home), createRoute("/about", About)], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/about" });
     expect(html).toContain('class="about"');
@@ -55,11 +49,7 @@ describe("Router SSR", () => {
   });
 
   it("should render fallback to string when no match", async () => {
-    const App = () =>
-      Router({
-        routes: [createRoute("/", Home)],
-        fallback: Fallback,
-      });
+    const App = component(() => Router([createRoute("/", Home)], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/not-found" });
     expect(html).toContain('class="fallback"');
@@ -67,12 +57,11 @@ describe("Router SSR", () => {
   });
 
   it("should handle dynamic params in SSR", async () => {
-    const User = (params: any) => $("div", { className: "user", textContent: params.as((p: any) => `User ${p.id}`) });
-
-    const App = () =>
-      Router({
-        routes: [createRoute("/user/:id", User)],
-      });
+    const User = component(
+      (params: any) => $("div", { className: "user", textContent: params.as((p: any) => `User ${p.id}`) }),
+      "User",
+    );
+    const App = component(() => Router([createRoute("/user/:id", User)], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/user/123" });
     expect(html).toContain("User 123");
@@ -81,11 +70,11 @@ describe("Router SSR", () => {
   it("should handle navigate during SSR render", async () => {
     let navigateWasCalled = false;
 
-    const TestComponent = () => {
+    const TestComponent = component(() => {
       navigateWasCalled = true;
       navigate("/");
       return $("div", { textContent: "Test Component" });
-    };
+    }, "Test");
 
     const { html } = await renderToString(TestComponent);
     expect(navigateWasCalled).toBe(true);
@@ -93,31 +82,31 @@ describe("Router SSR", () => {
   });
 
   it("should isolate path between SSR requests", async () => {
-    const AboutPage = () => $("div", { textContent: "About" });
-    const HomePage = () => $("div", { textContent: "Home" });
+    const AboutPage = component(() => $("div", { textContent: "About Page" }), "AboutPage");
+    const HomePage = component(() => $("div", { textContent: "Home Page" }), "HomePage");
 
-    const App = () => {
-      return $("div", {}, [Route("/about", AboutPage), Route("/", HomePage)]);
-    };
+    const App = component(() => Router([createRoute("/about", AboutPage), createRoute("/", HomePage)]), "App");
 
     const result1 = await renderToString(App, { path: "/about" });
-    expect(result1.html).toContain("About");
+    expect(result1.html).toContain("About Page");
 
     const result2 = await renderToString(App, { path: "/" });
-    expect(result2.html).toContain("Home");
-    expect(result2.html).not.toContain("About");
+    expect(result2.html).toContain("Home Page");
+    expect(result2.html).not.toContain("About Page");
   });
 
   it("should use default path when initialPath is not provided", async () => {
-    const App = () =>
-      Router({
-        routes: [
+    const App = component(
+      () =>
+        Router([
           createRoute("/", () => $("div", { textContent: "Home" })),
           createRoute("/about", () => $("div", { textContent: "About" })),
-        ],
-      });
+        ]),
+      "App",
+    );
 
     const { html } = await renderToString(App);
+    console.log(html);
     expect(html).toContain("Home");
   });
 });

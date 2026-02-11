@@ -14,7 +14,7 @@ export interface RouteMatch<P = Record<string, string>> {
  * @param routes The list of routes to check
  * @returns The match result or null if no route matches
  */
-export function matchRoute(path: string, routes: RouteDefinition<any, any>[]): RouteMatch | null {
+export const matchRoute = (path: string, routes: RouteDefinition<any, any>[]): RouteMatch | null => {
   for (let i = 0; i < routes.length; i++) {
     const route = routes[i];
     let params: Record<string, string> | false = false;
@@ -36,4 +36,4 @@ export function matchRoute(path: string, routes: RouteDefinition<any, any>[]): R
   }
 
   return null;
-}
+};

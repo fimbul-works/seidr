@@ -1,15 +1,51 @@
 import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import type { SeidrChild, SeidrNode } from "../element";
+import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 
 /**
- * Seidr component function type.
+ * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
+ */
+interface SeidrComponentFactoryInterface {
+  readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
+  readonly name: string;
+}
+
+/**
+ * Seidr component pure function type.
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFunction<P = void> = P extends void
+export type SeidrComponentFactoryPureFunction<P = void> = P extends void
   ? () => SeidrComponentReturnValue
   : (props: P) => SeidrComponentReturnValue;
+
+/**
+ * Seidr component factory function type.
+ *
+ * @template P - Props object type (optional)
+ */
+export type SeidrComponentFactory<P = void> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
+  SeidrComponentFactoryInterface;
+
+/**
+ * Type representing a Seidr component factory, which can be either a pure function or a wrapped factory function.
+ *
+ * @template P - Props object type (optional)
+ */
+export type SeidrComponentFactoryFunction<P = void> = SeidrComponentFactoryPureFunction<P> | SeidrComponentFactory<P>;
+
+/**
+ * Type representing a Seidr component, which can be either a factory or an instantiated component.
+ *
+ * @template P - Props object type (optional)
+ */
+export type SeidrComponentType<P = void> = SeidrComponentFactoryFunction<P> | SeidrComponent;
+
+/**
+ * Type representing the children of a component.
+ */
+export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null | undefined;
 
 /**
  * Type representing the return values of a component factory.
@@ -35,6 +71,27 @@ export interface ComponentScope {
   readonly isDestroyed: boolean;
 
   /**
+   * The parent component of this scope.
+   */
+  readonly parent: SeidrComponent | null;
+
+  /**
+   * The parent node of this scope.
+   */
+  readonly parentNode: Node | null;
+
+  /**
+   * The children of this component.
+   */
+  readonly children: ReadonlyMap<string, SeidrComponent>;
+
+  /**
+   * Removes a child component from this scope.
+   * @param child - The child component to remove
+   */
+  removeChild(child: SeidrComponent): void;
+
+  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    *
    * Use this method to register any cleanup logic that should run when
@@ -44,6 +101,17 @@ export interface ComponentScope {
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
   track(cleanup: CleanupFunction): void;
+
+  /**
+   * Observes a Seidr observable and executes the callback within the component's context.
+   * This ensures that any components created during the update are correctly parented.
+   *
+   * @template T
+   * @param {Seidr<T>} observable - The observable to watch
+   * @param {(val: T) => void} callback - The callback to execute when value changes
+   * @returns {CleanupFunction} Cleanup function to stop observation
+   */
+  observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction;
 
   /**
    * Register a promise to wait for (SSR integration).
@@ -138,24 +206,3 @@ export interface SeidrComponent {
    */
   unmount(): void;
 }
-
-/**
- * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
- */
-interface SeidrComponentFactoryInterface {
-  readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
-  readonly name: string;
-}
-
-/**
- * Seidr component factory type.
- *
- * @template P - Props object type (optional)
- */
-export type SeidrComponentFactory<P = void> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
-  SeidrComponentFactoryInterface;
-
-/**
- * Type representing the children of a component.
- */
-export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null | undefined;

@@ -1,4 +1,4 @@
-import { getDOMFactory, setInternalDOMFactory } from "../dom";
+import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
 import { getSSRDOMFactory } from "../dom/dom-factory.node";
 import { getRenderContext, setInternalRenderContext } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
@@ -9,7 +9,7 @@ import type { TestEnvironmentState } from "./types";
  *
  * @returns A cleanup function to restore the previous state.
  */
-export function enableSSRMode(): CleanupFunction {
+export const enableSSRMode = (): CleanupFunction => {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
@@ -30,4 +30,4 @@ export function enableSSRMode(): CleanupFunction {
     setInternalRenderContext(getRenderContext);
     if (currentState.getDOMFactory !== undefined) setInternalDOMFactory(currentState.getDOMFactory);
   };
-}
+};

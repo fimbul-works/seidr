@@ -1,4 +1,4 @@
-import { getDOMFactory, setInternalDOMFactory } from "../dom";
+import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
 import { getBrowserDOMFactory } from "../dom/dom-factory.browser";
 import { setInternalRenderContext } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";

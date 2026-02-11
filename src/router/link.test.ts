@@ -1,8 +1,8 @@
-import { beforeEach, expect, it } from "vitest";
-import { component } from "../component/internal";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { mount } from "../dom/internal";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";
 import { initRouter } from "./init-router";
 import { Link } from "./link";
@@ -10,6 +10,7 @@ import { navigate } from "./navigate";
 
 describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
   let container: HTMLDivElement;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     const document = getDOMFactory().getDocument();
@@ -18,9 +19,13 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
     initRouter("/");
   });
 
+  afterEach(() => {
+    unmount?.();
+  });
+
   it("should render an anchor tag by default", () => {
-    const App = component(() => Link({ to: "/about" }, ["About"]));
-    mount(App, container);
+    const App = () => Link({ to: "/about" }, ["About"]);
+    unmount = mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link).toBeTruthy();
@@ -29,8 +34,8 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
   });
 
   it("should render with custom tag name", () => {
-    const App = component(() => Link({ to: "/about", tagName: "button" }, ["About"]));
-    mount(App, container);
+    const App = () => Link({ to: "/about", tagName: "button" }, ["About"]);
+    unmount = mount(App, container);
 
     const link = container.querySelector("button")!;
     expect(link).toBeTruthy();
@@ -39,8 +44,8 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
 
   if (mode !== "SSR") {
     it("should call navigate on click", () => {
-      const App = component(() => Link({ to: "/about" }, ["About"]));
-      mount(App, container);
+      const App = () => Link({ to: "/about" }, ["About"]);
+      unmount = mount(App, container);
 
       const link = container.querySelector("a")!;
       link.click();
@@ -50,8 +55,8 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
   }
 
   it("should apply active class when path matches", () => {
-    const App = component(() => Link({ to: "/about", activeClass: "is-active" }, ["About"]));
-    mount(App, container);
+    const App = () => Link({ to: "/about", activeClass: "is-active" }, ["About"]);
+    unmount = mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.classList.contains("is-active")).toBe(false);
@@ -64,7 +69,7 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
   });
 
   it("should support custom active property", () => {
-    const App = component(() =>
+    const App = () =>
       Link(
         {
           to: "/about",
@@ -72,9 +77,8 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
           activeValue: "page",
         },
         ["About"],
-      ),
-    );
-    mount(App, container);
+      );
+    unmount = mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.getAttribute("aria-current")).toBeNull();
@@ -85,8 +89,9 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
 
   it("should support reactive 'to' prop", () => {
     const target = new Seidr("/initial");
-    const App = component(() => Link({ to: target }, ["Link"]));
-    mount(App, container);
+
+    const App = () => Link({ to: target }, ["Link"]);
+    unmount = mount(App, container);
 
     const link = container.querySelector("a")!;
     expect(link.getAttribute("href")).toBe("/initial");

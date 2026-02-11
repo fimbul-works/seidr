@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { component, useScope } from "../component";
 import { $ } from "../element";
 import { resetRequestIdCounter } from "../render-context/render-context.node";
@@ -9,15 +9,48 @@ import { createRoute } from "./create-route";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { initRouter } from "./init-router";
 import { Router } from "./router";
+import { beforeEach } from "vitest";
 
 describe("Router Hydration Unmounting", () => {
   let cleanupClientMode: CleanupFunction;
+  let unmount: CleanupFunction;
+
+  let homeUnmounted = false;
+  let fallbackUnmounted = false;
+
+  const Home = component(() => {
+    const scope = useScope();
+    scope.track(() => {
+      homeUnmounted = true;
+    });
+    return $("div", { className: "home", textContent: "Home" });
+  }, 'Home');
+
+  const Fallback = component(() => {
+    const scope = useScope();
+    scope.track(() => {
+      fallbackUnmounted = true;
+    });
+    return $("div", { className: "fallback", textContent: "404" });
+  }, 'Fallback');
+
+  const App = component(() => Router([createRoute("/", Home)], Fallback), 'App');
 
   beforeAll(() => {
     cleanupClientMode = enableClientMode();
     resetClientPathState();
     resetRequestIdCounter();
     clearHydrationData();
+  });
+
+  beforeEach(() => {
+    homeUnmounted = false;
+    fallbackUnmounted = false;
+  });
+
+  afterEach(() => {
+    unmount?.();
+    document.body.innerHTML = "";
   });
 
   afterAll(() => {
@@ -28,35 +61,9 @@ describe("Router Hydration Unmounting", () => {
   });
 
   it("should unmount SSR fallback when navigating to a valid route", async () => {
-    let homeUnmounted = false;
-    let fallbackUnmounted = false;
-
-    const Home = component(() => {
-      const scope = useScope();
-      scope.track(() => {
-        homeUnmounted = true;
-      });
-      return $("div", { className: "home", textContent: "Home" });
-    });
-
-    const Fallback = component(() => {
-      const scope = useScope();
-      scope.track(() => {
-        fallbackUnmounted = true;
-      });
-      return $("div", { className: "fallback", textContent: "404" });
-    });
-
-    const App = component(() =>
-      Router({
-        routes: [createRoute("/", Home)],
-        fallback: Fallback,
-      }),
-    );
-
     // 1. SSR a 404 page
     process.env.SEIDR_TEST_SSR = "true";
-    const { html, hydrationData } = await renderToString(() => App(), { path: "/unknown" });
+    const { html, hydrationData } = await renderToString(App, { path: "/unknown" });
     delete process.env.SEIDR_TEST_SSR;
 
     // 2. Setup browser DOM
@@ -66,7 +73,7 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     initRouter("/unknown");
-    hydrate(() => App(), container, hydrationData);
+    unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
     expect(container.querySelector(".fallback")).toBeTruthy();
@@ -80,37 +87,9 @@ describe("Router Hydration Unmounting", () => {
     expect(container.querySelector(".home")).toBeTruthy();
     expect(fallbackUnmounted).toBe(true);
     expect(homeUnmounted).toBe(false);
-
-    document.body.removeChild(container);
   });
 
   it("should unmount SSR route when navigating to fallback", async () => {
-    let homeUnmounted = false;
-    let fallbackUnmounted = false;
-
-    const Home = component(() => {
-      const scope = useScope();
-      scope.track(() => {
-        homeUnmounted = true;
-      });
-      return $("div", { className: "home", textContent: "Home" });
-    });
-
-    const Fallback = component(() => {
-      const scope = useScope();
-      scope.track(() => {
-        fallbackUnmounted = true;
-      });
-      return $("div", { className: "fallback", textContent: "404" });
-    });
-
-    const App = component(() =>
-      Router({
-        routes: [createRoute("/", Home)],
-        fallback: Fallback,
-      }),
-    );
-
     // 1. SSR Home page
     process.env.SEIDR_TEST_SSR = "true";
     const { html, hydrationData } = await renderToString(() => App(), { path: "/" });
@@ -123,7 +102,7 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     initRouter("/");
-    hydrate(() => App(), container, hydrationData);
+    unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
     expect(container.querySelector(".home")).toBeTruthy();

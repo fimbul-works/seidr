@@ -1,11 +1,11 @@
-import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
 import type { Seidr } from "../seidr";
 import { Switch } from "./switch";
 
 /**
  * Conditionally renders a component based on a boolean observable state.
  *
- * @template {SeidrComponentFunction | SeidrComponentFactory} C - The type of component factory
+ * @template {SeidrComponentFactoryFunction} C - The type of component factory
  *
  * @param {Seidr<boolean>} condition - Boolean observable that controls visibility
  * @param {C} factory - Function that creates the component or element when needed
@@ -13,12 +13,10 @@ import { Switch } from "./switch";
  * @param {string} name - Optional name for the component
  * @returns {SeidrComponent} The component
  */
-export const Conditional = <
-  C extends SeidrComponentFunction | SeidrComponentFactory = SeidrComponentFunction | SeidrComponentFactory,
->(
+export const Conditional = <C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction>(
   condition: Seidr<boolean>,
   factory: C,
-  fallbackFactory?: C,
+  fallbackFactory?: C | null,
   name?: string,
 ): SeidrComponent =>
   Switch(

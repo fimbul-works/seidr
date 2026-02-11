@@ -1,3 +1,5 @@
+import type { SeidrComponent } from "src/component";
+
 /**
  * RenderContext is used for SSR and hydration.
  */
@@ -7,6 +9,9 @@ export interface RenderContext {
 
   /** The root node for the current render context */
   rootNode?: Node;
+
+  /** Thee root component for the current render context */
+  rootComponent?: SeidrComponent;
 
   /** The global document object for this render context (SSR isolation) */
   document?: Document;

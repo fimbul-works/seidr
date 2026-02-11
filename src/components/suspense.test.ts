@@ -1,12 +1,14 @@
-import { beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { mount } from "../dom/internal";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import type { CleanupFunction } from "../types";
 import { Suspense } from "./suspense";
 
 describeDualMode("Suspense", ({ getDOMFactory }) => {
   let container: HTMLElement;
   let document: Document;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     document = getDOMFactory().getDocument();
@@ -14,12 +16,17 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     document.body.appendChild(container);
   });
 
+  afterEach(() => {
+    unmount?.();
+    document.body.removeChild(container);
+  });
+
   it("should show loading state initially", async () => {
     const promise = new Promise<string>(() => {});
     const factory = (val: string) => val;
     const loading = () => "Loading...";
 
-    mount(
+    unmount = mount(
       Suspense(promise, factory, loading, (err) => err.message),
       container,
     );
@@ -33,7 +40,7 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     const factory = (val: string) => val;
     const loading = () => "Loading...";
 
-    mount(
+    unmount = mount(
       Suspense(promise, factory, loading, (err) => err.message),
       container,
     );
@@ -51,7 +58,7 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     const loading = () => document.createTextNode("Loading...");
     const error = (err: Error) => document.createTextNode(`Error: ${err.message}`);
 
-    mount(Suspense(promise, factory, loading, error), container);
+    unmount = mount(Suspense(promise, factory, loading, error), container);
     rejectPromise!(new Error("Failed"));
     await new Promise((r) => setTimeout(r, 0));
     expect(container.textContent).toBe("Error: Failed");
@@ -68,7 +75,7 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     const factory = (val: string) => document.createTextNode(val);
     const loading = () => document.createTextNode("Loading...");
 
-    mount(
+    unmount = mount(
       Suspense(promiseSeidr, factory, loading, (err) => document.createTextNode(err.message)),
       container,
     );

@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
-import { getRenderContext } from "../../render-context";
 import { Seidr } from "../../seidr";
 import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
@@ -11,6 +10,7 @@ import { clearHydrationData, type HydrationData, hasHydrationData, hydrate, setH
 describe("Hydration", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     container = document.createElement("div");
@@ -18,6 +18,7 @@ describe("Hydration", () => {
   });
 
   afterEach(() => {
+    unmount?.();
     clearHydrationData();
     cleanupClientMode();
     setSSRScope(undefined);
@@ -157,7 +158,7 @@ describe("Hydration", () => {
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
-    hydrate(TestComponent, container, { ctxID: 0, observables: { 2: 42 } });
+    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 2: 42 } });
 
     expect(container.textContent).toContain("Count: 42");
   });
@@ -179,7 +180,7 @@ describe("Hydration", () => {
 
     const cleanupClientMode2 = enableClientMode();
 
-    hydrate(TestComponent, container, hydrateData);
+    unmount = hydrate(TestComponent, container, hydrateData);
     cleanupClientMode2();
   });
 
@@ -190,9 +191,8 @@ describe("Hydration", () => {
 
     const cleanupClientMode2 = enableClientMode();
 
-    const hydratedComponent = hydrate(RawComponent, container, hydrationData);
+    unmount = hydrate(RawComponent, container, hydrationData);
 
-    expect(hydratedComponent).toBeDefined();
     expect(container.textContent).toBe("raw function");
 
     cleanupClientMode2();

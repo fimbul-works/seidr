@@ -15,8 +15,8 @@ import type { StateKey } from "./types";
  * @param {T} value - Value for the state. If null/undefined, an existing state will be used, otherwise undefined
  * @returns {[Seidr<T>, (v: T | Seidr<T>) => Seidr<T>]} Tuple with the Seidr observable and a setter.
  */
-export function useState<T>(key: StateKey<T> | string, value?: T): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] {
-  const { ctxID: renderContextID } = getRenderContext();
+export const useState = <T>(key: StateKey<T> | string, value?: T): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
+  const ctxID = getRenderContext().ctxID;
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   if (isStr(key)) {
@@ -29,10 +29,10 @@ export function useState<T>(key: StateKey<T> | string, value?: T): [Seidr<T>, (v
   }
 
   // Ensure ctx states map exists
-  if (!globalStates.has(renderContextID)) {
-    globalStates.set(renderContextID, new Map());
+  if (!globalStates.has(ctxID)) {
+    globalStates.set(ctxID, new Map());
   }
-  const ctxStates = globalStates.get(renderContextID)!;
+  const ctxStates = globalStates.get(ctxID)!;
 
   // Ensure state exists
   let observable = ctxStates.get(key) as Seidr<T>;
@@ -59,4 +59,4 @@ export function useState<T>(key: StateKey<T> | string, value?: T): [Seidr<T>, (v
   };
 
   return [observable, setValue];
-}
+};

@@ -8,7 +8,7 @@ import { getCurrentPath } from "./get-current-path";
  * @param {string} path - Current URL path
  * @returns {CleanupFunction} Cleanup function that stops listening to path change events.
  */
-export function initRouter(path?: string): CleanupFunction {
+export const initRouter = (path?: string): CleanupFunction => {
   // Set the initial path value
   const currentPath = getCurrentPath();
   if (!isUndefined(path)) {
@@ -25,4 +25,4 @@ export function initRouter(path?: string): CleanupFunction {
   window.addEventListener("popstate", popStateHandler);
 
   return () => window.removeEventListener("popstate", popStateHandler);
-}
+};

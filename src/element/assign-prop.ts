@@ -13,7 +13,7 @@ import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
  * @param {any} value - Property value (scalar or Seidr)
  * @param {CleanupFunction[]} cleanups - Array to store binding cleanups
  */
-export function assignProp(el: HTMLElement, prop: string, value: any, cleanups: CleanupFunction[]): void {
+export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: CleanupFunction[]): void => {
   // Helper functions
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
@@ -91,4 +91,4 @@ export function assignProp(el: HTMLElement, prop: string, value: any, cleanups: 
       (target as any)[effectiveProp] = value;
     }
   }
-}
+};

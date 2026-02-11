@@ -10,10 +10,10 @@ import type { SeidrElement, SeidrElementInterface } from "./types";
  * @param {CleanupFunction[]} cleanups - Array to push cleanup functions to
  * @returns {SeidrElement<K>} The decorated HTMLElement
  */
-export function decorateElement<K extends keyof HTMLElementTagNameMap>(
+export const decorateElement = <K extends keyof HTMLElementTagNameMap>(
   el: HTMLElement,
   cleanups: CleanupFunction[] = [],
-): SeidrElement<K> {
+): SeidrElement<K> => {
   const originalRemove = el.remove.bind(el);
 
   return Object.assign(el, {
@@ -26,7 +26,9 @@ export function decorateElement<K extends keyof HTMLElementTagNameMap>(
       options?: boolean | AddEventListenerOptions,
     ): CleanupFunction {
       el.addEventListener(event, handler as EventListener, options);
-      return () => el.removeEventListener(event, handler as EventListener, options);
+      const removeEventListener = () => el.removeEventListener(event, handler as EventListener, options);
+      cleanups.push(removeEventListener);
+      return removeEventListener;
     },
     clear(): void {
       while (el.firstChild) {
@@ -40,7 +42,7 @@ export function decorateElement<K extends keyof HTMLElementTagNameMap>(
     },
     [SEIDR_CLEANUP](): void {
       cleanups.forEach((cleanup) => cleanup());
-      cleanups = [];
+      cleanups.length = 0;
       for (const child of Array.from(el.childNodes)) {
         (child as SeidrElement<K> & SeidrElementInterface)[SEIDR_CLEANUP]?.();
       }
@@ -50,4 +52,4 @@ export function decorateElement<K extends keyof HTMLElementTagNameMap>(
       originalRemove();
     },
   } as SeidrElementInterface) as SeidrElement<K>;
-}
+};

@@ -1,14 +1,20 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../component";
 import { $, type SeidrElement } from "../element";
 import { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { mount } from "./mount";
 
 describe("mount", () => {
   let container: SeidrElement;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     container = $("div");
+  });
+
+  afterEach(() => {
+    unmount();
   });
 
   it("should mount component into container", () => {
@@ -18,7 +24,7 @@ describe("mount", () => {
     });
     const comp = createComp();
 
-    mount(comp, container);
+    unmount = mount(comp, container);
 
     expect(container.contains(mockElement)).toBe(true);
   });

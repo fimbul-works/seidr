@@ -9,12 +9,14 @@ import { renderToString } from "./render-to-string";
 
 describe("Complex Graph Hydration (4+ levels)", () => {
   let cleanupMode: CleanupFunction;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();
   });
 
   afterEach(() => {
+    unmount?.();
     cleanupMode();
     clearHydrationData();
   });
@@ -77,9 +79,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
     // Client-side hydration
     const container = document.createElement("div");
-    const hydratedComponent = hydrate(App, container, hydrationData);
-
-    expect(hydratedComponent).toBeDefined();
+    unmount = hydrate(App, container, hydrationData);
 
     // Verify all values are correctly hydrated
     expect(container.textContent).toContain("1");
@@ -129,7 +129,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     // Switch to client mode and hydrate
     cleanupMode = enableClientMode();
     const container = document.createElement("div");
-    hydrate(App, container, hydrationData);
+    unmount = hydrate(App, container, hydrationData);
 
     expect(container.textContent).toContain("15");
     expect(container.textContent).toContain("13");
@@ -184,7 +184,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     // Switch to client mode and hydrate
     cleanupMode = enableClientMode();
     const container = document.createElement("div");
-    hydrate(App, container, hydrationData);
+    unmount = hydrate(App, container, hydrationData);
 
     expect(container.textContent).toContain("2");
     expect(container.textContent).toContain("2");
