@@ -4,7 +4,6 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
-import type { SeidrNode } from "../element";
 import { wrapError } from "../util/wrap-error";
 
 /**
@@ -20,7 +19,10 @@ import { wrapError } from "../util/wrap-error";
  * @param {SeidrComponentFunction<Error> | SeidrComponentFactory<Error>} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {SeidrComponent} A Component instance with error handling
  */
-export const Safe = (factory: SeidrComponentFunction | SeidrComponentFactory, errorBoundaryFactory: SeidrComponentFunction<Error> | SeidrComponentFactory<Error>): SeidrComponent =>
+export const Safe = (
+  factory: SeidrComponentFunction | SeidrComponentFactory,
+  errorBoundaryFactory: SeidrComponentFunction<Error> | SeidrComponentFactory<Error>,
+): SeidrComponent =>
   component(() => {
     const scope = useScope();
 

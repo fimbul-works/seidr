@@ -14,30 +14,33 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     document.body.appendChild(container);
   });
 
-  it.only("should show loading state initially", async () => {
+  it("should show loading state initially", async () => {
     const promise = new Promise<string>(() => {});
     const factory = (val: string) => val;
     const loading = () => "Loading...";
 
     mount(
-      Suspense(promise, factory, loading, (err) => String(err.message)),
+      Suspense(promise, factory, loading, (err) => err.message),
       container,
     );
+
     expect(container.textContent).toBe("Loading...");
   });
 
   it("should show resolved content when promise resolves", async () => {
     let resolvePromise: (val: string) => void;
     const promise = new Promise<string>((resolve) => (resolvePromise = resolve));
-    const factory = (val: string) => document.createTextNode(val);
-    const loading = () => document.createTextNode("Loading...");
+    const factory = (val: string) => val;
+    const loading = () => "Loading...";
 
     mount(
-      Suspense(promise, factory, loading, (err) => document.createTextNode(err.message)),
+      Suspense(promise, factory, loading, (err) => err.message),
       container,
     );
+
     resolvePromise!("Resolved Content");
-    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((r) => setTimeout(r, 10));
+
     expect(container.textContent).toBe("Resolved Content");
   });
 

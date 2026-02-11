@@ -19,10 +19,15 @@ import { isArray } from "../util/type-guards/primitive-types";
  * @param {SeidrComponentFactory<T>} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent} List component
  */
-export const List = <T, I extends string | number>(
+export const List = <
+  T,
+  I extends string | number,
+  C extends SeidrComponentFunction<T> | SeidrComponentFactory<T> = SeidrComponentFunction<T> | SeidrComponentFactory<T>,
+>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  factory: SeidrComponentFunction<T>,
+  factory: C,
+  name?: string,
 ): SeidrComponent =>
   component(() => {
     const scope = useScope();
@@ -58,17 +63,17 @@ export const List = <T, I extends string | number>(
           componentMap.set(key, comp);
         }
 
-        const el = comp.element;
-        const lastNode = isArray(el) ? el[el.length - 1] : el;
+        const children = comp.element;
+        const lastNode = isArray(children) ? children[children.length - 1] : children;
 
         // Move to correct position if needed
         if (lastNode !== currentAnchor.previousSibling) {
-            parent.insertBefore(comp.startMarker, currentAnchor);
+          parent.insertBefore(comp.startMarker, currentAnchor);
 
-          if (isArray(el)) {
-            el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, currentAnchor));
-          } else if (isDOMNode(el)) {
-            parent.insertBefore(el, currentAnchor);
+          if (isArray(children)) {
+            children.forEach((n) => isDOMNode(n) && parent.insertBefore(n, currentAnchor));
+          } else if (isDOMNode(children)) {
+            parent.insertBefore(children, currentAnchor);
           }
 
           parent.insertBefore(comp.endMarker, currentAnchor);
@@ -93,4 +98,4 @@ export const List = <T, I extends string | number>(
       componentMap.set(getKey(item), comp);
       return comp;
     });
-  }, "List")();
+  }, name ?? "List")();
