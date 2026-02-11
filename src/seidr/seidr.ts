@@ -29,15 +29,15 @@ export interface SeidrOptions {
  *
  * @template T - The type of value being stored and observed
  */
-export class Seidr<T> {
+export class Seidr<T = any> {
   /** @type {string} Unique identifier for this observable */
   private i: string;
 
   /** @type {T} The current value being stored */
   private v: T;
 
-  /** @type {Seidr<any>[]} Parent dependencies (for derived/computed observables) */
-  private p: Seidr<any>[] = [];
+  /** @type {Seidr[]} Parent dependencies (for derived observables) */
+  private p: Seidr[] = [];
 
   /** @type {Set<EventHandler<T>>} Observers */
   private f: Set<EventHandler<T>> = new Set<EventHandler<T>>();
@@ -96,7 +96,7 @@ export class Seidr<T> {
   }
 
   /**
-   * Gets whether this observable is derived/computed.
+   * Gets whether this observable is derived.
    *
    * @type {boolean} true if this is a derived observable, false otherwise
    */
@@ -107,9 +107,9 @@ export class Seidr<T> {
   /**
    * Gets the parent dependencies of this observable.
    *
-   * @type {ReadonlyArray<Seidr<any>>} Array of parent Seidr instances (empty for root observables)
+   * @type {Seidr[]} Array of parent Seidr instances (empty for root observables)
    */
-  get parents(): ReadonlyArray<Seidr<any>> {
+  get parents(): Seidr[] {
     return [...this.p];
   }
 
@@ -167,12 +167,12 @@ export class Seidr<T> {
    * Creates a reactive binding between this observable and a target.
    * Unlike `observe`, this function will call the handler immediately with the current value.
    *
-   * @template E - The type being bound to
-   * @param {E} target - The value to apply changes to
-   * @param {(value: T, target: E) => void} bindFn - Function to bind the observable's value to the target
+   * @template O - The type being bound to
+   * @param {O} target - The value to apply changes to
+   * @param {(value: T, target: O) => void} bindFn - Function to bind the observable's value to the target
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
-  bind<E>(target: E, bindFn: (value: T, target: E) => void): CleanupFunction {
+  bind<O>(target: O, bindFn: (value: T, target: O) => void): CleanupFunction {
     if (!process.env.CORE_DISABLE_SSR) {
       this.register();
     }
@@ -183,48 +183,38 @@ export class Seidr<T> {
   /**
    * Creates a derived Seidr that automatically transforms this observable's value.
    *
-   * @template U - The type of the transformed/derived value
+   * @template D - The type of the transformed/derived value
    *
-   * @param {(value: T) => U} transformFn - Function that transforms the source value to the derived value
+   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
    * @param {SeidrOptions} [options] - Options for the new derived Seidr
-   * @returns {Seidr<U>} A new Seidr instance containing the transformed value
+   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
    */
-  as<U>(transformFn: (value: T) => U, options: SeidrOptions = {}): Seidr<U> {
-    const derived = new Seidr<U>(transformFn(this.v), options);
+  as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}): Seidr<D> {
+    const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.addCleanup(this.observe((updatedValue) => (derived.value = transformFn(updatedValue))));
+    this.c.push(this.observe((updatedValue) => (derived.value = transformFn(updatedValue))));
     return derived;
   }
 
   /**
-   * Creates a computed observable value that automatically updates when its dependencies change.
+   * Creates a derived observable value that automatically updates when its dependencies change.
    *
-   * @template C - The return type of the computed value
+   * @template D - The return type of the derived value
    *
-   * @param {() => C} compute - Function that computes the derived value
-   * @param {Seidr<any>[]} parents - Array of Seidrs that trigger recomputation when changed
-   * @param {SeidrOptions} [options] - Options for the new computed Seidr
-   * @returns {Seidr<C>} A new Seidr instance containing the computed result
+   * @param {() => D} mergeFn - Function that merges the parent values to a new value
+   * @param {Seidr[]} parents - Array of Seidrs that trigger recomputation when changed
+   * @param {SeidrOptions} [options] - Options for the new derived Seidr
+   * @returns {Seidr<D>} A new Seidr instance containing the derived result
    */
-  static computed<C>(compute: () => C, parents: Seidr<any>[], options: SeidrOptions = {}): Seidr<C> {
+  static merge<D>(mergeFn: () => D, parents: Seidr[], options: SeidrOptions = {}): Seidr<D> {
     if (parents.length === 0) {
-      console.warn("Computed value with zero dependencies");
+      throw new SeidrError("Merged must have at least one parent");
     }
 
-    const computed = new Seidr<C>(compute(), options);
-    computed.setParents(parents);
-    parents.forEach((p) => computed.addCleanup(p.observe(() => (computed.value = compute()))));
-    return computed;
-  }
-
-  /**
-   * Add a cleanup function.
-   * Cleanup functions are called when the observable is destroyed.
-   *
-   * @param {CleanupFunction} fn - The cleanup function to register
-   */
-  addCleanup(fn: CleanupFunction): void {
-    this.c.push(fn);
+    const merged = new Seidr<D>(mergeFn(), options);
+    merged.setParents(parents);
+    parents.forEach((p) => merged.c.push(p.observe(() => (merged.value = mergeFn()))));
+    return merged;
   }
 
   /**
@@ -260,12 +250,12 @@ export class Seidr<T> {
 
   /**
    * Mark this observable as derived.
-   * This is used by `.as()` and `Seidr.computed()`.
+   * This is used by `.as()` and `Seidr.merge()`.
    * This will register the observable for SSR/hydration.
    *
-   * @param {Seidr<any>[]} parents - Array of parent Seidr instances this observable depends on
+   * @param {Seidr[]} parents - Array of parent Seidr instances this observable depends on
    */
-  private setParents(parents: Seidr<any>[]): void {
+  private setParents(parents: Seidr[]): void {
     this.p = parents;
     if (!process.env.CORE_DISABLE_SSR) {
       this.register();

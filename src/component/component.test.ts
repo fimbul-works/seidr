@@ -34,8 +34,8 @@ describeDualMode("component", () => {
     })();
 
     expect(comp).toHaveProperty("element");
-    expect(comp.element).toHaveLength(4);
-    expect(comp.element).toEqual([comp.start, mockElement[0], mockElement[1], comp.end]);
+    expect(comp.element).toHaveLength(2);
+    expect(comp.element).toEqual([mockElement[0], mockElement[1]]);
   });
 
   it("should create a component returning null", () => {
@@ -44,8 +44,7 @@ describeDualMode("component", () => {
     })();
 
     expect(comp).toHaveProperty("element");
-    expect(comp.element).toHaveLength(2);
-    expect(comp.element).toEqual([comp.start, comp.end]);
+    expect(comp.element).toBeNull();
   });
 
   it("should call destroy on scope when component is destroyed", () => {
@@ -53,18 +52,13 @@ describeDualMode("component", () => {
 
     const comp = component(() => {
       const scopeParam = useScope();
-      // Override destroy for testing
-      const originalDestroy = scopeParam.destroy;
-      scopeParam.destroy = () => {
-        scopeDestroyed = true;
-        originalDestroy();
-      };
+      scopeParam.track(() => scopeDestroyed = true)
       return $("div");
     })();
 
     expect(scopeDestroyed).toBe(false);
 
-    comp.element.remove();
+    comp.unmount();
 
     expect(scopeDestroyed).toBe(true);
   });

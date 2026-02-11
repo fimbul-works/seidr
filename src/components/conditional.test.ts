@@ -68,6 +68,7 @@ describeDualMode("Conditional Component", ({ getDOMFactory }) => {
     mount(() => Conditional(isVisible, View), container);
 
     isVisible.value = false;
+    
     expect(scopeDestroyed).toBe(true);
   });
 });

@@ -1,16 +1,15 @@
 import type { SeidrComponent, SeidrComponentFactory } from "../../component/types";
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_ELEMENT, TYPE_PROP } from "../../constants";
-import type { SeidrElement, SeidrNode } from "../../element";
+import type { SeidrElement } from "../../element";
 import { isFn, isObj } from "./primitive-types";
 
 /**
  * Check if a value is a Seidr component.
- * @template {SeidrNode} T - Type of the component's Root Node
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr component, `false` otherwise
  */
-export const isSeidrComponent = <T extends SeidrNode = SeidrNode>(v: any): v is SeidrComponent<T> =>
-  isObj<SeidrComponent<T>>(v) && v[TYPE_PROP] === TYPE_COMPONENT;
+export const isSeidrComponent = (v: any): v is SeidrComponent =>
+  isObj<SeidrComponent>(v) && v[TYPE_PROP] === TYPE_COMPONENT;
 
 /**
  * Check if a value is a Seidr component factory.

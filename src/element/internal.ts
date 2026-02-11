@@ -1,4 +1,4 @@
-export * from "./append-child";
+export * from "../dom/append-child";
 export * from "./assign-prop";
 export * from "./assign-props";
 export * from "./create-element";

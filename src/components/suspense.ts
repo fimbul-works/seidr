@@ -1,7 +1,6 @@
 import { component } from "../component/component";
-import type { SeidrComponent } from "../component/types";
+import type { SeidrComponent, SeidrComponentFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
-import type { SeidrNode } from "../element";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { isSeidr } from "../util/type-guards/is-seidr";
 import { wrapError } from "../util/wrap-error";
@@ -15,23 +14,22 @@ const PROMISE_ERROR = "error";
  * Creates a component that handles Promise resolution with loading and error states.
  *
  * @template T - The type of resolved value
- * @template {SeidrNode} R - The type of element the component returns
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
- * @param {(value: T) => R} factory - Function that creates the component when promise resolves
- * @param {() => SeidrNode} [loadingFactory] - Optional loading component
- * @param {(error: Error) => SeidrNode} [errorBoundaryFactory] - Optional error handler component
+ * @param {SeidrComponentFunction<T>} factory - Function that creates the component when promise resolves
+ * @param {SeidrComponentFunction} [loadingFactory] - Optional loading component
+ * @param {SeidrComponentFunction<Error>} [errorBoundaryFactory] - Optional error handler component
  * @returns {SeidrComponent} A component handling the promise state
  */
-export const Suspense = <T, R extends SeidrNode>(
+export const Suspense = <T>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
-  factory: (value: T) => R,
-  loadingFactory: () => SeidrNode = () => "Loading...",
-  errorBoundaryFactory: (err: Error) => SeidrNode = (err) => `Error: ${err.message}`,
+  factory: SeidrComponentFunction<T>,
+  loadingFactory: SeidrComponentFunction = () => "Loading...",
+  errorBoundaryFactory: SeidrComponentFunction<Error> = (err: Error) => `Error: ${err.message}`,
 ): SeidrComponent =>
   component(() => {
     const scope = useScope();
-    const status = new Seidr<"pending" | "resolved" | "error">(PROMISE_PENDING);
+    const status = new Seidr<typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof PROMISE_ERROR>(PROMISE_PENDING);
 
     let resolvedValue: T | null = null;
     let errorValue: Error | null = null;
@@ -71,9 +69,14 @@ export const Suspense = <T, R extends SeidrNode>(
       scope.track(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
     }
 
-    return Switch(status, {
-      resolved: () => factory(resolvedValue!),
-      error: () => errorBoundaryFactory(errorValue!),
-      pending: loadingFactory,
-    });
+    return Switch(
+      status,
+      {
+        resolved: () => factory(resolvedValue!),
+        error: () => errorBoundaryFactory(errorValue!),
+        pending: loadingFactory,
+      },
+      null,
+      "Suspense",
+    );
   }, "Suspense")();

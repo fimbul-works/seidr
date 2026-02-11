@@ -16,13 +16,13 @@ import { parseRouteParams } from "./parse-route-params";
  * The `factory` function will be called to create the SeidrNode when the route matches.
  *
  * @template {SeidrNode} C - The type of SeidrNode being conditionally rendered
- * @template {Seidr<any>} P - The type of matching route parameters
+ * @template {Seidr} P - The type of matching route parameters
  * @param {string | RegExp} pattern - Path pattern like `"/user/:id/edit"` or `RegExp`
  * @param {(params?: P) => C} factory - Function that creates the component when needed
  * @param {Seidr<string>} pathState - Optional current path state (default: current path)
  * @returns {SeidrComponent} Conditional component that mounts when matched
  */
-export function Route<C extends SeidrNode, P extends Seidr<any>>(
+export function Route<C extends SeidrNode, P extends Seidr>(
   pattern: string | RegExp,
   factory: (params?: P) => C,
   pathState: Seidr<string> = getCurrentPath(),

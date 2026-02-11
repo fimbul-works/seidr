@@ -32,9 +32,9 @@ export function findMarkerComments(id: string, root?: Node): [Comment | null, Co
         if (start && end) {
           // If markers are not in the same parent node, warn and return return null
           if (start.parentNode !== end.parentNode && !process.env.CORE_DISABLE_SSR) {
-            console.warn(
-              `Hydration warning: start and end markers for component ${id} are not in the same parent node`,
-            );
+            if (process.env.NODE_ENV === "development") {
+              console.warn(`[${id}] Hydration warning: start and end markers not in the same parent node`);
+            }
             start = null;
             end = null;
           }

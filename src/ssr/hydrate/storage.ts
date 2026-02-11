@@ -3,10 +3,10 @@ import type { HydrationData } from "./types";
 
 export interface HydrationDataStorage {
   data: HydrationData | undefined;
-  registry: Set<Seidr<any>>;
+  registry: Set<Seidr>;
 }
 
 export const hydrationDataStorage: HydrationDataStorage = {
   data: undefined,
-  registry: new Set<Seidr<any>>(),
+  registry: new Set<Seidr>(),
 };

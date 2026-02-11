@@ -34,7 +34,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
       const abc = a.as((n) => n + b.value + c.value); // 1 + 2 + 3 = 6
 
       // Layer 3: Third level derivations
-      const sumOfSums = Seidr.computed(() => ab.value + bc.value, [ab, bc]); // 3 + 5 = 8
+      const sumOfSums = Seidr.merge(() => ab.value + bc.value, [ab, bc]); // 3 + 5 = 8
 
       // Layer 4: Fourth level derivation
       const final = sumOfSums.as((n) => n * 2); // 8 * 2 = 16
@@ -107,7 +107,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
       const ab = a.as((n) => n + b.value); // 10 + 5 = 15
       const ac = a.as((n) => n + c.value); // 10 + 3 = 13
-      const abc = Seidr.computed(() => ab.value + ac.value, [ab, ac]); // 15 + 13 = 28
+      const abc = Seidr.merge(() => ab.value + ac.value, [ab, ac]); // 15 + 13 = 28
 
       return $("div", {}, [
         $("span", { textContent: ab }),
@@ -147,7 +147,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
       const l1_b = b.as((n) => n + 1); // 2
 
       // Level 2
-      const l2 = Seidr.computed(() => l1_a.value + l1_b.value, [l1_a, l1_b]); // 4
+      const l2 = Seidr.merge(() => l1_a.value + l1_b.value, [l1_a, l1_b]); // 4
 
       // Level 3
       const l3 = l2.as((n) => n * 2); // 8

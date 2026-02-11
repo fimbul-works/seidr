@@ -23,7 +23,9 @@ export function createScope(id: string = "unknown"): ComponentScope {
     },
     track(cleanup: CleanupFunction): void {
       if (destroyed) {
-        console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
+        }
         cleanup();
         return;
       }
@@ -61,7 +63,13 @@ export function createScope(id: string = "unknown"): ComponentScope {
       });
     },
     destroy() {
-      if (destroyed) return;
+      if (destroyed) {
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[${id}] Destroying already destroyed scope`);
+        }
+        return;
+      }
+
       destroyed = true;
       cleanups.forEach((fn) => {
         try {

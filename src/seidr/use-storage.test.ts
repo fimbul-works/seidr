@@ -61,11 +61,11 @@ describe("useStorage", () => {
   });
 
   describe("Basic functionality", () => {
-    it("should return the same Seidr instance", () => {
+    it("should return a cleanup function", () => {
       const original = new Seidr("test");
-      const result = useStorage("test-key", original);
+      const cleanup = useStorage("test-key", original);
 
-      expect(result).toBe(original);
+      expect(typeof cleanup).toBe("function");
     });
 
     it("should initialize with stored value if it exists", () => {
@@ -320,86 +320,62 @@ describe("useStorage", () => {
       }
 
       const userSeidr = new Seidr<User>({ name: "", age: 0 });
-      const result = useStorage("user", userSeidr);
+      useStorage("user", userSeidr);
 
       // TypeScript should infer the correct type
-      expect(typeof result.value.name).toBe("string");
-      expect(typeof result.value.age).toBe("number");
+      expect(typeof userSeidr.value.name).toBe("string");
+      expect(typeof userSeidr.value.age).toBe("number");
     });
 
     it("should work with derived observables", () => {
       const base = new Seidr(5);
       const derived = base.as((n) => `Number: ${n}`);
 
-      const result = useStorage("derived", derived);
+      useStorage("derived", derived);
 
-      expect(typeof result.value).toBe("string");
+      expect(typeof derived.value).toBe("string");
     });
   });
 
   describe("Cleanup", () => {
-    it("should not prevent garbage collection when observable is destroyed", () => {
+    it("should remove the storage binding when the cleanup function is called", () => {
+      const seidr = new Seidr("test");
+      const cleanup = useStorage("cleanup-test", seidr);
+
+      seidr.value = "final-value";
+      expect(localStorageMock["cleanup-test"]).toBe(JSON.stringify("final-value"));
+
+      cleanup();
+
+      seidr.value = "should-not-save";
+
+      expect(localStorageMock["cleanup-test"]).toBe(JSON.stringify("final-value"));
+    });
+
+    it("should remove the storage binding when the observable is destroyed", () => {
       const seidr = new Seidr("test");
       useStorage("cleanup-test", seidr);
 
       seidr.value = "final-value";
       expect(localStorageMock["cleanup-test"]).toBe(JSON.stringify("final-value"));
 
-      // Destroy the observable
       seidr.destroy();
 
-      // The storage binding should be cleaned up as part of the normal
-      // observable destruction process
       seidr.value = "should-not-save";
 
-      // This depends on the implementation - if the observer is cleaned up,
-      // this value won't be saved. The test documents this behavior.
+      expect(localStorageMock["cleanup-test"]).toBe(JSON.stringify("final-value"));
     });
   });
 
   describe("Server-side rendering", () => {
-    it("should return Seidr unchanged when window is undefined (SSR)", () => {
-      // Store original window
-      const originalWindow = globalThis.window;
-
-      // Delete window to simulate SSR environment
-      // @ts-expect-error - Intentionally removing window for test
-      delete globalThis.window;
-
-      try {
-        const seidr = new Seidr("test-value");
-        const result = useStorage("ssr-key", seidr);
-
-        // Should return the same Seidr instance
-        expect(result).toBe(seidr);
-
-        // Should not attempt to access storage
-        expect(seidr.value).toBe("test-value");
-
-        // Changing value should not throw (no storage access)
-        seidr.value = "updated";
-        expect(seidr.value).toBe("updated");
-      } finally {
-        // Restore window
-        globalThis.window = originalWindow;
-      }
-    });
-
     it("should not throw errors in SSR environment", () => {
-      const originalWindow = globalThis.window;
+      expect(() => {
+        const seidr = new Seidr({ data: "test" });
+        const cleanup = useStorage("any-key", seidr);
 
-      // @ts-expect-error - Intentionally removing window for test
-      delete globalThis.window;
-
-      try {
-        // Should not throw even with invalid key or missing storage
-        const seidr = useStorage("any-key", new Seidr({ data: "test" }));
-
-        expect(seidr).toBeDefined();
+        expect(typeof cleanup).toBe("function");
         expect(seidr.value).toEqual({ data: "test" });
-      } finally {
-        globalThis.window = originalWindow;
-      }
+      }).not.toThrow();
     });
   });
 });

@@ -1,7 +1,7 @@
 import { component } from "../component/component";
 import { createScope } from "../component/component-scope";
 import { getCurrentComponent } from "../component/component-stack";
-import type { SeidrComponent } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import type { SeidrNode } from "../element";
@@ -14,18 +14,18 @@ import { wrapError } from "../util/wrap-error";
  * an error during initialization, the error boundary factory is called to create
  * a fallback UI instead of crashing.
  *
- * @template {SeidrNode} T - The type of element the component returns
+ * @template T -
  *
- * @param {() => T} factory - Function that creates the component element
- * @param {(err: Error) => T} errorBoundaryFactory - Error handler that returns fallback UI
+ * @param {SeidrComponentFunction | SeidrComponentFactory} factory - Function that creates the component element
+ * @param {SeidrComponentFunction<Error> | SeidrComponentFactory<Error>} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {SeidrComponent} A Component instance with error handling
  */
-export const Safe = <T extends SeidrNode>(factory: () => T, errorBoundaryFactory: (err: Error) => T): SeidrComponent =>
+export const Safe = (factory: SeidrComponentFunction | SeidrComponentFactory, errorBoundaryFactory: SeidrComponentFunction<Error> | SeidrComponentFactory<Error>): SeidrComponent =>
   component(() => {
     const scope = useScope();
 
     try {
-      return wrapComponent(factory)() as T;
+      return wrapComponent(factory)();
     } catch (err) {
       const newScope = createScope();
       newScope.onAttached = (parent) => scope.onAttached?.(parent);

@@ -130,12 +130,14 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
 > & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string> };
 
 /**
- * Union type representing allowed child nodes for Seidr elements.
- *
- * Children can be regular DOM elements, Seidr-enhanced elements, Comments, or text nodes.
- * This type ensures type safety when building DOM structures.
+ * Union type representing allowed nodes for Seidr elements.
  */
-export type SeidrNode = SeidrComponent | SeidrElement<any> | Element | Text | Comment | string;
+export type SeidrNode = SeidrComponent | SeidrElement<any> | Element | Text | Comment;
+
+/**
+ * Union type representing allowed child nodes for Seidr elements.
+ */
+export type SeidrChild = SeidrNode | string | null | undefined;
 
 /**
  * Enhanced HTMLElement interface with Seidr-specific functionality.

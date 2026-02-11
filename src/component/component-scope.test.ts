@@ -27,15 +27,10 @@ describe("ComponentScope", () => {
     scope.destroy();
 
     const cleanup = vi.fn();
-    const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
     scope.track(cleanup);
 
     expect(cleanup).toHaveBeenCalled();
-    expect(cleanup).toHaveBeenCalled();
-    expect(consoleSpy).toHaveBeenCalledWith("[unknown] Tracking cleanup on already destroyed scope");
-
-    consoleSpy.mockRestore();
   });
 
   it("should track child components", () => {

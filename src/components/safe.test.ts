@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { useScope } from "../component";
+import { appendChild } from "../dom/append-child";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
-import { appendChild } from "../element/append-child";
 import { describeDualMode } from "../test-setup";
 import { SeidrError } from "../types";
 import { Safe } from "./safe";
@@ -31,11 +31,11 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      expect(comp.element.textContent).toBe(`Error: ${errorMessage}`);
-      expect(comp.start).toBeDefined();
-      expect(comp.start?.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
-      expect(comp.end).toBeDefined();
-      expect(comp.end?.textContent).toContain(`${SEIDR_COMPONENT_END_PREFIX}Safe-`);
+      expect((comp.element as HTMLElement).textContent).toBe(`Error: ${errorMessage}`);
+      expect(comp.startMarker).toBeDefined();
+      expect(comp.startMarker.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
+      expect(comp.endMarker).toBeDefined();
+      expect(comp.endMarker.textContent).toContain(`${SEIDR_COMPONENT_END_PREFIX}Safe-`);
     });
 
     it("should create new scope for error boundary", () => {
@@ -97,7 +97,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       // Error boundary should render, no console error
       expect(consoleSpy).not.toHaveBeenCalled();
-      expect(comp.element.textContent).toBe("Recovered");
+      expect((comp.element as HTMLElement).textContent).toBe("Recovered");
 
       consoleSpy.mockRestore();
     });
@@ -113,7 +113,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       );
 
       // Root components have data-seidr-root attribute even when error boundary is used
-      expect(comp.element.dataset.seidrRoot).toBeTruthy();
+      expect((comp.element as HTMLElement).dataset.seidrRoot).toBeTruthy();
     });
   });
 
@@ -134,7 +134,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       // Verify Safe component caught the error
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
-      expect(ErrorChild.element.textContent).toContain("Child error caught");
+      expect((ErrorChild.element as HTMLElement).textContent).toContain("Child error caught");
     });
 
     it("should track error boundary component cleanup", () => {
@@ -231,7 +231,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      expect(comp.element.textContent).toBe("TypeError");
+      expect((comp.element as HTMLElement).textContent).toBe("TypeError");
     });
 
     it("should handle error boundary that throws", () => {
@@ -268,7 +268,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       const parent = Parent();
 
       expect(errorCaught).toBe(true);
-      expect(parent.element.textContent).toBe("Parent error boundary");
+      expect((parent.element as HTMLElement).textContent).toBe("Parent error boundary");
     });
   });
 });

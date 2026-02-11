@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { getMarkerComments } from "../dom/get-marker-comments";
@@ -16,22 +16,21 @@ import { isArray } from "../util/type-guards/primitive-types";
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => I} getKey - Key extraction function
- * @param {(item: T) => SeidrComponentChildren} factory - Component creation function (raw or wrapped)
+ * @param {SeidrComponentFactory<T>} factory - Component creation function (raw or wrapped)
  * @returns {SeidrComponent} List component
  */
 export const List = <T, I extends string | number>(
   observable: Seidr<T[]>,
   getKey: (item: T) => I,
-  factory: (item: T) => SeidrComponentChildren,
+  factory: SeidrComponentFunction<T>,
 ): SeidrComponent =>
   component(() => {
     const scope = useScope();
-    const markers = getMarkerComments(scope.id);
+    const [, endMarker] = getMarkerComments(scope.id);
     const componentMap = new Map<I, SeidrComponent>();
 
     function update(items: T[]) {
-      const end = markers[1];
-      const parent = end.parentNode;
+      const parent = endMarker.parentNode;
       if (!parent) {
         return;
       }
@@ -47,7 +46,8 @@ export const List = <T, I extends string | number>(
       }
 
       // Add or reorder components by iterating backwards from end marker
-      let currentAnchor: Node = end;
+      let currentAnchor: Node = endMarker;
+
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
@@ -63,9 +63,7 @@ export const List = <T, I extends string | number>(
 
         // Move to correct position if needed
         if (lastNode !== currentAnchor.previousSibling) {
-          if (comp.start) {
-            parent.insertBefore(comp.start, currentAnchor);
-          }
+            parent.insertBefore(comp.startMarker, currentAnchor);
 
           if (isArray(el)) {
             el.forEach((n) => isDOMNode(n) && parent.insertBefore(n, currentAnchor));
@@ -73,14 +71,12 @@ export const List = <T, I extends string | number>(
             parent.insertBefore(el, currentAnchor);
           }
 
-          if (comp.end) {
-            parent.insertBefore(comp.end, currentAnchor);
-          }
+          parent.insertBefore(comp.endMarker, currentAnchor);
 
           comp.scope.attached(parent);
         }
 
-        currentAnchor = (comp.start || (isArray(el) ? el[0] : el)) as Node;
+        currentAnchor = comp.startMarker;
       }
     }
 
@@ -93,7 +89,7 @@ export const List = <T, I extends string | number>(
     });
 
     return observable.value.map((item) => {
-      const comp = wrapComponent<T>(factory as SeidrComponentFactory<T>)(item);
+      const comp = wrapComponent<T>(factory)(item);
       componentMap.set(getKey(item), comp);
       return comp;
     });

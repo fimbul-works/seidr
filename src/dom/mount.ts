@@ -1,13 +1,10 @@
-import { getCurrentComponent } from "../component/component-stack";
-import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "../component/types";
+import type { SeidrComponent, SeidrComponentFactory, SeidrComponentFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import type { SeidrElement } from "../element";
-import { appendChild } from "../element/append-child";
 import { getRenderContext } from "../render-context";
 import type { CleanupFunction } from "../types";
-import { isDOMNode } from "../util/type-guards/dom-node-types";
-import { isArray } from "../util/type-guards/primitive-types";
 import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
+import { appendChild } from "./append-child";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -22,43 +19,29 @@ import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
  * If called within a parent component's render function, the cleanup is automatically
  * tracked and will be executed when the parent component is destroyed.
  *
- * @template {SeidrComponentChildren | SeidrComponentFactory<void>} C - The type of SeidrComponentChildren or SeidrComponentFactory being mounted
- *
- * @param {C | (() => C)} componentOrFactory - The component instance, or a factory function (raw or wrapped)
+ * @template {SeidrComponentFunction<any> | SeidrComponentFactory<any> | SeidrComponent} C - Type of the component or factory
+ * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement | SeidrElement} container - The DOM container element to mount into
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
-export function mount<C extends (() => SeidrComponentChildren) | SeidrComponentChildren | SeidrComponentFactory<void>>(
-  componentOrFactory: C,
-  container: HTMLElement | SeidrElement,
-): CleanupFunction {
+export function mount<
+  C extends SeidrComponentFunction | SeidrComponentFactory | SeidrComponent =
+    | SeidrComponentFunction<void>
+    | SeidrComponentFactory<void>
+    | SeidrComponent,
+>(componentOrFactory: C, container: HTMLElement | SeidrElement): CleanupFunction {
   // Bind the container to the render context if not already bound
   const ctx = getRenderContext();
   if (!ctx.rootNode) {
     ctx.rootNode = container;
   }
 
+  // Create the component
   const component: SeidrComponent = isSeidrComponent(componentOrFactory)
     ? componentOrFactory
-    : wrapComponent(componentOrFactory as SeidrComponentFactory<void>)();
+    : wrapComponent(componentOrFactory)();
+  appendChild(container, component);
 
-  const isAlreadyMounted = isArray(component.element)
-    ? component.element.length > 0 && container.contains(component.element[0] as Node)
-    : component.element
-      ? container.contains(component.element as Node)
-      : false;
-
-  if (!isAlreadyMounted) {
-    if (isArray(component.element)) {
-      component.element.forEach((el) => isDOMNode(el) && appendChild(container, el));
-    } else if (isDOMNode(component.element)) {
-      appendChild(container, component.element);
-    }
-  }
-
-  const cleanup = () => component.unmount();
-  getCurrentComponent()?.scope.track(cleanup);
-  component.scope.attached(container);
-
-  return cleanup;
+  // Return cleanup function
+  return () => component.unmount();
 }

@@ -253,10 +253,10 @@ describe("elementClassToggle", () => {
       expect(element.classList.contains("large")).toBe(true); // Still no change
     });
 
-    it("should cleanup computed observable bindings", () => {
+    it("should cleanup merge observable bindings", () => {
       const firstName = new Seidr("John");
       const lastName = new Seidr("Doe");
-      const isFullNameLong = Seidr.computed(
+      const isFullNameLong = Seidr.merge(
         () => `${firstName.value} ${lastName.value}`.length > 10,
         [firstName, lastName],
       );
@@ -344,10 +344,10 @@ describe("elementClassToggle", () => {
       cleanup();
     });
 
-    it("should work with computed observables", () => {
+    it("should work with merge observables", () => {
       const firstName = new Seidr("John");
       const lastName = new Seidr("Doe");
-      const isFullNameLong = Seidr.computed(
+      const isFullNameLong = Seidr.merge(
         () => `${firstName.value} ${lastName.value}`.length > 10,
         [firstName, lastName],
       );

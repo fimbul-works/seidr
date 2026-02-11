@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { Seidr } from "../seidr";
+import { Seidr } from ".";
 import { wrapSeidr } from "./wrap-seidr";
 
 describe("wrapSeidr", () => {

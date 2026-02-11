@@ -4,7 +4,7 @@ import type { Seidr } from "../seidr";
 /**
  * Route definition for Router.
  */
-export interface RouteDefinition<C extends SeidrNode, P extends Seidr<any>> {
+export interface RouteDefinition<C extends SeidrNode, P extends Seidr> {
   pattern: string | RegExp;
   componentFactory: (params?: P) => C;
 }
@@ -15,14 +15,14 @@ export interface RouteDefinition<C extends SeidrNode, P extends Seidr<any>> {
  * Helper function to create type-safe route definitions with proper TypeScript inference.
  *
  * @template {SeidrNode} C - The component or element type
- * @template {Seidr<any>} P - The params observable type
+ * @template {Seidr} P - The params observable type
  * @param {string | RegExp} pattern - Path pattern or RegExp
  * @param {(params?: P) => C} factory - Function that creates the component or element when needed
  * @returns {RouteDefinition<C, P>} Route definition object
  */
 export function createRoute<C extends SeidrNode>(
   pattern: string | RegExp,
-  componentFactory: (params: Seidr<any>) => C,
+  componentFactory: (params: Seidr) => C,
 ): RouteDefinition<C, any> {
   return { pattern, componentFactory };
 }

@@ -163,7 +163,7 @@ describe("SSRScope", () => {
       setSSRScope(undefined);
     });
 
-    it("should auto-register computed observables", () => {
+    it("should auto-register mergeed observables", () => {
       const scope = new SSRScope();
       setSSRScope(scope);
 
@@ -172,12 +172,12 @@ describe("SSRScope", () => {
       // Observe roots to trigger their registration
       a.observe(() => {});
       b.observe(() => {});
-      const computed = Seidr.computed(() => a.value + b.value, [a, b]);
+      const merged = Seidr.merge(() => a.value + b.value, [a, b]);
 
       expect(scope.size).toBe(3);
       expect(scope.has(a.id)).toBe(true);
       expect(scope.has(b.id)).toBe(true);
-      expect(scope.has(computed.id)).toBe(true);
+      expect(scope.has(merged.id)).toBe(true);
 
       setSSRScope(undefined);
     });

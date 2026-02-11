@@ -1,7 +1,7 @@
+import { appendChild } from "../dom/append-child";
 import { getDOMFactory } from "../dom/dom-factory";
 import type { CleanupFunction } from "../types";
 import { isArray } from "../util/type-guards";
-import { appendChild } from "./append-child";
 import { assignProps } from "./assign-props";
 import { decorateElement } from "./decorate-element";
 import type { SeidrElement, SeidrElementProps, SeidrNode } from "./types";
@@ -13,13 +13,13 @@ import type { SeidrElement, SeidrElementProps, SeidrNode } from "./types";
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {SeidrElementProps<K>} [props] - Element properties supporting reactive bindings
- * @param {SeidrNode[]} [children] - Child elements
+ * @param {(SeidrNode | string)[]} [children] - Child elements
  * @returns {SeidrElement<K>} A Seidr-enhanced HTML element
  */
 export function $<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
   props?: SeidrElementProps<K>,
-  children?: SeidrNode[],
+  children?: (SeidrNode | string)[],
 ): SeidrElement<K> {
   const cleanups: CleanupFunction[] = [];
   const domFactory = getDOMFactory();

@@ -7,9 +7,9 @@ import { hydrationDataStorage } from "./storage";
  * Registers a Seidr instance during hydration.
  * Called automatically by Seidr constructor when in hydration mode.
  *
- * @param {Seidr<any>} seidr - The Seidr instance to register
+ * @param {Seidr} seidr - The Seidr instance to register
  */
-export function registerHydratingSeidr(seidr: Seidr<any>): void {
+export function registerHydratingSeidr(seidr: Seidr): void {
   if (!hasHydrationData() || hydrationDataStorage.registry.has(seidr)) {
     return;
   }

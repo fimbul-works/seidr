@@ -38,8 +38,8 @@ export const Conditional = <T extends SeidrNode>(
       if (shouldShow && !currentComponent) {
         currentComponent = wrapComponent(factory)();
 
-        if (currentComponent.start) {
-          parent.insertBefore(currentComponent.start, end);
+        if (currentComponent.startMarker) {
+          parent.insertBefore(currentComponent.startMarker, end);
         }
 
         const el = currentComponent.element;
@@ -49,8 +49,8 @@ export const Conditional = <T extends SeidrNode>(
           parent.insertBefore(el, end);
         }
 
-        if (currentComponent.end) {
-          parent.insertBefore(currentComponent.end, end);
+        if (currentComponent.endMarker) {
+          parent.insertBefore(currentComponent.endMarker, end);
         }
 
         currentComponent.scope.attached(parent);

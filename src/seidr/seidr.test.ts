@@ -216,10 +216,10 @@ describe("Seidr", () => {
       expect(derived.parents[0]).toBe(parent);
     });
 
-    it("should return parents for computed observable", () => {
+    it("should return parents for merged observable", () => {
       const firstName = new Seidr("John");
       const lastName = new Seidr("Doe");
-      const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
       expect(fullName.parents).toEqual([firstName, lastName]);
       expect(fullName.parents.length).toBe(2);
@@ -274,61 +274,19 @@ describe("Seidr", () => {
     });
   });
 
-  describe("cleanup", () => {
-    it("should track cleanup functions", () => {
-      const computed = new Seidr("test");
-      let cleanupCalled = false;
+  describe("Seidr.merge", () => {
+    it("should return Seidr instance", () => {
+      const a = new Seidr(1);
+      const result = Seidr.merge(() => a.value * 2, [a]);
 
-      computed.addCleanup(() => {
-        cleanupCalled = true;
-      });
-
-      expect(cleanupCalled).toBe(false);
-
-      computed.destroy();
-
-      expect(cleanupCalled).toBe(true);
+      expect(result).toBeInstanceOf(Seidr);
     });
 
-    it("should handle multiple cleanup functions", () => {
-      const computed = new Seidr("test");
-      let cleanup1Called = false;
-      let cleanup2Called = false;
-
-      computed.addCleanup(() => {
-        cleanup1Called = true;
-      });
-      computed.addCleanup(() => {
-        cleanup2Called = true;
-      });
-
-      computed.destroy();
-
-      expect(cleanup1Called).toBe(true);
-      expect(cleanup2Called).toBe(true);
-    });
-
-    it("should clear cleanup functions after destroy", () => {
-      const computed = new Seidr("test");
-      let cleanupCalled = false;
-
-      computed.addCleanup(() => {
-        cleanupCalled = true;
-      });
-
-      computed.destroy();
-      computed.destroy(); // Call destroy twice
-
-      expect(cleanupCalled).toBe(true);
-    });
-  });
-
-  describe("computed", () => {
-    it("should create computed value with initial computation", () => {
+    it("should create derived value with initial computation", () => {
       const a = new Seidr(2);
       const b = new Seidr(3);
 
-      const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+      const sum = Seidr.merge(() => a.value + b.value, [a, b]);
 
       expect(sum.value).toBe(5);
     });
@@ -337,7 +295,7 @@ describe("Seidr", () => {
       const a = new Seidr(2);
       const b = new Seidr(3);
 
-      const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+      const sum = Seidr.merge(() => a.value + b.value, [a, b]);
 
       expect(sum.value).toBe(5);
 
@@ -355,7 +313,7 @@ describe("Seidr", () => {
       const lastName = new Seidr("Doe");
       const age = new Seidr(30);
 
-      const fullName = Seidr.computed(
+      const fullName = Seidr.merge(
         () => `${firstName.value} ${lastName.value}, age ${age.value}`,
         [firstName, lastName, age],
       );
@@ -369,11 +327,11 @@ describe("Seidr", () => {
       expect(fullName.value).toBe("John Smith, age 31");
     });
 
-    it("should work with computed values as dependencies", () => {
+    it("should work with merged values as dependencies", () => {
       const a = new Seidr(2);
       const b = new Seidr(3);
-      const sum = Seidr.computed(() => a.value + b.value, [a, b]);
-      const doubled = Seidr.computed(() => sum.value * 2, [sum]);
+      const sum = Seidr.merge(() => a.value + b.value, [a, b]);
+      const doubled = Seidr.merge(() => sum.value * 2, [sum]);
 
       expect(doubled.value).toBe(10);
 
@@ -383,51 +341,21 @@ describe("Seidr", () => {
       expect(doubled.value).toBe(16);
     });
 
-    it("should return Seidr instance", () => {
-      const a = new Seidr(1);
-      const result = Seidr.computed(() => a.value * 2, [a]);
-
-      expect(result).toBeInstanceOf(Seidr);
-    });
-
-    it("should warn when no dependencies provided", () => {
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-      Seidr.computed(() => 42, []);
-
-      expect(consoleSpy).toHaveBeenCalledWith("Computed value with zero dependencies");
-
-      consoleSpy.mockRestore();
+    it("should throw when no dependencies provided", () => {
+      expect(() => Seidr.merge(() => 42, [])).toThrow(SeidrError);
     });
 
     it("should not update when unrelated observables change", () => {
       const a = new Seidr(2);
       const unrelated = new Seidr("unrelated");
 
-      const sum = Seidr.computed(() => a.value + 1, [a]);
+      const sum = Seidr.merge(() => a.value + 1, [a]);
 
       expect(sum.value).toBe(3);
 
       unrelated.value = "changed";
 
       expect(sum.value).toBe(3); // Should remain unchanged
-    });
-
-    it("should handle computation errors gracefully", () => {
-      const a = new Seidr(2);
-
-      const faulty = Seidr.computed(() => {
-        if (a.value === 0) {
-          throw new SeidrError("Division by zero");
-        }
-        return 100 / a.value;
-      }, [a]);
-
-      expect(faulty.value).toBe(50);
-
-      // This should throw, but we can't easily test error handling here
-      // since it depends on the Seidr implementation
-      // We're mainly testing that the computed structure works
     });
   });
 
@@ -495,14 +423,14 @@ describe("Seidr", () => {
         expect(derived.isDerived).toBe(true);
       });
 
-      it("should be true for observables created via Seidr.computed()", () => {
+      it("should be true for observables created via Seidr.merge()", () => {
         const a = new Seidr(2);
         const b = new Seidr(3);
-        const computed = Seidr.computed(() => a.value + b.value, [a, b]);
+        const merged = Seidr.merge(() => a.value + b.value, [a, b]);
 
         expect(a.isDerived).toBe(false);
         expect(b.isDerived).toBe(false);
-        expect(computed.isDerived).toBe(true);
+        expect(merged.isDerived).toBe(true);
       });
 
       it("should not allow external modification of isDerived", () => {
@@ -533,11 +461,11 @@ describe("Seidr", () => {
         expect(level3.isDerived).toBe(true);
       });
 
-      it("should correctly mark nested computed observables", () => {
+      it("should correctly mark nested merged observables", () => {
         const a = new Seidr(2);
         const b = new Seidr(3);
-        const sum = Seidr.computed(() => a.value + b.value, [a, b]);
-        const doubled = Seidr.computed(() => sum.value * 2, [sum]);
+        const sum = Seidr.merge(() => a.value + b.value, [a, b]);
+        const doubled = Seidr.merge(() => sum.value * 2, [sum]);
 
         expect(a.isDerived).toBe(false);
         expect(b.isDerived).toBe(false);
@@ -545,17 +473,17 @@ describe("Seidr", () => {
         expect(doubled.isDerived).toBe(true);
       });
 
-      it("should correctly mark mixed derived and computed observables", () => {
+      it("should correctly mark mixed derived and merged observables", () => {
         const root = new Seidr(10);
         const derived = root.as((x) => x * 2);
 
         const a = new Seidr(5);
-        const computed = Seidr.computed(() => a.value + derived.value, [a, derived]);
+        const merged = Seidr.merge(() => a.value + derived.value, [a, derived]);
 
         expect(root.isDerived).toBe(false);
         expect(a.isDerived).toBe(false);
         expect(derived.isDerived).toBe(true);
-        expect(computed.isDerived).toBe(true);
+        expect(merged.isDerived).toBe(true);
       });
 
       it("should maintain isDerived flag through value updates", () => {
@@ -576,9 +504,9 @@ describe("Seidr", () => {
         const root = new Seidr(10);
         const derived = root.as((x) => x * 2);
         const a = new Seidr(5);
-        const computed = Seidr.computed(() => a.value + derived.value, [a, derived]);
+        const merged = Seidr.merge(() => a.value + derived.value, [a, derived]);
 
-        const ids = [root.id, derived.id, a.id, computed.id];
+        const ids = [root.id, derived.id, a.id, merged.id];
         const uniqueIds = new Set(ids);
 
         expect(uniqueIds.size).toBe(4);
@@ -589,7 +517,7 @@ describe("Seidr", () => {
         const lastName = new Seidr("Doe");
         const age = new Seidr(30);
 
-        const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+        const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
         const description = fullName.as((name) => `${name} is ${age.value} years old`);
 

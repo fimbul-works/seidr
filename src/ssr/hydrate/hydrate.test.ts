@@ -98,7 +98,7 @@ describe("Hydration", () => {
     expect(derived.value).toBe("ROOT"); // Derived from hydrated root
   });
 
-  it("should work with computed observables", () => {
+  it("should work with merged observables", () => {
     const data: HydrationData = {
       ctxID: 0,
       observables: {
@@ -111,7 +111,7 @@ describe("Hydration", () => {
 
     const firstName = new Seidr("");
     const lastName = new Seidr("");
-    const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+    const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
     expect(firstName.value).toBe("John");
     expect(lastName.value).toBe("Doe");

@@ -1,6 +1,20 @@
-import type { SeidrNode } from "src/element";
 import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import type { SeidrChild, SeidrNode } from "../element";
 import type { CleanupFunction } from "../types";
+
+/**
+ * Seidr component function type.
+ *
+ * @template P - Props object type (optional)
+ */
+export type SeidrComponentFunction<P = void> = P extends void
+  ? () => SeidrComponentReturnValue
+  : (props: P) => SeidrComponentReturnValue;
+
+/**
+ * Type representing the return values of a component factory.
+ */
+export type SeidrComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
@@ -79,10 +93,8 @@ export interface ComponentScope {
  * both the visual element and the cleanup logic needed for proper resource
  * management. Each component tracks its own reactive bindings, event listeners,
  * and child components.
- *
- * @template {Node} T - The type of SeidrElement this component contains
  */
-export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = SeidrNode | SeidrNode[] | null> {
+export interface SeidrComponent {
   /**
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}
@@ -92,28 +104,28 @@ export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = Seidr
   /**
    * The unique identifier of the component.
    */
-  id: string;
+  readonly id: string;
 
   /**
    * The root element of the component.
    *
    * This element is enhanced with SeidrElement functionality including
    * reactive bindings, event handling, and cleanup capabilities.
-   * @type {T}
+   * @type {SeidrComponentChildren}
    */
-  element: T;
+  element: SeidrComponentChildren;
 
   /**
    * The start marker of the component.
-   * @type {Comment | undefined}
+   * @type {Comment}
    */
-  start?: Comment;
+  startMarker: Comment;
 
   /**
    * The end marker of the component.
-   * @type {Comment | undefined}
+   * @type {Comment}
    */
-  end?: Comment;
+  endMarker: Comment;
 
   /**
    * The ComponentScope of this element.
@@ -131,7 +143,8 @@ export interface SeidrComponent<T extends SeidrNode | SeidrNode[] | null = Seidr
  * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
  */
 interface SeidrComponentFactoryInterface {
-  [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
+  readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
+  readonly name: string;
 }
 
 /**
@@ -139,10 +152,10 @@ interface SeidrComponentFactoryInterface {
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFactory<P> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
+export type SeidrComponentFactory<P = void> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
   SeidrComponentFactoryInterface;
 
 /**
  * Type representing the children of a component.
  */
-export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null;
+export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null | undefined;

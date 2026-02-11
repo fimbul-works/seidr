@@ -11,7 +11,7 @@ import { renderToString } from "./render-to-string";
 import { setSSRScope } from "./ssr-scope";
 
 describe("renderToString", () => {
-  let observables: Seidr<any>[] = [];
+  let observables: Seidr[] = [];
   let cleanupEnv: CleanupFunction;
 
   beforeEach(() => {
@@ -86,7 +86,7 @@ describe("renderToString", () => {
       firstName = new Seidr("John");
       lastName = new Seidr("Doe");
       observables.push(firstName, lastName);
-      const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
       return $("div", {}, [$("h1", { textContent: fullName })]);
     });
 
@@ -103,18 +103,18 @@ describe("renderToString", () => {
     expect(lastName!.observerCount()).toBe(0);
   });
 
-  it("should capture computed dependencies but not computed values", async () => {
+  it("should capture merged dependencies but not merged values", async () => {
     const TestComponent = component(() => {
       const a = new Seidr(2);
       const b = new Seidr(3);
-      const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+      const sum = Seidr.merge(() => a.value + b.value, [a, b]);
 
       return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
     });
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Sum: 5");
-    // Both a and b should be in observables, not sum (computed)
+    // Both a and b should be in observables, not sum (merged)
     expect(Object.keys(hydrationData.observables)).toHaveLength(2);
     const values = Object.values(hydrationData.observables);
     expect(values[0]).toBe(2);

@@ -57,7 +57,7 @@ describe("SSR Integration Tests", () => {
     it("should handle derived values", () => {
       const firstName = new Seidr("John");
       const lastName = new Seidr("Doe");
-      const fullName = Seidr.computed(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
 
       const element = $("div", { textContent: fullName });
       expect(element.toString()).toContain("John Doe");
@@ -197,8 +197,8 @@ describe("SSR Integration Tests", () => {
       const hasError = new Seidr(false);
       const isSuccess = new Seidr(true);
 
-      // Create a computed observable for the className
-      const alertClass = Seidr.computed(
+      // Create a merge observable for the className
+      const alertClass = Seidr.merge(
         () =>
           ["alert", isLoading.value && "loading", hasError.value && "error", isSuccess.value && "success"]
             .filter(Boolean)

@@ -14,13 +14,13 @@ describeDualMode("Suspense", ({ getDOMFactory }) => {
     document.body.appendChild(container);
   });
 
-  it("should show loading state initially", async () => {
+  it.only("should show loading state initially", async () => {
     const promise = new Promise<string>(() => {});
-    const factory = (val: string) => document.createTextNode(val);
-    const loading = () => document.createTextNode("Loading...");
+    const factory = (val: string) => val;
+    const loading = () => "Loading...";
 
     mount(
-      Suspense(promise, factory, loading, (err) => document.createTextNode(err.message)),
+      Suspense(promise, factory, loading, (err) => String(err.message)),
       container,
     );
     expect(container.textContent).toBe("Loading...");

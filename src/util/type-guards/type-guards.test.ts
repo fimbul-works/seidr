@@ -314,10 +314,10 @@ describe("Type Guard Utilities", () => {
         expect(isSeidr(derived)).toBe(true);
       });
 
-      it("should work with computed Seidr instances", () => {
+      it("should work with merged Seidr instances", () => {
         const a = new Seidr(1);
         const b = new Seidr(2);
-        const sum = Seidr.computed(() => a.value + b.value, [a, b]);
+        const sum = Seidr.merge(() => a.value + b.value, [a, b]);
 
         expect(isSeidr(a)).toBe(true);
         expect(isSeidr(b)).toBe(true);

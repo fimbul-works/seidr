@@ -49,8 +49,8 @@ export function Link<K extends keyof HTMLElementTagNameMap = "a">(
     const val = activeValue ?? activeClass;
     const currentPath = getCurrentPath();
 
-    // Create a combined computed that depends on both currentPath and toValue
-    const isActive = Seidr.computed(
+    // Create a combined merge that depends on both currentPath and toValue
+    const isActive = Seidr.merge(
       () => normalizePath(currentPath.value) === normalizePath(unwrapSeidr(toValue)),
       [currentPath, toValue],
       NO_HYDRATE,

@@ -1,5 +1,5 @@
 import { getCurrentComponent } from "../component/component-stack";
-import { SeidrError } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { isClient } from "../util/environment/browser";
 import { isServer } from "../util/environment/server";
 import { isEmpty } from "../util/type-guards/primitive-types";
@@ -21,17 +21,6 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * enabling automatic persistence and restoration of reactive state across page reloads
  * and browser sessions.
  *
- * ⚠️ **ERROR HANDLING REQUIRED**
- *
- * Storage operations can fail due to:
- * - Quota exceeded (localStorage limit: ~5-10MB)
- * - Access denied (privacy mode, CORS restrictions)
- * - Corrupted data (invalid JSON)
- * - Storage unavailable (older browsers, disabled storage)
- *
- * By default, useStorage throws on errors. Wrap components using useStorage in a
- * `<Safe>` boundary to handle errors gracefully:
- *
  * @template T - The type of the Seidr observable to bind to storage
  *
  * @param {string} key - The storage key to use for persisting the observable value
@@ -41,7 +30,7 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  *   will be passed to this handler instead of being thrown. Useful for custom error
  *   handling or logging.
  *
- * @returns {T} The same Seidr instance, now with storage synchronization enabled
+ * @returns {CleanupFunction} Cleanup function to remove the storage synchronization
  * @throws {Error} If storage read/write fails and no onError handler is provided
  */
 export function useStorage<T>(
@@ -49,11 +38,20 @@ export function useStorage<T>(
   seidr: Seidr<T>,
   storage: Storage = isClient() ? localStorage : ({} as Storage),
   onError?: StorageErrorHandler,
-): Seidr<T> {
+): CleanupFunction {
   // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
   if (isServer()) {
-    return seidr;
+    return () => {};
   }
+
+  const handleError = (err: unknown, operation: "read" | "write") => {
+    const error = wrapError(err);
+    if (onError) {
+      onError(error, operation);
+    } else {
+      throw new SeidrError(`Failed to ${operation} from storage (key: ${key}): ${error.message}`, seidr);
+    }
+  };
 
   // Load initial value from storage
   try {
@@ -62,12 +60,7 @@ export function useStorage<T>(
       seidr.value = JSON.parse(initial);
     }
   } catch (error) {
-    const err = wrapError(error);
-    if (onError) {
-      onError(err, "read");
-    } else {
-      throw new SeidrError(`Failed to read from storage (key: ${key}): ${err.message}`);
-    }
+    handleError(error, "read");
   }
 
   // Observe changes and save to storage
@@ -75,17 +68,12 @@ export function useStorage<T>(
     try {
       storage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      const err = wrapError(error);
-      if (onError) {
-        onError(err, "write");
-      } else {
-        throw new SeidrError(`Failed to write to storage (key: ${key}): ${err.message}`);
-      }
+      handleError(error, "write");
     }
   });
 
   // Cleanup on component unmount
   getCurrentComponent()?.scope.track(cleanup);
 
-  return seidr;
+  return cleanup;
 }

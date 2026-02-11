@@ -70,7 +70,7 @@ export function clearSSRScope(ctxID: number): void {
  */
 export class SSRScope {
   // id -> instance
-  private observables = new Map<string, Seidr<any>>();
+  private observables = new Map<string, Seidr>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
 
@@ -109,9 +109,9 @@ export class SSRScope {
    * Registers an observable with this scope.
    * Called automatically by Seidr during SSR rendering when first observed/bound.
    *
-   * @param {Seidr<any>} seidr - The Seidr instance to register
+   * @param {Seidr} seidr - The Seidr instance to register
    */
-  register(seidr: Seidr<any>): void {
+  register(seidr: Seidr): void {
     // console.log("Registering Seidr", seidr.id, "at scope size", this.observables.size);
     this.observables.set(seidr.id, seidr);
   }
@@ -126,7 +126,7 @@ export class SSRScope {
   /**
    * Gets an observable by ID from this scope.
    */
-  get(id: string): Seidr<any> | undefined {
+  get(id: string): Seidr | undefined {
     return this.observables.get(id);
   }
 

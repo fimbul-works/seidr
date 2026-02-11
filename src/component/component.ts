@@ -1,14 +1,20 @@
-import { SEIDR_CLEANUP, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { getMarkerComments } from "../dom/get-marker-comments";
 import { $text } from "../dom/text";
-import type { SeidrElementInterface, SeidrNode } from "../element";
+import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
-import { isHTMLElement } from "../util/type-guards/dom-node-types";
-import { isArray, isBool, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { isSeidrComponent, isSeidrElement } from "../util/type-guards/seidr-dom-types";
+import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
+import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
+import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
 import { createScope } from "./component-scope";
 import { getComponentStack } from "./component-stack";
-import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } from "./types";
+import type {
+  SeidrComponent,
+  SeidrComponentChildren,
+  SeidrComponentFactory,
+  SeidrComponentFunction,
+  SeidrComponentReturnValue,
+} from "./types";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -20,51 +26,62 @@ import type { SeidrComponent, SeidrComponentChildren, SeidrComponentFactory } fr
  *
  * @template P - Props object type (optional)
  *
- * @param {(props: P) => SeidrComponentChildren} factory - Function that accepts props and creates the component element
+ * @param {(props: P) => SeidrComponentReturnValue} factory - Function that accepts props and creates the component element
  * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
  */
 export const component = <P = void>(
-  factory: (props: P) => SeidrComponentChildren,
+  factory: SeidrComponentFunction<P>,
   name: string = "Component",
 ): SeidrComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
-    const ctx = getRenderContext();
-    const instanceId = getNextId();
-    const id = `${name}-${ctx.ctxID}-${instanceId}`;
-
+    const id = `${name}-${getRenderContext().ctxID}-${getNextId()}`;
+    const scope = createScope(id);
     const stack = getComponentStack();
     const isRootComponent = stack.length === 0;
 
-    // Create the scope and partial SeidrComponent
-    const scope = createScope(id);
+    // Create partial SeidrComponent
     const comp = {
       [TYPE_PROP]: TYPE_COMPONENT,
       id,
       scope,
       unmount: () => {
+        // If already destroyed, do nothing
         if (comp.scope.isDestroyed) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(`[${id}] Unmounting already destroyed component`);
+          }
           return;
         }
 
+        // Destroy the scope
         comp.scope.destroy();
 
-        (comp.start as ChildNode)?.remove?.();
+        // Remove the start marker
+        comp.startMarker?.remove();
 
+        /**
+         * Removes a child component or DOM node from the DOM.
+         * @param {SeidrComponentChildren} child - The child component or DOM node to remove
+         */
+        const removeChild = (child: SeidrComponentChildren): void => {
+          if (isSeidrComponent(child)) {
+            child.unmount();
+          } else if (isDOMNode(child)) {
+            child.remove();
+          }
+        };
+
+        // Remove the element
         const el = comp.element;
         if (isArray(el)) {
-          el.forEach((child) => {
-            if (isSeidrComponent(child)) {
-              child.unmount();
-            } else {
-              (child as ChildNode)?.remove?.();
-            }
-          });
+          el.forEach(removeChild);
         } else {
-          (el as ChildNode)?.remove?.();
+          removeChild(el);
         }
 
-        (comp.end as ChildNode)?.remove?.();
+        // Remove the end marker
+        comp.endMarker?.remove();
       },
     } as SeidrComponent;
 
@@ -82,47 +99,13 @@ export const component = <P = void>(
       const result = factory(props);
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-      const toNode = (item: any): SeidrComponentChildren => {
-        if (isEmpty(item) || isBool(item)) {
-          return null;
-        }
+      const toNode = (item: SeidrChild): SeidrComponentChildren =>
+        isSeidrComponent(item) ? item.element : isStr(item) || isNum(item) ? $text(item) : item;
 
-        if (isStr(item) || isNum(item)) {
-          return $text(item);
-        }
-
-        if (isSeidrComponent(item)) {
-          return item.element as SeidrNode | SeidrNode[];
-        }
-
-        return item;
-      };
-
-      // Normalize result: wrap arrays, null, and undefined
       const [startMarker, endMarker] = getMarkerComments(id);
-      comp.start = startMarker;
-      comp.end = endMarker;
-
-      if (isArray(result)) {
-        const children = result.map(toNode).filter(Boolean) as SeidrNode[];
-        comp.element = [startMarker, ...children, endMarker];
-      } else if (isEmpty(result) || isBool(result)) {
-        comp.element = [startMarker, endMarker];
-      } else {
-        // Single node or component
-        const node = toNode(result);
-        comp.element = node;
-      }
-
-      // Link element cleanup to scope destroy
-      if (isSeidrElement(comp.element)) {
-        const el = comp.element as SeidrElementInterface;
-        const originalCleanup = el[SEIDR_CLEANUP];
-        el[SEIDR_CLEANUP] = () => {
-          originalCleanup();
-          comp.unmount();
-        };
-      }
+      comp.startMarker = startMarker;
+      comp.endMarker = endMarker;
+      comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as SeidrComponentChildren) : toNode(result);
     } catch (err) {
       comp.unmount();
       throw err;
@@ -138,7 +121,9 @@ export const component = <P = void>(
 
     // Root component must clear out component stack
     if (isRootComponent && stack.length > 0) {
-      console.warn("Component stack not cleared");
+      if (process.env.NODE_ENV === "development") {
+        console.warn(`[${id}] Component stack not cleared`);
+      }
       while (stack.length) {
         stack.pop();
       }
@@ -147,6 +132,20 @@ export const component = <P = void>(
     return comp;
   }) as SeidrComponentFactory<P>;
 
-  componentFactory[TYPE_PROP] = TYPE_COMPONENT_FACTORY;
+  Object.defineProperties(componentFactory, {
+    [TYPE_PROP]: {
+      value: TYPE_COMPONENT_FACTORY,
+      writable: false,
+      configurable: false,
+      enumerable: true,
+    },
+    name: {
+      value: name,
+      writable: false,
+      configurable: false,
+      enumerable: true,
+    },
+  });
+
   return componentFactory;
 };

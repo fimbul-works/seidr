@@ -6,7 +6,7 @@
 
 [![npm version](https://badge.fury.io/js/%40fimbul-works%2Fseidr.svg)](https://www.npmjs.com/package/@fimbul-works/seidr)
 [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/microsoft/TypeScript)
-[![Bundle Size](https://img.shields.io/bundlephobia/minzip/@fimbul-works/seidr)](https://bundlephobia.com/package/@fimbul-works/seidr)
+[![Bundle Size](https://img.shields.io/bundlephobia/minzip/%40fimbul-works%2Fseidr)](https://bundlephobia.com/package/@fimbul-works/seidr)
 
 ## Table of Contents
 
@@ -22,24 +22,24 @@
 - [Performance](#-performance)
 - [Browser Support](#-browser-support)
 
-## ✨ Features
+## Features
 
 - 🔋 **Batteries Included** - Built-in Router, SSR engine, and Global State
 - 🪄 **Reactive Bindings** - Observable to DOM attribute binding
 - 🎯 **Type-Safe Props** - TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - 📦 **Tiny Footprint**
-  - Hello World: **2.7KB**
-  - Full Stack (Router + SSR): **7.5KB**
+  - Hello World: **2.4KB**
+  - Full Stack (Router + SSR): **7.3KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
 
-## 🎯 When to Use Seidr
+## When to Use Seidr
 
 Seidr is designed for developers who value **control, correctness, and deliberate engineering**. It's not the right tool for every project.
 
-### ✅ Ideal Use Cases
+### Ideal Use Cases
 
 **Small to Medium-Sized Applications**
 - SPAs where bundle size matters
@@ -60,7 +60,7 @@ Seidr is designed for developers who value **control, correctness, and deliberat
 - Understanding how their tools work internally
 - Control over performance characteristics
 
-### ❌ Consider Alternatives When
+### Consider Alternatives When
 
 **You Need**
 - A rich ecosystem of pre-built components (use React, Vue)
@@ -74,7 +74,7 @@ Seidr is designed for developers who value **control, correctness, and deliberat
 - Doesn't want to think about cleanup and memory management
 - Needs extensive community support and third-party integrations
 
-### 🎨 The Philosophy
+### The Philosophy
 
 Seidr embraces **fact-based tradeoffs**:
 
@@ -84,7 +84,7 @@ Seidr embraces **fact-based tradeoffs**:
 
 This is infrastructure for developers who want a "batteries included" framework (Router, SSR, Global State) without the bloat of a Virtual DOM or build-step requirement.
 
-## 📦 Installation
+## Installation
 
 ```bash
 npm install @fimbul-works/seidr
@@ -97,7 +97,7 @@ yarn add @fimbul-works/seidr
 pnpm install @fimbul-works/seidr
 ```
 
-## 🚀 Quick Start
+## Quick Start
 
 ```typescript
 import { useScope, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
@@ -127,19 +127,19 @@ const Counter = () => {
 mount(Counter, document.body);
 ```
 
-## 🧠 Conceptual Overview
+## Conceptual Overview
 
 Before diving into the details, it helps to understand Seidr's mental model. This section walks through the complete flow from state to reactivity to cleanup.
 
 ### The Three Pillars
 
-**1. Observables (`Seidr<T>`)**
+**1. Reactive State (`Seidr`)**
 - The only class in Seidr
 - Holds a value and notifies listeners when it changes
 - Think "reactive variable" not "state management system"
 
 **2. Bindings**
-- Connect observables to DOM properties
+- Connect reactive state to DOM properties
 - Automatically update when the observable changes
 - No manual DOM manipulation needed
 
@@ -168,7 +168,7 @@ const items = new Seidr([
 #### Step 2: Derive Filtered Results
 ```typescript
 // Create derived observable that filters based on search
-const filteredItems = Seidr.computed(() => {
+const filteredItems = Seidr.merge(() => {
   const query = searchQuery.value.toLowerCase();
   return query
     ? items.filter(item => item.name.toLowerCase().includes(query))
@@ -210,7 +210,7 @@ const SearchApp = () => {
     { id: 3, name: 'Cherry' }
   ]);
 
-  const filteredItems = Seidr.computed(() => {
+  const filteredItems = Seidr.merge(() => {
     const query = searchQuery.value.toLowerCase();
     return query
       ? items.filter(item => item.name.toLowerCase().includes(query))
@@ -293,7 +293,7 @@ Seidr follows a "Push-Based" reactive model. Unlike React (which pulls updates b
 [ Root Observable (Seidr) ] ──▶ [ Cleanup Tracking (Scope) ]
       │
       ▼
-[ Derived Observables (Seidr.computed or instance.as) ]
+[ Derived Observables (Seidr.merge or instance.as) ]
       │
       ▼
 [ DOM Bindings ($props) ] ──▶ [ Real DOM Updates ]
@@ -319,13 +319,13 @@ Seidr follows a "Push-Based" reactive model. Unlike React (which pulls updates b
 
 This model gives you **control** without **complexity**. You understand exactly what's happening, but you don't have to manage the details manually.
 
-## 🎯 Core Concepts
+## Core Concepts
 
-Seidr is built around `Seidr<T>` - a reactive observable that manages state and automatically updates bound DOM elements. All other features are composable utility functions.
+Seidr is built around `Seidr` - a reactive observable that manages state and automatically updates bound DOM elements. All other features are composable utility functions.
 
 ### Reactive State
 
-State is stored in `Seidr<T>` observables. Create them, pass them to element props, and Seidr handles the rest.
+State is stored in `Seidr` observables. Create them, pass them to element props, and Seidr handles the rest.
 
 ```typescript
 import { Seidr, $input } from '@fimbul-works/seidr';
@@ -336,11 +336,11 @@ const input = $input({ disabled });
 disabled.value = true; // Input instantly becomes disabled
 ```
 
-**Learn more:** [`Seidr`](API.md#seidrt)
+**Learn more:** [`Seidr`](docs/Seidr.md#seidr-class)
 
-### Derived Values
+#### Derived Values
 
-Transform observables with `.as()` and `.computed()` for derived values that update automatically.
+Transform observables with `.as()` and `.merge()` for derived values that update automatically.
 
 ```typescript
 const count = new Seidr(0);
@@ -348,7 +348,7 @@ const doubled = count.as(n => n * 2);
 const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 ```
 
-**Learn more:** [`instance.as()`](API.md#seidr-as) | [`Seidr.computed()`](API.md#seidr-computed)
+**Learn more:** [`instance.as()`](docs/Seidr.md#as) | [`Seidr.merge()`](docs/Seidr.md#merge)
 
 ### Components
 
@@ -377,7 +377,7 @@ const UserProfile = ({ name, initialAge = 30 }) => {
 
 > **The Magic:** When you mount a function using `mount()`, `List()`, `Conditional()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `useScope()` and automatic cleanup work perfectly in plain functions!
 
-#### Creating Reusable Factories with `component()`
+#### Creating Reusable Factories with component()
 
 If you need to create a reusable component factory that can be passed around as a single unit, or if you need to manually instantiate a component instance, you can use the `component()` wrapper:
 
@@ -427,7 +427,7 @@ mount(Counter, document.body);
 - Props can include initial values, configuration, or callbacks
 - Destructuring with defaults (`= {}`) makes props optional
 
-**Learn more:** [component()](API.md#component) | [Manual bindings](API.md#seidrbind)
+**Learn more:** [component()](docs/components.md#component) | [Manual bindings](docs/Seidr.md#bind)
 
 ### Memory Management
 
@@ -456,105 +456,18 @@ const GoodComponent = () => {
 };
 ```
 
-### Mounting
-
-Mount components to DOM or use them as children in other components.
-
-```typescript
-// For direct DOM mounting (top-level)
-mount(MyComponent, document.body);
-
-// Conditional rendering as a child
-$div({}, [
-  Conditional(isVisible, DetailsPanel)
-]);
-
-// List rendering as a child with key-based diffing
-$ul({}, [
-  List(todos, item => item.id, item => TodoItem({ item }))
-]);
-
-// Switch between components as a child
-$div({}, [
-  Switch(viewMode, {
-    list: ListView,
-    grid: GridView
-  })
-]);
-```
-
-**Shorthand utilities for direct DOM mounting:**
-```typescript
-// Mount directly to DOM (equivalent to mount(Conditional(...), container))
-mountConditional(isVisible, () => DetailsPanel(), container);
-
-// Mount directly to DOM (equivalent to mount(List(...), container))
-mountList(todos, item => item.id, item => TodoItem({ item }), container);
-
-// Mount directly to DOM (equivalent to mount(Switch(...), container))
-mountSwitch(viewMode, { list: ListView, grid: GridView }, container);
-```
-
-**Learn more:** [Mounting](API.md#mounting--declarative-components)
-
-### Two-Way Form Binding
-
-Bind form inputs to observables with automatic synchronization:
-
-```typescript
-import { Seidr, $input, $span, $div, bindInput } from '@fimbul-works/seidr';
-
-const searchText = new Seidr('');
-
-const searchComponent = $div({}, [
-  $input({
-    type: 'text',
-    placeholder: 'Search...',
-    ...bindInput(searchText)
-  }),
-  $span({ textContent: searchText.as(t => `Searching: ${t}`) })
-]);
-```
-
-### Persistent State
-
-Automatically persist observables to localStorage/sessionStorage:
-
-```typescript
-import { useStorage, Seidr } from '@fimbul-works/seidr';
-
-// Create observable that persists to localStorage
-const todos = useStorage(
-  'todo-list',
-  new Seidr<TodoItem[]>([])
-);
-
-// Automatically saved to localStorage
-todos.value = [{ id: 1, text: 'Learn Seidr', completed: true }];
-
-// On page reload, value is restored from localStorage
-```
-
-**Learn more:** [useStorage()](API.md#withstorage)
-
 ### Global State Management
+
 Seidr provides a simple, type-safe global state management system via the `useState()` hook.
 
-> ⚠️ **Crucial Difference from React:** Unlike React's `useState` which is local to a specific component instance, Seidr's `useState` is **Global**. It uses a singleton pattern: every call with the same key returns the exact same observable instance, effectively acting as "Shared State" across your entire application.
+> ⚠️ **Crucial Difference from React:** Unlike React's `useState` which is local to a specific component instance, Seidr's `useState` is **global**. It uses a singleton pattern: every call with the same key returns the exact same observable instance, effectively acting as "Shared State" across your entire application.
 
 ```typescript
 import { useState, $button, $span } from '@fimbul-works/seidr';
 
-// 1. Use the hook with a unique key
 const Counter = () => {
-  const [userCount, setUserCount] = useState<number>('user-count');
+  const [userCount, setUserCount] = useState('user-count', 0);
 
-  // 2. Initialize if needed (or let it be undefined)
-  if (userCount.value === undefined) {
-      setUserCount(0);
-  }
-
-  // 3. Bind and update
   return $button({
     textContent: userCount.as(n => `Users: ${n}`),
     onclick: () => setUserCount(userCount.value! + 1)
@@ -564,7 +477,7 @@ const Counter = () => {
 
 **SSR Best Practice:** The `useState` hook is safe for SSR because it resolves the state context lazily when called, ensuring that state is isolated per-request during server rendering.
 
-**Learn more:** [useState()](API.md#usestate)
+**Learn more:** [useState()](docs/state.md#usestate)
 
 ### Custom Element Factories
 
@@ -578,85 +491,23 @@ const $primaryButton = $factory('button', { className: 'btn btn-primary' });
 const submitButton = $primaryButton({ textContent: 'Submit' });
 ```
 
-**Learn more:** [$factory()](API.md#factory---create-custom-element-creators)
+**Learn more:** [$factory()](docs/DOM.md#factory)
 
 ## 📚 API Reference
 
-For complete API documentation with all methods, parameters, and examples, see **[API.md](API.md)**.
-
-Quick links:
-
-- **Core:** [Seidr<T>](API.md#seidrt-class) | [.as()](API.md#seidr-as) | [.observe()](API.md#seidr-observe) | [.bind()](API.md#seidr-bind) | [Seidr.computed()](API.md#seidr-computed)
-- **Components:** [useScope()](API.md#components-functions) | [component()](API.md#component) | [Safe()](API.md#safe) | [bindInput()](API.md#bindinput)
-- **Mounting:** [mount()](API.md#mount) | [Conditional()](API.md#conditional) | [List()](API.md#list) | [Switch()](API.md#switch)
-- **DOM:** [$()](API.md#---create-dom-elements) | [$factory()](API.md#factory---create-custom-element-creators) | [Predefined Elements](API.md#predefined-element-creators)
-- **Routing:** [Router()](API.md#router) | [Route()](API.md#route) | [Link()](API.md#link) | [navigate()](API.md#navigate)
-- **Utilities:** [random()](API.md#random) | [cn()](API.md#cn) | [useStorage()](API.md#withstorage) | [Type Guards](API.md#type-guards)
-- **State:** [useState()](API.md#usestate) | [setState()](API.md#setstate) | [getState()](API.md#getstate) | [createStateKey()](API.md#createstatekey)
-- **Environment:** [inClient() / inServer()](API.md#environment-utilities)
+For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
 
 ---
 
 ## 🌐 Server-Side Rendering (Experimental)
 
-> ⚠️ **Experimental** - While the SSR API is stable and likely to remain unchanged, the server-side DOM implementation is currently experimental and doesn't support all `HTMLElement` functionality. It is suitable for most UI rendering but may require environment-specific guards (`inClient`, `inServer`) for complex DOM manipulations.
+> ⚠️ **Experimental** - While the SSR API is stable and likely to remain unchanged, the server-side DOM implementation is currently a work in progress and may not support all `HTMLElement` functionality. It is suitable for most UI rendering but may require environment-specific guards (`inClient`, `inServer`) for complex DOM manipulations.
 
 Seidr provides SSR support with automatic state capture and client-side hydration. This allows you to render your Seidr applications on the server and make them interactive on the client.
 
-**Key Features:**
-- 🖥️ Server-side HTML rendering with `renderToString()`
-- 💾 Automatic state capture and dependency graph traversal
-- 🔄 Client-side hydration with `hydrate()`
-- 📦 Compact numeric ID-based hydration data
-- 🔒 Render context isolation using AsyncLocalStorage (Node.js)
+For more information, see **[SSR.md](docs/SSR.md)**.
 
-**Quick Start:**
-
-```typescript
-// Server-side (Node.js)
-import { useScope, $, Seidr, renderToString } from '@fimbul-works/seidr';
-
-const App = () => {
-  const count = new Seidr(0);
-
-  return $('div', {}, [
-    $('p', { textContent: count.as(n => `Count: ${n}`) }),
-    $('button', {
-      textContent: 'Increment',
-      onclick: () => count.value++
-    })
-  ]);
-};
-
-// In your server route (must be async for AsyncLocalStorage context!)
-app.get('/', async (req, res) => {
-  const { html, hydrationData } = await renderToString(App);
-
-  res.send(`
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <script>window.__HYDRATION_DATA__ = ${JSON.stringify(hydrationData)}</script>
-      </head>
-      <body>
-        <div id="app">${html}</div>
-        <script type="module" src="/client.js"></script>
-      </body>
-    </html>
-  `);
-});
-```
-
-```typescript
-// Client-side
-import { hydrate } from '@fimbul-works/seidr';
-import { App } from './app.js';
-
-const hydrationData = window.__HYDRATION_DATA__;
-hydrate(App, document.getElementById('app'), hydrationData);
-```
-
-**Learn more:** **[SSR.md](SSR.md)** - Complete SSR documentation with examples, best practices, and gotchas.
+---
 
 ## 🌊 Animation
 
@@ -676,7 +527,7 @@ const opacity = new Seidr(0);
 await tween(opacity, 'value', 1, 500, easeOutExpo);
 ```
 
-**[Read the full documentation](https://www.npmjs.com/package/@fimbul-works/flaedi)**
+**[Read the full documentation](https://www.npmjs.com/package/@fimbul-works/flaedi/README.md)**
 
 ## ⚡ Performance
 
@@ -699,25 +550,9 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 ### Minimal Bundle Impact
 - **React counter app**: ~42KB (React + ReactDOM)
 - **Vue counter app**: ~35KB (Vue runtime)
-- **Seidr counter app**: ~2.9KB (minified + gzipped)
+- **Seidr counter app**: ~2.6KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The ~7.5KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
-
-### Efficient List Rendering
-Key-based diffing ensures minimal DOM operations:
-
-```typescript
-// Only removes 1 element, doesn't re-render entire list
-todos.value = todos.value.filter(t => t.id !== 3);
-```
-
-### Memory Safety
-Automatic cleanup prevents memory leaks from abandoned subscriptions:
-
-```typescript
-const comp = MyComponent();
-comp.unmount(); // All bindings cleaned up automatically
-```
+> **Note on Tree-Shaking:** The ~7.3KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ## 🌐 Browser Support
 

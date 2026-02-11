@@ -87,7 +87,7 @@ export const Router = component(({ routes, fallback }: RouterProps) => {
       return;
     }
 
-    const { start: startNode, end: endNode, element: el } = comp;
+    const { startMarker: startNode, endMarker: endNode, element: el } = comp;
 
     if (startNode) {
       parent.insertBefore(startNode, anchor);
