@@ -85,6 +85,7 @@
     "test:ui": "vitest run src/**/*parity.test.ts src/**/*dual*.test.ts",
     "test:careful": "vitest run --isolate --maxConcurrency=1 --no-file-parallelism --pool forks",
     "test:ssr:inspect": "npx tsx examples/ssr/inspect.ts",
+    "docs": "tsx scripts/generate-api-docs.ts",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "devDependencies": {

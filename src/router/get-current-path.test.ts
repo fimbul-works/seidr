@@ -1,13 +1,8 @@
-import { beforeEach, expect, it } from "vitest";
+import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup";
 import { getCurrentPath } from "./get-current-path";
-import { initRouter } from "./init-router";
 
 describeDualMode("getCurrentPath", () => {
-  beforeEach(() => {
-    initRouter("/");
-  });
-
   it("should return a Seidr instance with current path", () => {
     const path = getCurrentPath();
     expect(path.value).toBe("/");

@@ -40,7 +40,9 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
     },
     track(cleanup: CleanupFunction): void {
       if (destroyed) {
-        console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
+        }
         cleanup();
         return;
       }
@@ -78,7 +80,9 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
     },
     attached(parent: Node) {
       if (attachedParent) {
-        console.warn(`[${id}] Calling attached on an already attached scope`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[${id}] Calling attached on an already attached scope`);
+        }
         return; // Already attached
       }
 
@@ -89,7 +93,9 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
     },
     destroy() {
       if (destroyed) {
-        console.warn(`[${id}] Destroying already destroyed scope`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(`[${id}] Destroying already destroyed scope`);
+        }
         return;
       }
 

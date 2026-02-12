@@ -61,7 +61,7 @@ export const Router = <C extends SeidrComponentFactoryFunction = SeidrComponentF
     const updateComponent = (index: number) => {
       currentComponent =
         index > -1
-          ? wrapComponent(routes[index].factory)(currentParamsSeidr!)
+          ? wrapComponent(routes[index][1])(currentParamsSeidr!)
           : isFn(fallback)
             ? wrapComponent(fallback)()
             : undefined;

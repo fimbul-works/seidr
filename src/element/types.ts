@@ -60,7 +60,9 @@ type FlexibleCSSStyleDeclaration = Partial<CSSStyleDeclaration>;
  */
 export type ReactiveValue<T> = [T] extends [Scalar]
   ? T | Seidr<string> | Seidr<string | null> | Seidr<number> | Seidr<number | null> | Seidr<boolean>
-  : T;
+  : [T] extends [infer A]
+    ? T | Seidr<A> | null
+    : T;
 
 /**
  * Type definition for reactive HTML element properties.

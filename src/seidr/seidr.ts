@@ -88,6 +88,10 @@ export class Seidr<T = any> {
    * @param {T} v - The new value to store
    */
   set value(v: T) {
+    this.set(v);
+  }
+
+  private set(v: T) {
     if (!Object.is(this.v, v)) {
       // console.log("update", this.id, "=", v, "observers", this.f.size);
       this.v = v;
@@ -192,7 +196,7 @@ export class Seidr<T = any> {
   as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}): Seidr<D> {
     const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.c.push(this.observe((updatedValue) => (derived.value = transformFn(updatedValue))));
+    this.c.push(this.observe((updatedValue) => (derived.set(transformFn(updatedValue)))));
     return derived;
   }
 
@@ -213,7 +217,7 @@ export class Seidr<T = any> {
 
     const merged = new Seidr<D>(mergeFn(), options);
     merged.setParents(parents);
-    parents.forEach((p) => merged.c.push(p.observe(() => (merged.value = mergeFn()))));
+    parents.forEach((p) => merged.c.push(p.observe(() => (merged.set(mergeFn())))));
     return merged;
   }
 

@@ -16,19 +16,19 @@ export interface RouteMatch<P = Record<string, string>> {
  */
 export const matchRoute = (path: string, routes: RouteDefinition<any, any>[]): RouteMatch | null => {
   for (let i = 0; i < routes.length; i++) {
-    const route = routes[i];
+    const [pattern] = routes[i];
     let params: Record<string, string> | false = false;
 
-    if (route.pattern instanceof RegExp) {
-      const match = path.match(route.pattern);
+    if (pattern instanceof RegExp) {
+      const match = path.match(pattern);
       params = match ? (match.groups ?? {}) : false;
     } else {
-      params = parseRouteParams(route.pattern, path);
+      params = parseRouteParams(pattern, path);
     }
 
     if (params) {
       return {
-        route,
+        route: routes[i],
         params: params as any,
         index: i,
       };

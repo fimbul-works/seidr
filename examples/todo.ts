@@ -13,7 +13,6 @@ import {
   mount,
   Seidr,
   useState,
-  useStorage,
 } from "../src/index.core.js";
 
 type Todo = { id: number; text: string; completed: boolean };
@@ -49,10 +48,6 @@ const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 export const TodoApp = (initialTodos: Todo[] = []) => {
   // Store todos in global app state
   const [todos, setTodos] = useState<Todo[]>("todos", initialTodos);
-
-  // Use local storage
-  useStorage<Todo[]>("todos", todos);
-
   const newTodoText = new Seidr("");
 
   const addTodo = (e: Event) => {

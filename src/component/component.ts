@@ -48,7 +48,9 @@ export const component = <P = void>(
       unmount: () => {
         // If already destroyed, do nothing
         if (comp.scope.isDestroyed) {
-          console.warn(`[${id}] Unmounting already destroyed component`);
+          if (process.env.NODE_ENV === "development") {
+            console.warn(`[${id}] Unmounting already destroyed component`);
+          }
           return;
         }
 

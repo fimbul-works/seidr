@@ -90,7 +90,7 @@ describeDualMode("matchRoute", () => {
 
     const paramsSeidr = new Seidr(match.params);
     const container = $div();
-    const factory = wrapComponent(match.route.factory);
+    const factory = wrapComponent(match.route[1]);
 
     const component = factory(paramsSeidr);
     unmount = mount(component, container);

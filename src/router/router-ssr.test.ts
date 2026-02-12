@@ -6,9 +6,7 @@ import { clearHydrationData, renderToString, setSSRScope } from "../ssr/internal
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
-import { initRouter } from "./init-router";
 import { navigate } from "./navigate";
-import { Route } from "./route";
 import { Router } from "./router";
 
 describe("Router SSR", () => {
@@ -106,7 +104,6 @@ describe("Router SSR", () => {
     );
 
     const { html } = await renderToString(App);
-    console.log(html);
     expect(html).toContain("Home");
   });
 });

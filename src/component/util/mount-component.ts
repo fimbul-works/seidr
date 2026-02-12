@@ -31,6 +31,8 @@ export const mountComponent = (component: SeidrComponent, anchor: Node): void =>
 
     parent.insertBefore(endNode, anchor);
 
-    component.scope.attached(parent);
+    if (!component.scope.parentNode) {
+      component.scope.attached(parent);
+    }
   }
 };

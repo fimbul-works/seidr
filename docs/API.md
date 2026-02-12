@@ -9,7 +9,7 @@
     - [`useStorage()`](state.md#usestorage) - Helper function to use local storage or session Storage as a reactive state.
     - [`createStateKey()`](state.md#createstatekey) - Create a unique key for a global state that captures the type of the state.
 ## [DOM Elements](DOM.md)
-  - [`$()`](DOM.md#---create-dom-elements) - Create a DOM element.
+  - [`$()`](DOM.md#--create-dom-elements) - Create a DOM element.
   - [`$factory()`](DOM.md#factory) - Create a custom element creator.
   - [Predefined Element Creators](DOM.md#predefined-element-creators) - Predefined element creators for common DOM elements.
   - [`SeidrElement`](DOM.md#seidrelement-type) - The type of an augmented HTMLElement.
@@ -51,9 +51,12 @@
   - [`isSeidrElement`](TypeGuards.md#isseidrelement) - Check if a value is a [`SeidrElement`](DOM.md#seidrelement-type).
   - [`isSeidrComponent`](TypeGuards.md#isseidrcomponent) - Check if a value is a [`SeidrComponent`](Components.md#seidrcomponent-type).
 ## [SSR API](SSR.md)
+- [Key Features](SSR.md#key-features)
+- [Quick Start](SSR.md#quick-start)
+- [Architecture](SSR.md#architecture-runtime-graph-reconstruction)
 - [`renderToString()`](SSR.md#rendertostring) - Render a Seidr component to a string.
 - [`hydrate()`](SSR.md#hydrate) - Hydrate a Seidr component.
-- [SSR Environment Utilities](SSR.md#ssr-environment-utilities)
+- SSR Environment Utilities
   - [`isClient()`](SSR.md#isclient) - Check if the code is running on the client.
   - [`inClient()`](SSR.md#inclient) - Run code only on the client.
   - [`isServer()`](SSR.md#isserver) - Check if the code is running on the server.

@@ -7,14 +7,11 @@ import type { Seidr } from "../seidr";
  * @template {Seidr<Record<string, string>>} P - The params observable type
  * @template {SeidrComponentFactoryFunction<P>} C - The component or element type
  */
-export interface RouteDefinition<
+export type RouteDefinition<
   T extends Record<string, string> = Record<string, string>,
   P extends Seidr<T> = Seidr<T>,
   C extends SeidrComponentFactoryFunction<P> = SeidrComponentFactoryFunction<P>,
-> {
-  pattern: string | RegExp;
-  factory: C;
-}
+> = [pattern: string | RegExp, factory: C];
 
 /**
  * Create a route definition for use with Router.
@@ -35,4 +32,4 @@ export const createRoute = <
 >(
   pattern: string | RegExp,
   factory: C,
-): RouteDefinition<T, P, C> => ({ pattern, factory });
+): RouteDefinition<T, P, C> => [pattern, factory];

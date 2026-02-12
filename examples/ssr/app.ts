@@ -1,4 +1,4 @@
-import { $a, $div, $footer, $nav, initRouter, inServer, Link, Router, useState } from "../../src/index.browser.js";
+import { $a, $div, $footer, $nav, inServer, Link, Router, useState } from "../../src/index.browser.js";
 import { routes } from "./routes.js";
 import type { PageContext } from "./server.js";
 import type { BlogPost } from "./types.js";
@@ -17,7 +17,6 @@ const Header = () =>
 export const BlogApp = ({ initialPosts = [], initialCurrentPost = undefined }: PageContext = {}) => {
   const [, setPosts] = useState<BlogPost[]>("posts");
   const [, setCurrentPost] = useState<BlogPost | undefined>("currentPost");
-  initRouter();
 
   // Initialize state from props on the server
   inServer(() => {
@@ -33,10 +32,7 @@ export const BlogApp = ({ initialPosts = [], initialCurrentPost = undefined }: P
   return $div({ className: "app-container" }, [
     Header(),
     $div({ className: "main-content" }, [
-      Router({
-        routes,
-        fallback: () => $div({ textContent: "404 Not Found" }),
-      }),
+      Router(routes, () => $div({ textContent: "404 Not Found" })),
     ]),
     $footer({ textContent: `© ${new Date().getFullYear()} Seidr Blog Example` }),
   ]);

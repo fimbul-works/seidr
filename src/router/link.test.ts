@@ -4,7 +4,6 @@ import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";
-import { initRouter } from "./init-router";
 import { Link } from "./link";
 import { navigate } from "./navigate";
 
@@ -16,7 +15,7 @@ describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
     const document = getDOMFactory().getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
-    initRouter("/");
+    getCurrentPath().value = "/";
   });
 
   afterEach(() => {

@@ -22,3 +22,10 @@ export const setInternalRenderContext = (fn: () => RenderContext) => (getRenderC
  * @internal
  */
 export const setRenderContextID = (id: number) => (getRenderContext().ctxID = id);
+
+/**
+ * Get the current render context ID.
+ *
+ * @returns {number} The render context ID.
+ */
+export const getRenderContextID = () => getRenderContext().ctxID;

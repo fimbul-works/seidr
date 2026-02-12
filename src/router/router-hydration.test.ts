@@ -7,7 +7,6 @@ import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { createRoute } from "./create-route";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
-import { initRouter } from "./init-router";
 import { Router } from "./router";
 import { beforeEach } from "vitest";
 
@@ -72,7 +71,7 @@ describe("Router Hydration Unmounting", () => {
     document.body.appendChild(container);
 
     // 3. Hydrate
-    initRouter("/unknown");
+    getCurrentPath().value = "/unknown";
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -101,7 +100,6 @@ describe("Router Hydration Unmounting", () => {
     document.body.appendChild(container);
 
     // 3. Hydrate
-    initRouter("/");
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state

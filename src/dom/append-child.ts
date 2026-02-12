@@ -32,7 +32,9 @@ export const appendChild = (
     appendChild(parent, child.startMarker);
     appendChild(parent, child.element);
     appendChild(parent, child.endMarker);
-    child.scope.attached(parent);
+    if (!child.scope.parentNode) {
+      child.scope.attached(parent);
+    }
     return cleanups.push(() => child.unmount());
   }
 

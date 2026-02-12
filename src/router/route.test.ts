@@ -32,12 +32,10 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
     }, "App");
 
     unmount = mount(App, container);
-    console.log("(A):", container.innerHTML);
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
 
     navigate("/about");
-    console.log("(B):", container.innerHTML);
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".about")).toBeTruthy();
   });
