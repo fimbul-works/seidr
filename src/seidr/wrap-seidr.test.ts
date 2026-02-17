@@ -25,14 +25,14 @@ describe("wrapSeidr", () => {
     const obj = { key: "value" };
     const observable = wrapSeidr(obj);
     expect(observable).toBeInstanceOf(Seidr);
-    expect(observable.value).toBe(obj);
+    expect(observable.value).toEqual(obj);
   });
 
   it("should wrap the value in an array Seidr", () => {
     const arr = [1, 2, 3];
     const observable = wrapSeidr(arr);
     expect(observable).toBeInstanceOf(Seidr);
-    expect(observable.value).toBe(arr);
+    expect(observable.value).toEqual(arr);
   });
 
   it("should wrap the value in a null Seidr", () => {
@@ -69,14 +69,14 @@ describe("wrapSeidr", () => {
     const obj = { key: "value" };
     const observable = wrapSeidr(new Seidr(obj));
     expect(observable).toBeInstanceOf(Seidr);
-    expect(observable.value).toBe(obj);
+    expect(observable.value).toEqual(obj);
   });
 
   it("should not re-wrap an array Seidr", () => {
     const arr = [1, 2, 3];
     const observable = wrapSeidr(new Seidr(arr));
     expect(observable).toBeInstanceOf(Seidr);
-    expect(observable.value).toBe(arr);
+    expect(observable.value).toEqual(arr);
   });
 
   it("should not re-warp a null Seidr", () => {

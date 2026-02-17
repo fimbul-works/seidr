@@ -1,6 +1,21 @@
-import type { CleanupFunction } from "src/types";
-import type { Seidr, SeidrOptions } from "./seidr";
-import type { Weave } from "./seidr-weave";
+import { type SEIDR_WEAVE, TYPE_PROP } from "../constants";
+import type { CleanupFunction } from "../types";
+import type { Seidr } from "./seidr";
+
+/**
+ * Options for Seidr instances.
+ */
+export interface SeidrOptions {
+  /**
+   * Unique identifier for this observable
+   */
+  id?: any;
+
+  /**
+   * Whether to hydrate this observable from server-side data
+   */
+  hydrate?: boolean;
+}
 
 /**
  * Basic observable interface.
@@ -48,6 +63,13 @@ export interface Observable<T> {
    * Removes all observers and executes all registered cleanup functions.
    */
   destroy(): void;
+
+  /**
+   * Returns the current state as a plain object.
+   *
+   * @returns {T} The current state as a plain object
+   */
+  toJSON(): T;
 }
 
 /**
@@ -74,7 +96,57 @@ export interface ObservableObject<T extends object = object, K extends keyof T =
    */
   bind<O>(target: O, bindFn: (values: T, target: O) => void, keys?: K[]): CleanupFunction;
 
+  /**
+   * Creates a derived observable value that automatically updates when its dependencies change.
+   *
+   * @template D - The return type of the derived value
+   *
+   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
+   * @param {SeidrOptions} [options] - Options for the new derived Seidr
+   * @param {K[]} [keys] - Keys to observe
+   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
+   */
+  as<D>(
+    transformFn: (value: T) => D,
+    options?: SeidrOptions,
+    keys?: K[],
+  ): D extends object ? Weave<D> | Seidr<D> : Seidr<D>;
+
+  /**
+   * Get the currently stored keys.
+   *
+   * @returns {K[]} The currently stored keys
+   */
   keys(): K[];
+
+  /**
+   * Get the currently stored values.
+   *
+   * @returns {(Seidr<T[K]> | Weave<any>)[]} The currently stored values
+   */
   values(): (Seidr<T[K]> | Weave<any>)[];
+
+  /**
+   * Get the currently stored entries.
+   *
+   * @returns {[K, Seidr<T[K]> | Weave<any>][]} The currently stored entries
+   */
   entries(): [K, Seidr<T[K]> | Weave<any>][];
+
+  /**
+   * Returns the current state as a plain object.
+   *
+   * @returns {T} The current state as a plain object
+   */
+  toJSON(): T;
 }
+
+/**
+ * A weave is a reactive object that wraps Seidr instances.
+ */
+export type Weave<T extends object = object, K extends keyof T & string = keyof T & string> = ObservableObject<T, K> & {
+  /**
+   * The type of the object.
+   */
+  [TYPE_PROP]: typeof SEIDR_WEAVE;
+} & { [key in K]: T[K] extends object ? Weave<T[K]> | T[K] : T[K] };

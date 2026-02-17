@@ -21,13 +21,13 @@ describe("unwrapSeidr", () => {
   it("should return the value of an object Seidr", () => {
     const obj = { key: "value" };
     const observable = new Seidr(obj);
-    expect(unwrapSeidr(observable)).toBe(obj);
+    expect(unwrapSeidr(observable)).toEqual(obj);
   });
 
   it("should return the value of an array Seidr", () => {
     const arr = [1, 2, 3];
     const observable = new Seidr(arr);
-    expect(unwrapSeidr(observable)).toBe(arr);
+    expect(unwrapSeidr(observable)).toEqual(arr);
   });
 
   it("should return the value of a null Seidr", () => {
