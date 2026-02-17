@@ -5,7 +5,6 @@ import { $ } from "../element";
 import type { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { createRoute } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";
 import { Router } from "./router";
@@ -42,7 +41,7 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   const Fallback = component(() => $("div", { id: "fallback", textContent: "404" }), "Fallback");
 
   it("should render the matching route", () => {
-    const App = component(() => Router([createRoute("/", Home), createRoute("/about", About)]), "App");
+    const App = component(() => Router([["/", Home], ["/about", About]]), "App");
 
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
@@ -55,7 +54,7 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   });
 
   it("should render fallback if no route matches", () => {
-    const App = component(() => Router([createRoute("/", Home)], Fallback), "App");
+    const App = component(() => Router([[/"/, Home]], Fallback), "App");
 
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
@@ -70,7 +69,7 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   });
 
   it("should pass dynamic parameters to components", () => {
-    const App = component(() => Router([createRoute<any>("/user/:id", User)]), "App");
+    const App = component(() => Router([["/user/:id", User]]), "App");
 
     navigate("/user/123");
     unmount = mount(App, container);
@@ -86,14 +85,8 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
     const App = component(
       () =>
         Router([
-          createRoute(
-            "/admin/dashboard",
-            component(() => $("div", { textContent: "Admin" })),
-          ),
-          createRoute(
-            "/user/:id/edit",
-            component(() => $("div", { textContent: "Edit User" })),
-          ),
+          ["/admin/dashboard", component(() => $("div", { textContent: "Admin" }))],
+          ["/user/:id/edit", component(() => $("div", { textContent: "Edit User" }))],
         ]),
       "App",
     );
@@ -111,9 +104,10 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
     const App = component(
       () =>
         Router([
-          createRoute<any>(/^\/post\/(?<id>\d+)$/, (params: Seidr<IdParams>) =>
-            $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
-          ),
+          [
+            "/^/post/(?<id>d+)$",
+            (params: Seidr<IdParams>) => $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
+          ],
         ]),
       "App",
     );

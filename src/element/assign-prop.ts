@@ -2,7 +2,7 @@ import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
 import { camelToKebab } from "../util/string";
-import { isSeidr } from "../util/type-guards/is-seidr";
+import { isSeidr } from "../util/type-guards/is-observable";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
 
 /**

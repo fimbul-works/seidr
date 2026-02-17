@@ -1,5 +1,5 @@
 import type { Seidr } from "../seidr/seidr";
-import { CleanupFunction, SeidrError } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { isEmpty } from "../util/index";
 import { wrapError } from "../util/wrap-error";

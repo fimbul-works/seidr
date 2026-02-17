@@ -7,16 +7,16 @@ import { getMarkerComments } from "../dom/get-marker-comments";
 import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { isFn } from "../util";
-import type { RouteDefinition } from "./create-route";
 import { getCurrentPath } from "./get-current-path";
 import { matchRoute } from "./match-route";
+import type { RouteDefinition } from "./types";
 
 const ROUTER_PARAMS_ID = "router-params";
 
 /**
  * Router component props.
  */
-export interface RouterProps<C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction> {
+export interface RouterProps<C extends SeidrComponentFactoryFunction<any> = SeidrComponentFactoryFunction<any>> {
   routes: Array<RouteDefinition>;
   fallback?: C;
 }
@@ -24,7 +24,7 @@ export interface RouterProps<C extends SeidrComponentFactoryFunction = SeidrComp
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = <C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction>(
+export const Router = <C extends SeidrComponentFactoryFunction<any> = SeidrComponentFactoryFunction<any>>(
   routes: Array<RouteDefinition>,
   fallback?: C,
 ): SeidrComponent =>
@@ -63,7 +63,7 @@ export const Router = <C extends SeidrComponentFactoryFunction = SeidrComponentF
         index > -1
           ? wrapComponent(routes[index][1])(currentParamsSeidr!)
           : isFn(fallback)
-            ? wrapComponent(fallback)()
+            ? wrapComponent(fallback)(currentParamsSeidr)
             : undefined;
     };
 

@@ -4,6 +4,7 @@ import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isClient } from "../util/environment/browser";
 import { isServer } from "../util/environment/server";
+import type { Observable, ObservableObject } from "./types";
 
 /**
  * Options for Seidr instances.
@@ -29,7 +30,7 @@ export interface SeidrOptions {
  *
  * @template T - The type of value being stored and observed
  */
-export class Seidr<T = any> {
+export class Seidr<T = any> implements Observable<T> {
   /** @type {string} Unique identifier for this observable */
   private i: string;
 
@@ -193,11 +194,11 @@ export class Seidr<T = any> {
    * @param {SeidrOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<D>} A new Seidr instance containing the transformed value
    */
-  as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}): Seidr<D> {
+  as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}) {
     const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.c.push(this.observe((updatedValue) => (derived.set(transformFn(updatedValue)))));
-    return derived;
+    this.c.push(this.observe((updatedValue) => derived.set(transformFn(updatedValue))));
+    return derived as any;
   }
 
   /**
@@ -217,7 +218,7 @@ export class Seidr<T = any> {
 
     const merged = new Seidr<D>(mergeFn(), options);
     merged.setParents(parents);
-    parents.forEach((p) => merged.c.push(p.observe(() => (merged.set(mergeFn())))));
+    parents.forEach((p) => merged.c.push(p.observe(() => merged.set(mergeFn()))));
     return merged;
   }
 

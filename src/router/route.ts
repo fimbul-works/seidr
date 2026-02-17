@@ -19,7 +19,7 @@ import { parseRouteParams } from "./parse-route-params";
 export const Route = <
   T extends Record<string, string> = Record<string, string>,
   P extends Seidr<T> = Seidr<T>,
-  C extends SeidrComponentFactoryFunction<P> = SeidrComponentFactoryFunction<P>,
+  C extends SeidrComponentFactoryFunction<void | P> = SeidrComponentFactoryFunction<void | P>,
 >(
   pattern: string | RegExp,
   factory: C,

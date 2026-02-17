@@ -1,5 +1,5 @@
-import type { RouteDefinition } from "./create-route";
 import { parseRouteParams } from "./parse-route-params";
+import type { RouteDefinition } from "./types";
 
 export interface RouteMatch<P = Record<string, string>> {
   route: RouteDefinition<any, any>;

@@ -1,4 +1,4 @@
-import { isSeidr } from "./type-guards/is-seidr";
+import { isSeidr } from "./type-guards/is-observable";
 import { isArray, isFn, isObj } from "./type-guards/primitive-types";
 
 const B = Boolean;

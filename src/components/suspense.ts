@@ -4,7 +4,7 @@ import { useScope } from "../component/use-scope";
 import { getComponent, mountComponent } from "../component/util";
 import { getMarkerComments } from "../dom/get-marker-comments";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { isSeidr } from "../util/type-guards/is-seidr";
+import { isSeidr } from "../util/type-guards/is-observable";
 import { wrapError } from "../util/wrap-error";
 
 const PROMISE_PENDING = "pending";

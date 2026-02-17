@@ -2,7 +2,7 @@ import { getRenderContext } from "../../render-context";
 import { Seidr } from "../../seidr/seidr";
 import { createStateKey } from "../../state/create-state-key";
 import { globalStates } from "../../state/storage";
-import { isSeidr } from "../../util/type-guards/is-seidr";
+import { isSeidr } from "../../util/type-guards/is-observable";
 
 /**
  * Restores state values for a render context during hydration.
