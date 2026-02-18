@@ -1,5 +1,5 @@
 import { getRenderContext } from "../render-context";
-import { tryCatchFinally } from "../util/try-catch-finally";
+import { safe } from "../util/try-catch-finally";
 import type { SeidrComponent } from "./types";
 
 /** Map of current component cursor by render context ID */
@@ -41,9 +41,9 @@ export const pop = (): void => {
 export const executeInContext = <T>(component: SeidrComponent, fn: () => T): T => {
   const id = getRenderContext().ctxID;
   const previous = renderContextCursors.get(id) ?? null;
-  return tryCatchFinally(
+  return safe(
     () => (renderContextCursors.set(id, component), fn()),
-    () => renderContextCursors.set(id, previous),
     (error) => console.warn(error) as T,
+    () => renderContextCursors.set(id, previous),
   ) as T;
 };

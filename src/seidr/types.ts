@@ -5,7 +5,7 @@ import type { Seidr } from "./seidr";
 /**
  * Options for Seidr instances.
  */
-export interface SeidrOptions {
+export interface ObservableOptions {
   /**
    * Unique identifier for this observable
    */
@@ -42,17 +42,6 @@ export interface Observable<T> {
   bind<O>(target: O, bindFn: (values: T, target: O) => void): CleanupFunction;
 
   /**
-   * Creates a derived observable value that automatically updates when its dependencies change.
-   *
-   * @template D - The return type of the derived value
-   *
-   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
-   * @param {SeidrOptions} [options] - Options for the new derived Seidr
-   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
-   */
-  as<D>(transformFn: (value: T) => D, options?: SeidrOptions): D extends object ? Weave<D> | Seidr<D> : Seidr<D>;
-
-  /**
    * Returns the number of active observers.
    *
    * @returns {number} The number of active observers
@@ -73,9 +62,26 @@ export interface Observable<T> {
 }
 
 /**
+ * Seidr interface.
+ */
+export interface SeidrInterface<T> extends Observable<T> {
+  /**
+   * Creates a derived observable value that automatically updates when its dependencies change.
+   *
+   * @template D - The return type of the derived value
+   *
+   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
+   * @param {ObservableOptions} [options] - Options for the new derived Seidr
+   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
+   */
+  as<D>(transformFn: (value: T) => D, options?: ObservableOptions): Seidr<D>;
+}
+
+/**
  * Basic observable interface.
  */
-export interface ObservableObject<T extends object = object, K extends keyof T = keyof T> extends Observable<T> {
+export interface ObservableObject<T extends object = object, K extends keyof T = keyof T>
+  extends Observable<T & object> {
   /**
    * Subscribes to value changes with an event handler.
    * Unlike `bind`, this function will only be called when the value changes.
@@ -95,22 +101,6 @@ export interface ObservableObject<T extends object = object, K extends keyof T =
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
   bind<O>(target: O, bindFn: (values: T, target: O) => void, keys?: K[]): CleanupFunction;
-
-  /**
-   * Creates a derived observable value that automatically updates when its dependencies change.
-   *
-   * @template D - The return type of the derived value
-   *
-   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
-   * @param {SeidrOptions} [options] - Options for the new derived Seidr
-   * @param {K[]} [keys] - Keys to observe
-   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
-   */
-  as<D>(
-    transformFn: (value: T) => D,
-    options?: SeidrOptions,
-    keys?: K[],
-  ): D extends object ? Weave<D> | Seidr<D> : Seidr<D>;
 
   /**
    * Get the currently stored keys.
@@ -149,4 +139,16 @@ export type Weave<T extends object = object, K extends keyof T & string = keyof 
    * The type of the object.
    */
   [TYPE_PROP]: typeof SEIDR_WEAVE;
+
+  /**
+   * Creates a derived observable value that automatically updates when its dependencies change.
+   *
+   * @template D - The return type of the derived value
+   *
+   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
+   * @param {ObservableOptions} [options] - Options for the new derived Seidr
+   * @param {K[]} [keys] - Keys to observe
+   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
+   */
+  as<D>(transformFn: (value: T) => D, options?: ObservableOptions, keys?: K[]): Weave<D & object>;
 } & { [key in K]: T[K] extends object ? Weave<T[K]> | T[K] : T[K] };

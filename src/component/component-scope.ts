@@ -1,7 +1,7 @@
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { tryCatchFinally } from "../util/try-catch-finally";
+import { safe } from "../util/try-catch-finally";
 import { executeInContext } from "./component-stack";
 import type { ComponentScope, SeidrComponent } from "./types";
 
@@ -100,7 +100,7 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
       }
 
       destroyed = true;
-      cleanups.forEach((fn) => tryCatchFinally(fn));
+      cleanups.forEach((fn) => safe(fn));
       cleanups = [];
       children.clear();
       attachedParent = null;

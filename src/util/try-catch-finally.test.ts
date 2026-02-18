@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { tryCatchFinally } from "./try-catch-finally";
+import { safe } from "./try-catch-finally";
 
-describe("tryCatchFinally", () => {
+describe("safe", () => {
   throw new Error("Not implemented");
 });

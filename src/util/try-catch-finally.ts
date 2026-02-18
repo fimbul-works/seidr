@@ -8,10 +8,10 @@ import { wrapError } from "./wrap-error";
  * @param {() => void} finallyFn The function to call when the function finally returns.
  * @param {(error: Error) => T} onErrorFn The function to call with any errors that occur. Defaults to console.error.
  */
-export const tryCatchFinally = <T>(
+export const safe = <T>(
   fn: () => T,
-  finallyFn?: (() => void) | null,
   onErrorFn: (error: Error) => T | void = console.error,
+  finallyFn?: (() => void) | null,
 ): T => {
   try {
     return fn();

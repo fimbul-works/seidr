@@ -222,7 +222,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       appendChild(document.body, comp.element);
       if (!isSSR) {
-        (comp.element as SeidrComponent).element?.click();
+        ((comp.element as SeidrComponent).element as HTMLElement).click();
         expect(eventListenerCalled).toBe(true);
       }
 

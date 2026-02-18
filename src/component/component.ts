@@ -3,7 +3,7 @@ import { getMarkerComments } from "../dom/get-marker-comments";
 import { $text } from "../dom/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
-import { tryCatchFinally } from "../util/try-catch-finally";
+import { safe } from "../util/try-catch-finally";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
@@ -95,7 +95,7 @@ export const component = <P = void>(
     push(comp);
 
     // Render the component via factory
-    tryCatchFinally(
+    safe(
       () => {
         // Call factory with props (or undefined if no props)
         const result = factory(props);
@@ -110,13 +110,13 @@ export const component = <P = void>(
           ? (result.map(toNode).filter(Boolean) as SeidrComponentChildren)
           : toNode(result);
       },
-      () => {
-        pop();
-      },
       (err) => {
         // Restore previous component (Pop from tree)
         comp.unmount();
         throw err;
+      },
+      () => {
+        pop();
       },
     );
 

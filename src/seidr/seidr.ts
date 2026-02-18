@@ -4,9 +4,7 @@ import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isClient } from "../util/environment/browser";
 import { isServer } from "../util/environment/server";
-import { isObj, isSeidr, isWeave } from "../util/type-guards";
-import { weave } from "./seidr-weave";
-import type { Observable, SeidrOptions, Weave } from "./types";
+import type { Observable, ObservableOptions } from "./types";
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -40,19 +38,14 @@ export class Seidr<T = any> implements Observable<T> {
    * Creates an instance of Seidr observable.
    *
    * @param {T} initial - The initial value to store
-   * @param {SeidrOptions} [options={}] - Options for this Seidr instance
+   * @param {ObservableOptions} [options={}] - Options for this Seidr instance
    */
   constructor(
     initial: T,
-    public readonly options: SeidrOptions = {},
+    public readonly options: ObservableOptions = {},
   ) {
     this.i = String(options.id ?? getNextId());
-
-    // Auto-wrap objects in Weave if they aren't already observable
-    const val = isObj(initial) && !isSeidr(initial) && !isWeave(initial) ? weave(initial as object, options) : initial;
-
-    this.v = val as T;
-    this.setupInternalObservation(val);
+    this.v = initial;
 
     // Register for hydration in browser
     if (isClient() && !process.env.CORE_DISABLE_SSR) {
@@ -84,34 +77,21 @@ export class Seidr<T = any> implements Observable<T> {
    * @param {T} v - The new value to store
    */
   set value(v: T) {
+    if (this.isDerived) {
+      throw new SeidrError("Cannot set value of derived Seidr", { cause: this });
+    }
     this.set(v);
   }
 
-  private set(v: T) {
-    // Auto-wrap objects in Weave if they aren't already observable
-    const val = isObj(v) && !isSeidr(v) && !isWeave(v) ? weave(v as object, this.options) : v;
-
-    if (!Object.is(this.v, val)) {
-      if (this.cv) {
-        this.cv();
-        this.cv = undefined;
-      }
-
-      this.v = val as T;
-      this.setupInternalObservation(val);
-      this.f.forEach((fn) => fn(this.v));
-    }
-  }
-
   /**
-   * Sets up internal observation if the value is a Seidr or Weave.
-   * This ensures that deep changes in the value trigger this Seidr's observers.
+   * Sets a new value and notifies all observers if the value changed.
+   *
+   * @param {T} v - The new value to store
    */
-  private setupInternalObservation(val: any) {
-    if (isSeidr(val) || isWeave(val)) {
-      this.cv = (val as any).observe(() => {
-        this.f.forEach((fn) => fn(this.v));
-      });
+  private set(v: T) {
+    if (!Object.is(this.v, v)) {
+      this.v = v;
+      this.f.forEach((fn) => fn(v));
     }
   }
 
@@ -206,20 +186,14 @@ export class Seidr<T = any> implements Observable<T> {
    * @template D - The type of the transformed/derived value
    *
    * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
-   * @param {SeidrOptions} [options] - Options for the new derived Seidr
+   * @param {ObservableOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<D>} A new Seidr instance containing the transformed value
    */
-  as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}): D extends object ? Weave<D> | Seidr<D> : Seidr<D> {
-    const value = transformFn(this.v);
-    if (isObj(value)) {
-      const derived = weave<typeof value>(value, options);
-      this.c.push(this.observe((updatedValue) => (derived as any).set(transformFn(updatedValue))));
-      return derived as D extends object ? Weave<D> | Seidr<D> : Seidr<D>;
-    }
-    const derived = new Seidr<D>(value, options);
+  as<D>(transformFn: (value: T) => D, options: ObservableOptions = {}) {
+    const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.c.push(this.observe((updatedValue) => (derived as any).set(transformFn(updatedValue))));
-    return derived as D extends object ? Weave<D> | Seidr<D> : Seidr<D>;
+    this.c.push(this.observe((updatedValue) => derived.set(transformFn(updatedValue))));
+    return derived;
   }
 
   /**
@@ -229,17 +203,17 @@ export class Seidr<T = any> implements Observable<T> {
    *
    * @param {() => D} mergeFn - Function that merges the parent values to a new value
    * @param {Seidr[]} parents - Array of Seidrs that trigger recomputation when changed
-   * @param {SeidrOptions} [options] - Options for the new derived Seidr
+   * @param {ObservableOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<D>} A new Seidr instance containing the derived result
    */
-  static merge<D>(mergeFn: () => D, parents: Seidr[], options: SeidrOptions = {}): Seidr<D> {
+  static merge<D>(mergeFn: () => D, parents: Seidr[], options: ObservableOptions = {}): Seidr<D> {
     if (parents.length === 0) {
       throw new SeidrError("Merged must have at least one parent");
     }
 
     const merged = new Seidr<D>(mergeFn(), options);
     merged.setParents(parents);
-    parents.forEach((p) => merged.c.push(p.observe(() => (merged as any).set(mergeFn()))));
+    parents.forEach((p) => merged.c.push(p.observe(() => merged.set(mergeFn()))));
     return merged;
   }
 

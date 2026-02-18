@@ -2,7 +2,7 @@ import { SEIDR_WEAVE, TYPE_PROP } from "../constants";
 import { type Seidr, unwrapSeidr, wrapSeidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { isObj, isSeidr, isWeave } from "../util/type-guards";
-import type { ObservableObject, SeidrOptions, Weave } from "./types";
+import type { ObservableObject, ObservableOptions, Weave } from "./types";
 
 /**
  * Creates a reactive Weave from an object.
@@ -14,7 +14,7 @@ import type { ObservableObject, SeidrOptions, Weave } from "./types";
  */
 export const weave = <T extends object = object, K extends keyof T & string = keyof T & string>(
   shape: T,
-  options?: SeidrOptions,
+  options?: ObservableOptions,
 ): Weave<T, K> => {
   /**
    * Recursively builds a map of Seidr instances from an object.
@@ -28,7 +28,6 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
   const wrap = <D, W = D extends object ? Weave<D> : Seidr<D>>(
     value: T,
     transformFn: (value: T) => D = (v) => v as any,
-    options?: SeidrOptions,
   ): W => {
     const v = transformFn(value);
     return (
@@ -39,11 +38,11 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
               Object.entries(v).map(([key, value]) => [
                 key,
                 // Wrap objects in Weave and primitives in Seidr
-                isObj(value) ? weave(value, options) : wrapSeidr(value, options),
+                isObj(value) ? weave(value) : wrapSeidr(value),
               ]),
             )
         : // Wrap primitives in Seidr
-          wrapSeidr(v, options)
+          wrapSeidr(v)
     ) as W;
   };
 
@@ -111,7 +110,9 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
   /**
    * The API object.
    */
-  const api: ObservableObject<T, K> = {
+  const api = {
+    [TYPE_PROP]: SEIDR_WEAVE,
+
     observe(changedFn, keys: K[] = Object.keys(shape) as K[]): CleanupFunction {
       // Register the observer for each key
       keys.forEach((key) =>
@@ -190,12 +191,12 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
       bindFn(proxy as any, target);
       return api.observe(() => bindFn(proxy as any, target), boundKeys);
     },
-    as<D>(transformFn: (value: T) => D, _options?: SeidrOptions, keys: K[] = []) {
-      transmuteKeys = keys;
-      const result = wrap(shape, transformFn, options);
+    as<D>(transformFn: (value: T) => D) {
+      transmuteKeys = [];
+      const result = wrap(shape, transformFn);
       cleanups.push(api.observe(() => transformFn(unwrap(Object.fromEntries(data.entries()) as any)), transmuteKeys));
       transmuteKeys = [];
-      return result as any;
+      return result;
     },
     observerCount() {
       return cleanups.length;
@@ -225,7 +226,7 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
         ...Object.fromEntries(Object.entries(api).filter(([k]) => typeof api[k as keyof typeof api] === "function")),
       };
     },
-  };
+  } as Weave<T, K>;
 
   // Define API methods as non-enumerable to prevent cluttering console.log and Object.keys
   Object.defineProperties(api, {

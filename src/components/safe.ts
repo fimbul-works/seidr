@@ -4,7 +4,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
-import { tryCatchFinally } from "../util/try-catch-finally";
+import { safe,  } from "../util/try-catch-finally";
 import { wrapError } from "../util/wrap-error";
 
 /**
@@ -31,9 +31,8 @@ export const Safe = <
   component(() => {
     const scope = useScope();
 
-    return tryCatchFinally(
+    return safe(
       () => wrapComponent(factory)(),
-      null,
       (err) => {
         const newScope = createScope();
         newScope.onAttached = (parent) => scope.onAttached?.(parent);
