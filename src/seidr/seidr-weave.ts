@@ -2,7 +2,8 @@ import { SEIDR_WEAVE, TYPE_PROP } from "../constants";
 import { type Seidr, unwrapSeidr, wrapSeidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { isObj, isSeidr, isWeave } from "../util/type-guards";
-import type { ObservableObject, ObservableOptions, Weave } from "./types";
+import type { ObservableOptions, Weave } from "./types";
+import { optionsForChild } from "./utils";
 
 /**
  * Creates a reactive Weave from an object.
@@ -38,11 +39,11 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
               Object.entries(v).map(([key, value]) => [
                 key,
                 // Wrap objects in Weave and primitives in Seidr
-                isObj(value) ? weave(value) : wrapSeidr(value),
+                isObj(value) ? weave(value, optionsForChild(options)) : wrapSeidr(value, optionsForChild(options)),
               ]),
             )
         : // Wrap primitives in Seidr
-          wrapSeidr(v)
+          wrapSeidr(v, optionsForChild(options))
     ) as W;
   };
 
@@ -296,7 +297,7 @@ export const weave = <T extends object = object, K extends keyof T & string = ke
         }
 
         // 2. Wrap and set new value
-        const newWrapped = isObj(value) ? weave(value) : wrapSeidr(value);
+        const newWrapped = isObj(value) ? weave(value) : wrapSeidr(value, optionsForChild(options));
         data.set(key, newWrapped as Seidr<T[K]> | Weave<any, string>);
 
         // 3. Re-subscribe active observers to the new value

@@ -8,8 +8,6 @@ import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { isFn } from "../util";
 import { getCurrentPath } from "./get-current-path";
-import { useParams } from "./hooks/use-params";
-import { useRouter } from "./hooks/use-router";
 import { matchRoute } from "./match-route";
 import type { RouteDefinition } from "./types";
 
@@ -32,8 +30,6 @@ export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactor
 ): Component =>
   component(({ routes, fallback }: RouterProps) => {
     const scope = useScope();
-    const router = useRouter();
-    const params = useParams();
 
     const [, endMarker] = getMarkerComments(scope.id);
     const currentPath = getCurrentPath();

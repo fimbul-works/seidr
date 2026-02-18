@@ -22,7 +22,7 @@ import type { StateKey, StateOptions } from "./types";
 export const useState = <T>(
   key: StateKey<T> | string,
   value?: T,
-  options?: StateOptions<T>,
+  options?: StateOptions,
 ): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
   const ctxID = getRenderContext().ctxID;
 

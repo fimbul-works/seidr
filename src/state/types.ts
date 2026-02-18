@@ -24,7 +24,7 @@ export const STORAGE_LOCAL = "local";
 export type StorageType = typeof STORAGE_SESSION | typeof STORAGE_LOCAL;
 
 /** Options for identifying and configuring state */
-export interface StateOptions<T> {
+export interface StateOptions {
   /** Storage type to persist state */
   storage?: StorageType;
   /** Error handler for storage operations */

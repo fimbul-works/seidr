@@ -49,7 +49,7 @@ export const useNavigate = (): Navigation => {
    * @param {boolean} replace - Whether to replace the current history entry
    * @param {any} data - Data to pass to history
    */
-  function navigate(path: string, replace: boolean = true, data: any = {}): void {
+  function navigate(path: string, data: any = {}, replace = true): void {
     getCurrentPath().value = path.split(/[?#]/)[0];
 
     // Skip actual navigation in server
@@ -68,7 +68,7 @@ export const useNavigate = (): Navigation => {
   if (isServer()) {
     return {
       navigate,
-      redirect: (path: string) => navigate(path, true),
+      redirect: (path: string) => navigate(path, null, true),
       history: {
         back: () => {},
         forward: () => {},
@@ -87,7 +87,7 @@ export const useNavigate = (): Navigation => {
 
   return {
     navigate,
-    redirect: (path: string) => navigate(path, true),
+    redirect: (path: string) => navigate(path, null, true),
     history: {
       back: () => window.history.back(),
       forward: () => window.history.forward(),

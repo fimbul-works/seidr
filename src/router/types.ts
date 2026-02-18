@@ -1,5 +1,5 @@
 import type { ComponentFactoryFunction } from "../component/types";
-import type { Seidr } from "../observable/seidr";
+import type { Seidr } from "../seidr/seidr";
 
 /**
  * Route definition for Router.
@@ -11,5 +11,5 @@ import type { Seidr } from "../observable/seidr";
 export type RouteDefinition<
   T = Record<string, string>,
   P extends Seidr<T> = Seidr<T>,
-  C extends ComponentFactoryFunction<P> = ComponentFactoryFunction<P>,
+  C extends ComponentFactoryFunction<any> = ComponentFactoryFunction<any>,
 > = [pattern: string | RegExp, factory: C];
