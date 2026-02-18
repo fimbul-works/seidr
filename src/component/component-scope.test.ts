@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { createScope } from "./component-scope";
-import type { SeidrComponent } from "./types";
+import type { Component } from "./types";
 
 describe("ComponentScope", () => {
   it("should track and execute cleanups", () => {
@@ -39,7 +39,7 @@ describe("ComponentScope", () => {
       id: "child",
       unmount: vi.fn(),
       scope: { attached: vi.fn() },
-    } as unknown as SeidrComponent;
+    } as unknown as Component;
 
     scope.child(childComponent);
     expect(childComponent.unmount).not.toHaveBeenCalled();

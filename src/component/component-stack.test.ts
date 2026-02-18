@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
-import type { SeidrComponent } from "./types";
+import type { Component } from "./types";
 
 describe("Component Stack", () => {
-  const createMockComponent = (id: string, parent: SeidrComponent | null = null): SeidrComponent => {
+  const createMockComponent = (id: string, parent: Component | null = null): Component => {
     return {
       id,
       scope: {
         parent,
       },
-    } as unknown as SeidrComponent;
+    } as unknown as Component;
   };
 
   it("should return null when stack is empty", () => {

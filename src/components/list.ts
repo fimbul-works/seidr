@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
+import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
@@ -13,23 +13,23 @@ import { isArray } from "../util/type-guards/primitive-types";
  *
  * @template T - The type of list items
  * @template K - Unique key type
- * @template {SeidrComponentFactoryFunction<T>} C - The type of component factory
+ * @template {ComponentFactoryFunction<T>} C - The type of component factory
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => K} getKey - Key extraction function
  * @param {C} factory - Component creation function (raw or wrapped)
- * @returns {SeidrComponent} List component
+ * @returns {Component} List component
  */
-export const List = <T, K, C extends SeidrComponentFactoryFunction<T> = SeidrComponentFactoryFunction<T>>(
+export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
   factory: C,
   name?: string,
-): SeidrComponent =>
+): Component =>
   component(() => {
     const scope = useScope();
     const [, endMarker] = getMarkerComments(scope.id);
-    const componentMap = new Map<K, SeidrComponent>();
+    const componentMap = new Map<K, Component>();
 
     const update = (items: T[]) => {
       const parent = endMarker.parentNode;

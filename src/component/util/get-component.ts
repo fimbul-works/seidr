@@ -1,4 +1,4 @@
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../../component/types";
+import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { wrapComponent } from "../../component/wrap-component";
 
 /**
@@ -9,17 +9,17 @@ import { wrapComponent } from "../../component/wrap-component";
  * @param {M} factories Map or object of factories.
  * @param {T} value The value to get the component for.
  * @param {C} [fallbackFactory] Optional fallback factory.
- * @returns {SeidrComponent | undefined} The component for the given value.
+ * @returns {Component | undefined} The component for the given value.
  */
 export const getComponent = <
   T,
-  C extends SeidrComponentFactoryFunction<T> = SeidrComponentFactoryFunction<T>,
+  C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>,
   M extends Map<T, C> | Record<T & string, C> = Map<T, C> | Record<T & string, C>,
 >(
   factories: M,
   value: T,
   fallbackFactory?: C | null,
-): SeidrComponent | undefined => {
+): Component | undefined => {
   const factory = (factories instanceof Map ? factories.get(value) : factories[value as keyof M]) ?? fallbackFactory;
-  return factory ? wrapComponent<T>(factory as SeidrComponentFactoryFunction<T>)(value) : undefined;
+  return factory ? wrapComponent<T>(factory as ComponentFactoryFunction<T>)(value) : undefined;
 };

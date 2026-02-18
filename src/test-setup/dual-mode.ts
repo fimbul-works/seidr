@@ -87,7 +87,7 @@ export function renderToHtml(node: any, depth = 0): string {
   }
   if (node === null || node === undefined) return "";
 
-  // Handle SeidrComponent
+  // Handle Component
   if (node && typeof node === "object" && "element" in node) {
     node = node.element;
   }
@@ -127,7 +127,7 @@ export function renderToHtml(node: any, depth = 0): string {
  * and comparing the resulting HTML.
  *
  * @param name - Test name
- * @param factory - Function that returns a SeidrNode or SeidrComponent
+ * @param factory - Function that returns a SeidrNode or Component
  */
 export function itHasParity(name: string, factory: () => any) {
   it(name, () => {

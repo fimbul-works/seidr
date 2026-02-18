@@ -1,5 +1,4 @@
-import { isClient } from "../../util/environment/client";
-import { isServer } from "../../util/environment/server";
+import { isClient, isServer } from "../../util/environment";
 import { getCurrentPath } from "../get-current-path";
 import { parseURL } from "./util";
 

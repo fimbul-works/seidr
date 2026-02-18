@@ -2,7 +2,7 @@ import { getNextId } from "../render-context/get-next-id";
 import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
-import { isClient } from "../util/environment/browser";
+import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
 import type { Observable, ObservableOptions } from "./types";
 

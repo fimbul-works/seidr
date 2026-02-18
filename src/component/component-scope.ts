@@ -3,7 +3,7 @@ import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { safe } from "../util/try-catch-finally";
 import { executeInContext } from "./component-stack";
-import type { ComponentScope, SeidrComponent } from "./types";
+import type { Component, ComponentScope } from "./types";
 
 /**
  * Creates a new ComponentScope instance for tracking component cleanup logic.
@@ -11,13 +11,13 @@ import type { ComponentScope, SeidrComponent } from "./types";
  * @param {string} id - The ID of the component
  * @returns {ComponentScope} A ComponentScope instance
  */
-export const createScope = (id: string = "unknown", parent: SeidrComponent | null = null): ComponentScope => {
-  const parentComponent: SeidrComponent | null = parent;
-  const children = new Map<string, SeidrComponent>();
+export const createScope = (id: string = "unknown", parent: Component | null = null): ComponentScope => {
+  const parentComponent: Component | null = parent;
+  const children = new Map<string, Component>();
   let cleanups: CleanupFunction[] = [];
   let destroyed = false;
   let attachedParent: Node | null = null;
-  let componentInstance: SeidrComponent | null = null;
+  let componentInstance: Component | null = null;
 
   const scope: ComponentScope = {
     get id() {
@@ -35,7 +35,7 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
     get children() {
       return children;
     },
-    removeChild(childComponent: SeidrComponent) {
+    removeChild(childComponent: Component) {
       children.delete(childComponent.id);
     },
     track(cleanup: CleanupFunction): void {
@@ -68,7 +68,7 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
 
       return promise;
     },
-    child(childComponent: SeidrComponent) {
+    child(childComponent: Component) {
       children.set(childComponent.id, childComponent);
       scope.track(() => childComponent.unmount());
 
@@ -107,7 +107,7 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
       componentInstance = null;
     },
     // @ts-expect-error - internal usage
-    _setComponent: (comp: SeidrComponent) => (componentInstance = comp),
+    _setComponent: (comp: Component) => (componentInstance = comp),
   };
 
   return scope;
@@ -116,7 +116,7 @@ export const createScope = (id: string = "unknown", parent: SeidrComponent | nul
 /**
  * Internal helper to link the scope to its component instance.
  */
-export const setScopeComponent = (scope: ComponentScope, component: SeidrComponent) => {
+export const setScopeComponent = (scope: ComponentScope, component: Component) => {
   // We use a closure variable 'componentInstance' inside createScope
   // To access it from outside, we can attach a hidden method to the scope object
   // or we can just make createScope return a tuple [scope, setComponent]

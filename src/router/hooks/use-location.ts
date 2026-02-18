@@ -1,5 +1,5 @@
-import { weave } from "../../observable";
-import { NO_HYDRATE } from "../../observable/constants";
+import { NO_HYDRATE } from "../../seidr/constants";
+import { weave } from "../../seidr/seidr-weave";
 import { isClient } from "../../util/environment/client";
 import { getCurrentPath } from "../get-current-path";
 import { parseURL } from "./util";

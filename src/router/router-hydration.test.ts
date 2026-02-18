@@ -5,7 +5,6 @@ import { resetRequestIdCounter } from "../render-context/render-context.node";
 import { clearHydrationData, hydrate, renderToString } from "../ssr/internal";
 import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { createRoute } from "./create-route";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { Router } from "./router";
 import { beforeEach } from "vitest";
@@ -33,7 +32,7 @@ describe("Router Hydration Unmounting", () => {
     return $("div", { className: "fallback", textContent: "404" });
   }, 'Fallback');
 
-  const App = component(() => Router([createRoute("/", Home)], Fallback), 'App');
+  const App = component(() => Router([[/^\/$/, Home]], Fallback), 'App');
 
   beforeAll(() => {
     cleanupClientMode = enableClientMode();

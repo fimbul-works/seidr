@@ -6,7 +6,7 @@ import type { CleanupFunction } from "../types";
 /**
  * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
  */
-interface SeidrComponentFactoryInterface {
+interface ComponentFactoryInterface {
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
   readonly name: string;
 }
@@ -16,41 +16,41 @@ interface SeidrComponentFactoryInterface {
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFactoryPureFunction<P = void> = P extends void
-  ? () => SeidrComponentReturnValue
-  : (props: P) => SeidrComponentReturnValue;
+export type ComponentFactoryPureFunction<P = void> = P extends void
+  ? () => ComponentReturnValue
+  : (props: P) => ComponentReturnValue;
 
 /**
  * Seidr component factory function type.
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFactory<P = void> = (P extends void ? () => SeidrComponent : (props: P) => SeidrComponent) &
-  SeidrComponentFactoryInterface;
+export type ComponentFactory<P = void> = (P extends void ? () => Component : (props: P) => Component) &
+  ComponentFactoryInterface;
 
 /**
  * Type representing a Seidr component factory, which can be either a pure function or a wrapped factory function.
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFactoryFunction<P = void> = SeidrComponentFactoryPureFunction<P> | SeidrComponentFactory<P>;
+export type ComponentFactoryFunction<P = void> = ComponentFactoryPureFunction<P> | ComponentFactory<P>;
 
 /**
  * Type representing a Seidr component, which can be either a factory or an instantiated component.
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentType<P = void> = SeidrComponentFactoryFunction<P> | SeidrComponent;
+export type ComponentType<P = void> = ComponentFactoryFunction<P> | Component;
 
 /**
  * Type representing the children of a component.
  */
-export type SeidrComponentChildren = SeidrNode | SeidrNode[] | null | undefined;
+export type ComponentChildren = SeidrNode | SeidrNode[] | null | undefined;
 
 /**
  * Type representing the return values of a component factory.
  */
-export type SeidrComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
+export type ComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
 
 /**
  * Manages cleanup functions and child components within a component's lifecycle.
@@ -73,7 +73,7 @@ export interface ComponentScope {
   /**
    * The parent component of this scope.
    */
-  readonly parent: SeidrComponent | null;
+  readonly parent: Component | null;
 
   /**
    * The parent node of this scope.
@@ -83,13 +83,13 @@ export interface ComponentScope {
   /**
    * The children of this component.
    */
-  readonly children: ReadonlyMap<string, SeidrComponent>;
+  readonly children: ReadonlyMap<string, Component>;
 
   /**
    * Removes a child component from this scope.
    * @param child - The child component to remove
    */
-  removeChild(child: SeidrComponent): void;
+  removeChild(child: Component): void;
 
   /**
    * Tracks a cleanup function to be executed when the component is destroyed.
@@ -127,10 +127,10 @@ export interface ComponentScope {
    * is destroyed, creating a proper cleanup hierarchy. This method ensures
    * that child components are properly managed and cleaned up.
    *
-   * @param {SeidrComponent} component - The child component to track
-   * @returns {SeidrComponent} The same child SeidrComponent
+   * @param {Component} component - The child component to track
+   * @returns {Component} The same child Component
    */
-  child(component: SeidrComponent): SeidrComponent;
+  child(component: Component): Component;
 
   /**
    * Destroys all tracked resources and marks the scope as destroyed.
@@ -162,7 +162,7 @@ export interface ComponentScope {
  * management. Each component tracks its own reactive bindings, event listeners,
  * and child components.
  */
-export interface SeidrComponent {
+export interface Component {
   /**
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}
@@ -179,9 +179,9 @@ export interface SeidrComponent {
    *
    * This element is enhanced with SeidrElement functionality including
    * reactive bindings, event handling, and cleanup capabilities.
-   * @type {SeidrComponentChildren}
+   * @type {ComponentChildren}
    */
-  element: SeidrComponentChildren;
+  element: ComponentChildren;
 
   /**
    * The start marker of the component.

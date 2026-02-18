@@ -2,15 +2,15 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component/internal";
 import { mount } from "../dom/internal";
 import { $ } from "../element";
-import type { Seidr } from "../seidr";
+import type { Seidr } from "../observable";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";
-import { navigate } from "./navigate";
+import { useNavigate } from "./hooks/use-navigate";
 import { Router } from "./router";
 
 describeDualMode("Router Component", ({ getDOMFactory }) => {
-  type IdParams = { id: string } extends Record<string, string> ? { id: string } : never;
+  const { navigate } = useNavigate();
 
   let container: HTMLDivElement;
   let document: Document;
@@ -31,7 +31,7 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   const Home = component(() => $("div", { id: "home", textContent: "Home Component" }), "Home");
   const About = component(() => $("div", { id: "about", textContent: "About Component" }), "About");
   const User = component(
-    (params: Seidr<IdParams>) =>
+    (params: Seidr<Record<string, string>>) =>
       $("div", {
         id: "user",
         textContent: params.as((p) => `User Component ${p.id}`),
@@ -41,7 +41,14 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   const Fallback = component(() => $("div", { id: "fallback", textContent: "404" }), "Fallback");
 
   it("should render the matching route", () => {
-    const App = component(() => Router([["/", Home], ["/about", About]]), "App");
+    const App = component(
+      () =>
+        Router([
+          ["/", Home],
+          ["/about", About],
+        ]),
+      "App",
+    );
 
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
@@ -54,7 +61,7 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
   });
 
   it("should render fallback if no route matches", () => {
-    const App = component(() => Router([[/"/, Home]], Fallback), "App");
+    const App = component(() => Router([["/", Home]], Fallback), "App");
 
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
@@ -105,8 +112,8 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
       () =>
         Router([
           [
-            "/^/post/(?<id>d+)$",
-            (params: Seidr<IdParams>) => $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
+            /^\/post\/(?<id>\d+)$/,
+            (params: Seidr<Record<string, string>>) => $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
           ],
         ]),
       "App",

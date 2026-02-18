@@ -1,5 +1,5 @@
 import { getSSRScope } from "../../ssr/ssr-scope";
-import { isClient } from "./browser";
+import { isClient } from "./client";
 
 /**
  * Returns true if the current environment is the server (Node.js/SSR).

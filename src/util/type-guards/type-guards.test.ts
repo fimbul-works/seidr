@@ -7,6 +7,8 @@ import {
   isArray,
   isBool,
   isComment,
+  isComponent,
+  isComponentFactory,
   isDOMNode,
   isEmpty,
   isFn,
@@ -14,8 +16,6 @@ import {
   isNum,
   isObj,
   isSeidr,
-  isSeidrComponent,
-  isSeidrComponentFactory,
   isSeidrElement,
   isStr,
   isTextNode,
@@ -325,49 +325,49 @@ describe("Type Guard Utilities", () => {
       });
     });
 
-    describe("isSeidrComponent", () => {
-      it("should return true for SeidrComponent instances", () => {
-        expect(isSeidrComponent(component(() => $("div"))())).toBe(true);
+    describe("isComponent", () => {
+      it("should return true for Component instances", () => {
+        expect(isComponent(component(() => $("div"))())).toBe(true);
       });
 
-      it("should return false for non-SeidrComponent values", () => {
-        expect(isSeidrComponent(42)).toBe(false);
-        expect(isSeidrComponent("hello")).toBe(false);
-        expect(isSeidrComponent({ a: 1 })).toBe(false);
-        expect(isSeidrComponent(null)).toBe(false);
-        expect(isSeidrComponent(undefined)).toBe(false);
+      it("should return false for non-Component values", () => {
+        expect(isComponent(42)).toBe(false);
+        expect(isComponent("hello")).toBe(false);
+        expect(isComponent({ a: 1 })).toBe(false);
+        expect(isComponent(null)).toBe(false);
+        expect(isComponent(undefined)).toBe(false);
       });
 
       it("should return false for plain objects", () => {
-        const fakeSeidrComponent = { value: 42, bind: () => {} };
-        expect(isSeidrComponent(fakeSeidrComponent)).toBe(false);
+        const fakeComponent = { value: 42, bind: () => {} };
+        expect(isComponent(fakeComponent)).toBe(false);
       });
 
       it("should narrow type correctly", () => {
         const value: unknown = component(() => $("div"))();
-        if (isSeidrComponent(value)) {
+        if (isComponent(value)) {
           const _typed = value;
         }
       });
     });
 
-    describe("isSeidrComponentFactory", () => {
-      it("should return true for SeidrComponentFactory instances", () => {
+    describe("isComponentFactory", () => {
+      it("should return true for ComponentFactory instances", () => {
         const factory = wrapComponent(() => $("div"));
-        expect(isSeidrComponentFactory(factory)).toBe(true);
+        expect(isComponentFactory(factory)).toBe(true);
       });
 
-      it("should return false for non-SeidrComponentFactory values", () => {
-        expect(isSeidrComponentFactory(42)).toBe(false);
-        expect(isSeidrComponentFactory("hello")).toBe(false);
-        expect(isSeidrComponentFactory({ a: 1 })).toBe(false);
-        expect(isSeidrComponentFactory(null)).toBe(false);
-        expect(isSeidrComponentFactory(undefined)).toBe(false);
+      it("should return false for non-ComponentFactory values", () => {
+        expect(isComponentFactory(42)).toBe(false);
+        expect(isComponentFactory("hello")).toBe(false);
+        expect(isComponentFactory({ a: 1 })).toBe(false);
+        expect(isComponentFactory(null)).toBe(false);
+        expect(isComponentFactory(undefined)).toBe(false);
       });
 
       it("should narrow type correctly", () => {
         const value: unknown = wrapComponent(() => $("div"));
-        if (isSeidrComponentFactory(value)) {
+        if (isComponentFactory(value)) {
           const _typed = value;
         }
       });

@@ -5,10 +5,12 @@ import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { navigate } from "./navigate";
+import { useNavigate } from "./hooks/use-navigate";
 import { Route } from "./route";
 
 describeDualMode("Route Component", ({ getDOMFactory }) => {
+  const { navigate } = useNavigate();
+
   let container: HTMLDivElement;
   let unmount: CleanupFunction;
 
@@ -24,13 +26,15 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
     unmount?.();
   });
 
-  const Page = (name: string) => component(() => $("div", { className: name.toLowerCase(), textContent: name }), "Page");
+  const Page = (name: string) =>
+    component(() => $("div", { className: name.toLowerCase(), textContent: name }), "Page");
 
   it("should render when path matches exactly", () => {
     const App = component(() => {
       return $("div", {}, [Route("/", Page("Home")), Route("/about", Page("About"))]);
     }, "App");
 
+    navigate("/");
     unmount = mount(App, container);
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
@@ -41,8 +45,10 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
   });
 
   it("should handle dynamic parameters", () => {
-    const UserPage = component((params: Seidr<IdParams>) =>
-      $("div", { className: "user", textContent: params.as((p) => `User ${p.id}`) }), "UserPage");
+    const UserPage = component(
+      (params: Seidr<IdParams>) => $("div", { className: "user", textContent: params.as((p) => `User ${p.id}`) }),
+      "UserPage",
+    );
 
     const App = component(() => {
       return $("div", {}, [Route<IdParams>("/user/:id", UserPage)]);
@@ -58,8 +64,10 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
   });
 
   it("should support RegExp patterns", () => {
-    const PostPage = component((params: Seidr<IdParams>) =>
-      $("div", { className: "post", textContent: params?.as((p) => `Post ${p.id}`) }), "PostPage");
+    const PostPage = component(
+      (params: Seidr<IdParams>) => $("div", { className: "post", textContent: params?.as((p) => `Post ${p.id}`) }),
+      "PostPage",
+    );
 
     const App = component(() => {
       return $("div", {}, [Route<IdParams>(/^\/post\/(?<id>\d+)$/, PostPage)]);
@@ -75,6 +83,7 @@ describeDualMode("Route Component", ({ getDOMFactory }) => {
 
   it("should use provide pathState if provided", () => {
     const customPath = new Seidr("/custom");
+
     const App = component(() => {
       return $("div", {}, [Route("/custom", Page("Custom"), customPath)]);
     }, "App");

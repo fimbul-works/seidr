@@ -1,4 +1,4 @@
-import type { SeidrComponent } from "../component/types";
+import type { Component } from "../component/types";
 import { SEIDR_CLEANUP, type TYPE_ELEMENT, TYPE_PROP } from "../constants";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction, IsCamelCase } from "../types";
@@ -134,7 +134,7 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
 /**
  * Union type representing allowed nodes for Seidr elements.
  */
-export type SeidrNode = SeidrComponent | SeidrElement<any> | Element | Text | Comment;
+export type SeidrNode = Component | SeidrElement<any> | Element | Text | Comment;
 
 /**
  * Union type representing allowed child nodes for Seidr elements.

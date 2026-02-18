@@ -1,10 +1,11 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { describeDualMode } from "../test-setup";
+import { describeDualMode, enableClientMode } from "../test-setup";
 import { getCurrentPath } from "./get-current-path";
 import { navigate } from "./navigate";
 
 describeDualMode("navigate", ({ mode }) => {
   beforeEach(() => {
+    enableClientMode();
     vi.stubGlobal("window", {
       history: {
         pushState: vi.fn(),

@@ -1,7 +1,7 @@
 import { getRenderContext } from "../render-context/render-context";
 import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
-import { isClient } from "../util/environment/browser";
+import { isClient } from "../util/environment/client";
 import type { SSRScopeCapture } from "./types";
 
 /**

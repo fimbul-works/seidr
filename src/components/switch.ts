@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
+import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { getComponent, mountComponent } from "../component/util";
 import { getMarkerComments } from "../dom/get-marker-comments";
@@ -9,29 +9,29 @@ import type { Seidr } from "../seidr";
  * Switches between different components based on an observable value.
  *
  * @template K - The type of the observable value
- * @template {SeidrComponentFactoryFunction<K>} C - The type of component factory
+ * @template {ComponentFactoryFunction<K>} C - The type of component factory
  * @template {Map<K, C> | Record<K & string, C>} M - The type of the factories map or object
  *
  * @param {Seidr<K>} observable - Observable value to switch on
  * @param {M} factories - Map or object of cases to component factories (raw or wrapped)
  * @param {C | null | undefined} [fallbackFactory] - Optional fallback component factory
- * @returns {SeidrComponent} Switch component
+ * @returns {Component} Switch component
  */
 export const Switch = <
   K,
-  C extends SeidrComponentFactoryFunction<K> = SeidrComponentFactoryFunction<K>,
+  C extends ComponentFactoryFunction<K> = ComponentFactoryFunction<K>,
   M extends Map<K, C> | Record<K & string, C> = Map<K, C> | Record<K & string, C>,
 >(
   observable: Seidr<K>,
   factories: M,
   fallbackFactory?: C | null,
   name?: string,
-): SeidrComponent =>
+): Component =>
   component(() => {
     const scope = useScope();
     const [, endMarker] = getMarkerComments(scope.id);
 
-    let currentComponent: SeidrComponent | undefined = getComponent(factories, observable.value, fallbackFactory);
+    let currentComponent: Component | undefined = getComponent(factories, observable.value, fallbackFactory);
 
     /**
      * Updates the component based on the new value.

@@ -6,28 +6,23 @@ import { getNextId, getRenderContext } from "../render-context";
 import { safe } from "../util/try-catch-finally";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
-import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
+import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { createScope, setScopeComponent } from "./component-scope";
 import { getCurrentComponent, pop, push } from "./component-stack";
-import type {
-  SeidrComponent,
-  SeidrComponentChildren,
-  SeidrComponentFactory,
-  SeidrComponentFactoryPureFunction,
-} from "./types";
+import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
  *
  * @template P - Props object type (optional)
  *
- * @param {SeidrComponentFactoryPureFunction<P>} factory - Function that accepts props and creates the component element
- * @returns {SeidrComponentFactory<P>} A function that accepts props and returns a Component instance
+ * @param {ComponentFactoryPureFunction<P>} factory - Function that accepts props and creates the component element
+ * @returns {ComponentFactory<P>} A function that accepts props and returns a Component instance
  */
 export const component = <P = void>(
-  factory: SeidrComponentFactoryPureFunction<P>,
+  factory: ComponentFactoryPureFunction<P>,
   name: string = "Component",
-): SeidrComponentFactory<P> => {
+): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const ctx = getRenderContext();
@@ -40,7 +35,7 @@ export const component = <P = void>(
     // So if getCurrentComponent() is null, we are truly at the root.
     const scope = createScope(id, parent);
 
-    // Create partial SeidrComponent
+    // Create partial Component
     const comp = {
       [TYPE_PROP]: TYPE_COMPONENT,
       id,
@@ -65,10 +60,10 @@ export const component = <P = void>(
 
         /**
          * Removes a child component or DOM node from the DOM.
-         * @param {SeidrComponentChildren} child - The child component or DOM node to remove
+         * @param {ComponentChildren} child - The child component or DOM node to remove
          */
-        const removeChild = (child: SeidrComponentChildren): void => {
-          if (isSeidrComponent(child)) {
+        const removeChild = (child: ComponentChildren): void => {
+          if (isComponent(child)) {
             child.unmount();
           } else if (isDOMNode(child)) {
             child.remove();
@@ -86,7 +81,7 @@ export const component = <P = void>(
         // Remove the end marker
         comp.endMarker?.remove();
       },
-    } as SeidrComponent;
+    } as Component;
 
     // Link scope to component instance for observe() context restoration
     setScopeComponent(scope, comp);
@@ -101,14 +96,12 @@ export const component = <P = void>(
         const result = factory(props);
 
         // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-        const toNode = (item: SeidrChild): SeidrComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
+        const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
 
         const [startMarker, endMarker] = getMarkerComments(id);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
-        comp.element = isArray(result)
-          ? (result.map(toNode).filter(Boolean) as SeidrComponentChildren)
-          : toNode(result);
+        comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
       },
       (err) => {
         // Restore previous component (Pop from tree)
@@ -138,7 +131,7 @@ export const component = <P = void>(
     }
 
     return comp;
-  }) as SeidrComponentFactory<P>;
+  }) as ComponentFactory<P>;
 
   Object.defineProperties(componentFactory, {
     [TYPE_PROP]: {

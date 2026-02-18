@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type SeidrComponent, useScope } from "../component";
+import { type Component, useScope } from "../component";
 import { appendChild } from "../dom/append-child";
 import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
 import { $ } from "../element";
@@ -108,7 +108,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       unmount = mount(comp, container);
 
       expect(consoleSpy).not.toHaveBeenCalled();
-      expect((comp.element as HTMLElement).textContent).toBe("Recovered");
+      expect(((comp.element as Component).element as HTMLElement).textContent).toBe("Recovered");
 
       consoleSpy.mockRestore();
     });
@@ -124,7 +124,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       );
 
       unmount = mount(comp, container);
-      expect(((comp.element as SeidrComponent).element as HTMLElement).dataset.seidrRoot).toBeTruthy();
+      console.log(container.innerHTML);
+      expect(((comp.element as Component).element as HTMLElement).dataset.seidrRoot).toBeTruthy();
     });
   });
 
@@ -146,9 +147,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
-      expect(((ErrorChild.element as SeidrComponent).element as HTMLElement).textContent).toContain(
-        "Child error caught",
-      );
+      expect(((ErrorChild.element as Component).element as HTMLElement).textContent).toContain("Child error caught");
     });
 
     it("should track error boundary component cleanup", () => {
@@ -222,7 +221,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       appendChild(document.body, comp.element);
       if (!isSSR) {
-        ((comp.element as SeidrComponent).element as HTMLElement).click();
+        ((comp.element as Component).element as HTMLElement).click();
         expect(eventListenerCalled).toBe(true);
       }
 
@@ -241,7 +240,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      expect(((comp.element as SeidrComponent).element as HTMLElement).textContent).toBe("TypeError");
+      expect(((comp.element as Component).element as HTMLElement).textContent).toBe("TypeError");
     });
 
     it("should handle error boundary that throws", () => {
@@ -278,7 +277,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       const parent = Parent();
 
       expect(errorCaught).toBe(true);
-      expect(((parent.element as SeidrComponent).element as HTMLElement).textContent).toBe("Parent error boundary");
+      expect(((parent.element as Component).element as HTMLElement).textContent).toBe("Parent error boundary");
     });
   });
 });

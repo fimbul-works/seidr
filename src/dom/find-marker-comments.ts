@@ -1,5 +1,5 @@
 import { getRenderContext } from "../render-context";
-import { isClient } from "../util/environment/browser";
+import { isClient } from "../util/environment/client";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./marker-comment-prefix";
 
 /**

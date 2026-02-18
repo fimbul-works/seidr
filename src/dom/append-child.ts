@@ -2,7 +2,7 @@ import type { SeidrChild } from "../element/types";
 import type { CleanupFunction } from "../types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
-import { isSeidrComponent } from "../util/type-guards/seidr-dom-types";
+import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { $text } from "./text";
 
 /**
@@ -28,7 +28,7 @@ export const appendChild = (
   }
 
   // Append Seidr component
-  if (isSeidrComponent(child)) {
+  if (isComponent(child)) {
     appendChild(parent, child.startMarker);
     appendChild(parent, child.element);
     appendChild(parent, child.endMarker);

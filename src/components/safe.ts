@@ -1,10 +1,10 @@
 import { component } from "../component/component";
 import { createScope } from "../component/component-scope";
 import { getCurrentComponent } from "../component/component-stack";
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
+import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
-import { safe,  } from "../util/try-catch-finally";
+import { safe } from "../util/try-catch-finally";
 import { wrapError } from "../util/wrap-error";
 
 /**
@@ -16,18 +16,18 @@ import { wrapError } from "../util/wrap-error";
  *
  * @template T -
  *
- * @param {SeidrComponentFactoryFunction} factory - Function that creates the component element
- * @param {SeidrComponentFactoryFunction<Error>} errorBoundaryFactory - Error handler that returns fallback UI
- * @returns {SeidrComponent} A Component instance with error handling
+ * @param {ComponentFactoryFunction} factory - Function that creates the component element
+ * @param {ComponentFactoryFunction<Error>} errorBoundaryFactory - Error handler that returns fallback UI
+ * @returns {Component} A Component instance with error handling
  */
 export const Safe = <
-  C extends SeidrComponentFactoryFunction = SeidrComponentFactoryFunction,
-  E extends SeidrComponentFactoryFunction<Error> = SeidrComponentFactoryFunction<Error>,
+  C extends ComponentFactoryFunction = ComponentFactoryFunction,
+  E extends ComponentFactoryFunction<Error> = ComponentFactoryFunction<Error>,
 >(
   factory: C,
   errorBoundaryFactory: E,
   name?: string,
-): SeidrComponent =>
+): Component =>
   component(() => {
     const scope = useScope();
 

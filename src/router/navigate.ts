@@ -1,4 +1,4 @@
-import { isClient } from "../util/environment/browser";
+import { isClient } from "../util/environment/client";
 import { getCurrentPath } from "./get-current-path";
 
 /**

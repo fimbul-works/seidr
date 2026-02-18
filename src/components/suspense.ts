@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
+import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { getComponent, mountComponent } from "../component/util";
 import { getMarkerComments } from "../dom/get-marker-comments";
@@ -17,21 +17,21 @@ type SuspenseStatus = typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof 
  * Creates a component that handles Promise resolution with loading and error states.
  *
  * @template T - The type of resolved value
- * @template {SeidrComponentFactoryFunction<T>} C - The type of component factory
+ * @template {ComponentFactoryFunction<T>} C - The type of component factory
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
  * @param {C} factory - Function that creates the component when promise resolves
- * @param {SeidrComponentFactoryFunction} [loadingFactory] - Optional loading component
- * @param {SeidrComponentFactoryFunction<Error>} [errorBoundaryFactory] - Optional error handler component
- * @returns {SeidrComponent} A component handling the promise state
+ * @param {ComponentFactoryFunction} [loadingFactory] - Optional loading component
+ * @param {ComponentFactoryFunction<Error>} [errorBoundaryFactory] - Optional error handler component
+ * @returns {Component} A component handling the promise state
  */
-export const Suspense = <T, C extends SeidrComponentFactoryFunction<T> = SeidrComponentFactoryFunction<T>>(
+export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
   factory: C,
-  loadingFactory: SeidrComponentFactoryFunction = () => "Loading...",
-  errorBoundaryFactory: SeidrComponentFactoryFunction<Error> = (err: Error) => `${err.name}: ${err.message}`,
+  loadingFactory: ComponentFactoryFunction = () => "Loading...",
+  errorBoundaryFactory: ComponentFactoryFunction<Error> = (err: Error) => `${err.name}: ${err.message}`,
   name?: string,
-): SeidrComponent =>
+): Component =>
   component(() => {
     const scope = useScope();
     const status = new Seidr<SuspenseStatus>(PROMISE_PENDING);
@@ -41,13 +41,13 @@ export const Suspense = <T, C extends SeidrComponentFactoryFunction<T> = SeidrCo
     let errorValue: Error | null = null;
     let currentPromiseId = 0;
 
-    const factories: Record<SuspenseStatus, SeidrComponentFactoryFunction<any>> = {
+    const factories: Record<SuspenseStatus, ComponentFactoryFunction<any>> = {
       [PROMISE_RESOLVED]: () => factory(resolvedValue!),
       [PROMISE_ERROR]: () => errorBoundaryFactory(errorValue!),
       [PROMISE_PENDING]: loadingFactory,
     };
 
-    let currentComponent: SeidrComponent | undefined = getComponent(factories, status.value);
+    let currentComponent: Component | undefined = getComponent(factories, status.value);
 
     /**
      * Handles a promise and updates the status accordingly.

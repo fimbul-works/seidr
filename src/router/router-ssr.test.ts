@@ -26,7 +26,7 @@ describe("Router SSR", () => {
   const Fallback = component(() => $("div", { className: "fallback", textContent: "404 Component" }), "Fallback");
 
   it("should render matching route to string", async () => {
-    const App = component(() => Router(["/", Home], ["/about", About]), Fallback), "App");
+    const App = component(() => Router([["/", Home], ["/about", About]], Fallback), "App");
 
     const { html, hydrationData } = await renderToString(App, { path: "/" });
     expect(html).toContain('class="home"');
@@ -37,7 +37,7 @@ describe("Router SSR", () => {
   });
 
   it("should render another route to string", async () => {
-    const App = component(() => Router(["/", Home], ["/about", About]), Fallback), "App");
+    const App = component(() => Router([["/", Home], ["/about", About]], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/about" });
     expect(html).toContain('class="about"');
@@ -46,7 +46,7 @@ describe("Router SSR", () => {
   });
 
   it("should render fallback to string when no match", async () => {
-    const App = component(() => Router(["/", Home], Fallback), "App");
+    const App = component(() => Router([["/", Home]], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/not-found" });
     expect(html).toContain('class="fallback"');
@@ -58,7 +58,7 @@ describe("Router SSR", () => {
       (params: any) => $("div", { className: "user", textContent: params.as((p: any) => `User ${p.id}`) }),
       "User",
     );
-    const App = component(() => Router(["/user/:id", User], Fallback), "App");
+    const App = component(() => Router([["/user/:id", User]], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/user/123" });
     expect(html).toContain("User 123");
@@ -82,7 +82,7 @@ describe("Router SSR", () => {
     const AboutPage = component(() => $("div", { textContent: "About Page" }), "AboutPage");
     const HomePage = component(() => $("div", { textContent: "Home Page" }), "HomePage");
 
-    const App = component(() => Router(["/about", AboutPage], ["/", HomePage]), "App");
+    const App = component(() => Router([["/about", AboutPage], ["/", HomePage]], Fallback), "App");
 
     const result1 = await renderToString(App, { path: "/about" });
     expect(result1.html).toContain("About Page");
@@ -104,5 +104,6 @@ describe("Router SSR", () => {
 
     const { html } = await renderToString(App);
     expect(html).toContain("Home");
+    
   });
 });

@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import type { SeidrComponent, SeidrComponentFactoryFunction } from "../component/types";
+import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
@@ -8,6 +8,8 @@ import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { isFn } from "../util";
 import { getCurrentPath } from "./get-current-path";
+import { useParams } from "./hooks/use-params";
+import { useRouter } from "./hooks/use-router";
 import { matchRoute } from "./match-route";
 import type { RouteDefinition } from "./types";
 
@@ -16,7 +18,7 @@ const ROUTER_PARAMS_ID = "router-params";
 /**
  * Router component props.
  */
-export interface RouterProps<C extends SeidrComponentFactoryFunction<any> = SeidrComponentFactoryFunction<any>> {
+export interface RouterProps<C extends ComponentFactoryFunction<any> = ComponentFactoryFunction<any>> {
   routes: Array<RouteDefinition>;
   fallback?: C;
 }
@@ -24,18 +26,21 @@ export interface RouterProps<C extends SeidrComponentFactoryFunction<any> = Seid
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = <C extends SeidrComponentFactoryFunction<any> = SeidrComponentFactoryFunction<any>>(
+export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactoryFunction<any>>(
   routes: Array<RouteDefinition>,
   fallback?: C,
-): SeidrComponent =>
+): Component =>
   component(({ routes, fallback }: RouterProps) => {
     const scope = useScope();
+    const router = useRouter();
+    const params = useParams();
+
     const [, endMarker] = getMarkerComments(scope.id);
     const currentPath = getCurrentPath();
 
     let currentRouteIndex = -100;
     let currentParamsSeidr: Seidr<Record<string, string>> | undefined;
-    let currentComponent: SeidrComponent | undefined;
+    let currentComponent: Component | undefined;
 
     const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
       const match = matchRoute(currentPath.value, routes);

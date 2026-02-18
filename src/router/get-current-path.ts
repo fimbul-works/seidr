@@ -1,8 +1,8 @@
 import { getCurrentComponent } from "../component/component-stack";
 import { getRenderContext } from "../render-context/render-context";
-import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
-import { isClient } from "../util/environment/browser";
+import { Seidr } from "../seidr/seidr";
+import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
 
 const PATH_SEIDR_ID = "router-path";
@@ -37,12 +37,12 @@ export const getCurrentPath = (): Seidr<string> => {
 
     if (!observable) {
       // Create a new Seidr for this render context
-      observable = new Seidr(ctx.currentPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+      observable = new Seidr<string>(ctx.currentPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
       pathCache.set(ctxID, observable);
 
       // Keep context synchronized with observable changes
       // This is important for SSR navigation and hydration tests
-      observable.observe((val) => (ctx.currentPath = val));
+      observable.observe((val) => (ctx.currentPath = val.toString()));
     } else {
       // Update the cached Seidr with the current path from context
       // This allows renderToString to set different paths for different renders
@@ -54,7 +54,7 @@ export const getCurrentPath = (): Seidr<string> => {
 
   // Client-side: Use module-level state
   if (!clientPathState) {
-    clientPathState = new Seidr(isClient() ? window.location?.pathname : "/", {
+    clientPathState = new Seidr(isClient() ? window.location?.toString() : "/", {
       ...NO_HYDRATE,
       id: PATH_SEIDR_ID,
     });
@@ -62,7 +62,7 @@ export const getCurrentPath = (): Seidr<string> => {
     // Handle history.back
     const component = getCurrentComponent();
     if (component) {
-      const popStateHandler = () => (clientPathState!.value = window.location.pathname);
+      const popStateHandler = () => (clientPathState!.value = window.location.toString());
       window.addEventListener("popstate", popStateHandler);
       component.scope.track(() => window.removeEventListener("popstate", popStateHandler));
     }

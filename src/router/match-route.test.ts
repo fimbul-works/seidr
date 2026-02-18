@@ -5,8 +5,8 @@ import { $div } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { createRoute } from "./create-route";
 import { matchRoute } from "./match-route";
+import type { RouteDefinition } from "./types";
 
 describeDualMode("matchRoute", () => {
   const comp = () => $div();
@@ -17,7 +17,7 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should match simple path", () => {
-    const route = createRoute("/home", comp);
+    const route: RouteDefinition = ["/home", comp];
     const match = matchRoute("/home", [route]);
 
     expect(match).not.toBeNull();
@@ -27,9 +27,10 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should match route with parameters", () => {
-    const route = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
-      $div({ textContent: params?.as((p) => p.id) }),
-    );
+    const route: RouteDefinition = [
+      "/user/:id",
+      (params?: Seidr<{ id: string }>) => $div({ textContent: params?.as((p) => p.id) }),
+    ];
     const match = matchRoute("/user/123", [route]);
 
     expect(match).not.toBeNull();
@@ -38,9 +39,10 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should match regex route", () => {
-    const route = createRoute<{ slug: string }>(/^\/post\/(?<slug>[a-z-]+)$/, (params?: Seidr<{ slug: string }>) =>
-      $div({ textContent: params?.as((p) => p.slug) }),
-    );
+    const route: RouteDefinition = [
+      /^\/post\/(?<slug>[a-z-]+)$/,
+      (params?: Seidr<{ slug: string }>) => $div({ textContent: params?.as((p) => p.slug) }),
+    ];
     const match = matchRoute("/post/hello-world", [route]);
 
     expect(match).not.toBeNull();
@@ -49,10 +51,11 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should prioritize earlier routes", () => {
-    const route1 = createRoute("/user/new", comp);
-    const route2 = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
-      $div({ textContent: params?.as((p) => p.id) }),
-    );
+    const route1: RouteDefinition = ["/user/new", comp];
+    const route2: RouteDefinition = [
+      "/user/:id",
+      (params?: Seidr<{ id: string }>) => $div({ textContent: params?.as((p) => p.id) }),
+    ];
 
     const match = matchRoute("/user/new", [route1, route2]);
 
@@ -62,14 +65,14 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should return null for no match", () => {
-    const route = createRoute("/home", comp);
+    const route: RouteDefinition = ["/home", comp];
     const match = matchRoute("/about", [route]);
 
     expect(match).toBeNull();
   });
 
   it("should handle trailing slashes", () => {
-    const route = createRoute("/home", comp);
+    const route: RouteDefinition = ["/home", comp];
     const match = matchRoute("/home/", [route]);
 
     expect(match).not.toBeNull();
@@ -77,9 +80,10 @@ describeDualMode("matchRoute", () => {
   });
 
   it("should render component with captured params", async () => {
-    const route = createRoute<{ id: string }>("/user/:id", (params?: Seidr<{ id: string }>) =>
-      $div({ textContent: params?.as((p) => `User: ${p.id}`) }),
-    );
+    const route: RouteDefinition = [
+      "/user/:id",
+      (params?: Seidr<{ id: string }>) => $div({ textContent: params?.as((p) => `User: ${p.id}`) }),
+    ];
 
     const match = matchRoute("/user/42", [route]);
     expect(match).not.toBeNull();
