@@ -31,9 +31,6 @@ export class Seidr<T = any> implements Observable<T> {
   /** @type {CleanupFunction[]} Cleanup functions */
   private c: CleanupFunction[] = [];
 
-  /** @type {CleanupFunction | undefined} Cleanup for internal observation of child Weave/Seidr */
-  private cv: CleanupFunction | undefined;
-
   /**
    * Creates an instance of Seidr observable.
    *
@@ -246,10 +243,6 @@ export class Seidr<T = any> implements Observable<T> {
       }
     });
     this.c = [];
-    if (this.cv) {
-      this.cv();
-      this.cv = undefined;
-    }
   }
 
   /**

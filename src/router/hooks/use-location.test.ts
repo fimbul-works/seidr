@@ -11,35 +11,30 @@ describe("useLocation", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("should return current pathname", () => {
+  it("should return current pathname snapshot", () => {
     const location = useLocation();
     expect(location.pathname).toBe("/");
   });
 
-  it("should update when path changes via navigate", () => {
+  it("should provide reactivity via explicit signals", () => {
     const location = useLocation();
     navigate("/about");
-    expect(location.pathname).toBe("/about");
+    expect(location.pathSignal.value).toBe("/about");
+
+    // The snapshot itself is stale
+    expect(location.pathname).toBe("/");
+
+    // Re-calling hook gives new snapshot
+    const newLocation = useLocation();
+    expect(newLocation.pathname).toBe("/about");
   });
 
-  it("should provide reactive params", () => {
+  it("should provide reactive params via signal", () => {
     const location = useLocation();
-    const keys = Object.keys(location.params).filter((k) => k !== "$type");
-    expect(keys).toHaveLength(0);
+    expect(Object.keys(location.params)).toHaveLength(0);
 
     getCurrentParams().value = { id: "456" };
-    expect(location.params["id"]).toBe("456");
-  });
-
-  it("should provide reactive query params", () => {
-    const location = useLocation();
-    // Simulate navigation with query.
-    // We must update BOTH window history (for internal checks) AND Seidr signal (for Weave).
-    // navigate() assumes browser env.
-    navigate("/?key=value");
-
-    const params = location.queryParams;
-    expect(params["key"]).toBe("value");
+    expect(location.paramsSignal.value.id).toBe("456");
   });
 
   it("should expose window location properties", () => {

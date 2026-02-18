@@ -1,13 +1,9 @@
-import { NO_HYDRATE } from "../../seidr/constants";
-import { weave } from "../../seidr/seidr-weave";
 import { getCurrentParams } from "../get-current-params";
 import { getCurrentPath } from "../get-current-path";
 import { parseURL } from "./util";
 
-const LOCATION_SEIDR_ID = "router-location";
-
 export interface Location {
-  location: string;
+  href: string;
   pathname: string;
   search: string;
   hash: string;
@@ -20,27 +16,23 @@ export interface Location {
 }
 
 /**
- * Returns the current location object.
- * @returns {Location} The current location object
+ * Returns the current location snapshot.
+ * To make properties reactive, use location.pathSignal or location.paramsSignal.
  */
 export const useLocation = (overridePath?: string) => {
-  // Get the current path state
   const currentPathState = getCurrentPath();
   const currentParamsState = getCurrentParams();
 
-  // If an override path is provided, set it
   if (overridePath) {
     currentPathState.value = overridePath;
   }
 
-  // Create a weave for the location
-  const location = weave(
-    { ...parseURL(currentPathState.value), params: currentParamsState.value },
-    { id: LOCATION_SEIDR_ID, ...NO_HYDRATE },
-  );
+  const urlData = parseURL(currentPathState.value);
 
-  currentPathState.bind(location, (url, loc) => Object.assign(loc, parseURL(url)));
-  currentParamsState.bind(location, (params, loc) => Object.assign(loc, { params }));
-
-  return location;
+  return {
+    ...urlData,
+    params: currentParamsState.value,
+    pathSignal: currentPathState,
+    paramsSignal: currentParamsState,
+  };
 };

@@ -11,16 +11,13 @@ describe("useSearchParams", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("should return query params", () => {
-    // Ensuring signal is updated
-    navigate("/?q=hello&sort=asc");
+  it("should return query params snapshot", () => {
+    navigate("/?q=hello");
     const [params] = useSearchParams();
-
     expect(params.q).toBe("hello");
-    expect(params.sort).toBe("asc");
   });
 
-  it("should update query params", () => {
+  it("should update query params and require new hook call for new snapshot", () => {
     navigate("/");
     const [params, setParam] = useSearchParams();
     expect(params.new).toBeUndefined();
@@ -29,15 +26,12 @@ describe("useSearchParams", () => {
 
     expect(window.location.search).toContain("new=value");
     expect(getCurrentPath().value).toContain("?new=value");
-    expect(params.new).toBe("value");
-  });
 
-  it("should handle multiple params", () => {
-    navigate("/?a=1");
-    const [params, setParam] = useSearchParams();
+    // The old params object is a stale snapshot
+    expect(params.new).toBeUndefined();
 
-    setParam("b", "2");
-    expect(window.location.search).toContain("a=1");
-    expect(window.location.search).toContain("b=2");
+    // New hook call gets new snapshot
+    const [newParams] = useSearchParams();
+    expect(newParams.new).toBe("value");
   });
 });

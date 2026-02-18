@@ -21,6 +21,3 @@ export const TYPE_PROP = "$type";
 
 /** Seidr cleanup function. */
 export const SEIDR_CLEANUP = Symbol("seidrCleanup");
-
-/** Seidr weave symbol. */
-export const SEIDR_WEAVE = Symbol("seidrWeave");

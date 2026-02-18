@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { getCurrentParams } from "../get-current-params";
 import { getCurrentPath } from "../get-current-path";
 import { useRouter } from "./use-router";
@@ -10,49 +10,46 @@ describe("useRouter", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("should return location properties", () => {
+  it("should return location properties as static snapshot", () => {
     const router = useRouter();
     expect(router.pathname).toBe("/");
     expect(router.search).toBe("");
   });
 
-  it.skip("should return navigate functions", () => {
+  it("should return navigation functions", () => {
     const router = useRouter();
-    // Use simple truthy checks if typeof is flaky with Proxy
-    expect(router.navigate).toBeDefined();
-    expect(router.redirect).toBeDefined();
-    expect(router.back).toBeDefined();
+    expect(typeof router.navigate).toBe("function");
+    expect(typeof router.redirect).toBe("function");
+    expect(typeof router.history.back).toBe("function");
   });
 
-  it("should reflect path changes", () => {
+  it("should push updates to signals but leave current snapshot static", () => {
     const router = useRouter();
     expect(router.pathname).toBe("/");
 
-    router.navigate("/about"); // Use router.navigate explicitly
-    expect(router.pathname).toBe("/about");
-    expect(getCurrentPath().value).toBe("/about");
+    router.navigate("/about");
+    expect(router.pathSignal.value).toBe("/about");
+    expect(router.pathname).toBe("/"); // Stale snapshot
+
+    const nextRouter = useRouter();
+    expect(nextRouter.pathname).toBe("/about");
   });
 
-  it("should reflect params changes", () => {
+  it("should reflect params changes via signal", () => {
     const router = useRouter();
-    // Ensure we filter out internal keys if any
-    const keys = Object.keys(router.params).filter((k) => k !== "$type");
-    expect(keys).toHaveLength(0);
-
     getCurrentParams().value = { id: "123" };
-    expect(router.params.id).toBe("123");
+    expect(router.paramsSignal.value.id).toBe("123");
   });
 
-  it("should provide simplified query param access", () => {
+  it("should update query params", () => {
     const router = useRouter();
-    // Use navigate to set state
     router.navigate("/?q=hello");
 
-    // Access query params
-    const qParams = router.queryParams;
-    expect(qParams.q).toBe("hello");
+    // Need new router for new snapshot
+    const r2 = useRouter();
+    expect(r2.queryParams.q).toBe("hello");
 
-    router.setQueryParam("q", "world");
+    r2.setQueryParam("q", "world");
     expect(window.location.search).toContain("q=world");
   });
 });
