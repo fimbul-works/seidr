@@ -14,14 +14,15 @@ export interface RouteMatch<P = Record<string, string>> {
  * @param routes The list of routes to check
  * @returns The match result or null if no route matches
  */
-export const matchRoute = (path: string, routes: RouteDefinition<any, any>[]): RouteMatch | null => {
+export const matchRoute = (rawPath: string, routes: RouteDefinition<any, any>[]): RouteMatch | null => {
+  const path = rawPath.split(/[?#]/)[0];
   for (let i = 0; i < routes.length; i++) {
     const [pattern] = routes[i];
     let params: Record<string, string> | false = false;
 
     if (pattern instanceof RegExp) {
       const match = path.match(pattern);
-      params = match ? (match.groups ?? {}) : false;
+      params = match?.groups ? { ...match.groups } : false;
     } else {
       params = parseRouteParams(pattern, path);
     }
@@ -29,7 +30,7 @@ export const matchRoute = (path: string, routes: RouteDefinition<any, any>[]): R
     if (params) {
       return {
         route: routes[i],
-        params: params as any,
+        params: params,
         index: i,
       };
     }

@@ -6,14 +6,12 @@ import { getCurrentPath } from "./get-current-path";
  * @param {string} path
  */
 export const navigate = (path: string): void => {
-  // Strip hash and query string for routing purposes
   // window.location.pathname doesn't include these, but navigate() might receive them
-  const cleanPath = path.split(/[?#]/)[0];
   const currentPath = getCurrentPath();
-  currentPath.value = cleanPath;
+  currentPath.value = path;
 
   // Push path to history
   if (isClient()) {
-    window.history.pushState({}, "", cleanPath);
+    window.history.pushState({}, "", path);
   }
 };

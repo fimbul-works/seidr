@@ -1,5 +1,5 @@
 import { getRenderContext } from "../render-context";
-import { safe } from "../util/try-catch-finally";
+import { safe } from "../util/safe";
 import type { Component } from "./types";
 
 /** Map of current component cursor by render context ID */

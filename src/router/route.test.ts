@@ -8,7 +8,13 @@ import type { CleanupFunction } from "../types";
 import { useNavigate } from "./hooks/use-navigate";
 import { Route } from "./route";
 
-describeDualMode("Route Component", ({ getDOMFactory }) => {
+describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
+  if (isSSR) {
+    it("should be covered by router-ssr.test.ts", () => {
+      expect(true).toBe(true);
+    });
+    return;
+  }
   const { navigate } = useNavigate();
 
   let container: HTMLDivElement;

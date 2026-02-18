@@ -9,7 +9,14 @@ import { getCurrentPath } from "./get-current-path";
 import { useNavigate } from "./hooks/use-navigate";
 import { Router } from "./router";
 
-describeDualMode("Router Component", ({ getDOMFactory }) => {
+describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
+  if (isSSR) {
+    it("should be covered by router-ssr.test.ts", () => {
+      expect(true).toBe(true);
+    });
+    return;
+  }
+
   const { navigate } = useNavigate();
 
   let container: HTMLDivElement;
@@ -113,7 +120,9 @@ describeDualMode("Router Component", ({ getDOMFactory }) => {
         Router([
           [
             /^\/post\/(?<id>\d+)$/,
-            (params: Seidr<Record<string, string>>) => $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
+            component((params: Seidr<Record<string, string>>) =>
+              $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
+            ),
           ],
         ]),
       "App",

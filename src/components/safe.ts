@@ -4,7 +4,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
-import { safe } from "../util/try-catch-finally";
+import { safe } from "../util/safe";
 import { wrapError } from "../util/wrap-error";
 
 /**

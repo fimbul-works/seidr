@@ -5,8 +5,8 @@ import { wrapError } from "./wrap-error";
  *
  * @template T - The return type of the function.
  * @param {() => T} fn The function to execute.
- * @param {() => void} finallyFn The function to call when the function finally returns.
  * @param {(error: Error) => T} onErrorFn The function to call with any errors that occur. Defaults to console.error.
+ * @param {() => void} finallyFn The function to call when the function finally returns.
  */
 export const safe = <T>(
   fn: () => T,

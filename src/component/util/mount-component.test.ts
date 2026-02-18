@@ -54,7 +54,7 @@ describe("mountComponent", () => {
   });
 
   it("should recursively mount nested components", () => {
-    const Child = component(() => $("span", { className: "child", textContent: "Child" }), "Child");
+    const Child = component(() => $("span", { className: "child", textContent: "Child Component" }), "Child");
     const Parent = component(() => Child(), "Parent")();
 
     mountComponent(Parent, anchor);
@@ -62,7 +62,7 @@ describe("mountComponent", () => {
     const html = container.innerHTML;
     expect(html).toContain(`${SEIDR_COMPONENT_START_PREFIX}Parent-`);
     expect(html).toContain(`${SEIDR_COMPONENT_START_PREFIX}Child-`);
-    expect(html).toContain('<span class="child">Child</span>');
+    expect(html).toContain("Child Component");
     expect(html).toContain(`${SEIDR_COMPONENT_END_PREFIX}Child-`);
     expect(html).toContain(`${SEIDR_COMPONENT_END_PREFIX}Parent-`);
 

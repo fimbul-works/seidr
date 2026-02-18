@@ -13,13 +13,11 @@ import { useNavigate } from "./hooks";
 export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
   to: string | Seidr<string>;
   tagName?: K;
-  activeClass?: string;
-  activeProp?: string;
-  activeValue?: any;
 }
 
 /**
  * Link component for Route.
+ * @template K - Key from the HTMLElementTagNameMap interface
  * @param {LinkProps & SeidrElementProps<K>} props - Link props with reactive bindings
  * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
  * @returns {Component} Component that wraps an anchor element
@@ -32,11 +30,11 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     const scope = useScope();
     const { navigate } = useNavigate();
 
-    // If to is a Seidr, observe it; otherwise wrap it in a Seidr
+    // If to is a Seidr, use it directly; otherwise wrap it in a Seidr
     // We opt-out of hydration for this internal Seidr to save space
-    const toValue = new Seidr(unwrapSeidr(to), NO_HYDRATE);
+    const toValue = to instanceof Seidr ? to : new Seidr(to, NO_HYDRATE);
 
-    const el = $(tagName as K, restProps as any, children);
+    const el = $(tagName as K, { href: toValue, ...restProps } as any, children);
     scope.track(
       el.on("click", (e: Event) => {
         e.preventDefault();

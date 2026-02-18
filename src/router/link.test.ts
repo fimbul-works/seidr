@@ -1,5 +1,75 @@
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { component } from "../component/internal";
+import { mount } from "../dom/internal";
+import { $ } from "../element";
+import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
+import { Link } from "./link";
 
-describeDualMode("Link Component", ({ getDOMFactory, mode }) => {
-  throw new Error("TODO: new implementation required");
+// Mock useNavigate
+const navigateMock = vi.fn();
+vi.mock("./hooks/use-navigate", () => ({
+  useNavigate: () => ({
+    navigate: navigateMock,
+  }),
+}));
+
+describeDualMode("Link Component", ({ getDOMFactory, isSSR }) => {
+  let container: HTMLDivElement;
+  let document: Document;
+  let unmount: () => void;
+
+  beforeEach(() => {
+    document = getDOMFactory().getDocument();
+    container = document.createElement("div");
+    document.body.appendChild(container);
+    navigateMock.mockClear();
+  });
+
+  afterEach(() => {
+    unmount?.();
+    document.body.removeChild(container);
+  });
+
+  it("should render an anchor tag with correct href", () => {
+    const App = component(() => Link({ to: "/users" }, [$("span", { textContent: "Users" })]), "App");
+
+    unmount = mount(App, container);
+
+    const anchor = container.querySelector("a");
+    expect(anchor).toBeTruthy();
+    expect(anchor?.textContent).toBe("Users");
+    expect(anchor?.getAttribute("href")).toBe("/users");
+  });
+
+  if (!isSSR) {
+    it("should call navigate on click", () => {
+      const App = component(() => Link({ to: "/profile" }, [$("span", { textContent: "Profile" })]), "App");
+
+      unmount = mount(App, container);
+      const anchor = container.querySelector("a");
+
+      // Simulate click
+      anchor?.dispatchEvent(new Event("click", { bubbles: true, cancelable: true }));
+
+      expect(navigateMock).toHaveBeenCalledWith("/profile");
+    });
+
+    it("should handle reactive 'to' prop", () => {
+      const path = new Seidr("/initial");
+      const App = component(() => Link({ to: path }, [$("span", { textContent: "Dynamic" })]), "App");
+
+      unmount = mount(App, container);
+      const anchor = container.querySelector("a");
+
+      anchor?.dispatchEvent(new Event("click", { bubbles: true, cancelable: true }));
+      expect(navigateMock).toHaveBeenCalledWith("/initial");
+
+      path.value = "/updated";
+
+      // Check if navigate uses updated value
+      anchor?.dispatchEvent(new Event("click", { bubbles: true, cancelable: true }));
+      expect(navigateMock).toHaveBeenCalledWith("/updated");
+    });
+  }
 });

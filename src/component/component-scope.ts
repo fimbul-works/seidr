@@ -1,7 +1,7 @@
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
-import { safe } from "../util/try-catch-finally";
+import { safe } from "../util/safe";
 import { executeInContext } from "./component-stack";
 import type { Component, ComponentScope } from "./types";
 

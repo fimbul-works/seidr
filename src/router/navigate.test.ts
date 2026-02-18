@@ -18,9 +18,9 @@ describeDualMode("navigate", ({ mode }) => {
     expect(getCurrentPath().value).toBe("/about");
   });
 
-  it("should strip query params and hashes", () => {
+  it("should preserve query params and hashes", () => {
     navigate("/about?foo=bar#baz");
-    expect(getCurrentPath().value).toBe("/about");
+    expect(getCurrentPath().value).toBe("/about?foo=bar#baz");
   });
 
   if (mode !== "SSR") {

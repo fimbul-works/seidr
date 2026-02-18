@@ -5,7 +5,11 @@ interface URLData {
   pathname: string;
   search: string;
   hash: string;
-  params: Record<string, string>;
+  queryParams: Record<string, string>;
+  origin: string;
+  hostname: string;
+  port: string;
+  protocol: string;
 }
 
 export function parseURL(href: string): URLData {
@@ -15,7 +19,11 @@ export function parseURL(href: string): URLData {
     pathname: url.pathname,
     search: url.search,
     hash: url.hash,
-    params: Object.fromEntries(url.searchParams.entries()),
+    queryParams: Object.fromEntries(url.searchParams.entries()),
+    origin: url.origin,
+    hostname: url.hostname,
+    port: url.port,
+    protocol: url.protocol,
   };
   return location;
 }

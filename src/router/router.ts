@@ -4,14 +4,11 @@ import { useScope } from "../component/use-scope";
 import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import { getMarkerComments } from "../dom/get-marker-comments";
-import { Seidr } from "../seidr";
-import { NO_HYDRATE } from "../seidr/constants";
 import { isFn } from "../util";
+import { getCurrentParams } from "./get-current-params";
 import { getCurrentPath } from "./get-current-path";
 import { matchRoute } from "./match-route";
 import type { RouteDefinition } from "./types";
-
-const ROUTER_PARAMS_ID = "router-params";
 
 /**
  * Router component props.
@@ -33,9 +30,9 @@ export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactor
 
     const [, endMarker] = getMarkerComments(scope.id);
     const currentPath = getCurrentPath();
+    const currentParams = getCurrentParams();
 
     let currentRouteIndex = -100;
-    let currentParamsSeidr: Seidr<Record<string, string>> | undefined;
     let currentComponent: Component | undefined;
 
     const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
@@ -50,21 +47,19 @@ export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactor
 
     const updateRouteTarget = (index: number, params: Record<string, string> | null) => {
       currentRouteIndex = index;
-      if (currentRouteIndex === -1 || !params) {
-        currentParamsSeidr = undefined;
-      } else if (currentParamsSeidr) {
-        currentParamsSeidr.value = params;
+      if (params) {
+        currentParams.value = params;
       } else {
-        currentParamsSeidr = new Seidr(params, { ...NO_HYDRATE, id: ROUTER_PARAMS_ID });
+        currentParams.value = {};
       }
     };
 
     const updateComponent = (index: number) => {
       currentComponent =
         index > -1
-          ? wrapComponent(routes[index][1])(currentParamsSeidr!)
+          ? wrapComponent(routes[index][1])(currentParams)
           : isFn(fallback)
-            ? wrapComponent(fallback)(currentParamsSeidr)
+            ? wrapComponent(fallback)(currentParams)
             : undefined;
     };
 
