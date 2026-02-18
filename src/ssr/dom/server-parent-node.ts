@@ -176,18 +176,10 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
     return results;
   };
 
-  parentNode.querySelector = function (selector: string): ServerElement | null {
-    if (selector.startsWith("#")) {
-      return this.getElementById(selector.slice(1));
-    }
-
-    if (selector.startsWith(".")) {
-      return this.getElementsByClassName(selector.slice(1))[0] ?? null;
-    }
-
+  parentNode.querySelector = (selector: string): ServerElement | null => {
     const children = parentNode.children as ServerElement[];
     for (const el of children) {
-      if (el.tagName?.toLowerCase() === selector.toLowerCase()) {
+      if (el.matches(selector)) {
         return el;
       }
 
@@ -199,19 +191,11 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
     return null;
   };
 
-  parentNode.querySelectorAll = function (selector: string): ServerElement[] {
-    if (selector.startsWith("#")) {
-      return [this.getElementById(selector.slice(1))].filter(Boolean) as ServerElement[];
-    }
-
-    if (selector.startsWith(".")) {
-      return this.getElementsByClassName(selector.slice(1));
-    }
-
+  parentNode.querySelectorAll = (selector: string): ServerElement[] => {
     const results: ServerElement[] = [];
     const children = parentNode.children as ServerElement[];
     for (const el of children) {
-      if (el.tagName?.toLowerCase() === selector.toLowerCase()) {
+      if (el.matches(selector)) {
         results.push(el);
       }
 

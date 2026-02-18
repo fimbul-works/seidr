@@ -1,6 +1,6 @@
+import type { Weave } from "src/seidr/types";
 import { SEIDR_WEAVE, TYPE_PROP } from "../../constants";
 import { Seidr } from "../../seidr/seidr";
-import type { Weave } from "../../seidr/seidr-weave";
 import { isObj } from "./primitive-types";
 
 /**

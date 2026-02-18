@@ -39,7 +39,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       unmount = mount(comp, container);
 
-      expect((comp.element as HTMLElement).textContent).toBe(`Error: ${errorMessage}`);
+      expect(container.textContent).toBe(`Error: ${errorMessage}`);
       expect(comp.startMarker).toBeDefined();
       expect(comp.startMarker.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
       expect(comp.endMarker).toBeDefined();
@@ -108,7 +108,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       unmount = mount(comp, container);
 
       expect(consoleSpy).not.toHaveBeenCalled();
-      expect(((comp.element as Component).element as HTMLElement).textContent).toBe("Recovered");
+      expect(container.textContent).toBe("Recovered");
 
       consoleSpy.mockRestore();
     });
@@ -124,8 +124,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       );
 
       unmount = mount(comp, container);
-      console.log(container.innerHTML);
-      expect(((comp.element as Component).element as HTMLElement).dataset.seidrRoot).toBeTruthy();
+      expect(container.querySelector("[data-seidr-root]")).toBeTruthy();
     });
   });
 
@@ -147,7 +146,7 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
 
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
-      expect(((ErrorChild.element as Component).element as HTMLElement).textContent).toContain("Child error caught");
+      expect(container.textContent).toContain("Child error caught");
     });
 
     it("should track error boundary component cleanup", () => {
@@ -240,7 +239,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
         },
       );
 
-      expect(((comp.element as Component).element as HTMLElement).textContent).toBe("TypeError");
+      unmount = mount(comp, container);
+      expect(container.textContent).toBe("TypeError");
     });
 
     it("should handle error boundary that throws", () => {
@@ -277,7 +277,8 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
       const parent = Parent();
 
       expect(errorCaught).toBe(true);
-      expect(((parent.element as Component).element as HTMLElement).textContent).toBe("Parent error boundary");
+      unmount = mount(parent, container);
+      expect(container.textContent).toBe("Parent error boundary");
     });
   });
 });

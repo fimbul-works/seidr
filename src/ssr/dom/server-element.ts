@@ -284,6 +284,17 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
         if (!selector) return false;
         if (selector === "*") return true;
 
+        // Attribute selector
+        if (selector.startsWith("[") && selector.endsWith("]")) {
+          const content = selector.slice(1, -1);
+          if (content.includes("=")) {
+            const [name, value] = content.split("=");
+            const unquoted = value.replace(/^["']|["']$/g, "");
+            return element.getAttribute(name) === unquoted;
+          }
+          return element.hasAttribute(content);
+        }
+
         // Very basic selector parser
         if (selector.startsWith("#")) {
           return element.id === selector.slice(1);

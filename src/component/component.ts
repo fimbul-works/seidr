@@ -115,14 +115,27 @@ export const component = <P = void>(
 
     // Apply root element attributes
     if (!parent) {
-      if (isHTMLElement(comp.element)) {
-        comp.element.dataset.seidrRoot = ctxID;
-      } else if (isArray(comp.element)) {
-        const firstChild = comp.element.find(isHTMLElement);
-        if (firstChild) {
-          firstChild.dataset.seidrRoot = ctxID;
+      /**
+       * Recursively applies the seidrRoot dataset attribute to the first HTMLElement found.
+       * @param {ComponentChildren} item - The child to search
+       */
+      const applyRootMarker = (item: ComponentChildren): void => {
+        if (isHTMLElement(item)) {
+          item.dataset.seidrRoot = ctxID;
+        } else if (isComponent(item)) {
+          applyRootMarker(item.element);
+        } else if (isArray(item)) {
+          for (const child of item) {
+            applyRootMarker(child);
+            // Only mark the first one found in the array to avoid multiple roots
+            const firstMarked =
+              isHTMLElement(child) || (isComponent(child) && !!(child.element as HTMLElement)?.dataset?.seidrRoot);
+            if (firstMarked) break;
+          }
         }
-      }
+      };
+
+      applyRootMarker(comp.element);
     }
 
     // Register as child component after factory runs to ensure onAttached handlers are set
