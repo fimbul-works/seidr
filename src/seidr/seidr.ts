@@ -4,6 +4,7 @@ import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
+import { scheduleUpdate } from "./scheduler";
 import type { Observable, ObservableOptions } from "./types";
 
 /**
@@ -88,8 +89,21 @@ export class Seidr<T = any> implements Observable<T> {
   private set(v: T) {
     if (!Object.is(this.v, v)) {
       this.v = v;
-      this.f.forEach((fn) => fn(v));
+
+      if (this.options.sync) {
+        this.runFlush();
+      } else {
+        scheduleUpdate(this);
+      }
     }
+  }
+
+  /**
+   * Flushes pending notifications to observers.
+   * Internal method used by the scheduler.
+   */
+  runFlush(): void {
+    this.f.forEach((fn) => fn(this.v));
   }
 
   /**

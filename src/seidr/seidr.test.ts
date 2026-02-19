@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $, type SeidrElement } from "../element";
 import { enableClientMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
+import { flushSync } from "./scheduler";
 import { Seidr } from "./seidr";
 
 describe("Seidr", () => {
@@ -56,6 +57,7 @@ describe("Seidr", () => {
     it("should update and return the latest value", () => {
       const observable = new Seidr("initial");
       observable.value = "updated";
+      flushSync();
       expect(observable.value).toBe("updated");
     });
 
@@ -76,6 +78,7 @@ describe("Seidr", () => {
 
       // -0 and +0 are different in Object.is
       observable.value = -0;
+      flushSync();
       expect(handler).toHaveBeenCalledTimes(1);
 
       // NaN is equal to itself in Object.is
@@ -113,6 +116,7 @@ describe("Seidr", () => {
       expect(renderer).toHaveBeenCalledTimes(1);
 
       observable.value = "new value";
+      flushSync();
 
       expect(renderer).toHaveBeenCalledTimes(2);
       expect(renderer).toHaveBeenCalledWith("new value", element);
@@ -141,6 +145,7 @@ describe("Seidr", () => {
 
       // Value change after cleanup should not trigger renderer
       observable.value = "new value";
+      flushSync();
 
       // Should still only have the initial call
       expect(renderer).toHaveBeenCalledTimes(1);
@@ -155,6 +160,7 @@ describe("Seidr", () => {
       expect(renderer).toHaveBeenCalledWith(42, element);
 
       numberObs.value = 100;
+      flushSync();
 
       expect(renderer).toHaveBeenCalledWith(100, element);
     });
@@ -168,6 +174,7 @@ describe("Seidr", () => {
       expect(derived.value).toBe(10);
 
       observable.value = 10;
+      flushSync();
       expect(derived.value).toBe(20);
     });
 
@@ -178,6 +185,7 @@ describe("Seidr", () => {
       expect(derived.value).toBe("42");
 
       observable.value = 100;
+      flushSync();
       expect(derived.value).toBe("100");
     });
 
@@ -192,6 +200,7 @@ describe("Seidr", () => {
       squared.observe(squaredHandler);
 
       observable.value = 3;
+      flushSync();
 
       expect(doubled.value).toBe(6);
       expect(squared.value).toBe(9);
@@ -250,6 +259,7 @@ describe("Seidr", () => {
       expect(derived.parents[0]).toBe(parent);
 
       parent.value = 10;
+      flushSync();
       expect(derived.parents[0]).toBe(parent);
       expect(derived.parents[0].value).toBe(10);
     });
@@ -300,10 +310,12 @@ describe("Seidr", () => {
       expect(sum.value).toBe(5);
 
       a.value = 10;
+      flushSync();
 
       expect(sum.value).toBe(13);
 
       b.value = 7;
+      flushSync();
 
       expect(sum.value).toBe(17);
     });
@@ -321,9 +333,11 @@ describe("Seidr", () => {
       expect(fullName.value).toBe("John Doe, age 30");
 
       lastName.value = "Smith";
+      flushSync();
       expect(fullName.value).toBe("John Smith, age 30");
 
       age.value = 31;
+      flushSync();
       expect(fullName.value).toBe("John Smith, age 31");
     });
 
@@ -336,6 +350,7 @@ describe("Seidr", () => {
       expect(doubled.value).toBe(10);
 
       a.value = 5;
+      flushSync();
 
       expect(sum.value).toBe(8);
       expect(doubled.value).toBe(16);

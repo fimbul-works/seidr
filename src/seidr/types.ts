@@ -14,6 +14,12 @@ export interface ObservableOptions {
    * Whether to hydrate this observable from server-side data
    */
   hydrate?: boolean;
+
+  /**
+   * Whether to notify observers synchronously.
+   * If false (default), notifications are batched via microtasks.
+   */
+  sync?: boolean;
 }
 
 /**
