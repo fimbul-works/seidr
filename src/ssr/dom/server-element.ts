@@ -88,7 +88,7 @@ const INTERNAL_ATTRIBUTES = new Set([
 
   TYPE_PROP,
   "on",
-  "clear",
+  "clearChildren",
   "remove",
 ]);
 

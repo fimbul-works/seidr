@@ -16,40 +16,62 @@ export const decorateElement = <K extends keyof HTMLElementTagNameMap>(
 ): SeidrElement<K> => {
   const originalRemove = el.remove.bind(el);
 
-  return Object.assign(el, {
-    get [TYPE_PROP]() {
-      return TYPE_ELEMENT;
+  Object.defineProperties(el, {
+    [TYPE_PROP]: {
+      get: () => TYPE_ELEMENT,
+      enumerable: false,
+      configurable: true,
     },
-    on<E extends keyof HTMLElementEventMap>(
-      event: E,
-      handler: (ev: HTMLElementEventMap[E]) => any,
-      options?: boolean | AddEventListenerOptions,
-    ): CleanupFunction {
-      el.addEventListener(event, handler as EventListener, options);
-      const removeEventListener = () => el.removeEventListener(event, handler as EventListener, options);
-      cleanups.push(removeEventListener);
-      return removeEventListener;
+    on: {
+      value<E extends keyof HTMLElementEventMap>(
+        event: E,
+        handler: (ev: HTMLElementEventMap[E]) => any,
+        options?: boolean | AddEventListenerOptions,
+      ): CleanupFunction {
+        el.addEventListener(event, handler as EventListener, options);
+        const removeEventListener = () => el.removeEventListener(event, handler as EventListener, options);
+        cleanups.push(removeEventListener);
+        return removeEventListener;
+      },
+      enumerable: false,
+      configurable: true,
+      writable: true,
     },
-    clear(): void {
-      while (el.firstChild) {
-        const child = el.firstChild as ChildNode;
-        if (child.remove) {
-          child.remove();
-        } else {
-          el.removeChild(child);
+    clearChildren: {
+      value(): void {
+        while (el.firstChild) {
+          const child = el.firstChild as ChildNode;
+          if (child.remove) {
+            child.remove();
+          } else {
+            el.removeChild(child);
+          }
         }
-      }
+      },
+      enumerable: false,
+      configurable: true,
+      writable: true,
     },
-    [SEIDR_CLEANUP](): void {
-      cleanups.forEach((cleanup) => cleanup());
-      cleanups.length = 0;
-      for (const child of Array.from(el.childNodes)) {
-        (child as SeidrElement<K> & SeidrElementInterface)[SEIDR_CLEANUP]?.();
-      }
+    [SEIDR_CLEANUP]: {
+      value(): void {
+        cleanups.forEach((cleanup) => cleanup());
+        cleanups.length = 0;
+        for (const child of Array.from(el.childNodes)) {
+          (child as SeidrElement<K> & SeidrElementInterface)[SEIDR_CLEANUP]?.();
+        }
+      },
+      enumerable: false,
+      configurable: true,
     },
-    remove(): void {
-      (el as SeidrElement<K> & SeidrElementInterface)[SEIDR_CLEANUP]?.();
-      originalRemove();
+    remove: {
+      value(): void {
+        (el as SeidrElement<K> & SeidrElementInterface)[SEIDR_CLEANUP]?.();
+        originalRemove();
+      },
+      enumerable: false,
+      configurable: true,
     },
-  } as SeidrElementInterface) as SeidrElement<K>;
+  });
+
+  return el as SeidrElement<K>;
 };

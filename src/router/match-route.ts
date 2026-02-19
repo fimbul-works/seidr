@@ -22,7 +22,7 @@ export const matchRoute = (rawPath: string, routes: RouteDefinition<any, any>[])
 
     if (pattern instanceof RegExp) {
       const match = path.match(pattern);
-      params = match?.groups ? { ...match.groups } : false;
+      params = match ? (match.groups ? { ...match.groups } : {}) : false;
     } else {
       params = parseRouteParams(pattern, path);
     }

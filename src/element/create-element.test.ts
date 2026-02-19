@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import "../dom/dom-factory.browser";
 import { elementClassToggle } from "../helper";
 import { Seidr } from "../seidr";
+import { flushSync } from "../seidr/scheduler";
 import { describeDualMode } from "../test-setup";
 import { isHTMLElement } from "../util/type-guards/dom-node-types";
 import { $ } from "./create-element";
@@ -127,11 +128,11 @@ describe("element on method", () => {
       expect(element.classList.contains("active")).toBe(false);
 
       observable.value = true;
-
+      flushSync();
       expect(element.classList.contains("active")).toBe(true);
 
       observable.value = false;
-
+      flushSync();
       expect(element.classList.contains("active")).toBe(false);
 
       cleanup();
@@ -152,6 +153,7 @@ describe("element on method", () => {
       cleanup();
 
       observable.value = true;
+      flushSync();
 
       // Class should not be added after cleanup
       expect(element.classList.contains("active")).toBe(false);

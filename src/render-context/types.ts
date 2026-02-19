@@ -1,4 +1,4 @@
-import type { Component } from "src/component";
+import type { Component } from "../component";
 
 /**
  * RenderContext is used for SSR and hydration.

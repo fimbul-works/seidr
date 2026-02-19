@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element/create-element";
+import { flushSync } from "../seidr/scheduler";
 import { Seidr } from "../seidr/seidr";
 import { enableSSRMode } from "../test-setup";
 
@@ -71,6 +72,7 @@ describe("SSR Integration Tests", () => {
       expect(button.toString()).not.toContain("disabled");
 
       isLoading.value = true;
+      flushSync();
       // In SSR, the binding updates the ServerHTMLElement
       expect(button.toString()).toContain("disabled");
     });
@@ -352,11 +354,11 @@ describe("SSR Integration Tests", () => {
   });
 
   describe("cleanup and destroy in SSR", () => {
-    it("should support clear method", () => {
+    it("should support clearChildren method", () => {
       const element = $("div", {}, [$("div", { textContent: "Child 1" }), $("div", { textContent: "Child 2" })]);
       expect(element.children.length).toBe(2);
 
-      element.clear();
+      (element as any).clearChildren();
       expect(element.children.length).toBe(0);
     });
 

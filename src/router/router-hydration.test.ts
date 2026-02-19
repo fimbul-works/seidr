@@ -2,6 +2,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { component, useScope } from "../component";
 import { $ } from "../element";
 import { resetRequestIdCounter } from "../render-context/render-context.node";
+import { flushSync } from "../seidr/scheduler";
 import { clearHydrationData, hydrate, renderToString } from "../ssr/internal";
 import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
@@ -9,7 +10,7 @@ import { isServer } from "../util/environment/server";
 import { getCurrentPath, resetClientPathState } from "./get-current-path";
 import { Router } from "./router";
 
-describe.skip("Router Hydration Unmounting", () => {
+describe("Router Hydration Unmounting", () => {
   if (isServer()) {
     it("should skip in SSR", () => expect(true).toBe(true));
     return;
@@ -46,6 +47,7 @@ describe.skip("Router Hydration Unmounting", () => {
   });
 
   beforeEach(() => {
+    resetClientPathState();
     homeUnmounted = false;
     fallbackUnmounted = false;
   });
@@ -75,6 +77,7 @@ describe.skip("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     getCurrentPath().value = "/unknown";
+    flushSync();
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -83,6 +86,7 @@ describe.skip("Router Hydration Unmounting", () => {
 
     // 4. Navigate to "/"
     getCurrentPath().value = "/";
+    flushSync();
 
     // Verify unmount
     expect(container.querySelector(".fallback")).toBeFalsy();
@@ -94,7 +98,7 @@ describe.skip("Router Hydration Unmounting", () => {
   it("should unmount SSR route when navigating to fallback", async () => {
     // 1. SSR Home page
     process.env.SEIDR_TEST_SSR = "true";
-    const { html, hydrationData } = await renderToString(() => App(), { path: "/" });
+    const { html, hydrationData } = await renderToString(App, { path: "/" });
     delete process.env.SEIDR_TEST_SSR;
 
     // 2. Setup browser DOM
@@ -103,6 +107,8 @@ describe.skip("Router Hydration Unmounting", () => {
     document.body.appendChild(container);
 
     // 3. Hydrate
+    getCurrentPath().value = "/";
+    flushSync();
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -111,6 +117,7 @@ describe.skip("Router Hydration Unmounting", () => {
 
     // 4. Navigate to "/unknown"
     getCurrentPath().value = "/unknown";
+    flushSync();
 
     // Verify unmount
     expect(container.querySelector(".home")).toBe(null);

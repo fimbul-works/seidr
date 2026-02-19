@@ -1,4 +1,4 @@
-import type { ComponentType } from "src/component";
+import type { ComponentType } from "../../component/types";
 import { mount } from "../../dom/mount";
 import type { CleanupFunction } from "../../types";
 import { isUndefined } from "../../util/type-guards/primitive-types";

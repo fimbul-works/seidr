@@ -30,9 +30,10 @@ export const resetClientPathState = () => (clientPathState = undefined);
 export const getCurrentPath = (): Seidr<string> => {
   const ctx = getRenderContext();
   const ctxID = ctx.ctxID;
+  const isSvr = isServer();
 
   // Server-side: Get or create Seidr for this render context
-  if (isServer()) {
+  if (isSvr) {
     let observable = pathCache.get(ctxID);
 
     if (!observable) {
@@ -54,7 +55,7 @@ export const getCurrentPath = (): Seidr<string> => {
 
   // Client-side: Use module-level state
   if (!clientPathState) {
-    clientPathState = new Seidr(isClient() ? window.location?.toString() : "/", {
+    clientPathState = new Seidr(isClient() ? window.location?.pathname || "/" : "/", {
       ...NO_HYDRATE,
       id: PATH_SEIDR_ID,
     });

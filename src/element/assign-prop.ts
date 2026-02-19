@@ -48,21 +48,28 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
 
-  let target: HTMLElement[keyof HTMLElement] = el;
   let effectiveProp = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || prop === "form";
 
   if (!useAttribute) {
     if (propStartsWith("data") && matchUpperCasePosition(4)) {
-      target = el.dataset;
-      effectiveProp = prop[4].toLowerCase() + prop.slice(5);
+      effectiveProp = camelToKebab(prop);
+      useAttribute = true;
     } else if (propStartsWith("aria") && matchUpperCasePosition(4)) {
       if (!(prop in el)) {
         effectiveProp = camelToKebab(prop);
         useAttribute = true;
       }
+    } else if (prop === "htmlFor") {
+      effectiveProp = "for";
+      useAttribute = true;
+    } else if (prop === "className") {
+      effectiveProp = "class";
+      useAttribute = true;
     }
   }
+
+  const target: any = el;
 
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {

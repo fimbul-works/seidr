@@ -39,5 +39,6 @@ export const appendChild = (
   }
 
   // Append DOM node or text node
-  parent.appendChild(isDOMNode(child) ? child : $text(child));
+  const target = (parent as any).content || parent;
+  target.appendChild(isDOMNode(child) ? child : $text(child));
 };

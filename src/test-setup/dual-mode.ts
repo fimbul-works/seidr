@@ -1,5 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { type DOMFactory, getDOMFactory } from "../dom";
+import { escapeHTML } from "../util/escape";
 import { isArray } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
 
@@ -98,7 +99,7 @@ export function renderToHtml(node: any, depth = 0): string {
       return node.outerHTML;
     }
     if (node instanceof Text) {
-      return node.textContent || "";
+      return escapeHTML(node.textContent || "");
     }
     if (node instanceof Comment) {
       return `<!--${node.nodeValue}-->`;

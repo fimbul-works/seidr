@@ -22,7 +22,7 @@ describeDualMode("decorateElement", ({ getDOMFactory, isSSR }) => {
     cleanup();
   });
 
-  it("should decorate element with clear method", () => {
+  it("should decorate element with clearChildren method", () => {
     const factory = getDOMFactory();
     const el = factory.createElement("div");
     el.appendChild(factory.createElement("span"));
@@ -31,7 +31,7 @@ describeDualMode("decorateElement", ({ getDOMFactory, isSSR }) => {
     const decorated = decorateElement(el, []);
     expect(el.childNodes.length).toBe(2);
 
-    decorated.clear();
+    (decorated as any).clearChildren();
     expect(el.childNodes.length).toBe(0);
   });
 
