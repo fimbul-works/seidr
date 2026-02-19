@@ -178,11 +178,6 @@ export interface SeidrElementInterface {
     options?: boolean | AddEventListenerOptions,
   ): CleanupFunction;
 
-  /**
-   * Remove all child elements.
-   */
-  clear(): void;
-
   [SEIDR_CLEANUP]: CleanupFunction;
 }
 

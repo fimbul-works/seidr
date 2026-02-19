@@ -92,15 +92,6 @@ export function renderToHtml(node: any, depth = 0): string {
     node = node.element;
   }
 
-  // Handle SSR nodes
-  // We check if it's NOT a native DOM node that returns [object ...]
-  if (typeof node.toString === "function") {
-    const str = node.toString();
-    if (str !== "[object HTMLElement]" && !str.startsWith("[object HTML")) {
-      return str;
-    }
-  }
-
   // Handle Browser/JSDOM nodes
   if (typeof window !== "undefined") {
     if (node instanceof Element) {
@@ -114,12 +105,71 @@ export function renderToHtml(node: any, depth = 0): string {
     }
   }
 
+  // Handle SSR nodes
+  // We check if it's NOT a native DOM node that returns [object ...]
+  if (typeof node.toString === "function") {
+    const str = node.toString();
+    if (str !== "[object HTMLElement]" && !str.startsWith("[object HTML")) {
+      return str;
+    }
+  }
+
   // Handle arrays (SSR)
   if (isArray(node)) {
     return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 
   return String(node);
+}
+
+/**
+ * Normalizes an HTML string for comparison.
+ * Sorts attributes and normalizes whitespace.
+ *
+ * @param html - RAW HTML string
+ * @returns Normalized HTML string
+ */
+function normalizeHtml(html: string): string {
+  if (!html) return "";
+
+  // 1. Sort attributes within tags
+  let normalized = html.replace(/<([a-z0-9-]+)([^>]*)>/gi, (match, tag, attrs) => {
+    // Handle self-closing end slash
+    const isSelfClosing = attrs.trim().endsWith("/");
+    let cleanAttrs = attrs.trim();
+    if (isSelfClosing) {
+      cleanAttrs = cleanAttrs.slice(0, -1).trim();
+    }
+
+    // Split attributes by space, but respect quoted values
+    // Regex matches: key="value" or key='value' or key
+    const attrMatches = cleanAttrs.match(/(?:[^\s"'=]+(?:=(?:"[^"]*"|'[^']*'|[^\s"']+))?)/g) || [];
+
+    // Normalize boolean attributes: transform 'key=""' to 'key'
+    const normalizedAttrList = attrMatches.map((attr) => {
+      if (attr.endsWith('=""')) {
+        const key = attr.slice(0, -3);
+        // We can be aggressive and strip it for any attribute for comparison purposes,
+        // or just for-sure booleans. Let's do any empty string attribute.
+        return key;
+      }
+      return attr;
+    });
+
+    const sortedAttrs = normalizedAttrList.sort().join(" ");
+
+    // We normalize to NO slash for self-closing tags to match JSDOM,
+    // as Seidr SSR uses slashes but JSDOM doesn't for HTML5.
+    return `<${tag.toLowerCase()}${sortedAttrs ? " " + sortedAttrs : ""}>`;
+  });
+
+  // 2. Normalize case for closing tags
+  normalized = normalized.replace(/<\/([a-z0-9-]+)>/gi, (match, tag) => {
+    return `</${tag.toLowerCase()}>`;
+  });
+
+  // 3. Normalize whitespace
+  return normalized.replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
 }
 
 /**
@@ -135,7 +185,7 @@ export function itHasParity(name: string, factory: () => any) {
     const cleanupClient = enableClientMode();
     let clientHtml = "";
     try {
-      clientHtml = renderToHtml(factory);
+      clientHtml = renderToHtml(factory());
     } finally {
       cleanupClient();
     }
@@ -144,12 +194,12 @@ export function itHasParity(name: string, factory: () => any) {
     const cleanupSSR = enableSSRMode();
     let ssrHtml = "";
     try {
-      ssrHtml = renderToHtml(factory);
+      ssrHtml = renderToHtml(factory());
     } finally {
       cleanupSSR();
     }
 
-    // 3. Compare
-    expect(ssrHtml).toBe(clientHtml);
+    // 3. Compare normalized output
+    expect(normalizeHtml(ssrHtml)).toBe(normalizeHtml(clientHtml));
   });
 }

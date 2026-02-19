@@ -5,6 +5,36 @@ import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
 
+const BOOL_PROPS = new Set([
+  "allowfullscreen",
+  "async",
+  "autofocus",
+  "autoplay",
+  "checked",
+  "compact",
+  "controls",
+  "default",
+  "defer",
+  "disabled",
+  "formnovalidate",
+  "hidden",
+  "ismap",
+  "loop",
+  "multiple",
+  "muted",
+  "nomodule",
+  "noresize",
+  "noshade",
+  "novalidate",
+  "open",
+  "playsinline",
+  "readonly",
+  "required",
+  "reversed",
+  "selected",
+  "truespeed",
+]);
+
 /**
  * Assigns a property to an element, handling reactive Seidr bindings.
  *
@@ -20,7 +50,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
 
   let target: HTMLElement[keyof HTMLElement] = el;
   let effectiveProp = prop;
-  let useAttribute = propStartsWith("aria-") || propStartsWith("data-");
+  let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || prop === "form";
 
   if (!useAttribute) {
     if (propStartsWith("data") && matchUpperCasePosition(4)) {
@@ -74,20 +104,32 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
     return;
   }
 
+  const isBoolProp = BOOL_PROPS.has(effectiveProp.toLowerCase());
+
   if (isSeidr(value)) {
     cleanups.push(
       value.bind(el, (val, _element) => {
-        if (useAttribute) {
-          isEmpty(val) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
-        } else {
+        if (useAttribute || !(effectiveProp in target) || isBoolProp) {
+          if (isBoolProp) {
+            val ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
+          } else {
+            isEmpty(val) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
+          }
+        }
+        if (!(useAttribute || !(effectiveProp in target))) {
           (target as any)[effectiveProp] = val;
         }
       }),
     );
   } else {
-    if (useAttribute) {
-      isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(value));
-    } else {
+    if (useAttribute || !(effectiveProp in target) || isBoolProp) {
+      if (isBoolProp) {
+        value ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
+      } else {
+        isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(value));
+      }
+    }
+    if (!(useAttribute || !(effectiveProp in target))) {
       (target as any)[effectiveProp] = value;
     }
   }

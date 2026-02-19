@@ -10,7 +10,35 @@ import { applyParentNodeMethods } from "./server-parent-node";
 import { createServerTextNode } from "./server-text-node";
 import type { ServerDocument, ServerElement } from "./types";
 
-const BOOL_ATTRIBUTES = ["disabled", "checked", "selected", "readonly", "required", "multiple", "hidden", "autofocus"];
+const BOOL_ATTRIBUTES = [
+  "allowfullscreen",
+  "async",
+  "autofocus",
+  "autoplay",
+  "checked",
+  "compact",
+  "controls",
+  "default",
+  "defer",
+  "disabled",
+  "formnovalidate",
+  "hidden",
+  "ismap",
+  "loop",
+  "multiple",
+  "muted",
+  "nomodule",
+  "noresize",
+  "noshade",
+  "novalidate",
+  "open",
+  "playsinline",
+  "readonly",
+  "required",
+  "reversed",
+  "selected",
+  "truespeed",
+];
 
 const INTERNAL_ATTRIBUTES = new Set([
   "nodeType",
@@ -315,7 +343,9 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
           attributes.style = styleStr;
         }
 
-        const activeBoolAttributes = BOOL_ATTRIBUTES.filter((p) => attributes[p] === true).map((p) => p.toLowerCase());
+        const activeBoolAttributes = BOOL_ATTRIBUTES.filter(
+          (p) => attributes[p] !== undefined && attributes[p] !== false,
+        ).map((p) => p.toLowerCase());
 
         const attrs = [
           ...Object.entries(attributes)

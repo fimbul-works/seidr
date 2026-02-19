@@ -23,7 +23,7 @@ export const assignProps = <K extends keyof HTMLElementTagNameMap>(
   }
 
   for (const [prop, value] of Object.entries(props)) {
-    if ([TYPE_PROP, "on", "clear", SEIDR_CLEANUP].includes(prop)) {
+    if ([TYPE_PROP, "on", SEIDR_CLEANUP].includes(prop)) {
       throw new SeidrError(`Unallowed property "${prop}"`);
     }
 
