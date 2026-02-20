@@ -1,6 +1,6 @@
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { safe } from "../util/safe";
 import { executeInContext } from "./component-stack";
 import type { Component, ComponentScope } from "./types";
@@ -35,6 +35,15 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
     get children() {
       return children;
     },
+    get component() {
+      return componentInstance as Component;
+    },
+    set component(comp: Component) {
+      if (componentInstance) {
+        throw new SeidrError("Component already attached");
+      }
+      componentInstance = comp;
+    },
     removeChild(childComponent: Component) {
       children.delete(childComponent.id);
     },
@@ -43,8 +52,7 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
         if (process.env.NODE_ENV === "development") {
           console.warn(`[${id}] Tracking cleanup on already destroyed scope`);
         }
-        cleanup();
-        return;
+        return cleanup();
       }
       cleanups.push(cleanup);
     },
@@ -106,22 +114,7 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
       attachedParent = null;
       componentInstance = null;
     },
-    // @ts-expect-error - internal usage
-    _setComponent: (comp: Component) => (componentInstance = comp),
   };
 
   return scope;
-};
-
-/**
- * Internal helper to link the scope to its component instance.
- */
-export const setScopeComponent = (scope: ComponentScope, component: Component) => {
-  // We use a closure variable 'componentInstance' inside createScope
-  // To access it from outside, we can attach a hidden method to the scope object
-  // or we can just make createScope return a tuple [scope, setComponent]
-  // But that changes the public API of createScope which is used in component() factory
-
-  // Let's rely on a hidden property on the scope object that createScope defines
-  (scope as any)._setComponent?.(component);
 };

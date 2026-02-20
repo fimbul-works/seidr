@@ -19,6 +19,9 @@
         "noExplicitAny": "off",
         "useIterableCallbackReturn": "off",
         "noConfusingVoidType": "off"
+      },
+      "correctness": {
+        "noVoidTypeReturn": "off"
       }
     }
   }

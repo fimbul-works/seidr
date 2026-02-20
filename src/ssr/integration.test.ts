@@ -220,16 +220,6 @@ describe("SSR Integration Tests", () => {
     });
   });
 
-  describe("Event Handlers in SSR", () => {
-    it("should return cleanup function from on() method", () => {
-      const button = $("button");
-      const cleanup = button.on("click", () => {});
-
-      expect(typeof cleanup).toBe("function");
-      expect(cleanup()).toBeUndefined();
-    });
-  });
-
   describe("Self-Closing Tags in SSR", () => {
     it("should render void elements correctly", () => {
       const img = $("img", { src: "/image.png", alt: "Test image" });
@@ -354,14 +344,6 @@ describe("SSR Integration Tests", () => {
   });
 
   describe("cleanup and destroy in SSR", () => {
-    it("should support clearChildren method", () => {
-      const element = $("div", {}, [$("div", { textContent: "Child 1" }), $("div", { textContent: "Child 2" })]);
-      expect(element.children.length).toBe(2);
-
-      (element as any).clearChildren();
-      expect(element.children.length).toBe(0);
-    });
-
     it("should support remove method", () => {
       const parent = $("div");
       const child = $("div");

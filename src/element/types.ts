@@ -193,10 +193,8 @@ export interface SeidrElementInterface {
   ): CleanupFunction;
 
   /**
-   * Removes all child nodes from this element and performs necessary cleanups.
+   * Removes the element and all its children from the DOM.
    */
-  clearChildren(): void;
-
   [SEIDR_CLEANUP]: CleanupFunction;
 }
 

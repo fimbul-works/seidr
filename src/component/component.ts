@@ -6,7 +6,7 @@ import { safe } from "../util/safe";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
-import { createScope, setScopeComponent } from "./component-scope";
+import { createScope } from "./component-scope";
 import { getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
@@ -29,10 +29,6 @@ export const component = <P = void>(
     const parent = getCurrentComponent();
     const ctxID = String(ctx.ctxID);
     const id = `${name}-${ctxID}-${getNextId()}`;
-    // The previous component is the current cursor, or if null, check if we have a root component context
-    // Actually, getCurrentComponent() handles it. If it returns null, we are at root.
-    // But wait, user said "Root component should be the result of getCurrentComponent() when the stack points to the root"
-    // So if getCurrentComponent() is null, we are truly at the root.
     const scope = createScope(id, parent);
 
     // Create partial Component
@@ -84,34 +80,31 @@ export const component = <P = void>(
     } as Component;
 
     // Link scope to component instance for observe() context restoration
-    setScopeComponent(scope, comp);
+    // @ts-expect-error
+    scope.component = comp;
 
     // Set as current component (Push to tree)
     push(comp);
 
     // Render the component via factory
-    safe(
-      () => {
-        // Call factory with props (or undefined if no props)
-        const result = factory(props);
+    try {
+      // Call factory with props (or undefined if no props)
+      const result = factory(props);
 
-        // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-        const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
+      // Helper to normalize SeidrNode to DOM Node (or string in SSR)
+      const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
 
-        const [startMarker, endMarker] = getMarkerComments(id);
-        comp.startMarker = startMarker;
-        comp.endMarker = endMarker;
-        comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
-      },
-      (err) => {
-        // Restore previous component (Pop from tree)
-        comp.unmount();
-        throw err;
-      },
-      () => {
-        pop();
-      },
-    );
+      const [startMarker, endMarker] = getMarkerComments(id);
+      comp.startMarker = startMarker;
+      comp.endMarker = endMarker;
+      comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
+    } catch (err) {
+      // Restore previous component (Pop from tree)
+      comp.unmount();
+      throw err;
+    } finally {
+      pop();
+    }
 
     // Apply root element attributes
     if (!parent) {
@@ -139,9 +132,7 @@ export const component = <P = void>(
     }
 
     // Register as child component after factory runs to ensure onAttached handlers are set
-    if (parent) {
-      parent.scope.child(comp);
-    }
+    parent?.scope.child(comp);
 
     return comp;
   }) as ComponentFactory<P>;

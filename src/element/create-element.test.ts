@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import "../dom/dom-factory.browser";
 import { elementClassToggle } from "../helper";
 import { Seidr } from "../seidr";
@@ -44,13 +44,6 @@ describeDualMode("$ (createElement)", ({ getDOMFactory }) => {
     expect(div.childNodes[1]).toBe(child2);
   });
 
-  it("should add on method to element", () => {
-    const div = $("div");
-
-    expect("on" in div).toBe(true);
-    expect(typeof (div as any).on).toBe("function");
-  });
-
   it("should work with different HTML elements", () => {
     const button = $("button", { type: "button", textContent: "Click me" });
     const input = $("input", { type: "text", placeholder: "Enter text" });
@@ -70,109 +63,85 @@ describeDualMode("$ (createElement)", ({ getDOMFactory }) => {
   });
 });
 
-describe("element on method", () => {
-  it("should provide on method on created elements", () => {
-    const div = $("div");
-    const handler = vi.fn();
+describe("elementClassToggle", () => {
+  let element: SeidrElement;
+  let observable: Seidr<boolean>;
 
-    expect("on" in div).toBe(true);
+  beforeEach(() => {
+    element = $("div");
+    observable = new Seidr(false);
+  });
 
-    // TypeScript should infer the correct types
-    const cleanup = (div as SeidrElement).on("click", handler);
+  it("should add class when observable is true", () => {
+    observable.value = true;
+
+    const cleanup = elementClassToggle(element, "active", observable);
+
+    expect(element.classList.contains("active")).toBe(true);
+
+    cleanup();
+  });
+
+  it("should remove class when observable is false", () => {
+    observable.value = false;
+
+    const cleanup = elementClassToggle(element, "active", observable);
+
+    expect(element.classList.contains("active")).toBe(false);
+
+    cleanup();
+  });
+
+  it("should toggle class when observable changes", () => {
+    const cleanup = elementClassToggle(element, "active", observable);
+
+    expect(element.classList.contains("active")).toBe(false);
+
+    observable.value = true;
+    flushSync();
+    expect(element.classList.contains("active")).toBe(true);
+
+    observable.value = false;
+    flushSync();
+    expect(element.classList.contains("active")).toBe(false);
+
+    cleanup();
+  });
+
+  it("should return cleanup function", () => {
+    const cleanup = elementClassToggle(element, "active", observable);
 
     expect(typeof cleanup).toBe("function");
+    expect(() => cleanup()).not.toThrow();
+  });
 
-    div.click();
+  it("should stop updating after cleanup", () => {
+    const cleanup = elementClassToggle(element, "active", observable);
 
-    expect(handler).toHaveBeenCalledTimes(1);
+    expect(element.classList.contains("active")).toBe(false);
 
     cleanup();
 
-    div.click();
+    observable.value = true;
+    flushSync();
 
-    expect(handler).toHaveBeenCalledTimes(1);
+    // Class should not be added after cleanup
+    expect(element.classList.contains("active")).toBe(false);
   });
 
-  describe("toggleClass", () => {
-    let element: SeidrElement;
-    let observable: Seidr<boolean>;
+  it("should work with existing classes on element", () => {
+    element.classList.add("existing");
+    observable.value = true;
 
-    beforeEach(() => {
-      element = $("div");
-      observable = new Seidr(false);
-    });
+    const cleanup = elementClassToggle(element, "active", observable);
 
-    it("should add class when observable is true", () => {
-      observable.value = true;
+    expect(element.classList.contains("existing")).toBe(true);
+    expect(element.classList.contains("active")).toBe(true);
 
-      const cleanup = elementClassToggle(element, "active", observable);
+    cleanup();
 
-      expect(element.classList.contains("active")).toBe(true);
-
-      cleanup();
-    });
-
-    it("should remove class when observable is false", () => {
-      observable.value = false;
-
-      const cleanup = elementClassToggle(element, "active", observable);
-
-      expect(element.classList.contains("active")).toBe(false);
-
-      cleanup();
-    });
-
-    it("should toggle class when observable changes", () => {
-      const cleanup = elementClassToggle(element, "active", observable);
-
-      expect(element.classList.contains("active")).toBe(false);
-
-      observable.value = true;
-      flushSync();
-      expect(element.classList.contains("active")).toBe(true);
-
-      observable.value = false;
-      flushSync();
-      expect(element.classList.contains("active")).toBe(false);
-
-      cleanup();
-    });
-
-    it("should return cleanup function", () => {
-      const cleanup = elementClassToggle(element, "active", observable);
-
-      expect(typeof cleanup).toBe("function");
-      expect(() => cleanup()).not.toThrow();
-    });
-
-    it("should stop updating after cleanup", () => {
-      const cleanup = elementClassToggle(element, "active", observable);
-
-      expect(element.classList.contains("active")).toBe(false);
-
-      cleanup();
-
-      observable.value = true;
-      flushSync();
-
-      // Class should not be added after cleanup
-      expect(element.classList.contains("active")).toBe(false);
-    });
-
-    it("should work with existing classes on element", () => {
-      element.classList.add("existing");
-      observable.value = true;
-
-      const cleanup = elementClassToggle(element, "active", observable);
-
-      expect(element.classList.contains("existing")).toBe(true);
-      expect(element.classList.contains("active")).toBe(true);
-
-      cleanup();
-
-      expect(element.classList.contains("existing")).toBe(true);
-      // elementClassToggle cleanup doesn't remove the class, it just stops observing changes
-      expect(element.classList.contains("active")).toBe(true);
-    });
+    expect(element.classList.contains("existing")).toBe(true);
+    // elementClassToggle cleanup doesn't remove the class, it just stops observing changes
+    expect(element.classList.contains("active")).toBe(true);
   });
 });

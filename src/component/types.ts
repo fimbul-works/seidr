@@ -71,6 +71,11 @@ export interface ComponentScope {
   readonly isDestroyed: boolean;
 
   /**
+   * The component instance this scope belongs to.
+   */
+  readonly component: Component;
+
+  /**
    * The parent component of this scope.
    */
   readonly parent: Component | null;

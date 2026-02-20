@@ -22,36 +22,6 @@ export const decorateElement = <K extends keyof HTMLElementTagNameMap>(
       enumerable: false,
       configurable: true,
     },
-    on: {
-      value<E extends keyof HTMLElementEventMap>(
-        event: E,
-        handler: (ev: HTMLElementEventMap[E]) => any,
-        options?: boolean | AddEventListenerOptions,
-      ): CleanupFunction {
-        el.addEventListener(event, handler as EventListener, options);
-        const removeEventListener = () => el.removeEventListener(event, handler as EventListener, options);
-        cleanups.push(removeEventListener);
-        return removeEventListener;
-      },
-      enumerable: false,
-      configurable: true,
-      writable: true,
-    },
-    clearChildren: {
-      value(): void {
-        while (el.firstChild) {
-          const child = el.firstChild as ChildNode;
-          if (child.remove) {
-            child.remove();
-          } else {
-            el.removeChild(child);
-          }
-        }
-      },
-      enumerable: false,
-      configurable: true,
-      writable: true,
-    },
     [SEIDR_CLEANUP]: {
       value(): void {
         cleanups.forEach((cleanup) => cleanup());

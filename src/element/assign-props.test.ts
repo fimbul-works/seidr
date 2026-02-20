@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { TYPE_PROP } from "../constants";
 import { describeDualMode } from "../test-setup";
 import { assignProps } from "./assign-props";
 
@@ -26,11 +25,5 @@ describeDualMode("assignProps", ({ getDOMFactory }) => {
     expect(el.style.color).toBe("red");
     // browsers might return '10px' or '10.0px' depending on engine, but SSR should be exact
     expect(el.style.fontSize).toBe("10px");
-  });
-
-  it("should throw for unallowed properties", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("div");
-    expect(() => assignProps(el, { [TYPE_PROP]: "element" } as any, [])).toThrow();
   });
 });

@@ -1,6 +1,5 @@
-import { SEIDR_CLEANUP, TYPE_PROP } from "../constants";
 import { getNextId } from "../render-context/get-next-id";
-import { type CleanupFunction, SeidrError } from "../types";
+import type { CleanupFunction } from "../types";
 import { isSeidr } from "../util/type-guards";
 import { assignProp } from "./assign-prop";
 import type { SeidrElementProps } from "./types";
@@ -22,11 +21,5 @@ export const assignProps = <K extends keyof HTMLElementTagNameMap>(
     el.dataset.seidrId = String(getNextId());
   }
 
-  for (const [prop, value] of Object.entries(props)) {
-    if ([TYPE_PROP, "on", SEIDR_CLEANUP].includes(prop)) {
-      throw new SeidrError(`Unallowed property "${prop}"`);
-    }
-
-    assignProp(el, prop, value, cleanups);
-  }
+  Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value, cleanups));
 };

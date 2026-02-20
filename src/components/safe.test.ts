@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Component, useScope } from "../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { appendChild } from "../dom/append-child";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
 describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
   let container: HTMLElement;
@@ -208,13 +208,10 @@ describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
           throw new SeidrError("Error");
         },
         (_err) => {
-          const scope = useScope();
           const button = $("button", { textContent: "Retry" });
-          scope.track(
-            button.on("click", () => {
-              eventListenerCalled = true;
-            }),
-          );
+          button.onclick = () => {
+            eventListenerCalled = true;
+          };
           return button;
         },
       );

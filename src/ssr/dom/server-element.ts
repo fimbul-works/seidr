@@ -87,8 +87,6 @@ const INTERNAL_ATTRIBUTES = new Set([
   "querySelectorAll",
 
   TYPE_PROP,
-  "on",
-  "clearChildren",
   "remove",
 ]);
 
