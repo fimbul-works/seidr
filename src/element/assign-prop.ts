@@ -49,7 +49,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
 
   let effectiveProp = prop;
-  let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || prop === "form";
+  let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);
 
   if (!useAttribute) {
     if (propStartsWith("data") && matchUpperCasePosition(4)) {
