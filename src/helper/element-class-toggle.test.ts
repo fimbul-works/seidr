@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $, $div, type SeidrElement } from "../element";
+import { $, type SeidrElement } from "../element";
+import { $div } from "../elements";
 import { flushSync, Seidr } from "../seidr";
 import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";

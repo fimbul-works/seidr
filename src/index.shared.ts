@@ -2,6 +2,7 @@ export * from "./component/index";
 export * from "./components/index";
 export * from "./dom/index";
 export * from "./element/index";
+export * from "./elements/index";
 export * from "./helper/index";
 export * from "./render-context/index";
 export * from "./router/index";

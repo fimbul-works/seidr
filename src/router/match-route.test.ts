@@ -1,7 +1,7 @@
 import { afterEach, expect, it } from "vitest";
 import { wrapComponent } from "../component/internal";
 import { mount } from "../dom/internal";
-import { $div } from "../element";
+import { $div } from "../elements";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { $div } from "../element/elements";
+import { $div } from "../elements";
 import { enableClientMode } from "../test-setup";
 import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
@@ -33,13 +33,13 @@ describeDualMode("wrapComponent", () => {
 
     // Check execution
     const comp = wrapped();
-    expect(comp.element?.textContent).toBe("test");
+    expect((comp.element as HTMLElement).textContent).toBe("test");
   });
 
   it("should handle props", () => {
     const fn = (props: { text: string }) => $div({ textContent: props.text });
     const wrapped = wrapComponent(fn);
     const comp = wrapped({ text: "hello" });
-    expect(comp.element?.textContent).toBe("hello");
+    expect((comp.element as HTMLElement).textContent).toBe("hello");
   });
 });

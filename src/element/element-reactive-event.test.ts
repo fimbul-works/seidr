@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, it } from "vitest";
+import { $button } from "../elements";
 import { Seidr } from "../seidr";
 import { useState } from "../state/use-state";
 import type { CleanupFunction } from "../types";
-import { $button } from "./elements";
 import type { SeidrElement } from "./types";
 
 describe("element reactive event handlers", () => {
