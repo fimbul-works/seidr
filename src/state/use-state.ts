@@ -78,11 +78,11 @@ export const useState = <T>(
    */
   const setValue = (v: T | Seidr<T>): Seidr<T> => {
     // Derived are assigned directly
-    if (isSeidr(v) && v.isDerived) {
+    if (isSeidr<T>(v) && v.isDerived) {
       observable = v;
       ctxStates.set(key as StateKey<T>, observable);
     } else {
-      while (isSeidr(v) && !v.isDerived) {
+      while (isSeidr<T>(v) && !v.isDerived) {
         v = unwrapSeidr(v);
       }
       observable.value = v as T;

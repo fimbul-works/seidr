@@ -91,7 +91,7 @@ export class Seidr<T = any> implements Observable<T> {
       this.v = v;
 
       if (this.options.sync) {
-        this.runFlush();
+        this.notify();
       } else {
         scheduleUpdate(this);
       }
@@ -102,7 +102,7 @@ export class Seidr<T = any> implements Observable<T> {
    * Flushes pending notifications to observers.
    * Internal method used by the scheduler.
    */
-  runFlush(): void {
+  notify(): void {
     this.f.forEach((fn) => fn(this.v));
   }
 
@@ -138,7 +138,7 @@ export class Seidr<T = any> implements Observable<T> {
       if (parent.id === this.id) {
         // In SSR we throw, but in the browser we just warn and return
         if (isServer()) {
-          throw new SeidrError(`Seidr ID must be unique`, this);
+          throw new SeidrError(`Seidr ID must be unique`, { cause: this });
         }
         console.warn(`Seidr ID must be unique`);
       }

@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { runWithRenderContext } from "../../render-context/render-context.node";
 import { Seidr } from "../../seidr";
-import { globalStates, symbolNames, useState } from "../../state/internal";
+import { globalStates, symbolNames } from "../../state/storage";
+import { useState } from "../../state/use-state";
 import { restoreGlobalState } from "./restore-global-state";
 
 describe("restoreGlobalState", () => {

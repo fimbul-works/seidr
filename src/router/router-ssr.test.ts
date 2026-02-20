@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../component";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { $ } from "../element";
-import { clearHydrationData, renderToString, setSSRScope } from "../ssr/internal";
+import { renderToString } from "../ssr";
+import { clearHydrationData } from "../ssr/hydrate";
+import { setSSRScope } from "../ssr/ssr-scope";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { navigate } from "./navigate";

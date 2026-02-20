@@ -1,7 +1,7 @@
 import type { Component } from "../component/types";
 import { SEIDR_CLEANUP, type TYPE_ELEMENT, TYPE_PROP } from "../constants";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction, IsCamelCase } from "../types";
+import type { CleanupFunction } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -36,6 +36,20 @@ type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
 type WritableKeys<T> = {
   [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
 }[keyof T];
+
+/**
+ * Checks if a string is in camelCase.
+ *
+ * @template S - The string to check
+ * @returns true if the string is in camelCase, false otherwise
+ */
+type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
+  ? false
+  : S extends `${infer First}${string}`
+    ? First extends Lowercase<First>
+      ? true
+      : false
+    : false;
 
 /**
  * Removes the `style` property from a type.

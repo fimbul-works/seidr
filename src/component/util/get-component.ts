@@ -1,5 +1,5 @@
-import type { Component, ComponentFactoryFunction } from "../../component/types";
-import { wrapComponent } from "../../component/wrap-component";
+import type { Component, ComponentFactoryFunction } from "../types";
+import { wrapComponent } from "../wrap-component";
 
 /**
  * Gets the component for a given value from a map or object of factories.
@@ -8,13 +8,13 @@ import { wrapComponent } from "../../component/wrap-component";
  * @template M - The type of the factories map or object.
  * @param {M} factories Map or object of factories.
  * @param {T} value The value to get the component for.
- * @param {C} [fallbackFactory] Optional fallback factory.
+ * @param {C | null} [fallbackFactory] Optional fallback factory.
  * @returns {Component | undefined} The component for the given value.
  */
 export const getComponent = <
-  T,
+  T extends string,
   C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>,
-  M extends Map<T, C> | Record<T & string, C> = Map<T, C> | Record<T & string, C>,
+  M extends Map<T, C> | Record<T, C> = Map<T, C> | Record<T, C>,
 >(
   factories: M,
   value: T,

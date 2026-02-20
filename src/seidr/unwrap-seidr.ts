@@ -7,4 +7,4 @@ import type { Seidr } from "./seidr";
  * @param {T} v - Value or Seidr with value
  * @returns {T} Extracted value
  */
-export const unwrapSeidr = <T>(v: T | Seidr<T>): T => (isSeidr(v) ? v.value : (v as T));
+export const unwrapSeidr = <T>(v: T | Seidr<T>): T => (isSeidr<T>(v) ? v.value : v);

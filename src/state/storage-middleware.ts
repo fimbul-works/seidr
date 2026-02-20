@@ -35,7 +35,7 @@ const handleStorageError = (
   if (onError) {
     onError(error, operation);
   } else {
-    throw new SeidrError(`Failed to ${operation} from storage (key: ${key}): ${error.message}`, observable);
+    throw new SeidrError(`Failed to ${operation} from storage (key: ${key}): ${error.message}`, { cause: observable });
   }
 };
 

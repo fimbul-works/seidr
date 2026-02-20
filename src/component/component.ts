@@ -1,5 +1,4 @@
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
-import { getMarkerComments } from "../dom/get-marker-comments";
 import { $text } from "../dom/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
@@ -9,6 +8,7 @@ import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { createScope, setScopeComponent } from "./component-scope";
 import { getCurrentComponent, pop, push } from "./component-stack";
+import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
 
 /**

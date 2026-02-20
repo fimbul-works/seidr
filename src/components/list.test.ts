@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { component, useScope } from "../component";
-import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
+import { mount } from "../dom";
 import { $ } from "../element";
 import { flushSync, Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";

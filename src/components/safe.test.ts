@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Component, useScope } from "../component";
 import { appendChild } from "../dom/append-child";
-import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
+import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
 describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
   let container: HTMLElement;

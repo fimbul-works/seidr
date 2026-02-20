@@ -21,3 +21,9 @@ export const TYPE_PROP = "$type";
 
 /** Seidr cleanup function. */
 export const SEIDR_CLEANUP = Symbol("seidrCleanup");
+
+/** Prefix used for marker comments */
+export const SEIDR_COMPONENT_START_PREFIX = "";
+
+/** Suffix used for marker comments */
+export const SEIDR_COMPONENT_END_PREFIX = "/";

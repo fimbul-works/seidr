@@ -1,9 +1,9 @@
 import { component } from "../component/component";
+import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
-import { getMarkerComments } from "../dom/get-marker-comments";
 import type { Seidr } from "../seidr";
 import { isArray } from "../util/type-guards/primitive-types";
 

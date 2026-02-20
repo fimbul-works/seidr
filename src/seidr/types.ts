@@ -1,5 +1,4 @@
 import type { CleanupFunction } from "../types";
-import type { Seidr } from "./seidr";
 
 /**§
  * Options for Seidr instances.
@@ -8,7 +7,7 @@ export interface ObservableOptions {
   /**
    * Unique identifier for this observable
    */
-  id?: any;
+  id?: string;
 
   /**
    * Whether to hydrate this observable from server-side data
@@ -64,20 +63,4 @@ export interface Observable<T> {
    * @returns {T} The current state as a plain object
    */
   toJSON(): T;
-}
-
-/**
- * Seidr interface.
- */
-export interface SeidrInterface<T> extends Observable<T> {
-  /**
-   * Creates a derived observable value that automatically updates when its dependencies change.
-   *
-   * @template D - The return type of the derived value
-   *
-   * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
-   * @param {ObservableOptions} [options] - Options for the new derived Seidr
-   * @returns {Seidr<D>} A new Seidr instance containing the transformed value
-   */
-  as<D>(transformFn: (value: T) => D, options?: ObservableOptions): Seidr<D>;
 }

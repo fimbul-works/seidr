@@ -1,7 +1,7 @@
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
+import { getDOMFactory } from "../dom/dom-factory";
 import { getRenderContext } from "../render-context/render-context";
-import { getDOMFactory } from "./dom-factory";
 import { findMarkerComments } from "./find-marker-comments";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./marker-comment-prefix";
 
 /**
  * Get or create boundary markers for a given ID.

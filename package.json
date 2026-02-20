@@ -89,7 +89,7 @@
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
+    "@biomejs/biome": "^2.4.3",
     "@rollup/plugin-commonjs": "^29.0.0",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-replace": "^6.0.3",
@@ -98,19 +98,19 @@
     "@testing-library/dom": "^10.4.1",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^27.0.0",
-    "@types/node": "^25.0.9",
+    "@types/node": "^25.3.0",
     "dts-bundle-generator": "^9.5.1",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",
-    "jsdom": "^27.4.0",
-    "marked": "^17.0.1",
-    "puppeteer": "^24.35.0",
-    "rollup": "^4.55.2",
+    "jsdom": "^28.1.0",
+    "marked": "^17.0.3",
+    "puppeteer": "^24.37.5",
+    "rollup": "^4.58.0",
     "sirv": "^3.0.2",
     "tslib": "^2.8.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
-    "vitest": "^4.0.17"
+    "vitest": "^4.0.18"
   }
 }

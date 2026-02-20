@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { getRenderContext } from "../render-context/render-context";
 import { getMarkerComments } from "./get-marker-comments";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./marker-comment-prefix";
 
 describe("getMarkerComments", () => {
   beforeEach(() => {

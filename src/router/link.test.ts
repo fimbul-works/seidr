@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component } from "../component/internal";
-import { mount } from "../dom/internal";
+import { component } from "../component";
+import { mount } from "../dom";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";

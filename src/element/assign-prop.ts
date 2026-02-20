@@ -73,7 +73,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
 
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
-      if (isSeidr(cssText)) {
+      if (isSeidr<string>(cssText)) {
         cleanups.push(cssText.bind(el, (val) => (el.style = val)));
       } else {
         el.style = cssText as string;
@@ -84,14 +84,14 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
       if (isServer()) {
         style = camelToKebab(style as string) as K;
       }
-      if (isSeidr(value)) {
+      if (isSeidr<CSSStyleDeclaration[K]>(value)) {
         cleanups.push(value.bind(el, (val) => (el.style[style] = val)));
       } else {
         el.style[style] = value;
       }
     };
 
-    if (isSeidr(value)) {
+    if (isSeidr<string>(value)) {
       if (isStr(value.value)) {
         cleanups.push(
           value.bind(el, (val) => {

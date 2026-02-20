@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, useScope } from "../component/internal";
-import { mount, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../dom/internal";
+import { component, useScope } from "../component";
+import { mount } from "../dom";
 import { $ } from "../element";
 import { flushSync, Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Switch } from "./switch";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
 describeDualMode("Switch Component", ({ getDOMFactory }) => {
   let container: HTMLDivElement;

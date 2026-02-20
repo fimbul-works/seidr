@@ -1,6 +1,6 @@
 import { afterEach, expect, it } from "vitest";
-import { wrapComponent } from "../component/internal";
-import { mount } from "../dom/internal";
+import { wrapComponent } from "../component/wrap-component";
+import { mount } from "../dom";
 import { $div } from "../elements";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";

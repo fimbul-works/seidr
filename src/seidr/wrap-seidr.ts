@@ -9,4 +9,4 @@ import type { ObservableOptions } from "./types";
  * @returns {Seidr<T>} Seidr wrapped vaue
  */
 export const wrapSeidr = <T>(v: T | Seidr<T>, options?: ObservableOptions): Seidr<T> =>
-  isSeidr<T>(v) ? (v as Seidr<T>) : new Seidr(v as T, options);
+  isSeidr<T>(v) ? v : new Seidr(v, options);

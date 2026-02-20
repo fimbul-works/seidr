@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { findMarkerComments } from "./find-marker-comments";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "./marker-comment-prefix";
 
 describe("findMarkerComments", () => {
   it("should find markers in the DOM", () => {
