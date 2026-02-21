@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { type getDocument, getDocument } from "../dom";
+import { getDocument } from "../dom";
 import { escapeHTML } from "../util/escape";
 import { isArray } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
@@ -10,7 +10,7 @@ import { enableClientMode, enableSSRMode } from ".";
 export interface DualModeContext {
   mode: "Browser" | "SSR";
   isSSR: boolean;
-  getDocument: () => getDocument;
+  getDocument: () => Document;
 }
 
 /**
@@ -147,7 +147,7 @@ function normalizeHtml(html: string): string {
     const attrMatches = cleanAttrs.match(/(?:[^\s"'=]+(?:=(?:"[^"]*"|'[^']*'|[^\s"']+))?)/g) || [];
 
     // Normalize boolean attributes: transform 'key=""' to 'key'
-    const normalizedAttrList = attrMatches.map((attr) => {
+    const normalizedAttrList = attrMatches.map((attr: string) => {
       if (attr.endsWith('=""')) {
         const key = attr.slice(0, -3);
         // We can be aggressive and strip it for any attribute for comparison purposes,

@@ -1,3 +1,5 @@
+import { getDocument } from "../get-document";
+
 /**
  * Call HTMLElement.querySelectorAll to find all matching elements.
  *
@@ -11,5 +13,5 @@
  * @param {HTMLElement} [el] - The element to query within (defaults: document.body)
  * @returns {T[]} An array of all elements matching the selector
  */
-export const $queryAll = <T extends HTMLElement>(query: string, el: HTMLElement = document.body): T[] =>
+export const $queryAll = <T extends HTMLElement>(query: string, el: HTMLElement = getDocument().body): T[] =>
   Array.from(el.querySelectorAll(query)) as T[];

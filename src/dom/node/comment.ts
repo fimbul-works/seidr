@@ -1,4 +1,4 @@
-import { getDocument } from "./get-document";
+import { getDocument } from "../get-document";
 
 /**
  * Creates a new DOM Comment node.

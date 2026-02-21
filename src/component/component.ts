@@ -1,5 +1,5 @@
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
-import { $text } from "../dom/text";
+import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
@@ -24,9 +24,8 @@ export const component = <P = void>(
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
-    const ctx = getRenderContext();
     const parent = getCurrentComponent();
-    const ctxID = String(ctx.ctxID);
+    const ctxID = String(getRenderContext().ctxID);
     const id = `${name}-${ctxID}-${getNextId()}`;
     const scope = createScope(id, parent);
 

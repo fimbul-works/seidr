@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { component, wrapComponent } from "../../component/index";
+import { component } from "../../component/index";
+import { wrapComponent } from "../../component/wrap-component";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { describeDualMode } from "../../test-setup";

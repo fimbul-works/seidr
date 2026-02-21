@@ -1,6 +1,6 @@
 import { expect } from "vitest";
-import { TYPE_TEXT_NODE } from "../constants";
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
+import { TYPE_TEXT_NODE } from "../../constants";
+import { describeDualMode, itHasParity } from "../../test-setup/dual-mode";
 
 describeDualMode("$text", ({ getDocument }) => {
   itHasParity("should create text node", () => {

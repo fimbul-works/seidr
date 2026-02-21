@@ -71,7 +71,7 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
         return promise;
       }
 
-      getRenderContext()?.onPromise?.(promise);
+      getRenderContext().onPromise?.(promise);
 
       return promise;
     },

@@ -7,12 +7,16 @@ export const clientReplace = {
   // Production build
   "process.env.NODE_ENV": JSON.stringify("production"),
   "process.env.SEIDR_TEST_SSR": "false",
+  "process.env.USE_SCHEDULER": "true",
+  "process.env.VITEST": "false",
 };
 
 export const nodeReplace = {
   // Production build
   "process.env.NODE_ENV": JSON.stringify("production"),
   "process.env.SEIDR_TEST_SSR": "false",
+  "process.env.USE_SCHEDULER": "false",
+  "process.env.VITEST": "false",
   // Disable client bundle guards
   window: "undefined",
 };
@@ -46,12 +50,14 @@ export const makeClientBundle = (input, output, cjs = true, values = {}) => ({
   treeshake,
 });
 
-export const makeNodeBundle = (input, output, values = {}) => ({
+export const makeNodeBundle = (input, output, cjs = true, values = {}) => ({
   input,
-  output: [
-    { file: `${output}.js`, format: "esm" },
-    { file: `${output}.cjs`, format: "cjs" },
-  ],
+  output: cjs
+    ? [
+        { file: `${output}.js`, format: "esm" },
+        { file: `${output}.cjs`, format: "cjs" },
+      ]
+    : [{ file: `${output}.js`, format: "esm" }],
   plugins: [
     ...pluginsCommon,
     replace({ ...nodeReplace, "isClient()": "false", "isServer()": "true", ...values, preventAssignment: true }),

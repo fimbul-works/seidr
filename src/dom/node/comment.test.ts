@@ -1,7 +1,7 @@
 import { expect } from "vitest";
-import { TYPE_COMMENT_NODE } from "../constants";
-import { describeDualMode } from "../test-setup";
-import { itHasParity } from "../test-setup/dual-mode";
+import { TYPE_COMMENT_NODE } from "../../constants";
+import { describeDualMode } from "../../test-setup";
+import { itHasParity } from "../../test-setup/dual-mode";
 
 describeDualMode("Comment Parity", ({ getDocument }) => {
   itHasParity("should create comment node", () => {

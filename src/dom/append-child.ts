@@ -3,7 +3,7 @@ import type { CleanupFunction } from "../types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
-import { $text } from "./text";
+import { $text } from "./node/text";
 
 /**
  * Appends a child node to a parent node.

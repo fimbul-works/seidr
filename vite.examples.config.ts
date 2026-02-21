@@ -24,7 +24,11 @@ export default defineConfig((_config) => {
       },
     },
     esbuild: {
-      define: { ...clientReplace, "process.env.CORE_DISABLE_SSR": "true", "process.env.VITEST": "false" },
+      define: {
+        ...clientReplace,
+        "process.env.CORE_DISABLE_SSR": "true",
+      },
+      drop: ["console", "debugger"],
     },
     server: {
       port: 3000,
