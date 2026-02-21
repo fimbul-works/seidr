@@ -134,7 +134,7 @@ function normalizeHtml(html: string): string {
   if (!html) return "";
 
   // 1. Sort attributes within tags
-  let normalized = html.replace(/<([a-z0-9-]+)([^>]*)>/gi, (match, tag, attrs) => {
+  let normalized = html.replace(/<([a-z0-9-]+)([^>]*)>/gi, (_match, tag, attrs) => {
     // Handle self-closing end slash
     const isSelfClosing = attrs.trim().endsWith("/");
     let cleanAttrs = attrs.trim();
@@ -161,11 +161,11 @@ function normalizeHtml(html: string): string {
 
     // We normalize to NO slash for self-closing tags to match JSDOM,
     // as Seidr SSR uses slashes but JSDOM doesn't for HTML5.
-    return `<${tag.toLowerCase()}${sortedAttrs ? " " + sortedAttrs : ""}>`;
+    return `<${tag.toLowerCase()}${sortedAttrs ? ` ${sortedAttrs}` : ""}>`;
   });
 
   // 2. Normalize case for closing tags
-  normalized = normalized.replace(/<\/([a-z0-9-]+)>/gi, (match, tag) => {
+  normalized = normalized.replace(/<\/([a-z0-9-]+)>/gi, (_match, tag) => {
     return `</${tag.toLowerCase()}>`;
   });
 

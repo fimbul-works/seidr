@@ -31,9 +31,6 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
     get parentNode() {
       return attachedParent;
     },
-    get children() {
-      return children;
-    },
     get component() {
       return componentInstance as Component;
     },

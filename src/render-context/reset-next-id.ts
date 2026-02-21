@@ -1,5 +1,4 @@
 import { getRenderContext } from "./render-context";
-import { counters } from "./storage";
 
 /**
  * Resets the next available ID for the RenderContext.
@@ -7,7 +6,7 @@ import { counters } from "./storage";
  */
 export const resetNextId = (): void => {
   try {
-    counters.delete(getRenderContext().ctxID);
+    getRenderContext().idCounter = 0;
   } catch (_e) {
     // Ignore if no render context is available
   }

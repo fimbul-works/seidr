@@ -6,7 +6,8 @@ import type { ObservableOptions } from "./types";
  * Convenience helper to wrap a value in a Seidr observable.
  * @template T - Type of value
  * @param {T | Seidr<T>} v - Value or Seidr with value
- * @returns {Seidr<T>} Seidr wrapped vaue
+ * @param {ObservableOptions} [options] - Options for the new Seidr instance
+ * @returns {Seidr<T>} Seidr wrapped value
  */
 export const wrapSeidr = <T>(v: T | Seidr<T>, options?: ObservableOptions): Seidr<T> =>
   isSeidr<T>(v) ? v : new Seidr(v, options);

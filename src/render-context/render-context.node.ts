@@ -45,6 +45,7 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
 
   const context: RenderContext = {
     ctxID,
+    idCounter: 0,
     currentPath: "/",
     markers: new Map<string, [Comment, Comment]>(),
   };
@@ -63,6 +64,7 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
 export const setMockRenderContextForTests = (): CleanupFunction => {
   const mockContext: RenderContext = {
     ctxID: 0,
+    idCounter: 0,
     currentPath: "/",
     markers: new Map<string, [Comment, Comment]>(),
   };

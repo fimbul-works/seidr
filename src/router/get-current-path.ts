@@ -2,7 +2,6 @@ import { getCurrentComponent } from "../component/component-stack";
 import { getRenderContext } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
-import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
 
 const PATH_SEIDR_ID = "router-path";
@@ -28,12 +27,11 @@ export const resetClientPathState = () => (clientPathState = undefined);
  * @returns {Seidr<string>} Reactive current path observable
  */
 export const getCurrentPath = (): Seidr<string> => {
-  const ctx = getRenderContext();
-  const ctxID = ctx.ctxID;
-  const isSvr = isServer();
-
   // Server-side: Get or create Seidr for this render context
-  if (isSvr) {
+  if (isServer()) {
+    const ctx = getRenderContext();
+    const ctxID = ctx.ctxID;
+
     let observable = pathCache.get(ctxID);
 
     if (!observable) {
@@ -55,7 +53,7 @@ export const getCurrentPath = (): Seidr<string> => {
 
   // Client-side: Use module-level state
   if (!clientPathState) {
-    clientPathState = new Seidr(isClient() ? window.location?.pathname || "/" : "/", {
+    clientPathState = new Seidr(window.location?.pathname ?? "/", {
       ...NO_HYDRATE,
       id: PATH_SEIDR_ID,
     });

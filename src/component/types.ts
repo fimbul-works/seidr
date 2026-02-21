@@ -86,11 +86,6 @@ export interface ComponentScope {
   readonly parentNode: Node | null;
 
   /**
-   * The children of this component.
-   */
-  readonly children: ReadonlyMap<string, Component>;
-
-  /**
    * Removes a child component from this scope.
    * @param child - The child component to remove
    */

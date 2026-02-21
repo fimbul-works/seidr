@@ -3,6 +3,7 @@ import type { RenderContext } from "../render-context";
 // Set up a simple browser render context that returns a valid context object
 export const testRenderContext: RenderContext = {
   ctxID: 0,
+  idCounter: 0,
   currentPath: "/",
   markers: new Map<string, [Comment, Comment]>(),
 };

@@ -1,3 +1,4 @@
+import { getRenderContext } from "../render-context";
 import { getNextId } from "../render-context/get-next-id";
 import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
 import { getSSRScope } from "../ssr/ssr-scope";

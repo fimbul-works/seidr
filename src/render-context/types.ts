@@ -7,6 +7,15 @@ export interface RenderContext {
   /** Render context ID is used to differentiate render context between requests */
   ctxID: number;
 
+  /** Counter for generating unique IDs */
+  idCounter: number;
+
+  /** Current URL path for routing (isolated per request in SSR) */
+  currentPath: string;
+
+  /** Cache for marker comments indexed by component ID */
+  markers: Map<string, [Comment, Comment]>;
+
   /** The root node for the current render context */
   rootNode?: Node;
 
@@ -18,12 +27,6 @@ export interface RenderContext {
 
   /** State for the deterministic random number generator [s0, s1, s2, c] */
   rngState?: [number, number, number, number];
-
-  /** Current URL path for routing (isolated per request in SSR) */
-  currentPath: string;
-
-  /** Cache for marker comments indexed by component ID */
-  markers: Map<string, [Comment, Comment]>;
 
   /** Callback to track promises for SSR waiting (optional) */
   onPromise?: (p: Promise<any>) => void;
