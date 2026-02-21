@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { component } from "../component";
-import { mount } from "../dom";
-import { $ } from "../element";
-import { Seidr } from "../seidr";
-import { describeDualMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { useNavigate } from "./hooks/use-navigate";
+import { component } from "../../component";
+import { mount } from "../../dom";
+import { $ } from "../../element";
+import { Seidr } from "../../seidr";
+import { describeDualMode } from "../../test-setup";
+import type { CleanupFunction } from "../../types";
+import { useNavigate } from "../hooks/use-navigate";
+import { useParams } from "../hooks/use-params";
 import { Route } from "./route";
 
 describeDualMode("Route Component", ({ getDocument, isSSR }) => {
@@ -15,12 +16,9 @@ describeDualMode("Route Component", ({ getDocument, isSSR }) => {
     });
     return;
   }
-  const { navigate } = useNavigate();
 
   let container: HTMLDivElement;
   let unmount: CleanupFunction;
-
-  type IdParams = { id: string };
 
   beforeEach(() => {
     const document = getDocument();
@@ -40,6 +38,7 @@ describeDualMode("Route Component", ({ getDocument, isSSR }) => {
       return $("div", {}, [Route("/", Page("Home")), Route("/about", Page("About"))]);
     }, "App");
 
+    const navigate = useNavigate();
     navigate("/");
     unmount = mount(App, container);
     expect(container.querySelector(".home")).toBeTruthy();
@@ -50,16 +49,17 @@ describeDualMode("Route Component", ({ getDocument, isSSR }) => {
     expect(container.querySelector(".about")).toBeTruthy();
   });
 
-  it("should handle dynamic parameters", () => {
-    const UserPage = component(
-      (params: Seidr<IdParams>) => $("div", { className: "user", textContent: params.as((p) => `User ${p.id}`) }),
-      "UserPage",
-    );
+  it("should handle dynamic parameters via useParams hook", () => {
+    const UserPage = component(() => {
+      const params = useParams();
+      return $("div", { className: "user", textContent: params.as((p) => `User ${p.id}`) });
+    }, "UserPage");
 
     const App = component(() => {
-      return $("div", {}, [Route<IdParams>("/user/:id", UserPage)]);
+      return $("div", {}, [Route("/user/:id", UserPage)]);
     }, "App");
 
+    const navigate = useNavigate();
     navigate("/user/123");
     unmount = mount(App, container);
 
@@ -70,15 +70,16 @@ describeDualMode("Route Component", ({ getDocument, isSSR }) => {
   });
 
   it("should support RegExp patterns", () => {
-    const PostPage = component(
-      (params: Seidr<IdParams>) => $("div", { className: "post", textContent: params?.as((p) => `Post ${p.id}`) }),
-      "PostPage",
-    );
+    const PostPage = component(() => {
+      const params = useParams();
+      return $("div", { className: "post", textContent: params.as((p) => `Post ${p.id}`) });
+    }, "PostPage");
 
     const App = component(() => {
-      return $("div", {}, [Route<IdParams>(/^\/post\/(?<id>\d+)$/, PostPage)]);
+      return $("div", {}, [Route(/^\/post\/(?<id>\d+)$/, PostPage)]);
     }, "App");
 
+    const navigate = useNavigate();
     navigate("/post/123");
     unmount = mount(App, container);
     expect(container.querySelector(".post")?.textContent).toBe("Post 123");

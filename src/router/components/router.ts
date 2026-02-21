@@ -1,19 +1,19 @@
-import { component } from "../component/component";
-import { getMarkerComments } from "../component/get-marker-comments";
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { mountComponent } from "../component/util";
-import { wrapComponent } from "../component/wrap-component";
-import { isFn } from "../util";
-import { getCurrentParams } from "./get-current-params";
-import { getCurrentPath } from "./get-current-path";
-import { matchRoute } from "./match-route";
-import type { RouteDefinition } from "./types";
+import { component } from "../../component/component";
+import { getMarkerComments } from "../../component/get-marker-comments";
+import type { Component, ComponentFactoryFunction } from "../../component/types";
+import { useScope } from "../../component/use-scope";
+import { mountComponent } from "../../component/util";
+import { wrapComponent } from "../../component/wrap-component";
+import { isFn } from "../../util";
+import { getCurrentParams } from "../get-current-params";
+import { getCurrentPath } from "../get-current-path";
+import { matchRoute } from "../match-route";
+import type { RouteDefinition } from "../types";
 
 /**
  * Router component props.
  */
-export interface RouterProps<C extends ComponentFactoryFunction<any> = ComponentFactoryFunction<any>> {
+export interface RouterProps<C extends ComponentFactoryFunction = ComponentFactoryFunction> {
   routes: Array<RouteDefinition>;
   fallback?: C;
 }
@@ -21,10 +21,7 @@ export interface RouterProps<C extends ComponentFactoryFunction<any> = Component
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactoryFunction<any>>(
-  routes: Array<RouteDefinition>,
-  fallback?: C,
-): Component =>
+export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFactoryFunction): Component =>
   component(({ routes, fallback }: RouterProps) => {
     const scope = useScope();
 
@@ -57,9 +54,9 @@ export const Router = <C extends ComponentFactoryFunction<any> = ComponentFactor
     const updateComponent = (index: number) => {
       currentComponent =
         index > -1
-          ? wrapComponent(routes[index][1])(currentParams)
+          ? wrapComponent(routes[index][1])()
           : isFn(fallback)
-            ? wrapComponent(fallback)(currentParams)
+            ? wrapComponent(fallback)()
             : undefined;
     };
 

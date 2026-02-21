@@ -6,6 +6,7 @@ describeDualMode("getCurrentPath", () => {
   beforeEach(() => {
     getCurrentPath().value = "/";
   });
+
   it("should return a Seidr instance with current path", () => {
     const path = getCurrentPath();
     expect(path.value).toBe("/");

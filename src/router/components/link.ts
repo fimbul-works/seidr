@@ -1,11 +1,11 @@
-import { component } from "../component/component";
-import type { Component } from "../component/types";
-import { $, type SeidrChild, type SeidrElementProps } from "../element";
-import { NO_HYDRATE } from "../seidr/constants";
-import type { Seidr } from "../seidr/seidr";
-import { unwrapSeidr } from "../seidr/unwrap-seidr";
-import { wrapSeidr } from "../seidr/wrap-seidr";
-import { useNavigate } from "./hooks";
+import { component } from "../../component/component";
+import type { Component } from "../../component/types";
+import { $, type SeidrChild, type SeidrElementProps } from "../../element";
+import { NO_HYDRATE } from "../../seidr/constants";
+import type { Seidr } from "../../seidr/seidr";
+import { unwrapSeidr } from "../../seidr/unwrap-seidr";
+import { wrapSeidr } from "../../seidr/wrap-seidr";
+import { useNavigate } from "../hooks";
 
 /**
  * Link component props.
@@ -27,7 +27,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   children: SeidrChild[] = [],
 ): Component =>
   component(() => {
-    const { navigate } = useNavigate();
+    const navigate = useNavigate();
 
     // If to is a Seidr, use it directly; otherwise wrap it in a Seidr
     // We opt-out of hydration for this internal Seidr to save space

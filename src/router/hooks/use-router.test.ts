@@ -10,46 +10,38 @@ describe("useRouter", () => {
     window.history.replaceState(null, "", "/");
   });
 
-  it("should return location properties as static snapshot", () => {
+  it("should return location as a Seidr", () => {
     const router = useRouter();
-    expect(router.pathname).toBe("/");
-    expect(router.search).toBe("");
+    expect(router.location.value).toBe("/");
   });
 
-  it("should return navigation functions", () => {
+  it("should return navigate function", () => {
     const router = useRouter();
     expect(typeof router.navigate).toBe("function");
-    expect(typeof router.redirect).toBe("function");
-    expect(typeof router.history.back).toBe("function");
   });
 
-  it("should push updates to signals but leave current snapshot static", () => {
+  it("should return params as a Seidr", () => {
     const router = useRouter();
-    expect(router.pathname).toBe("/");
+    expect(router.params.value).toEqual({});
 
-    router.navigate("/about");
-    expect(router.pathSignal.value).toBe("/about");
-    expect(router.pathname).toBe("/"); // Stale snapshot
-
-    const nextRouter = useRouter();
-    expect(nextRouter.pathname).toBe("/about");
-  });
-
-  it("should reflect params changes via signal", () => {
-    const router = useRouter();
     getCurrentParams().value = { id: "123" };
-    expect(router.paramsSignal.value.id).toBe("123");
+    expect(router.params.value.id).toBe("123");
   });
 
-  it("should update query params", () => {
+  it("should navigate and update location", () => {
+    const router = useRouter();
+    router.navigate("/about");
+    expect(router.location.value).toBe("/about");
+  });
+
+  it("should manage search params", () => {
     const router = useRouter();
     router.navigate("/?q=hello");
 
-    // Need new router for new snapshot
-    const r2 = useRouter();
-    expect(r2.queryParams.q).toBe("hello");
+    expect(router.searchParams.value.q).toBe("hello");
 
-    r2.setQueryParam("q", "world");
+    router.setSearchParams("q", "world");
     expect(window.location.search).toContain("q=world");
+    expect(router.searchParams.value.q).toBe("world");
   });
 });

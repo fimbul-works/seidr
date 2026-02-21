@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../component";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { $ } from "../element";
-import { renderToString } from "../ssr";
-import { clearHydrationData } from "../ssr/hydrate";
-import { setSSRScope } from "../ssr/ssr-scope";
-import { enableSSRMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { navigate } from "./navigate";
+import { component } from "../../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants";
+import { $ } from "../../element";
+import { renderToString } from "../../ssr";
+import { clearHydrationData } from "../../ssr/hydrate";
+import { setSSRScope } from "../../ssr/ssr-scope";
+import { enableSSRMode } from "../../test-setup";
+import type { CleanupFunction } from "../../types";
+import { useNavigate, useParams } from "../hooks";
 import { Router } from "./router";
 
 describe("Router SSR", () => {
@@ -75,22 +75,22 @@ describe("Router SSR", () => {
     expect(html).toContain("404");
   });
 
-  it("should handle dynamic params in SSR", async () => {
-    const User = component(
-      (params: any) => $("div", { className: "user", textContent: params.as((p: any) => `User ${p.id}`) }),
-      "User",
-    );
+  it("should handle dynamic params in SSR via useParams", async () => {
+    const User = component(() => {
+      const params = useParams();
+      return $("div", { className: "user", textContent: params.as((p: any) => `User ${p.id}`) });
+    }, "User");
     const App = component(() => Router([["/user/:id", User]], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/user/123" });
     expect(html).toContain("User 123");
   });
 
-  it("should handle RegExp patterns in SSR", async () => {
-    const Post = component(
-      (params: any) => $("div", { className: "post", textContent: params.as((p: any) => `Post ${p.id}`) }),
-      "Post",
-    );
+  it("should handle RegExp patterns in SSR via useParams", async () => {
+    const Post = component(() => {
+      const params = useParams();
+      return $("div", { className: "post", textContent: params.as((p: any) => `Post ${p.id}`) });
+    }, "Post");
     const App = component(() => Router([[/^\/post\/(?<id>\d+)$/, Post]], Fallback), "App");
 
     const { html } = await renderToString(App, { path: "/post/456" });
@@ -101,6 +101,7 @@ describe("Router SSR", () => {
     let navigateWasCalled = false;
 
     const TestComponent = component(() => {
+      const navigate = useNavigate();
       navigateWasCalled = true;
       navigate("/");
       return $("div", { textContent: "Test Component" });

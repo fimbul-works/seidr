@@ -1,9 +1,9 @@
 import { parseRouteParams } from "./parse-route-params";
 import type { RouteDefinition } from "./types";
 
-export interface RouteMatch<P = Record<string, string>> {
-  route: RouteDefinition<any, any>;
-  params: P;
+export interface RouteMatch {
+  route: RouteDefinition;
+  params: Record<string, string>;
   index: number;
 }
 
@@ -14,7 +14,7 @@ export interface RouteMatch<P = Record<string, string>> {
  * @param routes The list of routes to check
  * @returns The match result or null if no route matches
  */
-export const matchRoute = (rawPath: string, routes: RouteDefinition<any, any>[]): RouteMatch | null => {
+export const matchRoute = (rawPath: string, routes: RouteDefinition[]): RouteMatch | null => {
   const path = rawPath.split(/[?#]/)[0];
   for (let i = 0; i < routes.length; i++) {
     const [pattern] = routes[i];

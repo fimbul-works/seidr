@@ -1,20 +1,22 @@
 import { useLocation } from "./use-location";
 import { useNavigate } from "./use-navigate";
+import { useParams } from "./use-params";
 import { useSearchParams } from "./use-search-params";
 
 /**
- * Returns the router object.
- * @returns {Router} The router object
+ * Returns the router object with all common router hooks aggregated.
  */
 export const useRouter = () => {
   const location = useLocation();
-  const navigation = useNavigate();
-  const [queryParams, setQueryParam] = useSearchParams();
+  const navigate = useNavigate();
+  const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   return {
-    ...location,
-    ...navigation,
-    setQueryParam,
-    queryParams,
+    location,
+    navigate,
+    params,
+    searchParams,
+    setSearchParams,
   };
 };

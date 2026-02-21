@@ -1,13 +1,13 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
-import { component, useScope } from "../component";
-import { $ } from "../element";
-import { resetRequestIdCounter } from "../render-context/render-context.node";
-import { clearHydrationData, hydrate } from "../ssr/hydrate";
-import { renderToString } from "../ssr/render-to-string";
-import { enableClientMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { isServer } from "../util/environment/server";
-import { getCurrentPath, resetClientPathState } from "./get-current-path";
+import { component, useScope } from "../../component";
+import { $ } from "../../element";
+import { resetRequestIdCounter } from "../../render-context/render-context.node";
+import { clearHydrationData, hydrate } from "../../ssr/hydrate";
+import { renderToString } from "../../ssr/render-to-string";
+import { enableClientMode } from "../../test-setup";
+import type { CleanupFunction } from "../../types";
+import { isServer } from "../../util/environment/server";
+import { getCurrentPath, resetClientPathState } from "../get-current-path";
 import { Router } from "./router";
 
 describe("Router Hydration Unmounting", () => {

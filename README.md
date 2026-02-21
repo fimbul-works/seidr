@@ -30,7 +30,7 @@
 - 🔧 **Functional API** - Simple, composable functions for DOM creation
 - 📦 **Tiny Footprint**
   - Hello World: **2.8KB**
-  - Full Stack (Router + SSR): **7.5KB**
+  - Full Stack (Router + SSR): **7.2KB**
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -100,10 +100,9 @@ pnpm install @fimbul-works/seidr
 ## Quick Start
 
 ```typescript
-import { useScope, mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
+import { mount, Seidr, $div, $button, $span } from '@fimbul-works/seidr';
 
 const Counter = () => {
-  const scope = useScope();
   const count = new Seidr(0);
   const disabled = count.as(value => value >= 10);
 
@@ -552,7 +551,7 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **Vue counter app**: ~35KB (Vue runtime)
 - **Seidr counter app**: ~2.9KB (minified + gzipped)
 
-> **Note on Tree-Shaking:** The ~7.5KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The ~7.2KB footprint includes the entire library (Router, SSR engine, etc.). If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ## 🌐 Browser Support
 

@@ -1,17 +1,15 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component } from "../component";
-import { mount } from "../dom";
-import { $ } from "../element";
-import { Seidr } from "../seidr";
-import { describeDualMode } from "../test-setup";
+import { component } from "../../component";
+import { mount } from "../../dom";
+import { $ } from "../../element";
+import { Seidr } from "../../seidr";
+import { describeDualMode } from "../../test-setup";
 import { Link } from "./link";
 
 // Mock useNavigate
 const navigateMock = vi.fn();
-vi.mock("./hooks/use-navigate", () => ({
-  useNavigate: () => ({
-    navigate: navigateMock,
-  }),
+vi.mock("../hooks/use-navigate", () => ({
+  useNavigate: () => navigateMock,
 }));
 
 describeDualMode("Link Component", ({ getDocument, isSSR }) => {

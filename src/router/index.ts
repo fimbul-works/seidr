@@ -1,6 +1,3 @@
-export { getCurrentPath } from "./get-current-path";
-export * from "./hooks/index";
-export * from "./link";
-export * from "./route";
-export * from "./router";
+export * from "./components";
+export * from "./hooks";
 export * from "./types";

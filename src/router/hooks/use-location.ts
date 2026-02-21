@@ -1,38 +1,10 @@
-import { getCurrentParams } from "../get-current-params";
+import type { Seidr } from "../../seidr/seidr";
 import { getCurrentPath } from "../get-current-path";
-import { parseURL } from "./util";
-
-export interface Location {
-  href: string;
-  pathname: string;
-  search: string;
-  hash: string;
-  params: Record<string, string>;
-  queryParams: Record<string, string>;
-  origin: string;
-  hostname: string;
-  port: string;
-  protocol: string;
-}
 
 /**
- * Returns the current location snapshot.
- * To make properties reactive, use location.pathSignal or location.paramsSignal.
+ * Returns the current path as a derived Seidr.
+ * This cannot be changed directly by the user.
+ *
+ * @returns {Seidr<string>} Derived Seidr of the current path
  */
-export const useLocation = (overridePath?: string) => {
-  const currentPathState = getCurrentPath();
-  const currentParamsState = getCurrentParams();
-
-  if (overridePath) {
-    currentPathState.value = overridePath;
-  }
-
-  const urlData = parseURL(currentPathState.value);
-
-  return {
-    ...urlData,
-    params: currentParamsState.value,
-    pathSignal: currentPathState,
-    paramsSignal: currentParamsState,
-  };
-};
+export const useLocation = (): Seidr<string> => getCurrentPath().as((path) => path);

@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { component } from "../component";
-import { mount } from "../dom";
-import { $ } from "../element";
-import type { Seidr } from "../seidr";
-import { describeDualMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { getCurrentPath } from "./get-current-path";
-import { useNavigate } from "./hooks/use-navigate";
+import { component } from "../../component";
+import { mount } from "../../dom";
+import { $ } from "../../element";
+import { describeDualMode } from "../../test-setup";
+import type { CleanupFunction } from "../../types";
+import { getCurrentPath } from "../get-current-path";
+import { useNavigate } from "../hooks/use-navigate";
+import { useParams } from "../hooks/use-params";
 import { Router } from "./router";
 
 describeDualMode("Router Component", ({ getDocument, isSSR }) => {
@@ -16,8 +16,6 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
     });
     return;
   }
-
-  const { navigate } = useNavigate();
 
   let container: HTMLDivElement;
   let document: Document;
@@ -37,14 +35,13 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
 
   const Home = component(() => $("div", { id: "home", textContent: "Home Component" }), "Home");
   const About = component(() => $("div", { id: "about", textContent: "About Component" }), "About");
-  const User = component(
-    (params: Seidr<Record<string, string>>) =>
-      $("div", {
-        id: "user",
-        textContent: params.as((p) => `User Component ${p.id}`),
-      }),
-    "User",
-  );
+  const User = component(() => {
+    const params = useParams();
+    return $("div", {
+      id: "user",
+      textContent: params.as((p) => `User Component ${p.id}`),
+    });
+  }, "User");
   const Fallback = component(() => $("div", { id: "fallback", textContent: "404" }), "Fallback");
 
   it("should render the matching route", () => {
@@ -57,6 +54,7 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
       "App",
     );
 
+    const navigate = useNavigate();
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
     expect(document.getElementById("about")).toBeFalsy();
@@ -70,6 +68,7 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
   it("should render fallback if no route matches", () => {
     const App = component(() => Router([["/", Home]], Fallback), "App");
 
+    const navigate = useNavigate();
     unmount = mount(App, container);
     expect(document.getElementById("home")).toBeTruthy();
 
@@ -82,9 +81,10 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
     expect(document.getElementById("home")).toBeTruthy();
   });
 
-  it("should pass dynamic parameters to components", () => {
+  it("should provide dynamic parameters to components via useParams", () => {
     const App = component(() => Router([["/user/:id", User]]), "App");
 
+    const navigate = useNavigate();
     navigate("/user/123");
     unmount = mount(App, container);
 
@@ -105,6 +105,7 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
       "App",
     );
 
+    const navigate = useNavigate();
     unmount = mount(App, container);
 
     navigate("/admin/dashboard");
@@ -114,20 +115,22 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
     expect(container.textContent).toContain("Edit User");
   });
 
-  it("should support RegExp patterns", () => {
+  it("should support RegExp patterns with useParams", () => {
     const App = component(
       () =>
         Router([
           [
             /^\/post\/(?<id>\d+)$/,
-            component((params: Seidr<Record<string, string>>) =>
-              $("div", { textContent: params.as((p) => `Post ${p.id}`) }),
-            ),
+            component(() => {
+              const params = useParams();
+              return $("div", { textContent: params.as((p) => `Post ${p.id}`) });
+            }),
           ],
         ]),
       "App",
     );
 
+    const navigate = useNavigate();
     unmount = mount(App, container);
 
     navigate("/post/123");
