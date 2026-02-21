@@ -31,8 +31,8 @@ export const mountComponent = (component: Component, anchor: Node): void => {
 
     parent.insertBefore(endNode, anchor);
 
-    if (!component.scope.parentNode) {
-      component.scope.attached(parent);
+    if (!component.parentNode) {
+      component.attached(parent);
     }
   }
 };

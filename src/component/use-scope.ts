@@ -1,6 +1,6 @@
 import { SeidrError } from "../types";
 import { getCurrentComponent } from "./component-stack";
-import type { ComponentScope } from "./types";
+import type { LifecycleScope } from "./types";
 
 /**
  * Gets the scope of the current component.
@@ -9,12 +9,12 @@ import type { ComponentScope } from "./types";
  * for tracking cleanup functions and child components. It must be called within a component.
  *
  * @throws {Error} If called outside of a component context
- * @returns {ComponentScope} The scope of the current component
+ * @returns {LifecycleScope} The scope of the current component
  */
-export const useScope = (): ComponentScope => {
+export const useScope = (): LifecycleScope => {
   const current = getCurrentComponent();
   if (!current) {
     throw new SeidrError("useScope() must be called within a component");
   }
-  return current.scope;
+  return current;
 };

@@ -1,6 +1,4 @@
 import { component } from "../component/component";
-import { createScope } from "../component/component-scope";
-import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
@@ -33,13 +31,8 @@ export const Safe = <
     try {
       return wrapComponent(factory)();
     } catch (err) {
-      const newScope = createScope();
-      newScope.onAttached = (parent) => scope.onAttached?.(parent);
-
-      const currentComp = getCurrentComponent();
-      if (currentComp) {
-        currentComp.scope = newScope;
-      }
+      // Clean up any resources tracked during the failed factory call
+      (scope as Component).reset?.();
 
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }

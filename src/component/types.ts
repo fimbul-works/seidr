@@ -53,59 +53,28 @@ export type ComponentChildren = SeidrNode | SeidrNode[] | null | undefined;
 export type ComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
 
 /**
- * Manages cleanup functions and child components within a component's lifecycle.
- *
- * The ComponentScope provides a centralized way to track all resources that
- * need to be cleaned up when a component is destroyed. This prevents memory
- * leaks and ensures proper resource management throughout the application.
+ * Lifecycle and resource management interface for components.
+ * This is the public API surface exposed via useScope().
  */
-export interface ComponentScope {
+export interface LifecycleScope {
   /**
    * The unique identifier of the component.
    */
   readonly id: string;
 
   /**
-   * Whether the scope has been destroyed.
+   * Whether the component has been destroyed.
    */
   readonly isDestroyed: boolean;
 
   /**
-   * The component instance this scope belongs to.
-   */
-  readonly component: Component;
-
-  /**
-   * The parent component of this scope.
-   */
-  readonly parent: Component | null;
-
-  /**
-   * The parent node of this scope.
-   */
-  readonly parentNode: Node | null;
-
-  /**
-   * Removes a child component from this scope.
-   * @param child - The child component to remove
-   */
-  removeChild(child: Component): void;
-
-  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
-   *
-   * Use this method to register any cleanup logic that should run when
-   * the component is no longer needed, such as removing event listeners,
-   * cleaning up reactive bindings, or clearing timeouts.
-   *
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
   track(cleanup: CleanupFunction): void;
 
   /**
    * Observes a Seidr observable and executes the callback within the component's context.
-   * This ensures that any components created during the update are correctly parented.
-   *
    * @template T
    * @param {Seidr<T>} observable - The observable to watch
    * @param {(val: T) => void} callback - The callback to execute when value changes
@@ -121,32 +90,11 @@ export interface ComponentScope {
   waitFor<T>(promise: Promise<T>): Promise<T>;
 
   /**
-   * Tracks a child component for automatic cleanup when this component is destroyed.
-   *
-   * Child components are automatically destroyed when their parent component
-   * is destroyed, creating a proper cleanup hierarchy. This method ensures
-   * that child components are properly managed and cleaned up.
-   *
+   * Tracks a child component for automatic cleanup.
    * @param {Component} component - The child component to track
    * @returns {Component} The same child Component
    */
   child(component: Component): Component;
-
-  /**
-   * Destroys all tracked resources and marks the scope as destroyed.
-   *
-   * This method executes all registered cleanup functions in the order
-   * they were added. Once destroyed, the scope can no longer be used
-   * to track new cleanup functions.
-   */
-  destroy(): void;
-
-  /**
-   * Notifies the scope that it has been attached to the DOM.
-   * This will trigger onAttached and propagate to child components.
-   * @param parent - The parent DOM node
-   */
-  attached(parent: Node): void;
 
   /**
    * Optional callback triggered when the component is attached to a parent.
@@ -159,10 +107,9 @@ export interface ComponentScope {
  *
  * Components are the primary building blocks of Seidr applications, encapsulating
  * both the visual element and the cleanup logic needed for proper resource
- * management. Each component tracks its own reactive bindings, event listeners,
- * and child components.
+ * management.
  */
-export interface Component {
+export interface Component extends LifecycleScope {
   /**
    * Read-only identifier for Seidr components.
    * @type {typeof TYPE.COMPONENT}
@@ -170,15 +117,17 @@ export interface Component {
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
 
   /**
-   * The unique identifier of the component.
+   * The parent component.
    */
-  readonly id: string;
+  readonly parent: Component | null;
+
+  /**
+   * The parent DOM node, if attached.
+   */
+  readonly parentNode: Node | null;
 
   /**
    * The root element of the component.
-   *
-   * This element is enhanced with SeidrElement functionality including
-   * reactive bindings, event handling, and cleanup capabilities.
    * @type {ComponentChildren}
    */
   element: ComponentChildren;
@@ -196,13 +145,28 @@ export interface Component {
   endMarker: Comment;
 
   /**
-   * The ComponentScope of this element.
-   * @type {ComponentScope}
-   */
-  scope: ComponentScope;
-
-  /**
-   * Unmounts the component, destroying its scope and removing its elements from the DOM.
+   * Destroys the component, cleaning up resources and removing its elements from the DOM.
    */
   unmount(): void;
+
+  /**
+   * Removes a child component.
+   * @param child - The child component to remove
+   * @internal
+   */
+  removeChild(child: Component): void;
+
+  /**
+   * Notifies the component that it has been attached to the DOM.
+   * @param parent - The parent DOM node
+   * @internal
+   */
+  attached(parent: Node): void;
+
+  /**
+   * Resets the component's internal lifecycle state (cleanups and children).
+   * Used for error recovery in Safe components.
+   * @internal
+   */
+  reset(): void;
 }

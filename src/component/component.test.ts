@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
 import { describeDualMode } from "../test-setup/dual-mode";
@@ -47,7 +47,7 @@ describeDualMode("component", () => {
     expect(comp.element).toBeNull();
   });
 
-  it("should call destroy on scope when component is destroyed", () => {
+  it("should call destroy logic when component is unmounted", () => {
     let scopeDestroyed = false;
 
     const comp = component(() => {
@@ -61,5 +61,35 @@ describeDualMode("component", () => {
     comp.unmount();
 
     expect(scopeDestroyed).toBe(true);
+  });
+
+  it("should execute cleanups immediately if already unmounted", () => {
+    const comp = component(() => $("div"))();
+    comp.unmount();
+
+    const cleanup = vi.fn();
+    comp.track(cleanup);
+
+    expect(cleanup).toHaveBeenCalled();
+  });
+
+  it("should unmount child components recursively", () => {
+    let childDestroyed = false;
+    const Child = component(() => {
+      useScope().track(() => (childDestroyed = true));
+      return $("span");
+    });
+
+    const Parent = component(() => {
+      const scope = useScope();
+      scope.child(Child());
+      return $("div");
+    });
+
+    const parent = Parent();
+    expect(childDestroyed).toBe(false);
+
+    parent.unmount();
+    expect(childDestroyed).toBe(true);
   });
 });

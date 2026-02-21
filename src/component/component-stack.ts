@@ -24,7 +24,7 @@ export const pop = (): void => {
   const id = getRenderContext().ctxID;
   const current = renderContextCursors.get(id);
   if (current) {
-    renderContextCursors.set(id, current.scope.parent);
+    renderContextCursors.set(id, current.parent);
   }
 };
 

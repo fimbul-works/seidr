@@ -2,11 +2,12 @@ import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants"
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
+import type { Seidr } from "../seidr";
+import type { CleanupFunction } from "../types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
-import { createScope } from "./component-scope";
-import { getCurrentComponent, pop, push } from "./component-stack";
+import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
 
@@ -27,36 +28,118 @@ export const component = <P = void>(
     const parent = getCurrentComponent();
     const ctxID = String(getRenderContext().ctxID);
     const id = `${name}-${ctxID}-${getNextId()}`;
-    const scope = createScope(id, parent);
 
-    // Create partial Component
+    // Lifecycle state
+    const children = new Map<string, Component>();
+    let cleanups: CleanupFunction[] = [];
+    let destroyed = false;
+    let attachedParent: Node | null = null;
+
+    // Create Component instance
     const comp = {
-      [TYPE_PROP]: TYPE_COMPONENT,
-      id,
-      scope,
-      unmount: () => {
-        // If already destroyed, do nothing
-        if (comp.scope.isDestroyed) {
+      get [TYPE_PROP]() {
+        return TYPE_COMPONENT;
+      },
+      get id() {
+        return id;
+      },
+      get isDestroyed() {
+        return destroyed;
+      },
+      get parent() {
+        return parent;
+      },
+      get parentNode() {
+        return attachedParent;
+      },
+      track(cleanup: CleanupFunction): void {
+        if (destroyed) {
           if (process.env.NODE_ENV === "development") {
-            console.warn(`[${id}] Unmounting already destroyed component`);
+            console.warn(`[${id}] Tracking cleanup on already destroyed component`);
+          }
+          return cleanup();
+        }
+        cleanups.push(cleanup);
+      },
+
+      observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
+        const cleanup = observable.observe((val) => executeInContext(comp, () => callback(val)));
+        comp.track(cleanup);
+        return cleanup;
+      },
+
+      waitFor<T>(promise: Promise<T>): Promise<T> {
+        if (process.env.CORE_DISABLE_SSR) {
+          return promise;
+        }
+
+        getRenderContext().onPromise?.(promise);
+
+        return promise;
+      },
+
+      child(childComponent: Component) {
+        children.set(childComponent.id, childComponent);
+        comp.track(() => childComponent.unmount());
+
+        if (attachedParent) {
+          childComponent.attached(attachedParent);
+        }
+
+        return childComponent;
+      },
+
+      attached(parent: Node) {
+        if (attachedParent) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(`[${id}] Calling attached on an already attached component`);
+          }
+          return; // Already attached
+        }
+
+        attachedParent = parent;
+        comp.onAttached?.(parent);
+
+        children.forEach((c) => c.attached(parent));
+      },
+
+      removeChild(childComponent: Component) {
+        children.delete(childComponent.id);
+      },
+
+      reset() {
+        cleanups.forEach((fn) => {
+          try {
+            fn();
+          } catch (error) {
+            console.warn(error);
+          }
+        });
+        cleanups = [];
+        children.clear();
+      },
+
+      unmount() {
+        if (destroyed) {
+          if (process.env.NODE_ENV === "development") {
+            console.warn(`[${id}] Unmounting already unmounted component`);
           }
           return;
         }
 
-        // Destroy the scope - this handles children destruction via recursion
-        comp.scope.destroy();
+        destroyed = true;
 
-        // Remove from parent scope
-        comp.scope.parent?.scope.removeChild(comp);
+        // 1. Run cleanups and clear children
+        comp.reset();
+        attachedParent = null;
 
-        // Remove the start marker
+        // 2. Remove from parent
+        parent?.removeChild(comp);
+
+        // 3. Remove from DOM
         comp.startMarker?.remove();
 
-        /**
-         * Removes a child component or DOM node from the DOM.
-         * @param {ComponentChildren} child - The child component or DOM node to remove
-         */
-        const removeChild = (child: ComponentChildren): void => {
+        const removeChildEntry = (child: ComponentChildren): void => {
           if (isComponent(child)) {
             child.unmount();
           } else if (isDOMNode(child)) {
@@ -64,22 +147,16 @@ export const component = <P = void>(
           }
         };
 
-        // Remove the element
         const el = comp.element;
         if (isArray(el)) {
-          el.forEach(removeChild);
+          el.forEach(removeChildEntry);
         } else {
-          removeChild(el);
+          removeChildEntry(el);
         }
 
-        // Remove the end marker
         comp.endMarker?.remove();
       },
     } as Component;
-
-    // Link scope to component instance for observe() context restoration
-    // @ts-expect-error
-    scope.component = comp;
 
     // Set as current component (Push to tree)
     push(comp);
@@ -130,7 +207,7 @@ export const component = <P = void>(
     }
 
     // Register as child component after factory runs to ensure onAttached handlers are set
-    parent?.scope.child(comp);
+    parent?.child(comp);
 
     return comp;
   }) as ComponentFactory<P>;

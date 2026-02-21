@@ -4,12 +4,11 @@ import type { Component } from "./types";
 
 describe("Component Stack", () => {
   const createMockComponent = (id: string, parent: Component | null = null): Component => {
-    return {
+    const comp = {
       id,
-      scope: {
-        parent,
-      },
-    } as unknown as Component;
+      parent,
+    };
+    return comp as Component;
   };
 
   it("should return null when stack is empty", () => {
