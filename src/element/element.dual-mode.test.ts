@@ -2,25 +2,24 @@ import { expect, it } from "vitest";
 import { TYPE_ELEMENT } from "../constants";
 import { describeDualMode } from "../test-setup";
 
-describeDualMode("Element Parity", ({ getDOMFactory, isSSR }) => {
+describeDualMode("Element Parity", ({ getDocument, isSSR }) => {
   it("should create element with correct tagName", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("div");
+    const doc = getDocument();
+    const el = doc.createElement("div");
     expect(el.tagName).toBe("DIV");
     expect(el.nodeName).toBe("DIV");
     expect(el.nodeType).toBe(TYPE_ELEMENT);
   });
 
   it("should have correct ownerDocument", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("span");
-    const doc = factory.getDocument();
+    const doc = getDocument();
+    const el = doc.createElement("span");
     expect(el.ownerDocument).toBe(doc);
   });
 
   it("should handle attributes", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("a");
+    const doc = getDocument();
+    const el = doc.createElement("a");
     el.setAttribute("href", "/foo");
     el.setAttribute("title", "link");
 
@@ -35,8 +34,8 @@ describeDualMode("Element Parity", ({ getDOMFactory, isSSR }) => {
   });
 
   it("should handle textContent", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("p");
+    const doc = getDocument();
+    const el = doc.createElement("p");
     el.textContent = "hello";
     expect(el.textContent).toBe("hello");
 
@@ -48,8 +47,8 @@ describeDualMode("Element Parity", ({ getDOMFactory, isSSR }) => {
   });
 
   it("should produce consistent string representation", () => {
-    const factory = getDOMFactory();
-    const el = factory.createElement("div");
+    const doc = getDocument();
+    const el = doc.createElement("div");
     el.setAttribute("class", "container");
     el.setAttribute("id", "main");
     el.textContent = "Content";

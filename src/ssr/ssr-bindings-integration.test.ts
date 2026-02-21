@@ -7,7 +7,7 @@ import type { CleanupFunction } from "../types";
 import { clearHydrationData, hydrate } from "./hydrate/index";
 import { renderToString } from "./render-to-string";
 import { SSRScope, setSSRScope } from "./ssr-scope";
-import "../dom/dom-factory.node";
+import "../dom/get-document.node";
 import { isClient } from "../util/environment/client";
 
 describe("SSR Reactive Bindings Integration", () => {

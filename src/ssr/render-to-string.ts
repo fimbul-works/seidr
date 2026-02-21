@@ -1,13 +1,13 @@
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
-import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
-import { getSSRDOMFactory } from "../dom/dom-factory.node";
+import { getDocument, setInternalGetDocument } from "../dom/get-document";
+import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import type { SeidrNode } from "../element/types";
 import { getRenderContext } from "../render-context";
 import { runWithRenderContext } from "../render-context/render-context.node";
 import { clearPathCache } from "../router/get-current-path";
 import { SeidrError } from "../types";
-import { isArray, isDOMNode, isStr } from "../util/type-guards/index";
+import { isStr } from "../util/type-guards/index";
 import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope";
 import { captureGlobalState, clearGlobalState } from "./state";
 import type { SSRRenderResult } from "./types";
@@ -35,8 +35,8 @@ export async function renderToString<C extends SeidrNode>(
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
   return await runWithRenderContext(async () => {
-    const prevFactory = getDOMFactory;
-    setInternalDOMFactory(getSSRDOMFactory);
+    const prevFactory = getDocument;
+    setInternalGetDocument(getSSRDocument);
 
     try {
       const ctx = getRenderContext();
@@ -57,8 +57,8 @@ export async function renderToString<C extends SeidrNode>(
 
         // Ensure root is attached to something so it can render content (especially for marker-based components)
         // We use a temporary div as a container for initial rendering.
-        const doc = getDOMFactory().createElement("div");
-        const anchor = getDOMFactory().createComment("ssr-anchor");
+        const doc = getDocument().createElement("div");
+        const anchor = getDocument().createComment("ssr-anchor");
         doc.appendChild(anchor);
 
         // Mount the component properly using the recursive mountComponent
@@ -91,7 +91,7 @@ export async function renderToString<C extends SeidrNode>(
         }
       }
     } finally {
-      setInternalDOMFactory(prevFactory);
+      setInternalGetDocument(prevFactory);
     }
   });
 }

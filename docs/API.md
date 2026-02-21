@@ -32,10 +32,6 @@
 ## [Utilities](utils.md)
 - [`bindInput()`](utils.md#bindinput) - Bind an input element to a Seidr observable.
 - [`elementClassToggle()`](utils.md#elementclasstoggle) - Toggle a class on an element.
-- [`cn()`](utils.md#cn) - Merge class names.
-- [`debounce()`](utils.md#debounce) - Debounce a function.
-- [`uid()`](utils.md#uid) - Generate a unique ID.
-- [`uidTime()`](utils.md#uidtime) - Generate a unique ID based on the current time.
 - [`random()`](utils.md#random) - Generate a random number.
 - [Type Guards](TypeGuards.md)
   - [`isArray`](TypeGuards.md#isarray) - Check if a value is an array.

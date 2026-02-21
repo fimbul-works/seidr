@@ -2,9 +2,9 @@ import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup";
 import { assignProps } from "./assign-props";
 
-describeDualMode("assignProps", ({ getDOMFactory }) => {
+describeDualMode("assignProps", ({ getDocument }) => {
   it("should assign basic props", () => {
-    const factory = getDOMFactory();
+    const factory = getDocument();
     const el = factory.createElement("div");
     assignProps(el, { id: "foo", title: "bar" }, []);
     expect(el.id).toBe("foo");
@@ -12,14 +12,14 @@ describeDualMode("assignProps", ({ getDOMFactory }) => {
   });
 
   it("should handle custom data attributes", () => {
-    const factory = getDOMFactory();
+    const factory = getDocument();
     const el = factory.createElement("div");
     assignProps(el, { "data-custom": "value" }, []);
     expect(el.getAttribute("data-custom")).toBe("value");
   });
 
   it("should handle style props", () => {
-    const factory = getDOMFactory();
+    const factory = getDocument();
     const el = factory.createElement("div");
     assignProps(el, { style: { color: "red", fontSize: "10px" } }, []);
     expect(el.style.color).toBe("red");

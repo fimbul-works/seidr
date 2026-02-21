@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import "../dom/dom-factory.browser";
+import "../dom/get-document.browser";
 import { elementClassToggle } from "../helper";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
@@ -7,10 +7,10 @@ import { isHTMLElement } from "../util/type-guards/dom-node-types";
 import { $ } from "./create-element";
 import type { SeidrElement } from "./types";
 
-describeDualMode("$ (createElement)", ({ getDOMFactory }) => {
+describeDualMode("$ (createElement)", ({ getDocument }) => {
   let document: Document;
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
   });
 
   it("should create basic HTML element", () => {

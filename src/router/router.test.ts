@@ -9,7 +9,7 @@ import { getCurrentPath } from "./get-current-path";
 import { useNavigate } from "./hooks/use-navigate";
 import { Router } from "./router";
 
-describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
+describeDualMode("Router Component", ({ getDocument, isSSR }) => {
   if (isSSR) {
     it("should be covered by router-ssr.test.ts", () => {
       expect(true).toBe(true);
@@ -24,7 +24,7 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
     getCurrentPath().value = "/";

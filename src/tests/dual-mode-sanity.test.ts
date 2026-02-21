@@ -4,7 +4,7 @@ import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup/dual-mode";
 
-describeDualMode("Dual-Mode PoC", ({ isSSR, getDOMFactory }) => {
+describeDualMode("Dual-Mode PoC", ({ isSSR, getDocument }) => {
   it("should create elements with correct attributes", () => {
     // strict use of className for property assignment compatibility across modes
     const el = $("div", { id: "test-id", className: "btn primary" });
@@ -43,7 +43,7 @@ describeDualMode("Dual-Mode PoC", ({ isSSR, getDOMFactory }) => {
     if (isSSR) {
       // In SSR, we can't append to global document (JSDOM)
       // Create a server document to test connection logic
-      const doc = getDOMFactory().getDocument();
+      const doc = getDocument();
       doc.body.appendChild(el);
       expect(el.isConnected).toBe(true);
       doc.body.removeChild(el);

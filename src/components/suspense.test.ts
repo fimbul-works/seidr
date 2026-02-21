@@ -5,13 +5,13 @@ import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Suspense } from "./suspense";
 
-describeDualMode("Suspense", ({ getDOMFactory }) => {
+describeDualMode("Suspense", ({ getDocument }) => {
   let container: HTMLElement;
   let document: Document;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
   });

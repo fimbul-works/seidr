@@ -2,9 +2,9 @@ import { expect } from "vitest";
 import { TYPE_TEXT_NODE } from "../constants";
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 
-describeDualMode("$text", ({ getDOMFactory }) => {
+describeDualMode("$text", ({ getDocument }) => {
   itHasParity("should create text node", () => {
-    const doc = getDOMFactory().getDocument();
+    const doc = getDocument();
     const text = doc.createTextNode("Hello");
     expect(text.textContent).toBe("Hello");
     expect(text.nodeType).toBe(TYPE_TEXT_NODE);
@@ -14,10 +14,10 @@ describeDualMode("$text", ({ getDOMFactory }) => {
   });
 
   itHasParity("should serialize correctly", () => {
-    return getDOMFactory().createTextNode("Hello & <World>");
+    return getDocument().createTextNode("Hello & <World>");
   });
 
   itHasParity("should work with empty string", () => {
-    return getDOMFactory().createTextNode("");
+    return getDocument().createTextNode("");
   });
 });

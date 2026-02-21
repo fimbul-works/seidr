@@ -1,20 +1,20 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { component, useScope } from "../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Switch } from "./switch";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
-describeDualMode("Switch Component", ({ getDOMFactory }) => {
+describeDualMode("Switch Component", ({ getDocument }) => {
   let container: HTMLDivElement;
   let document: Document;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
   });

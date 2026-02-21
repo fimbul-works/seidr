@@ -8,7 +8,7 @@ import type { CleanupFunction } from "../types";
 import { useNavigate } from "./hooks/use-navigate";
 import { Route } from "./route";
 
-describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
+describeDualMode("Route Component", ({ getDocument, isSSR }) => {
   if (isSSR) {
     it("should be covered by router-ssr.test.ts", () => {
       expect(true).toBe(true);
@@ -23,7 +23,7 @@ describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
   type IdParams = { id: string };
 
   beforeEach(() => {
-    const document = getDOMFactory().getDocument();
+    const document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
   });

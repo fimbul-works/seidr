@@ -1,4 +1,4 @@
-import "./dom/dom-factory.browser";
+import "./dom/get-document.browser";
 
 export * from "./index.shared";
 export * from "./index.ssr";

@@ -8,12 +8,12 @@ import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { List } from "./list";
 
-describeDualMode("List Component", ({ getDOMFactory }) => {
+describeDualMode("List Component", ({ getDocument }) => {
   let container: HTMLDivElement;
   let cleanup: CleanupFunction;
 
   beforeEach(() => {
-    const doc = getDOMFactory().getDocument();
+    const doc = getDocument();
     container = doc.createElement("div");
     doc.body.appendChild(container);
   });

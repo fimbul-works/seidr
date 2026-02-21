@@ -1,5 +1,5 @@
-import { getDOMFactory, setInternalDOMFactory } from "../dom/dom-factory";
-import { getSSRDOMFactory } from "../dom/dom-factory.node";
+import { getDocument, setInternalGetDocument } from "../dom/get-document";
+import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import { getRenderContext, setInternalRenderContext } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import type { TestEnvironmentState } from "./types";
@@ -14,11 +14,11 @@ export const enableSSRMode = (): CleanupFunction => {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: (process.env as any).VITEST,
     window: (global as any).window,
-    getDOMFactory: getDOMFactory,
+    getDocument: getDocument,
   };
 
   process.env.SEIDR_TEST_SSR = "true";
-  setInternalDOMFactory(getSSRDOMFactory);
+  setInternalGetDocument(getSSRDocument);
   setInternalRenderContext(getRenderContext);
 
   return () => {
@@ -28,6 +28,6 @@ export const enableSSRMode = (): CleanupFunction => {
     else delete (process.env as any).VITEST;
     if (currentState.window !== undefined) (global as any).window = currentState.window;
     setInternalRenderContext(getRenderContext);
-    if (currentState.getDOMFactory !== undefined) setInternalDOMFactory(currentState.getDOMFactory);
+    if (currentState.getDocument !== undefined) setInternalGetDocument(currentState.getDocument);
   };
 };

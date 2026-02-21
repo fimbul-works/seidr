@@ -14,13 +14,13 @@ vi.mock("./hooks/use-navigate", () => ({
   }),
 }));
 
-describeDualMode("Link Component", ({ getDOMFactory, isSSR }) => {
+describeDualMode("Link Component", ({ getDocument, isSSR }) => {
   let container: HTMLDivElement;
   let document: Document;
   let unmount: () => void;
 
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
     navigateMock.mockClear();

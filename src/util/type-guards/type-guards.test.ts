@@ -231,22 +231,22 @@ describe("Type Guard Utilities", () => {
     });
   });
 
-  describeDualMode("DOM Nodes", ({ getDOMFactory }) => {
+  describeDualMode("DOM Nodes", ({ getDocument }) => {
     describe("isComment", () => {
       it("should return true for comments", () => {
-        expect(isComment(getDOMFactory().createComment("comment"))).toBe(true);
+        expect(isComment(getDocument().createComment("comment"))).toBe(true);
       });
 
       it("should return false for non-comments", () => {
-        expect(isComment(getDOMFactory().createTextNode("text"))).toBe(false);
+        expect(isComment(getDocument().createTextNode("text"))).toBe(false);
       });
     });
 
     describe("isDOMNode", () => {
       it("should return true for DOM nodes", () => {
-        expect(isDOMNode(getDOMFactory().createComment("comment"))).toBe(true);
-        expect(isDOMNode(getDOMFactory().createTextNode("text"))).toBe(true);
-        expect(isDOMNode(getDOMFactory().createElement("div"))).toBe(true);
+        expect(isDOMNode(getDocument().createComment("comment"))).toBe(true);
+        expect(isDOMNode(getDocument().createTextNode("text"))).toBe(true);
+        expect(isDOMNode(getDocument().createElement("div"))).toBe(true);
       });
 
       it("should return false for non-DOM nodes", () => {
@@ -258,21 +258,21 @@ describe("Type Guard Utilities", () => {
 
     describe("isHTMLElement", () => {
       it("should return true for HTMLElements", () => {
-        expect(isHTMLElement(getDOMFactory().createElement("div"))).toBe(true);
+        expect(isHTMLElement(getDocument().createElement("div"))).toBe(true);
       });
 
       it("should return false for non-HTMLElements", () => {
-        expect(isHTMLElement(getDOMFactory().createTextNode("text"))).toBe(false);
+        expect(isHTMLElement(getDocument().createTextNode("text"))).toBe(false);
       });
     });
 
     describe("isTextNode", () => {
       it("should return true for Text nodes", () => {
-        expect(isTextNode(getDOMFactory().createTextNode("text"))).toBe(true);
+        expect(isTextNode(getDocument().createTextNode("text"))).toBe(true);
       });
 
       it("should return false for non-Text nodes", () => {
-        expect(isTextNode(getDOMFactory().createComment("comment"))).toBe(false);
+        expect(isTextNode(getDocument().createComment("comment"))).toBe(false);
       });
     });
   });

@@ -1,19 +1,19 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { useScope } from "../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Conditional } from "./conditional";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
-describeDualMode("Conditional Component", ({ getDOMFactory }) => {
+describeDualMode("Conditional Component", ({ getDocument }) => {
   let container: HTMLDivElement;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    const doc = getDOMFactory().getDocument();
+    const doc = getDocument();
     container = doc.createElement("div");
     doc.body.appendChild(container);
   });

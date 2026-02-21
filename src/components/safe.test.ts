@@ -8,13 +8,13 @@ import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
 
-describeDualMode("Safe", ({ getDOMFactory, isSSR }) => {
+describeDualMode("Safe", ({ getDocument, isSSR }) => {
   let container: HTMLElement;
   let document: Document;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    document = getDOMFactory().getDocument();
+    document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
   });

@@ -1,7 +1,7 @@
 import { afterEach } from "vitest";
-import { setInternalDOMFactory } from "../dom/dom-factory";
-import { getBrowserDOMFactory } from "../dom/dom-factory.browser";
-import { getSSRDOMFactory } from "../dom/dom-factory.node";
+import { setInternalGetDocument } from "../dom/get-document";
+import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
+import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import { setInternalRenderContext } from "../render-context/render-context";
 import { isServer } from "../util/environment/server";
 import { getRenderContext, testRenderContext } from "./render-context";
@@ -12,7 +12,7 @@ export { getRenderContext, setRenderContextID, testRenderContext } from "./rende
 export { enableSSRMode } from "./ssr-mode";
 
 setInternalRenderContext(getRenderContext);
-setInternalDOMFactory(isServer() ? getSSRDOMFactory : getBrowserDOMFactory);
+setInternalGetDocument(isServer() ? getSSRDocument : getBrowserDocument);
 
 afterEach(() => {
   // Reset browser context counters for next test

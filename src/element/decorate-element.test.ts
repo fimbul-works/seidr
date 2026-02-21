@@ -3,9 +3,9 @@ import { SEIDR_CLEANUP } from "../constants";
 import { describeDualMode } from "../test-setup";
 import { decorateElement } from "./decorate-element";
 
-describeDualMode("decorateElement", ({ getDOMFactory }) => {
+describeDualMode("decorateElement", ({ getDocument }) => {
   it("should handle cleanup", () => {
-    const factory = getDOMFactory();
+    const factory = getDocument();
     const el = factory.createElement("div");
     let cleaned = false;
     const decorated = decorateElement(el, [

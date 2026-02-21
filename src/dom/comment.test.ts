@@ -3,9 +3,9 @@ import { TYPE_COMMENT_NODE } from "../constants";
 import { describeDualMode } from "../test-setup";
 import { itHasParity } from "../test-setup/dual-mode";
 
-describeDualMode("Comment Parity", ({ getDOMFactory }) => {
+describeDualMode("Comment Parity", ({ getDocument }) => {
   itHasParity("should create comment node", () => {
-    const doc = getDOMFactory().getDocument();
+    const doc = getDocument();
     const comment = doc.createComment("my comment");
     expect(comment.textContent).toBe("my comment");
     expect(comment.nodeType).toBe(TYPE_COMMENT_NODE);
@@ -15,7 +15,7 @@ describeDualMode("Comment Parity", ({ getDOMFactory }) => {
   });
 
   itHasParity("should serialize correctly", () => {
-    const comment = getDOMFactory().createComment("hidden info");
+    const comment = getDocument().createComment("hidden info");
     return comment;
   });
 });

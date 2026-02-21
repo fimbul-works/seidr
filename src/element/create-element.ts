@@ -1,5 +1,5 @@
 import { appendChild } from "../dom/append-child";
-import { getDOMFactory } from "../dom/dom-factory";
+import { getDocument } from "../dom/get-document";
 import type { CleanupFunction } from "../types";
 import { isArray } from "../util/type-guards";
 import { assignProps } from "./assign-props";
@@ -22,8 +22,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   children?: SeidrChild[],
 ): SeidrElement<K> => {
   const cleanups: CleanupFunction[] = [];
-  const domFactory = getDOMFactory();
-  const el = decorateElement<K>(domFactory.createElement(tagName), cleanups);
+  const el = decorateElement<K>(getDocument().createElement(tagName), cleanups);
 
   if (props) {
     assignProps(el as HTMLElement, props, cleanups);

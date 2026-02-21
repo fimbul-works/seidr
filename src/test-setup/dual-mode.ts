@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { type DOMFactory, getDOMFactory } from "../dom";
+import { type getDocument, getDocument } from "../dom";
 import { escapeHTML } from "../util/escape";
 import { isArray } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
@@ -10,7 +10,7 @@ import { enableClientMode, enableSSRMode } from ".";
 export interface DualModeContext {
   mode: "Browser" | "SSR";
   isSSR: boolean;
-  getDOMFactory: () => DOMFactory;
+  getDocument: () => getDocument;
 }
 
 /**
@@ -69,7 +69,7 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
     fn({
       mode: mode.name,
       isSSR: mode.isSSR,
-      getDOMFactory: () => getDOMFactory(),
+      getDocument: () => getDocument(),
     });
   });
 }
