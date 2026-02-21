@@ -20,7 +20,7 @@ export const Conditional = <C extends ComponentFactoryFunction = ComponentFactor
   name?: string,
 ): Component =>
   Switch(
-    condition.as<string>((v) => (v && "true")),
+    condition.as<string>((v) => v && "true"),
     { true: factory },
     fallbackFactory,
     name ?? "Conditional",

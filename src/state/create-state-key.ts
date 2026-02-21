@@ -21,4 +21,4 @@ export const createStateKey = <T>(key: string): StateKey<T> => {
   const symbol = Symbol(key) as StateKey<T>;
   symbolNames.set(key, symbol);
   return symbol;
-}
+};

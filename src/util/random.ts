@@ -42,4 +42,4 @@ export const random = (): number => {
   ctx.rngState = [r0, r1, r2, i];
 
   return r2;
-}
+};

@@ -2,7 +2,6 @@ import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants"
 import { $text } from "../dom/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
-import { safe } from "../util/safe";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";

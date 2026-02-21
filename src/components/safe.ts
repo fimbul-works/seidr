@@ -4,7 +4,6 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
-import { safe } from "../util/safe";
 import { wrapError } from "../util/wrap-error";
 
 /**
@@ -31,18 +30,17 @@ export const Safe = <
   component(() => {
     const scope = useScope();
 
-    return safe(
-      () => wrapComponent(factory)(),
-      (err) => {
-        const newScope = createScope();
-        newScope.onAttached = (parent) => scope.onAttached?.(parent);
+    try {
+      return wrapComponent(factory)();
+    } catch (err) {
+      const newScope = createScope();
+      newScope.onAttached = (parent) => scope.onAttached?.(parent);
 
-        const currentComp = getCurrentComponent();
-        if (currentComp) {
-          currentComp.scope = newScope;
-        }
+      const currentComp = getCurrentComponent();
+      if (currentComp) {
+        currentComp.scope = newScope;
+      }
 
-        return wrapComponent(errorBoundaryFactory)(wrapError(err));
-      },
-    );
+      return wrapComponent(errorBoundaryFactory)(wrapError(err));
+    }
   }, name ?? "Safe")();

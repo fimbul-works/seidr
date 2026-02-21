@@ -7,7 +7,7 @@ import type { RenderContext } from "./types";
 let requestIdCounter = 0;
 
 /** Reset the global ID counter (for testing) */
-export const resetRequestIdCounter = () => requestIdCounter = 0;
+export const resetRequestIdCounter = () => (requestIdCounter = 0);
 
 /** Storage for per-request RenderContext */
 const contextLocalStorage = new AsyncLocalStorage<RenderContext>();

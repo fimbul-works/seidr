@@ -52,7 +52,7 @@ describeDualMode("component", () => {
 
     const comp = component(() => {
       const scopeParam = useScope();
-      scopeParam.track(() => scopeDestroyed = true)
+      scopeParam.track(() => (scopeDestroyed = true));
       return $("div");
     })();
 

@@ -31,9 +31,7 @@ export const BlogApp = ({ initialPosts = [], initialCurrentPost = undefined }: P
 
   return $div({ className: "app-container" }, [
     Header(),
-    $div({ className: "main-content" }, [
-      Router(routes, () => $div({ textContent: "404 Not Found" })),
-    ]),
+    $div({ className: "main-content" }, [Router(routes, () => $div({ textContent: "404 Not Found" }))]),
     $footer({ textContent: `© ${new Date().getFullYear()} Seidr Blog Example` }),
   ]);
 };

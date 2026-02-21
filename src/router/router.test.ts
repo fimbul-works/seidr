@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { type Seidr } from "../seidr";
+import type { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";

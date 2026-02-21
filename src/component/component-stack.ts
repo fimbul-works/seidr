@@ -1,5 +1,4 @@
 import { getRenderContext } from "../render-context";
-import { safe } from "../util/safe";
 import type { Component } from "./types";
 
 /** Map of current component cursor by render context ID */
@@ -40,9 +39,13 @@ export const pop = (): void => {
 export const executeInContext = <T>(component: Component, fn: () => T): T => {
   const id = getRenderContext().ctxID;
   const previous = renderContextCursors.get(id) ?? null;
-  return safe(
-    () => (renderContextCursors.set(id, component), fn()),
-    (error) => console.warn(error) as T,
-    () => renderContextCursors.set(id, previous),
-  ) as T;
+  try {
+    renderContextCursors.set(id, component);
+    return fn();
+  } catch (error) {
+    console.warn(error);
+    return null as T;
+  } finally {
+    renderContextCursors.set(id, previous);
+  }
 };

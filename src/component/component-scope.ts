@@ -1,7 +1,6 @@
 import { getRenderContext } from "../render-context";
 import type { Seidr } from "../seidr";
 import { type CleanupFunction, SeidrError } from "../types";
-import { safe } from "../util/safe";
 import { executeInContext } from "./component-stack";
 import type { Component, ComponentScope } from "./types";
 
@@ -108,7 +107,13 @@ export const createScope = (id: string = "unknown", parent: Component | null = n
       }
 
       destroyed = true;
-      cleanups.forEach((fn) => safe(fn));
+      cleanups.forEach((fn) => {
+        try {
+          fn();
+        } catch (error) {
+          console.warn(error);
+        }
+      });
       cleanups = [];
       children.clear();
       attachedParent = null;

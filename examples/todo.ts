@@ -8,7 +8,6 @@ import {
   $span,
   $ul,
   bindInput,
-  cn,
   List,
   mount,
   Seidr,
@@ -22,7 +21,7 @@ const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 
   return $li(
     {
-      className: isCompleted.as((completed) => cn("todo-item", completed && "completed")),
+      className: isCompleted.as((completed) => `todo-item${completed ? " completed" : ""}`),
     },
     [
       $checkbox({
