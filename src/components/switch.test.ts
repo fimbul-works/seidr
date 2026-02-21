@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { component, useScope } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Switch } from "./switch";
@@ -56,12 +56,10 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
 
     mode.value = "B";
-    flushSync();
     expect(parentEl.innerHTML).toContain("View B");
     expect(parentEl.innerHTML).not.toContain("View A");
 
     mode.value = "C"; // No match
-    flushSync();
     expect(parentEl.innerHTML).not.toContain("View B");
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
@@ -97,7 +95,6 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
 
     onAttached.mockClear();
     mode.value = "B";
-    flushSync();
     expect(onAttached).toHaveBeenCalledWith("B", expect.anything());
   });
 
@@ -121,12 +118,10 @@ describeDualMode("Switch Component", ({ getDOMFactory }) => {
     unmount = mount(() => Switch(mode, { A: CompA, B: CompB }), container);
 
     mode.value = "B";
-    flushSync();
     expect(scopeADestroyed).toBe(true);
     expect(scopeBDestroyed).toBe(false);
 
     mode.value = "A";
-    flushSync();
     expect(scopeBDestroyed).toBe(true);
   });
 });

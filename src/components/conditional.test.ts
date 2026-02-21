@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { useScope } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Conditional } from "./conditional";
@@ -36,11 +36,9 @@ describeDualMode("Conditional Component", ({ getDOMFactory }) => {
     expect(parentEl.innerHTML).not.toContain("Visible");
 
     isVisible.value = true;
-    flushSync();
     expect(parentEl.innerHTML).toContain("Visible");
 
     isVisible.value = false;
-    flushSync();
     expect(parentEl.innerHTML).not.toContain("Visible");
   });
 
@@ -61,7 +59,6 @@ describeDualMode("Conditional Component", ({ getDOMFactory }) => {
     unmount = mount(Parent, container);
 
     isVisible.value = true;
-    flushSync();
     expect(onAttached).toHaveBeenCalledWith(expect.anything());
   });
 
@@ -78,7 +75,6 @@ describeDualMode("Conditional Component", ({ getDOMFactory }) => {
     unmount = mount(() => Conditional(isVisible, View), container);
 
     isVisible.value = false;
-    flushSync();
 
     expect(scopeDestroyed).toBe(true);
   });

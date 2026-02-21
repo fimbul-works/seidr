@@ -2,7 +2,6 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { component, useScope } from "../component";
 import { $ } from "../element";
 import { resetRequestIdCounter } from "../render-context/render-context.node";
-import { flushSync } from "../seidr/scheduler";
 import { clearHydrationData, hydrate } from "../ssr/hydrate";
 import { renderToString } from "../ssr/render-to-string";
 import { enableClientMode } from "../test-setup";
@@ -78,7 +77,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     getCurrentPath().value = "/unknown";
-    flushSync();
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -87,7 +85,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 4. Navigate to "/"
     getCurrentPath().value = "/";
-    flushSync();
 
     // Verify unmount
     expect(container.querySelector(".fallback")).toBeFalsy();
@@ -109,7 +106,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     getCurrentPath().value = "/";
-    flushSync();
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -118,7 +114,6 @@ describe("Router Hydration Unmounting", () => {
 
     // 4. Navigate to "/unknown"
     getCurrentPath().value = "/unknown";
-    flushSync();
 
     // Verify unmount
     expect(container.querySelector(".home")).toBe(null);

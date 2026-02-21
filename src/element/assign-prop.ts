@@ -124,7 +124,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
           }
         }
         if (!(useAttribute || !(effectiveProp in target))) {
-          (target as any)[effectiveProp] = val;
+          target[effectiveProp] = val;
         }
       }),
     );
@@ -137,7 +137,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
       }
     }
     if (!(useAttribute || !(effectiveProp in target))) {
-      (target as any)[effectiveProp] = value;
+      target[effectiveProp] = value;
     }
   }
 };

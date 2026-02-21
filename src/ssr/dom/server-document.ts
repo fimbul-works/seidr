@@ -13,7 +13,7 @@ import type { ServerDocument } from "./types";
 export function createServerDocument(): ServerDocument {
   const document = applyParentNodeMethods(createServerNode(TYPE_DOCUMENT)) as ServerDocument;
 
-  document.createElement = (tagName: string) => createServerElement(tagName as any, document);
+  document.createElement = (tagName: string) => createServerElement(tagName as keyof HTMLElementTagNameMap, document);
   document.createTextNode = (text: string) => createServerTextNode(text, document);
   document.createComment = (text: string) => createServerComment(text, document);
 

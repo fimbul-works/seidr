@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element/create-element";
-import { flushSync } from "../seidr/scheduler";
 import { Seidr } from "../seidr/seidr";
 import { enableSSRMode } from "../test-setup";
 
@@ -72,7 +71,6 @@ describe("SSR Integration Tests", () => {
       expect(button.toString()).not.toContain("disabled");
 
       isLoading.value = true;
-      flushSync();
       // In SSR, the binding updates the ServerHTMLElement
       expect(button.toString()).toContain("disabled");
     });

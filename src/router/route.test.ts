@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { useNavigate } from "./hooks/use-navigate";
@@ -41,13 +41,11 @@ describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
     }, "App");
 
     navigate("/");
-    flushSync();
     unmount = mount(App, container);
     expect(container.querySelector(".home")).toBeTruthy();
     expect(container.querySelector(".about")).toBeFalsy();
 
     navigate("/about");
-    flushSync();
     expect(container.querySelector(".home")).toBeFalsy();
     expect(container.querySelector(".about")).toBeTruthy();
   });
@@ -63,13 +61,11 @@ describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
     }, "App");
 
     navigate("/user/123");
-    flushSync();
     unmount = mount(App, container);
 
     expect(container.querySelector(".user")?.textContent).toBe("User 123");
 
     navigate("/user/456");
-    flushSync();
     expect(container.querySelector(".user")?.textContent).toBe("User 456");
   });
 
@@ -84,12 +80,10 @@ describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
     }, "App");
 
     navigate("/post/123");
-    flushSync();
     unmount = mount(App, container);
     expect(container.querySelector(".post")?.textContent).toBe("Post 123");
 
     navigate("/post/abc");
-    flushSync();
     expect(container.querySelector(".post")).toBeFalsy();
   });
 
@@ -104,7 +98,6 @@ describeDualMode("Route Component", ({ getDOMFactory, isSSR }) => {
     expect(container.querySelector(".custom")).toBeTruthy();
 
     customPath.value = "/other";
-    flushSync();
     expect(container.querySelector(".custom")).toBeFalsy();
   });
 });

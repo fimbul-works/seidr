@@ -42,7 +42,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
           e.preventDefault();
           navigate(unwrapSeidr(href));
         },
-      } as any,
+      } as SeidrElementProps<K>,
       children,
     );
 

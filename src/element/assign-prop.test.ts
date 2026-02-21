@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { flushSync } from "../seidr/scheduler";
 import { Seidr } from "../seidr/seidr";
 import { describeDualMode } from "../test-setup/dual-mode";
 import { assignProp } from "./assign-prop";
@@ -22,7 +21,6 @@ describeDualMode("assignProp", ({ getDOMFactory }) => {
     expect(cleanups.length).toBe(1);
 
     obs.value = "updated";
-    flushSync();
     expect(el.id).toBe("updated");
   });
 
@@ -49,7 +47,6 @@ describeDualMode("assignProp", ({ getDOMFactory }) => {
     expect(el.style.color).toBe("red");
 
     color.value = "green";
-    flushSync();
     expect(el.style.color).toBe("green");
   });
 

@@ -1,5 +1,4 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { flushSync } from "../seidr/scheduler";
 import { Seidr } from "../seidr/seidr";
 import { storageConfig } from "./storage";
 import { bindStorage, getStorageInstance, readFromStorage, writeToStorage } from "./storage-middleware";
@@ -135,13 +134,11 @@ describe("storage-middleware", () => {
 
       // Check write on change
       observable.value = "updated";
-      flushSync();
       expect(localStorageMock["bind-key"]).toBe(JSON.stringify("updated"));
 
       // Check cleanup
       cleanup();
       observable.value = "final";
-      flushSync();
       expect(localStorageMock["bind-key"]).toBe(JSON.stringify("updated")); // Stale value
     });
 

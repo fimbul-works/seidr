@@ -12,6 +12,12 @@ let isScheduled = false;
 export function scheduleUpdate(item: Seidr): void {
   pending.add(item);
 
+  // Flush immediately in tests unless USE_SCHEDULER is enabled
+  if (!process.env.USE_SCHEDULER) {
+    flushSync();
+    return;
+  }
+
   if (!isScheduled) {
     isScheduled = true;
     queueMicrotask(() => {

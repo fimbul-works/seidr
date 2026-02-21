@@ -1,8 +1,16 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { flushSync } from "./scheduler";
 import { Seidr } from "./seidr";
 
 describe("Seidr Scheduler (Batching)", () => {
+  beforeEach(() => {
+    process.env.USE_SCHEDULER = "true";
+  });
+
+  afterEach(() => {
+    delete process.env.USE_SCHEDULER;
+  });
+
   it("should batch multiple updates in a single microtask", async () => {
     const s = new Seidr(0);
     const handler = vi.fn();

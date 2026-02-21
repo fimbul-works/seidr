@@ -3,7 +3,7 @@ import { component, useScope } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { List } from "./list";
@@ -54,7 +54,6 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
       { id: 2, text: "B" },
       { id: 3, text: "C" },
     ];
-    flushSync();
     expect(parentEl.querySelectorAll("span").length).toBe(2);
 
     const spanTexts = Array.from(parentEl.querySelectorAll("span")).map((s) => s.textContent);
@@ -67,7 +66,6 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
       { id: 3, text: "C" },
       { id: 2, text: "B" },
     ];
-    flushSync();
     const spans = parentEl.querySelectorAll("span");
     expect(spans[0].textContent).toBe("C");
     expect(spans[1].textContent).toBe("B");
@@ -94,7 +92,6 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
 
     // Add another item
     items.value = [...items.value, { id: 2, text: "B" }];
-    flushSync();
     expect(onAttached).toHaveBeenCalledWith(2, expect.anything());
   });
 
@@ -124,13 +121,11 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
 
     // Remove item 1
     items.value = [{ id: 2, text: "B" }];
-    flushSync();
     expect(destroyedIds).toContain(1);
     expect(destroyedIds).not.toContain(2);
 
     // Remove item 2
     items.value = [];
-    flushSync();
     expect(destroyedIds).toContain(2);
   });
 
@@ -154,12 +149,10 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
       { id: 3, text: "Updated" },
       { id: 2, text: "New" },
     ];
-    flushSync();
     expect(container.textContent).toBe("UpdatedNew");
 
     // Removal
     items.value = [{ id: 4, text: "Only New" }];
-    flushSync();
     expect(container.textContent).toBe("Only New");
 
     // Reorder
@@ -167,7 +160,6 @@ describeDualMode("List Component", ({ getDOMFactory }) => {
       { id: 1, text: "One" },
       { id: 2, text: "Two" },
     ];
-    flushSync();
     expect(container.textContent).toBe("OneTwo");
   });
 });

@@ -1,7 +1,6 @@
 import { expect, it } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
-import { flushSync } from "../seidr/scheduler";
 import { describeDualMode } from "../test-setup/dual-mode";
 
 describeDualMode("App Parity Test", ({ isSSR }) => {
@@ -38,7 +37,6 @@ describeDualMode("App Parity Test", ({ isSSR }) => {
     expect(styleAttr).toContain("font-size: 16px");
 
     fontSize.value = "20px";
-    flushSync();
 
     const updatedStyle = appEl.getAttribute("style");
     expect(updatedStyle).toContain("font-size: 20px");

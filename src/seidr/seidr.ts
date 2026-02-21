@@ -90,7 +90,8 @@ export class Seidr<T = any> implements Observable<T> {
     if (!Object.is(this.v, v)) {
       this.v = v;
 
-      if (this.options.sync) {
+      // Notify immediately in SSR
+      if (this.options.sync || isServer()) {
         this.notify();
       } else {
         scheduleUpdate(this);

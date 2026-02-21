@@ -8,16 +8,13 @@ import type { DOMFactory } from "./types";
  */
 const domFactorySSR: DOMFactory = {
   createElement<K extends keyof HTMLElementTagNameMap>(tag: K): HTMLElementTagNameMap[K] {
-    const el = createServerElement(tag, this.getDocument() as any);
-    return el as unknown as HTMLElementTagNameMap[K];
+    return createServerElement<K>(tag, this.getDocument() as any) as unknown as HTMLElementTagNameMap[K];
   },
   createTextNode(data: string): Text {
-    const node = createServerTextNode(data, this.getDocument() as any);
-    return node as unknown as Text;
+    return createServerTextNode(data, this.getDocument() as any) as unknown as Text;
   },
   createComment(data: string): Comment {
-    const node = createServerComment(data, this.getDocument() as any);
-    return node as unknown as Comment;
+    return createServerComment(data, this.getDocument() as any) as unknown as Comment;
   },
   getDocument(): Document {
     const ctx = getRenderContext();

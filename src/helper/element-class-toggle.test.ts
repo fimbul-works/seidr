@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $, type SeidrElement } from "../element";
 import { $div } from "../elements";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { elementClassToggle } from "./element-class-toggle";
@@ -116,14 +116,12 @@ describe("elementClassToggle", () => {
 
       hasError.value = true;
       isLoading.value = true;
-      flushSync();
 
       expect(element.classList.contains("active")).toBe(true);
       expect(element.classList.contains("error")).toBe(true);
       expect(element.classList.contains("loading")).toBe(true);
 
       isActive.value = false;
-      flushSync();
 
       expect(element.classList.contains("active")).toBe(false);
       expect(element.classList.contains("error")).toBe(true);
@@ -162,7 +160,6 @@ describe("elementClassToggle", () => {
 
       for (let i = 0; i < 10; i++) {
         observable.value = i % 2 === 0;
-        flushSync();
         expect(element.classList.contains("active")).toBe(i % 2 === 0);
       }
 
@@ -245,7 +242,6 @@ describe("elementClassToggle", () => {
       const cleanup = elementClassToggle(element, "large", isLarge);
 
       count.value = 10;
-      flushSync();
       expect(element.classList.contains("large")).toBe(true);
 
       cleanup();
@@ -269,7 +265,6 @@ describe("elementClassToggle", () => {
       const cleanup = elementClassToggle(element, "long-name", isFullNameLong);
 
       firstName.value = "Alexander";
-      flushSync();
       expect(element.classList.contains("long-name")).toBe(true);
 
       cleanup();
@@ -301,11 +296,9 @@ describe("elementClassToggle", () => {
 
       // Error binding should still work
       hasError.value = true;
-      flushSync();
       expect(element.classList.contains("error")).toBe(true); // Error binding still active
 
       hasError.value = false;
-      flushSync();
       expect(element.classList.contains("error")).toBe(false);
 
       // Cleanup the error binding
@@ -344,11 +337,9 @@ describe("elementClassToggle", () => {
       expect(element.classList.contains("large")).toBe(false);
 
       count.value = 10;
-      flushSync();
       expect(element.classList.contains("large")).toBe(true);
 
       count.value = 2;
-      flushSync();
       expect(element.classList.contains("large")).toBe(false);
 
       cleanup();
@@ -367,15 +358,12 @@ describe("elementClassToggle", () => {
       expect(element.classList.contains("long-name")).toBe(false); // "John Doe" = 8
 
       firstName.value = "Alexander";
-      flushSync();
       expect(element.classList.contains("long-name")).toBe(true); // "Alexander Doe" = 13
 
       lastName.value = "Smith";
-      flushSync();
       expect(element.classList.contains("long-name")).toBe(true); // "Alexander Smith" = 15
 
       firstName.value = "Bob";
-      flushSync();
       expect(element.classList.contains("long-name")).toBe(false); // "Bob Smith" = 9
 
       cleanup();
@@ -394,12 +382,10 @@ describe("elementClassToggle", () => {
       expect(element.classList.contains("zero")).toBe(true);
 
       value.value = 5;
-      flushSync();
       expect(element.classList.contains("positive")).toBe(true);
       expect(element.classList.contains("zero")).toBe(false);
 
       value.value = -5;
-      flushSync();
       expect(element.classList.contains("negative")).toBe(true);
       expect(element.classList.contains("positive")).toBe(false);
 

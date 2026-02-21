@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { flushSync, type Seidr } from "../seidr";
+import { type Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { getCurrentPath } from "./get-current-path";
@@ -62,7 +62,6 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
     expect(document.getElementById("about")).toBeFalsy();
 
     navigate("/about");
-    flushSync();
 
     expect(container.outerHTML).not.toContain("Home Component");
     expect(container.outerHTML).toContain("About Component");
@@ -75,12 +74,10 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
     expect(document.getElementById("home")).toBeTruthy();
 
     navigate("/unknown");
-    flushSync();
     expect(document.getElementById("home")).toBeFalsy();
     expect(document.getElementById("fallback")).toBeTruthy();
 
     navigate("/");
-    flushSync();
     expect(document.getElementById("fallback")).toBeFalsy();
     expect(document.getElementById("home")).toBeTruthy();
   });
@@ -89,14 +86,12 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
     const App = component(() => Router([["/user/:id", User]]), "App");
 
     navigate("/user/123");
-    flushSync();
     unmount = mount(App, container);
 
     const userEl = document.getElementById("user")!;
     expect(userEl.textContent).toBe("User Component 123");
 
     navigate("/user/456");
-    flushSync();
     expect(userEl.textContent).toBe("User Component 456");
   });
 
@@ -113,11 +108,9 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
     unmount = mount(App, container);
 
     navigate("/admin/dashboard");
-    flushSync();
     expect(container.textContent).toContain("Admin");
 
     navigate("/user/789/edit");
-    flushSync();
     expect(container.textContent).toContain("Edit User");
   });
 
@@ -138,11 +131,9 @@ describeDualMode("Router Component", ({ getDOMFactory, isSSR }) => {
     unmount = mount(App, container);
 
     navigate("/post/123");
-    flushSync();
     expect(container.textContent).toContain("Post 123");
 
     navigate("/post/abc"); // No match
-    flushSync();
     expect(container.textContent).not.toContain("Post 123");
   });
 });

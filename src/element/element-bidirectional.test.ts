@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { flushSync, Seidr } from "../seidr";
+import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import { $ } from "./create-element";
 
@@ -29,7 +29,6 @@ describe("$ Bidirectional Mapping", () => {
       expect(el.toString()).toContain('data-user-id="123"');
 
       userId.value = "456";
-      flushSync();
       expect(el.toString()).toContain('data-user-id="456"');
     });
 
@@ -39,7 +38,6 @@ describe("$ Bidirectional Mapping", () => {
       expect(el.style.toString()).toBe("color: red;");
 
       color.value = "blue";
-      flushSync();
       expect(el.style.toString()).toBe("color: blue;");
     });
   });
@@ -69,7 +67,6 @@ describe("$ Bidirectional Mapping", () => {
       expect(el.dataset.userId).toBe("123");
 
       userId.value = "456";
-      flushSync();
       expect(el.dataset.userId).toBe("456");
     });
   });
