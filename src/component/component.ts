@@ -2,6 +2,7 @@ import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants"
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
+import { getFeature } from "../render-context/feature";
 import { getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
@@ -9,6 +10,7 @@ import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
+import { getOnPromiseFeature } from "./feature";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
 
@@ -73,7 +75,7 @@ export const component = <P = void>(
           return promise;
         }
 
-        getRenderContext().onPromise?.(promise);
+        getFeature(getOnPromiseFeature(), getRenderContext())?.(promise);
 
         return promise;
       },

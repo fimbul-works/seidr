@@ -1,8 +1,10 @@
 import { getCurrentComponent } from "../component/component-stack";
+import { getFeature, setFeature } from "../render-context/feature";
 import { getRenderContext } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
+import { getCurrentPathFeature } from "./feature";
 
 const PATH_SEIDR_ID = "router-path";
 
@@ -31,21 +33,22 @@ export const getCurrentPath = (): Seidr<string> => {
   if (isServer()) {
     const ctx = getRenderContext();
     const ctxID = ctx.ctxID;
+    const currentPathFeature = getCurrentPathFeature();
 
     let observable = pathCache.get(ctxID);
 
     if (!observable) {
       // Create a new Seidr for this render context
-      observable = new Seidr<string>(ctx.currentPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+      observable = new Seidr<string>(getFeature(currentPathFeature, ctx), { ...NO_HYDRATE, id: PATH_SEIDR_ID });
       pathCache.set(ctxID, observable);
 
       // Keep context synchronized with observable changes
       // This is important for SSR navigation and hydration tests
-      observable.observe((val) => (ctx.currentPath = val.toString()));
+      observable.observe((val) => setFeature(currentPathFeature, val.toString(), ctx));
     } else {
       // Update the cached Seidr with the current path from context
       // This allows renderToString to set different paths for different renders
-      observable.value = ctx.currentPath;
+      observable.value = getFeature(currentPathFeature, ctx);
     }
 
     return observable;

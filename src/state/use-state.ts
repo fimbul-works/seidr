@@ -1,10 +1,11 @@
 import { getCurrentComponent } from "../component/component-stack";
-import { getRenderContextID } from "../render-context/render-context";
+import { getFeature } from "../render-context/feature";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { isServer } from "../util/environment/server";
 import { isEmpty, isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
-import { globalStates, storageConfig } from "./storage";
+import { getGlobalStateFeature } from "./feature";
+import { storageConfig } from "./storage";
 import { bindStorage } from "./storage-middleware";
 import type { StateKey, StateOptions } from "./types";
 
@@ -24,8 +25,6 @@ export const useState = <T>(
   value?: T,
   options?: StateOptions,
 ): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
-  const ctxID = getRenderContextID();
-
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   const originalKey = key;
   const strKey = String(originalKey);
@@ -39,10 +38,7 @@ export const useState = <T>(
   }
 
   // Ensure ctx states map exists
-  if (!globalStates.has(ctxID)) {
-    globalStates.set(ctxID, new Map());
-  }
-  const ctxStates = globalStates.get(ctxID)!;
+  const ctxStates = getFeature(getGlobalStateFeature());
 
   // Ensure state exists
   let observable = ctxStates.get(key) as Seidr<T>;

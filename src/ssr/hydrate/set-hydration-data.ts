@@ -1,4 +1,5 @@
-import { setRenderContextID } from "../../render-context/render-context";
+import { deserializeFeatures } from "../../render-context/feature";
+import { getRenderContext, setRenderContextID } from "../../render-context/render-context";
 import { resetNextId } from "../../render-context/reset-next-id";
 import { restoreGlobalState } from "../state/restore-global-state";
 import { hydrationDataStorage } from "./storage";
@@ -14,6 +15,7 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   hydrationDataStorage.registry.clear();
   setRenderContextID(data.ctxID);
   resetNextId();
+  deserializeFeatures(getRenderContext(), data.features);
   hydrationDataStorage.data = data;
   hydrationDataStorage.data.root = root;
 

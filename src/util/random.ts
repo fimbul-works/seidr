@@ -1,4 +1,20 @@
 import { getNextId, getRenderContext } from "../render-context";
+import { createRenderFeature, getFeature, getRenderFeature, setFeature } from "../render-context/feature";
+
+const RANDOM_FEATURE_ID = "seidr.rng";
+
+/**
+ * Lazily creates and returns the random number generator feature.
+ * @returns The random number generator feature.
+ */
+const getRandomRenderFeature = () =>
+  getRenderFeature<[number, number, number, number] | undefined>(RANDOM_FEATURE_ID) ??
+  createRenderFeature<[number, number, number, number] | undefined>({
+    id: RANDOM_FEATURE_ID,
+    defaultValue: () => undefined,
+    serialize: (v) => v,
+    deserialize: (v) => v,
+  });
 
 /** 2^-32 - the smallest possible decimal number (1 / 4294967296) */
 const FRAC = 2 ** -32;
@@ -19,19 +35,21 @@ const ALEA_M = 2091639;
  * @returns {number} A random float between 0 and 1
  */
 export const random = (): number => {
-  const ctx = getRenderContext();
+  const rngFeature = getRandomRenderFeature();
+  let state = getFeature(rngFeature);
 
   // Initialize state if not present
-  if (!ctx.rngState) {
+  if (!state) {
+    const ctx = getRenderContext();
     const seed = ctx.ctxID + getNextId() + LCG_M / 1;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
-    ctx.rngState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
+    state = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
   }
 
   // Generate next number using the stored state
-  let [r0, r1, r2, i] = ctx.rngState;
+  let [r0, r1, r2, i] = state;
   const t = ALEA_M * r0 + i * FRAC;
   r0 = r1;
   r1 = r2;
@@ -39,7 +57,7 @@ export const random = (): number => {
   r2 = t - i;
 
   // Save the state back to context
-  ctx.rngState = [r0, r1, r2, i];
+  setFeature(rngFeature, [r0, r1, r2, i] as [number, number, number, number]);
 
   return r2;
 };

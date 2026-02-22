@@ -4,8 +4,8 @@ import type { RenderContext } from "../render-context";
 export const testRenderContext: RenderContext = {
   ctxID: 0,
   idCounter: 0,
-  currentPath: "/",
   markers: new Map<string, [Comment, Comment]>(),
+  featureData: new Map<string, any>(),
 };
 
 /**

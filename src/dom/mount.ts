@@ -1,9 +1,11 @@
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { getRenderContext } from "../render-context";
+import { getFeature, setFeature } from "../render-context/feature";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { appendChild } from "./append-child";
+import { rootComponentFeature, rootNodeFeature } from "./feature";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -29,9 +31,10 @@ export const mount = <C extends ComponentType = ComponentType>(
 ): CleanupFunction => {
   // Bind the container to the render context if not already bound
   const ctx = getRenderContext();
-  if (!ctx.rootNode) {
-    ctx.rootNode = container;
-  } else if (ctx.rootComponent) {
+  const currentRootNode = getFeature(rootNodeFeature, ctx);
+  if (!currentRootNode) {
+    setFeature(rootNodeFeature, container, ctx);
+  } else if (getFeature(rootComponentFeature, ctx)) {
     throw new SeidrError("Container already bound to a different root node");
   }
 
@@ -40,15 +43,15 @@ export const mount = <C extends ComponentType = ComponentType>(
     ? componentOrFactory
     : wrapComponent(componentOrFactory)();
 
-  ctx.rootComponent = component;
+  setFeature(rootComponentFeature, component, ctx);
   appendChild(container, component);
 
   // Return cleanup function
   return () => {
     component.unmount();
-    ctx.rootComponent = undefined;
-    if (ctx.rootNode === container) {
-      ctx.rootNode = undefined;
+    setFeature(rootComponentFeature, undefined, ctx);
+    if (getFeature(rootNodeFeature, ctx) === container) {
+      setFeature(rootNodeFeature, undefined, ctx);
     }
   };
 };

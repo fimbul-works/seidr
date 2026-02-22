@@ -33,6 +33,11 @@ export interface HydrationData extends SSRScopeCapture {
   state?: Record<string, unknown>;
 
   /**
+   * Serialized feature data from the RenderContext registry.
+   */
+  features?: Record<string, any>;
+
+  /**
    * Root container for path traversal relative lookup (client-side only).
    */
   root?: Element | ServerElement;

@@ -16,10 +16,10 @@ setInternalGetDocument(isServer() ? getSSRDocument : getBrowserDocument);
 
 afterEach(() => {
   // Reset browser context counters for next test
-  testRenderContext.rngState = undefined;
-  testRenderContext.currentPath = "/";
-  testRenderContext.document = undefined;
-  testRenderContext.markers = new Map();
+  testRenderContext.markers.clear();
+  if (testRenderContext.featureData) {
+    testRenderContext.featureData.clear();
+  }
 
   // Clean up DOM after each test
   document.body.innerHTML = "";

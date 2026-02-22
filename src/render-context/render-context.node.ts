@@ -46,8 +46,8 @@ export const runWithRenderContext = async <T>(callback: () => Promise<T>): Promi
   const context: RenderContext = {
     ctxID,
     idCounter: 0,
-    currentPath: "/",
     markers: new Map<string, [Comment, Comment]>(),
+    featureData: new Map<string, any>(),
   };
 
   return contextLocalStorage.run(context, callback);
@@ -65,8 +65,8 @@ export const setMockRenderContextForTests = (): CleanupFunction => {
   const mockContext: RenderContext = {
     ctxID: 0,
     idCounter: 0,
-    currentPath: "/",
     markers: new Map<string, [Comment, Comment]>(),
+    featureData: new Map<string, any>(),
   };
   const originalGetRenderContext = getSSRRenderContext;
 

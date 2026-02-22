@@ -1,5 +1,3 @@
-import type { Component } from "../component";
-
 /**
  * RenderContext is used for SSR and hydration.
  */
@@ -10,24 +8,59 @@ export interface RenderContext {
   /** Counter for generating unique IDs */
   idCounter: number;
 
-  /** Current URL path for routing (isolated per request in SSR) */
-  currentPath: string;
-
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;
 
-  /** The root node for the current render context */
-  rootNode?: Node;
+  /** Feature-specific data extending the render context */
+  featureData: Map<string, any>;
+}
 
-  /** Thee root component for the current render context */
-  rootComponent?: Component;
+/**
+ * A render feature is a piece of data that is stored in the render context.
+ */
+export interface RenderFeature<T, S = T> {
+  /**
+   * The unique identifier of the feature.
+   */
+  id: string;
 
-  /** The global document object for this render context (SSR isolation) */
-  document?: Document;
+  /**
+   * The default value of the feature.
+   */
+  defaultValue?: () => T;
 
-  /** State for the deterministic random number generator [s0, s1, s2, c] */
-  rngState?: [number, number, number, number];
+  /**
+   * Serializes the feature value for SSR.
+   */
+  serialize?: (value: T) => S;
 
-  /** Callback to track promises for SSR waiting (optional) */
-  onPromise?: (p: Promise<any>) => void;
+  /**
+   * Deserializes the feature value from SSR.
+   */
+  deserialize?: (serialized: S) => T;
+}
+
+/**
+ * Options for creating a new render feature.
+ */
+export interface RenderFeatureOptions<T, S = T> {
+  /**
+   * The unique identifier of the feature.
+   */
+  id: string;
+
+  /**
+   * The default value of the feature.
+   */
+  defaultValue?: () => T;
+
+  /**
+   * Serializes the feature value for SSR.
+   */
+  serialize?: (value: T) => S;
+
+  /**
+   * Deserializes the feature value from SSR.
+   */
+  deserialize?: (serialized: S) => T;
 }

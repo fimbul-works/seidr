@@ -1,15 +1,17 @@
+import { getOnPromiseFeature } from "../component/feature";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import type { SeidrNode } from "../element/types";
 import { getRenderContext } from "../render-context";
+import { serializeFeatures, setFeature } from "../render-context/feature";
 import { runWithRenderContext } from "../render-context/render-context.node";
+import { getCurrentPathFeature } from "../router/feature";
 import { clearPathCache } from "../router/get-current-path";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
 import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope";
-import { captureGlobalState, clearGlobalState } from "./state";
 import type { SSRRenderResult } from "./types";
 
 /**
@@ -45,11 +47,11 @@ export async function renderToString<C extends SeidrNode>(
       }
 
       if (isStr(options.path)) {
-        ctx.currentPath = options.path;
+        setFeature(getCurrentPathFeature(), options.path, ctx);
       }
 
       const activeScope = options.scope ?? new SSRScope();
-      ctx.onPromise = (p) => activeScope.addPromise(p);
+      setFeature(getOnPromiseFeature(), (p: Promise<any>) => activeScope.addPromise(p), ctx);
       setSSRScope(activeScope);
 
       try {
@@ -72,12 +74,11 @@ export async function renderToString<C extends SeidrNode>(
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
-          state: captureGlobalState(ctx.ctxID),
+          features: serializeFeatures(ctx),
           ctxID: ctx.ctxID,
         };
 
         comp.unmount();
-        clearGlobalState(ctx.ctxID);
         clearPathCache(ctx.ctxID);
 
         return { html, hydrationData };

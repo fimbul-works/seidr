@@ -1,6 +1,12 @@
 import { getRenderContext } from "../render-context";
+import { createRenderFeature, getFeature, setFeature } from "../render-context/feature";
 import { createServerComment, createServerDocument, createServerElement, createServerTextNode } from "../ssr/dom";
 import { setInternalGetDocument } from "./get-document";
+
+export const documentFeature = createRenderFeature<Document | undefined>({
+  id: "seidr.ssr.document",
+  defaultValue: () => undefined,
+});
 
 /**
  * Get the server Document implementation.
@@ -8,8 +14,9 @@ import { setInternalGetDocument } from "./get-document";
  */
 export const getDocument = (): Document => {
   const ctx = getRenderContext();
-  if (ctx.document) {
-    return ctx.document;
+  const currentDoc = getFeature(documentFeature, ctx);
+  if (currentDoc) {
+    return currentDoc;
   }
 
   const doc = createServerDocument();
@@ -32,8 +39,8 @@ export const getDocument = (): Document => {
     },
   });
 
-  ctx.document = doc as unknown as Document;
-  return ctx.document;
+  setFeature(documentFeature, doc as unknown as Document, ctx);
+  return getFeature(documentFeature, ctx)!;
 };
 
 setInternalGetDocument(getDocument);
