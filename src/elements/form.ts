@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Form SeidrElement.
- * @returns {SeidrElement<"form">}
+ * Creates a Form HTML element.
+ * @returns {HTMLFormElement}
  */
 export const $form = $factory("form");

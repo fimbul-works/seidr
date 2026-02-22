@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { $, type SeidrElement } from "../element";
+import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Seidr } from "./seidr";
@@ -88,7 +88,7 @@ describe("Seidr", () => {
   });
 
   describe("bind", () => {
-    let element: SeidrElement;
+    let element: HTMLElement;
     let observable: Seidr<string>;
 
     beforeEach(() => {

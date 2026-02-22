@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a string SeidrElement.
- * @returns {SeidrElement<"map">}
+ * Creates an Image Map HTML element.
+ * @returns {HTMLMapElement}
  */
 export const $map = $factory("map");

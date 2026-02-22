@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element";
 import { runWithRenderContext } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
-import { enableClientMode, enableSSRMode } from "../test-setup";
+import { enableClientMode, enableSSRMode, mockUseScope } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { clearHydrationData, hydrate } from "./hydrate/index";
 import { renderToString } from "./render-to-string";
@@ -13,6 +13,8 @@ import { isClient } from "../util/environment/client";
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: CleanupFunction;
   let unmount: CleanupFunction;
+
+  mockUseScope();
 
   afterEach(() => {
     unmount?.();

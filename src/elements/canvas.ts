@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Graphics Canvas SeidrElement.
- * @returns {SeidrElement<"canvas">}
+ * Creates a Graphics Canvas HTML element.
+ * @returns {HTMLCanvasElement}
  */
 export const $canvas = $factory("canvas");

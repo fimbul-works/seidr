@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Footer SeidrElement.
- * @returns {SeidrElement<"footer">}
+ * Creates a Footer HTML element.
+ * @returns {HTMLElementTagNameMap["footer"]}
  */
 export const $footer = $factory("footer");

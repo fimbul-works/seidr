@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates an Anchor SeidrElement.
- * @returns {SeidrElement<"a">}
+ * Creates an Anchor HTML element.
+ * @returns {HTMLAnchorElement}
  */
 export const $a = $factory("a");

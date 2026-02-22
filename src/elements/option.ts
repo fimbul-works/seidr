@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a HTML Option SeidrElement.
- * @returns {SeidrElement<"option">}
+ * Creates an Option HTML element.
+ * @returns {HTMLOptionElement}
  */
 export const $option = $factory("option");

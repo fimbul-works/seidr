@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Ruby Fallback Parenthesis SeidrElement.
- * @returns {SeidrElement<"rp">}
+ * Creates a Ruby Fallback Parenthesis HTML element.
+ * @returns {HTMLElementTagNameMap["rp"]}
  */
 export const $rp = $factory("rp");

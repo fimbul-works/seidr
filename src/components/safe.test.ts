@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Component, useScope } from "../component";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { appendChild } from "../dom/append-child";
 import { mount } from "../dom/mount";
 import { $ } from "../element";

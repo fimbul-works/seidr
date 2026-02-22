@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDocument } from "../dom";
 import { escapeHTML } from "../util/escape";
 import { isArray } from "../util/type-guards";
@@ -171,6 +171,26 @@ function normalizeHtml(html: string): string {
 
   // 3. Normalize whitespace
   return normalized.replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
+}
+
+import * as useScopeModule from "../component/use-scope";
+
+/**
+ * Mocks the useScope hook for tests that need to run in SSR mode
+ * but don't actually need scope tracking.
+ */
+export function mockUseScope() {
+  let spy: any;
+
+  beforeEach(() => {
+    spy = vi.spyOn(useScopeModule, "useScope").mockReturnValue({
+      track: () => {},
+    } as any);
+  });
+
+  afterEach(() => {
+    spy?.mockRestore();
+  });
 }
 
 /**

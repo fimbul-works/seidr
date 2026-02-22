@@ -1,7 +1,9 @@
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
 import { $a } from "./a";
 
 describeDualMode("Anchor Element Parity", () => {
+  mockUseScope();
+
   itHasParity("renders with basic attributes", () => {
     return $a({ href: "https://example.com", target: "_blank", rel: "noopener" }, ["Example"]);
   });

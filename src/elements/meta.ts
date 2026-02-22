@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a metadata SeidrElement.
- * @returns {SeidrElement<"meta">}
+ * Creates a Metadata HTML element.
+ * @returns {HTMLMetaElement}
  */
 export const $meta = $factory("meta");

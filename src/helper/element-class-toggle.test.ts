@@ -1,15 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $, type SeidrElement } from "../element";
+import { $ } from "../element";
 import { $div } from "../elements";
 import { Seidr } from "../seidr";
-import { enableClientMode } from "../test-setup";
+import { enableClientMode, mockUseScope } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { elementClassToggle } from "./element-class-toggle";
 
 describe("elementClassToggle", () => {
-  let element: SeidrElement;
+  let element: HTMLElement;
   let observable: Seidr<boolean>;
   let restore: CleanupFunction;
+
+  mockUseScope();
 
   beforeEach(() => {
     restore = enableClientMode();

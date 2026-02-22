@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Label SeidrElement.
- * @returns {SeidrElement<"label">}
+ * Creates a Label HTML element.
+ * @returns {HTMLLabelElement}
  */
 export const $label = $factory("label");

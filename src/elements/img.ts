@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates an Image SeidrElement.
- * @returns {SeidrElement<"img">}
+ * Creates an Image HTML element.
+ * @returns {HTMLImageElement}
  */
 export const $img = $factory("img");

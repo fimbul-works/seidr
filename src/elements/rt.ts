@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Ruby Text SeidrElement.
- * @returns {SeidrElement<"rt">}
+ * Creates a Ruby Text HTML element.
+ * @returns {HTMLElementTagNameMap["rt"]}
  */
 export const $rt = $factory("rt");

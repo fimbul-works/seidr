@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Button SeidrElement.
- * @returns {SeidrElement<"button">}
+ * Creates a Button HTML element.
+ * @returns {HTMLButtonElement}
  */
 export const $button = $factory("button");

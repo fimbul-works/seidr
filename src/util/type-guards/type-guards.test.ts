@@ -17,7 +17,6 @@ import {
   isNum,
   isObj,
   isSeidr,
-  isSeidrElement,
   isStr,
   isTextNode,
   isUndefined,
@@ -369,28 +368,6 @@ describe("Type Guard Utilities", () => {
       it("should narrow type correctly", () => {
         const value: unknown = wrapComponent(() => $("div"));
         if (isComponentFactory(value)) {
-          const _typed = value;
-        }
-      });
-    });
-
-    describe("isSeidrElement", () => {
-      it("should return true for SeidrElement instances", () => {
-        const element = $("div");
-        expect(isSeidrElement(element)).toBe(true);
-      });
-
-      it("should return false for non-SeidrElement values", () => {
-        expect(isSeidrElement(42)).toBe(false);
-        expect(isSeidrElement("hello")).toBe(false);
-        expect(isSeidrElement({ a: 1 })).toBe(false);
-        expect(isSeidrElement(null)).toBe(false);
-        expect(isSeidrElement(undefined)).toBe(false);
-      });
-
-      it("should narrow type correctly", () => {
-        const value: unknown = $("div");
-        if (isSeidrElement(value)) {
           const _typed = value;
         }
       });

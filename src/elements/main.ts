@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Main SeidrElement.
- * @returns {SeidrElement<"main">}
+ * Creates a Main HTML element.
+ * @returns {HTMLElementTagNameMap["main"]}
  */
 export const $main = $factory("main");

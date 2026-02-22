@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Section SeidrElement.
- * @returns {SeidrElement<"section">}
+ * Creates a Section HTML element.
+ * @returns {HTMLElementTagNameMap["section"]}
  */
 export const $section = $factory("section");

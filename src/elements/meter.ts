@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Meter SeidrElement.
- * @returns {SeidrElement<"meter">}
+ * Creates a Meter HTML element.
+ * @returns {HTMLMeterElement}
  */
 export const $meter = $factory("meter");

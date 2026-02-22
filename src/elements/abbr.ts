@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates an Abbreviation SeidrElement.
- * @returns {SeidrElement<"abbr">}
+ * Creates an Abbreviation HTML element.
+ * @returns {HTMLElementTagNameMap["abbr"]}
  */
 export const $abbr = $factory("abbr");

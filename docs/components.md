@@ -179,8 +179,6 @@ export interface SeidrComponent {
   /**
    * The root element of the component.
    *
-   * This element is enhanced with SeidrElement functionality including
-   * reactive bindings, event handling, and cleanup capabilities.
    * @type {SeidrComponentChildren}
    */
   element: SeidrComponentChildren;

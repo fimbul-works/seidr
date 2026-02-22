@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Option Group SeidrElement.
- * @returns {SeidrElement<"optgroup">}
+ * Creates a Option Group HTML element.
+ * @returns {HTMLOptGroupElement}
  */
 export const $optgroup = $factory("optgroup");

@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a generic search SeidrElement.
- * @returns {SeidrElement<"search">}
+ * Creates a Search HTML element.
+ * @returns {HTMLElementTagNameMap["search"]}
  */
 export const $search = $factory("search");

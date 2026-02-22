@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Web Component Slot SeidrElement.
- * @returns {SeidrElement<"slot">}
+ * Creates a Slot HTML element.
+ * @returns {HTMLSlotElement}
  */
 export const $slot = $factory("slot");

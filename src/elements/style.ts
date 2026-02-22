@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Style Information SeidrElement.
- * @returns {SeidrElement<"style">}
+ * Creates a Style Information HTML element.
+ * @returns {HTMLStyleElement}
  */
 export const $style = $factory("style");

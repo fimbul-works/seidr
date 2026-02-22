@@ -1,5 +1,5 @@
 import { $ } from "./create-element";
-import type { SeidrChild, SeidrElement, SeidrElementProps } from "./types";
+import type { SeidrChild, SeidrElementProps } from "./types";
 
 /**
  * Creates a specialized HTML element creator function for a specific tag type.
@@ -17,10 +17,10 @@ import type { SeidrChild, SeidrElement, SeidrElementProps } from "./types";
  * @param {SeidrElementProps<K>} [initialProps] - Optional default props to apply to all created elements
  * @returns {((
  *   props?: SeidrElementProps<K>,
- *   children?: SeidrChild[],
- * ) => SeidrElement<K>)} A specialized function that creates elements of the specified type
+ *   children?: SeidrChild | SeidrChild[],
+ * ) => HTMLElementTagNameMap[K])} A specialized function that creates elements of the specified type
  */
 export const $factory =
   <K extends keyof HTMLElementTagNameMap>(tagName: K, initialProps: SeidrElementProps<K> = {}) =>
-  (props: SeidrElementProps<K> = {}, children: SeidrChild[] = []): SeidrElement<K> =>
+  (props: SeidrElementProps<K> = {}, children?: SeidrChild | SeidrChild[]): HTMLElementTagNameMap[K] =>
     $(tagName, { ...initialProps, ...props }, children);

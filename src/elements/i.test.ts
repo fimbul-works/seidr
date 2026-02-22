@@ -1,7 +1,9 @@
+import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
 import { $i } from "./i";
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 
 describeDualMode("Italic Element Parity", () => {
+  mockUseScope();
+
   itHasParity("renders with global attributes", () => {
     return $i({ className: "italic-text" }, ["Italic"]);
   });

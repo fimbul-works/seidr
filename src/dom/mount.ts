@@ -1,6 +1,5 @@
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
-import type { SeidrElement } from "../element";
 import { getRenderContext } from "../render-context";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -21,12 +20,12 @@ import { appendChild } from "./append-child";
  *
  * @template {ComponentType} C - Type of the component or factory
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
- * @param {HTMLElement | SeidrElement} container - The DOM container element to mount into
+ * @param {HTMLElement} container - The DOM container element to mount into
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
 export const mount = <C extends ComponentType = ComponentType>(
   componentOrFactory: C,
-  container: HTMLElement | SeidrElement,
+  container: HTMLElement,
 ): CleanupFunction => {
   // Bind the container to the render context if not already bound
   const ctx = getRenderContext();

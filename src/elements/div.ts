@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Div SeidrElement.
- * @returns {SeidrElement<"div">}
+ * Creates a Div HTML element.
+ * @returns {HTMLDivElement}
  */
 export const $div = $factory("div");

@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Mark Text SeidrElement.
- * @returns {SeidrElement<"mark">}
+ * Creates a Mark Text HTML element.
+ * @returns {HTMLElementTagNameMap["mark"]}
  */
 export const $mark = $factory("mark");

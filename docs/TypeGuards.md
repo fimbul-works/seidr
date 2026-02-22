@@ -220,28 +220,6 @@ console.log(isHTMLElement(plainObj)); // false
 console.log(isHTMLElement(42));       // false
 ```
 
-### isSeidrElement()
-
-Check if a value is a [`SeidrElement`](DOM.md#seidrelement-type) instance.
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `SeidrElement`
-
-```typescript
-import { isSeidrElement, $div } from '@fimbul-works/seidr';
-
-const seidrEl = $div();
-const el = document.createElement('div');
-const plainObj = { value: 0 };
-
-console.log(isHTMLElement(seidrEl));  // true
-console.log(isHTMLElement(el));       // false
-console.log(isHTMLElement(plainObj)); // false
-console.log(isHTMLElement(42));       // false
-```
-
 ### isSeidrComponent()
 
 Check if a value is a [`SeidrComponent`](Components.md#seidrcomponent-type) object.

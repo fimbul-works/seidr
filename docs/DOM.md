@@ -9,7 +9,7 @@ Create DOM elements with reactive props support.
 - `props` - Object with element properties (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
 - `children` - Array of child elements, strings, functions, or [`SeidrComponents`](../component/README.md#seidrcomponent-type)
 
-**Returns:** [`SeidrElement`](#seidrelement-type)
+**Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
 import { $, Seidr } from '@fimbul-works/seidr';
@@ -35,7 +35,7 @@ Create reusable element creator functions with optional default props.
 - `props` - Object with element properties (can include Seidr observables)
 - `initialProps` - Default properties to apply to all created elements (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
 
-**Returns:** [`SeidrElement`](#seidrelement-type)
+**Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
 import { $factory } from '@fimbul-works/seidr';
@@ -66,7 +66,7 @@ All HTML elements available with [`$()`](#create-dom-elements) prefix:
 - `props` - Object with element properties (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
 - `children` - Array of child elements or functions that return elements
 
-**Returns:** [`SeidrElement`](#seidrelement-type)
+**Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
 // Structure
@@ -176,16 +176,6 @@ const items = $queryAll('.item');
 // With custom root
 const items = $queryAll('.item', customContainer);
 ```
-
----
-
-## SeidrElement type
-
-An extended `HTMLElement` with reactive props support. Use [`$`](#create-dom-elements) to create any HTML element.
-
-**Returned element has additional methods:**
-- `on<E>(event, handler)` - Add event listener, returns cleanup
-- `clear()` - Remove all child elements
 
 ---
 

@@ -1,8 +1,10 @@
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
 import { $form } from "./form";
 import { $input } from "./input";
 
 describeDualMode("Form Element Parity", () => {
+  mockUseScope();
+
   itHasParity("renders with various attributes", () => {
     return $form(
       {

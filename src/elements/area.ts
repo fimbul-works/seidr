@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Image Map Area SeidrElement.
- * @returns {SeidrElement<"area">}
+ * Creates an Area HTML element.
+ * @returns {HTMLAreaElement}
  */
 export const $area = $factory("area");

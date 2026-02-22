@@ -1,7 +1,9 @@
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
 import { $meter } from "./meter";
 
 describeDualMode("Meter Element Parity", () => {
+  mockUseScope();
+
   itHasParity("renders with gauging attributes", () => {
     return $meter(
       {

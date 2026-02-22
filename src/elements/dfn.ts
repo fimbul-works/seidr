@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Definition SeidrElement.
- * @returns {SeidrElement<"dfn">}
+ * Creates a Definition HTML element.
+ * @returns {HTMLElementTagNameMap["dfn"]}
  */
 export const $dfn = $factory("dfn");

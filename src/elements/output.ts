@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates an output SeidrElement.
- * @returns {SeidrElement<"output">}
+ * Creates an Output HTML element.
+ * @returns {HTMLOutputElement}
  */
 export const $output = $factory("output");

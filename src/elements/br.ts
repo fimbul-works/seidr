@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Line Break SeidrElement.
- * @returns {SeidrElement<"br">}
+ * Creates a Line Break HTML element.
+ * @returns {HTMLBRElement}
  */
 export const $br = $factory("br");

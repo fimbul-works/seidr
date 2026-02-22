@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Table Column Group SeidrElement.
- * @returns {SeidrElement<"colgroup">}
+ * Creates a Table Column Group HTML element.
+ * @returns {HTMLTableColElement}
  */
 export const $colgroup = $factory("colgroup");

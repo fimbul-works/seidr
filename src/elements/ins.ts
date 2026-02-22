@@ -2,6 +2,6 @@ import { $factory } from "../element";
 
 /**
  * Creates an Inserted Text Element.
- * @returns {SeidrElement<"ins">}
+ * @returns {HTMLModElement}
  */
 export const $ins = $factory("ins");

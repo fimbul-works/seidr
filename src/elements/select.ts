@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a name SeidrElement.
- * @returns {SeidrElement<"select">}
+ * Creates a Select HTML element.
+ * @returns {HTMLSelectElement}
  */
 export const $select = $factory("select");

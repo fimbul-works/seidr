@@ -122,7 +122,7 @@ cleanup();
 ```
 
 **Automatic binding:**
-You can use [`Seidr`](#seidr-class) instances as props on [`SeidrElement`](DOM.md#seidrelement-type) to update element properties automatically.
+You can use [`Seidr`](#seidr-class) instances as props on `HTMLElement` to update element properties automatically.
 
 ```typescript
 import { $ } from '@fimbul-works/seidr';

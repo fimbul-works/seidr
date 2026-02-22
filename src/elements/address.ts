@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Contact Address SeidrElement.
- * @returns {SeidrElement<"address">}
+ * Creates an Address HTML element.
+ * @returns {HTMLElementTagNameMap["address"]}
  */
 export const $address = $factory("address");

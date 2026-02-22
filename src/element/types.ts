@@ -1,7 +1,5 @@
 import type { Component } from "../component/types";
-import { SEIDR_CLEANUP, type TYPE_ELEMENT, TYPE_PROP } from "../constants";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction } from "../types";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -57,11 +55,6 @@ type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
  * @template T - The type to remove the `style` property from
  */
 type NoStyle<T> = Omit<T, "style">;
-
-/**
- * Type definition for reactive CSS style properties.
- */
-type FlexibleCSSStyleDeclaration = Partial<CSSStyleDeclaration>;
 
 /**
  * Union type representing either a scalar value or a reactive Seidr observable.
@@ -137,7 +130,7 @@ export type ReactiveCamelCaseProps = {
 };
 
 /**
- * Props for SeidrElement.
+ * Props for Seidr HTML elements.
  *
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  */
@@ -148,59 +141,9 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
 /**
  * Union type representing allowed nodes for Seidr elements.
  */
-export type SeidrNode = Component | SeidrElement<any> | Element | Text | Comment;
+export type SeidrNode = Component | Element | Text | Comment;
 
 /**
  * Union type representing allowed child nodes for Seidr elements.
  */
 export type SeidrChild = SeidrNode | string | null | undefined;
-
-/**
- * Enhanced HTMLElement interface with Seidr-specific functionality.
- *
- * SeidrElement extends the standard HTMLElement with additional methods for
- * reactive programming, event handling, and lifecycle management. All elements
- * created with $() automatically implement this interface.
- */
-export interface SeidrElementInterface {
-  /**
-   * Read-only identifier for Seidr-enhanced elements.
-   *
-   * This property can be used to quickly identify if an element was created
-   * by Seidr and has the enhanced functionality available.
-   * @type {typeof TYPE.ELEMENT}
-   */
-  readonly [TYPE_PROP]: typeof TYPE_ELEMENT;
-
-  /**
-   * Adds an event listener with automatic cleanup functionality.
-   *
-   * Unlike addEventListener(), this method returns a cleanup function
-   * that removes the event listener. This integrates with Seidr's
-   * component lifecycle and resource management system.
-   *
-   * @template {keyof HTMLElementEventMap} E - The event type from HTMLElementEventMap
-   *
-   * @param {E} event - The event type to listen for
-   * @param {(ev: HTMLElementEventMap[E]) => void} handler - The event handler function
-   * @param {boolean | AddEventListenerOptions} [options] - Optional event listener options
-   * @returns {CleanupFunction} A cleanup function that removes the event listener
-   */
-  on<E extends keyof HTMLElementEventMap>(
-    event: E,
-    handler: (ev: HTMLElementEventMap[E]) => void,
-    options?: boolean | AddEventListenerOptions,
-  ): CleanupFunction;
-
-  /**
-   * Removes the element and all its children from the DOM.
-   */
-  [SEIDR_CLEANUP]: CleanupFunction;
-}
-
-/**
- * SeidrElement is an enhanced HTMLElement.
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- */
-export type SeidrElement<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = SeidrElementInterface &
-  NoStyle<HTMLElementTagNameMap[K]> & { style: FlexibleCSSStyleDeclaration };

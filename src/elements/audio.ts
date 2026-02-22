@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Embed Audio SeidrElement.
- * @returns {SeidrElement<"audio">}
+ * Creates an Audio HTML element.
+ * @returns {HTMLAudioElement}
  */
 export const $audio = $factory("audio");

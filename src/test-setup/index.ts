@@ -7,7 +7,7 @@ import { isServer } from "../util/environment/server";
 import { getRenderContext, testRenderContext } from "./render-context";
 
 export { enableClientMode } from "./client-mode";
-export { describeDualMode } from "./dual-mode";
+export { describeDualMode, mockUseScope } from "./dual-mode";
 export { getRenderContext, setRenderContextID, testRenderContext } from "./render-context";
 export { enableSSRMode } from "./ssr-mode";
 

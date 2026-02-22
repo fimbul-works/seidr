@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
-import { enableClientMode } from "../../test-setup";
+import { enableClientMode, mockUseScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
@@ -11,6 +11,8 @@ describe("Hydration", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
+
+  mockUseScope();
 
   beforeEach(() => {
     container = document.createElement("div");

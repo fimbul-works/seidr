@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a HTML Data List SeidrElement.
- * @returns {SeidrElement<"datalist">}
+ * Creates a HTML Data List element.
+ * @returns {HTMLDataListElement}
  */
 export const $datalist = $factory("datalist");

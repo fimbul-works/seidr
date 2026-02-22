@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Summary SeidrElement.
- * @returns {SeidrElement<"summary">}
+ * Creates a Summary HTML element.
+ * @returns {HTMLElementTagNameMap["summary"]}
  */
 export const $summary = $factory("summary");

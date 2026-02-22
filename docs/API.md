@@ -12,7 +12,6 @@
   - [`$()`](DOM.md#--create-dom-elements) - Create a DOM element.
   - [`$factory()`](DOM.md#factory) - Create a custom element creator.
   - [Predefined Element Creators](DOM.md#predefined-element-creators) - Predefined element creators for common DOM elements.
-  - [`SeidrElement`](DOM.md#seidrelement-type) - The type of an augmented HTMLElement.
   - [DOM Query Utilities](DOM.md#dom-query-utilities)
     - [`$getById()`](DOM.md#getbyid) - Get a DOM element by ID.
     - [`$query()`](DOM.md#query) - Query a single DOM element.
@@ -44,7 +43,6 @@
   - [`isSeidr`](TypeGuards.md#isseidr) - Check if a value is a [`Seidr`](Seidr.md#seidr-class) observable.
   - [`isDOMNode`](TypeGuards.md#isdomnode) - Check if a value is a DOM node.
   - [`isHTMLElement`](TypeGuards.md#ishtmlelement) - Check if a value is an HTMLElement.
-  - [`isSeidrElement`](TypeGuards.md#isseidrelement) - Check if a value is a [`SeidrElement`](DOM.md#seidrelement-type).
   - [`isSeidrComponent`](TypeGuards.md#isseidrcomponent) - Check if a value is a [`SeidrComponent`](Components.md#seidrcomponent-type).
 ## [SSR API](SSR.md)
 - [Key Features](SSR.md#key-features)

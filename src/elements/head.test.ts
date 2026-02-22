@@ -1,7 +1,9 @@
+import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
 import { $head } from "./head";
-import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 
 describeDualMode("Head Element Parity", () => {
+  mockUseScope();
+  
   itHasParity("renders", () => {
     return $head;
   });

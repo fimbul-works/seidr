@@ -1,5 +1,5 @@
+import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
-import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
 import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
@@ -41,12 +41,12 @@ const BOOL_PROPS = new Set([
  * @param {HTMLElement} el - The target element
  * @param {string} prop - Property name
  * @param {any} value - Property value (scalar or Seidr)
- * @param {CleanupFunction[]} cleanups - Array to store binding cleanups
  */
-export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: CleanupFunction[]): void => {
+export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   // Helper functions
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
+  const scope = useScope();
 
   let effectiveProp = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);
@@ -74,7 +74,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        cleanups.push(cssText.bind(el, (val) => (el.style = val)));
+        scope.track(cssText.bind(el, (val) => (el.style = val)));
       } else {
         el.style = cssText as string;
       }
@@ -85,21 +85,21 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
         style = camelToKebab(style as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(value)) {
-        cleanups.push(value.bind(el, (val) => (el.style[style] = val)));
+        scope.track(value.bind(el, (val) => (el.style[style] = val)));
       } else {
         el.style[style] = value;
       }
     };
 
-    if (isSeidr<string>(value)) {
+    if (isSeidr(value)) {
       if (isStr(value.value)) {
-        cleanups.push(
+        scope.track(
           value.bind(el, (val) => {
             setCSSText(val);
           }),
         );
       } else {
-        cleanups.push(value.bind(el, (val) => (el.style = val)));
+        scope.track(value.bind(el, (val) => (el.style = val)));
       }
     } else if (isStr(value)) {
       setCSSText(value);
@@ -114,13 +114,13 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
   const isBoolProp = BOOL_PROPS.has(effectiveProp.toLowerCase());
 
   if (isSeidr(value)) {
-    cleanups.push(
-      value.bind(el, (val, _element) => {
+    scope.track(
+      value.bind(el, (val, element) => {
         if (useAttribute || !(effectiveProp in target) || isBoolProp) {
           if (isBoolProp) {
-            val ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
+            val ? element.setAttribute(effectiveProp, "") : element.removeAttribute(effectiveProp);
           } else {
-            isEmpty(val) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(val));
+            isEmpty(val) ? element.removeAttribute(effectiveProp) : element.setAttribute(effectiveProp, val);
           }
         }
         if (!(useAttribute || !(effectiveProp in target))) {
@@ -133,7 +133,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any, cleanups: 
       if (isBoolProp) {
         value ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
       } else {
-        isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, String(value));
+        isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, value);
       }
     }
     if (!(useAttribute || !(effectiveProp in target))) {

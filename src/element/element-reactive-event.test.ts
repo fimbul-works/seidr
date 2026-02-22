@@ -2,11 +2,13 @@ import { afterEach, describe, expect, it } from "vitest";
 import { $button } from "../elements";
 import { Seidr } from "../seidr";
 import { useState } from "../state/use-state";
+import { mockUseScope } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import type { SeidrElement } from "./types";
 
 describe("element reactive event handlers", () => {
   let cleanup: CleanupFunction;
+
+  mockUseScope();
 
   afterEach(() => {
     cleanup?.();
@@ -16,10 +18,7 @@ describe("element reactive event handlers", () => {
     const [count] = useState("test-count", 0);
     const btn = $button({ textContent: count, onclick: () => (count.value = count.value + 1) });
 
-    cleanup = count.bind(
-      btn,
-      (value: number, btn: SeidrElement<"button">) => (btn.textContent = (value + 1).toString()),
-    );
+    cleanup = count.bind(btn, (value: number, btn: HTMLButtonElement) => (btn.textContent = (value + 1).toString()));
 
     // Verify initial state
     expect(count.value).toBe(0);

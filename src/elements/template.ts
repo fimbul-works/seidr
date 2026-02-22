@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Content Template SeidrElement.
- * @returns {SeidrElement<"template">}
+ * Creates a Content Template HTML element.
+ * @returns {HTMLTemplateElement}
  */
 export const $template = $factory("template");

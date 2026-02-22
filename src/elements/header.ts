@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a Header SeidrElement.
- * @returns {SeidrElement<"header">}
+ * Creates a Header HTML element.
+ * @returns {HTMLElementTagNameMap["header"]}
  */
 export const $header = $factory("header");

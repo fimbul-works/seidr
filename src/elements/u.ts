@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates an Unordered list item SeidrElement.
- * @returns {SeidrElement<"u">}
+ * Creates an Underline HTML element.
+ * @returns {HTMLElementTagNameMap["u"]}
  */
 export const $u = $factory("u");

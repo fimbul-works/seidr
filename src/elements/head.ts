@@ -1,7 +1,7 @@
 import { $factory } from "../element";
 
 /**
- * Creates a HTML Head Element.
- * @returns {SeidrElement<"head">}
+ * Creates a Head HTML element.
+ * @returns {HTMLHeadElement}
  */
 export const $head = $factory("head");
