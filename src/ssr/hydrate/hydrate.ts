@@ -3,6 +3,7 @@ import { mount } from "../../dom/mount";
 import type { CleanupFunction } from "../../types";
 import { isUndefined } from "../../util/type-guards/primitive-types";
 import { clearHydrationData } from "./clear-hydration-data";
+import type { HydrationTarget } from "./node-map";
 import { setHydrationData } from "./set-hydration-data";
 import type { HydrationData } from "./types";
 
@@ -26,7 +27,9 @@ export function hydrate<T extends ComponentType>(
   }
 
   setHydrationData(hydrationData, container);
-  container.innerHTML = ""; // TODO: fixme
+
+  (container as HydrationTarget).__hydration_index = 0;
+
   const unmount = mount(factory, container);
   clearHydrationData();
 

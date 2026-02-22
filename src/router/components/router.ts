@@ -53,11 +53,7 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
 
     const updateComponent = (index: number) => {
       currentComponent =
-        index > -1
-          ? wrapComponent(routes[index][1])()
-          : isFn(fallback)
-            ? wrapComponent(fallback)()
-            : undefined;
+        index > -1 ? wrapComponent(routes[index][1])() : isFn(fallback) ? wrapComponent(fallback)() : undefined;
     };
 
     const { index: initialIndex, params: initialParams } = matchCurrentPath();

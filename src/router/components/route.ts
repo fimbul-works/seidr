@@ -37,7 +37,7 @@ export const Route = <
     routeParams = pathState.as<T | false>((path: string) => parseRouteParams(pattern, path));
   }
 
-  routeParams.bind(getCurrentParams(), (params, observable) => observable.value = params as T)
+  routeParams.bind(getCurrentParams(), (params, observable) => (observable.value = params as T));
 
   const isMatch = routeParams.as<boolean>((params: T | false) => !!params);
   return Conditional(isMatch, factory, null, "Route");

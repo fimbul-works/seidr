@@ -3,7 +3,7 @@ import { Seidr, unwrapSeidr } from "../seidr";
 import { createStateKey } from "./create-state-key";
 import { symbolNames } from "./storage";
 
-const GLOBAL_STATE_FEATURE_ID = "seidr.state.global";
+export const GLOBAL_STATE_FEATURE_ID = "seidr.state.global";
 
 /**
  * Lazily creates and returns the global state feature.

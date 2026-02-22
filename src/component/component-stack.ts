@@ -14,8 +14,7 @@ export const getCurrentComponent = (): Component | null => renderContextCursors.
  * Pushes a component as the current context cursor.
  * @param {Component} component - The component to set as current.
  */
-export const push = (component: Component): void =>
-  renderContextCursors.set(getRenderContextID(), component) as any;
+export const push = (component: Component): void => renderContextCursors.set(getRenderContextID(), component) as any;
 
 /**
  * Pops the current component cursor, moving up to the parent.

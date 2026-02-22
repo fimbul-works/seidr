@@ -2,7 +2,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import { getFeature } from "../render-context/feature";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { isServer } from "../util/environment/server";
-import { isEmpty, isSeidr, isStr } from "../util/type-guards";
+import { isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
 import { getGlobalStateFeature } from "./feature";
 import { storageConfig } from "./storage";
@@ -45,9 +45,6 @@ export const useState = <T>(
   if (!observable) {
     observable = new Seidr<T>(value as T);
     ctxStates.set(key, observable);
-  } else if (!isEmpty(value)) {
-    // Set initial value if given value is not null/undefined
-    observable.value = value;
   }
 
   // Persist state to storage if specified

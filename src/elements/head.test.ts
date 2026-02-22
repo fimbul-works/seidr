@@ -3,7 +3,7 @@ import { $head } from "./head";
 
 describeDualMode("Head Element Parity", () => {
   mockUseScope();
-  
+
   itHasParity("renders", () => {
     return $head;
   });

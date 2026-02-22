@@ -1,4 +1,7 @@
 import type { SeidrChild } from "../element/types";
+import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
+import { consumeHydrationNode } from "../ssr/hydrate/hydrate-tree";
+import { type HydrationTarget, isHydrationTarget } from "../ssr/hydrate/node-map";
 import type { CleanupFunction } from "../types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
@@ -42,7 +45,14 @@ export const appendChild = (
     return cleanups.push(() => child.unmount());
   }
 
-  // Append DOM node or text node
   const target = (parent as HTMLTemplateElement).content || parent;
-  target.appendChild(isDOMNode(child) ? child : $text(child));
+  const childNode = isDOMNode(child) ? child : $text(child);
+
+  if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
+    if (isHydrationTarget(target as Node) && consumeHydrationNode(target as HydrationTarget, childNode)) {
+      return;
+    }
+  }
+
+  target.appendChild(childNode);
 };

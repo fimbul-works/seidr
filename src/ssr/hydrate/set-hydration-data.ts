@@ -1,6 +1,7 @@
 import { deserializeFeatures } from "../../render-context/feature";
 import { getRenderContext, setRenderContextID } from "../../render-context/render-context";
 import { resetNextId } from "../../render-context/reset-next-id";
+import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { restoreGlobalState } from "../state/restore-global-state";
 import { hydrationDataStorage } from "./storage";
 import type { HydrationData } from "./types";
@@ -20,7 +21,7 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   hydrationDataStorage.data.root = root;
 
   // Restore state values from the server
-  if (data.state) {
-    restoreGlobalState(data.state);
+  if (data.features?.[GLOBAL_STATE_FEATURE_ID]) {
+    restoreGlobalState(data.features[GLOBAL_STATE_FEATURE_ID]);
   }
 }

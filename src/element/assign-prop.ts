@@ -1,5 +1,6 @@
 import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
+import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
 import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
@@ -74,7 +75,13 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        scope.track(cssText.bind(el, (val) => (el.style = val)));
+        scope.track(
+          cssText.bind(
+            el,
+            (val, element) =>
+              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style = val),
+          ),
+        );
       } else {
         el.style = cssText as string;
       }
@@ -85,7 +92,14 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
         style = camelToKebab(style as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(value)) {
-        scope.track(value.bind(el, (val) => (el.style[style] = val)));
+        scope.track(
+          value.bind(
+            el,
+            (val, element) =>
+              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style[style] =
+                val),
+          ),
+        );
       } else {
         el.style[style] = value;
       }
@@ -94,12 +108,25 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
     if (isSeidr(value)) {
       if (isStr(value.value)) {
         scope.track(
-          value.bind(el, (val) => {
-            setCSSText(val);
+          value.bind(el, (val, element) => {
+            const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) ||
+              element) as HTMLElement;
+            if (isSeidr<string>(val as any)) {
+              // edgecase
+              activeElement.style = (val as any).value;
+            } else {
+              activeElement.style = val;
+            }
           }),
         );
       } else {
-        scope.track(value.bind(el, (val) => (el.style = val)));
+        scope.track(
+          value.bind(
+            el,
+            (val, element) =>
+              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style = val),
+          ),
+        );
       }
     } else if (isStr(value)) {
       setCSSText(value);
@@ -116,15 +143,19 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (isSeidr(value)) {
     scope.track(
       value.bind(el, (val, element) => {
-        if (useAttribute || !(effectiveProp in target) || isBoolProp) {
+        const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement;
+        const activeTarget = activeElement as any;
+        if (useAttribute || !(effectiveProp in activeTarget) || isBoolProp) {
           if (isBoolProp) {
-            val ? element.setAttribute(effectiveProp, "") : element.removeAttribute(effectiveProp);
+            val ? activeElement.setAttribute(effectiveProp, "") : activeElement.removeAttribute(effectiveProp);
           } else {
-            isEmpty(val) ? element.removeAttribute(effectiveProp) : element.setAttribute(effectiveProp, val);
+            isEmpty(val)
+              ? activeElement.removeAttribute(effectiveProp)
+              : activeElement.setAttribute(effectiveProp, val);
           }
         }
-        if (!(useAttribute || !(effectiveProp in target))) {
-          target[effectiveProp] = val;
+        if (!(useAttribute || !(effectiveProp in activeTarget))) {
+          activeTarget[effectiveProp] = val;
         }
       }),
     );

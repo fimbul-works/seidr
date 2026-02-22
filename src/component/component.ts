@@ -5,6 +5,7 @@ import { getNextId, getRenderContext } from "../render-context";
 import { getFeature } from "../render-context/feature";
 import { getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
+import { hydrationMap } from "../ssr/hydrate/node-map";
 import type { CleanupFunction } from "../types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
@@ -63,13 +64,11 @@ export const component = <P = void>(
         }
         cleanups.push(cleanup);
       },
-
       observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
         const cleanup = observable.observe((val) => executeInContext(comp, () => callback(val)));
         comp.track(cleanup);
         return cleanup;
       },
-
       waitFor<T>(promise: Promise<T>): Promise<T> {
         if (process.env.CORE_DISABLE_SSR) {
           return promise;
@@ -79,7 +78,6 @@ export const component = <P = void>(
 
         return promise;
       },
-
       child(childComponent: Component) {
         children.set(childComponent.id, childComponent);
         comp.track(() => childComponent.unmount());
@@ -90,7 +88,6 @@ export const component = <P = void>(
 
         return childComponent;
       },
-
       attached(parent: Node) {
         if (attachedParent) {
           if (process.env.NODE_ENV === "development") {
@@ -104,11 +101,9 @@ export const component = <P = void>(
 
         children.forEach((c) => c.attached(parent));
       },
-
       removeChild(childComponent: Component) {
         children.delete(childComponent.id);
       },
-
       reset() {
         cleanups.forEach((fn) => {
           try {
@@ -120,7 +115,6 @@ export const component = <P = void>(
         cleanups = [];
         children.clear();
       },
-
       unmount() {
         if (destroyed) {
           if (process.env.NODE_ENV === "development") {
@@ -139,13 +133,16 @@ export const component = <P = void>(
         parent?.removeChild(comp);
 
         // 3. Remove from DOM
-        comp.startMarker?.remove();
+        const mappedStart = comp.startMarker
+          ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(comp.startMarker)) || comp.startMarker
+          : undefined;
+        (mappedStart as Comment)?.remove();
 
         const removeChildEntry = (child: ComponentChildren): void => {
           if (isComponent(child)) {
             child.unmount();
           } else if (isDOMNode(child)) {
-            child.remove();
+            (((!process.env.CORE_DISABLE_SSR && hydrationMap.get(child)) || child) as Element).remove();
           }
         };
 
@@ -156,7 +153,10 @@ export const component = <P = void>(
           removeChildEntry(el);
         }
 
-        comp.endMarker?.remove();
+        const mappedEnd = comp.endMarker
+          ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(comp.endMarker)) || comp.endMarker
+          : undefined;
+        (mappedEnd as Comment)?.remove();
       },
     } as Component;
 
