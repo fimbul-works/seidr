@@ -1,10 +1,9 @@
 import { component } from "../../component/component";
 import type { Component } from "../../component/types";
+import { useScope } from "../../component/use-scope";
 import { $, type SeidrChild, type SeidrElementProps } from "../../element";
-import { NO_HYDRATE } from "../../seidr/constants";
 import type { Seidr } from "../../seidr/seidr";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
-import { wrapSeidr } from "../../seidr/wrap-seidr";
 import { useNavigate } from "../hooks";
 
 /**
@@ -28,23 +27,24 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 ): Component =>
   component(() => {
     const navigate = useNavigate();
-
-    // If to is a Seidr, use it directly; otherwise wrap it in a Seidr
-    // We opt-out of hydration for this internal Seidr to save space
-    const href = wrapSeidr(to, NO_HYDRATE);
+    const scope = useScope();
 
     const el = $(
       tagName as K,
       {
-        href,
+        href: to,
         ...restProps,
-        onclick: (e: Event) => {
-          e.preventDefault();
-          navigate(unwrapSeidr(href));
-        },
       } as SeidrElementProps<K>,
       children,
     );
+
+    const onclick = (e: Event) => {
+      e.preventDefault();
+      navigate(unwrapSeidr(to));
+    };
+
+    el.addEventListener("click", onclick);
+    scope.track(() => el.removeEventListener("click", onclick));
 
     return el;
   }, "Link")();
