@@ -70,21 +70,21 @@ export function createServerNode<T extends SupportedNodeTypes>(
     },
 
     get nextSibling(): ServerNode | null {
-      const p = node.parentNode as any;
+      const p = this.parentNode as any;
       if (!p) return null;
       const siblings = (p.childNodes as any).serverNodes;
       if (!siblings) return null;
-      const index = siblings.indexOf(node as any);
+      const index = siblings.indexOf(this as any);
       if (index === -1) return null;
       return siblings[index + 1] ?? null;
     },
 
     get previousSibling(): ServerNode | null {
-      const p = node.parentNode as any;
+      const p = this.parentNode as any;
       if (!p) return null;
       const siblings = (p.childNodes as any).serverNodes;
       if (!siblings) return null;
-      const index = siblings.indexOf(node as any);
+      const index = siblings.indexOf(this as any);
       if (index === -1) return null;
       return siblings[index - 1] ?? null;
     },

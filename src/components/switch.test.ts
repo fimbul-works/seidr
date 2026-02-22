@@ -23,14 +23,15 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     unmount?.();
   });
 
-  it("should render nested components with markers", () => {
+  it("should render nested components without markers when returning single HTMLElement", () => {
     const Child = component(() => $("span", { textContent: "Child" }), "Child");
     const Parent = component(() => $("div", {}, [Child()]), "Parent");
 
     unmount = mount(Parent, container);
 
-    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Child-`);
-    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Child-`);
+    // Child should NOT have markers
+    expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Child-`);
+    expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Child-`);
     expect(container.innerHTML).toContain("<span>Child</span>");
   });
 
@@ -52,6 +53,7 @@ describeDualMode("Switch Component", ({ getDocument }) => {
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("View A");
+    // Switch returns a component, so it gets markers
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
 

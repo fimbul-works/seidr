@@ -41,10 +41,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
       unmount = mount(comp, container);
 
       expect(container.textContent).toBe(`Error: ${errorMessage}`);
-      expect(comp.startMarker).toBeDefined();
-      expect(comp.startMarker.textContent).toContain(`${SEIDR_COMPONENT_START_PREFIX}Safe-`);
-      expect(comp.endMarker).toBeDefined();
-      expect(comp.endMarker.textContent).toContain(`${SEIDR_COMPONENT_END_PREFIX}Safe-`);
     });
 
     it("should create new scope for error boundary", () => {

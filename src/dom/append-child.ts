@@ -29,9 +29,13 @@ export const appendChild = (
 
   // Append Seidr component
   if (isComponent(child)) {
-    appendChild(parent, child.startMarker);
+    if (child.startMarker) {
+      appendChild(parent, child.startMarker);
+    }
     appendChild(parent, child.element);
-    appendChild(parent, child.endMarker);
+    if (child.endMarker) {
+      appendChild(parent, child.endMarker);
+    }
     if (!child.parentNode) {
       child.attached(parent);
     }

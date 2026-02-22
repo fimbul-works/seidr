@@ -136,13 +136,13 @@ export interface Component extends LifecycleScope {
    * The start marker of the component.
    * @type {Comment}
    */
-  startMarker: Comment;
+  startMarker?: Comment;
 
   /**
    * The end marker of the component.
    * @type {Comment}
    */
-  endMarker: Comment;
+  endMarker?: Comment;
 
   /**
    * Destroys the component, cleaning up resources and removing its elements from the DOM.

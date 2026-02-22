@@ -2,10 +2,9 @@ import { component } from "../component/component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
-import { mountComponent } from "../component/util";
+import { getComponentFirstNode, getComponentLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
-import { isArray } from "../util/type-guards/primitive-types";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -59,14 +58,13 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
           componentMap.set(key, itemComponent);
         }
 
-        const children = itemComponent.element;
-        const lastNode = isArray(children) ? children[children.length - 1] : children;
+        const lastNode = getComponentLastNode(itemComponent);
 
-        if (lastNode !== currentAnchor.previousSibling) {
+        if (lastNode !== (currentAnchor as any).previousSibling) {
           mountComponent(itemComponent, currentAnchor);
         }
 
-        currentAnchor = itemComponent.startMarker;
+        currentAnchor = getComponentFirstNode(itemComponent);
       }
     };
 

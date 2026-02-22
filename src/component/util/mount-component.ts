@@ -13,7 +13,9 @@ export const mountComponent = (component: Component, anchor: Node): void => {
   if (parent) {
     const { startMarker: startNode, endMarker: endNode, element: el } = component;
 
-    parent.insertBefore(startNode, anchor);
+    if (startNode) {
+      parent.insertBefore(startNode, anchor);
+    }
 
     const mountChild = (item: ComponentChildren) => {
       if (isDOMNode(item)) {
@@ -29,7 +31,9 @@ export const mountComponent = (component: Component, anchor: Node): void => {
       mountChild(el);
     }
 
-    parent.insertBefore(endNode, anchor);
+    if (endNode) {
+      parent.insertBefore(endNode, anchor);
+    }
 
     if (!component.parentNode) {
       component.attached(parent);

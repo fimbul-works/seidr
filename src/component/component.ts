@@ -161,18 +161,27 @@ export const component = <P = void>(
     // Set as current component (Push to tree)
     push(comp);
 
-    // Render the component via factory
     try {
-      // Call factory with props (or undefined if no props)
+      // Render the component via factory
       const result = factory(props);
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
 
-      const [startMarker, endMarker] = getMarkerComments(id);
-      comp.startMarker = startMarker;
-      comp.endMarker = endMarker;
-      comp.element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
+      const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
+      comp.element = element;
+
+      // Only add markers if the component returns an array or a nullish/text value.
+      // If it's a single HTMLElement or Component, we skip markers to reduce SSR bloat.
+      // We also check if markers were explicitly requested (e.g. by Switch or List).
+      const shouldAddMarkers =
+        getRenderContext().markers.has(id) || isArray(element) || (!isHTMLElement(element) && !isComponent(element));
+
+      if (shouldAddMarkers) {
+        const [startMarker, endMarker] = getMarkerComments(id);
+        comp.startMarker = startMarker;
+        comp.endMarker = endMarker;
+      }
     } catch (err) {
       // Restore previous component (Pop from tree)
       comp.unmount();
