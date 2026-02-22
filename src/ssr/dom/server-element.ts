@@ -2,7 +2,7 @@ import { TYPE_ELEMENT, TYPE_PROP } from "../../constants";
 import { escapeAttribute } from "../../util/escape";
 import { camelToKebab } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
-import { isEmpty, isObj } from "../../util/type-guards/primitive-types";
+import { isEmpty, isFn, isObj } from "../../util/type-guards/primitive-types";
 import { createCaseProxy } from "./case-proxy";
 import { createServerNode } from "./server-node";
 import type { ServerNodeList } from "./server-node-list";
@@ -347,6 +347,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
 
         const attrs = [
           ...Object.entries(attributes)
+            .filter(([, value]) => !isFn(value))
             .filter(([name]) => !BOOL_ATTRIBUTES.some((p) => p === name.toLowerCase()))
             .map(([name, value]) => `${name}="${escapeAttribute(String(value))}"`),
           ...activeBoolAttributes,
