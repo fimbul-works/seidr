@@ -15,6 +15,10 @@ const nodeMatches = (real: Node, fake: Node): boolean => {
   return true; // text/comments match by type
 };
 
+const isWhitespaceTextNode = (node: Node): boolean => {
+  return node.nodeType === Node.TEXT_NODE && node.textContent?.trim() === "";
+};
+
 /**
  * Transfers event listeners from one element to another.
  * @param {HTMLElement} real - The real element
@@ -68,7 +72,14 @@ export const hydrateNode = (real: Node, fake: Node): void => {
   let realIdx = 0;
 
   for (const fakeChild of fakeChildren) {
-    const realChild = real.childNodes[realIdx];
+    let realChild = real.childNodes[realIdx];
+
+    if (!isWhitespaceTextNode(fakeChild)) {
+      while (realChild && isWhitespaceTextNode(realChild)) {
+        realIdx++;
+        realChild = real.childNodes[realIdx];
+      }
+    }
 
     if (realChild && nodeMatches(realChild, fakeChild)) {
       hydrateNode(realChild, fakeChild);
@@ -94,8 +105,15 @@ export const hydrateNode = (real: Node, fake: Node): void => {
  * @returns {boolean} True if successfully matched/intercepted.
  */
 export const consumeHydrationNode = (parent: HydrationTarget, childNode: Node): boolean => {
-  const childIndex = parent.__hydration_index || 0;
-  const realChild = parent.childNodes[childIndex];
+  let childIndex = parent.__hydration_index || 0;
+  let realChild = parent.childNodes[childIndex];
+
+  if (!isWhitespaceTextNode(childNode)) {
+    while (realChild && isWhitespaceTextNode(realChild)) {
+      childIndex++;
+      realChild = parent.childNodes[childIndex];
+    }
+  }
 
   if (realChild && nodeMatches(realChild, childNode)) {
     hydrateNode(realChild, childNode);
@@ -104,7 +122,7 @@ export const consumeHydrationNode = (parent: HydrationTarget, childNode: Node): 
   }
 
   console.warn(
-    `Hydration mismatch: Expected element but found <${(childNode as any).tagName || "Text"}>. Bailing out.`,
+    `Hydration mismatch: Expected element but found <${(childNode as HTMLElement).tagName || "Text"}>. Bailing out.`,
   );
 
   if (realChild) {
