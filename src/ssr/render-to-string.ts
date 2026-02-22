@@ -65,6 +65,7 @@ export async function renderToString<C extends SeidrNode>(
         mountComponent(comp, anchor);
 
         await activeScope.waitForPromises();
+        anchor.remove();
 
         // Use innerHTML to get the stringified content without the wrapping div
         const html = doc.innerHTML;

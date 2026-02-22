@@ -1,4 +1,4 @@
-import { getRenderContext } from "../render-context/render-context";
+import { getRenderContextID } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
@@ -27,8 +27,7 @@ export const resetClientParamsState = () => (clientParamsState = undefined);
  */
 export const getCurrentParams = (): Seidr<Record<string, string>> => {
   if (isServer()) {
-    const ctx = getRenderContext();
-    const ctxID = ctx.ctxID;
+    const ctxID = getRenderContextID();
     let observable = paramsCache.get(ctxID);
 
     if (!observable) {

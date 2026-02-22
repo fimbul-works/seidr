@@ -1,4 +1,4 @@
-import { getRenderContext } from "../../render-context";
+import { getRenderContextID } from "../../render-context/render-context";
 import { Seidr } from "../../seidr/seidr";
 import { createStateKey } from "../../state/create-state-key";
 import { globalStates } from "../../state/storage";
@@ -14,7 +14,7 @@ import { isSeidr } from "../../util/type-guards/is-observable";
  * @param {Record<string, unknown>} state - Record of numeric IDs to values from SSR
  */
 export function restoreGlobalState(state: Record<string, unknown>): void {
-  const ctxID = getRenderContext().ctxID;
+  const ctxID = getRenderContextID();
 
   // Ensure the render context has a state storage
   let ctxStates = globalStates.get(ctxID);

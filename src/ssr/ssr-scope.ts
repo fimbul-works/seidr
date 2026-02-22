@@ -1,4 +1,4 @@
-import { getRenderContext } from "../render-context/render-context";
+import { getRenderContext, getRenderContextID } from "../render-context/render-context";
 import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
 import { isClient } from "../util/environment/client";
@@ -47,8 +47,7 @@ export function setSSRScope(scope: SSRScope | undefined): void {
  * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
 export function getSSRScope(): SSRScope | undefined {
-  const ctx: RenderContext = getRenderContext();
-  return scopes.get(ctx.ctxID);
+  return scopes.get(getRenderContextID());
 }
 
 /**

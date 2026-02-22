@@ -46,7 +46,7 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeDefined();
     expect(comp.endMarker).toBeDefined();
-    expect(container.innerHTML).toContain("<!--MyComp-0-");
+    expect(container.innerHTML).toContain("<!--MyComp-");
     expect(container.innerHTML).toContain("One</div>");
     expect(container.innerHTML).toContain("<div>Two</div>");
     unmount();
@@ -60,7 +60,7 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeDefined();
     expect(comp.endMarker).toBeDefined();
-    expect(container.innerHTML).toContain("<!--MyComp-0-");
+    expect(container.innerHTML).toContain("<!--MyComp-");
     unmount();
   });
 

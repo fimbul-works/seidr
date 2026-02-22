@@ -12,7 +12,7 @@ import type { HydrationData } from "./types";
  */
 export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   hydrationDataStorage.registry.clear();
-  setRenderContextID(data.ctxID!);
+  setRenderContextID(data.ctxID);
   resetNextId();
   hydrationDataStorage.data = data;
   hydrationDataStorage.data.root = root;

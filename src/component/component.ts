@@ -2,6 +2,7 @@ import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants"
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getNextId, getRenderContext } from "../render-context";
+import { getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
@@ -26,8 +27,7 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const ctxID = String(getRenderContext().ctxID);
-    const id = `${name}-${ctxID}-${getNextId()}`;
+    const id = `${name}-${getNextId()}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -198,7 +198,7 @@ export const component = <P = void>(
        */
       const applyRootMarker = (item: ComponentChildren): void => {
         if (isHTMLElement(item)) {
-          item.dataset.seidrRoot = ctxID;
+          item.dataset.seidrRoot = String(getRenderContextID());
         } else if (isComponent(item)) {
           applyRootMarker(item.element);
         } else if (isArray(item)) {

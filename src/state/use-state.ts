@@ -1,5 +1,5 @@
 import { getCurrentComponent } from "../component/component-stack";
-import { getRenderContext } from "../render-context";
+import { getRenderContextID } from "../render-context/render-context";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { isServer } from "../util/environment/server";
 import { isEmpty, isSeidr, isStr } from "../util/type-guards";
@@ -24,7 +24,7 @@ export const useState = <T>(
   value?: T,
   options?: StateOptions,
 ): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
-  const ctxID = getRenderContext().ctxID;
+  const ctxID = getRenderContextID();
 
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   const originalKey = key;
