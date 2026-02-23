@@ -21,7 +21,14 @@ export const setInternalRenderContext = (fn: () => RenderContext) => (getRenderC
  * @param {number} id - The render context ID from the server
  * @internal
  */
-export const setRenderContextID = (id: number) => (getRenderContext().ctxID = id);
+export const setRenderContextID = (id: number) => {
+  const ctx = getRenderContext();
+  ctx.ctxID = id;
+  ctx.sID = 0;
+  ctx.cID = 0;
+  ctx.featureData.clear();
+  ctx.markers.clear();
+};
 
 /**
  * Get the current render context ID.

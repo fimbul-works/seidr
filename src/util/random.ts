@@ -1,4 +1,4 @@
-import { getNextId, getRenderContext } from "../render-context";
+import { getNextSeidrId, getRenderContext } from "../render-context";
 import { createRenderFeature, getFeature, getRenderFeature, setFeature } from "../render-context/feature";
 
 const RANDOM_FEATURE_ID = "seidr.rng";
@@ -41,7 +41,7 @@ export const random = (): number => {
   // Initialize state if not present
   if (!state) {
     const ctx = getRenderContext();
-    const seed = ctx.ctxID + getNextId() + LCG_M / 1;
+    const seed = ctx.ctxID + getNextSeidrId() + LCG_M / 1;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;

@@ -1,5 +1,3 @@
-import type { getDocument } from "../dom";
-
 /**
  * Interface for the test environment state.
  */
@@ -19,5 +17,5 @@ export interface TestEnvironmentState {
   /**
    * The DOM factory of the test environment.
    */
-  getDocument?: () => getDocument;
+  getDocument?: () => Document;
 }

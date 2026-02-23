@@ -1,4 +1,4 @@
-import { getNextId } from "../render-context/get-next-id";
+import { getNextSeidrId } from "../render-context/get-next-id";
 import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
@@ -42,7 +42,7 @@ export class Seidr<T = any> implements Observable<T> {
     initial: T,
     public readonly options: ObservableOptions = {},
   ) {
-    this.i = String(options.id ?? getNextId());
+    this.i = String(options.id ?? getNextSeidrId());
     this.v = initial;
 
     // Register for hydration

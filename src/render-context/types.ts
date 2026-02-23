@@ -6,7 +6,10 @@ export interface RenderContext {
   ctxID: number;
 
   /** Counter for generating unique IDs */
-  idCounter: number;
+  sID: number;
+
+  /** Counter for generating unique component IDs */
+  cID: number;
 
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;

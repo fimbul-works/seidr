@@ -6,7 +6,8 @@ import { getRenderContext } from "./render-context";
  */
 export const resetNextId = (): void => {
   try {
-    getRenderContext().idCounter = 0;
+    getRenderContext().sID = 0;
+    getRenderContext().cID = 0;
   } catch (_e) {
     // Ignore if no render context is available
   }

@@ -160,7 +160,7 @@ describe("Hydration", () => {
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
-    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 2: 42 } });
+    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 1: 42 } });
 
     expect(container.textContent).toContain("Count: 42");
   });

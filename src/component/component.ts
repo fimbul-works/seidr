@@ -1,8 +1,9 @@
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
-import { getNextId, getRenderContext } from "../render-context";
+import { getRenderContext } from "../render-context";
 import { getFeature } from "../render-context/feature";
+import { getNextComponentId } from "../render-context/get-next-id";
 import { getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
@@ -30,7 +31,7 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const id = `${name}-${getNextId()}`;
+    const id = `${name}-${getNextComponentId()}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
