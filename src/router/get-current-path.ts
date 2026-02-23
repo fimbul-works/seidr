@@ -64,11 +64,13 @@ export const getCurrentPath = (): Seidr<string> => {
     // Handle history.back
     const component = getCurrentComponent();
     if (component) {
-      const popStateHandler = () => (clientPathState!.value = window.location.toString());
+      const popStateHandler = () => (clientPathState!.value = window.location.pathname.toString());
       window.addEventListener("popstate", popStateHandler);
       component.track(() => window.removeEventListener("popstate", popStateHandler));
     }
   }
+
+  // clientPathState.observe((val) => console.log("Path change", val));
 
   return clientPathState;
 };

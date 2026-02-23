@@ -1,3 +1,4 @@
+import { NO_HYDRATE } from "../seidr/constants";
 import { component } from "../component/component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
@@ -34,7 +35,7 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
 ): Component =>
   component(() => {
     const scope = useScope();
-    const status = new Seidr<SuspenseStatus>(PROMISE_PENDING);
+    const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, NO_HYDRATE);
     const [, endMarker] = getMarkerComments(scope.id);
 
     let resolvedValue: T | null = null;

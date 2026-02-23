@@ -78,6 +78,7 @@ describe("Hydration Integration", () => {
     expect(hydratedAppDiv).toBe(originalAppDiv); // Same exact DOM node!
     expect(hydratedH1).toBe(originalH1);
     expect(hydratedButton).toBe(originalButton);
+    expect(container.querySelectorAll("li").length).toBe(3);
 
     // 5. Verify Reactivity & Events
     hydratedButton?.click();

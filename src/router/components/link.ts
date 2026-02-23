@@ -17,12 +17,12 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap> {
  * Link component for Route.
  * @template K - Key from the HTMLElementTagNameMap interface
  * @param {LinkProps & SeidrElementProps<K>} props - Link props with reactive bindings
- * @param {(SeidrNode | (() => SeidrNode))[]} [children] - Optional child nodes (default: `[]`)
+ * @param {SeidrChild | SeidrChild[]} [children] - Optional child nodes
  * @returns {Component} Component that wraps an anchor element
  */
-export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
+export const Link = <K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap>(
   { to, tagName = "a" as K, ...restProps }: LinkProps<K> & SeidrElementProps<K>,
-  children: SeidrChild[] = [],
+  children?: SeidrChild | SeidrChild[],
 ): Component =>
   component(() => {
     const navigate = useNavigate();

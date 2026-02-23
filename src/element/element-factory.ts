@@ -16,11 +16,11 @@ import type { SeidrChild, SeidrElementProps } from "./types";
  * @param {K} tagName - The HTML tag name to create a specialized factory for
  * @param {SeidrElementProps<K>} [initialProps] - Optional default props to apply to all created elements
  * @returns {((
- *   props?: SeidrElementProps<K>,
+ *   props?: SeidrElementProps<K> | null,
  *   children?: SeidrChild | SeidrChild[],
  * ) => HTMLElementTagNameMap[K])} A specialized function that creates elements of the specified type
  */
 export const $factory =
   <K extends keyof HTMLElementTagNameMap>(tagName: K, initialProps: SeidrElementProps<K> = {}) =>
-  (props: SeidrElementProps<K> = {}, children?: SeidrChild | SeidrChild[]): HTMLElementTagNameMap[K] =>
-    $(tagName, { ...initialProps, ...props }, children);
+  (props: SeidrElementProps<K> | null, children?: SeidrChild | SeidrChild[]): HTMLElementTagNameMap[K] =>
+    $(tagName, { ...initialProps, ...(props ?? {}) }, children);

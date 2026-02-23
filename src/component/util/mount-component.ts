@@ -1,4 +1,5 @@
 import type { Component, ComponentChildren } from "../../component/types";
+import { hydrationMap } from "../../ssr/hydrate/node-map";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
 import { isComponent } from "../../util/type-guards/seidr-dom-types";
@@ -9,19 +10,20 @@ import { isComponent } from "../../util/type-guards/seidr-dom-types";
  * @param {Node} anchor The node to insert the component before
  */
 export const mountComponent = (component: Component, anchor: Node): void => {
-  const parent = anchor.parentNode;
+  const realAnchor = (!process.env.CORE_DISABLE_SSR && hydrationMap.get(anchor)) || anchor;
+  const parent = realAnchor.parentNode;
   if (parent) {
     const { startMarker: startNode, endMarker: endNode, element: el } = component;
 
     if (startNode) {
-      parent.insertBefore(startNode, anchor);
+      parent.insertBefore(startNode, realAnchor);
     }
 
     const mountChild = (item: ComponentChildren) => {
       if (isDOMNode(item)) {
-        parent.insertBefore(item, anchor);
+        parent.insertBefore(item, realAnchor);
       } else if (isComponent(item)) {
-        mountComponent(item, anchor);
+        mountComponent(item, realAnchor);
       }
     };
 
@@ -32,7 +34,7 @@ export const mountComponent = (component: Component, anchor: Node): void => {
     }
 
     if (endNode) {
-      parent.insertBefore(endNode, anchor);
+      parent.insertBefore(endNode, realAnchor);
     }
 
     if (!component.parentNode) {

@@ -45,7 +45,7 @@ export class Seidr<T = any> implements Observable<T> {
     this.i = String(options.id ?? getNextId());
     this.v = initial;
 
-    // Register for hydration in browser
+    // Register for hydration
     if (isClient() && !process.env.CORE_DISABLE_SSR) {
       this.register();
     }

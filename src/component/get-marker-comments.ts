@@ -1,7 +1,6 @@
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { getDocument } from "../dom/get-document";
+import { $comment } from "../dom/node/comment";
 import { getRenderContext } from "../render-context/render-context";
-import { findMarkerComments } from "./find-marker-comments";
 
 /**
  * Get or create boundary markers for a given ID.
@@ -18,11 +17,9 @@ export const getMarkerComments = (id: string): [Comment, Comment] => {
     return cached;
   }
 
-  const [start, end] = findMarkerComments(id);
-
   const markers: [Comment, Comment] = [
-    start ?? getDocument().createComment(SEIDR_COMPONENT_START_PREFIX + id),
-    end ?? getDocument().createComment(SEIDR_COMPONENT_END_PREFIX + id),
+    $comment(SEIDR_COMPONENT_START_PREFIX + id),
+    $comment(SEIDR_COMPONENT_END_PREFIX + id),
   ];
 
   ctx.markers.set(id, markers);

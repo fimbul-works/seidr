@@ -1,8 +1,8 @@
+import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { consumeHydrationNode } from "../ssr/hydrate/hydrate-tree";
 import { type HydrationTarget, isHydrationTarget } from "../ssr/hydrate/node-map";
-import type { CleanupFunction } from "../types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -13,13 +13,8 @@ import { $text } from "./node/text";
  *
  * @param {Node} parent - The parent node to append the child to
  * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to append
- * @param {CleanupFunction[]} [cleanups=[]] - Array to push cleanup functions to
  */
-export const appendChild = (
-  parent: Node,
-  child: SeidrChild | SeidrChild[] | null | undefined,
-  cleanups: CleanupFunction[] = [],
-) => {
+export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | null | undefined) => {
   // Skip empty children
   if (!child) {
     return;
@@ -35,14 +30,24 @@ export const appendChild = (
     if (child.startMarker) {
       appendChild(parent, child.startMarker);
     }
+
     appendChild(parent, child.element);
+
     if (child.endMarker) {
       appendChild(parent, child.endMarker);
     }
+
     if (!child.parentNode) {
       child.attached(parent);
     }
-    return cleanups.push(() => child.unmount());
+
+    try {
+      const scope = useScope();
+      scope.track(child.unmount);
+    } catch (_e) {
+      // Ignore if not in a component context
+    }
+    return;
   }
 
   const target = (parent as HTMLTemplateElement).content || parent;
