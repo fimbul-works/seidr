@@ -1,4 +1,4 @@
-import { isUndefined } from "../../util/type-guards/primitive-types";
+import { isEmpty } from "../../util/type-guards/primitive-types";
 import { hydrationDataStorage } from "./storage";
 
 /**
@@ -6,6 +6,4 @@ import { hydrationDataStorage } from "./storage";
  *
  * @returns {boolean} true if in hydration mode with data available
  */
-export function hasHydrationData(): boolean {
-  return !isUndefined(hydrationDataStorage.data);
-}
+export const hasHydrationData = (): boolean => !isEmpty(hydrationDataStorage.data);

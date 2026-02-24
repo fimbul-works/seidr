@@ -48,7 +48,9 @@ describeDualMode("assignProp", ({ getDocument }) => {
   it("should handle data attributes", () => {
     const el = getDocument().createElement("div");
     assignProp(el, "dataTest", "value");
+    assignProp(el, "data-custom", "value2");
     expect(el.dataset.test).toBe("value");
+    expect(el.dataset.custom).toBe("value2");
   });
 
   it("should handle aria attributes", () => {

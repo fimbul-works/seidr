@@ -87,21 +87,25 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       }
     };
 
-    const setCSSStyleProperty = <K extends keyof CSSStyleDeclaration>(style: K, value: CSSStyleDeclaration[K]) => {
+    const setCSSStyleProperty = <K extends keyof CSSStyleDeclaration>(
+      styleProp: K,
+      styleValue: CSSStyleDeclaration[K],
+    ) => {
       if (isServer()) {
-        style = camelToKebab(style as string) as K;
+        styleProp = camelToKebab(styleProp as string) as K;
       }
-      if (isSeidr<CSSStyleDeclaration[K]>(value)) {
+      if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {
         scope.track(
-          value.bind(
+          styleValue.bind(
             el,
             (val, element) =>
-              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style[style] =
-                val),
+              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style[
+                styleProp
+              ] = val),
           ),
         );
       } else {
-        el.style[style] = value;
+        el.style[styleProp] = styleValue;
       }
     };
 
@@ -111,9 +115,9 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
           value.bind(el, (val, element) => {
             const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) ||
               element) as HTMLElement;
-            if (isSeidr<string>(val as any)) {
+            if (isSeidr<string>(val)) {
               // edgecase
-              activeElement.style = (val as any).value;
+              activeElement.style = val.value;
             } else {
               activeElement.style = val;
             }

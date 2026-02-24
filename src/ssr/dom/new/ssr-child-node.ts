@@ -1,3 +1,4 @@
+import { isStr } from "../../../util/type-guards/primitive-types";
 import { SSRNode } from "./ssr-node";
 import type { SupportedNodeTypes } from "./types";
 
@@ -8,10 +9,7 @@ export abstract class SSRChildNode<T extends SupportedNodeTypes> extends SSRNode
     }
 
     nodes.forEach((node) => {
-      this.parentNode!.insertBefore(
-        typeof node === "string" ? this.ownerDocument!.createTextNode(node) : node,
-        this.nextSibling,
-      );
+      this.parentNode!.insertBefore(isStr(node) ? this.ownerDocument!.createTextNode(node) : node, this.nextSibling);
     });
   }
 
@@ -21,7 +19,7 @@ export abstract class SSRChildNode<T extends SupportedNodeTypes> extends SSRNode
     }
 
     nodes.forEach((node) => {
-      this.parentNode!.insertBefore(typeof node === "string" ? this.ownerDocument!.createTextNode(node) : node, this);
+      this.parentNode!.insertBefore(isStr(node) ? this.ownerDocument!.createTextNode(node) : node, this);
     });
   }
 
@@ -35,7 +33,7 @@ export abstract class SSRChildNode<T extends SupportedNodeTypes> extends SSRNode
     }
 
     nodes.forEach((node) => {
-      this.parentNode!.replaceChild(typeof node === "string" ? this.ownerDocument!.createTextNode(node) : node, this);
+      this.parentNode!.replaceChild(isStr(node) ? this.ownerDocument!.createTextNode(node) : node, this);
     });
   }
 }

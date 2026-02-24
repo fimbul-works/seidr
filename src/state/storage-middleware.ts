@@ -1,17 +1,11 @@
+import { STORAGE_LOCAL, STORAGE_SESSION } from "../constants";
 import type { Seidr } from "../seidr/seidr";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { isEmpty } from "../util/index";
 import { wrapError } from "../util/wrap-error";
 import { storageConfig } from "./storage";
-import {
-  STORAGE_LOCAL,
-  STORAGE_SESSION,
-  type StateKey,
-  type StorageErrorHandler,
-  type StorageOperation,
-  type StorageType,
-} from "./types";
+import type { StateKey, StorageErrorHandler, StorageOperation, StorageType } from "./types";
 
 /**
  * Get the storage instance based on type

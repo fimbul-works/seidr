@@ -1,5 +1,6 @@
 import { TYPE_ELEMENT } from "../../../constants";
 import type { NodeTypeDocument, NodeTypeElement } from "../../../types";
+import { isStr } from "../../../util/type-guards/primitive-types";
 import { ServerNodeList } from "../server-node-list";
 import { SSRChildNode } from "./ssr-child-node";
 import { SSRDocument } from "./ssr-document";
@@ -28,9 +29,7 @@ export abstract class SSRParentNode<T extends NodeTypeDocument | NodeTypeElement
   prepend(...nodes: (Node | string)[]): void {
     this.serverChildNodes.nodes.unshift(
       ...nodes.map((node) =>
-        typeof node === "string"
-          ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document))
-          : node,
+        isStr(node) ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document)) : node,
       ),
     );
   }
@@ -38,9 +37,7 @@ export abstract class SSRParentNode<T extends NodeTypeDocument | NodeTypeElement
   append(...nodes: (Node | string)[]): void {
     this.serverChildNodes.nodes.push(
       ...nodes.map((node) =>
-        typeof node === "string"
-          ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document))
-          : node,
+        isStr(node) ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document)) : node,
       ),
     );
   }
@@ -50,9 +47,7 @@ export abstract class SSRParentNode<T extends NodeTypeDocument | NodeTypeElement
       0,
       this.serverChildNodes.nodes.length,
       ...nodes.map((node) =>
-        typeof node === "string"
-          ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document))
-          : node,
+        isStr(node) ? new SSRTextNode(node, this.ownerDocument ?? (new SSRDocument() as unknown as Document)) : node,
       ),
     );
   }

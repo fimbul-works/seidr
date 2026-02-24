@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { STORAGE_LOCAL, STORAGE_SESSION } from "../constants";
 import { Seidr } from "../seidr/seidr";
 import { storageConfig } from "./storage";
 import { bindStorage, getStorageInstance, readFromStorage, writeToStorage } from "./storage-middleware";
-import { STORAGE_LOCAL, STORAGE_SESSION } from "./types";
 
 declare global {
   var localStorage: Storage;

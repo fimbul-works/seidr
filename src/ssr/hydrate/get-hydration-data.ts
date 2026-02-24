@@ -6,6 +6,4 @@ import type { HydrationData } from "./types";
  *
  * @returns {HydrationData | undefined}
  */
-export function getHydrationData(): HydrationData | undefined {
-  return hydrationDataStorage.data;
-}
+export const getHydrationData = (): HydrationData | undefined => hydrationDataStorage.data;

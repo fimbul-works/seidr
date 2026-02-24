@@ -1,4 +1,4 @@
-import { getNextSeidrId } from "../render-context/get-next-id";
+import { getNextSeidrId } from "../render-context/render-context";
 import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
@@ -250,13 +250,7 @@ export class Seidr<T = any> implements Observable<T> {
    */
   destroy(): void {
     this.f.clear();
-    this.c.forEach((cleanup) => {
-      try {
-        cleanup();
-      } catch (error) {
-        console.error(error);
-      }
-    });
+    this.c.forEach((cleanup) => cleanup());
     this.c = [];
   }
 

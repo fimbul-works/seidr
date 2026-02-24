@@ -9,7 +9,7 @@ let isScheduled = false;
  *
  * @param {Seidr} item - The Seidr instance to schedule for update
  */
-export function scheduleUpdate(item: Seidr): void {
+export const scheduleUpdate = (item: Seidr): void => {
   pending.add(item);
 
   // Flush immediately in tests unless USE_SCHEDULER is enabled
@@ -25,15 +25,15 @@ export function scheduleUpdate(item: Seidr): void {
       flushSync();
     });
   }
-}
+};
 
 /**
  * Immediately flushes all pending updates.
  */
-export function flushSync(): void {
+export const flushSync = (): void => {
   while (pending.size > 0) {
     const batch = Array.from(pending);
     pending.clear();
     batch.forEach((item) => item.notify());
   }
-}
+};

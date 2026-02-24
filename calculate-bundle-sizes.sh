@@ -29,7 +29,7 @@ echo "=========================================="
 echo ""
 
 # Remove temporary minified and gzipped files
-rm -f dist/*.gz
+rm -f dist/*.gz dist/*.min.js
 rm -f examples/dist/*.gz
 rm -f examples/ssr/dist/*.gz
 

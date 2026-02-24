@@ -5,13 +5,14 @@ export default defineConfig((_config) => {
     root: "examples/ssr",
     define: {
       process: "undefined",
+      "process.env.NODE_ENV": JSON.stringify("production"),
     },
     build: {
       outDir: "examples/ssr/dist",
       emptyOutDir: true,
       sourcemap: true,
       minify: "terser",
-      target: "es2020",
+      target: "esnext",
       rollupOptions: {
         input: `examples/ssr/entry-client.ts`,
         output: {

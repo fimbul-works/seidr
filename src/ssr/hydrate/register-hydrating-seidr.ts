@@ -1,5 +1,5 @@
 import type { Seidr } from "../../seidr/seidr";
-import { isUndefined } from "../../util/type-guards/primitive-types";
+import { isEmpty } from "../../util/type-guards/primitive-types";
 import { hasHydrationData } from "./has-hydration-data";
 import { hydrationDataStorage } from "./storage";
 
@@ -9,7 +9,7 @@ import { hydrationDataStorage } from "./storage";
  *
  * @param {Seidr} seidr - The Seidr instance to register
  */
-export function registerHydratingSeidr(seidr: Seidr): void {
+export const registerHydratingSeidr = (seidr: Seidr): void => {
   if (!hasHydrationData() || hydrationDataStorage.registry.has(seidr)) {
     return;
   }
@@ -19,9 +19,9 @@ export function registerHydratingSeidr(seidr: Seidr): void {
   }
 
   const value = hydrationDataStorage.data?.observables[seidr.id];
-  if (!isUndefined(value)) {
+  if (!isEmpty(value)) {
     // console.log("hydrating", seidr.id, ":", seidr.value, "=>", hydrationDataStorage.data?.observables[seidr.id]);
     hydrationDataStorage.registry.add(seidr);
     seidr.value = value;
   }
-}
+};

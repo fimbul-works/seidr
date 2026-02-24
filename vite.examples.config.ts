@@ -10,7 +10,7 @@ export default defineConfig((_config) => {
       outDir: "examples/dist",
       emptyOutDir: true,
       minify: "terser",
-      target: "es2020",
+      target: "chrome107",
       rollupOptions: {
         input: `examples/${example}.ts`,
         output: {
@@ -20,12 +20,15 @@ export default defineConfig((_config) => {
           inlineDynamicImports: true,
           compact: true,
         },
+        context: "window",
         treeshake: "smallest",
       },
     },
     esbuild: {
       define: {
         ...clientReplace,
+        window: "{}",
+        "process.env.NODE_ENV": JSON.stringify("production"),
         "process.env.CORE_DISABLE_SSR": "true",
       },
       drop: ["console", "debugger"],

@@ -1,3 +1,5 @@
+import type { STORAGE_LOCAL, STORAGE_SESSION } from "../constants";
+
 /**
  * Error callback type for useStorage error handling.
  *
@@ -15,10 +17,6 @@ export type StateKey<T> = symbol & { readonly __type?: T };
 
 // Extract generic from instance
 export type InferStateType<C> = C extends StateKey<infer T> ? T : never;
-
-/** Storage type constants */
-export const STORAGE_SESSION = "session";
-export const STORAGE_LOCAL = "local";
 
 /** Storage type */
 export type StorageType = typeof STORAGE_SESSION | typeof STORAGE_LOCAL;

@@ -2,7 +2,7 @@ import { TYPE_ELEMENT, TYPE_PROP } from "../../constants";
 import { escapeAttribute } from "../../util/escape";
 import { camelToKebab } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
-import { isEmpty, isFn, isObj } from "../../util/type-guards/primitive-types";
+import { isEmpty, isFn, isObj, isStr } from "../../util/type-guards/primitive-types";
 import { createCaseProxy } from "./case-proxy";
 import { createServerNode } from "./server-node";
 import type { ServerNodeList } from "./server-node-list";
@@ -243,7 +243,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
     style: {
       get: () => styleObj,
       set: (val: any) => {
-        if (typeof val === "string") {
+        if (isStr(val)) {
           styleProxy.fromString(val);
         } else if (isObj(val)) {
           // Clear and copy
@@ -394,7 +394,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
 
   const proxy = new Proxy(element, {
     get(target, prop, receiver) {
-      if (typeof prop !== "string") {
+      if (!isStr(prop)) {
         return Reflect.get(target, prop, receiver);
       }
 
@@ -421,7 +421,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
       return val;
     },
     set(target, prop, value, receiver) {
-      if (typeof prop !== "string") {
+      if (!isStr(prop)) {
         return Reflect.set(target, prop, value, receiver);
       }
 

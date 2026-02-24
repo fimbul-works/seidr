@@ -125,8 +125,8 @@ export type ReactiveDataKebabCase = {
  * It uses a "Template Literal Index Signature" to allow any
  * valid-looking camelCase key dynamically.
  */
-export type ReactiveCamelCaseProps = {
-  [K in string]: IsCamelCase<K> extends true ? ReactiveValue<string> : never;
+export type ReactiveDataCamelCase = {
+  [K in `data${string}`]: IsCamelCase<K> extends true ? ReactiveValue<string> : never;
 };
 
 /**
@@ -135,7 +135,11 @@ export type ReactiveCamelCaseProps = {
  * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
  */
 export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTMLElementTagNameMap> = Partial<
-  ReactiveProps<K, HTMLElementTagNameMap[K]> & ReactiveARIAMixin & ReactiveARIAKebabCase & ReactiveDataKebabCase
+  ReactiveProps<K, HTMLElementTagNameMap[K]> &
+    ReactiveARIAMixin &
+    ReactiveARIAKebabCase &
+    ReactiveDataKebabCase &
+    ReactiveDataCamelCase
 > & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string> };
 
 /**

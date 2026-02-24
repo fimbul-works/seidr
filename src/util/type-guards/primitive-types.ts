@@ -47,10 +47,3 @@ export const isObj = <T extends object>(v: any): v is T => v !== null && typeof 
  * @returns {boolean} `true` if the value is a string, `false` otherwise
  */
 export const isStr = (v: any): v is string => typeof v === "string";
-
-/**
- * Check if a value is undefined.
- * @param {any} v - Value to check
- * @returns {boolean} `true` if the value is undefined, `false` otherwise
- */
-export const isUndefined = (v: any): v is undefined => typeof v === "undefined";

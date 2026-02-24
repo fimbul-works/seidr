@@ -18,6 +18,10 @@ export let getDocument: () => Document = (): Document => {
  *
  * @param {(() => Document)} fn
  */
-export const setInternalGetDocument = (fn: () => Document): void => {
-  getDocument = fn;
-};
+export let setInternalGetDocument: (fn: () => Document) => void;
+
+if (!isClient() || process.env.VITEST) {
+  setInternalGetDocument = (fn: () => Document): void => {
+    getDocument = fn;
+  };
+}

@@ -37,7 +37,11 @@ describe("Hydration List", () => {
     inServer(() => {
       const posts = [
         { slug: "seidr-release", title: "Seidr 1.0.0", content: "Seidr 1.0.0 is now released on NPM..." },
-        { slug: "hello-world", title: "Hello World!", content: "Welcome to FimbulWorks! This is my homepage, and creative outlet..." },
+        {
+          slug: "hello-world",
+          title: "Hello World!",
+          content: "Welcome to FimbulWorks! This is my homepage, and creative outlet...",
+        },
       ];
       blogs.value = posts.map((post) => ({ ...post, content: getExcerpt(post) }));
     });
@@ -70,9 +74,9 @@ describe("Hydration List", () => {
     const articles = container.querySelectorAll("article");
     const div = articles[0].querySelector("div");
     if (div) {
-        // Wait! The user said: middle post without a body (link points to `/seidr-release`)
-        // If the first post (seidr-release) had a mismatch...
-        div.innerHTML = `<span>MISMATCH</span>`;
+      // Wait! The user said: middle post without a body (link points to `/seidr-release`)
+      // If the first post (seidr-release) had a mismatch...
+      div.innerHTML = `<span>MISMATCH</span>`;
     }
 
     // 3. Hydrate

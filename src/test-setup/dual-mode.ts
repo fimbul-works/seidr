@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDocument } from "../dom";
 import { escapeHTML } from "../util/escape";
-import { isArray } from "../util/type-guards";
+import { isArray, isEmpty, isFn, isObj } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
 
 /**
@@ -86,10 +86,10 @@ export function renderToHtml(node: any, depth = 0): string {
     console.error("renderToHtml: possible circular reference detected");
     return "[Circular]";
   }
-  if (node === null || node === undefined) return "";
+  if (isEmpty(node)) return "";
 
   // Handle Component
-  if (node && typeof node === "object" && "element" in node) {
+  if (isObj(node) && "element" in node) {
     node = node.element;
   }
 
@@ -108,7 +108,7 @@ export function renderToHtml(node: any, depth = 0): string {
 
   // Handle SSR nodes
   // We check if it's NOT a native DOM node that returns [object ...]
-  if (typeof node.toString === "function") {
+  if (isFn(node.toString)) {
     const str = node.toString();
     if (str !== "[object HTMLElement]" && !str.startsWith("[object HTML")) {
       return str;

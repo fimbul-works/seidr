@@ -1,5 +1,3 @@
-import { getNextSeidrId } from "../render-context/get-next-id";
-import { isSeidr } from "../util/type-guards";
 import { assignProp } from "./assign-prop";
 import type { SeidrElementProps } from "./types";
 
@@ -11,8 +9,5 @@ import type { SeidrElementProps } from "./types";
  * @param {SeidrElementProps<K>} props - The properties to assign
  */
 export const assignProps = <K extends keyof HTMLElementTagNameMap>(el: HTMLElement, props: SeidrElementProps<K>) => {
-  if (Object.values(props).some(isSeidr)) {
-    el.dataset.seidrId = String(getNextSeidrId());
-  }
   Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));
 };

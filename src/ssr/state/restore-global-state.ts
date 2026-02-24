@@ -10,7 +10,7 @@ import { isSeidr } from "../../util/type-guards/is-observable";
  *
  * @param {Record<string, unknown>} state - Record of numeric IDs to values from SSR
  */
-export function restoreGlobalState(state: Record<string, unknown>): void {
+export const restoreGlobalState = (state: Record<string, unknown>): void => {
   const ctx = getRenderContext();
   const ctxStates = getFeature(getGlobalStateFeature(), ctx);
 
@@ -24,4 +24,4 @@ export function restoreGlobalState(state: Record<string, unknown>): void {
       ctxStates.set(targetSymbol, new Seidr(value));
     }
   }
-}
+};

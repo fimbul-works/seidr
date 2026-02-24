@@ -5,7 +5,6 @@ import { setInternalGetDocument } from "./get-document";
 
 export const documentFeature = createRenderFeature<Document | undefined>({
   id: "seidr.ssr.document",
-  defaultValue: () => undefined,
 });
 
 /**

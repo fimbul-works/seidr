@@ -137,7 +137,6 @@ describe("renderToString", () => {
 
     // Verify HTML structure (data-seidr-id is added automatically)
     expect(html).toContain('class="todo-app card"');
-    expect(html).toContain("data-seidr-id=");
     expect(html).toContain('<ul class="todo-list">');
     expect(html).toContain('placeholder="What needs to be done?"');
 

@@ -16,8 +16,9 @@ describeDualMode("assignProps", ({ getDocument }) => {
   it("should handle custom data attributes", () => {
     const factory = getDocument();
     const el = factory.createElement("div");
-    assignProps(el, { "data-custom": "value" });
+    assignProps(el, { "data-custom": "value", dataTest: "value2" });
     expect(el.getAttribute("data-custom")).toBe("value");
+    expect(el.dataset.test).toBe("value2");
   });
 
   it("should handle style props", () => {

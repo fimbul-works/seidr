@@ -2,7 +2,7 @@ import type { ReactiveValue } from "../../element";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
 import { SeidrError } from "../../types";
 import { camelToKebab, kebabToCamel } from "../../util/string";
-import { isEmpty } from "../../util/type-guards/primitive-types";
+import { isEmpty, isStr } from "../../util/type-guards/primitive-types";
 
 /**
  * The options for the case proxy.
@@ -105,25 +105,25 @@ export function createCaseProxy<
 
   const proxy = new Proxy({} as T, {
     has(_, prop) {
-      if (typeof prop !== "string") return false;
+      if (!isStr(prop)) return false;
       const key = getStorageKey(prop);
       return key in storage;
     },
     get(_, prop) {
       if (prop === "toString") return caseProxy.toString;
-      if (typeof prop !== "string") return undefined;
+      if (!isStr(prop)) return undefined;
       const key = getStorageKey(prop);
       return storage[key];
     },
     set(_, prop, value) {
-      if (typeof prop !== "string") return false;
+      if (!isStr(prop)) return false;
       const key = getStorageKey(prop);
       storage[key] = value;
       onUpdate?.(key, value);
       return true;
     },
     deleteProperty(_, prop) {
-      if (typeof prop !== "string") return false;
+      if (!isStr(prop)) return false;
       const key = getStorageKey(prop);
       if (key in storage) {
         delete storage[key];
@@ -138,7 +138,7 @@ export function createCaseProxy<
         .map((k) => getPublicPath(k));
     },
     getOwnPropertyDescriptor(_target, prop) {
-      if (typeof prop !== "string") return undefined;
+      if (!isStr(prop)) return undefined;
       const key = getStorageKey(prop);
       if (key in storage) {
         return {

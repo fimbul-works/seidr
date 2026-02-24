@@ -1,9 +1,9 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { STORAGE_LOCAL, STORAGE_SESSION } from "../constants";
 import { runWithRenderContext, setMockRenderContextForTests } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { storageConfig } from "./storage";
-import { STORAGE_LOCAL, STORAGE_SESSION } from "./types";
 import { useState } from "./use-state";
 
 // Mock binding to verify calls

@@ -1,5 +1,5 @@
-import { getNextSeidrId, getRenderContext } from "../render-context";
 import { createRenderFeature, getFeature, getRenderFeature, setFeature } from "../render-context/feature";
+import { getNextSeidrId, getRenderContext } from "../render-context/render-context";
 
 const RANDOM_FEATURE_ID = "seidr.rng";
 
@@ -8,10 +8,9 @@ const RANDOM_FEATURE_ID = "seidr.rng";
  * @returns The random number generator feature.
  */
 const getRandomRenderFeature = () =>
-  getRenderFeature<[number, number, number, number] | undefined>(RANDOM_FEATURE_ID) ??
-  createRenderFeature<[number, number, number, number] | undefined>({
+  getRenderFeature<[number, number, number, number]>(RANDOM_FEATURE_ID) ??
+  createRenderFeature<[number, number, number, number]>({
     id: RANDOM_FEATURE_ID,
-    defaultValue: () => undefined,
     serialize: (v) => v,
     deserialize: (v) => v,
   });

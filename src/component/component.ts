@@ -1,10 +1,8 @@
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
-import { getRenderContext } from "../render-context";
 import { getFeature } from "../render-context/feature";
-import { getNextComponentId } from "../render-context/get-next-id";
-import { getRenderContextID } from "../render-context/render-context";
+import { getNextComponentId, getRenderContext, getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import type { CleanupFunction } from "../types";
@@ -100,7 +98,7 @@ export const component = <P = void>(
         attachedParent = parent;
         comp.onAttached?.(parent);
 
-        children.forEach((c) => c.attached(parent));
+        children.forEach((c) => !c.parentNode && c.attached(parent));
       },
       removeChild(childComponent: Component) {
         children.delete(childComponent.id);
@@ -194,7 +192,7 @@ export const component = <P = void>(
     }
 
     // Apply root element attributes
-    if (!parent) {
+    if (!parent && !process.env.CORE_DISABLE_SSR) {
       /**
        * Recursively applies the seidrRoot dataset attribute to the first HTMLElement found.
        * @param {ComponentChildren} item - The child to search

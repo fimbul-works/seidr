@@ -1,7 +1,7 @@
 import type { ComponentType } from "../../component/types";
 import { mount } from "../../dom/mount";
 import type { CleanupFunction } from "../../types";
-import { isUndefined } from "../../util/type-guards/primitive-types";
+import { isEmpty } from "../../util/type-guards/primitive-types";
 import { clearHydrationData } from "./clear-hydration-data";
 import type { HydrationTarget } from "./node-map";
 import { setHydrationData } from "./set-hydration-data";
@@ -16,12 +16,12 @@ import type { HydrationData } from "./types";
  * @param {HydrationData} hydrationData - The previously captured hydration data
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  */
-export function hydrate<T extends ComponentType>(
+export const hydrate = <T extends ComponentType>(
   factory: T,
   container: HTMLElement,
   hydrationData: HydrationData,
-): CleanupFunction {
-  if (isUndefined(hydrationData.ctxID)) {
+): CleanupFunction => {
+  if (isEmpty(hydrationData.ctxID)) {
     console.warn("Hydration data is missing context ID, falling back to normal mount");
     return mount(factory, container);
   }
@@ -34,4 +34,4 @@ export function hydrate<T extends ComponentType>(
   clearHydrationData();
 
   return unmount;
-}
+};

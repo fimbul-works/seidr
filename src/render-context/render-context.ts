@@ -1,3 +1,4 @@
+import { isClient } from "../util/environment/client";
 import { renderContext } from "./storage";
 import type { RenderContext } from "./types";
 
@@ -14,7 +15,11 @@ export let getRenderContext = (): RenderContext => renderContext;
  * @param {(() => RenderContext)} fn
  * @internal
  */
-export const setInternalRenderContext = (fn: () => RenderContext) => (getRenderContext = fn);
+export let setInternalRenderContext: (fn: () => RenderContext) => void;
+
+if (!isClient() || process.env.VITEST) {
+  setInternalRenderContext = (fn: () => RenderContext) => (getRenderContext = fn);
+}
 
 /**
  * Set the render context ID (used during hydration to match server-side IDs).
@@ -36,3 +41,15 @@ export const setRenderContextID = (id: number) => {
  * @returns {number} The render context ID.
  */
 export const getRenderContextID = () => getRenderContext().ctxID;
+
+/**
+ * Gets the next available Seidr ID for the RenderContext.
+ * @returns {number} The next available Seidr ID
+ */
+export const getNextSeidrId = (): number => getRenderContext().sID++ + 1;
+
+/**
+ * Gets the next available component ID for the RenderContext.
+ * @returns {number} The next available component ID
+ */
+export const getNextComponentId = (): number => getRenderContext().cID++ + 1;

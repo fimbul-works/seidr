@@ -19,11 +19,12 @@ export const TYPE_COMPONENT_FACTORY = 101;
 /** Seidr type property. */
 export const TYPE_PROP = "$type";
 
-/** Seidr cleanup function. */
-export const SEIDR_CLEANUP = Symbol("seidrCleanup");
-
 /** Prefix used for marker comments */
 export const SEIDR_COMPONENT_START_PREFIX = "";
 
 /** Suffix used for marker comments */
 export const SEIDR_COMPONENT_END_PREFIX = "/";
+
+/** Storage type constants */
+export const STORAGE_SESSION = "session";
+export const STORAGE_LOCAL = "local";

@@ -1,4 +1,5 @@
 import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../../constants";
+import { isFn } from "../../../util/type-guards/primitive-types";
 import { ServerNodeList } from "../server-node-list";
 import type { SupportedNodeTypes } from "./types";
 
@@ -238,7 +239,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
     const listeners = this.eventListeners.get(event.type);
     if (!listeners) return true;
     for (const listener of listeners) {
-      if (typeof listener === "function") {
+      if (isFn(listener)) {
         listener(event);
       } else {
         listener.handleEvent(event);

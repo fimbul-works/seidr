@@ -1,3 +1,4 @@
+import { isStr } from "../../util/type-guards/primitive-types";
 import type { ServerNode } from "./types";
 
 /**
@@ -13,7 +14,7 @@ export class ServerNodeList implements NodeList {
     // biome-ignore lint/correctness/noConstructorReturn: Proxy for index-based access]
     return new Proxy(this, {
       get(target, prop, receiver) {
-        if (typeof prop === "string" && !Number.isNaN(Number(prop))) {
+        if (isStr(prop) && !Number.isNaN(Number(prop))) {
           return target.nodes[Number(prop)] || null;
         }
         return Reflect.get(target, prop, receiver);

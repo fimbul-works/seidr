@@ -19,7 +19,6 @@ import {
   isSeidr,
   isStr,
   isTextNode,
-  isUndefined,
 } from ".";
 
 describe("Type Guard Utilities", () => {
@@ -202,30 +201,6 @@ describe("Type Guard Utilities", () => {
         if (isStr(value)) {
           const typed = value;
           expect(typeof typed).toBe("string");
-        }
-      });
-    });
-
-    describe("isUndefined", () => {
-      it("should return true for undefined", () => {
-        expect(isUndefined(undefined)).toBe(true);
-      });
-
-      it("should return false for null", () => {
-        expect(isUndefined(null)).toBe(false);
-      });
-
-      it("should return false for defined values", () => {
-        expect(isUndefined(0)).toBe(false);
-        expect(isUndefined("")).toBe(false);
-        expect(isUndefined(false)).toBe(false);
-      });
-
-      it("should narrow type correctly", () => {
-        const value: unknown = undefined;
-        if (isUndefined(value)) {
-          const typed = value;
-          expect(typed).toBeUndefined();
         }
       });
     });

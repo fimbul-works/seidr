@@ -4,20 +4,15 @@ import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
 
 export const clientReplace = {
-  // Production build
-  "process.env.NODE_ENV": JSON.stringify("production"),
   "process.env.SEIDR_TEST_SSR": "false",
   "process.env.USE_SCHEDULER": "true",
   "process.env.VITEST": "false",
 };
 
 export const nodeReplace = {
-  // Production build
-  "process.env.NODE_ENV": JSON.stringify("production"),
   "process.env.SEIDR_TEST_SSR": "false",
   "process.env.USE_SCHEDULER": "false",
   "process.env.VITEST": "false",
-  // Disable client bundle guards
   window: "undefined",
 };
 
@@ -48,6 +43,7 @@ export const makeClientBundle = (input, output, cjs = true, values = {}) => ({
     }),
   ],
   treeshake,
+  context: "window",
 });
 
 export const makeNodeBundle = (input, output, cjs = true, values = {}) => ({

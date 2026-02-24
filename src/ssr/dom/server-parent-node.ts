@@ -1,5 +1,6 @@
 import { TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
 import { SeidrError } from "../../types";
+import { isStr } from "../../util/type-guards/primitive-types";
 import type { ServerNodeList } from "./server-node-list";
 import type { ServerElement, ServerNode, ServerParentNode } from "./types";
 
@@ -117,7 +118,7 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
 
   parentNode.append = (...nodes: (ServerNode | string)[]) => {
     for (const n of nodes) {
-      if (typeof n !== "string") {
+      if (!isStr(n)) {
         insertRaw(n as ServerNode, null);
       }
     }
@@ -127,7 +128,7 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
     const reversed = [...nodes].reverse();
     const ref = (node.childNodes as ServerNodeList).serverNodes[0] || null;
     for (const n of reversed) {
-      if (typeof n !== "string") {
+      if (!isStr(n)) {
         insertRaw(n as ServerNode, ref);
       }
     }
