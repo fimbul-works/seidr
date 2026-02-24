@@ -1,7 +1,10 @@
 import { describe, expect, test } from "vitest";
 import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
+import { createServerDocument } from "./server-document";
 import { createServerNode } from "./server-node";
 import { applyParentNodeMethods } from "./server-parent-node";
+import { createServerElement } from "./server-element";
+import { createServerTextNode } from "./server-text-node";
 
 describe("ServerNode", () => {
   test("creates a node with the correct type", () => {
@@ -14,13 +17,12 @@ describe("ServerNode", () => {
     expect(createServerNode(TYPE_COMMENT_NODE).nodeName).toBe("#comment");
     expect(createServerNode(TYPE_DOCUMENT).nodeName).toBe("#document");
 
-    const el = createServerNode(TYPE_ELEMENT);
-    (el as any).tagName = "DIV";
+    const el = createServerElement("div");
     expect(el.nodeName).toBe("DIV");
   });
 
   test("ownerDocument and parentNode tracking", () => {
-    const doc = createServerNode(TYPE_DOCUMENT) as any;
+    const doc = createServerDocument();
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT, doc));
     const child = createServerNode(TYPE_TEXT_NODE);
 
@@ -63,7 +65,7 @@ describe("ServerNode", () => {
     parent.appendChild(child);
     expect(child.isConnected).toBe(false);
 
-    const root = applyParentNodeMethods(doc as any);
+    const root = applyParentNodeMethods(doc);
     root.appendChild(parent);
 
     expect(parent.isConnected).toBe(true);
@@ -87,10 +89,8 @@ describe("ServerNode", () => {
 
   test("textContent", () => {
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const t1 = createServerNode(TYPE_TEXT_NODE);
-    (t1 as any).data = "Hello ";
-    const t2 = createServerNode(TYPE_TEXT_NODE);
-    (t2 as any).data = "World";
+    const t1 = createServerTextNode("Hello ");
+    const t2 = createServerTextNode("World");
 
     parent.appendChild(t1);
     parent.appendChild(t2);
@@ -103,7 +103,7 @@ describe("ServerNode", () => {
 
   test("remove", () => {
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const child = createServerNode(TYPE_TEXT_NODE);
+    const child = createServerTextNode("Hello");
     parent.appendChild(child);
 
     expect(parent.childNodes.length).toBe(1);
@@ -118,11 +118,10 @@ describe("ServerNode", () => {
   });
 
   test("nodeValue", () => {
-    const node = createServerNode(TYPE_TEXT_NODE);
-    (node as any).data = "foo";
+    const node = createServerTextNode("foo");
     expect(node.nodeValue).toBe("foo");
 
-    const el = createServerNode(TYPE_ELEMENT);
+    const el = createServerElement("div");
     expect(el.nodeValue).toBe(null);
   });
 });

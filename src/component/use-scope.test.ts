@@ -10,7 +10,7 @@ describe("useScope", () => {
       return null;
     })();
     expect(capturedScope).toBeDefined();
-    expect(capturedScope.track).toBeTypeOf("function");
+    expect(capturedScope.onUnmount).toBeTypeOf("function");
   });
 
   it("should throw error when called outside a component", () => {

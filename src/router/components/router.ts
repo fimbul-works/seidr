@@ -89,7 +89,7 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
     };
 
     scope.observe(currentPath, updateRoutes);
-    scope.track(() => currentComponent?.unmount());
+    scope.onUnmount(() => currentComponent?.unmount());
 
     return currentComponent;
   }, "Router")({ routes, fallback });

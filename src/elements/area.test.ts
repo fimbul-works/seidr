@@ -13,7 +13,7 @@ describeDualMode("Area Element Parity", () => {
   });
 
   itHasParity("renders with download (boolean)", () => {
-    return $area({ href: "/image.png", download: true as any });
+    return $area({ href: "/image.png", download: true });
   });
 
   itHasParity("renders with referrerpolicy", () => {

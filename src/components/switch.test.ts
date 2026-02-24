@@ -67,19 +67,19 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
   });
 
-  it("should call onAttached when switching components", () => {
-    const onAttached = vi.fn();
+  it("should call onMount when switching components", () => {
+    const onMount = vi.fn();
     const mode = new Seidr("A");
 
     const CompA = () => {
       const scope = useScope();
-      scope.onAttached = (parent) => onAttached("A", parent);
+      scope.onMount((parent) => onMount("A", parent));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
       const scope = useScope();
-      scope.onAttached = (parent) => onAttached("B", parent);
+      scope.onMount((parent) => onMount("B", parent));
       return $("span", { textContent: "View B" });
     };
 
@@ -93,11 +93,11 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     };
 
     unmount = mount(Parent, container);
-    expect(onAttached).toHaveBeenCalledWith("A", expect.anything());
+    expect(onMount).toHaveBeenCalledWith("A", expect.anything());
 
-    onAttached.mockClear();
+    onMount.mockClear();
     mode.value = "B";
-    expect(onAttached).toHaveBeenCalledWith("B", expect.anything());
+    expect(onMount).toHaveBeenCalledWith("B", expect.anything());
   });
 
   it("should destroy scope of previous component when switching", () => {
@@ -107,13 +107,13 @@ describeDualMode("Switch Component", ({ getDocument }) => {
 
     const CompA = () => {
       const scope = useScope();
-      scope.track(() => (scopeADestroyed = true));
+      scope.onUnmount(() => (scopeADestroyed = true));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
       const scope = useScope();
-      scope.track(() => (scopeBDestroyed = true));
+      scope.onUnmount(() => (scopeBDestroyed = true));
       return $("span", { textContent: "View B" });
     };
 

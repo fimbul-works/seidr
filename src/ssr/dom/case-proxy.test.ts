@@ -147,7 +147,7 @@ describe("CaseProxy", () => {
     });
 
     test("clears existing keys with prefix before parsing", () => {
-      const storage = { "data-old": "value", other: "keep" } as any;
+      const storage = { "data-old": "value", other: "keep" } as Record<string, string>;
       const { fromString } = createCaseProxy<any, any>({
         prefix: "data-",
         storage,

@@ -16,20 +16,20 @@ describe("$ Bidirectional Mapping", () => {
     afterEach(() => cleanup());
 
     it("should handle camelCase data props", () => {
-      const el = $("div", { dataUserId: "123" } as any);
+      const el = $("div", { dataUserId: "123" });
       expect(el.toString()).toBe('<div data-user-id="123"></div>');
       expect(el.dataset.userId).toBe("123");
     });
 
     it("should handle camelCase aria props", () => {
-      const el = $("div", { ariaLabel: "test" } as any);
+      const el = $("div", { ariaLabel: "test" });
       expect(el.toString()).toBe('<div aria-label="test"></div>');
       expect(el.getAttribute("aria-label")).toBe("test");
     });
 
     it("should handle reactive camelCase data props", () => {
       const userId = new Seidr("123");
-      const el = $("div", { dataUserId: userId } as any);
+      const el = $("div", { dataUserId: userId });
       expect(el.toString()).toContain('data-user-id="123"');
 
       userId.value = "456";
@@ -38,7 +38,7 @@ describe("$ Bidirectional Mapping", () => {
 
     it("should handle reactive style object", () => {
       const color = new Seidr("red");
-      const el = $("div", { style: { color } } as any);
+      const el = $("div", { style: { color } });
       expect(el.style.toString()).toBe("color: red;");
 
       color.value = "blue";
@@ -56,20 +56,20 @@ describe("$ Bidirectional Mapping", () => {
     afterEach(() => cleanup());
 
     it("should handle camelCase data props", () => {
-      const el = $("div", { dataUserId: "123" } as any);
+      const el = $("div", { dataUserId: "123" });
       expect(el.dataset.userId).toBe("123");
       expect(el.getAttribute("data-user-id")).toBe("123");
     });
 
     it("should handle camelCase aria props", () => {
-      const el = $("div", { ariaLabel: "test" } as any);
+      const el = $("div", { ariaLabel: "test" });
       // Not all browsers support el.ariaLabel, but el.getAttribute('aria-label') should work
       expect(el.getAttribute("aria-label")).toBe("test");
     });
 
     it("should handle reactive camelCase data props", () => {
       const userId = new Seidr("123");
-      const el = $("div", { dataUserId: userId } as any);
+      const el = $("div", { dataUserId: userId });
       expect(el.dataset.userId).toBe("123");
 
       userId.value = "456";

@@ -3,11 +3,11 @@
 Renders a dynamic list of components from an observable array with optimized key-based diffing.
 
 **Parameters:**
-- `observable` - [`Seidr<T[]>`](../seidr/README.md#seidr-class) array observable
+- `observable` - [`Seidr<T[]>`](Seidr.md#seidr-class) array observable
 - `getKey` - Function to extract unique key: `(item: T) => string | number`
 - `factory` - Function to create components: `(item: T) => SeidrComponent`
 
-**Returns:** A [`SeidrComponent`](../component/README.md#seidrcomponent-type) rooted in a Comment node.
+**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
 
 **Example:**
 ```typescript

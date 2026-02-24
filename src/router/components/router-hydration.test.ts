@@ -23,7 +23,7 @@ describe("Router Hydration Unmounting", () => {
 
   const Home = component(() => {
     const scope = useScope();
-    scope.track(() => {
+    scope.onUnmount(() => {
       homeUnmounted = true;
     });
     return $("div", { className: "home", textContent: "Home" });
@@ -31,7 +31,7 @@ describe("Router Hydration Unmounting", () => {
 
   const Fallback = component(() => {
     const scope = useScope();
-    scope.track(() => {
+    scope.onUnmount(() => {
       fallbackUnmounted = true;
     });
     return $("div", { className: "fallback", textContent: "404" });

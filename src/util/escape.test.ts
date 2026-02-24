@@ -8,8 +8,8 @@ describe("escape", () => {
     });
 
     it("should handle non-string values", () => {
-      expect(escapeHTML(123 as any)).toBe("123");
-      expect(escapeHTML(true as any)).toBe("true");
+      expect(escapeHTML(123)).toBe("123");
+      expect(escapeHTML(true)).toBe("true");
     });
   });
 

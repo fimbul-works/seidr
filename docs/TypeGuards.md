@@ -222,7 +222,7 @@ console.log(isHTMLElement(42));       // false
 
 ### isSeidrComponent()
 
-Check if a value is a [`SeidrComponent`](Components.md#seidrcomponent-type) object.
+Check if a value is a [`SeidrComponent`](components.md#seidrcomponent-type) object.
 
 **Parameters:**
 - `value` - Value to test

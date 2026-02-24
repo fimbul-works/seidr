@@ -28,7 +28,7 @@ const MyComponent = () => {
 ```
 
 **Singleton Pattern:**
-The first time `useState()` is called for a key, it creates the [`Seidr`](../seidr/docs/Seidr.md#seidr-class) instance. All subsequent calls with the same key (in any component) return that same instance. This simplifies cross-component synchronization.
+The first time `useState()` is called for a key, it creates the [`Seidr`](Seidr.md#seidr-class) instance. All subsequent calls with the same key (in any component) return that same instance. This simplifies cross-component synchronization.
 
 **SSR Note:**
 `useState()` is safe for SSR because it resolves the state context lazily. During server rendering, state is automatically isolated to the specific request context.

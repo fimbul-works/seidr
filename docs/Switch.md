@@ -3,11 +3,11 @@
 Switches between different components based on an observable value.
 
 **Parameters:**
-- `observable` - [`Seidr<T>`](../seidr/README.md#seidr-class) observable
+- `observable` - [`Seidr<T>`](Seidr.md#seidr-class) observable
 - `cases` - Object or Map: `{ [key: string]: () => SeidrComponent }`
 - `defaultCase?` - Optional fallback factory function
 
-**Returns:** A [`SeidrComponent`](../component/README.md#seidrcomponent-type) rooted in a Comment node.
+**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
 
 **Example:**
 ```typescript

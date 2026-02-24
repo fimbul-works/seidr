@@ -43,7 +43,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
     try {
       const scope = useScope();
-      scope.track(child.unmount);
+      scope.onUnmount(child.unmount);
     } catch (_e) {
       // Ignore if not in a component context
     }

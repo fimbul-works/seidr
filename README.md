@@ -361,7 +361,7 @@ const UserProfile = ({ name, initialAge = 30 }) => {
   const age = new Seidr(initialAge);
 
   // Track custom cleanup logic
-  scope.track(() => console.log('Profile destroyed'));
+  scope.onUnmount(() => console.log('Profile destroyed'));
 
   return $div({ className: 'user-profile' }, [
     $span({ textContent: name }),
@@ -449,7 +449,7 @@ const GoodComponent = () => {
   const count = new Seidr(0);
 
   const interval = setInterval(() => count.value++, 1000);
-  scope.track(() => clearInterval(interval));
+  scope.onUnmount(() => clearInterval(interval));
 
   return $div({ textContent: count });
 };

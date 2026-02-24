@@ -66,7 +66,7 @@ export const getCurrentPath = (): Seidr<string> => {
     if (component) {
       const popStateHandler = () => (clientPathState!.value = window.location.pathname.toString());
       window.addEventListener("popstate", popStateHandler);
-      component.track(() => window.removeEventListener("popstate", popStateHandler));
+      component.onUnmount(() => window.removeEventListener("popstate", popStateHandler));
     }
   }
 

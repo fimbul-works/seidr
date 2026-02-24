@@ -65,7 +65,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
           lastNode = hydrationMap.get(lastNode) || lastNode;
         }
 
-        if (lastNode !== (currentAnchor as any).previousSibling) {
+        if (lastNode !== currentAnchor.previousSibling) {
           mountComponent(itemComponent, currentAnchor);
         }
 
@@ -77,7 +77,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
     };
 
     scope.observe(observable, update);
-    scope.track(() => {
+    scope.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();
     });

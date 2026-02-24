@@ -13,7 +13,7 @@ describe("Memory Leak Benchmark", () => {
       const scope = useScope();
 
       // Add some internal tracking
-      scope.track(() => {});
+      scope.onUnmount(() => {});
 
       return $div({}, [$span({ textContent: state }), $span({ textContent: derived })]);
     };
@@ -46,7 +46,7 @@ describe("Memory Leak Benchmark", () => {
       const count = new Seidr(0);
 
       const interval = setInterval(() => count.value++, 1000);
-      scope.track(() => {
+      scope.onUnmount(() => {
         clearInterval(interval);
         cleanupCalled++;
       });

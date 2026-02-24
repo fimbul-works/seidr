@@ -107,12 +107,12 @@ export function applyParentNodeMethods<T extends ServerNode>(node: T): T & Serve
   parentNode.appendChild = <U extends ServerNode>(child: U): U => insertRaw(child, null);
 
   parentNode.removeChild = <U extends ServerNode>(child: U): U => {
-    const index = (node.childNodes as ServerNodeList).nodes.indexOf(child as any);
+    const index = (node.childNodes as ServerNodeList).nodes.indexOf(child as unknown as Node);
     if (index === -1) {
       throw new SeidrError("The node to be removed is not a child of this node.");
     }
     (node.childNodes as ServerNodeList).nodes.splice(index, 1);
-    (child as any).parentNode = null;
+    (child as ServerNode).parentNode = null;
     return child;
   };
 

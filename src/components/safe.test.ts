@@ -72,7 +72,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
       const comp = Safe(
         () => {
           const scope = useScope();
-          scope.track(() => {
+          scope.onUnmount(() => {
             originalScopeDestroyed = true;
           });
           throw new SeidrError("Error");
@@ -154,7 +154,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         },
         (_err) => {
           const scope = useScope();
-          scope.track(() => {
+          scope.onUnmount(() => {
             errorBoundaryDestroyed = true;
           });
           return $("div");
@@ -174,14 +174,14 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
       const comp = Safe(
         () => {
           const scope = useScope();
-          scope.track(() => {
+          scope.onUnmount(() => {
             cleanupLog.push("factory cleanup");
           });
           throw new SeidrError("Error");
         },
         (_err) => {
           const scope = useScope();
-          scope.track(() => {
+          scope.onUnmount(() => {
             cleanupLog.push("error boundary cleanup");
           });
           return $("div");

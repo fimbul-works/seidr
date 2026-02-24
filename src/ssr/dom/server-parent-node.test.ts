@@ -1,7 +1,9 @@
 import { describe, expect, test } from "vitest";
-import { TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
+import { TYPE_ELEMENT } from "../../constants";
+import { createServerElement } from "./server-element";
 import { createServerNode } from "./server-node";
 import { applyParentNodeMethods } from "./server-parent-node";
+import { createServerTextNode } from "./server-text-node";
 
 describe("ServerParentNode", () => {
   test("append and prepend", () => {
@@ -52,8 +54,8 @@ describe("ServerParentNode", () => {
 
   test("getElementById", () => {
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const child = createServerNode(TYPE_ELEMENT);
-    (child as any).id = "foo";
+    const child = createServerElement("div");
+    child.id = "foo";
     parent.appendChild(child);
 
     expect(parent.getElementById("foo")).toBe(child);
@@ -62,10 +64,10 @@ describe("ServerParentNode", () => {
 
   test("getElementsByClassName", () => {
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const child1 = createServerNode(TYPE_ELEMENT);
-    (child1 as any).className = "foo bar";
-    const child2 = createServerNode(TYPE_ELEMENT);
-    (child2 as any).className = "foo";
+    const child1 = createServerElement("div");
+    child1.className = "foo bar";
+    const child2 = createServerElement("div");
+    child2.className = "foo";
 
     parent.appendChild(child1);
     parent.appendChild(child2);
@@ -76,10 +78,8 @@ describe("ServerParentNode", () => {
 
   test("text node merging", () => {
     const parent = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const t1 = createServerNode(TYPE_TEXT_NODE);
-    t1.textContent = "Hello ";
-    const t2 = createServerNode(TYPE_TEXT_NODE);
-    t2.textContent = "World";
+    const t1 = createServerTextNode("Hello ");
+    const t2 = createServerTextNode("World");
 
     parent.appendChild(t1);
     parent.appendChild(t2);
@@ -103,7 +103,7 @@ describe("ServerParentNode", () => {
   test("moves node from existing parent", () => {
     const p1 = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
     const p2 = applyParentNodeMethods(createServerNode(TYPE_ELEMENT));
-    const child = createServerNode(TYPE_ELEMENT);
+    const child = createServerElement("div");
 
     p1.appendChild(child);
     expect(p1.childNodes.length).toBe(1);

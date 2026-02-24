@@ -53,7 +53,7 @@ const PomodoroTimer = () => {
     audio.play().catch(() => {});
   };
 
-  scope.track(
+  scope.onUnmount(
     isRunning.observe((running) => {
       if (running) {
         interval = setInterval(tick, 1000);

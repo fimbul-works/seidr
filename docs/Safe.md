@@ -6,7 +6,7 @@ Create a component with error boundary protection. `Safe` wraps a component fact
 - `factory` - Function that creates the component element: `() => Node`
 - `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error) => Node`
 
-**Returns:** [`SeidrComponent`](../component/README.md#seidrcomponent-type)
+**Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
 
 ```typescript
 import { Safe, useScope, $div, $h2, $p } from '@fimbul-works/seidr';
@@ -32,7 +32,7 @@ const UserProfile = Safe(
 - **Scope Cleanup**: Original component scope is destroyed before error boundary is called
 - **Fresh Scope**: Error boundary receives a new [`ComponentScope`](types.md#componentscope-type) for tracking its own resources (via [`useScope`](useScope.md#usescope))
 - **Root Components**: Errors in root components without `Safe` wrapper are logged to console
-- **Resource Tracking**: Error boundary can track its own cleanup functions via [`scope.track`](../component/README.md#componentscope-type)
+- **Resource Tracking**: Error boundary can track its own cleanup functions via [`scope.onUnmount`](../component/README.md#componentscope-type)
 
 ```typescript
 import { Safe, useScope, $div } from '@fimbul-works/seidr';
@@ -41,7 +41,7 @@ const SafeComponent = Safe(
   () => {
     const scope = useScope();
     // Track resources
-    scope.track(() => console.log('Component cleanup'));
+    scope.onUnmount(() => console.log('Component cleanup'));
 
     throw new SeidrError('Failed');
     return $div();
@@ -49,7 +49,7 @@ const SafeComponent = Safe(
   (err) => {
     const scope = useScope();
     // Error boundary gets its own scope for resource tracking
-    scope.track(() => console.log('Error boundary cleanup'));
+    scope.onUnmount(() => console.log('Error boundary cleanup'));
 
     return $div({ textContent: 'Fallback UI' });
   }

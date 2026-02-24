@@ -1,6 +1,6 @@
 import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
-import { createServerNodeList } from "./server-node-list";
-import type { ServerDocument, ServerElement, ServerNode, SupportedNodeTypes } from "./types";
+import { createServerNodeList, type ServerNodeList } from "./server-node-list";
+import type { ServerDocument, ServerElement, ServerNode, ServerTextNode, SupportedNodeTypes } from "./types";
 
 /**
  * Creates a base server-side node.
@@ -11,7 +11,7 @@ import type { ServerDocument, ServerElement, ServerNode, SupportedNodeTypes } fr
  * @param {ServerDocument | null} ownerDocument The owner document of the node.
  * @returns {ServerNode<T>} The created node.
  */
-export function createServerNode<T extends SupportedNodeTypes>(
+export function createServerNode<T extends SupportedNodeTypes = SupportedNodeTypes>(
   type: T,
   ownerDocument: ServerDocument | null = null,
 ): ServerNode<T> {
@@ -19,7 +19,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
   const nodes: ServerNode[] = [];
   const childNodes = createServerNodeList(nodes);
 
-  const node: ServerNode<T> = {
+  const node = {
     get nodeType() {
       return type;
     },
@@ -27,7 +27,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
     get nodeName(): string {
       switch (type) {
         case TYPE_ELEMENT:
-          return (node as any).tagName?.toUpperCase() || "";
+          return (node as unknown as ServerElement).tagName?.toUpperCase() || "";
         case TYPE_TEXT_NODE:
           return "#text";
         case TYPE_COMMENT_NODE:
@@ -41,7 +41,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
 
     get ownerDocument(): ServerDocument | null {
       if (ownerDocument) return ownerDocument;
-      return node.parentNode?.ownerDocument ?? null;
+      return (node as ServerNode).parentNode?.ownerDocument ?? null;
     },
 
     get childNodes(): NodeList {
@@ -49,7 +49,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
     },
 
     get nodeValue(): string | null {
-      return (node as any).data ?? null;
+      return (node as unknown as ServerTextNode).data ?? null;
     },
 
     get parentNode(): ServerNode | null {
@@ -61,7 +61,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
     },
 
     get parentElement(): ServerElement | null {
-      const p = node.parentNode;
+      const p = (node as ServerNode).parentNode;
       return p && p.nodeType === TYPE_ELEMENT ? (p as ServerElement) : null;
     },
 
@@ -70,41 +70,41 @@ export function createServerNode<T extends SupportedNodeTypes>(
     },
 
     get nextSibling(): ServerNode | null {
-      const p = this.parentNode as any;
+      const p = (node as ServerNode).parentNode;
       if (!p) return null;
-      const siblings = (p.childNodes as any).serverNodes;
+      const siblings = (p.childNodes as ServerNodeList).serverNodes;
       if (!siblings) return null;
-      const index = siblings.indexOf(this as any);
+      const index = siblings.indexOf(node as ServerNode);
       if (index === -1) return null;
       return siblings[index + 1] ?? null;
     },
 
     get previousSibling(): ServerNode | null {
-      const p = this.parentNode as any;
+      const p = (node as ServerNode).parentNode;
       if (!p) return null;
-      const siblings = (p.childNodes as any).serverNodes;
+      const siblings = (p.childNodes as ServerNodeList).serverNodes;
       if (!siblings) return null;
-      const index = siblings.indexOf(this as any);
+      const index = siblings.indexOf(node as ServerNode);
       if (index === -1) return null;
       return siblings[index - 1] ?? null;
     },
 
     get isConnected(): boolean {
       if (type === TYPE_DOCUMENT) return true;
-      return node.parentNode?.isConnected || false;
+      return (node as ServerNode).parentNode?.isConnected || false;
     },
 
     contains(other: ServerNode): boolean {
       if (other === node) return true;
-      for (const child of node.childNodes) {
-        if ((child as any).contains?.(other)) return true;
+      for (const child of (node as ServerNode).childNodes) {
+        if (child.contains?.(other as unknown as Node)) return true;
       }
       return false;
     },
 
     get textContent(): string | null {
       if (type === TYPE_TEXT_NODE || type === TYPE_COMMENT_NODE) {
-        return (node as any).data;
+        return (node as unknown as Text).data;
       }
 
       return nodes.map((n) => n.textContent).join("");
@@ -112,14 +112,14 @@ export function createServerNode<T extends SupportedNodeTypes>(
 
     set textContent(value: string | null) {
       if (type === TYPE_TEXT_NODE || type === TYPE_COMMENT_NODE) {
-        (node as any).data = value ?? "";
+        (node as unknown as Text).data = value ?? "";
       } else {
         nodes.length = 0;
       }
     },
 
     remove(): void {
-      const self = this as any;
+      const self = this as unknown as Node;
       if (self.parentNode) {
         self.parentNode.removeChild(self);
       }
@@ -128,7 +128,7 @@ export function createServerNode<T extends SupportedNodeTypes>(
     toString(): string {
       return nodes.map((n) => n.toString()).join("");
     },
-  };
+  } as ServerNode<T>;
 
   return node;
 }

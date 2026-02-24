@@ -1,5 +1,4 @@
 import { expect, it } from "vitest";
-import { TYPE_ELEMENT, TYPE_PROP } from "../constants";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup/dual-mode";
@@ -12,7 +11,6 @@ describeDualMode("Dual-Mode PoC", ({ isSSR, getDocument }) => {
     expect(el.tagName.toLowerCase()).toBe("div");
     expect(el.getAttribute("id")).toBe("test-id");
     expect(el.className).toBe("btn primary");
-    expect(el[TYPE_PROP]).toBe(TYPE_ELEMENT);
   });
 
   it("should handle text content", () => {

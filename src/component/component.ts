@@ -34,6 +34,7 @@ export const component = <P = void>(
     // Lifecycle state
     const children = new Map<string, Component>();
     let cleanups: CleanupFunction[] = [];
+    let mountCallbacks: ((parent: Node) => void)[] = [];
     let destroyed = false;
     let attachedParent: Node | null = null;
 
@@ -45,7 +46,7 @@ export const component = <P = void>(
       get id() {
         return id;
       },
-      get isDestroyed() {
+      get isUnmounted() {
         return destroyed;
       },
       get parent() {
@@ -54,7 +55,7 @@ export const component = <P = void>(
       get parentNode() {
         return attachedParent;
       },
-      track(cleanup: CleanupFunction): void {
+      onUnmount(cleanup: CleanupFunction): void {
         if (destroyed) {
           if (process.env.NODE_ENV === "development") {
             console.warn(`[${id}] Tracking cleanup on already destroyed component`);
@@ -65,7 +66,7 @@ export const component = <P = void>(
       },
       observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
         const cleanup = observable.observe((val) => executeInContext(comp, () => callback(val)));
-        comp.track(cleanup);
+        comp.onUnmount(cleanup);
         return cleanup;
       },
       waitFor<T>(promise: Promise<T>): Promise<T> {
@@ -79,13 +80,20 @@ export const component = <P = void>(
       },
       child(childComponent: Component) {
         children.set(childComponent.id, childComponent);
-        comp.track(() => childComponent.unmount());
+        comp.onUnmount(() => childComponent.unmount());
 
         if (attachedParent) {
           childComponent.attached(attachedParent);
         }
 
         return childComponent;
+      },
+      onMount(callback: (parent: Node) => void) {
+        if (attachedParent) {
+          callback(attachedParent);
+        } else {
+          mountCallbacks.push(callback);
+        }
       },
       attached(parent: Node) {
         if (attachedParent) {
@@ -96,7 +104,8 @@ export const component = <P = void>(
         }
 
         attachedParent = parent;
-        comp.onAttached?.(parent);
+        mountCallbacks.forEach((cb) => cb(parent));
+        mountCallbacks = [];
 
         children.forEach((c) => !c.parentNode && c.attached(parent));
       },
@@ -216,7 +225,7 @@ export const component = <P = void>(
       applyRootMarker(comp.element);
     }
 
-    // Register as child component after factory runs to ensure onAttached handlers are set
+    // Register as child component after factory runs to ensure onMount handlers are set
     parent?.child(comp);
 
     return comp;

@@ -11,7 +11,7 @@ describeDualMode("Iframe Element Parity", () => {
       height: "300",
       allowFullscreen: true,
       loading: "lazy",
-      sandbox: "allow-scripts" as any,
+      sandbox: "allow-scripts" as unknown as DOMTokenList,
     });
   });
 });

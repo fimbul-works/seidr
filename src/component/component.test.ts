@@ -52,7 +52,7 @@ describeDualMode("component", () => {
 
     const comp = component(() => {
       const scopeParam = useScope();
-      scopeParam.track(() => (scopeDestroyed = true));
+      scopeParam.onUnmount(() => (scopeDestroyed = true));
       return $("div");
     })();
 
@@ -68,7 +68,7 @@ describeDualMode("component", () => {
     comp.unmount();
 
     const cleanup = vi.fn();
-    comp.track(cleanup);
+    comp.onUnmount(cleanup);
 
     expect(cleanup).toHaveBeenCalled();
   });
@@ -76,7 +76,7 @@ describeDualMode("component", () => {
   it("should unmount child components recursively", () => {
     let childDestroyed = false;
     const Child = component(() => {
-      useScope().track(() => (childDestroyed = true));
+      useScope().onUnmount(() => (childDestroyed = true));
       return $("span");
     });
 
@@ -91,5 +91,57 @@ describeDualMode("component", () => {
 
     parent.unmount();
     expect(childDestroyed).toBe(true);
+  });
+
+  it("should support multiple onMount callbacks", () => {
+    const mount1 = vi.fn();
+    const mount2 = vi.fn();
+    const parentNode = document.createElement("div");
+
+    const comp = component(() => {
+      const scope = useScope();
+      scope.onMount(mount1);
+      scope.onMount(mount2);
+      return $("span");
+    })();
+
+    expect(mount1).not.toHaveBeenCalled();
+    expect(mount2).not.toHaveBeenCalled();
+
+    comp.attached(parentNode);
+
+    expect(mount1).toHaveBeenCalledWith(parentNode);
+    expect(mount2).toHaveBeenCalledWith(parentNode);
+  });
+
+  it("should execute onMount immediately if already attached", () => {
+    const mount = vi.fn();
+    const parentNode = document.createElement("div");
+
+    const comp = component(() => {
+      return $("span");
+    })();
+
+    comp.attached(parentNode);
+
+    comp.onMount(mount);
+    expect(mount).toHaveBeenCalledWith(parentNode);
+  });
+
+  it("should support multiple onUnmount callbacks", () => {
+    const unmount1 = vi.fn();
+    const unmount2 = vi.fn();
+
+    const comp = component(() => {
+      const scope = useScope();
+      scope.onUnmount(unmount1);
+      scope.onUnmount(unmount2);
+      return $("span");
+    })();
+
+    comp.unmount();
+
+    expect(unmount1).toHaveBeenCalled();
+    expect(unmount2).toHaveBeenCalled();
   });
 });

@@ -2,6 +2,7 @@ import { TYPE_ELEMENT } from "../../../constants";
 import type { NodeTypeDocument, NodeTypeElement } from "../../../types";
 import { isStr } from "../../../util/type-guards/primitive-types";
 import { ServerNodeList } from "../server-node-list";
+import type { ServerNode } from "../types";
 import { SSRChildNode } from "./ssr-child-node";
 import { SSRDocument } from "./ssr-document";
 import { SSRTextNode } from "./ssr-text-node";
@@ -60,7 +61,7 @@ export abstract class SSRParentNode<T extends NodeTypeDocument | NodeTypeElement
   querySelectorAll(selectors: string): NodeListOf<Element> {
     const children = this.children as unknown as Element[];
     return new ServerNodeList(
-      children.filter((node) => node.matches(selectors)) as any,
+      children.filter((node) => node.matches(selectors)) as unknown as ServerNode[],
     ) as unknown as NodeListOf<Element>;
   }
 }

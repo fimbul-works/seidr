@@ -81,7 +81,7 @@ describe("ServerElement", () => {
   });
 
   it("should handle boolean properties correctly via proxy", () => {
-    const el = createServerElement("input") as any;
+    const el = createServerElement("input");
     el.disabled = true;
     expect(el.getAttribute("disabled")).toBe(true);
     expect(el.disabled).toBe(true);
@@ -157,7 +157,7 @@ describe("ServerElement", () => {
   });
 
   it("should not leak internal attributes", () => {
-    const el = createServerElement("div") as any;
+    const el = createServerElement("div");
     // tagName is internal
     expect(el.toString()).toBe("<div></div>");
 
@@ -168,7 +168,7 @@ describe("ServerElement", () => {
   });
 
   it("should handle camelCase aria properties via proxy", () => {
-    const el = createServerElement("div") as any;
+    const el = createServerElement("div");
     el.ariaLabel = "test";
     expect(el.getAttribute("aria-label")).toBe("test");
     expect(el.ariaLabel).toBe("test");

@@ -4,9 +4,9 @@ Conditionally renders a component based on a boolean observable.
 
 **Parameters:**
 - `condition` - [`Seidr<boolean>`](Seidr.md#seidr-class) observable
-- `factory` - Function that returns a [`SeidrComponent`](component.md#seidrcomponent-type) or DOM Node
+- `factory` - Function that returns a [`SeidrComponent`](components.md#seidrcomponent-type) or DOM Node
 
-**Returns:** A [`SeidrComponent`](component.md#seidrcomponent-type) rooted in a Comment node.
+**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
 
 **Example:**
 ```typescript

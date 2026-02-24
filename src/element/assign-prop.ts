@@ -75,7 +75,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        scope.track(
+        scope.onUnmount(
           cssText.bind(
             el,
             (val, element) =>
@@ -95,7 +95,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
         styleProp = camelToKebab(styleProp as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {
-        scope.track(
+        scope.onUnmount(
           styleValue.bind(
             el,
             (val, element) =>
@@ -111,7 +111,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
 
     if (isSeidr(value)) {
       if (isStr(value.value)) {
-        scope.track(
+        scope.onUnmount(
           value.bind(el, (val, element) => {
             const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) ||
               element) as HTMLElement;
@@ -124,7 +124,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
           }),
         );
       } else {
-        scope.track(
+        scope.onUnmount(
           value.bind(
             el,
             (val, element) =>
@@ -145,11 +145,10 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   const isBoolProp = BOOL_PROPS.has(effectiveProp.toLowerCase());
 
   if (isSeidr(value)) {
-    scope.track(
+    scope.onUnmount(
       value.bind(el, (val, element) => {
-        const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement;
-        const activeTarget = activeElement as any;
-        if (useAttribute || !(effectiveProp in activeTarget) || isBoolProp) {
+        const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as any;
+        if (useAttribute || !(effectiveProp in activeElement) || isBoolProp) {
           if (isBoolProp) {
             val ? activeElement.setAttribute(effectiveProp, "") : activeElement.removeAttribute(effectiveProp);
           } else {
@@ -158,8 +157,8 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
               : activeElement.setAttribute(effectiveProp, val);
           }
         }
-        if (!(useAttribute || !(effectiveProp in activeTarget))) {
-          activeTarget[effectiveProp] = val;
+        if (!(useAttribute || !(effectiveProp in activeElement))) {
+          activeElement[effectiveProp] = val;
         }
       }),
     );

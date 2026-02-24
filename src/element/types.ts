@@ -31,7 +31,7 @@ type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
  *
  * @template T - The type to extract writable keys from
  */
-type WritableKeys<T> = {
+export type WritableKeys<T> = {
   [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
 }[keyof T];
 
@@ -66,7 +66,7 @@ type NoStyle<T> = Omit<T, "style">;
  * @template T - The underlying scalar type
  */
 export type ReactiveValue<T> = [T] extends [Scalar]
-  ? T | Seidr<string> | Seidr<string | null> | Seidr<number> | Seidr<number | null> | Seidr<boolean>
+  ? T | Seidr<string> | Seidr<string | null> | Seidr<number> | Seidr<number | null> | Seidr<boolean> | true
   : [T] extends [infer A]
     ? T | Seidr<A> | null
     : T;

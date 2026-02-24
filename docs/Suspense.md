@@ -8,7 +8,7 @@ Handles asynchronous loading states for Promises with loading and error fallback
 - `loading` - Optional factory for loading state UI: `() => SeidrNode`
 - `error` - Optional factory for error state UI: `(err: Error) => SeidrNode`
 
-**Returns:** A [`SeidrComponent`](../component/README.md#seidrcomponent-type) rooted in a Comment node.
+**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
 
 **Example:**
 ```typescript
@@ -37,7 +37,7 @@ mount(App, document.body);
 
 **Reactive Usage:**
 
-You can pass a [`Seidr<Promise<T>>`](../seidr/README.md#seidr-class) to `Suspense` to automatically handle promise updates. This is powerful for data fetching that depends on other reactive state.
+You can pass a [`Seidr<Promise<T>>`](Seidr.md#seidr-class) to `Suspense` to automatically handle promise updates. This is powerful for data fetching that depends on other reactive state.
 
 ```typescript
 const userId = new Seidr('1');

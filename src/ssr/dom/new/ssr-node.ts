@@ -128,7 +128,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
   }
 
   isSameNode(otherNode: Node | null): boolean {
-    return (this as any) === otherNode;
+    return (this as Node) === otherNode;
   }
 
   compareDocumentPosition(_other: Node): number {

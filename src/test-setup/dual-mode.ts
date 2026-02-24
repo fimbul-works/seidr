@@ -173,6 +173,7 @@ function normalizeHtml(html: string): string {
   return normalized.replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
 }
 
+import type { LifecycleScope } from "../component";
 import * as useScopeModule from "../component/use-scope";
 
 /**
@@ -184,8 +185,8 @@ export function mockUseScope() {
 
   beforeEach(() => {
     spy = vi.spyOn(useScopeModule, "useScope").mockReturnValue({
-      track: () => {},
-    } as any);
+      onUnmount: () => {},
+    } as unknown as LifecycleScope);
   });
 
   afterEach(() => {

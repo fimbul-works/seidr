@@ -42,13 +42,13 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     expect(parentEl.innerHTML).not.toContain("Visible");
   });
 
-  it("should call onAttached when component is shown", () => {
-    const onAttached = vi.fn();
+  it("should call onMount when component is shown", () => {
+    const onMount = vi.fn();
     const isVisible = new Seidr(false);
 
     const View = () => {
       const scope = useScope();
-      scope.onAttached = (parent) => onAttached(parent);
+      scope.onMount((parent) => onMount(parent));
       return $("span", { textContent: "Visible" });
     };
 
@@ -59,7 +59,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     unmount = mount(Parent, container);
 
     isVisible.value = true;
-    expect(onAttached).toHaveBeenCalledWith(expect.anything());
+    expect(onMount).toHaveBeenCalledWith(expect.anything());
   });
 
   it("should destroy scope when condition becomes false", () => {
@@ -68,7 +68,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
 
     const View = () => {
       const scope = useScope();
-      scope.track(() => (scopeDestroyed = true));
+      scope.onUnmount(() => (scopeDestroyed = true));
       return $("span", { textContent: "Visible" });
     };
 

@@ -6,8 +6,8 @@ Create DOM elements with reactive props support.
 
 **Parameters:**
 - `tag` - HTML tag name
-- `props` - Object with element properties (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
-- `children` - Array of child elements, strings, functions, or [`SeidrComponents`](../component/README.md#seidrcomponent-type)
+- `props` - Object with element properties (can include [`Seidr`](Seidr.md#seidr-class) observables)
+- `children` - Array of child elements, strings, functions, or [`SeidrComponents`](components.md#seidrcomponent-type)
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
@@ -33,7 +33,7 @@ Create reusable element creator functions with optional default props.
 **Parameters:**
 - `tag` - HTML tag name
 - `props` - Object with element properties (can include Seidr observables)
-- `initialProps` - Default properties to apply to all created elements (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
+- `initialProps` - Default properties to apply to all created elements (can include [`Seidr`](Seidr.md#seidr-class) observables)
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
@@ -63,7 +63,7 @@ const submitButton = $primaryButton({ textContent: 'Submit' });
 All HTML elements available with [`$()`](#create-dom-elements) prefix:
 
 **Parameters:**
-- `props` - Object with element properties (can include [`Seidr`](../seidr/README.md#seidr-class) observables)
+- `props` - Object with element properties (can include [`Seidr`](Seidr.md#seidr-class) observables)
 - `children` - Array of child elements or functions that return elements
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)

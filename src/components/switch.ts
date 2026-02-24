@@ -53,7 +53,7 @@ export const Switch = <
 
     // Use scope.observe to ensure updates happen in the component's context
     scope.observe(observable, update);
-    scope.track(() => currentComponent?.unmount());
+    scope.onUnmount(() => currentComponent?.unmount());
 
     return currentComponent;
   }, name ?? "Switch")();

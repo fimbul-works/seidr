@@ -93,10 +93,10 @@ const INTERNAL_ATTRIBUTES = new Set([
 /**
  * Creates a server-side element.
  */
-export function createServerElement<K extends keyof HTMLElementTagNameMap>(
-  tagName: K,
-  ownerDocument: ServerDocument | null = null,
-): ServerElement<K> {
+export function createServerElement<
+  K extends keyof HTMLElementTagNameMap,
+  R extends ServerElement<K> & Partial<HTMLElementTagNameMap[K]> = ServerElement<K> & Partial<HTMLElementTagNameMap[K]>,
+>(tagName: K, ownerDocument: ServerDocument | null = null): R {
   const element = applyParentNodeMethods(createServerNode(TYPE_ELEMENT, ownerDocument)) as ServerElement<K>;
   const tag = tagName.toUpperCase() as K;
 
@@ -144,18 +144,18 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
           if (key === "cssText") {
             styleProxy.fromString(value);
           } else {
-            target[key as any] = value;
+            target[key] = value;
           }
         };
       }
 
       if (prop === "getPropertyValue") {
-        return (key: string) => target[key as any];
+        return (key: string) => target[key];
       }
 
       if (prop === "removeProperty") {
         return (key: string) => {
-          delete target[key as any];
+          delete target[key];
           return "";
         };
       }
@@ -449,7 +449,7 @@ export function createServerElement<K extends keyof HTMLElementTagNameMap>(
       target.setAttribute(effectiveProp, value);
       return true;
     },
-  });
+  }) as R;
 
   return proxy;
 }

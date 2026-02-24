@@ -4,7 +4,7 @@ import { $output } from "./output";
 describeDualMode("Output Element Parity", () => {
   mockUseScope();
 
-  itHasParity("renders with for and form", () => {
-    return $output({ for: "a b", form: "f1", name: "res" } as any, ["Result"]);
+  itHasParity("renders with htmlFor and form", () => {
+    return $output({ htmlFor: "a b", form: "f1", name: "res" } as any, ["Result"]);
   });
 });

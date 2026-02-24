@@ -159,7 +159,7 @@ describe("SSR Integration Tests", () => {
             className: todo.completed ? "completed" : "",
             textContent: todo.text,
           }),
-        ) as any),
+        )),
       ]);
 
       const html = list.toString();

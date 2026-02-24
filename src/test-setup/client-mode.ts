@@ -14,16 +14,16 @@ import type { TestEnvironmentState } from "./types";
 export function enableClientMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
-    vitest: (process.env as any).VITEST,
-    window: (global as any).window,
+    vitest: process.env.VITEST as boolean | undefined,
+    window: global.window,
     getDocument: getDocument,
   };
 
   delete process.env.SEIDR_TEST_SSR;
-  delete (process.env as any).VITEST;
+  delete process.env.VITEST;
 
   if (!isClient()) {
-    (global as any).window = currentState.window || {};
+    global.window = currentState.window || {};
   }
 
   setInternalRenderContext(getRenderContext);
@@ -32,9 +32,9 @@ export function enableClientMode(): CleanupFunction {
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
-    if (currentState.vitest !== undefined) (process.env as any).VITEST = currentState.vitest;
-    else delete (process.env as any).VITEST;
-    if (currentState.window !== undefined) (global as any).window = currentState.window;
+    if (currentState.vitest !== undefined) process.env.VITEST = currentState.vitest ? "true" : "false";
+    else delete process.env.VITEST;
+    if (currentState.window !== undefined) global.window = currentState.window;
     if (currentState.getDocument !== undefined) setInternalGetDocument(currentState.getDocument);
   };
 }

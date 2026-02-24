@@ -14,7 +14,7 @@ describeDualMode("Anchor Element Parity", () => {
 
   itHasParity("renders with download attribute (boolean)", () => {
     // In Seidr, boolean true renders as the attribute name
-    return $a({ href: "/file.pdf", download: true as any }, ["Download"]);
+    return $a({ href: "/file.pdf", download: true }, ["Download"]);
   });
 
   itHasParity("renders with hreflang", () => {

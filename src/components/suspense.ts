@@ -1,10 +1,10 @@
-import { NO_HYDRATE } from "../seidr/constants";
 import { component } from "../component/component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { getComponent, mountComponent } from "../component/util";
 import { Seidr, unwrapSeidr } from "../seidr";
+import { NO_HYDRATE } from "../seidr/constants";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { wrapError } from "../util/wrap-error";
 
@@ -57,7 +57,7 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
      * @returns {Promise<void>} A promise that resolves when the status has been updated.
      */
     const handlePromise = async (prom: Promise<T>): Promise<void> => {
-      if (!prom || scope.isDestroyed) {
+      if (!prom || scope.isUnmounted) {
         return;
       }
 
@@ -86,7 +86,7 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
 
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      scope.track(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
+      scope.onUnmount(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
     }
 
     /**
@@ -109,7 +109,7 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
     };
 
     scope.observe(status, update);
-    scope.track(() => currentComponent?.unmount());
+    scope.onUnmount(() => currentComponent?.unmount());
 
     return currentComponent;
   }, name ?? "Suspense")();

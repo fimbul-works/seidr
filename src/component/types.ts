@@ -65,13 +65,13 @@ export interface LifecycleScope {
   /**
    * Whether the component has been destroyed.
    */
-  readonly isDestroyed: boolean;
+  readonly isUnmounted: boolean;
 
   /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
-  track(cleanup: CleanupFunction): void;
+  onUnmount(cleanup: CleanupFunction): void;
 
   /**
    * Observes a Seidr observable and executes the callback within the component's context.
@@ -97,9 +97,10 @@ export interface LifecycleScope {
   child(component: Component): Component;
 
   /**
-   * Optional callback triggered when the component is attached to a parent.
+   * Callback triggered when the component is attached to a parent.
+   * @param {(parent: Node) => void} callback - The callback to execute when attached
    */
-  onAttached?: (parent: Node) => void;
+  onMount(callback: (parent: Node) => void): void;
 }
 
 /**

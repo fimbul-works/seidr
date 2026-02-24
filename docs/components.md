@@ -108,7 +108,7 @@ const Timer = () => {
   const interval = setInterval(() => count.value++, 1000);
 
   // Cleanup function
-  scope.track(() => clearInterval(interval));
+  scope.onUnmount(() => clearInterval(interval));
 
   return $div({ textContent: count });
 };
@@ -210,37 +210,38 @@ export interface SeidrComponent {
 
 ---
 
-### ComponentScope type
+### LifecycleScope type
 
 ```typescript
 /**
- * Manages cleanup functions and child components within a component's lifecycle.
- *
- * The ComponentScope provides a centralized way to track all resources that
- * need to be cleaned up when a component is destroyed. This prevents memory
- * leaks and ensures proper resource management throughout the application.
+ * Lifecycle and resource management interface for components.
+ * This is the public API surface exposed via useScope().
  */
-export interface ComponentScope {
+export interface LifecycleScope {
   /**
    * The unique identifier of the component.
    */
   readonly id: string;
 
   /**
-   * Whether the scope has been destroyed.
+   * Whether the component has been destroyed.
    */
-  readonly isDestroyed: boolean;
+  readonly isUnmounted: boolean;
 
   /**
    * Tracks a cleanup function to be executed when the component is destroyed.
-   *
-   * Use this method to register any cleanup logic that should run when
-   * the component is no longer needed, such as removing event listeners,
-   * cleaning up reactive bindings, or clearing timeouts.
-   *
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
-  track(cleanup: CleanupFunction): void;
+  onUnmount(cleanup: CleanupFunction): void;
+
+  /**
+   * Observes a Seidr observable and executes the callback within the component's context.
+   * @template T
+   * @param {Seidr<T>} observable - The observable to watch
+   * @param {(val: T) => void} callback - The callback to execute when value changes
+   * @returns {CleanupFunction} Cleanup function to stop observation
+   */
+  observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction;
 
   /**
    * Register a promise to wait for (SSR integration).
@@ -250,37 +251,17 @@ export interface ComponentScope {
   waitFor<T>(promise: Promise<T>): Promise<T>;
 
   /**
-   * Tracks a child component for automatic cleanup when this component is destroyed.
-   *
-   * Child components are automatically destroyed when their parent component
-   * is destroyed, creating a proper cleanup hierarchy. This method ensures
-   * that child components are properly managed and cleaned up.
-   *
-   * @param {SeidrComponent} component - The child component to track
-   * @returns {SeidrComponent} The same child SeidrComponent
+   * Tracks a child component for automatic cleanup.
+   * @param {Component} component - The child component to track
+   * @returns {Component} The same child Component
    */
-  child(component: SeidrComponent): SeidrComponent;
+  child(component: Component): Component;
 
   /**
-   * Destroys all tracked resources and marks the scope as destroyed.
-   *
-   * This method executes all registered cleanup functions in the order
-   * they were added. Once destroyed, the scope can no longer be used
-   * to track new cleanup functions.
+   * Callback triggered when the component is attached to a parent.
+   * @param {(parent: Node) => void} callback - The callback to execute when attached
    */
-  destroy(): void;
-
-  /**
-   * Notifies the scope that it has been attached to the DOM.
-   * This will trigger onAttached and propagate to child components.
-   * @param parent - The parent DOM node
-   */
-  attached(parent: Node): void;
-
-  /**
-   * Optional callback triggered when the component is attached to a parent.
-   */
-  onAttached?: (parent: Node) => void;
+  onMount(callback: (parent: Node) => void): void;
 }
 ```
 

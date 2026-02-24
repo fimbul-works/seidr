@@ -71,13 +71,13 @@ describeDualMode("List Component", ({ getDocument }) => {
     expect(spans[1].textContent).toBe("B");
   });
 
-  it("should call onAttached when components are added to the list", () => {
-    const onAttached = vi.fn();
+  it("should call onMount when components are added to the list", () => {
+    const onMount = vi.fn();
     const items = new Seidr([{ id: 1, text: "A" }]);
 
     const Item = component((props: { id: number }) => {
       const scope = useScope();
-      scope.onAttached = (parent) => onAttached(props.id, parent);
+      scope.onMount((parent) => onMount(props.id, parent));
       return $("span", { textContent: `Item ${props.id}` });
     }, "Item");
 
@@ -87,12 +87,12 @@ describeDualMode("List Component", ({ getDocument }) => {
 
     cleanup = mount(Parent, container);
 
-    expect(onAttached).toHaveBeenCalledWith(1, expect.anything());
-    onAttached.mockClear();
+    expect(onMount).toHaveBeenCalledWith(1, expect.anything());
+    onMount.mockClear();
 
     // Add another item
     items.value = [...items.value, { id: 2, text: "B" }];
-    expect(onAttached).toHaveBeenCalledWith(2, expect.anything());
+    expect(onMount).toHaveBeenCalledWith(2, expect.anything());
   });
 
   it("should destroy scopes of removed items", () => {
@@ -104,7 +104,7 @@ describeDualMode("List Component", ({ getDocument }) => {
 
     const Item = (props: { id: number }) => {
       const scope = useScope();
-      scope.track(() => destroyedIds.push(props.id));
+      scope.onUnmount(() => destroyedIds.push(props.id));
       return $("span", { textContent: `Item ${props.id}` });
     };
 
