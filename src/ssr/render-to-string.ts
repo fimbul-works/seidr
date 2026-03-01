@@ -51,8 +51,8 @@ export async function renderToString<C extends SeidrNode>(
       }
 
       const activeScope = options.scope ?? new SSRScope();
-      setFeature(getOnPromiseFeature(), (p: Promise<any>) => activeScope.addPromise(p), ctx);
       setSSRScope(activeScope);
+      setFeature(getOnPromiseFeature(), (p: Promise<any>) => activeScope.addPromise(p), ctx);
 
       try {
         const comp = wrapComponent(factory)();

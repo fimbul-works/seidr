@@ -1,9 +1,9 @@
 import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
-import { consumeHydrationNode } from "../ssr/hydrate/hydrate-tree";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { type HydrationTarget, isHydrationTarget } from "../ssr/hydrate/node-map";
-import { isDOMNode } from "../util/type-guards/dom-node-types";
+import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { $text } from "./node/text";
@@ -54,8 +54,23 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   const childNode = isDOMNode(child) ? child : $text(child);
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
-    if (isHydrationTarget(target as Node) && consumeHydrationNode(target as HydrationTarget, childNode)) {
+    // If we're hydrating, the node might already be in the DOM.
+    // If it is, and it's already a child of this parent, we skip.
+    if (childNode.parentNode === target) {
       return;
+    }
+
+    if (process.env.NODE_ENV === "development") {
+      const tag = isHTMLElement(childNode)
+        ? childNode.tagName.toLowerCase()
+        : isTextNode(childNode)
+          ? "#text"
+          : "unknown";
+      const parentTag = isHTMLElement(target) ? (target as any).tagName : "Node";
+      console.warn(`[Hydration Mismatch] Injected node <${tag}> as it was not a child of <${parentTag}>.`, {
+        childNode,
+        target,
+      });
     }
   }
 

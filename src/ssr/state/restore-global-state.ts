@@ -21,6 +21,7 @@ export const restoreGlobalState = (state: Record<string, unknown>): void => {
     if (isSeidr(existingValue)) {
       existingValue.value = value;
     } else {
+      // Create a initial Seidr that useState will pick up
       ctxStates.set(targetSymbol, new Seidr(value));
     }
   }

@@ -2,7 +2,7 @@ import { getRenderContext, getRenderContextID } from "../render-context/render-c
 import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
 import { isClient } from "../util/environment/client";
-import { buildStructureMap } from "./structure/structure-map";
+import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
 import type { SSRScopeCapture } from "./types";
 
 /**
@@ -172,9 +172,11 @@ export class SSRScope {
       }
     }
 
-    const components: Record<string, any[][]> = {};
+    console.log("Building structure map for component", this.components.size);
+
+    const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
-      if (comp.executionSequence && comp.executionSequence.length > 0) {
+      if (comp.nodeCreateIndex && comp.nodeCreateIndex.length > 0) {
         components[comp.id] = buildStructureMap(comp);
       }
     }

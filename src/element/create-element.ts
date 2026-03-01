@@ -2,6 +2,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { isServer } from "../util/environment/server";
 import { isArray, isEmpty } from "../util/type-guards";
 import { assignProps } from "./assign-props";
@@ -42,6 +43,23 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     }
 
     return el;
+  }
+
+  const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
+  if (hydrationContext) {
+    const el = hydrationContext.claim() as HTMLElementTagNameMap[K];
+    if (el) {
+      if (props) {
+        assignProps(el, props);
+      }
+
+      if (isArray(children)) {
+        children.forEach((child) => appendChild(el, child));
+      } else if (!isEmpty(children)) {
+        appendChild(el, children);
+      }
+      return el;
+    }
   }
 
   const el = getDocument().createElement(tagName);

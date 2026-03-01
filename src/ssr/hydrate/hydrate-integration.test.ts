@@ -4,17 +4,18 @@ import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { useState } from "../../state/use-state";
-import { enableClientMode } from "../../test-setup";
+import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { clearHydrationData, hydrate } from "./index";
 
 describe("Hydration Integration", () => {
   let container: HTMLElement;
-  let cleanupClientMode: CleanupFunction;
+  let cleanupMode: CleanupFunction;
   let unmount: CleanupFunction | undefined;
 
   beforeEach(() => {
+    cleanupMode = enableSSRMode();
     // We start in a clean state, not in client mode yet for SSR.
     container = document.createElement("div");
   });
@@ -22,12 +23,10 @@ describe("Hydration Integration", () => {
   afterEach(() => {
     unmount?.();
     clearHydrationData();
-    if (cleanupClientMode) {
-      cleanupClientMode();
-    }
+    cleanupMode?.();
   });
 
-  const TestApp = () => {
+  function TestApp() {
     const [count, setCount] = useState("count", 0);
     const [title] = useState("title", "My App");
     const items = new Seidr([1, 2, 3]);
@@ -47,15 +46,18 @@ describe("Hydration Integration", () => {
         ),
       ]),
     ]);
-  };
+  }
 
   it("should natively reuse existing DOM nodes on successful hydration", async () => {
     // 1. SSR Pass
     const { html, hydrationData } = await renderToString(TestApp);
 
     // 2. Client Setup
-    cleanupClientMode = enableClientMode();
+    cleanupMode(); // Cleanup SSR mode
+    cleanupMode = enableClientMode();
     container.innerHTML = html;
+
+    console.log(JSON.stringify(hydrationData, null, 2));
 
     // Grab references to the raw DOM nodes before hydration
     const originalAppDiv = container.querySelector("#app");
@@ -88,7 +90,8 @@ describe("Hydration Integration", () => {
   it("should bail out if there is a DOM mismatch (e.g. text difference)", async () => {
     const { html, hydrationData } = await renderToString(TestApp);
 
-    cleanupClientMode = enableClientMode();
+    cleanupMode(); // Cleanup SSR mode
+    cleanupMode = enableClientMode();
     container.innerHTML = html;
 
     // Mutate the HTML to create a mismatch
@@ -111,7 +114,8 @@ describe("Hydration Integration", () => {
   it("should bail out if there is a tag mismatch", async () => {
     const { html, hydrationData } = await renderToString(TestApp);
 
-    cleanupClientMode = enableClientMode();
+    cleanupMode(); // Cleanup SSR mode
+    cleanupMode = enableClientMode();
     container.innerHTML = html;
 
     // Mutate the HTML to create a severe tag mismatch
@@ -139,12 +143,13 @@ describe("Hydration Integration", () => {
     // SSR output renders "My App"
     const { html, hydrationData } = await renderToString(TestApp);
 
-    cleanupClientMode = enableClientMode();
+    cleanupMode(); // Cleanup SSR mode
+    cleanupMode = enableClientMode();
     container.innerHTML = html;
 
     // We deliberately alter the server state to something else before hydration
-    if (hydrationData.features) {
-      hydrationData.features[GLOBAL_STATE_FEATURE_ID].title = "Modified App Title";
+    if (hydrationData.features?.[GLOBAL_STATE_FEATURE_ID]) {
+      hydrationData.features[GLOBAL_STATE_FEATURE_ID]["title"] = "Modified App Title";
     }
 
     // Since the client receives this modified hydration state, the component will render with this new state

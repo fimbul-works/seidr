@@ -1,4 +1,5 @@
 import type { HydrationData } from "./hydrate/types";
+import type { StructureMapTuple } from "./structure/structure-map";
 
 /**
  * Result of SSR rendering containing HTML and hydration data.
@@ -20,7 +21,7 @@ export interface SSRScopeCapture {
   observables: Record<string, any>;
 
   /**
-   * Component ID -> Execution Sequence Path mapping.
+   * Component ID -> Structure Map mapping.
    */
-  components: Record<string, [string, number[]][]>;
+  components: Record<string, StructureMapTuple[]>;
 }

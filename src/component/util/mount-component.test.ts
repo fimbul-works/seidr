@@ -23,9 +23,12 @@ describe("mountComponent", () => {
     mountComponent(Comp, anchor);
 
     expect(container.innerHTML).not.toContain(`${SEIDR_COMPONENT_START_PREFIX}Single-`);
-    expect(container.innerHTML).toContain('<div class="single" data-seidr-root="');
-    expect(container.innerHTML).toContain('">Single</div>');
     expect(container.innerHTML).not.toContain(`${SEIDR_COMPONENT_END_PREFIX}Single-`);
+
+    const div = container.children.item(0);
+    expect(div?.getAttribute("data-seidr-root")).toBe("0");
+    expect(div?.className).toBe("single");
+    expect(div?.textContent).toBe("Single");
 
     // Check order: Element -> Anchor
     const nodes = Array.from(container.childNodes);
@@ -41,10 +44,17 @@ describe("mountComponent", () => {
 
     mountComponent(Comp, anchor);
 
-    expect(container.innerHTML).toContain('<div class="one" data-seidr-root="');
-    expect(container.innerHTML).toContain('">One</div>');
-    expect(container.innerHTML).toContain('<div class="two">Two</div>');
-    expect(container.innerHTML).toContain("<!--ArrayComp-");
+    expect(container.innerHTML).toContain(`${SEIDR_COMPONENT_START_PREFIX}ArrayComp-`);
+    expect(container.innerHTML).toContain(`${SEIDR_COMPONENT_END_PREFIX}ArrayComp-`);
+
+    const one = container.children.item(0);
+    expect(one?.getAttribute("data-seidr-root")).toBe("0");
+    expect(one?.className).toBe("one");
+    expect(one?.textContent).toBe("One");
+
+    const two = container.children.item(1);
+    expect(two?.className).toBe("two");
+    expect(two?.textContent).toBe("Two");
 
     const nodes = Array.from(container.childNodes);
     // Start -> Div1 -> Div2 -> End -> Anchor

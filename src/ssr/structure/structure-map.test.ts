@@ -2,18 +2,19 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../../component/component";
 import { $canvas, $div, $h1, $p, $section } from "../../elements";
 import { enableSSRMode } from "../../test-setup/ssr-mode";
+import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { renderStructureMapToTree, type StructureMapTuple, treeToStructureMap } from "./structure-map";
 
 describe("buildStructureMap integration", () => {
-  let restoreSSR: () => void;
+  let cleanupmode: CleanupFunction;
 
   beforeEach(() => {
-    restoreSSR = enableSSRMode();
+    cleanupmode = enableSSRMode();
   });
 
   afterEach(() => {
-    restoreSSR();
+    cleanupmode?.();
   });
 
   it("builds a correct structure map end-to-end via renderToString", async () => {
@@ -37,6 +38,7 @@ describe("buildStructureMap integration", () => {
 
     // Find the mapped IDs. We assume there's 'TestComp-1' and 'Message-2'
     const testCompId = Object.keys(hydrationData.components).find((id) => id.startsWith("TestComp"));
+    console.log("data", hydrationData);
     expect(testCompId).toBeDefined();
 
     const structureMap = hydrationData.components[testCompId!];

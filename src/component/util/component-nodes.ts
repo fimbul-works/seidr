@@ -10,10 +10,19 @@ import type { Component } from "../types";
  * @returns {Node} The first DOM node
  */
 export const getComponentFirstNode = (comp: Component): Node => {
-  if (comp.startMarker) return comp.startMarker;
+  if (comp.startMarker) {
+    return comp.startMarker;
+  }
+
   const el = comp.element;
-  if (isArray(el)) return el[0] as Node;
-  if (isComponent(el)) return getComponentFirstNode(el);
+  if (isArray(el)) {
+    return el[0] as Node;
+  }
+
+  if (isComponent(el)) {
+    return getComponentFirstNode(el);
+  }
+
   return el as Node;
 };
 
@@ -25,9 +34,18 @@ export const getComponentFirstNode = (comp: Component): Node => {
  * @returns {Node} The last DOM node
  */
 export const getComponentLastNode = (comp: Component): Node => {
-  if (comp.endMarker) return comp.endMarker;
+  if (comp.endMarker) {
+    return comp.endMarker;
+  }
+
   const el = comp.element;
-  if (isArray(el)) return el[el.length - 1] as Node;
-  if (isComponent(el)) return getComponentLastNode(el);
+  if (isArray(el)) {
+    return el[el.length - 1] as Node;
+  }
+
+  if (isComponent(el)) {
+    return getComponentLastNode(el);
+  }
+
   return el as Node;
 };

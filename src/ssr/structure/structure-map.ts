@@ -8,22 +8,22 @@ export type StructureMapTuple = [string, ...number[]];
  * Converts a component's execution sequence of DOM nodes into the Seidr Structure Map.
  */
 export function buildStructureMap(component: Component): StructureMapTuple[] {
-  const executionSequence = component.executionSequence;
-  if (!executionSequence || executionSequence.length === 0) {
+  const nodeCreateIndex = component.indexedNodes;
+  if (!nodeCreateIndex || nodeCreateIndex.length === 0) {
     return [];
   }
 
   // 1. Map Node to CreationIndex for O(1) child lookups
   const indexMap = new Map<Node, number>();
-  for (let i = 0; i < executionSequence.length; i++) {
-    indexMap.set(executionSequence[i], i);
+  for (let i = 0; i < nodeCreateIndex.length; i++) {
+    indexMap.set(nodeCreateIndex[i], i);
   }
 
   // 2. Build the output array
-  const structureMap: StructureMapTuple[] = new Array(executionSequence.length);
+  const structureMap: StructureMapTuple[] = new Array(nodeCreateIndex.length);
 
-  for (let i = 0; i < executionSequence.length; i++) {
-    const node = executionSequence[i];
+  for (let i = 0; i < nodeCreateIndex.length; i++) {
+    const node = nodeCreateIndex[i];
 
     // Check if it's a child component boundary
     const boundaryId = getComponentBoundaryId(node, component.id);

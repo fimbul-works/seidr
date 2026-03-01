@@ -176,7 +176,7 @@ export interface Component extends LifecycleScope {
    * Only present during SSR builds.
    * @internal
    */
-  executionSequence: Node[];
+  readonly indexedNodes: Node[];
 
   /**
    * Tracks a created node in the component's execution sequence.

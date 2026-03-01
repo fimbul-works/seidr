@@ -1,6 +1,7 @@
 import { getCurrentComponent } from "../component/component-stack";
 import { getFeature } from "../render-context/feature";
 import { Seidr, unwrapSeidr } from "../seidr";
+import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { isServer } from "../util/environment/server";
 import { isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
@@ -45,6 +46,9 @@ export const useState = <T>(
   if (!observable) {
     observable = new Seidr<T>(value as T);
     ctxStates.set(key, observable);
+  } else if (value !== undefined && observable.value !== value && !hasHydrationData()) {
+    // Only update if not hydrating and a new value is provided
+    observable.value = value;
   }
 
   // Persist state to storage if specified

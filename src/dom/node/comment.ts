@@ -1,4 +1,5 @@
 import { getCurrentComponent } from "../../component/component-stack";
+import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
 import { isServer } from "../../util/environment/server";
 import { getDocument } from "../get-document";
 
@@ -8,6 +9,17 @@ import { getDocument } from "../get-document";
  * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
+  const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
+  if (hydrationContext) {
+    const node = hydrationContext.claim() as Comment;
+    if (node) {
+      if (node.textContent !== text) {
+        node.textContent = text;
+      }
+      return node;
+    }
+  }
+
   const node = getDocument().createComment(text);
 
   if (!process.env.CORE_DISABLE_SSR && isServer()) {

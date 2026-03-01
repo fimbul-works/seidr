@@ -32,7 +32,11 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     // Child should NOT have markers
     expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Child-`);
     expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Child-`);
-    expect(container.innerHTML).toContain("<span>Child</span>");
+
+    expect(container.children[0]?.tagName).toBe("DIV");
+    expect(container.children[0]?.textContent).toBe("Child");
+    expect(container.children[0]?.children[0]?.tagName).toBe("SPAN");
+    expect(container.children[0]?.children[0]?.textContent).toBe("Child");
   });
 
   it("should switch between components", () => {

@@ -4,9 +4,18 @@ import type { SeidrChild } from "../element";
 import { getFeature } from "../render-context/feature";
 import { getNextComponentId, getRenderContext, getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
+import { getHydrationData } from "../ssr/hydrate/get-hydration-data";
+import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
+import {
+  getRootsForHydration,
+  HydrationContext,
+  popHydrationContext,
+  pushHydrationContext,
+} from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
+import { isServer } from "../util/environment/server";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -30,8 +39,9 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const numericId = getNextComponentId();
-    const fullComponentId = `${name}-${numericId}`;
+    const componentName = name || factory.name || "Component";
+    const componentId = getNextComponentId();
+    const fullComponentId = `${componentName}-${componentId}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -39,7 +49,22 @@ export const component = <P = void>(
     let mountCallbacks: ((parent: Node) => void)[] = [];
     let destroyed = false;
     let attachedParent: Node | null = null;
-    const executionSequence: Node[] = [];
+    const trackedNodes: Node[] = [];
+
+    // Check for hydration
+    let hydrationContext: HydrationContext | null = null;
+    if (!process.env.CORE_DISABLE_SSR && hasHydrationData()) {
+      const hData = getHydrationData();
+      if (hData?.components[fullComponentId]) {
+        const roots = getRootsForHydration(fullComponentId, hData.root as HTMLElement);
+        if (roots.length > 0) {
+          hydrationContext = new HydrationContext(fullComponentId, hData.components[fullComponentId], roots);
+          pushHydrationContext(hydrationContext);
+        } else if (process.env.NODE_ENV !== "production") {
+          console.warn(`[Hydration] No roots found for component ${fullComponentId}`);
+        }
+      }
+    }
 
     // Create Component instance
     const comp = {
@@ -58,13 +83,15 @@ export const component = <P = void>(
       get parentNode() {
         return attachedParent;
       },
-      executionSequence,
+      get indexedNodes() {
+        return trackedNodes;
+      },
       trackNode(node: Node) {
-        executionSequence.push(node);
+        trackedNodes.push(node);
       },
       onUnmount(cleanup: CleanupFunction): void {
         if (destroyed) {
-          if (process.env.NODE_ENV === "development") {
+          if (process.env.NODE_ENV !== "production") {
             console.warn(`[${fullComponentId}] Tracking cleanup on already destroyed component`);
           }
           return cleanup();
@@ -123,17 +150,14 @@ export const component = <P = void>(
       },
       attached(parent: Node) {
         if (attachedParent) {
-          if (process.env.NODE_ENV === "development") {
+          if (process.env.NODE_ENV !== "production") {
             console.warn(`[${fullComponentId}] Calling attached on an already attached component`);
           }
           return; // Already attached
         }
 
-        if (!process.env.CORE_DISABLE_SSR) {
-          const scope = getSSRScope();
-          if (scope) {
-            scope.registerComponent(comp);
-          }
+        if (!process.env.CORE_DISABLE_SSR && isServer()) {
+          getSSRScope()?.registerComponent(comp);
         }
 
         attachedParent = parent;
@@ -158,7 +182,7 @@ export const component = <P = void>(
       },
       unmount() {
         if (destroyed) {
-          if (process.env.NODE_ENV === "development") {
+          if (process.env.NODE_ENV !== "production") {
             console.warn(`[${fullComponentId}] Unmounting already unmounted component`);
           }
           return;
@@ -204,11 +228,9 @@ export const component = <P = void>(
     // Set as current component (Push to tree)
     push(comp);
 
-    if (!process.env.CORE_DISABLE_SSR) {
-      const scope = getSSRScope();
-      if (scope) {
-        scope.registerComponent(comp);
-      }
+    // Register component with SSR scope for hydration path mapping
+    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+      getSSRScope()?.registerComponent(comp);
     }
 
     try {
@@ -220,9 +242,11 @@ export const component = <P = void>(
       const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
 
       // Apply component id to all root elements
-      [...(isArray(element) ? element : [element])].forEach((el) =>
-        isHTMLElement(el) ? (el.dataset.seidrId = String(numericId)) : null,
-      );
+      if (!process.env.CORE_DISABLE_SSR) {
+        [...(isArray(element) ? element : [element])].forEach((el) =>
+          isHTMLElement(el) ? (el.dataset.seidrId = String(componentId)) : null,
+        );
+      }
 
       comp.element = element;
 
@@ -244,6 +268,9 @@ export const component = <P = void>(
       comp.unmount();
       throw err;
     } finally {
+      if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
+        popHydrationContext();
+      }
       pop();
     }
 
