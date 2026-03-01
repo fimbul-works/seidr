@@ -2,6 +2,7 @@ import { TYPE_ELEMENT } from "../../constants";
 import type { NodeTypeElement } from "../../types";
 import { escapeAttribute } from "../../util/escape";
 import { camelToKebab } from "../../util/string";
+import { isComment } from "../../util/type-guards/dom-node-types";
 import { isFn } from "../../util/type-guards/primitive-types";
 import type { SSRDocument } from "./ssr-document";
 import type { SSRNodeList } from "./ssr-node-list";
@@ -183,7 +184,10 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
 
   get textContent(): string {
     const children = this.childNodes as unknown as SSRNodeList;
-    return children.nodes.map((node) => node.textContent ?? "").join("");
+    return children.nodes
+      .filter((node) => !isComment(node))
+      .map((node) => node.textContent ?? "")
+      .join("");
   }
 
   set textContent(value: string | null) {
