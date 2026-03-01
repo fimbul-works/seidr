@@ -1,14 +1,16 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { component } from "../component/component";
+import { rootComponentFeature, rootNodeFeature } from "../dom/feature";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { getRenderContext } from "../render-context";
+import { setFeature } from "../render-context/feature";
 
 describe("Component Marker Optimization", () => {
   beforeEach(() => {
     const ctx = getRenderContext();
-    ctx.rootNode = undefined;
-    ctx.rootComponent = undefined;
+    setFeature(rootComponentFeature, undefined, ctx);
+    setFeature(rootNodeFeature, undefined, ctx);
     ctx.markers.clear();
   });
 
@@ -20,7 +22,8 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeUndefined();
     expect(comp.endMarker).toBeUndefined();
-    expect(container.innerHTML).toBe('<div data-seidr-root="0">Hello</div>');
+    expect(container.innerHTML).toContain('data-seidr-root="0"');
+    expect(container.innerHTML).toContain(">Hello</div>");
     unmount();
   });
 
@@ -34,7 +37,8 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeUndefined();
     expect(comp.endMarker).toBeUndefined();
-    expect(container.innerHTML).toBe('<div data-seidr-root="0">Child</div>');
+    expect(container.innerHTML).toContain('data-seidr-root="0">');
+    expect(container.innerHTML).toContain(">Child</div>");
     unmount();
   });
 
@@ -48,7 +52,7 @@ describe("Component Marker Optimization", () => {
     expect(comp.endMarker).toBeDefined();
     expect(container.innerHTML).toContain("<!--MyComp-");
     expect(container.innerHTML).toContain("One</div>");
-    expect(container.innerHTML).toContain("<div>Two</div>");
+    expect(container.innerHTML).toContain(">Two</div>");
     unmount();
   });
 

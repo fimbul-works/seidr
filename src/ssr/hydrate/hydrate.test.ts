@@ -29,9 +29,10 @@ describe("Hydration", () => {
   it("should track hydration state", () => {
     expect(hasHydrationData()).toBe(false);
 
-    const data: HydrationData = {
+    const data = {
       ctxID: 0,
       observables: { 0: 42 },
+      components: {},
     };
 
     setHydrationData(data, container);
@@ -45,6 +46,7 @@ describe("Hydration", () => {
     const data1: HydrationData = {
       ctxID: 0,
       observables: { 0: "first" },
+      components: {},
     };
 
     setHydrationData(data1, container);
@@ -57,6 +59,7 @@ describe("Hydration", () => {
     const data2: HydrationData = {
       ctxID: 1,
       observables: { 1: "second" },
+      components: {},
     };
 
     setHydrationData(data2, container);
@@ -72,6 +75,7 @@ describe("Hydration", () => {
     const data: HydrationData = {
       ctxID: 0,
       observables: { 1: 100, 2: 200 },
+      components: {},
     };
 
     setHydrationData(data, container);
@@ -90,6 +94,7 @@ describe("Hydration", () => {
     const data: HydrationData = {
       ctxID: 0,
       observables: { 1: "root" },
+      components: {},
     };
 
     setHydrationData(data, container);
@@ -108,6 +113,7 @@ describe("Hydration", () => {
         1: "John",
         2: "Doe",
       },
+      components: {},
     };
 
     setHydrationData(data, container);
@@ -134,6 +140,7 @@ describe("Hydration", () => {
           1: "hydrated-name",
           3: true,
         },
+        components: {},
       },
       container,
     );
@@ -160,7 +167,7 @@ describe("Hydration", () => {
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
-    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 1: 42 } });
+    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 1: 42 }, components: {} });
 
     expect(container.textContent).toContain("Count: 42");
   });
@@ -169,11 +176,13 @@ describe("Hydration", () => {
     const originalData: HydrationData = {
       ctxID: 0,
       observables: { 1: 1 },
+      components: {},
     };
 
     const hydrateData: HydrationData = {
       ctxID: 0,
       observables: { 1: 2 },
+      components: {},
     };
 
     setHydrationData(originalData, container);

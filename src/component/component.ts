@@ -5,6 +5,7 @@ import { getFeature } from "../render-context/feature";
 import { getNextComponentId, getRenderContext, getRenderContextID } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
+import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
@@ -29,7 +30,8 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const id = `${name}-${getNextComponentId()}`;
+    const numericId = getNextComponentId();
+    const fullComponentId = `${name}-${numericId}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -37,6 +39,7 @@ export const component = <P = void>(
     let mountCallbacks: ((parent: Node) => void)[] = [];
     let destroyed = false;
     let attachedParent: Node | null = null;
+    const executionSequence: Node[] = [];
 
     // Create Component instance
     const comp = {
@@ -44,7 +47,7 @@ export const component = <P = void>(
         return TYPE_COMPONENT;
       },
       get id() {
-        return id;
+        return fullComponentId;
       },
       get isUnmounted() {
         return destroyed;
@@ -55,10 +58,14 @@ export const component = <P = void>(
       get parentNode() {
         return attachedParent;
       },
+      executionSequence,
+      trackNode(node: Node) {
+        executionSequence.push(node);
+      },
       onUnmount(cleanup: CleanupFunction): void {
         if (destroyed) {
           if (process.env.NODE_ENV === "development") {
-            console.warn(`[${id}] Tracking cleanup on already destroyed component`);
+            console.warn(`[${fullComponentId}] Tracking cleanup on already destroyed component`);
           }
           return cleanup();
         }
@@ -86,6 +93,25 @@ export const component = <P = void>(
           childComponent.attached(attachedParent);
         }
 
+        if (!process.env.CORE_DISABLE_SSR && comp.trackNode) {
+          // If the child has a dedicated start marker (e.g. #component:ID or List marker), tracking it is enough for the boundary.
+          if (childComponent.startMarker) {
+            comp.trackNode(childComponent.startMarker);
+          } else {
+            // Otherwise, track its root element to signify its placement if it's a single node
+            const el = isArray(childComponent.element) ? childComponent.element[0] : childComponent.element;
+            if (isDOMNode(el)) {
+              // Ensure we enforce the seidr-id attribute so getComponentBoundaryId catches it
+              if (isHTMLElement(el)) {
+                // Use only the numeric part of the ID for the attribute to match getComponentBoundaryId expectations
+                const numericId = childComponent.id.split("-").pop();
+                el.setAttribute("data-seidr-id", numericId || "");
+              }
+              comp.trackNode(el);
+            }
+          }
+        }
+
         return childComponent;
       },
       onMount(callback: (parent: Node) => void) {
@@ -98,9 +124,16 @@ export const component = <P = void>(
       attached(parent: Node) {
         if (attachedParent) {
           if (process.env.NODE_ENV === "development") {
-            console.warn(`[${id}] Calling attached on an already attached component`);
+            console.warn(`[${fullComponentId}] Calling attached on an already attached component`);
           }
           return; // Already attached
+        }
+
+        if (!process.env.CORE_DISABLE_SSR) {
+          const scope = getSSRScope();
+          if (scope) {
+            scope.registerComponent(comp);
+          }
         }
 
         attachedParent = parent;
@@ -126,7 +159,7 @@ export const component = <P = void>(
       unmount() {
         if (destroyed) {
           if (process.env.NODE_ENV === "development") {
-            console.warn(`[${id}] Unmounting already unmounted component`);
+            console.warn(`[${fullComponentId}] Unmounting already unmounted component`);
           }
           return;
         }
@@ -171,24 +204,38 @@ export const component = <P = void>(
     // Set as current component (Push to tree)
     push(comp);
 
+    if (!process.env.CORE_DISABLE_SSR) {
+      const scope = getSSRScope();
+      if (scope) {
+        scope.registerComponent(comp);
+      }
+    }
+
     try {
       // Render the component via factory
       const result = factory(props);
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
-
       const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
+
+      // Apply component id to all root elements
+      [...(isArray(element) ? element : [element])].forEach((el) =>
+        isHTMLElement(el) ? (el.dataset.seidrId = String(numericId)) : null,
+      );
+
       comp.element = element;
 
       // Only add markers if the component returns an array or a nullish/text value.
       // If it's a single HTMLElement or Component, we skip markers to reduce SSR bloat.
       // We also check if markers were explicitly requested (e.g. by Switch or List).
-      const shouldAddMarkers =
-        getRenderContext().markers.has(id) || isArray(element) || (!isHTMLElement(element) && !isComponent(element));
+      const shouldAddMarkerComments =
+        getRenderContext().markers.has(fullComponentId) ||
+        isArray(element) ||
+        (!isHTMLElement(element) && !isComponent(element));
 
-      if (shouldAddMarkers) {
-        const [startMarker, endMarker] = getMarkerComments(id);
+      if (shouldAddMarkerComments) {
+        const [startMarker, endMarker] = getMarkerComments(fullComponentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
       }

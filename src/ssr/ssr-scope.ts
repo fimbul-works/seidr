@@ -2,8 +2,7 @@ import { getRenderContext, getRenderContextID } from "../render-context/render-c
 import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
 import { isClient } from "../util/environment/client";
-import { isArray } from "../util/type-guards/primitive-types";
-import { getRelativeDOMPath } from "./dom-path";
+import { buildStructureMap } from "./structure/structure-map";
 import type { SSRScopeCapture } from "./types";
 
 /**
@@ -173,40 +172,10 @@ export class SSRScope {
       }
     }
 
-    const components: Record<string, [string, number[]][]> = {};
+    const components: Record<string, any[][]> = {};
     for (const comp of this.components.values()) {
       if (comp.executionSequence && comp.executionSequence.length > 0) {
-        // Determine root and anchor for path calculation
-        let rootNode: Node | undefined;
-        let anchorNode: Node | undefined;
-
-        if (comp.startMarker) {
-          rootNode = comp.startMarker.parentNode as Node;
-          anchorNode = comp.startMarker;
-        } else {
-          // If single element root, the anchor IS the root element for its children.
-          // But we want to find the sequence nodes relative to the component's root.
-          // Wait, if a component has no markers, its root is the first Element.
-          const el = isArray(comp.element) ? comp.element.find((e: any) => e.nodeType === 1) : comp.element;
-          if (el && (el as any).nodeType === 1) {
-            rootNode = el as any;
-          } else {
-            // Fallback to whatever we have
-            rootNode = (isArray(comp.element) ? comp.element[0] : comp.element) as any;
-          }
-        }
-
-        if (rootNode) {
-          const sequence: [string, number[]][] = [];
-          for (const node of comp.executionSequence) {
-            const tagName = node.nodeType === 1 ? (node as Element).tagName.toLowerCase() : "#text";
-            const path = getRelativeDOMPath(rootNode, node, anchorNode);
-            if (path !== null) {
-              sequence.push([tagName, path]);
-            }
-          }
-          components[comp.id] = sequence;
-        }
+        components[comp.id] = buildStructureMap(comp);
       }
     }
 

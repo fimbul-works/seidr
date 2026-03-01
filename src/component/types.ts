@@ -170,4 +170,19 @@ export interface Component extends LifecycleScope {
    * @internal
    */
   reset(): void;
+
+  /**
+   * Execution sequence array populated during Server-Side Rendering.
+   * Only present during SSR builds.
+   * @internal
+   */
+  executionSequence: Node[];
+
+  /**
+   * Tracks a created node in the component's execution sequence.
+   * Only used during SSR to build the hydration data payload.
+   * @param node The node to track
+   * @internal
+   */
+  trackNode(node: Node): void;
 }

@@ -22,5 +22,5 @@ export interface SSRScopeCapture {
   /**
    * Component ID -> Execution Sequence Path mapping.
    */
-  components?: Record<string, [string, number[]][]>;
+  components: Record<string, [string, number[]][]>;
 }
