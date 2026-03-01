@@ -10,8 +10,12 @@ export class SSRComment extends SSRCharacterData<NodeTypeComment> implements Com
     return "#comment";
   }
 
+  get mockComment(): Comment {
+    return this as unknown as Comment;
+  }
+
   cloneNode(): Node {
-    return new SSRComment(this.data, this.ownerDocument);
+    return new SSRComment(this.data, this._ownerDocument);
   }
 
   toString(): string {

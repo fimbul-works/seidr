@@ -1,9 +1,12 @@
 import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../../constants";
 import { isFn } from "../../../util/type-guards/primitive-types";
 import { ServerNodeList } from "../server-node-list";
+import type { SSRDocument } from "./ssr-document";
 import type { SupportedNodeTypes } from "./types";
 
-export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
+export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocument | null = SSRDocument | null>
+  implements Node
+{
   readonly ELEMENT_NODE = TYPE_ELEMENT;
   readonly TEXT_NODE = TYPE_TEXT_NODE;
   readonly COMMENT_NODE = TYPE_COMMENT_NODE;
@@ -25,7 +28,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
   readonly DOCUMENT_POSITION_CONTAINED_BY = 0x10;
   readonly DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
 
-  constructor(protected _ownerDocument?: Document) {}
+  constructor(protected _ownerDocument: D = null as D) {}
 
   protected _parentNode: ParentNode | null = null;
 
@@ -51,13 +54,9 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
 
   get ownerDocument(): Document | null {
     if (this._ownerDocument) {
-      return this._ownerDocument;
+      return this._ownerDocument.mockDocument;
     }
     return this.parentNode?.ownerDocument ?? null;
-  }
-
-  protected set ownerDocument(value: Document) {
-    this._ownerDocument = value;
   }
 
   get isConnected(): boolean {
@@ -119,16 +118,40 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
     throw new Error("Method not implemented.");
   }
 
-  isEqualNode(_otherNode: Node | null): boolean {
-    throw new Error("Method not implemented.");
+  isEqualNode(otherNode: Node | null): boolean {
+    if (!otherNode) return false;
+    if (this.nodeType !== otherNode.nodeType) return false;
+    if (this.nodeType === 3 || this.nodeType === 8) {
+      return (this as any).data === (otherNode as any).data;
+    }
+    if (this.nodeType === 1) {
+      const elA = this as unknown as Element;
+      const elB = otherNode as unknown as Element;
+      if (elA.tagName !== elB.tagName) return false;
+      return true;
+    }
+    return false;
   }
 
   normalize(): void {
-    throw new Error("Method not implemented.");
+    const nodes = this.serverChildNodes.nodes;
+    for (let i = 0; i < nodes.length - 1; i++) {
+      const current = nodes[i];
+      const next = nodes[i + 1];
+      if (current.nodeType === 3 && next.nodeType === 3) {
+        (current as Text).data += (next as Text).data;
+        nodes.splice(i + 1, 1);
+        (next as any).parentNode = null;
+        i--;
+      }
+    }
   }
 
   isSameNode(otherNode: Node | null): boolean {
-    return (this as Node) === otherNode;
+    if (!otherNode) return false;
+    const targetA = (this as any).__target || this;
+    const targetB = (otherNode as any).__target || otherNode;
+    return targetA === targetB;
   }
 
   compareDocumentPosition(_other: Node): number {
@@ -146,7 +169,6 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
   lookupNamespaceURI(_prefix: string | null): string | null {
     throw new Error("Method not implemented.");
   }
-
   getRootNode(): Node {
     if (this.parentNode) {
       return this.parentNode.getRootNode();
@@ -155,60 +177,76 @@ export abstract class SSRNode<T extends SupportedNodeTypes> implements Node {
   }
 
   hasChildNodes(): boolean {
-    return this.childNodes.length > 0;
+    return this.serverChildNodes.nodes.length > 0;
+  }
+
+  contains(other: Node | null): boolean {
+    if (!other) return false;
+    if (this.isSameNode(other)) return true;
+    for (const child of this.serverChildNodes.nodes) {
+      if ((child as any).contains?.(other)) return true;
+    }
+    return false;
   }
 
   appendChild<T extends Node>(node: T): T {
-    this.serverChildNodes.nodes.push(node as unknown as Node);
-    (node as any).parentNode = this as unknown as ParentNode;
-    return node;
+    return this.insertBefore(node, null);
   }
 
   removeChild<T extends Node>(node: T): T {
-    this.serverChildNodes.nodes.splice(this.serverChildNodes.nodes.indexOf(node as unknown as Node), 1);
-    (node as any).parentNode = null;
+    const target = (node as any).__target || node;
+    const nodes = this.serverChildNodes.nodes;
+    const index = nodes.findIndex((n) => ((n as any).__target || n) === target);
+
+    if (index === -1) {
+      throw new Error("The node to be removed is not a child of this node.");
+    }
+
+    nodes.splice(index, 1);
+    (target as any).parentNode = null;
     return node;
   }
 
   replaceChild<T extends Node>(newChild: Node, oldChild: T): T {
-    const index = this.serverChildNodes.nodes.indexOf(oldChild as unknown as Node);
-    if (index === -1) {
-      throw new Error("Reference node not found");
-    }
-    this.serverChildNodes.nodes[index] = newChild as unknown as Node;
-    (newChild as any).parentNode = this as unknown as ParentNode;
-    return oldChild;
+    this.insertBefore(newChild, oldChild);
+    return this.removeChild(oldChild);
   }
 
   insertBefore<T extends Node>(node: T, child: Node | null): T {
-    if (!child) {
-      return this.appendChild(node);
-    }
-    const index = this.serverChildNodes.nodes.indexOf(child as unknown as Node);
-    if (index === -1) {
-      throw new Error("Reference node not found");
-    }
-    this.serverChildNodes.nodes.splice(index, 0, node as unknown as Node);
-    (node as any).parentNode = this as unknown as ParentNode;
-    return node;
-  }
+    const parentNode = this as unknown as ParentNode;
 
-  contains(other: Node): boolean {
-    if (other === (this as unknown as Node)) {
-      return true;
+    const targetNode = (node as any).__target || node;
+    const targetChild = child ? (child as any).__target || child : null;
+    const targetParent = (parentNode as any).__target || parentNode;
+
+    // 1. Cycle and hierarchy check
+    if (targetNode === targetParent) {
+      throw new Error("Cycle detected: cannot insert node into itself");
+    }
+    if ((targetNode as any).contains?.(targetParent)) {
+      throw new Error("Hierarchy error: cannot insert a node into its own descendant");
     }
 
-    if (!this.childNodes) {
-      return false;
+    // 2. Remove from old parent
+    if (targetNode.parentNode) {
+      targetNode.parentNode.removeChild(node);
     }
 
-    for (const child of this.serverChildNodes.nodes) {
-      if (child.contains(other)) {
-        return true;
+    // 3. Find insertion point
+    const nodes = this.serverChildNodes.nodes;
+    let index = nodes.length;
+
+    if (targetChild) {
+      index = nodes.findIndex((n) => ((n as any).__target || n) === targetChild);
+      if (index === -1) {
+        throw new Error("The node before which the new node is to be inserted is not a child of this node.");
       }
     }
 
-    return false;
+    // 4. Normal insert (Preserve the incoming node object/proxy)
+    nodes.splice(index, 0, node as unknown as Node);
+    (targetNode as any).parentNode = parentNode;
+    return node;
   }
 
   private eventListeners: Map<string, Set<EventListenerOrEventListenerObject>> = new Map();

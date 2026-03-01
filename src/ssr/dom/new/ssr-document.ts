@@ -6,8 +6,29 @@ import { SSRElement } from "./ssr-element";
 import { SSRParentNode } from "./ssr-parent-node";
 import { SSRTextNode } from "./ssr-text-node";
 
-export class SSRDocument extends SSRParentNode<NodeTypeDocument> implements Partial<Document> {
+export class SSRDocument extends SSRParentNode<NodeTypeDocument, null> implements Partial<Document> {
   readonly nodeType = TYPE_DOCUMENT;
+
+  public readonly documentElement: HTMLElement;
+  public readonly head: HTMLElement;
+  public readonly body: HTMLElement;
+
+  public readonly idMap: Map<string, SSRElement> = new Map();
+
+  constructor() {
+    super(null);
+    this.documentElement = this.createElement("html");
+    this.head = this.createElement("head");
+    this.body = this.createElement("body");
+
+    this.appendChild(this.documentElement);
+    this.documentElement.appendChild(this.head);
+    this.documentElement.appendChild(this.body);
+  }
+
+  get mockDocument(): Document {
+    return this as unknown as Document;
+  }
 
   get nodeName(): string {
     return "#document";
@@ -30,15 +51,26 @@ export class SSRDocument extends SSRParentNode<NodeTypeDocument> implements Part
   }
 
   createTextNode(data: string): Text {
-    return new SSRTextNode(data, this as unknown as Document);
+    return new SSRTextNode(data, this).mockText;
   }
 
   createComment(data: string): Comment {
-    return new SSRComment(data, this as unknown as Document);
+    return new SSRComment(data, this).mockComment;
   }
 
-  createElement(tagName: string): HTMLElement {
-    return new SSRElement(tagName, this as unknown as Document) as unknown as HTMLElement;
+  createElement<K extends keyof HTMLElementTagNameMap | string>(
+    tagName: K,
+  ): K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : HTMLElement {
+    return new SSRElement(tagName, this).mockElement as unknown as K extends keyof HTMLElementTagNameMap
+      ? HTMLElementTagNameMap[K]
+      : HTMLElement;
+  }
+
+  getElementById(id: string): HTMLElement | null {
+    if (this.idMap.has(id)) {
+      return this.idMap.get(id) as unknown as HTMLElement;
+    }
+    return this.querySelector(`#${id}`) as unknown as HTMLElement | null;
   }
 
   toString(): string {

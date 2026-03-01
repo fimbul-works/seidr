@@ -1,14 +1,15 @@
 import { TYPE_ELEMENT } from "../../../constants";
 import type { NodeTypeComment, NodeTypeText } from "../../../types";
 import { SSRChildNode } from "./ssr-child-node";
+import type { SSRDocument } from "./ssr-document";
 
 export abstract class SSRCharacterData<T extends NodeTypeComment | NodeTypeText>
-  extends SSRChildNode<T>
+  extends SSRChildNode<T, SSRDocument>
   implements CharacterData
 {
   constructor(
     public data: string,
-    ownerDocument: Document,
+    ownerDocument: SSRDocument,
   ) {
     super(ownerDocument);
   }
@@ -22,7 +23,7 @@ export abstract class SSRCharacterData<T extends NodeTypeComment | NodeTypeText>
   }
 
   get ownerDocument(): Document {
-    return this._ownerDocument!;
+    return this._ownerDocument!.mockDocument;
   }
 
   get textContent(): string {
@@ -75,5 +76,9 @@ export abstract class SSRCharacterData<T extends NodeTypeComment | NodeTypeText>
 
   isEqualNode(otherNode: Node | null): boolean {
     return otherNode?.nodeType === this.nodeType && this.data === (otherNode as SSRCharacterData<T>).data;
+  }
+
+  remove(): void {
+    this.parentNode?.removeChild(this);
   }
 }

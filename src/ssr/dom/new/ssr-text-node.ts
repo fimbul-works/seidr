@@ -10,6 +10,10 @@ export class SSRTextNode extends SSRCharacterData<NodeTypeText> implements Text 
     return "#text";
   }
 
+  get mockText(): Text {
+    return this as unknown as Text;
+  }
+
   get wholeText(): string {
     return this.data;
   }
@@ -22,14 +26,14 @@ export class SSRTextNode extends SSRCharacterData<NodeTypeText> implements Text 
     if (!this.parentNode) {
       throw new Error("Cannot split text node without a parent node");
     }
-    const newTextNode = new SSRTextNode(this.data.slice(offset), this.ownerDocument);
+    const newTextNode = new SSRTextNode(this.data.slice(offset), this._ownerDocument);
     this.data = this.data.slice(0, offset);
     this.parentNode.insertBefore(newTextNode, this.nextSibling);
     return newTextNode;
   }
 
   cloneNode(): Node {
-    return new SSRTextNode(this.data, this.ownerDocument);
+    return new SSRTextNode(this.data, this._ownerDocument);
   }
 
   toString(): string {

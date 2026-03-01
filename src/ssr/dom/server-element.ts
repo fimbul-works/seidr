@@ -398,8 +398,8 @@ export function createServerElement<
         return Reflect.get(target, prop, receiver);
       }
 
-      // if (prop === "__isProxy") return true;
-      // if (prop === "__target") return target;
+      if (prop === "__isProxy") return true;
+      if (prop === "__target") return target;
 
       if (prop in target || INTERNAL_ATTRIBUTES.has(prop)) {
         return Reflect.get(target, prop, receiver);
