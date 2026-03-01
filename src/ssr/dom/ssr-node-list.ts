@@ -5,7 +5,7 @@ import type { ServerNode } from "./types";
  * Live collection of nodes for SSR.
  * Implements the NodeList interface by wrapping an internal array.
  */
-export class ServerNodeList implements NodeList {
+export class SSRNodeList implements NodeList {
   public readonly nodes: Node[];
 
   constructor(public serverNodes: ServerNode[] = []) {
@@ -60,5 +60,5 @@ export class ServerNodeList implements NodeList {
  * Factory for creating a ServerNodeList.
  */
 export function createServerNodeList(nodes: ServerNode[]): NodeList {
-  return new ServerNodeList(nodes) as unknown as NodeList;
+  return new SSRNodeList(nodes) as unknown as NodeList;
 }

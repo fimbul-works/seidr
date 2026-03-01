@@ -1,8 +1,8 @@
-import { TYPE_DOCUMENT } from "../../../constants";
-import type { NodeTypeDocument } from "../../../types";
-import type { ServerNodeList } from "../server-node-list";
+import { TYPE_DOCUMENT } from "../../constants";
+import type { NodeTypeDocument } from "../../types";
 import { SSRComment } from "./ssr-comment";
 import { SSRElement } from "./ssr-element";
+import type { SSRNodeList } from "./ssr-node-list";
 import { SSRParentNode } from "./ssr-parent-node";
 import { SSRTextNode } from "./ssr-text-node";
 
@@ -74,7 +74,7 @@ export class SSRDocument extends SSRParentNode<NodeTypeDocument, null> implement
   }
 
   toString(): string {
-    const children = this.childNodes as unknown as ServerNodeList;
+    const children = this.childNodes as unknown as SSRNodeList;
     return children.nodes.map((node) => node.toString()).join("");
   }
 }

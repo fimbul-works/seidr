@@ -1,10 +1,10 @@
-import { TYPE_ELEMENT } from "../../../constants";
-import type { NodeTypeElement } from "../../../types";
-import { escapeAttribute } from "../../../util/escape";
-import { camelToKebab } from "../../../util/string";
-import { isFn } from "../../../util/type-guards/primitive-types";
-import type { ServerNodeList } from "../server-node-list";
+import { TYPE_ELEMENT } from "../../constants";
+import type { NodeTypeElement } from "../../types";
+import { escapeAttribute } from "../../util/escape";
+import { camelToKebab } from "../../util/string";
+import { isFn } from "../../util/type-guards/primitive-types";
 import type { SSRDocument } from "./ssr-document";
+import type { SSRNodeList } from "./ssr-node-list";
 import { SSRParentNode } from "./ssr-parent-node";
 import { SSRTextNode } from "./ssr-text-node";
 
@@ -54,8 +54,8 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
 
   private _attributes: Record<string, any> = {};
   private _styleStorage: Record<string, string> = {};
+  private _styleProxy: CSSStyleDeclaration;
 
-  public readonly style: CSSStyleDeclaration;
   public readonly dataset: DOMStringMap;
   public readonly classList: DOMTokenList;
 
@@ -65,7 +65,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     this.lowerTagName = tagName.toLowerCase() as unknown as K;
 
     // Initialize style proxy
-    this.style = this._createStyleProxy();
+    this._styleProxy = this._createStyleProxy();
     // Initialize dataset proxy
     this.dataset = this._createDatasetProxy();
     // Initialize classList
@@ -161,6 +161,19 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     this.setAttribute("id", value);
   }
 
+  get style(): CSSStyleDeclaration {
+    return this._styleProxy;
+  }
+
+  set style(val: any) {
+    if (typeof val === "string") {
+      this._styleProxy.cssText = val;
+    } else if (val && typeof val === "object") {
+      Object.keys(this._styleStorage).forEach((k) => delete this._styleStorage[k]);
+      Object.assign(this._styleProxy, val);
+    }
+  }
+
   get className(): string {
     return this.getAttribute("class") || "";
   }
@@ -169,12 +182,12 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
   }
 
   get textContent(): string {
-    const children = this.childNodes as unknown as ServerNodeList;
+    const children = this.childNodes as unknown as SSRNodeList;
     return children.nodes.map((node) => node.textContent ?? "").join("");
   }
 
   set textContent(value: string | null) {
-    const children = this.childNodes as unknown as ServerNodeList;
+    const children = this.childNodes as unknown as SSRNodeList;
     children.nodes.length = 0;
     if (value !== null && value !== undefined) {
       this.appendChild(new SSRTextNode(String(value), this._ownerDocument!));
@@ -182,12 +195,12 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
   }
 
   get innerHTML(): string {
-    const children = this.childNodes as unknown as ServerNodeList;
+    const children = this.childNodes as unknown as SSRNodeList;
     return children.nodes.map((c) => c.toString()).join("");
   }
 
   set innerHTML(val: string) {
-    const children = this.childNodes as unknown as ServerNodeList;
+    const children = this.childNodes as unknown as SSRNodeList;
     children.nodes.length = 0;
     if (val) {
       // In SSR, we often just want raw HTML. We can use a text node that doesn't escape.
@@ -322,8 +335,12 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
           String(value)
             .split(";")
             .forEach((s: string) => {
-              const [k, v] = s.split(":").map((x) => x.trim());
-              if (k && v) storage[k] = v;
+              const parts = s.split(":");
+              if (parts.length >= 2) {
+                const k = parts[0].trim();
+                const v = parts.slice(1).join(":").trim();
+                if (k && v) storage[camelToKebab(k)] = v;
+              }
             });
           return true;
         }

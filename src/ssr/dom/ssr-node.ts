@@ -1,7 +1,7 @@
-import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../../constants";
-import { isFn } from "../../../util/type-guards/primitive-types";
-import { ServerNodeList } from "../server-node-list";
+import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
+import { isFn } from "../../util/type-guards/primitive-types";
 import type { SSRDocument } from "./ssr-document";
+import { SSRNodeList } from "./ssr-node-list";
 import type { SupportedNodeTypes } from "./types";
 
 export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocument | null = SSRDocument | null>
@@ -34,10 +34,10 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
 
   abstract readonly nodeType: T;
 
-  public readonly childNodes = new ServerNodeList() as unknown as NodeListOf<ChildNode>;
+  public readonly childNodes = new SSRNodeList() as unknown as NodeListOf<ChildNode>;
 
-  protected get serverChildNodes(): ServerNodeList {
-    return this.childNodes as unknown as ServerNodeList;
+  protected get serverChildNodes(): SSRNodeList {
+    return this.childNodes as unknown as SSRNodeList;
   }
 
   abstract get nodeName(): string;
@@ -76,7 +76,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
     if (!this.parentNode) {
       return null;
     }
-    const siblings = this.parentNode.childNodes as unknown as ServerNodeList;
+    const siblings = this.parentNode.childNodes as unknown as SSRNodeList;
     if (!siblings) {
       return null;
     }
@@ -91,7 +91,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
     if (!this.parentNode) {
       return null;
     }
-    const siblings = this.parentNode.childNodes as unknown as ServerNodeList;
+    const siblings = this.parentNode.childNodes as unknown as SSRNodeList;
     if (!siblings) {
       return null;
     }

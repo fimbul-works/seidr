@@ -1,5 +1,5 @@
-import { TYPE_ELEMENT } from "../../../constants";
-import type { NodeTypeComment, NodeTypeText } from "../../../types";
+import { TYPE_ELEMENT } from "../../constants";
+import type { NodeTypeComment, NodeTypeText } from "../../types";
 import { SSRChildNode } from "./ssr-child-node";
 import type { SSRDocument } from "./ssr-document";
 

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createServerDocument, createServerElement, createServerTextNode } from "./dom";
+import { SSRDocument } from "./dom";
 import { getRelativeDOMPath } from "./dom-path";
 
 describe("getRelativeDOMPath", () => {
   it("should calculate correct path in a simple tree", () => {
-    const doc = createServerDocument() as any;
-    const root = createServerElement("div", doc);
-    const span = createServerElement("span", doc);
-    const text = createServerTextNode("hello", doc);
+    const doc = new SSRDocument();
+    const root = doc.createElement("div");
+    const span = doc.createElement("span");
+    const text = doc.createTextNode("hello");
 
     root.appendChild(span);
     span.appendChild(text);
@@ -17,10 +17,10 @@ describe("getRelativeDOMPath", () => {
   });
 
   it("should ignore whitespace text nodes", () => {
-    const doc = createServerDocument() as any;
-    const root = createServerElement("div", doc);
-    const ws = createServerTextNode("  \n  ", doc);
-    const span = createServerElement("span", doc);
+    const doc = new SSRDocument();
+    const root = doc.createElement("div");
+    const ws = doc.createTextNode("  \n  ");
+    const span = doc.createElement("span");
 
     root.appendChild(ws);
     root.appendChild(span);
@@ -30,10 +30,10 @@ describe("getRelativeDOMPath", () => {
   });
 
   it("should NOT ignore whitespace in <pre>", () => {
-    const doc = createServerDocument() as any;
-    const pre = createServerElement("pre", doc);
-    const ws = createServerTextNode("  ", doc);
-    const span = createServerElement("span", doc);
+    const doc = new SSRDocument();
+    const pre = doc.createElement("pre");
+    const ws = doc.createTextNode("  ");
+    const span = doc.createElement("span");
 
     pre.appendChild(ws);
     pre.appendChild(span);
@@ -43,11 +43,11 @@ describe("getRelativeDOMPath", () => {
   });
 
   it("should handle anchorSibling for markers", () => {
-    const doc = createServerDocument() as any;
-    const root = createServerElement("div", doc);
+    const doc = new SSRDocument();
+    const root = doc.createElement("div");
     const marker = doc.createComment("start");
-    const other = createServerElement("p", doc) as any;
-    const target = createServerElement("span", doc);
+    const other = doc.createElement("p");
+    const target = doc.createElement("span");
 
     root.appendChild(other);
     root.appendChild(marker);

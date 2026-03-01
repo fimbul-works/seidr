@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SSRDocument } from "../index";
+import { SSRDocument } from "./index";
 
 describe("ServerElement", () => {
   const doc = new SSRDocument();

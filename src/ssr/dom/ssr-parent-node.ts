@@ -1,9 +1,9 @@
-import { TYPE_ELEMENT } from "../../../constants";
-import type { NodeTypeDocument, NodeTypeElement } from "../../../types";
-import { isStr } from "../../../util/type-guards/primitive-types";
-import { ServerNodeList } from "../server-node-list";
+import { TYPE_ELEMENT } from "../../constants";
+import type { NodeTypeDocument, NodeTypeElement } from "../../types";
+import { isStr } from "../../util/type-guards/primitive-types";
 import { SSRChildNode } from "./ssr-child-node";
 import type { SSRDocument } from "./ssr-document";
+import { SSRNodeList } from "./ssr-node-list";
 import type { ServerNode } from "./types";
 
 export abstract class SSRParentNode<
@@ -75,7 +75,7 @@ export abstract class SSRParentNode<
       }
     };
     traverse(this);
-    return new ServerNodeList(results as unknown as ServerNode[]) as unknown as NodeListOf<Element>;
+    return new SSRNodeList(results as unknown as ServerNode[]) as unknown as NodeListOf<Element>;
   }
 
   getElementsByClassName(className: string): HTMLCollectionOf<Element> {
