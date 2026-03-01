@@ -149,9 +149,7 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
 
   isSameNode(otherNode: Node | null): boolean {
     if (!otherNode) return false;
-    const targetA = (this as any).__target || this;
-    const targetB = (otherNode as any).__target || otherNode;
-    return targetA === targetB;
+    return (this as Node) === otherNode;
   }
 
   compareDocumentPosition(_other: Node): number {
@@ -215,29 +213,26 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
   insertBefore<T extends Node>(node: T, child: Node | null): T {
     const parentNode = this as unknown as ParentNode;
 
-    const targetNode = (node as any).__target || node;
-    const targetChild = child ? (child as any).__target || child : null;
-    const targetParent = (parentNode as any).__target || parentNode;
-
     // 1. Cycle and hierarchy check
-    if (targetNode === targetParent) {
+    if (node === (this as unknown as T)) {
       throw new Error("Cycle detected: cannot insert node into itself");
     }
-    if ((targetNode as any).contains?.(targetParent)) {
+
+    if (node.contains(parentNode)) {
       throw new Error("Hierarchy error: cannot insert a node into its own descendant");
     }
 
     // 2. Remove from old parent
-    if (targetNode.parentNode) {
-      targetNode.parentNode.removeChild(node);
+    if (node.parentNode) {
+      node.parentNode.removeChild(node);
     }
 
     // 3. Find insertion point
     const nodes = this.serverChildNodes.nodes;
     let index = nodes.length;
 
-    if (targetChild) {
-      index = nodes.findIndex((n) => ((n as any).__target || n) === targetChild);
+    if (child) {
+      index = nodes.indexOf(child);
       if (index === -1) {
         throw new Error("The node before which the new node is to be inserted is not a child of this node.");
       }
@@ -245,7 +240,14 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
 
     // 4. Normal insert (Preserve the incoming node object/proxy)
     nodes.splice(index, 0, node as unknown as Node);
-    (targetNode as any).parentNode = parentNode;
+
+    try {
+      (node as any).parentNode = parentNode;
+    } catch {
+      // Ignore: Native DOM Nodes only have getters for parentNode,
+      // but they shouldn't crash SSR structural mapping where we mix SSR nodes with simulated native ones.
+    }
+
     return node;
   }
 
