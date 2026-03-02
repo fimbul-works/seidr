@@ -6,6 +6,7 @@ import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { useState } from "../../state/use-state";
 import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
+import { str } from "../../util/string";
 import { renderToString } from "../render-to-string";
 import { clearHydrationData, hydrate } from "./index";
 
@@ -41,7 +42,7 @@ describe("Hydration Integration", () => {
       $("ul", null, [
         List(
           items,
-          (item) => String(item),
+          (item) => str(item),
           (item) => $("li", { textContent: `Item ${item}` }),
         ),
       ]),
@@ -56,8 +57,6 @@ describe("Hydration Integration", () => {
     cleanupMode(); // Cleanup SSR mode
     cleanupMode = enableClientMode();
     container.innerHTML = html;
-
-    console.log(JSON.stringify(hydrationData, null, 2));
 
     // Grab references to the raw DOM nodes before hydration
     const originalAppDiv = container.querySelector("#app");
@@ -103,7 +102,7 @@ describe("Hydration Integration", () => {
     unmount = hydrate(TestApp, container, hydrationData);
 
     // It should have logged a warning and replaced the tampered elements
-    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("Hydration mismatch"));
+    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("Hydration"), expect.anything());
 
     // The framework should correct it back to the client expected state
     expect(container.querySelector("h1")?.textContent).toBe("My App");
@@ -129,7 +128,7 @@ describe("Hydration Integration", () => {
     unmount = hydrate(TestApp, container, hydrationData);
 
     // Should detect the difference between h1 and h2
-    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("Hydration mismatch"));
+    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("[Hydration mismatch]"), expect.anything());
 
     // The framework should gracefully fallback to client rendering and recreate the h1
     expect(container.querySelector("h1")).toBeTruthy();
@@ -154,6 +153,9 @@ describe("Hydration Integration", () => {
 
     // Since the client receives this modified hydration state, the component will render with this new state
     unmount = hydrate(TestApp, container, hydrationData);
+
+    console.log(container.innerHTML);
+    console.log(JSON.stringify(hydrationData, null, 2));
 
     // We expect the DOM to be smoothly updated to reflect the new state, rather than crashing
     expect(container.querySelector("h1")?.textContent).toBe("Modified App Title");

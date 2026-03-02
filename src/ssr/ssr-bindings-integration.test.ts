@@ -9,6 +9,7 @@ import { renderToString } from "./render-to-string";
 import { SSRScope, setSSRScope } from "./ssr-scope";
 import "../dom/get-document.node";
 import { isClient } from "../util/environment/client";
+import { str } from "../util/string";
 
 describe("SSR Reactive Bindings Integration", () => {
   let cleanupMode: CleanupFunction;
@@ -111,7 +112,7 @@ describe("SSR Reactive Bindings Integration", () => {
       const container = document.createElement("div");
       unmount = hydrate(App, container, hydrationData);
 
-      expect(String(container.textContent)).toContain("Count: 42");
+      expect(str(container.textContent)).toContain("Count: 42");
     });
   });
 

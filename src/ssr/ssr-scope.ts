@@ -1,6 +1,9 @@
+import { getFeature } from "../render-context/feature";
 import { getRenderContext, getRenderContextID } from "../render-context/render-context";
 import type { RenderContext } from "../render-context/types";
 import type { Seidr } from "../seidr";
+import { getGlobalStateFeature } from "../state/feature";
+import { symbolNames } from "../state/storage";
 import { isClient } from "../util/environment/client";
 import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
 import type { SSRScopeCapture } from "./types";
@@ -160,6 +163,9 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
+    const globalStateFeature = getGlobalStateFeature();
+    const globalState = getFeature(globalStateFeature, getRenderContext());
+
     const observables: Record<string, any> = {};
     // console.log(
     //   "Capturing hydration data",
@@ -167,7 +173,8 @@ export class SSRScope {
     // );
     // // Use Seidr IDs as keys to match client-side hydration registry order
     for (const seidr of this.observables.values()) {
-      if (!seidr.isDerived) {
+      const symbol = symbolNames.get(seidr.id);
+      if (!seidr.isDerived && (!symbol || !globalState.has(symbol))) {
         observables[seidr.id] = seidr.value;
       }
     }
@@ -176,8 +183,10 @@ export class SSRScope {
 
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
-      if (comp.nodeCreateIndex && comp.nodeCreateIndex.length > 0) {
-        components[comp.id] = buildStructureMap(comp);
+      if (comp.indexedNodes && comp.indexedNodes.length > 0) {
+        const map = buildStructureMap(comp);
+        components[comp.id] = map;
+        console.log(`[SSR] [${comp.id}] Generated structure map:`, JSON.stringify(map));
       }
     }
 

@@ -54,32 +54,42 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
     if (!parentNode) return;
 
     const tuple = structureMap[parentIdx];
-    if (tuple[0].startsWith("#component:")) return;
+    // We used to return early here if tuple[0].startsWith("#component:"),
+    // but child component boundaries (like Fragments) HAVE children (markers/li)
+    // in the parent's structure map that must be resolved!
 
     let domChildIdx = 0;
-    const children = Array.from(parentNode.childNodes);
+    const children = Array.from((parentNode as ParentNode).childNodes || []);
 
     for (let i = 1; i < tuple.length; i++) {
       const childMapIdx = tuple[i] as number;
       const expectedTag = structureMap[childMapIdx][0];
 
-      let domChild = children[domChildIdx];
+      let matchedNode: Node | null = null;
+      let searchIdx = domChildIdx;
 
-      // Skip whitespace/unrelated nodes
-      while (domChild && !nodeMatches(domChild, expectedTag)) {
-        domChildIdx++;
-        domChild = children[domChildIdx];
+      while (children[searchIdx]) {
+        if (nodeMatches(children[searchIdx], expectedTag)) {
+          matchedNode = children[searchIdx];
+          break;
+        }
+        searchIdx++;
       }
 
-      if (domChild) {
-        resolved[childMapIdx] = domChild;
+      if (matchedNode) {
+        resolved[childMapIdx] = matchedNode;
         resolveChildren(childMapIdx);
-        domChildIdx++;
+        // Advance the primary index past the matched node
+        domChildIdx = searchIdx + 1;
       } else {
         if (process.env.NODE_ENV !== "production") {
           console.warn(
-            `[Hydration Mismatch] Could not find physical node for tag "${expectedTag}" at map index ${childMapIdx}. Parent node:`,
-            parentNode,
+            `[Hydration mismatch] WHAT: Failed to resolve component DOM boundary.\n` +
+              `HOW: The client generated a structure map containing "${expectedTag}" at index ${childMapIdx} but the physical node was missing.\n` +
+              `WHERE: Component structure resolution inside ${parentNode ? (parentNode as HTMLElement).tagName || "Node" : "null"}.\n` +
+              `WHY: The HTML from the server may have been altered by a browser extension, malformed, or conditional state didn't match between client and server.\n` +
+              `ACTION: The structure map node resolution failed, which might cause subsequent nodes to fail hydration mappings.`,
+            { parentNode, expectedTag, childMapIdx },
           );
         }
       }
@@ -111,7 +121,18 @@ export class HydrationContext {
    * Consumes the next node in the execution sequence.
    */
   claim(): Node | undefined {
-    return this.resolvedNodes[this.currentIndex++];
+    const node = this.resolvedNodes[this.currentIndex++];
+    if (node) {
+      const tag = isHTMLElement(node)
+        ? (node as HTMLElement).tagName
+        : isTextNode(node)
+          ? "#text"
+          : isComment(node)
+            ? "#comment"
+            : "unknown";
+      console.log(`[Hydration debug] [${this.componentId}] Claimed node index ${this.currentIndex - 1}: <${tag}>`);
+    }
+    return node;
   }
 
   /**
@@ -174,43 +195,61 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
   let candidate: Node | undefined;
 
   if (parentCtx) {
+    // RESOLUTION via Marker-Position (Parent Structure Map)
     candidate = parentCtx.claimBoundary(componentId);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `[Hydration debug] [${componentId}] Resolved boundary from parent: ${candidate ? candidate.nodeName : "NONE"}`,
+      );
+    }
   } else if (container) {
-    // Top-level hydration. Look for root elements or markers in the container.
+    // Top-level discovery (Data-selector or Marker-search)
     const numericId = componentId.split("-").pop();
     const selector = `[data-seidr-id="${numericId}"]`;
-    const el = container.querySelector(selector);
-    if (el) return [el];
-
-    // Check for markers in top-level
-    const walker = document.createTreeWalker(container, NodeFilter.SHOW_COMMENT);
-    let node: Comment | null = walker.nextNode() as Comment;
-    while (node) {
-      if (node.textContent?.includes(`#${componentId}`)) {
-        candidate = node;
-        break;
-      }
-      node = walker.nextNode() as Comment;
+    const el = container.matches?.(selector) ? container : container.querySelector(selector);
+    if (el) {
+      candidate = el;
     }
-  }
 
-  if (candidate) {
-    if (isComment(candidate) && candidate.textContent?.includes(`#${componentId}`)) {
-      // It's a start marker. The roots are the siblings until the end marker.
-      const roots: Node[] = [];
-      let sibling = candidate.nextSibling;
-      const endTag = `/${componentId}`;
-      while (sibling) {
-        if (isComment(sibling) && sibling.textContent?.includes(endTag)) {
+    if (!candidate) {
+      // Check for markers in top-level
+      const walker = document.createTreeWalker(container, NodeFilter.SHOW_COMMENT);
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        if (node.textContent === componentId) {
+          candidate = node;
           break;
         }
-        roots.push(sibling);
-        sibling = sibling.nextSibling;
       }
-      return roots;
     }
-    return [candidate];
+
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `[Hydration debug] [${componentId}] Top-level discovery in container: ${candidate ? candidate.nodeName : "NONE"}`,
+      );
+    }
   }
 
-  return [];
+  if (!candidate) return [];
+
+  // If candidate is a start marker, return the full range until the end marker
+  if (isComment(candidate)) {
+    const text = candidate.textContent || "";
+    // Boundary match (e.g. Component-1 or List-2)
+    if (!text.startsWith("/")) {
+      const endLabel = "/" + text;
+      const nodes: Node[] = [candidate];
+      let current = candidate.nextSibling;
+      while (current) {
+        nodes.push(current);
+        if (isComment(current) && current.textContent === endLabel) {
+          break;
+        }
+        current = current.nextSibling;
+      }
+      return nodes;
+    }
+  }
+
+  return [candidate];
 }

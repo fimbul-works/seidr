@@ -179,10 +179,23 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
   }
 
   contains(other: Node | null): boolean {
-    if (!other) return false;
-    if (this.isSameNode(other)) return true;
+    if (!other) {
+      return false;
+    }
+
+    if (this.isSameNode(other)) {
+      return true;
+    }
+
     for (const child of this.serverChildNodes.nodes) {
-      if ((child as any).contains?.(other)) return true;
+      if (child === other) {
+        return true;
+      }
+
+      const canChildContain = child.nodeType === TYPE_ELEMENT || child.nodeType === TYPE_DOCUMENT;
+      if (canChildContain && child.contains(other)) {
+        return true;
+      }
     }
     return false;
   }
@@ -214,11 +227,12 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
     const parentNode = this as unknown as ParentNode;
 
     // 1. Cycle and hierarchy check
+    const canNodeContain = node.nodeType === this.ELEMENT_NODE || node.nodeType === this.DOCUMENT_NODE;
     if (node === (this as unknown as T)) {
       throw new Error("Cycle detected: cannot insert node into itself");
     }
 
-    if (node.contains(parentNode)) {
+    if (canNodeContain && node.contains(parentNode)) {
       throw new Error("Hierarchy error: cannot insert a node into its own descendant");
     }
 

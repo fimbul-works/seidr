@@ -47,6 +47,7 @@ export const Switch = <
 
       currentComponent = getComponent(factories, value, fallbackFactory);
       if (currentComponent) {
+        scope.child(currentComponent);
         mountComponent(currentComponent, endMarker);
       }
     };
@@ -55,5 +56,5 @@ export const Switch = <
     scope.observe(observable, update);
     scope.onUnmount(() => currentComponent?.unmount());
 
-    return currentComponent;
+    return currentComponent ? scope.child(currentComponent) : undefined;
   }, name ?? "Switch")();

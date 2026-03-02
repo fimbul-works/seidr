@@ -35,3 +35,11 @@ export const isKebabCase = (str: string): boolean => (/[A-Z]/.test(str) ? false 
  * @returns {boolean} True if the string is in camelCase, false otherwise
  */
 export const isCamelCase = (str: string): boolean => (/-|_/.test(str) ? false : /^[a-z][a-zA-Z0-9]*$/.test(str));
+
+/**
+ * Converts any value to a string.
+ *
+ * @param {any} v The value to convert
+ * @returns {string} The string representation of the value
+ */
+export const str = (v: any): string => String(v);

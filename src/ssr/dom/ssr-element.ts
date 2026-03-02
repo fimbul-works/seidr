@@ -1,7 +1,7 @@
 import { TYPE_ELEMENT } from "../../constants";
 import type { NodeTypeElement } from "../../types";
 import { escapeAttribute } from "../../util/escape";
-import { camelToKebab } from "../../util/string";
+import { camelToKebab, str } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
 import { isFn } from "../../util/type-guards/primitive-types";
 import type { SSRDocument } from "./ssr-document";
@@ -194,7 +194,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     const children = this.childNodes as unknown as SSRNodeList;
     children.nodes.length = 0;
     if (value !== null && value !== undefined) {
-      this.appendChild(new SSRTextNode(String(value), this._ownerDocument!));
+      this.appendChild(new SSRTextNode(str(value), this._ownerDocument!));
     }
   }
 
@@ -208,8 +208,8 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     children.nodes.length = 0;
     if (val) {
       // In SSR, we often just want raw HTML. We can use a text node that doesn't escape.
-      const raw = new SSRTextNode(String(val), this._ownerDocument!);
-      (raw as any).toString = () => String(val);
+      const raw = new SSRTextNode(str(val), this._ownerDocument!);
+      (raw as any).toString = () => str(val);
       this.appendChild(raw);
     }
   }
@@ -252,7 +252,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
       if (content.includes("=")) {
         const [n, v] = content.split("=");
         const unquoted = v.replace(/^["']|["']$/g, "");
-        return String(this.getAttribute(n)) === unquoted;
+        return str(this.getAttribute(n)) === unquoted;
       }
       return this.hasAttribute(content);
     }
@@ -274,7 +274,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
       )
       .map(([name, value]) => {
         if (BOOL_ATTRIBUTES.includes(name.toLowerCase())) return name.toLowerCase();
-        return `${name}="${escapeAttribute(String(value))}"`;
+        return `${name}="${escapeAttribute(str(value))}"`;
       })
       .sort(([a], [b]) => a.localeCompare(b))
       .join(" ");
@@ -336,7 +336,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         if (typeof prop !== "string") return Reflect.set(storage, prop, value);
         if (prop === "cssText") {
           Object.keys(storage).forEach((k) => delete storage[k]);
-          String(value)
+          str(value)
             .split(";")
             .forEach((s: string) => {
               const parts = s.split(":");
@@ -349,7 +349,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
           return true;
         }
 
-        storage[camelToKebab(prop)] = String(value);
+        storage[camelToKebab(prop)] = str(value);
         return true;
       },
     });

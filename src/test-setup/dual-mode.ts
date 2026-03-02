@@ -120,7 +120,7 @@ export function renderToHtml(node: any, depth = 0): string {
     return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 
-  return String(node);
+  return str(node);
 }
 
 /**
@@ -175,6 +175,7 @@ function normalizeHtml(html: string): string {
 
 import type { LifecycleScope } from "../component";
 import * as useScopeModule from "../component/use-scope";
+import { str } from "../util/string";
 
 /**
  * Mocks the useScope hook for tests that need to run in SSR mode

@@ -40,7 +40,12 @@ const transferEventListeners = (real: HTMLElement, fake: HTMLElement): void => {
 const syncTextNode = (real: Text | Comment, fake: Text | Comment): void => {
   if (real.textContent !== fake.textContent) {
     console.warn(
-      `Hydration mismatch: Text content difference. Expected '${fake.textContent}' but found '${real.textContent}'. Syncing.`,
+      `[Hydration mismatch] WHAT: Text content difference. Expected '${fake.textContent}' but found '${real.textContent}'.\n` +
+        `HOW: The client rendered different text than the server.\n` +
+        `WHERE: Text mapping on ${fake.parentElement?.tagName || "TextNode"}.\n` +
+        `WHY: This usually happens when state that is rendered as text changes between SSR and client mounting.\n` +
+        `ACTION: Syncing real DOM text content to match client text content.`,
+      { real, fake },
     );
     real.textContent = fake.textContent;
   }
@@ -85,7 +90,14 @@ export const hydrateNode = (real: Node, fake: Node): void => {
       hydrateNode(realChild, fakeChild);
       realIdx++;
     } else {
-      console.warn("Hydration mismatch deeply nested. Reverting to client-side replacement.");
+      console.warn(
+        `[Hydration mismatch] WHAT: Deep child node structure difference detected.\n` +
+          `HOW: The client-rendered tree contains different children than the SSR-rendered tree.\n` +
+          `WHERE: Deep mismatch while processing children of <${(real as HTMLElement).tagName || "Text"}>.\n` +
+          `WHY: This usually happens when conditional rendering logic differs between server and client passes.\n` +
+          `ACTION: Reverting to client-side replacement by unmounting the SSR tree and replacing with client nodes.`,
+        { realChild, fakeChild },
+      );
       if (realChild) {
         real.replaceChild(fakeChild, realChild);
       } else {
@@ -122,7 +134,12 @@ export const consumeHydrationNode = (parent: HydrationTarget, childNode: Node): 
   }
 
   console.warn(
-    `Hydration mismatch: Expected element but found <${(childNode as HTMLElement).tagName || "Text"}>. Bailing out.`,
+    `[Hydration mismatch] WHAT: Expected matching child node, but found unmatched node.\n` +
+      `HOW: The client tried to hydrate <${(childNode as HTMLElement).tagName || "Text"}>, but the SSR tree did not provide a match.\n` +
+      `WHERE: Top-level or component root hydration at index ${childIndex} of parent <${(parent as HTMLElement).tagName || "Document"}>.\n` +
+      `WHY: This occurs when components inject extra root nodes only on the client, or SSR omits nodes unexpectedly.\n` +
+      `ACTION: Replacing the mismatched SSR node or appending the new client node.`,
+    { childNode, expectedRealChild: realChild },
   );
 
   if (realChild) {

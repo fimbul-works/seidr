@@ -3,6 +3,7 @@ import express, { type Request, type Response } from "express";
 import type { ViteDevServer } from "vite";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";
+import { str } from "../../src/util/string.js";
 
 export type PageContext = { initialPosts?: BlogPost[]; initialCurrentPost?: BlogPost };
 
@@ -95,7 +96,7 @@ app.get(/.*/, async (req, res) => {
       return;
     }
     console.error(e);
-    res.status(500).end(String(e));
+    res.status(500).end(str(e));
   }
 });
 

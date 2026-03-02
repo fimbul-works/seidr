@@ -22,7 +22,7 @@ export const restoreGlobalState = (state: Record<string, unknown>): void => {
       existingValue.value = value;
     } else {
       // Create a initial Seidr that useState will pick up
-      ctxStates.set(targetSymbol, new Seidr(value));
+      ctxStates.set(targetSymbol, new Seidr(value, { id: key }));
     }
   }
 };

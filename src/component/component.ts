@@ -16,6 +16,7 @@ import { hydrationMap } from "../ssr/hydrate/node-map";
 import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
+import { str } from "../util/string";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -41,7 +42,8 @@ export const component = <P = void>(
     const parent = getCurrentComponent();
     const componentName = name || factory.name || "Component";
     const componentId = getNextComponentId();
-    const fullComponentId = `${componentName}-${componentId}`;
+    const fullComponentId =
+      process.env.NODE_ENV !== "production" ? `${componentName}-${componentId}` : `${componentId}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -61,7 +63,7 @@ export const component = <P = void>(
           hydrationContext = new HydrationContext(fullComponentId, hData.components[fullComponentId], roots);
           pushHydrationContext(hydrationContext);
         } else if (process.env.NODE_ENV !== "production") {
-          console.warn(`[Hydration] No roots found for component ${fullComponentId}`);
+          console.warn(`[Hydration mismatch] No roots found for component ${fullComponentId}`);
         }
       }
     }
@@ -114,7 +116,8 @@ export const component = <P = void>(
       },
       child(childComponent: Component) {
         children.set(childComponent.id, childComponent);
-        comp.onUnmount(() => childComponent.unmount());
+        childComponent.onUnmount(() => children.delete(childComponent.id));
+        comp.onUnmount(() => !childComponent.isUnmounted && childComponent.unmount());
 
         if (attachedParent) {
           childComponent.attached(attachedParent);
@@ -243,25 +246,62 @@ export const component = <P = void>(
 
       // Apply component id to all root elements
       if (!process.env.CORE_DISABLE_SSR) {
-        [...(isArray(element) ? element : [element])].forEach((el) =>
-          isHTMLElement(el) ? (el.dataset.seidrId = String(componentId)) : null,
-        );
+        [...(isArray(element) ? element : [element])].forEach((el) => {
+          if (isHTMLElement(el)) {
+            el.setAttribute("data-seidr-id", str(componentId));
+          }
+        });
       }
 
       comp.element = element;
 
       // Only add markers if the component returns an array or a nullish/text value.
-      // If it's a single HTMLElement or Component, we skip markers to reduce SSR bloat.
-      // We also check if markers were explicitly requested (e.g. by Switch or List).
       const shouldAddMarkerComments =
         getRenderContext().markers.has(fullComponentId) ||
-        isArray(element) ||
-        (!isHTMLElement(element) && !isComponent(element));
+        isArray(comp.element) ||
+        (!isHTMLElement(comp.element) && !isComponent(comp.element));
 
       if (shouldAddMarkerComments) {
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
+
+        // In SSR, track the start marker first
+        if (!process.env.CORE_DISABLE_SSR && isServer()) {
+          console.log(`[SSR] [${fullComponentId}] Tracking start marker: <!--${comp.startMarker.textContent}-->`);
+          comp.trackNode(comp.startMarker);
+        } else if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
+          // In hydration, claim the start marker
+          const claimed = hydrationContext.claim();
+          console.log(
+            `[Hydration debug] [${fullComponentId}] Claiming start marker: <!--${comp.startMarker.textContent}--> -> ${claimed ? "FOUND" : "NOT FOUND"}`,
+          );
+          if (claimed) {
+            hydrationMap.set(comp.startMarker, claimed);
+          }
+        }
+      }
+
+      // Re-evaluate final marker needs
+      const finalShouldAddMarkerComments =
+        getRenderContext().markers.has(fullComponentId) ||
+        isArray(element) ||
+        (!isHTMLElement(element) && !isComponent(element));
+
+      if (finalShouldAddMarkerComments && comp.endMarker) {
+        // Track/claim the end marker at the end of the sequence
+        if (!process.env.CORE_DISABLE_SSR && isServer()) {
+          console.log(`[SSR] [${fullComponentId}] Tracking end marker: <!--${comp.endMarker.textContent}-->`);
+          comp.trackNode(comp.endMarker);
+        } else if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
+          const claimed = hydrationContext.claim();
+          console.log(
+            `[Hydration debug] [${fullComponentId}] Claiming end marker: <!--${comp.endMarker.textContent}--> -> ${claimed ? "FOUND" : "NOT FOUND"}`,
+          );
+          if (claimed) {
+            hydrationMap.set(comp.endMarker, claimed);
+          }
+        }
       }
     } catch (err) {
       // Restore previous component (Pop from tree)
@@ -282,7 +322,7 @@ export const component = <P = void>(
        */
       const applyRootMarker = (item: ComponentChildren): void => {
         if (isHTMLElement(item)) {
-          item.dataset.seidrRoot = String(getRenderContextID());
+          item.dataset.seidrRoot = str(getRenderContextID());
         } else if (isComponent(item)) {
           applyRootMarker(item.element);
         } else if (isArray(item)) {

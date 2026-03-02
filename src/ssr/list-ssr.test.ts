@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { List } from "../components/list";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
+import { str } from "../util/string";
 import { renderToString } from "./render-to-string";
 
 describe("ssr limits", () => {
@@ -11,12 +12,11 @@ describe("ssr limits", () => {
       return $("div", null, [
         List(
           items,
-          (item) => String(item),
+          (item) => str(item),
           (item) => $("div", { textContent: `Item ${item}` }),
         ),
       ]);
     });
-    console.log("HTML IS:", html);
     expect(html).toContain("<!--List");
   });
 });

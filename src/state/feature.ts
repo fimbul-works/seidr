@@ -32,7 +32,7 @@ export const getGlobalStateFeature = (): RenderFeature<Map<symbol, Seidr<any>>, 
       const ctxStates = new Map<symbol, Seidr<any>>();
       for (const [key, value] of Object.entries(serialized)) {
         const targetSymbol = createStateKey(key);
-        ctxStates.set(targetSymbol, new Seidr(value));
+        ctxStates.set(targetSymbol, new Seidr(value, { id: key }));
       }
       return ctxStates;
     },

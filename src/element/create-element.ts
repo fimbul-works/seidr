@@ -3,8 +3,9 @@ import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
+import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
-import { isArray, isEmpty } from "../util/type-guards";
+import { isArray, isEmpty, isHTMLElement } from "../util/type-guards";
 import { assignProps } from "./assign-props";
 import type { SeidrChild, SeidrElementProps } from "./types";
 
@@ -47,18 +48,25 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 
   const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
   if (hydrationContext) {
-    const el = hydrationContext.claim() as HTMLElementTagNameMap[K];
-    if (el) {
-      if (props) {
-        assignProps(el, props);
+    const claimedNode = hydrationContext.claim() as HTMLElementTagNameMap[K];
+
+    if (claimedNode) {
+      // Store the relationship for reactive updates
+      hydrationMap.set(claimedNode, claimedNode);
+
+      if (isHTMLElement(claimedNode)) {
+        if (props) {
+          assignProps(claimedNode, props);
+        }
+
+        if (isArray(children)) {
+          children.forEach((child) => appendChild(claimedNode, child));
+        } else if (!isEmpty(children)) {
+          appendChild(claimedNode, children);
+        }
       }
 
-      if (isArray(children)) {
-        children.forEach((child) => appendChild(el, child));
-      } else if (!isEmpty(children)) {
-        appendChild(el, children);
-      }
-      return el;
+      return claimedNode;
     }
   }
 

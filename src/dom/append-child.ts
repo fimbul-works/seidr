@@ -1,8 +1,7 @@
 import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
-import { getHydrationContext } from "../ssr/hydrate/hydration-context";
-import { type HydrationTarget, isHydrationTarget } from "../ssr/hydrate/node-map";
+import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -50,7 +49,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     return;
   }
 
-  const target = (parent as HTMLTemplateElement).content || parent;
+  const target = parent as ParentNode;
   const childNode = isDOMNode(child) ? child : $text(child);
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
@@ -60,19 +59,34 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       return;
     }
 
+    // Check if we have a mapping for this virtual node to a real SSR node
+    const mapped = hydrationMap.get(childNode);
+    if (mapped && mapped.parentNode === target) {
+      return;
+    }
+
     if (process.env.NODE_ENV === "development") {
       const tag = isHTMLElement(childNode)
-        ? childNode.tagName.toLowerCase()
+        ? (childNode as HTMLElement).tagName.toLowerCase()
         : isTextNode(childNode)
           ? "#text"
           : "unknown";
-      const parentTag = isHTMLElement(target) ? (target as any).tagName : "Node";
-      console.warn(`[Hydration Mismatch] Injected node <${tag}> as it was not a child of <${parentTag}>.`, {
-        childNode,
-        target,
-      });
+      const parentTag = isHTMLElement(target) ? (target as HTMLElement).tagName : "Node";
+      console.warn(
+        `[Hydration mismatch] WHAT: Component structure discrepancy detected.\n` +
+          `HOW: The client injected an expected child node <${tag}> that the server did not include in the rendered parent <${parentTag}>.\n` +
+          `WHERE: Node appending phase inside <${parentTag}>.\n` +
+          `WHY: This happens when a client-side side-effect or different initial state causes a component to render additional elements not present during SSR.\n` +
+          `ACTION: Injecting new client-rendered <${tag}> as child element.`,
+        { childNode, target },
+      );
     }
   }
 
-  target.appendChild(childNode);
+  // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.
+  // Note: Only Elements/Documents support .contains() on other nodes reliably in JSDOM.
+  const canContain = childNode.nodeType === 1 || childNode.nodeType === 9;
+  if (childNode !== target && (!canContain || !childNode.contains(target))) {
+    target.appendChild(childNode);
+  }
 };

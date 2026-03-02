@@ -1,6 +1,8 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
+import { hydrationMap } from "../../ssr/hydrate/node-map";
 import { isServer } from "../../util/environment/server";
+import { str } from "../../util/string";
 import { getDocument } from "../get-document";
 
 /**
@@ -13,14 +15,17 @@ export const $text = (text: unknown): Text => {
   if (hydrationContext) {
     const node = hydrationContext.claim() as Text;
     if (node) {
-      if (node.textContent !== String(text)) {
-        node.textContent = String(text);
+      if (node.textContent !== str(text)) {
+        node.textContent = str(text);
       }
+      // Store the relationship for reactive updates
+      hydrationMap.set(node, node);
+
       return node;
     }
   }
 
-  const node: Text = getDocument().createTextNode(String(text));
+  const node: Text = getDocument().createTextNode(str(text));
 
   if (!process.env.CORE_DISABLE_SSR && isServer()) {
     getCurrentComponent()?.trackNode?.(node);

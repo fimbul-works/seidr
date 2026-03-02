@@ -4,6 +4,7 @@ import { wrapComponent } from "../../component/wrap-component";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { describeDualMode } from "../../test-setup";
+import { str } from "../string";
 import {
   isArray,
   isBool,
@@ -193,7 +194,7 @@ describe("Type Guard Utilities", () => {
       });
 
       it("should return false for String objects", () => {
-        expect(isStr(new String("hello"))).toBe(false); // eslint-disable-line no-new-wrappers
+        expect(isStr(new String("hello"))).toBe(false);
       });
 
       it("should narrow type correctly", () => {

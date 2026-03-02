@@ -4,6 +4,7 @@ import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
+import { str } from "../util/string";
 import { scheduleUpdate } from "./scheduler";
 import type { Observable, ObservableOptions } from "./types";
 
@@ -42,7 +43,7 @@ export class Seidr<T = any> implements Observable<T> {
     initial: T,
     public readonly options: ObservableOptions = {},
   ) {
-    this.i = String(options.id ?? getNextSeidrId());
+    this.i = str(options.id ?? getNextSeidrId());
     this.v = initial;
 
     // Register for hydration
@@ -91,7 +92,7 @@ export class Seidr<T = any> implements Observable<T> {
       this.v = v;
 
       // Notify immediately in SSR
-      if (this.options.sync || isServer()) {
+      if (this.options.sync || isServer() || (process.env.VITEST && !process.env.USE_SCHEDULER)) {
         this.notify();
       } else {
         scheduleUpdate(this);

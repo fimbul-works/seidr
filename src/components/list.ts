@@ -57,6 +57,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
         if (!itemComponent) {
           itemComponent = wrapComponent<T>(factory)(item);
+          scope.child(itemComponent);
           componentMap.set(key, itemComponent);
         }
 
@@ -84,6 +85,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
     return observable.value.map((item) => {
       const itemComponent = wrapComponent<T>(factory)(item);
+      scope.child(itemComponent);
       componentMap.set(getKey(item), itemComponent);
       return itemComponent;
     });

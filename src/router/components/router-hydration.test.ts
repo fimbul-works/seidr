@@ -15,6 +15,7 @@ describe("Router Hydration Unmounting", () => {
     it("should skip in SSR", () => expect(true).toBe(true));
     return;
   }
+
   let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
 
@@ -58,10 +59,10 @@ describe("Router Hydration Unmounting", () => {
   });
 
   afterAll(() => {
-    cleanupClientMode();
     resetClientPathState();
     resetRequestIdCounter();
     clearHydrationData();
+    cleanupClientMode();
   });
 
   it("should unmount SSR fallback when navigating to a valid route", async () => {

@@ -3,6 +3,7 @@ import type { Seidr } from "../seidr/seidr";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { isEmpty } from "../util/index";
+import { str } from "../util/string";
 import { wrapError } from "../util/wrap-error";
 import { storageConfig } from "./storage";
 import type { StateKey, StorageErrorHandler, StorageOperation, StorageType } from "./types";
@@ -80,7 +81,7 @@ export const bindStorage = <T>(
 ): CleanupFunction => {
   if (isServer()) return () => {};
 
-  const strKey = String(key);
+  const strKey = str(key);
   const storage = getStorageInstance(storageType);
 
   if (!storage) {

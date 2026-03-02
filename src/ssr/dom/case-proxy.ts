@@ -1,7 +1,7 @@
 import type { ReactiveValue } from "../../element";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
 import { SeidrError } from "../../types";
-import { camelToKebab, kebabToCamel } from "../../util/string";
+import { camelToKebab, kebabToCamel, str } from "../../util/string";
 import { isEmpty, isStr } from "../../util/type-guards/primitive-types";
 
 /**
@@ -176,7 +176,7 @@ export function createCaseProxy<
         if (value === true) {
           parts.push(key);
         } else {
-          parts.push(`${key}="${escapeKeyValue ? escapeKeyValue(key, value) : String(value)}"`);
+          parts.push(`${key}="${escapeKeyValue ? escapeKeyValue(key, value) : str(value)}"`);
         }
       }
 

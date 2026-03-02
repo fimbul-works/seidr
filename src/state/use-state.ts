@@ -3,6 +3,7 @@ import { getFeature } from "../render-context/feature";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { isServer } from "../util/environment/server";
+import { str } from "../util/string";
 import { isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
 import { getGlobalStateFeature } from "./feature";
@@ -28,7 +29,7 @@ export const useState = <T>(
 ): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
   // Resolve key lazily to ensure we use the correct RenderContext in SSR
   const originalKey = key;
-  const strKey = String(originalKey);
+  const strKey = str(originalKey);
   if (isStr(key)) {
     key = createStateKey<T>(key);
   }
@@ -44,7 +45,7 @@ export const useState = <T>(
   // Ensure state exists
   let observable = ctxStates.get(key) as Seidr<T>;
   if (!observable) {
-    observable = new Seidr<T>(value as T);
+    observable = new Seidr<T>(value as T, { id: strKey });
     ctxStates.set(key, observable);
   } else if (value !== undefined && observable.value !== value && !hasHydrationData()) {
     // Only update if not hydrating and a new value is provided

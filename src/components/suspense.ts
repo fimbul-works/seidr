@@ -104,6 +104,7 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
       // Mount new component
       currentComponent = getComponent(factories, status);
       if (currentComponent) {
+        scope.child(currentComponent);
         mountComponent(currentComponent, endMarker);
       }
     };
@@ -111,5 +112,5 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
     scope.observe(status, update);
     scope.onUnmount(() => currentComponent?.unmount());
 
-    return currentComponent;
+    return currentComponent ? scope.child(currentComponent) : undefined;
   }, name ?? "Suspense")();
