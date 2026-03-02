@@ -2,6 +2,7 @@ import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
+import { mismatchCandidates } from "../ssr/hydrate/mismatch-candidates";
 import { replaceWithStateTransfer } from "../ssr/hydrate/mismatch-fallback";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
@@ -44,7 +45,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
     try {
       const scope = useScope();
-      scope.onUnmount(child.unmount);
+      scope.child(child);
     } catch (_e) {
       // Ignore if not in a component context
     }
@@ -71,22 +72,31 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     // We check if the last node we tried to match at this sequence point was a stale candidate.
     const hCtx = getHydrationContext();
     if (hCtx && !mapped) {
-      const staleNode = hCtx.lastAttemptedNode;
+      const staleNode = mismatchCandidates.get(childNode) || hCtx.lastAttemptedNode;
       if (process.env.NODE_ENV !== "production") {
-        console.log(
+        console.warn(
           `[Hydration-Reconcile] Trying to replace stale ${staleNode?.nodeName} with new ${childNode.nodeName}`,
           {
             staleParent: staleNode?.parentNode?.nodeName,
             target: (target as HTMLElement).tagName || target.nodeName,
             match: staleNode?.parentNode === target,
+            hasCandidate: mismatchCandidates.has(childNode),
           },
         );
       }
       if (staleNode && staleNode.parentNode === target) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`[Hydration-Reconcile] MATCHED! Replacing ${staleNode.nodeName} with ${childNode.nodeName}`);
+        }
         replaceWithStateTransfer(staleNode, childNode);
+        mismatchCandidates.delete(childNode);
         // We also mark this new node as the valid physical node for this sequence entry
         hydrationMap.set(childNode, childNode);
         return;
+      } else if (process.env.NODE_ENV !== "production") {
+        console.log(
+          `[Hydration-Reconcile] PARENT MISMATCH! staleNode.parentNode: ${staleNode?.parentNode?.nodeName}, target: ${(target as any).tagName || target.nodeName}`,
+        );
       }
     }
 

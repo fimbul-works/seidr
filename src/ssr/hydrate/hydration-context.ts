@@ -103,7 +103,21 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
     }
   };
 
-  rootsInMap.forEach(resolveChildren);
+  rootsInMap.forEach((idx) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[Hydration-Resolve] Root index ${idx} resolved to ${resolved[idx]?.nodeName}`);
+    }
+    resolveChildren(idx);
+  });
+
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Hydration-Resolve] Finished resolving ${structureMap.length} nodes for component`);
+    resolved.forEach((node, i) => {
+      console.log(
+        `  [${i}] ${structureMap[i][0]} -> ${node?.nodeName} ${isHTMLElement(node) ? (node as HTMLElement).id || (node as HTMLElement).tagName : ""}`,
+      );
+    });
+  }
 
   return resolved;
 }
@@ -138,8 +152,8 @@ export class HydrationContext {
           console.warn(
             `[Hydration mismatch] Expected ${expectedTag} at index ${this.currentIndex - 1}, but found ${
               isHTMLElement(node) ? (node as HTMLElement).tagName.toLowerCase() : node.nodeName
-            }. Continuing as fresh.`,
-            { node, expectedTag, currentIndex: this.currentIndex - 1 },
+            }. Continuing as fresh. Node:`,
+            node,
           );
         }
         return undefined;

@@ -19,6 +19,9 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   deserializeFeatures(getRenderContext(), data.features);
   hydrationDataStorage.data = data;
   hydrationDataStorage.data.root = root;
+  if (process.env.NODE_ENV !== "production") {
+    console.log(`[Hydration-Debug] Hydration data set with ${Object.keys(data.components).length} components`);
+  }
 
   // Restore state values from the server
   if (data.features?.[GLOBAL_STATE_FEATURE_ID]) {

@@ -1,4 +1,6 @@
 import type { Component, ComponentChildren } from "../../component/types";
+import { mismatchCandidates } from "../../ssr/hydrate/mismatch-candidates";
+import { replaceWithStateTransfer } from "../../ssr/hydrate/mismatch-fallback";
 import { hydrationMap } from "../../ssr/hydrate/node-map";
 import { SeidrError } from "../../types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
@@ -26,6 +28,16 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
     const { startMarker: startNode, endMarker: endNode, element: el } = component;
 
     const mountChildNode = (node: Node) => {
+      const candidate = !process.env.CORE_DISABLE_SSR ? mismatchCandidates.get(node) : null;
+      if (candidate && candidate.parentNode === realParent) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(`[Hydration-Reconcile] mountComponent REPLACING ${candidate.nodeName} with ${node.nodeName}`);
+        }
+        replaceWithStateTransfer(candidate, node);
+        mismatchCandidates.delete(node);
+        return;
+      }
+
       if (realAnchor) {
         realParent!.insertBefore(node, realAnchor);
       } else {

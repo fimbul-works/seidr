@@ -73,10 +73,23 @@ export interface LifecycleScope {
   readonly parentNode: Node | null;
 
   /**
+   * Callback triggered when the component is attached to a parent.
+   * @param {(parent: Node) => void} callback - The callback to execute when attached
+   */
+  onMount(callback: (parent: Node) => void): void;
+
+  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
   onUnmount(cleanup: CleanupFunction): void;
+
+  /**
+   * Tracks a child component for automatic cleanup.
+   * @param {Component} component - The child component to track
+   * @returns {Component} The same child Component
+   */
+  child(component: Component): Component;
 
   /**
    * Observes a Seidr observable and executes the callback within the component's context.
@@ -93,19 +106,6 @@ export interface LifecycleScope {
    * @returns {Promise<T>} The same promise, for chaining
    */
   waitFor<T>(promise: Promise<T>): Promise<T>;
-
-  /**
-   * Tracks a child component for automatic cleanup.
-   * @param {Component} component - The child component to track
-   * @returns {Component} The same child Component
-   */
-  child(component: Component): Component;
-
-  /**
-   * Callback triggered when the component is attached to a parent.
-   * @param {(parent: Node) => void} callback - The callback to execute when attached
-   */
-  onMount(callback: (parent: Node) => void): void;
 }
 
 /**

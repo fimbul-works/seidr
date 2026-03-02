@@ -56,10 +56,23 @@ export const component = <P = void>(
 
     // Check for hydration
     let hydrationContext: HydrationContext | null = null;
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(
+        `[Hydration-Debug] Component ${fullComponentId} initialization. hasHydrationData: ${hasHydrationData()}`,
+      );
+    }
     if (!process.env.CORE_DISABLE_SSR && hasHydrationData()) {
       const hData = getHydrationData();
+      if (process.env.NODE_ENV !== "production") {
+        console.log(
+          `[Hydration-Debug] Checking component ${fullComponentId}. Metadata found: ${!!hData?.components[fullComponentId]}`,
+        );
+      }
       if (hData?.components[fullComponentId]) {
         const roots = getRootsForHydration(fullComponentId, hData.root as HTMLElement);
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`[Hydration-Debug] Roots for ${fullComponentId}: ${roots.length}`);
+        }
         if (roots.length > 0) {
           hydrationContext = new HydrationContext(fullComponentId, hData.components[fullComponentId], roots);
           pushHydrationContext(hydrationContext);

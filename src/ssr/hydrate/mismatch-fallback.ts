@@ -111,9 +111,15 @@ export function applyTreeState(root: HTMLElement, state: TreeState): void {
  */
 export function replaceWithStateTransfer(oldNode: Node, newNode: Node): void {
   if (isHTMLElement(oldNode) && isHTMLElement(newNode)) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn(`[Hydration-Debug] replaceWithStateTransfer called for ${oldNode.nodeName} -> ${newNode.nodeName}`);
+    }
     const state = captureTreeState(oldNode as HTMLElement);
     // Debug hook for tests
     if ((globalThis as any).__TEST_STATES_ENABLED__) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[Hydration-Debug] Setting __TEST_STATES__ with ${Object.keys(state).length} entries`);
+      }
       (globalThis as any).__TEST_STATES__ = state;
     }
 

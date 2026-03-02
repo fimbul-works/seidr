@@ -11,10 +11,26 @@ import type { LifecycleScope } from "./types";
  * @throws {Error} If called outside of a component context
  * @returns {LifecycleScope} The scope of the current component
  */
-export const useScope = (): LifecycleScope => {
+export const useScope = (): Readonly<LifecycleScope> => {
   const current = getCurrentComponent();
   if (!current) {
     throw new SeidrError("useScope() must be called within a component");
   }
-  return current;
+  const { id, isUnmounted, parentNode, onMount, child, observe, waitFor, onUnmount } = current;
+  return {
+    get id() {
+      return id;
+    },
+    get isUnmounted() {
+      return isUnmounted;
+    },
+    get parentNode() {
+      return parentNode;
+    },
+    onMount,
+    child,
+    observe,
+    waitFor,
+    onUnmount,
+  };
 };

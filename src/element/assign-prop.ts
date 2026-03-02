@@ -2,7 +2,7 @@ import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
-import { camelToKebab } from "../util/string";
+import { camelToKebab, str } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
 
@@ -158,6 +158,25 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
           }
         }
         if (!(useAttribute || !(effectiveProp in activeElement))) {
+          if (
+            !process.env.CORE_DISABLE_SSR &&
+            !isServer() &&
+            (effectiveProp === "textContent" || effectiveProp === "value")
+          ) {
+            const currentValue = effectiveProp === "value" ? activeElement.value : activeElement.textContent;
+            if (currentValue !== str(val)) {
+              if (process.env.NODE_ENV !== "production") {
+                console.warn(
+                  `[Hydration mismatch] Expected reactive ${effectiveProp} "${str(val)}", but found "${currentValue}".`,
+                  {
+                    el: activeElement,
+                    expected: str(val),
+                    found: currentValue,
+                  },
+                );
+              }
+            }
+          }
           activeElement[effectiveProp] = val;
         }
       }),
@@ -167,10 +186,40 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       if (isBoolProp) {
         value ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
       } else {
+        if (
+          !process.env.CORE_DISABLE_SSR &&
+          !isServer() &&
+          (effectiveProp === "value" || effectiveProp === "textContent")
+        ) {
+          const currentValue = effectiveProp === "value" ? (el as HTMLInputElement).value : el.textContent;
+          if (currentValue !== str(value)) {
+            if (process.env.NODE_ENV !== "production") {
+              console.warn(
+                `[Hydration mismatch] Expected ${effectiveProp} "${str(value)}", but found "${currentValue}".`,
+                {
+                  el,
+                  expected: str(value),
+                  found: currentValue,
+                },
+              );
+            }
+          }
+        }
         isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, value);
       }
     }
     if (!(useAttribute || !(effectiveProp in target))) {
+      if (!process.env.CORE_DISABLE_SSR && !isServer() && effectiveProp === "textContent") {
+        if (el.textContent !== str(value)) {
+          if (process.env.NODE_ENV !== "production") {
+            console.warn(`[Hydration mismatch] Expected textContent "${str(value)}", but found "${el.textContent}".`, {
+              el,
+              expected: str(value),
+              found: el.textContent,
+            });
+          }
+        }
+      }
       target[effectiveProp] = value;
     }
   }

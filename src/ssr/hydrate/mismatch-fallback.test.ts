@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { useState } from "../../state/use-state";
-import { enableClientMode } from "../../test-setup";
+import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { clearHydrationData, hydrate } from "./index";
@@ -88,22 +88,22 @@ describe("Hydration Mismatch Fallback", () => {
   };
 
   it("should preserve input value and focus during mismatch fallback", async () => {
+    const cleanupSSR = enableSSRMode();
     const { html, hydrationData } = await renderToString(InputApp);
+    cleanupSSR();
 
     // Switch to client context AFTER SSR
     cleanupClientMode = enableClientMode();
 
     // Mangle the HTML to force a tag mismatch during hydration
-    // We change the <p> tag to a <span> tag, but keep the data-seidr-id intact
-    container.innerHTML = html.replace("<p>", "<span>").replace("</p>", "</span>");
+    // We change the root <div> tag to a <section> tag
+    container.innerHTML = html.replace("<div", "<section").replace("</div>", "</section>");
 
     const inputAfterMangle = container.querySelector("input") as HTMLInputElement;
     inputAfterMangle.focus();
     inputAfterMangle.value = "user-typed";
 
-    console.warn("--- BEFORE HYDRATE ---");
     unmount = hydrate(InputApp, container, hydrationData);
-    console.warn("--- AFTER HYDRATE ---");
 
     // Diagnostics
     const capturedStates = (globalThis as any).__TEST_STATES__;
@@ -111,12 +111,15 @@ describe("Hydration Mismatch Fallback", () => {
       throw new Error("No states were captured! verify replaceWithStateTransfer was called.");
     }
 
-    // Since we removed comment markers, the path to the input is [0, 0] inside the root component
-    // The component wrapper DIV is "root:0".
-    // The input is "root:0.0".
-    // The p/span is "root:0.1".
-    if (!capturedStates["root:0.0"]) {
-      throw new Error("Target input path root:0.0 not found in captured states!");
+    // Since we replaced the root div, the path to the input is "root:0"
+    // root is the app div.
+    // children are: [input, p]
+    // so input is root:0
+    if (!capturedStates["root:0"]) {
+      console.warn("Captured states:", capturedStates);
+      throw new Error(
+        `Target input path root:0 not found in captured states! Got: ${Object.keys(capturedStates).join(", ")}`,
+      );
     }
 
     const finalInput = container.querySelector("input") as HTMLInputElement;
