@@ -8,7 +8,7 @@ import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { clearHydrationData } from "./hydrate/clear-hydration-data";
 import { renderToString } from "./render-to-string";
-import { setSSRScope } from "./ssr-scope";
+import { setSSRScope } from "./ssr-scope/set-ssr-scope";
 
 describe("renderToString", () => {
   let observables: Seidr[] = [];

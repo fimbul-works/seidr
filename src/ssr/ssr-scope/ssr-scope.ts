@@ -1,68 +1,10 @@
-import { getFeature } from "../render-context/feature";
-import { getRenderContext, getRenderContextID } from "../render-context/render-context";
-import type { RenderContext } from "../render-context/types";
-import type { Seidr } from "../seidr";
-import { getGlobalStateFeature } from "../state/feature";
-import { symbolNames } from "../state/storage";
-import { isClient } from "../util/environment/client";
-import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
+import { getFeature } from "../../render-context/feature";
+import { getRenderContext } from "../../render-context/render-context";
+import type { Seidr } from "../../seidr/seidr";
+import { getGlobalStateFeature } from "../../state/feature";
+import { symbolNames } from "../../state/storage";
+import { buildStructureMap, type StructureMapTuple } from "../structure/structure-map";
 import type { SSRScopeCapture } from "./types";
-
-/**
- * SSR scopes indexed by render context ID.
- * This ensures concurrent SSR requests have isolated scopes.
- */
-const scopes = new Map<number, SSRScope>();
-
-/**
- * Sets the active SSR scope for the current render context.
- * Call this before starting a render pass.
- *
- * @param {(SSRScope | undefined)} scope - The scope to activate for the current render context
- */
-export function setSSRScope(scope: SSRScope | undefined): void {
-  if (isClient()) {
-    return;
-  }
-
-  let ctx: RenderContext;
-  try {
-    ctx = getRenderContext();
-  } catch {
-    if (scope === undefined) {
-      return;
-    }
-    scopes.set(-1, scope);
-    return;
-  }
-
-  ctx = getRenderContext();
-  if (scope === undefined) {
-    scopes.delete(ctx.ctxID);
-  } else {
-    scopes.set(ctx.ctxID, scope);
-  }
-}
-
-/**
- * Gets the SSR scope for the current render context.
- * Returns undefined if not in SSR mode or no scope is active for this context.
- *
- * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
- */
-export function getSSRScope(): SSRScope | undefined {
-  return scopes.get(getRenderContextID());
-}
-
-/**
- * Removes the SSR scope for a specific render context ID.
- * Called after rendering to prevent memory leaks.
- *
- * @param {number} ctxID - The render context ID to clear
- */
-export function clearSSRScope(ctxID: number): void {
-  scopes.delete(ctxID);
-}
 
 /**
  * SSRScope manages observables created during a single server-side render pass.
@@ -162,8 +104,7 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
-    const globalStateFeature = getGlobalStateFeature();
-    const globalState = getFeature(globalStateFeature, getRenderContext());
+    const globalState = getFeature(getGlobalStateFeature(), getRenderContext());
 
     const observables: Record<string, any> = {};
     for (const seidr of this.observables.values()) {

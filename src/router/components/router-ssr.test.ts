@@ -4,7 +4,7 @@ import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../
 import { $ } from "../../element";
 import { renderToString } from "../../ssr";
 import { clearHydrationData } from "../../ssr/hydrate";
-import { setSSRScope } from "../../ssr/ssr-scope";
+import { setSSRScope } from "../../ssr/ssr-scope/set-ssr-scope";
 import { enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { useNavigate, useParams } from "../hooks";

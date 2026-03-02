@@ -47,7 +47,7 @@ export const useState = <T>(
   if (!observable) {
     observable = new Seidr<T>(value as T, { id: strKey });
     ctxStates.set(key, observable);
-  } else if (value !== undefined && observable.value !== value && !hasHydrationData()) {
+  } else if (value !== undefined && observable.value !== value && !ctxStates.has(key)) {
     // Only update if not hydrating and a new value is provided
     observable.value = value;
   }

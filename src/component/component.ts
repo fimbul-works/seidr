@@ -14,7 +14,7 @@ import {
   pushHydrationContext,
 } from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
-import { getSSRScope } from "../ssr/ssr-scope";
+import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";
@@ -246,16 +246,16 @@ export const component = <P = void>(
       // Pre-evaluate marker needs for hydration
       const isHydrating = !process.env.CORE_DISABLE_SSR && hydrationContext;
       const componentInHydrationData = isHydrating ? getHydrationData()?.components[fullComponentId] : null;
-      const serverHadMarkers = componentInHydrationData?.structureMap?.[0]?.[0] === "#comment";
+      const serverHadMarkers = componentInHydrationData?.[0]?.[0] === "#comment";
 
-      if (serverHadMarkers) {
+      if (!process.env.CORE_DISABLE_SSR && serverHadMarkers) {
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
 
         if (isServer()) {
           comp.trackNode(startMarker);
-        } else if (hydrationContext) {
+        } else if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
           // Important: We claim the start marker from the PARENT context, not the one we just created for this component.
           // Since we pushed the new context already, we need to peek at the previous one.
           const parentHCtx = getHydrationContext(1); // Get parent context (depth 1)
@@ -320,7 +320,7 @@ export const component = <P = void>(
         isArray(element) ||
         (!isHTMLElement(element) && !isComponent(element));
 
-      if ((finalShouldAddMarkerComments || serverHadMarkers) && comp.endMarker) {
+      if (!process.env.CORE_DISABLE_SSR && (finalShouldAddMarkerComments || serverHadMarkers) && comp.endMarker) {
         // Track/claim the end marker at the end of the sequence
         if (!process.env.CORE_DISABLE_SSR && isServer()) {
           comp.trackNode(comp.endMarker);

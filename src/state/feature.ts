@@ -1,5 +1,6 @@
 import { createRenderFeature, getRenderFeature, type RenderFeature } from "../render-context/feature";
-import { Seidr, unwrapSeidr } from "../seidr";
+import { Seidr } from "../seidr/seidr";
+import { unwrapSeidr } from "../seidr/unwrap-seidr";
 import { createStateKey } from "./create-state-key";
 import { symbolNames } from "./storage";
 

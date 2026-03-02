@@ -1,6 +1,6 @@
 import { getNextSeidrId } from "../render-context/render-context";
 import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
-import { getSSRScope } from "../ssr/ssr-scope";
+import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";

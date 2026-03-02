@@ -242,7 +242,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
     const text = candidate.textContent || "";
     // Boundary match (e.g. Component-1 or List-2)
     if (!text.startsWith("/")) {
-      const endLabel = "/" + text;
+      const endLabel = `/${text}`;
       const nodes: Node[] = [candidate];
       let current = candidate.nextSibling;
       while (current) {

@@ -1,4 +1,4 @@
-import { getSSRScope } from "../../ssr/ssr-scope";
+import { getSSRScope } from "../../ssr/ssr-scope/get-ssr-scope";
 import { isClient } from "./client";
 
 /**

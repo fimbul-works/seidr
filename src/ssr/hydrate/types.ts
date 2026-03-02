@@ -1,5 +1,5 @@
 import type { ServerElement } from "../dom/types";
-import type { SSRScopeCapture } from "../types";
+import type { SSRScopeCapture } from "../ssr-scope/types";
 
 /**
  * Complete hydration data for client-side restoration.

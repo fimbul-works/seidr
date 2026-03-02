@@ -4,7 +4,7 @@ import { Seidr } from "../../seidr";
 import { enableClientMode, mockUseScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
-import { setSSRScope } from "../ssr-scope";
+import { setSSRScope } from "../ssr-scope/set-ssr-scope";
 import { clearHydrationData, type HydrationData, hasHydrationData, hydrate, setHydrationData } from "./index";
 
 describe("Hydration", () => {

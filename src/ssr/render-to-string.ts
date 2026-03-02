@@ -11,7 +11,7 @@ import { getCurrentPathFeature } from "../router/feature";
 import { clearPathCache } from "../router/get-current-path";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
-import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope";
+import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope/index";
 import type { SSRRenderResult } from "./types";
 
 /**
