@@ -11,7 +11,7 @@ import { getDocument } from "../get-document";
 export const $comment = (text: string): Comment => {
   const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
   if (hydrationContext) {
-    const node = hydrationContext.claim() as Comment;
+    const node = hydrationContext.claim("#comment") as Comment;
     if (node) {
       if (node.textContent !== text) {
         node.textContent = text;

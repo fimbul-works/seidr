@@ -102,7 +102,7 @@ describe("Hydration Integration", () => {
     unmount = hydrate(TestApp, container, hydrationData);
 
     // It should have logged a warning and replaced the tampered elements
-    expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining("Hydration"), expect.anything());
+    expect(consoleWarnSpy.mock.calls.some((call) => call[0].includes("Hydration"))).toBe(true);
 
     // The framework should correct it back to the client expected state
     expect(container.querySelector("h1")?.textContent).toBe("My App");
@@ -153,9 +153,6 @@ describe("Hydration Integration", () => {
 
     // Since the client receives this modified hydration state, the component will render with this new state
     unmount = hydrate(TestApp, container, hydrationData);
-
-    console.log(container.innerHTML);
-    console.log(JSON.stringify(hydrationData, null, 2));
 
     // We expect the DOM to be smoothly updated to reflect the new state, rather than crashing
     expect(container.querySelector("h1")?.textContent).toBe("Modified App Title");

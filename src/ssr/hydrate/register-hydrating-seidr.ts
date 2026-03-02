@@ -20,7 +20,6 @@ export const registerHydratingSeidr = (seidr: Seidr): void => {
 
   const value = hydrationDataStorage.data?.observables[seidr.id];
   if (!isEmpty(value)) {
-    // console.log("hydrating", seidr.id, ":", seidr.value, "=>", hydrationDataStorage.data?.observables[seidr.id]);
     hydrationDataStorage.registry.add(seidr);
     seidr.value = value;
   }

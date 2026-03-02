@@ -1,6 +1,8 @@
 import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context";
+import { replaceWithStateTransfer } from "../ssr/hydrate/mismatch-fallback";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
@@ -63,6 +65,29 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     const mapped = hydrationMap.get(childNode);
     if (mapped && mapped.parentNode === target) {
       return;
+    }
+
+    // RECONCILIATION: If we are here, we have a new/unmapped node during hydration.
+    // We check if the last node we tried to match at this sequence point was a stale candidate.
+    const hCtx = getHydrationContext();
+    if (hCtx && !mapped) {
+      const staleNode = hCtx.lastAttemptedNode;
+      if (process.env.NODE_ENV !== "production") {
+        console.log(
+          `[Hydration-Reconcile] Trying to replace stale ${staleNode?.nodeName} with new ${childNode.nodeName}`,
+          {
+            staleParent: staleNode?.parentNode?.nodeName,
+            target: (target as HTMLElement).tagName || target.nodeName,
+            match: staleNode?.parentNode === target,
+          },
+        );
+      }
+      if (staleNode && staleNode.parentNode === target) {
+        replaceWithStateTransfer(staleNode, childNode);
+        // We also mark this new node as the valid physical node for this sequence entry
+        hydrationMap.set(childNode, childNode);
+        return;
+      }
     }
 
     if (process.env.NODE_ENV === "development") {

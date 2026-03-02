@@ -16,7 +16,8 @@ function nodeMatches(node: Node, tag: string): boolean {
     }
     if (isHTMLElement(node)) {
       const id = tag.split(":")[1];
-      return node.getAttribute("data-seidr-id") === id;
+      const attr = node.getAttribute("data-seidr-id");
+      return attr === id || (attr?.split(" ").includes(id) ?? false);
     }
     return false;
   }
@@ -41,23 +42,38 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
   const rootsInMap = structureMap.map((_, i) => i).filter((i) => !isChild.has(i));
 
-  // 1. Assign roots
-  rootsInMap.forEach((mapIdx, elementIdx) => {
-    if (roots[elementIdx]) {
-      resolved[mapIdx] = roots[elementIdx];
+  // 1. Initial Mapping of Roots (Flat Sequence)
+  // These mapping indices correspond to the components' top-level nodes (roots).
+  let domRootIdx = 0;
+  for (const rootIdx of rootsInMap) {
+    const expectedTag = structureMap[rootIdx][0];
+    let matchedNode: Node | null = null;
+    let searchIdx = domRootIdx;
+
+    while (roots[searchIdx]) {
+      if (nodeMatches(roots[searchIdx], expectedTag)) {
+        matchedNode = roots[searchIdx];
+        break;
+      }
+      searchIdx++;
     }
-  });
 
-  // 2. Recursive resolution from roots
-  const resolveChildren = (parentIdx: number) => {
-    const parentNode = resolved[parentIdx];
-    if (!parentNode) return;
+    if (matchedNode) {
+      resolved[rootIdx] = matchedNode;
+      domRootIdx = searchIdx + 1;
+    } else if (roots[domRootIdx]) {
+      // Fallback
+      resolved[rootIdx] = roots[domRootIdx];
+      domRootIdx++;
+    }
+  }
 
-    const tuple = structureMap[parentIdx];
-    // We used to return early here if tuple[0].startsWith("#component:"),
-    // but child component boundaries (like Fragments) HAVE children (markers/li)
-    // in the parent's structure map that must be resolved!
+  // 2. Recursive resolution for children of already resolved nodes
+  const resolveChildren = (idx: number) => {
+    const parentNode = resolved[idx];
+    if (!parentNode || !isHTMLElement(parentNode)) return;
 
+    const tuple = structureMap[idx];
     let domChildIdx = 0;
     const children = Array.from((parentNode as ParentNode).childNodes || []);
 
@@ -79,19 +95,10 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
       if (matchedNode) {
         resolved[childMapIdx] = matchedNode;
         resolveChildren(childMapIdx);
-        // Advance the primary index past the matched node
         domChildIdx = searchIdx + 1;
-      } else {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[Hydration mismatch] WHAT: Failed to resolve component DOM boundary.\n` +
-              `HOW: The client generated a structure map containing "${expectedTag}" at index ${childMapIdx} but the physical node was missing.\n` +
-              `WHERE: Component structure resolution inside ${parentNode ? (parentNode as HTMLElement).tagName || "Node" : "null"}.\n` +
-              `WHY: The HTML from the server may have been altered by a browser extension, malformed, or conditional state didn't match between client and server.\n` +
-              `ACTION: The structure map node resolution failed, which might cause subsequent nodes to fail hydration mappings.`,
-            { parentNode, expectedTag, childMapIdx },
-          );
-        }
+      } else if (children[domChildIdx]) {
+        resolved[childMapIdx] = children[domChildIdx];
+        domChildIdx++;
       }
     }
   };
@@ -100,7 +107,6 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
   return resolved;
 }
-
 /**
  * HydrationContext provides a sequential way to consume resolved nodes
  * during component rendering.
@@ -108,6 +114,7 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 export class HydrationContext {
   private resolvedNodes: Node[];
   private currentIndex = 0;
+  public lastAttemptedNode: Node | undefined;
 
   constructor(
     public readonly componentId: string,
@@ -119,19 +126,26 @@ export class HydrationContext {
 
   /**
    * Consumes the next node in the execution sequence.
+   * @param expectedTag Optional tag to verify against (e.g. "div", "#text", "#component:ID")
    */
-  claim(): Node | undefined {
+  claim(expectedTag?: string): Node | undefined {
     const node = this.resolvedNodes[this.currentIndex++];
-    if (node) {
-      const tag = isHTMLElement(node)
-        ? (node as HTMLElement).tagName
-        : isTextNode(node)
-          ? "#text"
-          : isComment(node)
-            ? "#comment"
-            : "unknown";
-      console.log(`[Hydration debug] [${this.componentId}] Claimed node index ${this.currentIndex - 1}: <${tag}>`);
+    this.lastAttemptedNode = node;
+
+    if (expectedTag && node) {
+      if (!nodeMatches(node, expectedTag)) {
+        if (process.env.NODE_ENV !== "production") {
+          console.warn(
+            `[Hydration mismatch] Expected ${expectedTag} at index ${this.currentIndex - 1}, but found ${
+              isHTMLElement(node) ? (node as HTMLElement).tagName.toLowerCase() : node.nodeName
+            }. Continuing as fresh.`,
+            { node, expectedTag, currentIndex: this.currentIndex - 1 },
+          );
+        }
+        return undefined;
+      }
     }
+
     return node;
   }
 
@@ -166,9 +180,11 @@ const contextStack: HydrationContext[] = [];
 
 /**
  * Gets the current active hydration context.
+ * @param depth Optional depth to go back in the stack (0 = current, 1 = parent, etc.)
  */
-export function getHydrationContext(): HydrationContext | null {
-  return activeContext;
+export function getHydrationContext(depth: number = 0): HydrationContext | null {
+  if (depth === 0) return activeContext;
+  return contextStack[contextStack.length - depth] || null;
 }
 
 /**
@@ -197,15 +213,10 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
   if (parentCtx) {
     // RESOLUTION via Marker-Position (Parent Structure Map)
     candidate = parentCtx.claimBoundary(componentId);
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        `[Hydration debug] [${componentId}] Resolved boundary from parent: ${candidate ? candidate.nodeName : "NONE"}`,
-      );
-    }
   } else if (container) {
     // Top-level discovery (Data-selector or Marker-search)
     const numericId = componentId.split("-").pop();
-    const selector = `[data-seidr-id="${numericId}"]`;
+    const selector = `[data-seidr-id~="${numericId}"]`;
     const el = container.matches?.(selector) ? container : container.querySelector(selector);
     if (el) {
       candidate = el;
@@ -221,12 +232,6 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
           break;
         }
       }
-    }
-
-    if (process.env.NODE_ENV !== "production") {
-      console.log(
-        `[Hydration debug] [${componentId}] Top-level discovery in container: ${candidate ? candidate.nodeName : "NONE"}`,
-      );
     }
   }
 

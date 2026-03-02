@@ -167,7 +167,6 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       if (isBoolProp) {
         value ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
       } else {
-        if (typeof el.setAttribute !== "function") console.log(el, typeof el);
         isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, value);
       }
     }

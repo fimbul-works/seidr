@@ -17,10 +17,14 @@ export const isDOMNode = (v: any): v is Node => isObj<Node>(v) && "nodeType" in 
 
 /**
  * Check if a value is an HTMLElement (safely works in Node.js/SSR environments).
+ * @template K - The tag name of the HTMLElement
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is an HTMLElement or its server-side equivalent, `false` otherwise
  */
-export const isHTMLElement = (v: any): v is HTMLElement => isDOMNode(v) && v.nodeType === TYPE_ELEMENT;
+export const isHTMLElement = <K extends keyof HTMLElementTagNameMap | string>(
+  v: any,
+): v is K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : HTMLElement =>
+  isDOMNode(v) && v.nodeType === TYPE_ELEMENT;
 
 /**
  * Check if a value is a Text node.

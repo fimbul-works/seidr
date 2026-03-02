@@ -34,11 +34,11 @@ describe("getComponentBoundaryId", () => {
 
   it("returns the ID for child component markers (comment)", () => {
     const comment = document.createComment("Comp-2");
-    expect(getComponentBoundaryId(comment, "Comp-1")).toBe("2");
+    expect(getComponentBoundaryId(comment, "Comp-1")).toBe("Comp-2");
   });
 
   it("returns the ID for child component fragment markers", () => {
     const comment = document.createComment("Comp-2.0");
-    expect(getComponentBoundaryId(comment, "Comp-1")).toBe("2.0");
+    expect(getComponentBoundaryId(comment, "Comp-1")).toBe("Comp-2.0");
   });
 });

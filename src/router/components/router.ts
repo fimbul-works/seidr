@@ -2,9 +2,9 @@ import { component } from "../../component/component";
 import { getMarkerComments } from "../../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { useScope } from "../../component/use-scope";
-import { mountComponent } from "../../component/util";
+import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";
-import { isFn } from "../../util";
+import { isFn } from "../../util/type-guards/primitive-types";
 import { getCurrentParams } from "../get-current-params";
 import { getCurrentPath } from "../get-current-path";
 import { matchRoute } from "../match-route";
@@ -72,7 +72,12 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
         return;
       }
 
-      // Full swap
+      // 1. Resolve anchor point before unmounting
+      const lastNode = currentComponent ? getLastNode(currentComponent) : null;
+      const anchor = lastNode?.nextSibling || endMarker;
+      const parent = lastNode?.parentNode || endMarker?.parentNode || scope.parentNode;
+
+      // 2. Full swap
       if (currentComponent) {
         currentComponent.unmount();
         currentComponent = undefined;
@@ -84,7 +89,8 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
       updateComponent(matchedIndex);
 
       if (currentComponent) {
-        mountComponent(currentComponent, endMarker);
+        scope.child(currentComponent);
+        mountComponent(currentComponent, anchor, parent!);
       }
     };
 

@@ -3,13 +3,13 @@ import { isComponent } from "../../util/type-guards/seidr-dom-types";
 import type { Component } from "../types";
 
 /**
- * Gets the first DOM node of a component.
+ * Gets the first physical DOM node of a component.
  * Recursively follows components if they don't have markers.
  *
  * @param {Component} comp - The component to get the first node for
  * @returns {Node} The first DOM node
  */
-export const getComponentFirstNode = (comp: Component): Node => {
+export const getFirstNode = (comp: Component): Node => {
   if (comp.startMarker) {
     return comp.startMarker;
   }
@@ -20,20 +20,20 @@ export const getComponentFirstNode = (comp: Component): Node => {
   }
 
   if (isComponent(el)) {
-    return getComponentFirstNode(el);
+    return getFirstNode(el);
   }
 
   return el as Node;
 };
 
 /**
- * Gets the last DOM node of a component.
+ * Gets the last physical DOM node of a component.
  * Recursively follows components if they don't have markers.
  *
  * @param {Component} comp - The component to get the last node for
  * @returns {Node} The last DOM node
  */
-export const getComponentLastNode = (comp: Component): Node => {
+export const getLastNode = (comp: Component): Node => {
   if (comp.endMarker) {
     return comp.endMarker;
   }
@@ -44,8 +44,13 @@ export const getComponentLastNode = (comp: Component): Node => {
   }
 
   if (isComponent(el)) {
-    return getComponentLastNode(el);
+    return getLastNode(el);
   }
 
   return el as Node;
 };
+
+// Re-export old names for compatibility during migration if needed,
+// but we'll try to update all callers now.
+export const getComponentFirstNode = getFirstNode;
+export const getComponentLastNode = getLastNode;

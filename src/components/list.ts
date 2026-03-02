@@ -2,7 +2,7 @@ import { component } from "../component/component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
-import { getComponentFirstNode, getComponentLastNode, mountComponent } from "../component/util";
+import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
@@ -57,11 +57,10 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
         if (!itemComponent) {
           itemComponent = wrapComponent<T>(factory)(item);
-          scope.child(itemComponent);
           componentMap.set(key, itemComponent);
         }
 
-        let lastNode = getComponentLastNode(itemComponent);
+        let lastNode = getLastNode(itemComponent);
         if (!process.env.CORE_DISABLE_SSR) {
           lastNode = hydrationMap.get(lastNode) || lastNode;
         }
@@ -70,7 +69,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
           mountComponent(itemComponent, currentAnchor);
         }
 
-        currentAnchor = getComponentFirstNode(itemComponent);
+        currentAnchor = getFirstNode(itemComponent);
         if (!process.env.CORE_DISABLE_SSR) {
           currentAnchor = hydrationMap.get(currentAnchor) || currentAnchor;
         }
@@ -85,7 +84,6 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
     return observable.value.map((item) => {
       const itemComponent = wrapComponent<T>(factory)(item);
-      scope.child(itemComponent);
       componentMap.set(getKey(item), itemComponent);
       return itemComponent;
     });

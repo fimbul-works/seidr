@@ -1,9 +1,10 @@
 import { TYPE_ELEMENT } from "../../constants";
+import type { ReactiveCSSStyleDeclaration } from "../../element";
 import type { NodeTypeElement } from "../../types";
 import { escapeAttribute } from "../../util/escape";
 import { camelToKebab, str } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
-import { isFn } from "../../util/type-guards/primitive-types";
+import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types";
 import type { SSRDocument } from "./ssr-document";
 import type { SSRNodeList } from "./ssr-node-list";
 import { SSRParentNode } from "./ssr-parent-node";
@@ -135,7 +136,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         (target as any)[prop] = value;
         return true;
       },
-    }) as any;
+    }) as unknown as SSRElement<K>;
   }
 
   get nodeName(): K {
@@ -166,10 +167,10 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     return this._styleProxy;
   }
 
-  set style(val: any) {
-    if (typeof val === "string") {
+  set style(val: string | ReactiveCSSStyleDeclaration) {
+    if (isStr(val)) {
       this._styleProxy.cssText = val;
-    } else if (val && typeof val === "object") {
+    } else if (isObj(val)) {
       Object.keys(this._styleStorage).forEach((k) => delete this._styleStorage[k]);
       Object.assign(this._styleProxy, val);
     }
@@ -209,7 +210,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     if (val) {
       // In SSR, we often just want raw HTML. We can use a text node that doesn't escape.
       const raw = new SSRTextNode(str(val), this._ownerDocument!);
-      (raw as any).toString = () => str(val);
+      raw.toString = () => str(val);
       this.appendChild(raw);
     }
   }
@@ -320,7 +321,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
   private _createStyleProxy(): CSSStyleDeclaration {
     const storage = this._styleStorage;
     const self = this;
-    return new Proxy({} as any, {
+    return new Proxy({} as CSSStyleDeclaration, {
       get(_, prop) {
         if (typeof prop !== "string") return Reflect.get(storage, prop);
         if (prop === "toString") return () => self._serializeStyle();
@@ -352,22 +353,25 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         storage[camelToKebab(prop)] = str(value);
         return true;
       },
-    });
+    }) as CSSStyleDeclaration;
   }
 
   private _createDatasetProxy(): DOMStringMap {
     const attrs = this._attributes;
-    return new Proxy({} as any, {
-      get(_, prop) {
-        if (typeof prop !== "string") return undefined;
-        return attrs[`data-${camelToKebab(prop)}`];
+    return new Proxy(
+      {},
+      {
+        get(_, prop) {
+          if (typeof prop !== "string") return undefined;
+          return attrs[`data-${camelToKebab(prop)}`];
+        },
+        set(_, prop, value) {
+          if (typeof prop !== "string") return false;
+          attrs[`data-${camelToKebab(prop)}`] = value;
+          return true;
+        },
       },
-      set(_, prop, value) {
-        if (typeof prop !== "string") return false;
-        attrs[`data-${camelToKebab(prop)}`] = value;
-        return true;
-      },
-    });
+    ) as DOMStringMap;
   }
 
   private _createClassList(): DOMTokenList {
@@ -392,6 +396,6 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         return next;
       },
       toString: () => this.className,
-    } as any;
+    } as DOMTokenList;
   }
 }

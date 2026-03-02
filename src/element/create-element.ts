@@ -1,7 +1,6 @@
 import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
-import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
@@ -48,7 +47,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 
   const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
   if (hydrationContext) {
-    const claimedNode = hydrationContext.claim() as HTMLElementTagNameMap[K];
+    const claimedNode = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
 
     if (claimedNode) {
       // Store the relationship for reactive updates

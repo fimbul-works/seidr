@@ -38,7 +38,6 @@ describe("buildStructureMap integration", () => {
 
     // Find the mapped IDs. We assume there's 'TestComp-1' and 'Message-2'
     const testCompId = Object.keys(hydrationData.components).find((id) => id.startsWith("TestComp"));
-    console.log("data", hydrationData);
     expect(testCompId).toBeDefined();
 
     const structureMap = hydrationData.components[testCompId!];

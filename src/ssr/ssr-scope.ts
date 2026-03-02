@@ -117,7 +117,6 @@ export class SSRScope {
    * @param {Seidr} seidr - The Seidr instance to register
    */
   register(seidr: Seidr): void {
-    // console.log("Registering Seidr", seidr.id, "at scope size", this.observables.size);
     this.observables.set(seidr.id, seidr);
   }
 
@@ -167,11 +166,6 @@ export class SSRScope {
     const globalState = getFeature(globalStateFeature, getRenderContext());
 
     const observables: Record<string, any> = {};
-    // console.log(
-    //   "Capturing hydration data",
-    //   Array.from(this.observables.values().map((s) => ({ id: s.id, value: s.value }))),
-    // );
-    // // Use Seidr IDs as keys to match client-side hydration registry order
     for (const seidr of this.observables.values()) {
       const symbol = symbolNames.get(seidr.id);
       if (!seidr.isDerived && (!symbol || !globalState.has(symbol))) {
@@ -179,14 +173,11 @@ export class SSRScope {
       }
     }
 
-    console.log("Building structure map for component", this.components.size);
-
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
       if (comp.indexedNodes && comp.indexedNodes.length > 0) {
         const map = buildStructureMap(comp);
         components[comp.id] = map;
-        console.log(`[SSR] [${comp.id}] Generated structure map:`, JSON.stringify(map));
       }
     }
 
@@ -200,6 +191,6 @@ export class SSRScope {
     return {
       observables,
       components,
-    } as any;
+    };
   }
 }

@@ -7,6 +7,7 @@ import type { Seidr } from "../seidr";
 import { getHydrationData } from "../ssr/hydrate/get-hydration-data";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import {
+  getHydrationContext,
   getRootsForHydration,
   HydrationContext,
   popHydrationContext,
@@ -89,6 +90,11 @@ export const component = <P = void>(
         return trackedNodes;
       },
       trackNode(node: Node) {
+        if (process.env.VITEST) {
+          console.log(
+            `[Tracking] [${fullComponentId}] Node: ${node.nodeName} ${isHTMLElement(node) ? (node as HTMLElement).tagName : ""}`,
+          );
+        }
         trackedNodes.push(node);
       },
       onUnmount(cleanup: CleanupFunction): void {
@@ -237,6 +243,31 @@ export const component = <P = void>(
     }
 
     try {
+      // Pre-evaluate marker needs for hydration
+      const isHydrating = !process.env.CORE_DISABLE_SSR && hydrationContext;
+      const componentInHydrationData = isHydrating ? getHydrationData()?.components[fullComponentId] : null;
+      const serverHadMarkers = componentInHydrationData?.structureMap?.[0]?.[0] === "#comment";
+
+      if (serverHadMarkers) {
+        const [startMarker, endMarker] = getMarkerComments(fullComponentId);
+        comp.startMarker = startMarker;
+        comp.endMarker = endMarker;
+
+        if (isServer()) {
+          comp.trackNode(startMarker);
+        } else if (hydrationContext) {
+          // Important: We claim the start marker from the PARENT context, not the one we just created for this component.
+          // Since we pushed the new context already, we need to peek at the previous one.
+          const parentHCtx = getHydrationContext(1); // Get parent context (depth 1)
+          const claimed = parentHCtx?.claim();
+          if (claimed) {
+            hydrationMap.set(comp.startMarker, claimed);
+          }
+          // Also advance OWN context past the start marker so children don't try to claim it.
+          hydrationContext.claim();
+        }
+      }
+
       // Render the component via factory
       const result = factory(props);
 
@@ -244,41 +275,42 @@ export const component = <P = void>(
       const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
       const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
 
-      // Apply component id to all root elements
+      // Apply component id to all root elements recursively
       if (!process.env.CORE_DISABLE_SSR) {
-        [...(isArray(element) ? element : [element])].forEach((el) => {
-          if (isHTMLElement(el)) {
-            el.setAttribute("data-seidr-id", str(componentId));
-          }
-        });
+        const applyId = (item: ComponentChildren) => {
+          [...(isArray(item) ? item : [item])].forEach((el) => {
+            if (isHTMLElement(el)) {
+              const currentId = el.getAttribute("data-seidr-id");
+              if (currentId && !currentId.includes(str(componentId))) {
+                el.setAttribute("data-seidr-id", `${currentId} ${str(componentId)}`);
+              } else if (!currentId) {
+                el.setAttribute("data-seidr-id", str(componentId));
+              }
+            } else if (isComponent(el)) {
+              applyId(el.element);
+            }
+          });
+        };
+        applyId(element);
       }
 
       comp.element = element;
 
       // Only add markers if the component returns an array or a nullish/text value.
       const shouldAddMarkerComments =
+        serverHadMarkers ||
         getRenderContext().markers.has(fullComponentId) ||
         isArray(comp.element) ||
         (!isHTMLElement(comp.element) && !isComponent(comp.element));
 
-      if (shouldAddMarkerComments) {
+      if (shouldAddMarkerComments && !comp.startMarker) {
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
 
         // In SSR, track the start marker first
         if (!process.env.CORE_DISABLE_SSR && isServer()) {
-          console.log(`[SSR] [${fullComponentId}] Tracking start marker: <!--${comp.startMarker.textContent}-->`);
           comp.trackNode(comp.startMarker);
-        } else if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
-          // In hydration, claim the start marker
-          const claimed = hydrationContext.claim();
-          console.log(
-            `[Hydration debug] [${fullComponentId}] Claiming start marker: <!--${comp.startMarker.textContent}--> -> ${claimed ? "FOUND" : "NOT FOUND"}`,
-          );
-          if (claimed) {
-            hydrationMap.set(comp.startMarker, claimed);
-          }
         }
       }
 
@@ -288,19 +320,19 @@ export const component = <P = void>(
         isArray(element) ||
         (!isHTMLElement(element) && !isComponent(element));
 
-      if (finalShouldAddMarkerComments && comp.endMarker) {
+      if ((finalShouldAddMarkerComments || serverHadMarkers) && comp.endMarker) {
         // Track/claim the end marker at the end of the sequence
         if (!process.env.CORE_DISABLE_SSR && isServer()) {
-          console.log(`[SSR] [${fullComponentId}] Tracking end marker: <!--${comp.endMarker.textContent}-->`);
           comp.trackNode(comp.endMarker);
         } else if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
-          const claimed = hydrationContext.claim();
-          console.log(
-            `[Hydration debug] [${fullComponentId}] Claiming end marker: <!--${comp.endMarker.textContent}--> -> ${claimed ? "FOUND" : "NOT FOUND"}`,
-          );
+          // Claim from parent context
+          const parentHCtx = getHydrationContext(1);
+          const claimed = parentHCtx?.claim();
           if (claimed) {
             hydrationMap.set(comp.endMarker, claimed);
           }
+          // Also advance OWN context
+          hydrationContext.claim();
         }
       }
     } catch (err) {

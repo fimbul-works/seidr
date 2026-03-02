@@ -2,7 +2,7 @@ import { component } from "../component/component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
-import { getComponent, mountComponent } from "../component/util";
+import { getComponent, getLastNode, mountComponent } from "../component/util";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { isSeidr } from "../util/type-guards/is-observable";
@@ -95,17 +95,22 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
      * @param {SuspenseStatus} status - The new value to update the component with.
      */
     const update = (status: SuspenseStatus) => {
-      // Unmount previous component
+      // 1. Resolve anchor point before unmounting
+      const lastNode = currentComponent ? getLastNode(currentComponent) : null;
+      const anchor = lastNode?.nextSibling || endMarker;
+      const parent = lastNode?.parentNode || endMarker?.parentNode || scope.parentNode;
+
+      // 2. Unmount previous component
       if (currentComponent) {
         currentComponent.unmount();
         currentComponent = undefined;
       }
 
-      // Mount new component
+      // 3. Mount new component
       currentComponent = getComponent(factories, status);
       if (currentComponent) {
         scope.child(currentComponent);
-        mountComponent(currentComponent, endMarker);
+        mountComponent(currentComponent, anchor, parent!);
       }
     };
 

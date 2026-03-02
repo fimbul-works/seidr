@@ -68,6 +68,11 @@ export interface LifecycleScope {
   readonly isUnmounted: boolean;
 
   /**
+   * The parent DOM node, if attached.
+   */
+  readonly parentNode: Node | null;
+
+  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */

@@ -85,9 +85,7 @@ describe("Hydration List", () => {
     // Wait for microtasks
     await new Promise((r) => setTimeout(r, 10));
 
-    console.log("HYDRATED OUTER HTML:", container.innerHTML);
-
     const hydratedArticles = container.querySelectorAll("article");
-    console.log("AT END ARTICLES COUNT:", hydratedArticles.length);
+    expect(hydratedArticles.length).toBe(4);
   });
 });

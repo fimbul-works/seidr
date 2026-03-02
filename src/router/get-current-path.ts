@@ -70,7 +70,5 @@ export const getCurrentPath = (): Seidr<string> => {
     }
   }
 
-  // clientPathState.observe((val) => console.log("Path change", val));
-
   return clientPathState;
 };

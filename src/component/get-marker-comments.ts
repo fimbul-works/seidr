@@ -1,5 +1,5 @@
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { $comment } from "../dom/node/comment";
+import { getDocument } from "../dom/get-document";
 import { getRenderContext } from "../render-context/render-context";
 
 /**
@@ -17,9 +17,10 @@ export const getMarkerComments = (id: string): [Comment, Comment] => {
     return cached;
   }
 
+  const doc = getDocument();
   const markers: [Comment, Comment] = [
-    $comment(SEIDR_COMPONENT_START_PREFIX + id),
-    $comment(SEIDR_COMPONENT_END_PREFIX + id),
+    doc.createComment(SEIDR_COMPONENT_START_PREFIX + id),
+    doc.createComment(SEIDR_COMPONENT_END_PREFIX + id),
   ];
 
   ctx.markers.set(id, markers);
