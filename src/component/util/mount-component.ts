@@ -59,7 +59,5 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
     if (!component.parentNode) {
       component.attached(realParent);
     }
-  } else if (process.env.NODE_ENV !== "production") {
-    console.warn("[mountComponent] No parent found to mount component into", { component, anchor, parent });
   }
 };

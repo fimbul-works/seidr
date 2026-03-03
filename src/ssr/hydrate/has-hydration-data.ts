@@ -8,9 +8,6 @@ import { hydrationDataStorage } from "./storage";
  */
 export const hasHydrationData = (): boolean => {
   const result = !isEmpty(hydrationDataStorage.data);
-  if (process.env.NODE_ENV !== "production" && result) {
-    console.warn(`[Hydration-Debug] hasHydrationData() -> ${result}`);
-  }
   return result;
 };
 
@@ -21,9 +18,6 @@ export const hasHydrationData = (): boolean => {
  * @returns {boolean} true if in hydration mode with data available
  */
 export const hasHydrationDataForSeidr = (id: string): boolean => {
-  const result = !isEmpty(hydrationDataStorage.data?.observables[id]);
-  if (process.env.NODE_ENV !== "production" && result) {
-    console.warn(`[Hydration-Debug] hasHydrationDataForSeidr(${id}) -> ${result}`);
-  }
+  const result = !isEmpty(hydrationDataStorage.data?.state?.[id]);
   return result;
 };

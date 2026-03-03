@@ -22,7 +22,7 @@ describe("Seidr Hydration Opt-out", () => {
     };
 
     const { hydrationData } = await renderToString(TestComponent);
-    const values = Object.values(hydrationData.observables);
+    const values = Object.values(hydrationData.state);
     expect(values).toContain("keep me");
     expect(values).not.toContain("drop me");
   });

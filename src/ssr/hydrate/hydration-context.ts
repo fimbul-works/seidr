@@ -78,10 +78,6 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
       resolved[rootIdx] = matchedNode;
       domRootIdx = searchIdx + 1;
     } else if (roots[domRootIdx]) {
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(`[Hydration-Resolve] Fallback for rootIdx ${rootIdx} from roots[${domRootIdx}]`);
-      }
-      // Fallback
       resolved[rootIdx] = roots[domRootIdx];
       domRootIdx++;
     }
@@ -167,13 +163,6 @@ export class HydrationContext {
 
     if (expectedTag && node) {
       if (!nodeMatches(node, expectedTag)) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(
-            `[Hydration mismatch] Expected <${expectedTag}> at index ${this.currentIndex - 1}, but found <${
-              isHTMLElement(node) ? (node as HTMLElement).tagName.toLowerCase() : node.nodeName.toLowerCase()
-            }>. This node will be replaced.`,
-          );
-        }
         return undefined;
       }
     }

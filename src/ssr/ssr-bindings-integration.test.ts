@@ -45,8 +45,8 @@ describe("SSR Reactive Bindings Integration", () => {
         setSSRScope(undefined);
 
         // Should have captured the observable
-        expect(Object.keys(hydrationData.observables)).toHaveLength(1);
-        expect(hydrationData.observables[1]).toBe(false);
+        expect(Object.keys(hydrationData.state)).toHaveLength(1);
+        expect(hydrationData.state[1]).toBe(false);
       });
     });
 
@@ -83,9 +83,9 @@ describe("SSR Reactive Bindings Integration", () => {
         setSSRScope(undefined);
 
         // Should captured all root observables
-        expect(Object.keys(hydrationData.observables)).toHaveLength(2);
-        expect(hydrationData.observables["1"]).toBe(5);
-        expect(hydrationData.observables["2"]).toBe(true);
+        expect(Object.keys(hydrationData.state)).toHaveLength(2);
+        expect(hydrationData.state["1"]).toBe(5);
+        expect(hydrationData.state["2"]).toBe(true);
       });
     });
 
@@ -105,7 +105,7 @@ describe("SSR Reactive Bindings Integration", () => {
       expect(html).not.toContain("disabled"); // 42 is not > 100
 
       // Check observables were captured
-      expect(Object.keys(hydrationData.observables).length).toBeGreaterThan(0);
+      expect(Object.keys(hydrationData.state).length).toBeGreaterThan(0);
 
       // Client-side
       cleanupMode = enableClientMode();

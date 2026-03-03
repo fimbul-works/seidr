@@ -2,39 +2,9 @@ import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
-import { camelToKebab, str } from "../util/string";
+import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
-
-const BOOL_PROPS = new Set([
-  "allowfullscreen",
-  "async",
-  "autofocus",
-  "autoplay",
-  "checked",
-  "compact",
-  "controls",
-  "default",
-  "defer",
-  "disabled",
-  "formnovalidate",
-  "hidden",
-  "ismap",
-  "loop",
-  "multiple",
-  "muted",
-  "nomodule",
-  "noresize",
-  "noshade",
-  "novalidate",
-  "open",
-  "playsinline",
-  "readonly",
-  "required",
-  "reversed",
-  "selected",
-  "truespeed",
-]);
 
 /**
  * Assigns a property to an element, handling reactive Seidr bindings.
@@ -48,6 +18,9 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
   const scope = useScope();
+
+  const elFromHydration = (element: HTMLElement): any =>
+    (!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element;
 
   let effectiveProp = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);
@@ -75,13 +48,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        scope.onUnmount(
-          cssText.bind(
-            el,
-            (val, element) =>
-              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style = val),
-          ),
-        );
+        scope.onUnmount(cssText.bind(el, (val, element) => (elFromHydration(element).style = val)));
       } else {
         el.style = cssText as string;
       }
@@ -95,15 +62,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
         styleProp = camelToKebab(styleProp as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {
-        scope.onUnmount(
-          styleValue.bind(
-            el,
-            (val, element) =>
-              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style[
-                styleProp
-              ] = val),
-          ),
-        );
+        scope.onUnmount(styleValue.bind(el, (val, element) => (elFromHydration(element).style[styleProp] = val)));
       } else {
         el.style[styleProp] = styleValue;
       }
@@ -113,8 +72,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       if (isStr(value.value)) {
         scope.onUnmount(
           value.bind(el, (val, element) => {
-            const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) ||
-              element) as HTMLElement;
+            const activeElement = elFromHydration(element);
             if (isSeidr<string>(val)) {
               // edgecase
               activeElement.style = val.value;
@@ -124,13 +82,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
           }),
         );
       } else {
-        scope.onUnmount(
-          value.bind(
-            el,
-            (val, element) =>
-              ((((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as HTMLElement).style = val),
-          ),
-        );
+        scope.onUnmount(value.bind(el, (val, element) => (elFromHydration(element).style = val)));
       }
     } else if (isStr(value)) {
       setCSSText(value);
@@ -142,12 +94,15 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
     return;
   }
 
-  const isBoolProp = BOOL_PROPS.has(effectiveProp.toLowerCase());
+  const isBoolProp =
+    /^(?:allowfullscreen|async|autofocus|autoplay|checked|compact|controls|default|defer|disabled|formnovalidate|hidden|ismap|loop|multiple|muted|nomodule|noresize|noshade|novalidate|open|playsinline|readonly|required|reversed|selected|truespeed)$/.test(
+      effectiveProp.toLowerCase(),
+    );
 
   if (isSeidr(value)) {
     scope.onUnmount(
       value.bind(el, (val, element) => {
-        const activeElement = ((!process.env.CORE_DISABLE_SSR && hydrationMap.get(element)) || element) as any;
+        const activeElement = elFromHydration(element);
         if (useAttribute || !(effectiveProp in activeElement) || isBoolProp) {
           if (isBoolProp) {
             val ? activeElement.setAttribute(effectiveProp, "") : activeElement.removeAttribute(effectiveProp);
@@ -158,25 +113,6 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
           }
         }
         if (!(useAttribute || !(effectiveProp in activeElement))) {
-          if (
-            !process.env.CORE_DISABLE_SSR &&
-            !isServer() &&
-            (effectiveProp === "textContent" || effectiveProp === "value")
-          ) {
-            const currentValue = effectiveProp === "value" ? activeElement.value : activeElement.textContent;
-            if (currentValue !== str(val)) {
-              if (process.env.NODE_ENV !== "production") {
-                console.warn(
-                  `[Hydration mismatch] Expected reactive ${effectiveProp} "${str(val)}", but found "${currentValue}".`,
-                  {
-                    el: activeElement,
-                    expected: str(val),
-                    found: currentValue,
-                  },
-                );
-              }
-            }
-          }
           activeElement[effectiveProp] = val;
         }
       }),
@@ -186,40 +122,10 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       if (isBoolProp) {
         value ? el.setAttribute(effectiveProp, "") : el.removeAttribute(effectiveProp);
       } else {
-        if (
-          !process.env.CORE_DISABLE_SSR &&
-          !isServer() &&
-          (effectiveProp === "value" || effectiveProp === "textContent")
-        ) {
-          const currentValue = effectiveProp === "value" ? (el as HTMLInputElement).value : el.textContent;
-          if (currentValue !== str(value)) {
-            if (process.env.NODE_ENV !== "production") {
-              console.warn(
-                `[Hydration mismatch] Expected ${effectiveProp} "${str(value)}", but found "${currentValue}".`,
-                {
-                  el,
-                  expected: str(value),
-                  found: currentValue,
-                },
-              );
-            }
-          }
-        }
         isEmpty(value) ? el.removeAttribute(effectiveProp) : el.setAttribute(effectiveProp, value);
       }
     }
     if (!(useAttribute || !(effectiveProp in target))) {
-      if (!process.env.CORE_DISABLE_SSR && !isServer() && effectiveProp === "textContent") {
-        if (el.textContent !== str(value)) {
-          if (process.env.NODE_ENV !== "production") {
-            console.warn(`[Hydration mismatch] Expected textContent "${str(value)}", but found "${el.textContent}".`, {
-              el,
-              expected: str(value),
-              found: el.textContent,
-            });
-          }
-        }
-      }
       target[effectiveProp] = value;
     }
   }

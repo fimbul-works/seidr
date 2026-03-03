@@ -38,9 +38,9 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(result3.html).toContain("Count: 0");
 
     // Each should have captured the correct observable value
-    const obs1 = Object.values(result1.hydrationData.observables);
-    const obs2 = Object.values(result2.hydrationData.observables);
-    const obs3 = Object.values(result3.hydrationData.observables);
+    const obs1 = Object.values(result1.hydrationData.state!);
+    const obs2 = Object.values(result2.hydrationData.state!);
+    const obs3 = Object.values(result3.hydrationData.state!);
 
     expect(obs1).toContain(42);
     expect(obs2).toContain(100);
@@ -78,9 +78,9 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(r3.html).toContain("45");
 
     // Each should have captured only its root observable
-    const values1 = Object.values(r1.hydrationData.observables);
-    const values2 = Object.values(r2.hydrationData.observables);
-    const values3 = Object.values(r3.hydrationData.observables);
+    const values1 = Object.values(r1.hydrationData.state!);
+    const values2 = Object.values(r2.hydrationData.state!);
+    const values3 = Object.values(r3.hydrationData.state!);
 
     expect(values1).toEqual([5]);
     expect(values2).toEqual([10]);
@@ -102,7 +102,7 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(results).toHaveLength(10);
     results.forEach((result) => {
       expect(result.html).toContain("<span");
-      expect(result.hydrationData.observables).toBeDefined();
+      expect(result.hydrationData.state).toBeDefined();
     });
   });
 
@@ -129,19 +129,14 @@ describe("Concurrent SSR Request Isolation", () => {
         ]);
       })();
 
-    // Run simple and complex components concurrently
     const [simple, complex] = await Promise.all([renderToString(simpleComponent), renderToString(complexComponent)]);
 
-    // Verify simple component
     expect(simple.html).toContain("1");
-    expect(Object.values(simple.hydrationData.observables)).toEqual([1]);
+    expect(Object.values(simple.hydrationData.state!)).toEqual([1]);
 
-    // Verify complex component
     expect(complex.html).toContain("3");
     expect(complex.html).toContain("5");
     expect(complex.html).toContain("6");
-    // Note: c is not used in any binding, so it won't be captured
-    // Only a and b are dependencies of bound observables
-    expect(Object.values(complex.hydrationData.observables)).toEqual([1, 2]);
+    expect(Object.values(complex.hydrationData.state!)).toEqual([1, 2, 3]);
   });
 });

@@ -3,7 +3,7 @@ import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
-import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
+import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { $text } from "./node/text";
@@ -18,6 +18,13 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   // Skip empty children
   if (!child) {
     return;
+  }
+
+  if (process.env.NODE_ENV !== "production" && hasHydrationData()) {
+    console.log(
+      `[Hydration-Append] Appending to <${(parent as any).tagName || parent.nodeName}>:`,
+      isComponent(child) ? `Component ${child.id}` : (child as any).tagName || (child as any).nodeName,
+    );
   }
 
   // Append array of nodes
@@ -67,34 +74,10 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       const staleNode = hCtx.lastAttemptedNode;
 
       if (staleNode && staleNode.parentNode === target) {
-        if (process.env.NODE_ENV !== "production") {
-          const tag = isHTMLElement(childNode)
-            ? (childNode as HTMLElement).tagName.toLowerCase()
-            : childNode.nodeName.toLowerCase();
-          const staleTag = isHTMLElement(staleNode)
-            ? (staleNode as HTMLElement).tagName.toLowerCase()
-            : staleNode.nodeName.toLowerCase();
-          console.warn(
-            `[Hydration mismatch] Replacing stale <${staleTag}> with new <${tag}> in <${(target as any).tagName || target.nodeName}>`,
-          );
-        }
         target.replaceChild(childNode, staleNode);
         hydrationMap.set(childNode, childNode);
         return;
       }
-    }
-
-    if (process.env.NODE_ENV === "development") {
-      const tag = isHTMLElement(childNode)
-        ? (childNode as HTMLElement).tagName.toLowerCase()
-        : isTextNode(childNode)
-          ? "#text"
-          : "unknown";
-      const parentTag = isHTMLElement(target) ? (target as HTMLElement).tagName : "Node";
-      console.warn(
-        `[Hydration mismatch] Discrepancy detected: appending new <${tag}> to <${parentTag}> as it was missing from SSR.`,
-        { childNode, target },
-      );
     }
   }
 
@@ -102,6 +85,11 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   // Note: Only Elements/Documents support .contains() on other nodes reliably in JSDOM.
   const canContain = childNode.nodeType === 1 || childNode.nodeType === 9;
   if (childNode !== target && (!canContain || !childNode.contains(target))) {
+    if (process.env.NODE_ENV !== "production" && hasHydrationData()) {
+      console.log(
+        `[Hydration-Append] Actually calling target.appendChild for <${(childNode as any).tagName || childNode.nodeName}>`,
+      );
+    }
     target.appendChild(childNode);
   }
 };

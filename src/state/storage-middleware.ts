@@ -85,9 +85,6 @@ export const bindStorage = <T>(
   const storage = getStorageInstance(storageType);
 
   if (!storage) {
-    if (process.env.NODE_ENV === "development") {
-      console.warn(`Storage type ${storageType} is not supported`);
-    }
     return () => {};
   }
 

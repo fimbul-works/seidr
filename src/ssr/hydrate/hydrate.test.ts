@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
-import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { enableClientMode, mockUseScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";

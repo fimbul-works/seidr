@@ -22,6 +22,8 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   }
 
   hydrationDataStorage.registry.clear();
+  data.root = root;
+  hydrationDataStorage.data = data;
   setAppStateID(data.ctxID);
   resetNextId();
   deserializeAppState(getAppState(), data.data);

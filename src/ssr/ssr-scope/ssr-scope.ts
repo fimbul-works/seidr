@@ -14,7 +14,7 @@ import type { SSRScopeCapture } from "./types";
  */
 export class SSRScope {
   // id -> instance
-  private observables = new Map<string, Seidr>();
+  private state = new Map<string, Seidr>();
   // id -> Component
   private components = new Map<string, any>();
   // Async tasks to await during SSR
@@ -48,7 +48,7 @@ export class SSRScope {
    * Useful for debugging and testing.
    */
   get size(): number {
-    return this.observables.size;
+    return this.state.size;
   }
 
   /**
@@ -58,7 +58,7 @@ export class SSRScope {
    * @param {Seidr} seidr - The Seidr instance to register
    */
   register(seidr: Seidr): void {
-    this.observables.set(seidr.id, seidr);
+    this.state.set(seidr.id, seidr);
   }
 
   /**
@@ -73,14 +73,14 @@ export class SSRScope {
    * Checks if an observable with the given ID is registered in this scope.
    */
   has(id: string): boolean {
-    return this.observables.has(id);
+    return this.state.has(id);
   }
 
   /**
    * Gets an observable by ID from this scope.
    */
   get(id: string): Seidr | undefined {
-    return this.observables.get(id);
+    return this.state.get(id);
   }
 
   /**
@@ -88,7 +88,7 @@ export class SSRScope {
    * Called after rendering to prevent memory leaks.
    */
   clear(): void {
-    this.observables.clear();
+    this.state.clear();
   }
 
   /**
@@ -103,14 +103,14 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
-    const state = getAppState();
-    const globalState = state.getData<Map<symbol, unknown>>(GLOBAL_STATE_FEATURE_ID) || new Map();
+    const appState = getAppState();
+    const globalState = appState.getData<Map<symbol, unknown>>(GLOBAL_STATE_FEATURE_ID) || new Map();
 
-    const observables: Record<string, any> = {};
-    for (const seidr of this.observables.values()) {
+    const state: Record<string, any> = {};
+    for (const seidr of this.state.values()) {
       const symbol = symbolNames.get(seidr.id);
       if (!seidr.isDerived && (!symbol || !globalState.has(symbol))) {
-        observables[seidr.id] = seidr.value;
+        state[seidr.id] = seidr.value;
       }
     }
 
@@ -123,14 +123,14 @@ export class SSRScope {
     }
 
     // Clear observables map to prevent memory leaks
-    for (const seidr of this.observables.values()) {
+    for (const seidr of this.state.values()) {
       seidr.destroy();
     }
-    this.observables.clear();
+    this.state.clear();
     this.components.clear();
 
     return {
-      observables,
+      state,
       components,
     };
   }

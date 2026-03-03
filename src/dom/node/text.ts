@@ -16,13 +16,6 @@ export const $text = (text: unknown): Text => {
     const node = hydrationContext.claim("#text") as Text;
     if (node) {
       if (node.textContent !== str(text)) {
-        if (process.env.NODE_ENV !== "production") {
-          console.warn(`[Hydration mismatch] Expected text content "${str(text)}", but found "${node.textContent}".`, {
-            node,
-            expected: str(text),
-            found: node.textContent,
-          });
-        }
         node.textContent = str(text);
       }
       // Store the relationship for reactive updates
