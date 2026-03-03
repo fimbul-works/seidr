@@ -1,8 +1,8 @@
 /**
- * RenderContext is used for SSR and hydration.
+ * AppState is used for application state management, SSR and hydration.
  */
-export interface RenderContext {
-  /** Render context ID is used to differentiate render context between requests */
+export interface AppState {
+  /** Application state ID is used to differentiate state between requests */
   ctxID: number;
 
   /** Counter for generating unique IDs */
@@ -14,11 +14,22 @@ export interface RenderContext {
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;
 
-  /** Feature-specific data extending the render context */
-  featureData: Map<string, any>;
+  /** Application data store */
+  data: Map<string, any>;
+
+  // Data accessors
+  hasData(key: string): boolean;
+  getData<T>(key: string): T | undefined;
+  setData<T>(key: string, value: T): void;
+  deleteData(key: string): boolean;
+
+  // Hydration strategies
+  defineDataStrategy<T>(key: string, captureFn: (value: T) => any, restoreFn: (value: any) => T): void;
+  getDataStrategy(key: string): [((value: any) => any) | undefined, ((value: any) => any) | undefined] | undefined;
 }
 
 /**
+ * @deprecated Use AppState data methods instead.
  * A render feature is a piece of data that is stored in the render context.
  */
 export interface RenderFeature<T, S = T> {
@@ -44,6 +55,7 @@ export interface RenderFeature<T, S = T> {
 }
 
 /**
+ * @deprecated Use AppState data methods instead.
  * Options for creating a new render feature.
  */
 export interface RenderFeatureOptions<T, S = T> {

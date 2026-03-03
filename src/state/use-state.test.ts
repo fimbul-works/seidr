@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { STORAGE_LOCAL, STORAGE_SESSION } from "../constants";
-import { runWithRenderContext, setMockRenderContextForTests } from "../render-context/render-context.node";
+import { runWithAppState, setMockAppStateForTests } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 import { storageConfig } from "./storage";
@@ -21,7 +21,7 @@ describe("useState", () => {
   let cleanupEnv: CleanupFunction;
 
   beforeAll(() => {
-    cleanupEnv = setMockRenderContextForTests();
+    cleanupEnv = setMockAppStateForTests();
   });
 
   afterAll(() => {
@@ -35,7 +35,7 @@ describe("useState", () => {
   });
 
   it("should return a singleton Seidr instance", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [state1] = useState<number>("count");
       const [state2] = useState<number>("count");
       expect(state1).toBeInstanceOf(Seidr);
@@ -44,21 +44,21 @@ describe("useState", () => {
   });
 
   it("should initialize with undefined if not set and no initial value", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [state] = useState<number>("new-key");
       expect(state.value).toBeUndefined();
     });
   });
 
   it("should use initial value if provided", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [state] = useState<string>("init-key", "hello");
       expect(state.value).toBe("hello");
     });
   });
 
   it("should persist to storage when options provided", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [state] = useState("storage-key", "initial", { storage: STORAGE_LOCAL });
       expect(bindStorageMock).toHaveBeenCalledWith(
         expect.anything(), // Symbol key
@@ -70,7 +70,7 @@ describe("useState", () => {
   });
 
   it("should pass error handler to storage binding", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const onError = vi.fn();
       const [state] = useState("error-key", "initial", { storage: STORAGE_SESSION, onStorageError: onError });
 
@@ -79,7 +79,7 @@ describe("useState", () => {
   });
 
   it("should not re-bind if already bound", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       // Simulate existing binding in config
       const key = "bound-key";
 
@@ -104,7 +104,7 @@ describe("useState", () => {
     const originalEnv = process.env.NODE_ENV;
     process.env.NODE_ENV = "development";
 
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       useState("conflict-key", "val", { storage: STORAGE_LOCAL });
 
       // Fake the binding

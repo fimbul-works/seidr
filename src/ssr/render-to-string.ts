@@ -1,13 +1,13 @@
-import { getOnPromiseFeature } from "../component/feature";
+import { ON_PROMISE_DATA_KEY } from "../component/feature";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import type { SeidrNode } from "../element/types";
-import { getRenderContext } from "../render-context";
-import { serializeFeatures, setFeature } from "../render-context/feature";
-import { runWithRenderContext } from "../render-context/render-context.node";
-import { getCurrentPathFeature } from "../router/feature";
+import { serializeAppState } from "../render-context/feature";
+import { getAppState } from "../render-context/render-context";
+import { runWithAppState } from "../render-context/render-context.node";
+import { PATH_DATA_KEY } from "../router/feature";
 import { clearPathCache } from "../router/get-current-path";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
@@ -36,23 +36,23 @@ export async function renderToString<C extends SeidrNode>(
   factory: () => C,
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
-  return await runWithRenderContext(async () => {
+  return await runWithAppState(async () => {
     const prevFactory = getDocument;
     setInternalGetDocument(getSSRDocument);
 
     try {
-      const ctx = getRenderContext();
-      if (!ctx) {
-        throw new SeidrError("No render context available.");
+      const state = getAppState();
+      if (!state) {
+        throw new SeidrError("No AppState available.");
       }
 
       if (isStr(options.path)) {
-        setFeature(getCurrentPathFeature(), options.path, ctx);
+        state.setData(PATH_DATA_KEY, options.path);
       }
 
       const activeScope = options.scope ?? new SSRScope();
       setSSRScope(activeScope);
-      setFeature(getOnPromiseFeature(), (p: Promise<any>) => activeScope.addPromise(p), ctx);
+      state.setData(ON_PROMISE_DATA_KEY, (p: Promise<any>) => activeScope.addPromise(p));
 
       try {
         const comp = wrapComponent(factory)();
@@ -74,19 +74,19 @@ export async function renderToString<C extends SeidrNode>(
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
-          features: serializeFeatures(ctx),
-          ctxID: ctx.ctxID,
+          data: serializeAppState(state),
+          ctxID: state.ctxID,
         };
 
         comp.unmount();
-        clearPathCache(ctx.ctxID);
+        clearPathCache(state.ctxID);
 
         return { html, hydrationData };
       } finally {
         setSSRScope(undefined);
-        clearSSRScope(ctx.ctxID);
-        if (ctx.markers) {
-          ctx.markers.clear();
+        clearSSRScope(state.ctxID);
+        if (state.markers) {
+          state.markers.clear();
         }
         if (!options.scope) {
           activeScope.clear();

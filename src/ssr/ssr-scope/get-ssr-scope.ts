@@ -1,4 +1,4 @@
-import { getRenderContextID } from "../../render-context/render-context";
+import { getAppStateID } from "../../render-context/render-context";
 import type { SSRScope } from "./ssr-scope";
 import { scopes } from "./storage";
 
@@ -9,5 +9,5 @@ import { scopes } from "./storage";
  * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
 export function getSSRScope(): SSRScope | undefined {
-  return scopes.get(getRenderContextID());
+  return scopes.get(getAppStateID());
 }

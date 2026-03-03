@@ -53,15 +53,8 @@ describe("buildStructureMap integration", () => {
       ["canvas"], // 0
       ["h1", 2], // 1, child is #text(2)
       ["#text"], // 2
-      [
-        `#component:${
-          Object.keys(hydrationData.components)
-            .find((id) => id.startsWith("Message"))!
-            .split("-")[1]
-        }`,
-      ], // 3
-      ["section", 1, 0, 3], // 4, children are h1(1), canvas(0), and Message(3)
-      ["div", 4], // 5, child is section(4)
+      ["section", 1, 0], // 3, children are h1(1), canvas(0)
+      ["div", 3], // 4, child is section(3)
     ]);
   });
 

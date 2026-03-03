@@ -1,12 +1,11 @@
 import { getCurrentComponent } from "../component/component-stack";
-import { getFeature } from "../render-context/feature";
+import { getAppState } from "../render-context";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";
 import { isSeidr, isStr } from "../util/type-guards";
 import { createStateKey } from "./create-state-key";
-import { getGlobalStateFeature } from "./feature";
+import { GLOBAL_STATE_FEATURE_ID } from "./feature";
 import { storageConfig } from "./storage";
 import { bindStorage } from "./storage-middleware";
 import type { StateKey, StateOptions } from "./types";
@@ -27,7 +26,7 @@ export const useState = <T>(
   value?: T,
   options?: StateOptions,
 ): [Seidr<T>, (v: T | Seidr<T>) => Seidr<T>] => {
-  // Resolve key lazily to ensure we use the correct RenderContext in SSR
+  // Resolve key lazily to ensure we use the correct AppState in SSR
   const originalKey = key;
   const strKey = str(originalKey);
   if (isStr(key)) {
@@ -40,7 +39,12 @@ export const useState = <T>(
   }
 
   // Ensure ctx states map exists
-  const ctxStates = getFeature(getGlobalStateFeature());
+  const state = getAppState();
+  let ctxStates = state.getData<Map<StateKey<any> | string, Seidr<any>>>(GLOBAL_STATE_FEATURE_ID);
+  if (!ctxStates) {
+    ctxStates = new Map();
+    state.setData(GLOBAL_STATE_FEATURE_ID, ctxStates);
+  }
 
   // Ensure state exists
   let observable = ctxStates.get(key) as Seidr<T>;
@@ -78,7 +82,7 @@ export const useState = <T>(
     // Derived are assigned directly
     if (isSeidr<T>(v) && v.isDerived) {
       observable = v;
-      ctxStates.set(key as StateKey<T>, observable);
+      ctxStates!.set(key as StateKey<T>, observable);
     } else {
       while (isSeidr<T>(v) && !v.isDerived) {
         v = unwrapSeidr(v);

@@ -1,4 +1,4 @@
-import { getRenderContextID } from "../render-context/render-context";
+import { getAppStateID } from "../render-context/render-context";
 import type { Component } from "./types";
 
 /** Map of current component cursor by render context ID */
@@ -8,19 +8,19 @@ const renderContextCursors = new Map<number, Component | null>();
  * Get the current component from the component tree.
  * @returns {Component | null} Current Component cursor, or null.
  */
-export const getCurrentComponent = (): Component | null => renderContextCursors.get(getRenderContextID()) ?? null;
+export const getCurrentComponent = (): Component | null => renderContextCursors.get(getAppStateID()) ?? null;
 
 /**
  * Pushes a component as the current context cursor.
  * @param {Component} component - The component to set as current.
  */
-export const push = (component: Component): void => (renderContextCursors.set(getRenderContextID(), component), void 0);
+export const push = (component: Component): void => (renderContextCursors.set(getAppStateID(), component), void 0);
 
 /**
  * Pops the current component cursor, moving up to the parent.
  */
 export const pop = (): void => {
-  const id = getRenderContextID();
+  const id = getAppStateID();
   const current = renderContextCursors.get(id);
   if (current) {
     renderContextCursors.set(id, current.parent);
@@ -36,7 +36,7 @@ export const pop = (): void => {
  * @returns {T} The result of the function.
  */
 export const executeInContext = <T>(component: Component, fn: () => T): T => {
-  const id = getRenderContextID();
+  const id = getAppStateID();
   const previous = renderContextCursors.get(id) ?? null;
   try {
     renderContextCursors.set(id, component);

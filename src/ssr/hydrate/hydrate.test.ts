@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
+import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { enableClientMode, mockUseScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
@@ -31,7 +32,7 @@ describe("Hydration", () => {
 
     const data = {
       ctxID: 0,
-      observables: { 0: 42 },
+      state: { 0: 42 },
       components: {},
     };
 
@@ -45,7 +46,7 @@ describe("Hydration", () => {
   it("should clear registry when setting new context", () => {
     const data1: HydrationData = {
       ctxID: 0,
-      observables: { 0: "first" },
+      state: { 0: "first" },
       components: {},
     };
 
@@ -58,7 +59,8 @@ describe("Hydration", () => {
     // Clear and set new context
     const data2: HydrationData = {
       ctxID: 1,
-      observables: { 1: "second" },
+      state: { 1: "second" },
+      data: {},
       components: {},
     };
 
@@ -74,7 +76,8 @@ describe("Hydration", () => {
   it("should register Seidr instances in creation order", () => {
     const data: HydrationData = {
       ctxID: 0,
-      observables: { 1: 100, 2: 200 },
+      state: { 1: 100, 2: 200 },
+      data: {},
       components: {},
     };
 
@@ -93,7 +96,8 @@ describe("Hydration", () => {
   it("should only hydrate root observables", () => {
     const data: HydrationData = {
       ctxID: 0,
-      observables: { 1: "root" },
+      state: { 1: "root" },
+      data: {},
       components: {},
     };
 
@@ -109,10 +113,11 @@ describe("Hydration", () => {
   it("should work with merged observables", () => {
     const data: HydrationData = {
       ctxID: 0,
-      observables: {
+      state: {
         1: "John",
         2: "Doe",
       },
+      data: {},
       components: {},
     };
 
@@ -136,10 +141,11 @@ describe("Hydration", () => {
     setHydrationData(
       {
         ctxID: 0,
-        observables: {
+        state: {
           1: "hydrated-name",
           3: true,
         },
+        data: {},
         components: {},
       },
       container,
@@ -164,10 +170,11 @@ describe("Hydration", () => {
   it("should restore observable values during hydration", () => {
     const TestComponent = () => {
       const count = new Seidr(0);
+      console.log("count.id", count.id);
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
-    unmount = hydrate(TestComponent, container, { ctxID: 0, observables: { 1: 42 }, components: {} });
+    unmount = hydrate(TestComponent, container, { ctxID: 0, state: { 1: 42 }, data: {}, components: {} });
 
     expect(container.textContent).toContain("Count: 42");
   });
@@ -175,13 +182,13 @@ describe("Hydration", () => {
   it("should restore nested context after hydration", () => {
     const originalData: HydrationData = {
       ctxID: 0,
-      observables: { 1: 1 },
+      state: { 1: 1 },
       components: {},
     };
 
     const hydrateData: HydrationData = {
       ctxID: 0,
-      observables: { 1: 2 },
+      state: { 1: 2 },
       components: {},
     };
 

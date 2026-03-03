@@ -1,23 +1,23 @@
-import { getRenderContext } from "../../render-context/render-context";
-import type { RenderContext } from "../../render-context/types";
+import { getAppState } from "../../render-context/render-context";
+import type { AppState } from "../../render-context/types";
 import { isClient } from "../../util/environment/client";
 import type { SSRScope } from "./ssr-scope";
 import { scopes } from "./storage";
 
 /**
- * Sets the active SSR scope for the current render context.
+ * Sets the active SSR scope for the current application state.
  * Call this before starting a render pass.
  *
- * @param {(SSRScope | undefined)} scope - The scope to activate for the current render context
+ * @param {(SSRScope | undefined)} scope - The scope to activate for the current application state
  */
 export function setSSRScope(scope: SSRScope | undefined): void {
   if (isClient()) {
     return;
   }
 
-  let ctx: RenderContext;
+  let state: AppState;
   try {
-    ctx = getRenderContext();
+    state = getAppState();
   } catch {
     if (scope === undefined) {
       return;
@@ -26,10 +26,9 @@ export function setSSRScope(scope: SSRScope | undefined): void {
     return;
   }
 
-  ctx = getRenderContext();
   if (scope === undefined) {
-    scopes.delete(ctx.ctxID);
+    scopes.delete(state.ctxID);
   } else {
-    scopes.set(ctx.ctxID, scope);
+    scopes.set(state.ctxID, scope);
   }
 }

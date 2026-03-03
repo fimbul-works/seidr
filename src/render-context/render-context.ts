@@ -1,55 +1,55 @@
 import { isClient } from "../util/environment/client";
-import { renderContext } from "./storage";
-import type { RenderContext } from "./types";
+import { appState } from "./storage";
+import type { AppState } from "./types";
 
 /**
- * Get the current render context.
+ * Get the current application state.
  *
- * @returns {RenderContext} RenderContext object.
+ * @returns {AppState} AppState object.
  */
-export let getRenderContext = (): RenderContext => renderContext;
+export let getAppState = (): AppState => appState;
 
 /**
- * Cross-environment getRenderContext contract dependency injector.
+ * Cross-environment getAppState contract dependency injector.
  *
- * @param {(() => RenderContext)} fn
+ * @param {(() => AppState)} fn
  * @internal
  */
-export let setInternalRenderContext: (fn: () => RenderContext) => void;
+export let setInternalAppState: (fn: () => AppState) => void;
 
 if (!isClient() || process.env.VITEST) {
-  setInternalRenderContext = (fn: () => RenderContext) => (getRenderContext = fn);
+  setInternalAppState = (fn: () => AppState) => (getAppState = fn);
 }
 
 /**
- * Set the render context ID (used during hydration to match server-side IDs).
- * @param {number} id - The render context ID from the server
+ * Set the application state ID (used during hydration to match server-side IDs).
+ * @param {number} id - The state ID from the server
  * @internal
  */
-export const setRenderContextID = (id: number) => {
-  const ctx = getRenderContext();
+export const setAppStateID = (id: number) => {
+  const ctx = getAppState();
   ctx.ctxID = id;
   ctx.sID = 0;
   ctx.cID = 0;
-  ctx.featureData.clear();
+  ctx.data.clear();
   ctx.markers.clear();
 };
 
 /**
- * Get the current render context ID.
+ * Get the current application state ID.
  *
- * @returns {number} The render context ID.
+ * @returns {number} The state ID.
  */
-export const getRenderContextID = () => getRenderContext().ctxID;
+export const getAppStateID = () => getAppState().ctxID;
 
 /**
- * Gets the next available Seidr ID for the RenderContext.
+ * Gets the next available Seidr ID for the AppState.
  * @returns {number} The next available Seidr ID
  */
-export const getNextSeidrId = (): number => getRenderContext().sID++ + 1;
+export const getNextSeidrId = (): number => getAppState().sID++ + 1;
 
 /**
- * Gets the next available component ID for the RenderContext.
+ * Gets the next available component ID for the AppState.
  * @returns {number} The next available component ID
  */
-export const getNextComponentId = (): number => getRenderContext().cID++ + 1;
+export const getNextComponentId = (): number => getAppState().cID++ + 1;

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetRequestIdCounter, runWithRenderContext } from "../render-context/render-context.node";
+import { resetRequestIdCounter, runWithAppState } from "../render-context/render-context.node";
 import { resetNextId } from "../render-context/reset-next-id";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
@@ -24,7 +24,7 @@ describe("random", () => {
   it("should produce different values on subsequent calls in same context", async () => {
     enableSSRMode();
 
-    await runWithRenderContext(async () => {
+    await runWithAppState(async () => {
       const r1 = random();
       const r2 = random();
       expect(r1).not.toBe(r2);
@@ -37,13 +37,13 @@ describe("random", () => {
   it("should produce different values on subsequent calls in different contexts", async () => {
     enableSSRMode();
 
-    const results1 = await runWithRenderContext(async () => {
+    const results1 = await runWithAppState(async () => {
       const r1 = random();
       const r2 = random();
       return [r1, r2];
     });
 
-    const results2 = await runWithRenderContext(async () => {
+    const results2 = await runWithAppState(async () => {
       const r1 = random();
       const r2 = random();
       return [r1, r2];
@@ -58,7 +58,7 @@ describe("random", () => {
     resetRequestIdCounter();
     // 1. "Server" render
     enableSSRMode();
-    const serverValues = await runWithRenderContext(async () => {
+    const serverValues = await runWithAppState(async () => {
       return [random(), random()];
     });
     enableClientMode();

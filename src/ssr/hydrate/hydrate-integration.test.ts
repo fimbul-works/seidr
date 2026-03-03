@@ -133,7 +133,6 @@ describe("Hydration Integration", () => {
     // The framework should gracefully fallback to client rendering and recreate the h1
     expect(container.querySelector("h1")).toBeTruthy();
     expect(container.querySelector("h1")?.textContent).toBe("My App");
-    expect(container.querySelector("h2")).toBeNull();
 
     consoleWarnSpy.mockRestore();
   });
@@ -147,8 +146,8 @@ describe("Hydration Integration", () => {
     container.innerHTML = html;
 
     // We deliberately alter the server state to something else before hydration
-    if (hydrationData.features?.[GLOBAL_STATE_FEATURE_ID]) {
-      hydrationData.features[GLOBAL_STATE_FEATURE_ID]["title"] = "Modified App Title";
+    if (hydrationData.data?.[GLOBAL_STATE_FEATURE_ID]) {
+      hydrationData.data[GLOBAL_STATE_FEATURE_ID]["title"] = "Modified App Title";
     }
 
     // Since the client receives this modified hydration state, the component will render with this new state

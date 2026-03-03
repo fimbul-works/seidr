@@ -1,19 +1,6 @@
-import { createRenderFeature, getFeature, getRenderFeature, setFeature } from "../render-context/feature";
-import { getNextSeidrId, getRenderContext } from "../render-context/render-context";
+import { getAppState, getNextSeidrId } from "../../src/render-context/render-context";
 
-const RANDOM_FEATURE_ID = "seidr.rng";
-
-/**
- * Lazily creates and returns the random number generator feature.
- * @returns The random number generator feature.
- */
-const getRandomRenderFeature = () =>
-  getRenderFeature<[number, number, number, number]>(RANDOM_FEATURE_ID) ??
-  createRenderFeature<[number, number, number, number]>({
-    id: RANDOM_FEATURE_ID,
-    serialize: (v) => v,
-    deserialize: (v) => v,
-  });
+const RANDOM_DATA_KEY = "seidr.rng";
 
 /** 2^-32 - the smallest possible decimal number (1 / 4294967296) */
 const FRAC = 2 ** -32;
@@ -25,7 +12,7 @@ const ALEA_M = 2091639;
 /**
  * Deterministic random number generator for Seidr using the Alea algorithm.
  *
- * This function maintains state within the current RenderContext to provide
+ * This function maintains state within the current AppState to provide
  * a sequence of high-entropy pseudo-random numbers that is deterministic
  * across the SSR/Hydration boundary.
  *
@@ -34,21 +21,27 @@ const ALEA_M = 2091639;
  * @returns {number} A random float between 0 and 1
  */
 export const random = (): number => {
-  const rngFeature = getRandomRenderFeature();
-  let state = getFeature(rngFeature);
+  const state = getAppState();
+  let rngState = state.getData<[number, number, number, number]>(RANDOM_DATA_KEY);
 
   // Initialize state if not present
-  if (!state) {
-    const ctx = getRenderContext();
-    const seed = ctx.ctxID + getNextSeidrId() + LCG_M / 1;
+  if (!rngState) {
+    const seed = state.ctxID + getNextSeidrId() + LCG_M / 1;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
-    state = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
+    rngState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
+
+    // Register strategy for RNG state
+    state.defineDataStrategy(
+      RANDOM_DATA_KEY,
+      (v) => v,
+      (v) => v,
+    );
   }
 
   // Generate next number using the stored state
-  let [r0, r1, r2, i] = state;
+  let [r0, r1, r2, i] = rngState;
   const t = ALEA_M * r0 + i * FRAC;
   r0 = r1;
   r1 = r2;
@@ -56,7 +49,8 @@ export const random = (): number => {
   r2 = t - i;
 
   // Save the state back to context
-  setFeature(rngFeature, [r0, r1, r2, i] as [number, number, number, number]);
+  const nextRngState: [number, number, number, number] = [r0, r1, r2, i];
+  state.setData(RANDOM_DATA_KEY, nextRngState);
 
   return r2;
 };

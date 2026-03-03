@@ -1,5 +1,5 @@
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { getRenderContext } from "../render-context";
+import { getAppState } from "../render-context/render-context";
 import { isServer } from "../util/environment/server";
 
 /**
@@ -10,7 +10,7 @@ import { isServer } from "../util/environment/server";
  */
 export const findMarkerComments = (id: string): [Comment | null, Comment | null] => {
   if (isServer()) {
-    return getRenderContext().markers.get(id) ?? [null, null];
+    return getAppState().markers.get(id) ?? [null, null];
   }
 
   const startPattern = SEIDR_COMPONENT_START_PREFIX + id;

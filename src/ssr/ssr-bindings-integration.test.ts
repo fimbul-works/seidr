@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element";
-import { runWithRenderContext } from "../render-context/render-context.node";
+import { runWithAppState } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode, mockUseScope } from "../test-setup";
 import type { CleanupFunction } from "../types";
@@ -34,7 +34,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should register observables for reactive props during SSR", async () => {
-      await runWithRenderContext(async () => {
+      await runWithAppState(async () => {
         const scope = new SSRScope();
         setSSRScope(scope);
 
@@ -51,7 +51,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should render reactive button with correct initial value", async () => {
-      await runWithRenderContext(async () => {
+      await runWithAppState(async () => {
         const scope = new SSRScope();
         setSSRScope(scope);
 
@@ -68,7 +68,7 @@ describe("SSR Reactive Bindings Integration", () => {
     });
 
     it("should capture all observables used in bindings", async () => {
-      await runWithRenderContext(async () => {
+      await runWithAppState(async () => {
         const scope = new SSRScope();
         setSSRScope(scope);
 

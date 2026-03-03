@@ -308,6 +308,10 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
       return `<${this.lowerTagName}${attrStr} />`;
     }
 
+    if (this.lowerTagName === "template") {
+      return `<${this.lowerTagName}${attrStr}></${this.lowerTagName}>`;
+    }
+
     return `<${this.lowerTagName}${attrStr}>${this.innerHTML}</${this.lowerTagName}>`;
   }
 

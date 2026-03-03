@@ -1,6 +1,6 @@
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
-import { getRenderContext, setInternalRenderContext } from "../render-context/render-context";
+import { getAppState, setInternalAppState } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import type { TestEnvironmentState } from "./types";
 
@@ -19,7 +19,7 @@ export const enableSSRMode = (): CleanupFunction => {
 
   process.env.SEIDR_TEST_SSR = "true";
   setInternalGetDocument(getSSRDocument);
-  setInternalRenderContext(getRenderContext);
+  setInternalAppState(getAppState);
 
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
@@ -27,7 +27,7 @@ export const enableSSRMode = (): CleanupFunction => {
     if (currentState.vitest !== undefined) process.env.VITEST = currentState.vitest ? "true" : "false";
     else delete process.env.VITEST;
     if (currentState.window !== undefined) global.window = currentState.window;
-    setInternalRenderContext(getRenderContext);
+    setInternalAppState(getAppState);
     if (currentState.getDocument !== undefined) setInternalGetDocument(currentState.getDocument);
   };
 };

@@ -7,4 +7,13 @@ import { hydrationDataStorage } from "./storage";
 export const clearHydrationData = (): void => {
   hydrationDataStorage.data = undefined;
   hydrationDataStorage.registry.clear();
+
+  if (process.env.VITEST) {
+    try {
+      const { clearTestAppState } = require("../../test-setup/render-context");
+      clearTestAppState?.();
+    } catch (_e) {
+      // Ignore
+    }
+  }
 };

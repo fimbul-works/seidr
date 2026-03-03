@@ -2,7 +2,6 @@ import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
-import { mismatchCandidates } from "../ssr/hydrate/mismatch-candidates";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isServer } from "../util/environment/server";
 import { isArray, isEmpty, isHTMLElement } from "../util/type-guards";
@@ -46,7 +45,6 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     return el;
   }
 
-  let mismatchCandidate: Node | undefined;
   const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
   if (hydrationContext) {
     const claimedNode = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
@@ -68,24 +66,10 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
       }
 
       return claimedNode;
-    } else {
-      // MISMATCH: The claim failed. Store the candidate node.
-      mismatchCandidate = hydrationContext.lastAttemptedNode;
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(`[Hydration-Debug] Mismatch for ${tagName}. Candidate: ${mismatchCandidate?.nodeName}`);
-      }
     }
   }
 
   const el = getDocument().createElement(tagName);
-  if (mismatchCandidate) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        `[Hydration-Debug] Attaching candidate ${mismatchCandidate.nodeName} to new ${el.tagName} via WeakMap`,
-      );
-    }
-    mismatchCandidates.set(el, mismatchCandidate);
-  }
 
   if (props) {
     assignProps(el, props);

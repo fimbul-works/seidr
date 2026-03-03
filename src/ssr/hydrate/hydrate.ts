@@ -27,11 +27,8 @@ export const hydrate = <T extends ComponentType>(
   }
 
   if (!process.env.CORE_DISABLE_SSR) {
-    console.warn(
-      `[Hydration-Debug] hydrate() called for container ${container.id || container.tagName}. Data present: ${!!hydrationData}`,
-    );
+    setHydrationData(hydrationData, container);
   }
-  setHydrationData(hydrationData, container);
 
   (container as HydrationTarget).__hydration_index = 0;
 

@@ -18,7 +18,7 @@ export const registerHydratingSeidr = (seidr: Seidr): void => {
     return;
   }
 
-  const value = hydrationDataStorage.data?.observables[seidr.id];
+  const value = hydrationDataStorage.data?.state?.[seidr.id];
   if (!isEmpty(value)) {
     hydrationDataStorage.registry.add(seidr);
     seidr.value = value;

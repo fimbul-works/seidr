@@ -9,7 +9,7 @@ export interface SSRScopeCapture {
    * Seidr ID -> value mapping for root observables.
    * Only contains root observables (isDerived = false).
    */
-  observables: Record<string, any>;
+  state?: Record<string, any>;
 
   /**
    * Component ID -> Structure Map mapping.

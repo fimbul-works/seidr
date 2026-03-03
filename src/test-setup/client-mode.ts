@@ -1,9 +1,9 @@
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
-import { setInternalRenderContext } from "../render-context/render-context";
+import { setInternalAppState } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import { isClient } from "../util/environment/client";
-import { getRenderContext } from "./render-context";
+import { getAppState } from "./render-context";
 import type { TestEnvironmentState } from "./types";
 
 /**
@@ -26,7 +26,7 @@ export function enableClientMode(): CleanupFunction {
     global.window = currentState.window || {};
   }
 
-  setInternalRenderContext(getRenderContext);
+  setInternalAppState(getAppState);
   setInternalGetDocument(getBrowserDocument);
 
   return () => {

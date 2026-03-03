@@ -123,13 +123,7 @@ describe("SSRScope", () => {
       const obs1 = new Seidr(42);
       const obs2 = new Seidr("test");
 
-      // Not registered yet
-      expect(scope.size).toBe(0);
-
-      // Observe to trigger registration
-      obs1.observe(() => {});
-      obs2.observe(() => {});
-
+      // Registered immediately in constructor
       expect(scope.size).toBe(2);
       expect(scope.has(obs1.id)).toBe(true);
       expect(scope.has(obs2.id)).toBe(true);

@@ -1,5 +1,5 @@
-import { deserializeFeatures } from "../../render-context/feature";
-import { getRenderContext, setRenderContextID } from "../../render-context/render-context";
+import { deserializeAppState } from "../../render-context/feature";
+import { getAppState, setAppStateID } from "../../render-context/render-context";
 import { resetNextId } from "../../render-context/reset-next-id";
 import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { restoreGlobalState } from "../state/restore-global-state";
@@ -13,18 +13,25 @@ import type { HydrationData } from "./types";
  * @param {HydrationData} data - The hydration data containing observables
  */
 export function setHydrationData(data: HydrationData, root: HTMLElement): void {
+  if (process.env.VITEST) {
+    const { getAppState: getTestAppState } = require("../../test-setup/render-context");
+    if (getTestAppState) {
+      const { setInternalAppState } = require("../../render-context/render-context");
+      setInternalAppState(getTestAppState);
+    }
+  }
+
   hydrationDataStorage.registry.clear();
-  setRenderContextID(data.ctxID);
+  setAppStateID(data.ctxID);
   resetNextId();
-  deserializeFeatures(getRenderContext(), data.features);
-  hydrationDataStorage.data = data;
-  hydrationDataStorage.data.root = root;
+  deserializeAppState(getAppState(), data.data);
+
   if (process.env.NODE_ENV !== "production") {
     console.log(`[Hydration-Debug] Hydration data set with ${Object.keys(data.components).length} components`);
   }
 
   // Restore state values from the server
-  if (data.features?.[GLOBAL_STATE_FEATURE_ID]) {
-    restoreGlobalState(data.features[GLOBAL_STATE_FEATURE_ID]);
+  if (data.data?.[GLOBAL_STATE_FEATURE_ID]) {
+    restoreGlobalState(data.data[GLOBAL_STATE_FEATURE_ID]);
   }
 }

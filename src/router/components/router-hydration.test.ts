@@ -123,6 +123,9 @@ describe("Router Hydration Unmounting", () => {
 
     // 3. Hydrate
     getCurrentPath().value = "/";
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[Test-Hydrate] Container HTML before hydrate:", container.innerHTML);
+    }
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state

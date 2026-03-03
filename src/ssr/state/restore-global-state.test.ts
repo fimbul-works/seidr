@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { runWithRenderContext } from "../../render-context/render-context.node";
+import { runWithAppState } from "../../render-context/render-context.node";
 import { Seidr } from "../../seidr";
 import { globalStates, symbolNames } from "../../state/storage";
 import { useState } from "../../state/use-state";
@@ -17,7 +17,7 @@ describe("restoreGlobalState", () => {
   });
 
   it("should restore values from string keys", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [user] = useState<string>("user");
       const [count] = useState<number>("count");
 
@@ -34,7 +34,7 @@ describe("restoreGlobalState", () => {
   });
 
   it("should restore mixed values", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [user] = useState<Seidr<string>>("user");
       const [settings] = useState<{ theme: string }>("settings");
       const [count] = useState<Seidr<number>>("count");
@@ -55,7 +55,7 @@ describe("restoreGlobalState", () => {
   });
 
   it("should create new Seidr instances if they don't exist", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [user] = useState<Seidr<string>>("user");
       expect(user.value).toBeUndefined();
 
@@ -69,7 +69,7 @@ describe("restoreGlobalState", () => {
   });
 
   it("should ignore keys that don't match any state symbols", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       // Technically, with createStateKey being used inside restoreGlobalState,
       // it now creates new keys for anything it sees.
       // But let's check basic restoration.

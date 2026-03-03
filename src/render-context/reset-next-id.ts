@@ -1,14 +1,15 @@
-import { getRenderContext } from "./render-context";
+import { getAppState } from "./render-context";
 
 /**
- * Resets the next available ID for the RenderContext.
+ * Resets the next available ID for the AppState.
  * Used in tests to ensure consistent IDs.
  */
 export const resetNextId = (): void => {
   try {
-    getRenderContext().sID = 0;
-    getRenderContext().cID = 0;
+    const state = getAppState();
+    state.sID = 0;
+    state.cID = 0;
   } catch (_e) {
-    // Ignore if no render context is available
+    // Ignore if no app state is available
   }
 };

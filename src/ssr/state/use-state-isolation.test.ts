@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { runWithRenderContext } from "../../render-context/render-context.node";
+import { runWithAppState } from "../../render-context/render-context.node";
 import { useState } from "../../state/index";
 
 describe("SSR useState isolation", () => {
   it("should isolate state between different render contexts", async () => {
     // Request/Context 1
-    await runWithRenderContext(async () => {
+    await runWithAppState(async () => {
       const [state, setState] = useState<number>("ssr-shared-key");
       // Should be undefined initially
       expect(state.value).toBeUndefined();
@@ -16,7 +16,7 @@ describe("SSR useState isolation", () => {
     });
 
     // Request/Context 2
-    await runWithRenderContext(async () => {
+    await runWithAppState(async () => {
       const [state, setState] = useState<number>("ssr-shared-key");
       // Should NOT see value from context 1
       expect(state.value).toBeUndefined();
@@ -29,7 +29,7 @@ describe("SSR useState isolation", () => {
 
   it("should support concurrent access correctly", async () => {
     // Simulate concurrent requests
-    const p1 = runWithRenderContext(async () => {
+    const p1 = runWithAppState(async () => {
       const [state, setState] = useState<number>("ssr-concurrent-key");
       setState(1);
       // Simulate work
@@ -38,7 +38,7 @@ describe("SSR useState isolation", () => {
       return state.value;
     });
 
-    const p2 = runWithRenderContext(async () => {
+    const p2 = runWithAppState(async () => {
       const [state, setState] = useState<number>("ssr-concurrent-key");
       setState(2);
       // Simulate work

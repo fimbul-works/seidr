@@ -1,8 +1,7 @@
-import { getRenderContext } from "../../render-context";
-import { getFeature } from "../../render-context/feature";
+import { getAppState } from "../../render-context/render-context";
 import { Seidr } from "../../seidr/seidr";
 import { createStateKey } from "../../state/create-state-key";
-import { getGlobalStateFeature } from "../../state/feature";
+import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
 import { isSeidr } from "../../util/type-guards/is-observable";
 
 /**
@@ -11,8 +10,13 @@ import { isSeidr } from "../../util/type-guards/is-observable";
  * @param {Record<string, unknown>} state - Record of numeric IDs to values from SSR
  */
 export const restoreGlobalState = (state: Record<string, unknown>): void => {
-  const ctx = getRenderContext();
-  const ctxStates = getFeature(getGlobalStateFeature(), ctx);
+  const appState = getAppState();
+  let ctxStates = appState.getData<Map<symbol, unknown>>(GLOBAL_STATE_FEATURE_ID);
+
+  if (!ctxStates || !(ctxStates instanceof Map)) {
+    ctxStates = new Map();
+    appState.setData(GLOBAL_STATE_FEATURE_ID, ctxStates);
+  }
 
   for (const [key, value] of Object.entries(state)) {
     const targetSymbol = createStateKey(key);
@@ -21,7 +25,7 @@ export const restoreGlobalState = (state: Record<string, unknown>): void => {
     if (isSeidr(existingValue)) {
       existingValue.value = value;
     } else {
-      // Create a initial Seidr that useState will pick up
+      // Create an initial Seidr that useState will pick up
       ctxStates.set(targetSymbol, new Seidr(value, { id: key }));
     }
   }

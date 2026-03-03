@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRenderContext } from "../../render-context/render-context";
-import { runWithRenderContext } from "../../render-context/render-context.node";
+import { getAppState } from "../../render-context/render-context";
+import { runWithAppState } from "../../render-context/render-context.node";
 import { Seidr } from "../../seidr";
 import { globalStates, symbolNames } from "../../state/storage";
 import { useState } from "../../state/use-state";
@@ -18,12 +18,12 @@ describe("captureGlobalState", () => {
   });
 
   const captureState = () => {
-    const ctx = getRenderContext();
+    const ctx = getAppState();
     return captureGlobalState(ctx.ctxID);
   };
 
   it("should capture mixed Seidr and plain values", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [, setUser] = useState<Seidr<string>>("user");
       const [, setSettings] = useState<{ theme: string }>("settings");
       const [, setCount] = useState<Seidr<number>>("count");
@@ -43,7 +43,7 @@ describe("captureGlobalState", () => {
   });
 
   it("should skip derived Seidr instances", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [count, setCount] = useState<number>("count");
       const [, setDoubled] = useState<number>("doubled");
 
@@ -60,7 +60,7 @@ describe("captureGlobalState", () => {
   });
 
   it("should return empty object when no state exists", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const state = captureState();
       expect(state).toEqual({});
     });

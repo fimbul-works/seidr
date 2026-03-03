@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRenderContext } from "../../render-context";
-import { runWithRenderContext } from "../../render-context/render-context.node";
+import { getAppState } from "../../render-context";
+import { runWithAppState } from "../../render-context/render-context.node";
 import { Seidr } from "../../seidr";
 import { globalStates, symbolNames } from "../../state/storage";
 import { useState } from "../../state/use-state";
@@ -19,12 +19,12 @@ describe("SSR State integration tests", () => {
   });
 
   const captureState = () => {
-    const ctx = getRenderContext();
+    const ctx = getAppState();
     return captureGlobalState(ctx.ctxID);
   };
 
   it("should preserve data through serialize -> deserialize cycle", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [user, setUser] = useState<Seidr<string>>("user");
       const [settings, setSettings] = useState<{ theme: string }>("settings");
       const [count, setCount] = useState<Seidr<number>>("count");
@@ -44,7 +44,7 @@ describe("SSR State integration tests", () => {
   });
 
   it("should handle complex nested objects", () => {
-    runWithRenderContext(async () => {
+    runWithAppState(async () => {
       const [config, setConfig] = useState<{
         database: { host: string; port: number };
         features: string[];

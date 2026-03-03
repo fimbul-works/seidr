@@ -63,6 +63,13 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
     }
     updateComponent(currentRouteIndex);
 
+    if (currentComponent) {
+      scope.child(currentComponent);
+      if (scope.parentNode) {
+        currentComponent.attached(scope.parentNode);
+      }
+    }
+
     const updateRoutes = () => {
       const { index: matchedIndex, params: matchedParams } = matchCurrentPath();
 
@@ -79,6 +86,9 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
 
       // 2. Full swap
       if (currentComponent) {
+        if (process.env.NODE_ENV !== "production") {
+          console.log(`[Router] Unmounting route ${currentComponent.id}, element:`, currentComponent.element);
+        }
         currentComponent.unmount();
         currentComponent = undefined;
       }

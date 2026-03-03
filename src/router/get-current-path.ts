@@ -1,10 +1,9 @@
 import { getCurrentComponent } from "../component/component-stack";
-import { getFeature, setFeature } from "../render-context/feature";
-import { getRenderContext } from "../render-context/render-context";
+import { getAppState } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
-import { getCurrentPathFeature } from "./feature";
+import { PATH_DATA_KEY } from "./feature";
 
 const PATH_SEIDR_ID = "router-path";
 
@@ -31,24 +30,22 @@ export const resetClientPathState = () => (clientPathState = undefined);
 export const getCurrentPath = (): Seidr<string> => {
   // Server-side: Get or create Seidr for this render context
   if (isServer()) {
-    const ctx = getRenderContext();
-    const ctxID = ctx.ctxID;
-    const currentPathFeature = getCurrentPathFeature();
+    const state = getAppState();
+    const ctxID = state.ctxID;
 
     let observable = pathCache.get(ctxID);
 
     if (!observable) {
+      const initialPath = state.getData<string>(PATH_DATA_KEY) ?? "/";
       // Create a new Seidr for this render context
-      observable = new Seidr<string>(getFeature(currentPathFeature, ctx), { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+      observable = new Seidr<string>(initialPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
       pathCache.set(ctxID, observable);
 
       // Keep context synchronized with observable changes
-      // This is important for SSR navigation and hydration tests
-      observable.observe((val) => setFeature(currentPathFeature, val.toString(), ctx));
+      observable.observe((val) => state.setData(PATH_DATA_KEY, val.toString()));
     } else {
       // Update the cached Seidr with the current path from context
-      // This allows renderToString to set different paths for different renders
-      observable.value = getFeature(currentPathFeature, ctx);
+      observable.value = state.getData<string>(PATH_DATA_KEY) ?? "/";
     }
 
     return observable;

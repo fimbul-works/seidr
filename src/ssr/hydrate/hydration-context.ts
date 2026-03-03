@@ -16,8 +16,10 @@ function nodeMatches(node: Node, tag: string): boolean {
     }
     if (isHTMLElement(node)) {
       const id = tag.split(":")[1];
-      const attr = node.getAttribute("data-seidr-id");
-      return attr === id || (attr?.split(" ").includes(id) ?? false);
+      const attr = node.getAttribute("data-seidr-id") || "";
+      const ids = attr.split(" ");
+      // Match full ID ("Home-3") or numeric ID ("3")
+      return ids.includes(id) || ids.some((item) => item === id || item.split("-").pop() === id);
     }
     return false;
   }
@@ -41,6 +43,14 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
   }
 
   const rootsInMap = structureMap.map((_, i) => i).filter((i) => !isChild.has(i));
+  if (process.env.NODE_ENV !== "production") {
+    console.log(
+      `[Hydration-Resolve] structureMap length: ${structureMap.length}, rootsInMap:`,
+      rootsInMap,
+      "roots from getRootsForHydration:",
+      roots.length,
+    );
+  }
 
   // 1. Initial Mapping of Roots (Flat Sequence)
   // These mapping indices correspond to the components' top-level nodes (roots).
@@ -51,7 +61,13 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
     let searchIdx = domRootIdx;
 
     while (roots[searchIdx]) {
-      if (nodeMatches(roots[searchIdx], expectedTag)) {
+      const matches = nodeMatches(roots[searchIdx], expectedTag);
+      if (process.env.NODE_ENV !== "production") {
+        console.log(
+          `[Hydration-Resolve] Checking rootIdx ${rootIdx} (${expectedTag}) against roots[${searchIdx}] (${isHTMLElement(roots[searchIdx]) ? (roots[searchIdx] as HTMLElement).tagName : roots[searchIdx].nodeName}): ${matches}`,
+        );
+      }
+      if (matches) {
         matchedNode = roots[searchIdx];
         break;
       }
@@ -62,6 +78,9 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
       resolved[rootIdx] = matchedNode;
       domRootIdx = searchIdx + 1;
     } else if (roots[domRootIdx]) {
+      if (process.env.NODE_ENV !== "production") {
+        console.warn(`[Hydration-Resolve] Fallback for rootIdx ${rootIdx} from roots[${domRootIdx}]`);
+      }
       // Fallback
       resolved[rootIdx] = roots[domRootIdx];
       domRootIdx++;
@@ -150,10 +169,9 @@ export class HydrationContext {
       if (!nodeMatches(node, expectedTag)) {
         if (process.env.NODE_ENV !== "production") {
           console.warn(
-            `[Hydration mismatch] Expected ${expectedTag} at index ${this.currentIndex - 1}, but found ${
-              isHTMLElement(node) ? (node as HTMLElement).tagName.toLowerCase() : node.nodeName
-            }. Continuing as fresh. Node:`,
-            node,
+            `[Hydration mismatch] Expected <${expectedTag}> at index ${this.currentIndex - 1}, but found <${
+              isHTMLElement(node) ? (node as HTMLElement).tagName.toLowerCase() : node.nodeName.toLowerCase()
+            }>. This node will be replaced.`,
           );
         }
         return undefined;
@@ -168,7 +186,10 @@ export class HydrationContext {
    */
   claimBoundary(id: string): Node | undefined {
     const node = this.peek();
-    if (node && nodeMatches(node, `#component:${id.split("-").pop()}`)) {
+    if (!node) return undefined;
+
+    const numericId = id.split("-").pop();
+    if (nodeMatches(node, `#component:${id}`) || (numericId && nodeMatches(node, `#component:${numericId}`))) {
       return this.claim();
     }
     return undefined;
@@ -227,43 +248,83 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
   if (parentCtx) {
     // RESOLUTION via Marker-Position (Parent Structure Map)
     candidate = parentCtx.claimBoundary(componentId);
+    if (process.env.NODE_ENV !== "production") {
+      console.log(`[Hydration-Roots] ${componentId} candidate from parentCtx:`, candidate?.nodeName);
+    }
   } else if (container) {
-    // Top-level discovery (Data-selector or Marker-search)
-    const numericId = componentId.split("-").pop();
-    const selector = `[data-seidr-id~="${numericId}"]`;
-    const el = container.matches?.(selector) ? container : container.querySelector(selector);
-    if (el) {
-      candidate = el;
+    // Top-level discovery: Prefer Markers if they exist, then fallback to Data-selector
+    const numericId = componentId.split("-").pop() || "";
+    const lookFor = [componentId, numericId];
+    if (numericId) lookFor.push(`#${numericId}`);
+    lookFor.push(`#${componentId}`);
+
+    // 1. Marker search (direct children first, then descendants)
+    // Direct children
+    const nodes = Array.from(container.childNodes);
+    for (const node of nodes) {
+      if (isComment(node) && lookFor.includes(node.textContent?.trim() || "")) {
+        candidate = node;
+        break;
+      }
     }
 
+    // Descendants
     if (!candidate) {
-      // Check for markers in top-level
       const walker = document.createTreeWalker(container, NodeFilter.SHOW_COMMENT);
       let node: Node | null;
       while ((node = walker.nextNode())) {
-        if (node.textContent === componentId) {
+        if (lookFor.includes(node.textContent?.trim() || "")) {
           candidate = node;
           break;
         }
       }
     }
+
+    if (candidate && process.env.NODE_ENV !== "production") {
+      console.log(
+        `[Hydration-Roots] ${componentId} candidate from marker search ('${candidate.textContent}'):`,
+        candidate.nodeName,
+      );
+    }
+
+    // 2. Data-selector fallback if no markers found
+    if (!candidate) {
+      const selector = `[data-seidr-id~="${numericId}"]`;
+      const el = container.matches?.(selector) ? container : container.querySelector(selector);
+      if (el) {
+        candidate = el;
+        if (process.env.NODE_ENV !== "production") {
+          console.log(
+            `[Hydration-Roots] ${componentId} candidate from selector ${selector}:`,
+            candidate.nodeName,
+            (candidate as HTMLElement).getAttribute("data-seidr-id"),
+          );
+        }
+      }
+    }
+  }
+
+  if (!candidate && process.env.NODE_ENV !== "production") {
+    console.log(
+      `[Hydration-Roots] ${componentId} - NO CANDIDATE FOUND in container ${container?.id || container?.tagName}`,
+    );
   }
 
   if (!candidate) return [];
 
-  // If candidate is a start marker, return the full range until the end marker
+  // If candidate is a start marker, return the full range until the end marker (excluding markers)
   if (isComment(candidate)) {
     const text = candidate.textContent || "";
     // Boundary match (e.g. Component-1 or List-2)
     if (!text.startsWith("/")) {
       const endLabel = `/${text}`;
-      const nodes: Node[] = [candidate];
+      const nodes: Node[] = [];
       let current = candidate.nextSibling;
       while (current) {
-        nodes.push(current);
         if (isComment(current) && current.textContent === endLabel) {
           break;
         }
+        nodes.push(current);
         current = current.nextSibling;
       }
       return nodes;

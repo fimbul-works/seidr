@@ -1,27 +1,24 @@
-import { getRenderContext } from "../render-context";
-import { createRenderFeature, getFeature, setFeature } from "../render-context/feature";
+import { getAppState } from "../render-context/render-context";
 import { SSRDocument } from "../ssr/dom";
 import { setInternalGetDocument } from "./get-document";
 
-export const documentFeature = createRenderFeature<Document | undefined>({
-  id: "seidr.ssr.document",
-});
+const DOCUMENT_DATA_KEY = "seidr.ssr.document";
 
 /**
  * Get the server Document implementation.
  * @returns {Document} Server Document implementation.
  */
 export const getDocument = (): Document => {
-  const ctx = getRenderContext();
-  const currentDoc = getFeature(documentFeature, ctx);
+  const state = getAppState();
+  const currentDoc = state.getData<Document>(DOCUMENT_DATA_KEY);
   if (currentDoc) {
     return currentDoc;
   }
 
-  const doc = new SSRDocument();
+  const doc = new SSRDocument() as unknown as Document;
 
-  setFeature(documentFeature, doc as unknown as Document, ctx);
-  return getFeature(documentFeature, ctx)!;
+  state.setData(DOCUMENT_DATA_KEY, doc);
+  return doc;
 };
 
 setInternalGetDocument(getDocument);

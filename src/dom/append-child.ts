@@ -2,8 +2,6 @@ import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
-import { mismatchCandidates } from "../ssr/hydrate/mismatch-candidates";
-import { replaceWithStateTransfer } from "../ssr/hydrate/mismatch-fallback";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { isDOMNode, isHTMLElement, isTextNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
@@ -57,11 +55,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
     // If we're hydrating, the node might already be in the DOM.
-    // If it is, and it's already a child of this parent, we skip.
-    if (childNode.parentNode === target) {
-      return;
-    }
-
     // Check if we have a mapping for this virtual node to a real SSR node
     const mapped = hydrationMap.get(childNode);
     if (mapped && mapped.parentNode === target) {
@@ -69,34 +62,25 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     }
 
     // RECONCILIATION: If we are here, we have a new/unmapped node during hydration.
-    // We check if the last node we tried to match at this sequence point was a stale candidate.
     const hCtx = getHydrationContext();
     if (hCtx && !mapped) {
-      const staleNode = mismatchCandidates.get(childNode) || hCtx.lastAttemptedNode;
-      if (process.env.NODE_ENV !== "production") {
-        console.warn(
-          `[Hydration-Reconcile] Trying to replace stale ${staleNode?.nodeName} with new ${childNode.nodeName}`,
-          {
-            staleParent: staleNode?.parentNode?.nodeName,
-            target: (target as HTMLElement).tagName || target.nodeName,
-            match: staleNode?.parentNode === target,
-            hasCandidate: mismatchCandidates.has(childNode),
-          },
-        );
-      }
+      const staleNode = hCtx.lastAttemptedNode;
+
       if (staleNode && staleNode.parentNode === target) {
         if (process.env.NODE_ENV !== "production") {
-          console.warn(`[Hydration-Reconcile] MATCHED! Replacing ${staleNode.nodeName} with ${childNode.nodeName}`);
+          const tag = isHTMLElement(childNode)
+            ? (childNode as HTMLElement).tagName.toLowerCase()
+            : childNode.nodeName.toLowerCase();
+          const staleTag = isHTMLElement(staleNode)
+            ? (staleNode as HTMLElement).tagName.toLowerCase()
+            : staleNode.nodeName.toLowerCase();
+          console.warn(
+            `[Hydration mismatch] Replacing stale <${staleTag}> with new <${tag}> in <${(target as any).tagName || target.nodeName}>`,
+          );
         }
-        replaceWithStateTransfer(staleNode, childNode);
-        mismatchCandidates.delete(childNode);
-        // We also mark this new node as the valid physical node for this sequence entry
+        target.replaceChild(childNode, staleNode);
         hydrationMap.set(childNode, childNode);
         return;
-      } else if (process.env.NODE_ENV !== "production") {
-        console.log(
-          `[Hydration-Reconcile] PARENT MISMATCH! staleNode.parentNode: ${staleNode?.parentNode?.nodeName}, target: ${(target as any).tagName || target.nodeName}`,
-        );
       }
     }
 
@@ -108,11 +92,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
           : "unknown";
       const parentTag = isHTMLElement(target) ? (target as HTMLElement).tagName : "Node";
       console.warn(
-        `[Hydration mismatch] WHAT: Component structure discrepancy detected.\n` +
-          `HOW: The client injected an expected child node <${tag}> that the server did not include in the rendered parent <${parentTag}>.\n` +
-          `WHERE: Node appending phase inside <${parentTag}>.\n` +
-          `WHY: This happens when a client-side side-effect or different initial state causes a component to render additional elements not present during SSR.\n` +
-          `ACTION: Injecting new client-rendered <${tag}> as child element.`,
+        `[Hydration mismatch] Discrepancy detected: appending new <${tag}> to <${parentTag}> as it was missing from SSR.`,
         { childNode, target },
       );
     }

@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { getRenderContext } from "../render-context/render-context";
+import { getAppState } from "../render-context/render-context";
 import { getMarkerComments } from "./get-marker-comments";
 
 describe("getMarkerComments", () => {
   beforeEach(() => {
-    getRenderContext().markers.clear();
+    getAppState().markers.clear();
   });
 
   it("should create new markers if not cached and not in DOM", () => {
