@@ -3,6 +3,7 @@ import { getDocument } from "../dom";
 import { escapeHTML } from "../util/escape";
 import { isArray, isEmpty, isFn, isObj } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
+import "../ssr/register-seidr";
 
 /**
  * Interface for the context provided to dual-mode tests.

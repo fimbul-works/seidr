@@ -1,8 +1,5 @@
 import { getNextSeidrId } from "../render-context/render-context";
-import { registerHydratingSeidr } from "../ssr/hydrate/register-hydrating-seidr";
-import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
-import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";
 import { scheduleUpdate } from "./scheduler";
@@ -34,6 +31,11 @@ export class Seidr<T = any> implements Observable<T> {
   private c: CleanupFunction[] = [];
 
   /**
+   * @type {(seidr: Seidr) => void} Register Seidr for SSR/hydration callback.
+   */
+  static register: (seidr: Seidr) => void;
+
+  /**
    * Creates an instance of Seidr observable.
    *
    * @param {T} initial - The initial value to store
@@ -46,9 +48,8 @@ export class Seidr<T = any> implements Observable<T> {
     this.i = str(options.id ?? getNextSeidrId());
     this.v = initial;
 
-    // Register for hydration
-    if (isClient() && !process.env.CORE_DISABLE_SSR) {
-      this.register();
+    if (!process.env.CORE_DISABLE_SSR) {
+      Seidr.register?.(this);
     }
   }
 
@@ -127,41 +128,6 @@ export class Seidr<T = any> implements Observable<T> {
   }
 
   /**
-   * Registers this Seidr instance with SSR/hydration systems.
-   */
-  private register(): void {
-    // Minimize bundle size by
-    if (process.env.CORE_DISABLE_SSR) {
-      return;
-    }
-
-    // Registr parents first
-    for (const parent of this.p) {
-      if (parent.id === this.id) {
-        // In SSR we throw, but in the browser we just warn and return
-        if (isServer()) {
-          throw new SeidrError(`Seidr ID must be unique`, { cause: this });
-        }
-        console.warn(`Seidr ID must be unique`);
-      }
-      parent.register();
-    }
-
-    // Don't register if hydrate is false
-    if (this.options.hydrate === false) {
-      return;
-    }
-
-    if (isClient()) {
-      // Client-side: register immediately for hydration
-      registerHydratingSeidr(this);
-    } else if (isServer()) {
-      // Server-side: register with active SSR scope
-      getSSRScope()?.register(this);
-    }
-  }
-
-  /**
    * Subscribes to value changes with an event handler.
    * Unlike `bind`, this function will only be called when the value changes.
    *
@@ -170,7 +136,7 @@ export class Seidr<T = any> implements Observable<T> {
    */
   observe(fn: (value: T) => void): CleanupFunction {
     if (!process.env.CORE_DISABLE_SSR) {
-      this.register();
+      Seidr.register?.(this);
     }
     this.f.add(fn);
     return () => this.f.delete(fn);
@@ -187,7 +153,7 @@ export class Seidr<T = any> implements Observable<T> {
    */
   bind<O>(target: O, bindFn: (value: T, target: O) => void): CleanupFunction {
     if (!process.env.CORE_DISABLE_SSR) {
-      this.register();
+      Seidr.register?.(this);
     }
     bindFn(this.value, target);
     return this.observe((value) => bindFn(value, target));
@@ -274,7 +240,7 @@ export class Seidr<T = any> implements Observable<T> {
   private setParents(parents: Seidr[]): void {
     this.p = parents;
     if (!process.env.CORE_DISABLE_SSR) {
-      this.register();
+      Seidr.register?.(this);
     }
   }
 }

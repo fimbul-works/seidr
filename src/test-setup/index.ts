@@ -5,6 +5,7 @@ import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import { setInternalRenderContext } from "../render-context/render-context";
 import { isServer } from "../util/environment/server";
 import { getRenderContext, testRenderContext } from "./render-context";
+import "../ssr/register-seidr";
 
 export { enableClientMode } from "./client-mode";
 export { describeDualMode, mockUseScope } from "./dual-mode";
