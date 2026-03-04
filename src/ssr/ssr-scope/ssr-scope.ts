@@ -85,7 +85,9 @@ export class SSRScope {
    * Called after rendering to prevent memory leaks.
    */
   clear(): void {
+    this.state.values().forEach((seidr) => seidr.destroy());
     this.state.clear();
+    this.components.clear();
   }
 
   /**
@@ -101,16 +103,14 @@ export class SSRScope {
    */
   captureHydrationData(): SSRScopeCapture {
     const state: Record<string, any> = {};
-    const values = this.state.values();
+    const values = Array.from(this.state.values());
 
-    console.log(values);
     for (const seidr of values) {
       if (seidr.isDerived || seidr.options.hydrate === false) {
         continue;
       }
       state[seidr.id] = seidr.value;
     }
-    console.log(state);
 
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {

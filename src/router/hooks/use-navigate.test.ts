@@ -7,6 +7,8 @@ describeDualMode("useNavigate", ({ mode }) => {
   beforeEach(() => {
     enableClientMode();
     vi.stubGlobal("window", {
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
       location: {
         pathname: "/",
         search: "",

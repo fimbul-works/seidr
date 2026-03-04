@@ -3,9 +3,12 @@ import { setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import { setInternalAppState } from "../render-context/render-context";
+import { Seidr } from "../seidr";
+import { registerSeidrForSSR } from "../ssr/register-seidr";
 import { isServer } from "../util/environment/server";
 import { getAppState, testAppState } from "./render-context";
-import "../ssr/register-seidr";
+
+Seidr.register = registerSeidrForSSR;
 
 export { enableClientMode } from "./client-mode";
 export { describeDualMode, mockUseScope } from "./dual-mode";

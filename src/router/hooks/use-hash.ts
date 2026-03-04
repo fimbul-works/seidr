@@ -27,13 +27,17 @@ export const useHash = (): Seidr<string> => {
     appState.setData(DATA_KEY, hash);
   }
 
-  // Return the hash directly on the server
-  if (isServer()) {
-    return hash.as((hash) => hash);
-  }
-
   // Derived seidr for the specific component using the hook
   const derivedHash = hash.as((hash) => hash);
+
+  // Clean up when the component unmounts
+  const scope = useScope();
+  scope.onUnmount(() => derivedHash.destroy());
+
+  // Return the hash directly on the server
+  if (isServer()) {
+    return derivedHash;
+  }
 
   // Add event listeners for hash changes if not already initialized
   if (!isInitialized) {
@@ -57,10 +61,6 @@ export const useHash = (): Seidr<string> => {
       appState.deleteData(DATA_KEY);
     });
   }
-
-  // Clean up when the component unmounts
-  const scope = useScope();
-  scope.onUnmount(() => derivedHash.destroy());
 
   return derivedHash;
 };

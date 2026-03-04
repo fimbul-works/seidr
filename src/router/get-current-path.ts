@@ -1,69 +1,51 @@
-import { getCurrentComponent } from "../component/component-stack";
+import { getRootComponent } from "../component/component-stack";
 import { getAppState } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "./constants";
 
-/** Map to cache Seidr instances per render context ID */
-const pathCache = new Map<number, Seidr<string>>();
-
-/** Client-side path state (created once, reused across calls) */
-let clientPathState: Seidr<string> | undefined;
-
-/** Clear cached path for a render context */
-export const clearPathCache = (ctxID: number) => pathCache.delete(ctxID);
-
-/** Reset client-side path state (for testing) */
-export const resetClientPathState = () => (clientPathState = undefined);
+/** Clear cached path from appState */
+export const clearPathCache = () => {
+  const state = getAppState();
+  const observable = state.getData<Seidr<string>>(PATH_DATA_KEY);
+  if (observable) {
+    observable.destroy();
+    state.deleteData(PATH_DATA_KEY);
+  }
+};
 
 /**
  * Get the reactive current path observable.
  *
- * On the client: Returns a module-level Seidr that persists across the session.
- * On the server: Returns a cached Seidr per render context (request-isolated).
- *
  * @returns {Seidr<string>} Reactive current path observable
  */
 export const getCurrentPath = (): Seidr<string> => {
-  // Server-side: Get or create Seidr for this render context
-  if (isServer()) {
-    const state = getAppState();
-    const ctxID = state.ctxID;
+  const state = getAppState();
+  let observable = state.getData<Seidr<string>>(PATH_DATA_KEY);
 
-    let observable = pathCache.get(ctxID);
+  if (!observable) {
+    const initialPath = isServer()
+      ? (state.getData<string>(PATH_DATA_KEY) ?? "/")
+      : window.location
+        ? window.location.pathname + window.location.search + window.location.hash
+        : "/";
 
-    if (!observable) {
-      const initialPath = state.getData<string>(PATH_DATA_KEY) ?? "/";
-      // Create a new Seidr for this render context
-      observable = new Seidr<string>(initialPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
-      pathCache.set(ctxID, observable);
+    observable = new Seidr<string>(initialPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+    state.setData(PATH_DATA_KEY, observable);
 
-      // Keep context synchronized with observable changes
-      observable.observe((val) => state.setData(PATH_DATA_KEY, val.toString()));
-    } else {
-      // Update the cached Seidr with the current path from context
-      observable.value = state.getData<string>(PATH_DATA_KEY) ?? "/";
-    }
-
-    return observable;
-  }
-
-  // Client-side: Use module-level state
-  if (!clientPathState) {
-    clientPathState = new Seidr(window.location?.pathname ?? "/", {
-      ...NO_HYDRATE,
-      id: PATH_SEIDR_ID,
-    });
-
-    // Handle history.back
-    const component = getCurrentComponent();
-    if (component) {
-      const popStateHandler = () => (clientPathState!.value = window.location.pathname.toString());
+    if (!isServer() && typeof window !== "undefined") {
+      // Handle history.back
+      const popStateHandler = () =>
+        (observable!.value = window.location.pathname + window.location.search + window.location.hash);
       window.addEventListener("popstate", popStateHandler);
-      component.onUnmount(() => window.removeEventListener("popstate", popStateHandler));
+
+      getRootComponent()?.onUnmount(() => {
+        window.removeEventListener("popstate", popStateHandler);
+        clearPathCache();
+      });
     }
   }
 
-  return clientPathState;
+  return observable;
 };

@@ -1,12 +1,14 @@
+import type { ComponentReturnValue } from "../component";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
-import type { SeidrNode } from "../element/types";
 import { getAppState } from "../render-context/render-context";
 import { runWithAppState } from "../render-context/render-context.node";
-import { PATH_DATA_KEY } from "../router/constants";
+import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../router/constants";
 import { clearPathCache } from "../router/get-current-path";
+import { Seidr } from "../seidr";
+import { NO_HYDRATE } from "../seidr/constants";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
 import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope/index";
@@ -26,11 +28,13 @@ export interface RenderToStringOptions {
 /**
  * Renders a component to an HTML string with hydration data capture.
  *
+ * @template {ComponentReturnValue} C - The return value of the component function
+ *
  * @param {() => C} factory - Component function to render
- * @param {RenderToStringOptions} [options] - Optiona options object
+ * @param {RenderToStringOptions} [options] - Optional options object
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
-export async function renderToString<C extends SeidrNode>(
+export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
@@ -44,8 +48,10 @@ export async function renderToString<C extends SeidrNode>(
         throw new SeidrError("No AppState available.");
       }
 
+      let pathSeidr: Seidr<string> | undefined;
       if (isStr(options.path)) {
-        state.setData(PATH_DATA_KEY, options.path);
+        pathSeidr = new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+        state.setData(PATH_DATA_KEY, pathSeidr);
       }
 
       const activeScope = options.scope ?? new SSRScope();
@@ -75,7 +81,8 @@ export async function renderToString<C extends SeidrNode>(
         };
 
         comp.unmount();
-        clearPathCache(state.ctxID);
+        pathSeidr?.destroy();
+        clearPathCache();
 
         return { html, hydrationData };
       } finally {

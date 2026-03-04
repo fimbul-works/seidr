@@ -31,7 +31,7 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
     let currentComponent: Component | undefined;
 
     const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
-      const match = matchRoute(currentPath.value, routes);
+      const match = matchRoute(currentPath.value ?? "/", routes);
       return match
         ? {
             index: match.index,

@@ -1,9 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { mockUseScope } from "../../test-setup";
 import { getCurrentParams } from "../get-current-params";
 import { getCurrentPath } from "../get-current-path";
 import { useRouter } from "./use-router";
 
 describe("useRouter", () => {
+  mockUseScope();
+
   beforeEach(() => {
     getCurrentPath().value = "/";
     getCurrentParams().value = {};

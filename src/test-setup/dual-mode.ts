@@ -1,9 +1,12 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { getDocument } from "../dom";
+import { Seidr } from "../seidr";
+import { registerSeidrForSSR } from "../ssr/register-seidr";
 import { escapeHTML } from "../util/escape";
 import { isArray, isEmpty, isFn, isObj } from "../util/type-guards";
 import { enableClientMode, enableSSRMode } from ".";
-import "../ssr/register-seidr";
+
+Seidr.register = registerSeidrForSSR;
 
 /**
  * Interface for the context provided to dual-mode tests.

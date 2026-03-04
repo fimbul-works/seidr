@@ -1,16 +1,19 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { component, useScope } from "../../component";
 import { $ } from "../../element";
+import { getAppState } from "../../render-context/render-context";
 import { resetRequestIdCounter } from "../../render-context/render-context.node";
+import { Seidr } from "../../seidr";
+import { NO_HYDRATE } from "../../seidr/constants";
 import { clearHydrationData, hydrate } from "../../ssr/hydrate";
 import { renderToString } from "../../ssr/render-to-string";
 import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
-import { getCurrentPath, resetClientPathState } from "../get-current-path";
-import { useNavigate } from "../hooks";
+import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../constants";
+import { clearPathCache } from "../get-current-path";
 import { Router } from "./router";
 
-describe("Router Hydration Unmounting", () => {
+describe("Router Hydration", () => {
   let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
 
@@ -37,19 +40,19 @@ describe("Router Hydration Unmounting", () => {
 
   beforeAll(() => {
     cleanupClientMode = enableClientMode();
-    resetClientPathState();
+    clearPathCache();
     resetRequestIdCounter();
     clearHydrationData();
   });
 
   beforeEach(() => {
-    resetClientPathState();
+    clearPathCache();
     homeUnmounted = false;
     fallbackUnmounted = false;
   });
 
   afterEach(() => {
-    resetClientPathState();
+    clearPathCache();
     unmount?.();
     document.body.innerHTML = "";
   });
@@ -91,8 +94,8 @@ describe("Router Hydration Unmounting", () => {
     document.body.appendChild(container);
 
     // 3. Hydrate
-    const navigate = useNavigate();
-    navigate("/unknown");
+    getAppState().setData(PATH_DATA_KEY, new Seidr("/unknown", { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
+    window.history.pushState({}, "", "/unknown");
 
     unmount = hydrate(App, container, hydrationData);
 
@@ -101,7 +104,8 @@ describe("Router Hydration Unmounting", () => {
     expect(container.querySelector(".home")).toBeFalsy();
 
     // 4. Navigate to "/"
-    navigate("/");
+    window.history.pushState({}, "", "/");
+    window.dispatchEvent(new PopStateEvent("popstate"));
 
     // Verify unmount
     expect(container.querySelector(".fallback")).toBeFalsy();
@@ -122,7 +126,8 @@ describe("Router Hydration Unmounting", () => {
     document.body.appendChild(container);
 
     // 3. Hydrate
-    getCurrentPath().value = "/";
+    getAppState().setData(PATH_DATA_KEY, new Seidr("/", { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
+    window.history.pushState({}, "", "/");
     unmount = hydrate(App, container, hydrationData);
 
     // Verify initial state
@@ -130,7 +135,8 @@ describe("Router Hydration Unmounting", () => {
     expect(container.querySelector(".fallback")).toBeFalsy();
 
     // 4. Navigate to "/unknown"
-    getCurrentPath().value = "/unknown";
+    window.history.pushState({}, "", "/unknown");
+    window.dispatchEvent(new PopStateEvent("popstate"));
 
     // Verify unmount
     expect(container.querySelector(".home")).toBe(null);
