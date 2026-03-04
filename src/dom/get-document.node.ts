@@ -1,4 +1,4 @@
-import { getAppState } from "../render-context/render-context";
+import { getAppState } from "../app-state/app-state";
 import { SSRDocument } from "../ssr/dom";
 import { setInternalGetDocument } from "./get-document";
 

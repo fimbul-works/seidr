@@ -1,4 +1,4 @@
-import { getAppState } from "./render-context";
+import { getAppState } from "./app-state";
 
 /**
  * Resets the next available ID for the AppState.

@@ -22,7 +22,6 @@ export const appState: AppState = {
   deleteData(key: string) {
     return this.data.delete(key);
   },
-
   defineDataStrategy<T>(key: string, captureFn: (value: T) => any, restoreFn: (value: any) => T) {
     strategies.set(key, [captureFn, restoreFn]);
   },

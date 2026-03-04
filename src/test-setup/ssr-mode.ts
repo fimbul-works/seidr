@@ -1,6 +1,6 @@
+import { getAppState, setInternalAppState } from "../app-state/app-state";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
-import { getAppState, setInternalAppState } from "../render-context/render-context";
 import type { CleanupFunction } from "../types";
 import type { TestEnvironmentState } from "./types";
 

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { resetNextId } from "../render-context/reset-next-id";
+import { resetNextId } from "../app-state/reset-next-id";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import { clearHydrationData } from "./hydrate/storage";

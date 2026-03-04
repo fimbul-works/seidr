@@ -49,8 +49,3 @@ export const getLastNode = (comp: Component): Node => {
 
   return el as Node;
 };
-
-// Re-export old names for compatibility during migration if needed,
-// but we'll try to update all callers now.
-export const getComponentFirstNode = getFirstNode;
-export const getComponentLastNode = getLastNode;

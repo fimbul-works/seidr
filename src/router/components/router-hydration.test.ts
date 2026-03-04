@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { getAppState } from "../../app-state/app-state";
+import { resetRequestIdCounter } from "../../app-state/app-state.node";
 import { component, useScope } from "../../component";
 import { $ } from "../../element";
-import { getAppState } from "../../render-context/render-context";
-import { resetRequestIdCounter } from "../../render-context/render-context.node";
 import { Seidr } from "../../seidr";
 import { NO_HYDRATE } from "../../seidr/constants";
 import { clearHydrationData, hydrate } from "../../ssr/hydrate";

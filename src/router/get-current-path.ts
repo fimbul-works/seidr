@@ -1,5 +1,5 @@
+import { getAppState } from "../app-state/app-state";
 import { getRootComponent } from "../component/component-stack";
-import { getAppState } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";

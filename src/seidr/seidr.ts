@@ -1,4 +1,4 @@
-import { getNextSeidrId } from "../render-context/render-context";
+import { getNextSeidrId } from "../app-state/app-state";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";

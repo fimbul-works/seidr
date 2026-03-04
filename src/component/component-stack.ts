@@ -1,4 +1,4 @@
-import { getAppState } from "../render-context/render-context";
+import { getAppState } from "../app-state/app-state";
 import type { Component } from "./types";
 
 export const COMPONENT_CURSOR_KEY = "seidr.component.cursor";

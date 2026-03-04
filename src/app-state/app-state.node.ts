@@ -1,6 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { type CleanupFunction, SeidrError } from "../types";
-import { setInternalAppState } from "./render-context";
+import { setInternalAppState } from "./app-state";
 import type { AppState } from "./types";
 
 /** Global fallback store for request ID generation */

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getAppState } from "../../app-state/app-state";
 import { component } from "../../component/component";
-import { getAppState } from "../../render-context/render-context";
 import { useHash } from "./use-hash";
 
 describe("useHash", () => {

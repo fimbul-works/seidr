@@ -1,4 +1,4 @@
-import { getAppState } from "../render-context/render-context";
+import { getAppState } from "../app-state/app-state";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { PARAMS_DATA_KEY, PARAMS_SEIDR_ID } from "./constants";

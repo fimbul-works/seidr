@@ -1,5 +1,5 @@
-import { getAppState } from "../render-context/render-context";
-import type { AppState } from "../render-context/types";
+import { getAppState } from "../app-state/app-state";
+import type { AppState } from "../app-state/types";
 import type { Seidr } from "../seidr/seidr";
 import { isClient } from "../util/environment/client";
 import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";

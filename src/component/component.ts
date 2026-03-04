@@ -1,3 +1,4 @@
+import { getAppStateID, getNextComponentId } from "../app-state/app-state";
 import {
   HYDRATION_ID_ATTRIBUTE,
   ROOT_ATTRIBUTE,
@@ -7,7 +8,6 @@ import {
 } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
-import { getAppStateID, getNextComponentId } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import {
   getRootsForHydration,
@@ -33,6 +33,7 @@ import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPu
  * @template P - Props object type (optional)
  *
  * @param {ComponentFactoryPureFunction<P>} factory - Function that accepts props and creates the component element
+ * @param {string} name - The name of the component
  * @returns {ComponentFactory<P>} A function that accepts props and returns a Component instance
  */
 export const component = <P = void>(
@@ -42,10 +43,8 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const componentName = name || factory.name || "Component";
-    const componentId = getNextComponentId();
-    const fullComponentId =
-      process.env.NODE_ENV !== "production" ? `${componentName}-${componentId}` : `${componentId}`;
+    const componentId = str(getNextComponentId());
+    const fullComponentId = process.env.NODE_ENV !== "production" ? `${name}-${componentId}` : `${componentId}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -257,12 +256,8 @@ export const component = <P = void>(
 
         if (!process.env.CORE_DISABLE_SSR && isServer()) {
           comp.trackNode(comp.startMarker);
+          comp.trackNode(comp.endMarker);
         }
-      }
-
-      // Track the end marker last for fragments, ensuring it is included in the structure map
-      if (comp.endMarker && !process.env.CORE_DISABLE_SSR && isServer()) {
-        comp.trackNode(comp.endMarker);
       }
     } catch (err) {
       // Restore previous component (Pop from tree)
@@ -279,12 +274,13 @@ export const component = <P = void>(
     const applyRootAttributes = (item: ComponentChildren): void => {
       if (isHTMLElement(item)) {
         // Apply app root marker if top-level
-        if (!parent && !process.env.CORE_DISABLE_SSR) {
+        if (!parent) {
           item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
         }
+
         // Apply component ID marker for hydration discovery
         if (!item.hasAttribute(HYDRATION_ID_ATTRIBUTE)) {
-          item.setAttribute(HYDRATION_ID_ATTRIBUTE, str(componentId));
+          item.setAttribute(HYDRATION_ID_ATTRIBUTE, componentId);
         }
       } else if (isComponent(item)) {
         applyRootAttributes(item.element);

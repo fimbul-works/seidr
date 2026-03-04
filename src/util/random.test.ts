@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetRequestIdCounter, runWithAppState } from "../render-context/render-context.node";
-import { resetNextId } from "../render-context/reset-next-id";
+import { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.node";
+import { resetNextId } from "../app-state/reset-next-id";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { random } from "./random";

@@ -1,5 +1,5 @@
 import "./dom/get-document.node";
-import "./render-context/render-context.node";
+import "./app-state/app-state.node";
 
 import { Seidr } from "./seidr/seidr";
 import { registerSeidrForSSR } from "./ssr/register-seidr";

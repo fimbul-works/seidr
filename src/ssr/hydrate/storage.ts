@@ -1,4 +1,4 @@
-import { getAppState, setAppStateID } from "../../render-context/render-context";
+import { getAppState, setAppStateID } from "../../app-state/app-state";
 import type { Seidr } from "../../seidr/seidr";
 import { isEmpty } from "../../util";
 import type { HydrationData, HydrationDataStorage } from "./types";

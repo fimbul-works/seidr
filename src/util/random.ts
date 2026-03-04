@@ -1,4 +1,4 @@
-import { getAppState, getNextSeidrId } from "../../src/render-context/render-context";
+import { getAppState, getNextSeidrId } from "../app-state/app-state";
 
 const RANDOM_DATA_KEY = "seidr.rng";
 

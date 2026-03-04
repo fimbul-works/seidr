@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../examples/todo";
+import { resetRequestIdCounter } from "../app-state/app-state.node";
 import { component } from "../component";
 import { $ } from "../element";
-import { resetRequestIdCounter } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";

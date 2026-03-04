@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { getAppState } from "../app-state/app-state";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import { getAppState } from "../render-context/render-context";
 import { getMarkerComments } from "./get-marker-comments";
 
 describe("getMarkerComments", () => {

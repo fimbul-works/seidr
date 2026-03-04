@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { getAppState } from "../app-state/app-state";
 import { component } from "../component/component";
+import { ROOT_ATTRIBUTE } from "../constants";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
-import { getAppState } from "../render-context";
-import { ROOT_ATTRIBUTE } from "../constants";
 
 describe("Component Marker Optimization", () => {
   beforeEach(() => {
