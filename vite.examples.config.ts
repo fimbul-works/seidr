@@ -1,3 +1,4 @@
+import replace from "@rollup/plugin-replace";
 import { defineConfig } from "vite";
 import { clientReplace } from "./rollup.shared";
 
@@ -6,6 +7,18 @@ export default defineConfig((_config) => {
 
   return {
     root: "examples",
+    plugins: [
+      replace({
+        ...clientReplace,
+        window: "{}",
+        "isClient()": "true",
+        "isServer()": "false",
+        "hasHydrationData()": "false",
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        "process.env.CORE_DISABLE_SSR": "true",
+        preventAssignment: true,
+      }),
+    ],
     build: {
       outDir: "examples/dist",
       emptyOutDir: true,
@@ -25,12 +38,6 @@ export default defineConfig((_config) => {
       },
     },
     esbuild: {
-      define: {
-        ...clientReplace,
-        window: "{}",
-        "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.CORE_DISABLE_SSR": "true",
-      },
       drop: ["console", "debugger"],
     },
     server: {

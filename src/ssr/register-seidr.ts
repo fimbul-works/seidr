@@ -1,4 +1,4 @@
-import { Seidr } from "../seidr";
+import type { Seidr } from "../seidr";
 import { SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
@@ -29,7 +29,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   }
 
   // Don't register if hydrate is false
-  if (seidr.options.hydrate === false) {
+  if (seidr.isDerived || seidr.options.hydrate === false) {
     return;
   }
 
@@ -41,5 +41,3 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
     getSSRScope()?.register(seidr);
   }
 };
-
-Seidr.register = registerSeidrForSSR;

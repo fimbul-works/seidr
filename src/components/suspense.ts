@@ -7,9 +7,9 @@ import { NO_HYDRATE } from "../seidr/constants";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { wrapError } from "../util/wrap-error";
 
-export const PROMISE_PENDING = "pending";
-export const PROMISE_RESOLVED = "resolved";
-export const PROMISE_ERROR = "error";
+const PROMISE_PENDING = "pending";
+const PROMISE_RESOLVED = "resolved";
+const PROMISE_ERROR = "error";
 
 export type SuspenseStatus = typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof PROMISE_ERROR;
 

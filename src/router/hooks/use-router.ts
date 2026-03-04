@@ -1,3 +1,4 @@
+import { useHash } from "./use-hash";
 import { useLocation } from "./use-location";
 import { useNavigate } from "./use-navigate";
 import { useParams } from "./use-params";
@@ -8,14 +9,16 @@ import { useSearchParams } from "./use-search-params";
  */
 export const useRouter = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const params = useParams();
+  const hash = useHash();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
   return {
-    location,
     navigate,
+    location,
     params,
+    hash,
     searchParams,
     setSearchParams,
   };

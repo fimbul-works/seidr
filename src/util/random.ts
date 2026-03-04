@@ -31,13 +31,6 @@ export const random = (): number => {
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
     rngState = [s0 * FRAC, s1 * FRAC, s2 * FRAC, 1];
-
-    // Register strategy for RNG state
-    state.defineDataStrategy(
-      RANDOM_DATA_KEY,
-      (v) => v,
-      (v) => v,
-    );
   }
 
   // Generate next number using the stored state

@@ -18,12 +18,11 @@ export const nodeReplace = {
 
 const pluginsCommon = [typescript({ tsconfig: "./tsconfig.json", declaration: false }), resolve(), commonjs()];
 
-export const treeshake = {
-  moduleSideEffects: false,
-  propertyReadSideEffects: false,
-  unknownGlobalSideEffects: false,
-};
+export const treeshake = "smallest";
 
+/**
+ * @returns {import('rollup').RollupOptions}
+ */
 export const makeClientBundle = (input, output, cjs = true, values = {}) => ({
   input,
   output: cjs

@@ -1,5 +1,5 @@
 import type { Component, ComponentChildren } from "../../component/types";
-import { getHydrationMap } from "../../ssr/hydrate";
+import { getHydrationMap } from "../../ssr/hydrate/storage";
 import { SeidrError } from "../../types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";

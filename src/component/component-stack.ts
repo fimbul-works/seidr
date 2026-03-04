@@ -28,6 +28,22 @@ export const pop = (): void => {
 };
 
 /**
+ * Returns the root component of the current render context.
+ * @returns {Component | null} The root component, or null if none found.
+ */
+export const getRootComponent = (): Component | null => {
+  const id = getAppStateID();
+  let current = renderContextCursors.get(id);
+  if (!current) {
+    return null;
+  }
+  while (current.parent) {
+    current = current.parent;
+  }
+  return current;
+};
+
+/**
  * Executes a function within the context of a specific component.
  * Restores the previous context afterwards.
  *

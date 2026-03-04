@@ -20,7 +20,7 @@ echo "Bundle sizes (bytes):"
 echo "=========================================="
 echo ""
 echo "Browser bundle:"
-wc -c dist/seidr.*js* | grep -v .node. | grep -v .cjs. | grep -v total
+wc -c dist/seidr.*js* | grep -v .node. | grep -v .cjs | grep -v total
 echo ""
 echo "Example bundles:"
 wc -c examples/dist/*.js* examples/ssr/dist/*.js* | grep -v \.map | grep -v total

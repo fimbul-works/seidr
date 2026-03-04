@@ -1,7 +1,10 @@
 import "./dom/get-document.node";
 import "./render-context/render-context.node";
-import "./ssr/register-seidr";
+
+import { Seidr } from "./seidr/seidr";
+import { registerSeidrForSSR } from "./ssr/register-seidr";
+
+Seidr.register = registerSeidrForSSR;
 
 export * from "./index.core";
-export * from "./ssr";
-export * from "./util/environment/index";
+export * from "./ssr/render-to-string";

@@ -1,8 +1,10 @@
 import { getAppState, setAppStateID } from "../../render-context/render-context";
 import type { Seidr } from "../../seidr/seidr";
 import { isEmpty } from "../../util";
-import { HYDRATION_DATA_ID, HYDRATION_MAP_DATA_ID } from "./constants";
 import type { HydrationData, HydrationDataStorage } from "./types";
+
+const HYDRATION_MAP_DATA_ID = "seidr.ssr.hydrationmap";
+const HYDRATION_DATA_ID = "seidr.ssr.hydrationdata";
 
 /**
  * Gets the current hydration data.
