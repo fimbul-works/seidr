@@ -13,6 +13,7 @@ import {
   List,
   type Seidr,
   Suspense,
+  Switch,
   useState,
 } from "../../src/index.browser.js";
 import { getPost, getPosts } from "./data.js";
@@ -49,11 +50,16 @@ export const HomePage = () => {
     });
   }
 
-  return Suspense(postsPromise, (posts) => {
-    return $div({ className: "home-page" }, [
-      $h1({ textContent: "Latest Posts" }),
-      $ul({ className: "post-list" }, [List(posts, (p) => p.slug, PostCard)]),
-    ]);
+  return Suspense(postsPromise, ({ state, value, error }) => {
+    return Switch(state, {
+      pending: () => $div({ textContent: "Loading posts..." }),
+      resolved: () =>
+        $div({ className: "home-page" }, [
+          $h1({ textContent: "Latest Posts" }),
+          $ul({ className: "post-list" }, [List(value, (p) => p.slug, PostCard)]),
+        ]),
+      error: () => $div({ textContent: error.value?.message || "Error" }),
+    });
   });
 };
 
@@ -81,14 +87,20 @@ export const PostPage = (params: Seidr<{ slug: string }>) => {
     });
   }
 
-  return Suspense(postPromise, (post) => {
-    const p = post.value;
-    if (!p) return $div({ textContent: "Post not found" });
+  return Suspense(postPromise, ({ state, value, error }) => {
+    return Switch(state, {
+      pending: () => $div({ textContent: "Loading post..." }),
+      resolved: () => {
+        const p = value.value;
+        if (!p) return $div({ textContent: "Post not found" });
 
-    return $article({ className: "post-page" }, [
-      $h1({ textContent: p.title }),
-      $div({ className: "meta", textContent: new Date(p.date).toLocaleDateString() }),
-      $div({ className: "markdown-body", innerHTML: p.content }),
-    ]);
+        return $article({ className: "post-page" }, [
+          $h1({ textContent: p.title }),
+          $div({ className: "meta", textContent: new Date(p.date).toLocaleDateString() }),
+          $div({ className: "markdown-body", innerHTML: p.content }),
+        ]);
+      },
+      error: () => $div({ textContent: error.value?.message || "Error" }),
+    });
   });
 };

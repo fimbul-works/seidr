@@ -1,18 +1,21 @@
 ## Suspense()
 
-Handles asynchronous loading states for Promises with loading and error fallbacks.
+Handles asynchronous loading states for Promises with reactive states.
 
 **Parameters:**
 - `promiseOrSeidr` - `Promise<T>` or `Seidr<Promise<T>>` to wait for
-- `factory` - Function called with resolved value: `(value: T) => SeidrNode`
-- `loading` - Optional factory for loading state UI: `() => SeidrNode`
-- `error` - Optional factory for error state UI: `(err: Error) => SeidrNode`
+- `factory` - Function called with reactive states: `(state: SuspenseState<T>) => SeidrNode`
 
-**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
+`SuspenseState<T>` includes:
+- `value`: `Seidr<T | null>` - The resolved value
+- `state`: `Seidr<'pending' | 'resolved' | 'error'>` - The current status
+- `error`: `Seidr<Error | null>` - Any error that occurred
+
+**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) handling the promise state.
 
 **Example:**
 ```typescript
-import { Suspense, $div, mount } from '@fimbul-works/seidr';
+import { Suspense, Switch, $div, mount } from '@fimbul-works/seidr';
 
 const fetchUser = async (id: string) => {
   const res = await fetch(`/api/user/${id}`);
@@ -25,9 +28,11 @@ const App = () => {
   return $div({}, [
     Suspense(
       fetchUser('123'),
-      (user) => UserProfile(user),
-      () => $div({ textContent: 'Loading user...' }),
-      (err) => $div({ textContent: `Error: ${err.message}` })
+      ({ state, value, error }) => Switch(state, {
+        pending: () => $div({ textContent: 'Loading user...' }),
+        resolved: () => UserProfile(value.value),
+        error: () => $div({ textContent: `Error: ${error.value?.message}` })
+      })
     )
   ]);
 };
@@ -49,9 +54,11 @@ const userIdPromise = userId.as(id =>
 
 Suspense(
   userIdPromise,
-  UserProfile,
-  LoadingSpinner,
-  ErrorMessage
+  ({ state, value, error }) => Switch(state, {
+    pending: LoadingSpinner,
+    resolved: () => UserProfile(value.value),
+    error: () => ErrorMessage(error.value)
+  })
 );
 ```
 

@@ -1,61 +1,47 @@
 import { component } from "../component/component";
-import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
-import { getComponent, getLastNode, mountComponent } from "../component/util";
+import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { isSeidr } from "../util/type-guards/is-observable";
 import { wrapError } from "../util/wrap-error";
 
-const PROMISE_PENDING = "pending";
-const PROMISE_RESOLVED = "resolved";
-const PROMISE_ERROR = "error";
+export const PROMISE_PENDING = "pending";
+export const PROMISE_RESOLVED = "resolved";
+export const PROMISE_ERROR = "error";
 
-type SuspenseStatus = typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof PROMISE_ERROR;
+export type SuspenseStatus = typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof PROMISE_ERROR;
+
+export interface SuspenseState<T> {
+  value: Seidr<T | null>;
+  state: Seidr<SuspenseStatus>;
+  error: Seidr<Error | null>;
+}
 
 /**
- * Creates a component that handles Promise resolution with loading and error states.
+ * Creates a component that handles Promise resolution with reactive states.
  *
  * @template T - The type of resolved value
- * @template {ComponentFactoryFunction<T>} C - The type of component factory
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
- * @param {C} factory - Function that creates the component when promise resolves
- * @param {ComponentFactoryFunction} [loadingFactory] - Optional loading component
- * @param {ComponentFactoryFunction<Error>} [errorBoundaryFactory] - Optional error handler component
+ * @param {ComponentFactoryFunction<SuspenseState<T>>} factory - Function that creates the component
+ * @param {string} [name] - Optional name for the component
  * @returns {Component} A component handling the promise state
  */
-export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
+export const Suspense = <T>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
-  factory: C,
-  loadingFactory: ComponentFactoryFunction = () => "Loading...",
-  errorBoundaryFactory: ComponentFactoryFunction<Error> = (err: Error) => `${err.name}: ${err.message}`,
+  factory: ComponentFactoryFunction<SuspenseState<T>>,
   name?: string,
 ): Component =>
   component(() => {
     const scope = useScope();
     const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, NO_HYDRATE);
-    const [, endMarker] = getMarkerComments(scope.id);
+    const value = new Seidr<T | null>(null, NO_HYDRATE);
+    const error = new Seidr<Error | null>(null, NO_HYDRATE);
 
-    let resolvedValue: T | null = null;
-    let errorValue: Error | null = null;
     let currentPromiseId = 0;
 
-    const factories: Record<SuspenseStatus, ComponentFactoryFunction<any>> = {
-      [PROMISE_RESOLVED]: () => factory(resolvedValue!),
-      [PROMISE_ERROR]: () => errorBoundaryFactory(errorValue!),
-      [PROMISE_PENDING]: loadingFactory,
-    };
-
-    let currentComponent: Component | undefined = getComponent(factories, status.value);
-
-    /**
-     * Handles a promise and updates the status accordingly.
-     *
-     * @param {Promise<T>} prom The promise to handle.
-     * @returns {Promise<void>} A promise that resolves when the status has been updated.
-     */
     const handlePromise = async (prom: Promise<T>): Promise<void> => {
       if (!prom || scope.isUnmounted) {
         return;
@@ -65,14 +51,14 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
       const currentId = ++currentPromiseId;
 
       try {
-        const value = await prom;
+        const resolved = await prom;
         if (currentId === currentPromiseId) {
-          resolvedValue = value;
+          value.value = resolved;
           status.value = PROMISE_RESOLVED;
         }
       } catch (err) {
         if (currentId === currentPromiseId) {
-          errorValue = wrapError(err);
+          error.value = wrapError(err);
           status.value = PROMISE_ERROR;
         }
       }
@@ -89,33 +75,6 @@ export const Suspense = <T, C extends ComponentFactoryFunction<T> = ComponentFac
       scope.onUnmount(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
     }
 
-    /**
-     * Updates the component based on promise status.
-     *
-     * @param {SuspenseStatus} status - The new value to update the component with.
-     */
-    const update = (status: SuspenseStatus) => {
-      // 1. Resolve anchor point before unmounting
-      const lastNode = currentComponent ? getLastNode(currentComponent) : null;
-      const anchor = lastNode?.nextSibling || endMarker;
-      const parent = lastNode?.parentNode || endMarker?.parentNode || scope.parentNode;
-
-      // 2. Unmount previous component
-      if (currentComponent) {
-        currentComponent.unmount();
-        currentComponent = undefined;
-      }
-
-      // 3. Mount new component
-      currentComponent = getComponent(factories, status);
-      if (currentComponent) {
-        scope.child(currentComponent);
-        mountComponent(currentComponent, anchor, parent!);
-      }
-    };
-
-    scope.observe(status, update);
-    scope.onUnmount(() => currentComponent?.unmount());
-
-    return currentComponent ? scope.child(currentComponent) : undefined;
+    const childComponent = wrapComponent(factory)({ value, state: status, error });
+    return childComponent ? scope.child(childComponent) : undefined;
   }, name ?? "Suspense")();

@@ -3,7 +3,8 @@ import { mount } from "../dom/mount";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { Suspense } from "./suspense";
+import { Suspense, type SuspenseState } from "./suspense";
+import { Switch } from "./switch";
 
 describeDualMode("Suspense", ({ getDocument }) => {
   let container: HTMLElement;
@@ -23,13 +24,14 @@ describeDualMode("Suspense", ({ getDocument }) => {
 
   it("should show loading state initially", async () => {
     const promise = new Promise<string>(() => {});
-    const factory = (val: string) => val;
-    const loading = () => "Loading...";
+    const factory = ({ state, value, error }: SuspenseState<string>) =>
+      Switch(state, {
+        pending: () => document.createTextNode("Loading..."),
+        resolved: () => document.createTextNode(value.value || ""),
+        error: () => document.createTextNode(error.value?.message || ""),
+      });
 
-    unmount = mount(
-      Suspense(promise, factory, loading, (err) => err.message),
-      container,
-    );
+    unmount = mount(Suspense(promise, factory), container);
 
     expect(container.textContent).toBe("Loading...");
   });
@@ -37,13 +39,14 @@ describeDualMode("Suspense", ({ getDocument }) => {
   it("should show resolved content when promise resolves", async () => {
     let resolvePromise: (val: string) => void;
     const promise = new Promise<string>((resolve) => (resolvePromise = resolve));
-    const factory = (val: string) => val;
-    const loading = () => "Loading...";
+    const factory = ({ state, value, error }: SuspenseState<string>) =>
+      Switch(state, {
+        pending: () => document.createTextNode("Loading..."),
+        resolved: () => document.createTextNode(value.value || ""),
+        error: () => document.createTextNode(`Error: ${error.value?.message}`),
+      });
 
-    unmount = mount(
-      Suspense(promise, factory, loading, (err) => err.message),
-      container,
-    );
+    unmount = mount(Suspense(promise, factory), container);
 
     resolvePromise!("Resolved Content");
     await new Promise((r) => setTimeout(r, 10));
@@ -54,17 +57,19 @@ describeDualMode("Suspense", ({ getDocument }) => {
   it("should show error content when promise rejects", async () => {
     let rejectPromise: (err: Error) => void;
     const promise = new Promise<string>((_, reject) => (rejectPromise = reject));
-    const factory = (val: string) => document.createTextNode(val);
-    const loading = () => document.createTextNode("Loading...");
-    const error = (err: Error) => document.createTextNode(`Error: ${err.message}`);
+    const factory = ({ state, error }: SuspenseState<string>) =>
+      Switch(state, {
+        pending: () => document.createTextNode("Loading..."),
+        resolved: () => document.createTextNode("Resolved Content"),
+        error: () => document.createTextNode(`Error: ${error.value?.message}`),
+      });
 
-    unmount = mount(Suspense(promise, factory, loading, error), container);
+    unmount = mount(Suspense(promise, factory), container);
     rejectPromise!(new Error("Failed"));
     await new Promise((r) => setTimeout(r, 0));
     expect(container.textContent).toBe("Error: Failed");
   });
 
-  // New test for reactive promise
   it("should react to changing promises via Seidr", async () => {
     let resolve1: (v: string) => void;
     let resolve2: (v: string) => void;
@@ -72,13 +77,14 @@ describeDualMode("Suspense", ({ getDocument }) => {
     const p2 = new Promise<string>((r) => (resolve2 = r));
 
     const promiseSeidr = new Seidr<Promise<string>>(p1);
-    const factory = (val: string) => document.createTextNode(val);
-    const loading = () => document.createTextNode("Loading...");
+    const factory = ({ state, value, error }: SuspenseState<string>) =>
+      Switch(state, {
+        pending: () => document.createTextNode("Loading..."),
+        resolved: () => document.createTextNode(value.value || ""),
+        error: () => document.createTextNode(error.value?.message || ""),
+      });
 
-    unmount = mount(
-      Suspense(promiseSeidr, factory, loading, (err) => document.createTextNode(err.message)),
-      container,
-    );
+    unmount = mount(Suspense(promiseSeidr, factory), container);
 
     // Initial state (p1 pending)
     expect(container.textContent).toBe("Loading...");
