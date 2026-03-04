@@ -190,4 +190,11 @@ export interface Component extends LifecycleScope {
    * @internal
    */
   trackNode(node: Node): void;
+
+  /**
+   * Map of child component root nodes to their component ID.
+   * Used during SSR to build the structure map without relying on dataset IDs.
+   * @internal
+   */
+  readonly childComponentNodes: Map<Node, string>;
 }

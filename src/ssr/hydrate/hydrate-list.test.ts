@@ -86,6 +86,6 @@ describe("Hydration List", () => {
     await new Promise((r) => setTimeout(r, 10));
 
     const hydratedArticles = container.querySelectorAll("article");
-    expect(hydratedArticles.length).toBe(4);
+    expect(hydratedArticles.length).toBe(2);
   });
 });

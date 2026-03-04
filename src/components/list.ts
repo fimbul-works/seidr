@@ -1,11 +1,9 @@
 import { component } from "../component/component";
-import { getMarkerComments } from "../component/get-marker-comments";
+import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
-import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 
 /**
@@ -28,13 +26,13 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
   name?: string,
 ): Component =>
   component(() => {
-    const scope = useScope();
-    const [, endMarker] = getMarkerComments(scope.id);
+    const listComponent = getCurrentComponent()!;
     const componentMap = new Map<K, Component>();
 
     const update = (items: T[]) => {
-      const realEndMarker = (!process.env.CORE_DISABLE_SSR && hydrationMap.get(endMarker)) || endMarker;
-      const parent = realEndMarker.parentNode;
+      const realEndMarker =
+        (!process.env.CORE_DISABLE_SSR && hydrationMap.get(listComponent.endMarker!)) || listComponent.endMarker;
+      const parent = realEndMarker?.parentNode;
       if (!parent) {
         return;
       }
@@ -77,8 +75,8 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
       }
     };
 
-    scope.observe(observable, update);
-    scope.onUnmount(() => {
+    listComponent.observe(observable, update);
+    listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();
     });
@@ -86,6 +84,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
     return observable.value.map((item) => {
       const itemComponent = wrapComponent<T>(factory)(item);
       componentMap.set(getKey(item), itemComponent);
+
       return itemComponent;
     });
   }, name ?? "List")();

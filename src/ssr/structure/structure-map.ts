@@ -1,6 +1,5 @@
 import type { Component } from "../../component/types";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
-import { getComponentBoundaryId } from "./boundary";
 
 export type StructureMapTuple = [string, ...number[]];
 
@@ -25,8 +24,8 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
   for (let i = 0; i < nodeCreateIndex.length; i++) {
     const node = nodeCreateIndex[i];
 
-    // Check if it's a child component boundary
-    const boundaryId = getComponentBoundaryId(node, component.id);
+    // Check if it's a child component boundary using explicit map
+    const boundaryId = component.childComponentNodes.get(node);
     if (boundaryId) {
       structureMap[i] = [`#component:${boundaryId}`];
       continue;

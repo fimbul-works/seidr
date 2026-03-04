@@ -14,9 +14,23 @@ export const $comment = (text: string): Comment => {
     const node = hydrationContext.claim("#comment") as Comment;
     if (node) {
       if (node.textContent !== text) {
+        console.warn(
+          `[Hydration] Comment mismatch: expected "${text}" but found "${node.textContent}". Updating content.`,
+        );
         node.textContent = text;
       }
       return node;
+    } else {
+      // Structural mismatch
+      const mismatchNode = hydrationContext.lastAttemptedNode;
+      const newNode = getDocument().createComment(text);
+      if (mismatchNode?.parentNode) {
+        console.warn(
+          `[Hydration] Tag mismatch: expected #comment but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+        );
+        mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
+      }
+      return newNode;
     }
   }
 

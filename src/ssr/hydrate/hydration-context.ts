@@ -1,5 +1,13 @@
+import { str } from "../../util/string";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
+import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { StructureMapTuple } from "../structure/structure-map";
+import { hydrationMap } from "./node-map";
+import { hydrationDataStorage } from "./storage";
+
+/**
+ * Error thrown when a hydration mismatch is detected.
+ */
 
 /**
  * Checks if a physical DOM node matches a structure map tag.
@@ -16,7 +24,7 @@ function nodeMatches(node: Node, tag: string): boolean {
     }
     if (isHTMLElement(node)) {
       const id = tag.split(":")[1];
-      const attr = node.getAttribute("data-seidr-id") || "";
+      const attr = node.getAttribute("data-seidr-root") || node.getAttribute("data-seidr-id") || "";
       const ids = attr.split(" ");
       // Match full ID ("Home-3") or numeric ID ("3")
       return ids.includes(id) || ids.some((item) => item === id || item.split("-").pop() === id);
@@ -43,14 +51,6 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
   }
 
   const rootsInMap = structureMap.map((_, i) => i).filter((i) => !isChild.has(i));
-  if (process.env.NODE_ENV !== "production") {
-    console.log(
-      `[Hydration-Resolve] structureMap length: ${structureMap.length}, rootsInMap:`,
-      rootsInMap,
-      "roots from getRootsForHydration:",
-      roots.length,
-    );
-  }
 
   // 1. Initial Mapping of Roots (Flat Sequence)
   // These mapping indices correspond to the components' top-level nodes (roots).
@@ -62,11 +62,6 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
     while (roots[searchIdx]) {
       const matches = nodeMatches(roots[searchIdx], expectedTag);
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          `[Hydration-Resolve] Checking rootIdx ${rootIdx} (${expectedTag}) against roots[${searchIdx}] (${isHTMLElement(roots[searchIdx]) ? (roots[searchIdx] as HTMLElement).tagName : roots[searchIdx].nodeName}): ${matches}`,
-        );
-      }
       if (matches) {
         matchedNode = roots[searchIdx];
         break;
@@ -76,9 +71,11 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
     if (matchedNode) {
       resolved[rootIdx] = matchedNode;
+      hydrationMap.set(matchedNode, matchedNode);
       domRootIdx = searchIdx + 1;
     } else if (roots[domRootIdx]) {
       resolved[rootIdx] = roots[domRootIdx];
+      hydrationMap.set(roots[domRootIdx], roots[domRootIdx]);
       domRootIdx++;
     }
   }
@@ -109,30 +106,20 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
       if (matchedNode) {
         resolved[childMapIdx] = matchedNode;
+        hydrationMap.set(matchedNode, matchedNode);
         resolveChildren(childMapIdx);
         domChildIdx = searchIdx + 1;
       } else if (children[domChildIdx]) {
         resolved[childMapIdx] = children[domChildIdx];
+        hydrationMap.set(children[domChildIdx], children[domChildIdx]);
         domChildIdx++;
       }
     }
   };
 
   rootsInMap.forEach((idx) => {
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[Hydration-Resolve] Root index ${idx} resolved to ${resolved[idx]?.nodeName}`);
-    }
     resolveChildren(idx);
   });
-
-  if (process.env.NODE_ENV !== "production") {
-    console.log(`[Hydration-Resolve] Finished resolving ${structureMap.length} nodes for component`);
-    resolved.forEach((node, i) => {
-      console.log(
-        `  [${i}] ${structureMap[i][0]} -> ${node?.nodeName} ${isHTMLElement(node) ? (node as HTMLElement).id || (node as HTMLElement).tagName : ""}`,
-      );
-    });
-  }
 
   return resolved;
 }
@@ -240,12 +227,19 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
     if (process.env.NODE_ENV !== "production") {
       console.log(`[Hydration-Roots] ${componentId} candidate from parentCtx:`, candidate?.nodeName);
     }
-  } else if (container) {
+  }
+
+  if (!candidate && container) {
     // Top-level discovery: Prefer Markers if they exist, then fallback to Data-selector
+    const hData = hydrationDataStorage.data;
     const numericId = componentId.split("-").pop() || "";
     const lookFor = [componentId, numericId];
     if (numericId) lookFor.push(`#${numericId}`);
     lookFor.push(`#${componentId}`);
+
+    if (!parentCtx && !isEmpty(hData?.ctxID)) {
+      lookFor.push(str(hData.ctxID));
+    }
 
     // 1. Marker search (direct children first, then descendants)
     // Direct children
@@ -278,7 +272,10 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
 
     // 2. Data-selector fallback if no markers found
     if (!candidate) {
-      const selector = `[data-seidr-id~="${numericId}"]`;
+      const hData = hydrationDataStorage.data;
+      const ctxSelector = !parentCtx && !isEmpty(hData?.ctxID) ? `[data-seidr-root~="${hData.ctxID}"],` : "";
+      const rootSelector = !parentCtx ? `[data-seidr-root~="${numericId}"],` : "";
+      const selector = `${ctxSelector}${rootSelector}[data-seidr-id~="${numericId}"]`;
       const el = container.matches?.(selector) ? container : container.querySelector(selector);
       if (el) {
         candidate = el;
@@ -286,7 +283,8 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
           console.log(
             `[Hydration-Roots] ${componentId} candidate from selector ${selector}:`,
             candidate.nodeName,
-            (candidate as HTMLElement).getAttribute("data-seidr-id"),
+            (candidate as HTMLElement).getAttribute("data-seidr-root") ||
+              (candidate as HTMLElement).getAttribute("data-seidr-id"),
           );
         }
       }
@@ -301,19 +299,19 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
 
   if (!candidate) return [];
 
-  // If candidate is a start marker, return the full range until the end marker (excluding markers)
+  // If candidate is a start marker, return the full range until the end marker (including markers)
   if (isComment(candidate)) {
     const text = candidate.textContent || "";
     // Boundary match (e.g. Component-1 or List-2)
     if (!text.startsWith("/")) {
       const endLabel = `/${text}`;
-      const nodes: Node[] = [];
+      const nodes: Node[] = [candidate];
       let current = candidate.nextSibling;
       while (current) {
+        nodes.push(current);
         if (isComment(current) && current.textContent === endLabel) {
           break;
         }
-        nodes.push(current);
         current = current.nextSibling;
       }
       return nodes;

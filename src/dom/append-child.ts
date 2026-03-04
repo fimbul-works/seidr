@@ -1,8 +1,10 @@
+import { getCurrentComponent, pop, push } from "../component/component-stack";
 import { useScope } from "../component/use-scope";
+import { getFirstNode } from "../component/util";
 import type { SeidrChild } from "../element/types";
 import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
-import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
+import { isServer } from "../util/environment/server";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
@@ -20,13 +22,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     return;
   }
 
-  if (process.env.NODE_ENV !== "production" && hasHydrationData()) {
-    console.log(
-      `[Hydration-Append] Appending to <${(parent as any).tagName || parent.nodeName}>:`,
-      isComponent(child) ? `Component ${child.id}` : (child as any).tagName || (child as any).nodeName,
-    );
-  }
-
   // Append array of nodes
   if (isArray(child)) {
     return child.forEach((c) => appendChild(parent, c));
@@ -38,10 +33,27 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    appendChild(parent, child.element);
+    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+      push(child);
+      appendChild(parent, child.element);
+      pop();
+    } else {
+      appendChild(parent, child.element);
+    }
 
     if (child.endMarker) {
       appendChild(parent, child.endMarker);
+    }
+
+    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+      const current = getCurrentComponent();
+      if (current) {
+        const boundary = child.startMarker || getFirstNode(child);
+        if (boundary) {
+          current.trackNode(boundary);
+          current.childComponentNodes.set(boundary, child.id);
+        }
+      }
     }
 
     if (!child.parentNode) {
@@ -61,21 +73,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   const childNode = isDOMNode(child) ? child : $text(child);
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
-    // If we're hydrating, the node might already be in the DOM.
-    // Check if we have a mapping for this virtual node to a real SSR node
     const mapped = hydrationMap.get(childNode);
-    if (mapped && mapped.parentNode === target) {
-      return;
-    }
-
-    // RECONCILIATION: If we are here, we have a new/unmapped node during hydration.
-    const hCtx = getHydrationContext();
-    if (hCtx && !mapped) {
-      const staleNode = hCtx.lastAttemptedNode;
-
-      if (staleNode && staleNode.parentNode === target) {
-        target.replaceChild(childNode, staleNode);
-        hydrationMap.set(childNode, childNode);
+    if (mapped) {
+      if (mapped.parentNode === target) {
         return;
       }
     }
@@ -85,11 +85,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   // Note: Only Elements/Documents support .contains() on other nodes reliably in JSDOM.
   const canContain = childNode.nodeType === 1 || childNode.nodeType === 9;
   if (childNode !== target && (!canContain || !childNode.contains(target))) {
-    if (process.env.NODE_ENV !== "production" && hasHydrationData()) {
-      console.log(
-        `[Hydration-Append] Actually calling target.appendChild for <${(childNode as any).tagName || childNode.nodeName}>`,
-      );
-    }
     target.appendChild(childNode);
   }
 };

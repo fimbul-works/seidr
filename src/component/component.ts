@@ -3,7 +3,15 @@ import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getAppStateID, getNextComponentId } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
+import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
+import {
+  getRootsForHydration,
+  HydrationContext,
+  popHydrationContext,
+  pushHydrationContext,
+} from "../ssr/hydrate/hydration-context";
 import { hydrationMap } from "../ssr/hydrate/node-map";
+import { hydrationDataStorage } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
@@ -43,6 +51,7 @@ export const component = <P = void>(
     let destroyed = false;
     let attachedParent: Node | null = null;
     const trackedNodes: Node[] = [];
+    const childComponentNodes = new Map<Node, string>();
 
     // Create Component instance
     const comp = {
@@ -63,6 +72,9 @@ export const component = <P = void>(
       },
       get indexedNodes() {
         return trackedNodes;
+      },
+      get childComponentNodes() {
+        return childComponentNodes;
       },
       trackNode(node: Node) {
         trackedNodes.push(node);
@@ -162,12 +174,6 @@ export const component = <P = void>(
           ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(comp.startMarker)) || comp.startMarker
           : undefined;
 
-        if (process.env.NODE_ENV !== "production" && mappedStart) {
-          console.log(
-            `[${fullComponentId}] Removing startMarker:`,
-            (mappedStart as any).textContent || mappedStart.nodeName,
-          );
-        }
         (mappedStart as Comment)?.remove();
 
         const removeChildEntry = (child: ComponentChildren): void => {
@@ -175,13 +181,7 @@ export const component = <P = void>(
             child.unmount();
           } else if (isDOMNode(child)) {
             const mapped = (!process.env.CORE_DISABLE_SSR && hydrationMap.get(child)) || child;
-            if (process.env.NODE_ENV !== "production") {
-              console.log(
-                `[${fullComponentId}] Removing node:`,
-                (mapped as any).tagName || mapped.nodeName,
-                (mapped as any).outerHTML || "",
-              );
-            }
+
             (mapped as Element).remove();
           }
         };
@@ -209,29 +209,40 @@ export const component = <P = void>(
     }
 
     try {
+      // Create HydrationContext if hydrating
+      let hCtx: HydrationContext | null = null;
+      if (!process.env.CORE_DISABLE_SSR && hasHydrationData()) {
+        const hData = hydrationDataStorage.data;
+        const compMap = hData?.components?.[fullComponentId];
+        if (compMap) {
+          const roots = getRootsForHydration(fullComponentId, hData.root as HTMLElement);
+          if (roots.length > 0) {
+            hCtx = new HydrationContext(fullComponentId, compMap, roots);
+            pushHydrationContext(hCtx);
+            // If the component has markers (e.g. it's a fragment), claim the start marker
+            if (compMap[0]?.[0] === "#comment") {
+              hCtx.claim("#comment");
+            }
+          } else {
+            console.warn(
+              `[Hydration] Could not find hydration roots for component ${fullComponentId}. Proceeding with client-side render only.`,
+            );
+          }
+        }
+      }
+
       // Render the component via factory
       const result = factory(props);
+
+      if (hCtx) {
+        popHydrationContext();
+      }
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
       const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
 
       comp.element = element;
-
-      // Track child component boundaries or elements in the structure map
-      if (!process.env.CORE_DISABLE_SSR && isServer()) {
-        const trackImmediateChildren = (item: ComponentChildren) => {
-          [isArray(item) ? item : [item]].forEach((entry) => {
-            if (isComponent(entry)) {
-              const node = entry.startMarker || getFirstNode(entry);
-              if (node) {
-                comp.trackNode(node);
-              }
-            }
-          });
-        };
-        trackImmediateChildren(element);
-      }
 
       // Only add markers if the component returns an array or a nullish/text value.
       const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element);
@@ -241,10 +252,14 @@ export const component = <P = void>(
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
 
-        // In SSR, track the start marker first
         if (!process.env.CORE_DISABLE_SSR && isServer()) {
           comp.trackNode(comp.startMarker);
         }
+      }
+
+      // Track the end marker last for fragments, ensuring it is included in the structure map
+      if (comp.endMarker && !process.env.CORE_DISABLE_SSR && isServer()) {
+        comp.trackNode(comp.endMarker);
       }
     } catch (err) {
       // Restore previous component (Pop from tree)
@@ -254,30 +269,38 @@ export const component = <P = void>(
       pop();
     }
 
-    // Apply root element attributes
-    if (!parent && !process.env.CORE_DISABLE_SSR) {
-      /**
-       * Recursively applies the seidrRoot dataset attribute to the first HTMLElement found.
-       * @param {ComponentChildren} item - The child to search
-       */
-      const applyRootMarker = (item: ComponentChildren): void => {
-        if (isHTMLElement(item)) {
+    /**
+     * Recursively applies the data attributes to root HTMLElements.
+     * @param {ComponentChildren} item - The child to search
+     */
+    const applyRootAttributes = (item: ComponentChildren): void => {
+      if (isHTMLElement(item)) {
+        // Apply app root marker if top-level
+        if (!parent && !process.env.CORE_DISABLE_SSR) {
           item.dataset.seidrRoot = str(getAppStateID());
-        } else if (isComponent(item)) {
-          applyRootMarker(item.element);
-        } else if (isArray(item)) {
-          for (const child of item) {
-            applyRootMarker(child);
-            // Only mark the first one found in the array to avoid multiple roots
-            const firstMarked =
-              isHTMLElement(child) || (isComponent(child) && !!(child.element as HTMLElement)?.dataset?.seidrRoot);
-            if (firstMarked) break;
+        }
+        // Apply component ID marker for hydration discovery
+        if (!process.env.CORE_DISABLE_SSR) {
+          const numericId = fullComponentId.split("-").pop() || "";
+          if (numericId && !item.hasAttribute("data-seidr-id")) {
+            item.setAttribute("data-seidr-id", numericId);
           }
         }
-      };
+      } else if (isComponent(item)) {
+        applyRootAttributes(item.element);
+      } else if (isArray(item)) {
+        for (const child of item) {
+          applyRootAttributes(child);
+          // Only mark the first one found in the array to avoid multiple roots
+          const firstMarked =
+            isHTMLElement(child) ||
+            (isComponent(child) && !!(child.element as HTMLElement)?.getAttribute?.("data-seidr-id"));
+          if (firstMarked) break;
+        }
+      }
+    };
 
-      applyRootMarker(comp.element);
-    }
+    applyRootAttributes(comp.element);
 
     // Register as child component after factory runs to ensure onMount handlers are set
     parent?.child(comp);

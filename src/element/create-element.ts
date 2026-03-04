@@ -66,6 +66,31 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
       }
 
       return claimedNode;
+    } else {
+      // Structural mismatch: what we found at this index is NOT the expected tagName
+      const mismatchNode = hydrationContext.lastAttemptedNode;
+      const newNode = getDocument().createElement(tagName);
+
+      if (mismatchNode?.parentNode) {
+        console.warn(
+          `[Hydration] Tag mismatch: expected <${tagName}> but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+        );
+        mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
+      }
+
+      hydrationMap.set(newNode, newNode);
+
+      // Procedural render for children of the new node
+      if (props) {
+        assignProps(newNode, props);
+      }
+      if (isArray(children)) {
+        children.forEach((child) => appendChild(newNode, child));
+      } else if (!isEmpty(children)) {
+        appendChild(newNode, children);
+      }
+
+      return newNode as HTMLElementTagNameMap[K];
     }
   }
 

@@ -16,12 +16,29 @@ export const $text = (text: unknown): Text => {
     const node = hydrationContext.claim("#text") as Text;
     if (node) {
       if (node.textContent !== str(text)) {
+        console.warn(
+          `[Hydration] Text mismatch: expected "${str(text)}" but found "${node.textContent}". Updating content.`,
+        );
         node.textContent = str(text);
       }
       // Store the relationship for reactive updates
       hydrationMap.set(node, node);
 
       return node;
+    } else {
+      // Structural mismatch: what we found at this index is NOT a text node
+      const mismatchNode = hydrationContext.lastAttemptedNode;
+      const newNode: Text = getDocument().createTextNode(str(text));
+
+      if (mismatchNode?.parentNode) {
+        console.warn(
+          `[Hydration] Tag mismatch: expected #text but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+        );
+        mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
+      }
+
+      hydrationMap.set(newNode, newNode);
+      return newNode;
     }
   }
 

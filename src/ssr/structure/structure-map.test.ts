@@ -46,15 +46,16 @@ describe("buildStructureMap integration", () => {
     // 0: canvas (created first)
     // 1: h1 (created before its text)
     // 2: #text ("Here is a player")
-    // 3: #component:2 (Message-2)
-    // 4: section (created after its children are defined)
+    // 3: section (created after its children are defined)
+    // 4: child component node
     // 5: div (created last)
     expect(structureMap).toEqual([
       ["canvas"], // 0
       ["h1", 2], // 1, child is #text(2)
       ["#text"], // 2
-      ["section", 1, 0], // 3, children are h1(1), canvas(0)
-      ["div", 3], // 4, child is section(3)
+      ["section", 1, 0, 4], // 3, children are h1(1), canvas(0)
+      ["#component:Message-2"], // 4
+      ["div", 3], // 5, child is section(3)
     ]);
   });
 
