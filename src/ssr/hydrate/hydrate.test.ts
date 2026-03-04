@@ -169,7 +169,6 @@ describe("Hydration", () => {
   it("should restore observable values during hydration", () => {
     const TestComponent = () => {
       const count = new Seidr(0);
-      console.log("count.id", count.id);
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 

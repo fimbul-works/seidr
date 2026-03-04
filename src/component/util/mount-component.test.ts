@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../../component";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants";
+import { ROOT_ATTRIBUTE, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants";
 import { $ } from "../../element/create-element";
 import { mountComponent } from "./mount-component";
 
@@ -26,7 +26,7 @@ describe("mountComponent", () => {
     expect(container.innerHTML).not.toContain(`${SEIDR_COMPONENT_END_PREFIX}Single-`);
 
     const div = container.children.item(0);
-    expect(div?.getAttribute("data-seidr-root")).toBe("0");
+    expect(div?.getAttribute(ROOT_ATTRIBUTE)).toBe("0");
     expect(div?.className).toBe("single");
     expect(div?.textContent).toBe("Single");
 
@@ -48,7 +48,7 @@ describe("mountComponent", () => {
     expect(container.innerHTML).toContain(`${SEIDR_COMPONENT_END_PREFIX}ArrayComp-`);
 
     const one = container.children.item(0);
-    expect(one?.getAttribute("data-seidr-root")).toBe("0");
+    expect(one?.getAttribute(ROOT_ATTRIBUTE)).toBe("0");
     expect(one?.className).toBe("one");
     expect(one?.textContent).toBe("One");
 

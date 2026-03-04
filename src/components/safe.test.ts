@@ -6,6 +6,7 @@ import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
+import { ROOT_ATTRIBUTE } from "../constants";
 
 describeDualMode("Safe", ({ getDocument, isSSR }) => {
   let container: HTMLElement;
@@ -120,7 +121,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
       );
 
       unmount = mount(comp, container);
-      expect(container.querySelector("[data-seidr-root]")).toBeTruthy();
+      expect(container.querySelector(`[${ROOT_ATTRIBUTE}]`)).toBeTruthy();
     });
   });
 

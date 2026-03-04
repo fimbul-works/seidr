@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { HYDRATION_ID_ATTRIBUTE } from "../../constants";
 import { SSRDocument } from "../dom/ssr-document";
 import { getComponentBoundaryId } from "./boundary";
 
@@ -12,13 +13,13 @@ describe("getComponentBoundaryId", () => {
 
   it("returns null for elements belonging to the parent component", () => {
     const el = document.createElement("div");
-    el.setAttribute("data-seidr-id", "1");
+    el.setAttribute(HYDRATION_ID_ATTRIBUTE, "1");
     expect(getComponentBoundaryId(el, "Comp-1")).toBeNull();
   });
 
   it("returns the ID for child components (element)", () => {
     const el = document.createElement("div");
-    el.setAttribute("data-seidr-id", "2");
+    el.setAttribute(HYDRATION_ID_ATTRIBUTE, "2");
     expect(getComponentBoundaryId(el, "Comp-1")).toBe("2");
   });
 

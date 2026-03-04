@@ -4,7 +4,6 @@ import type { CleanupFunction } from "../../types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
 import { clearHydrationData } from "./clear-hydration-data";
 
-import type { HydrationTarget } from "./node-map";
 import { setHydrationData } from "./set-hydration-data";
 import type { HydrationData } from "./types";
 
@@ -30,8 +29,6 @@ export const hydrate = <T extends ComponentType>(
   if (!process.env.CORE_DISABLE_SSR) {
     setHydrationData(hydrationData, container);
   }
-
-  (container as HydrationTarget).__hydration_index = 0;
 
   const unmount = mount(factory, container);
   clearHydrationData();

@@ -84,9 +84,6 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
 
       // 2. Full swap
       if (currentComponent) {
-        if (process.env.NODE_ENV !== "production") {
-          console.log(`[Router] Unmounting route ${currentComponent.id}, element:`, currentComponent.element);
-        }
         currentComponent.unmount();
         currentComponent = undefined;
       }

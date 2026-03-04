@@ -3,9 +3,7 @@ import { getAppState } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
-import { PATH_DATA_KEY } from "./feature";
-
-const PATH_SEIDR_ID = "router-path";
+import { PATH_DATA_KEY, PATH_SEIDR_ID } from "./constants";
 
 /** Map to cache Seidr instances per render context ID */
 const pathCache = new Map<number, Seidr<string>>();

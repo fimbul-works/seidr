@@ -5,7 +5,7 @@ import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import type { SeidrNode } from "../element/types";
 import { getAppState } from "../render-context/render-context";
 import { runWithAppState } from "../render-context/render-context.node";
-import { PATH_DATA_KEY } from "../router/feature";
+import { PATH_DATA_KEY } from "../router/constants";
 import { clearPathCache } from "../router/get-current-path";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";

@@ -1,3 +1,4 @@
+import { HYDRATION_ID_ATTRIBUTE } from "../../constants";
 import { isComment, isHTMLElement } from "../../util/type-guards/dom-node-types";
 
 /**
@@ -9,7 +10,11 @@ import { isComment, isHTMLElement } from "../../util/type-guards/dom-node-types"
  * @param parentComponentId The ID of the component we are currently collecting data for
  */
 export function getComponentBoundaryId(node: Node, parentComponentId: string): string | null {
-  const rawId = isHTMLElement(node) ? node.dataset.seidrId : isComment(node) ? node.textContent?.split(":").pop() : "";
+  const rawId = isHTMLElement(node)
+    ? node.getAttribute(HYDRATION_ID_ATTRIBUTE)
+    : isComment(node)
+      ? node.textContent?.split(":").pop()
+      : "";
 
   if (!rawId) {
     return null;

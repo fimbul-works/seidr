@@ -77,7 +77,6 @@ describe("Hydration Integration", () => {
     expect(hydratedAppDiv).toBe(originalAppDiv); // Same exact DOM node!
     expect(hydratedH1).toBe(originalH1);
     expect(hydratedButton).toBe(originalButton);
-    console.log("container.innerHTML", container.innerHTML);
     expect(container.querySelectorAll("li").length).toBe(3);
 
     // 5. Verify Reactivity & Events
@@ -138,13 +137,10 @@ describe("Hydration Integration", () => {
     cleanupMode = enableClientMode();
     container.innerHTML = html;
 
-    console.log("hydrationData", hydrationData);
     // We deliberately alter the server state to something else before hydration
     if (hydrationData.state?.title) {
       hydrationData.state.title = "Modified App Title";
     }
-
-    console.log("container.innerHTML", container.innerHTML, hydrationData);
 
     // Since the client receives this modified hydration state, the component will render with this new state
     unmount = hydrate(TestApp, container, hydrationData);

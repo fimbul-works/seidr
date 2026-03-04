@@ -2,8 +2,7 @@ import { getAppStateID } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/server";
-
-const PARAMS_SEIDR_ID = "router-params";
+import { PARAMS_SEIDR_ID } from "./constants";
 
 /** Map to cache Seidr instances per render context ID */
 const paramsCache = new Map<number, Seidr<Record<string, string>>>();

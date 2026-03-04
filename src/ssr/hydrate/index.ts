@@ -2,7 +2,6 @@ export * from "./clear-hydration-data";
 export * from "./get-hydration-data";
 export * from "./has-hydration-data";
 export * from "./hydrate";
-export * from "./hydrate-tree";
 export * from "./hydration-context";
 export * from "./node-map";
 export * from "./register-hydrating-seidr";

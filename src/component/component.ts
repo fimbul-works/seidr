@@ -1,4 +1,4 @@
-import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getAppStateID, getNextComponentId } from "../render-context/render-context";
@@ -277,14 +277,11 @@ export const component = <P = void>(
       if (isHTMLElement(item)) {
         // Apply app root marker if top-level
         if (!parent && !process.env.CORE_DISABLE_SSR) {
-          item.dataset.seidrRoot = str(getAppStateID());
+          item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
         }
         // Apply component ID marker for hydration discovery
-        if (!process.env.CORE_DISABLE_SSR) {
-          const numericId = fullComponentId.split("-").pop() || "";
-          if (numericId && !item.hasAttribute("data-seidr-id")) {
-            item.setAttribute("data-seidr-id", numericId);
-          }
+        if (!item.hasAttribute(HYDRATION_ID_ATTRIBUTE)) {
+          item.setAttribute(HYDRATION_ID_ATTRIBUTE, str(componentId));
         }
       } else if (isComponent(item)) {
         applyRootAttributes(item.element);
@@ -294,13 +291,15 @@ export const component = <P = void>(
           // Only mark the first one found in the array to avoid multiple roots
           const firstMarked =
             isHTMLElement(child) ||
-            (isComponent(child) && !!(child.element as HTMLElement)?.getAttribute?.("data-seidr-id"));
+            (isComponent(child) && !!(child.element as HTMLElement)?.getAttribute?.(HYDRATION_ID_ATTRIBUTE));
           if (firstMarked) break;
         }
       }
     };
 
-    applyRootAttributes(comp.element);
+    if (!process.env.CORE_DISABLE_SSR) {
+      applyRootAttributes(comp.element);
+    }
 
     // Register as child component after factory runs to ensure onMount handlers are set
     parent?.child(comp);

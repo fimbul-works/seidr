@@ -1,3 +1,4 @@
+import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE } from "../../constants";
 import { str } from "../../util/string";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
@@ -6,28 +7,20 @@ import { hydrationMap } from "./node-map";
 import { hydrationDataStorage } from "./storage";
 
 /**
- * Error thrown when a hydration mismatch is detected.
- */
-
-/**
  * Checks if a physical DOM node matches a structure map tag.
  */
 function nodeMatches(node: Node, tag: string): boolean {
   if (tag === "#text") return isTextNode(node);
   if (tag === "#comment") return isComment(node);
   if (tag.startsWith("#component:")) {
+      const id = tag.split(":")[1];
     // Component boundaries can be markers (comments) or elements with data-seidr-id
     if (isComment(node)) {
-      const id = tag.split(":")[1];
       // Match markers like <!--#ID--> or <!--List:ID-->
-      return node.textContent?.includes(id) ?? false;
+      return node.data.endsWith(id);
     }
     if (isHTMLElement(node)) {
-      const id = tag.split(":")[1];
-      const attr = node.getAttribute("data-seidr-root") || node.getAttribute("data-seidr-id") || "";
-      const ids = attr.split(" ");
-      // Match full ID ("Home-3") or numeric ID ("3")
-      return ids.includes(id) || ids.some((item) => item === id || item.split("-").pop() === id);
+      return id === node.getAttribute(HYDRATION_ID_ATTRIBUTE);
     }
     return false;
   }
@@ -222,11 +215,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
   let candidate: Node | undefined;
 
   if (parentCtx) {
-    // RESOLUTION via Marker-Position (Parent Structure Map)
     candidate = parentCtx.claimBoundary(componentId);
-    if (process.env.NODE_ENV !== "production") {
-      console.log(`[Hydration-Roots] ${componentId} candidate from parentCtx:`, candidate?.nodeName);
-    }
   }
 
   if (!candidate && container) {
@@ -241,7 +230,6 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
       lookFor.push(str(hData.ctxID));
     }
 
-    // 1. Marker search (direct children first, then descendants)
     // Direct children
     const nodes = Array.from(container.childNodes);
     for (const node of nodes) {
@@ -263,38 +251,17 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
       }
     }
 
-    if (candidate && process.env.NODE_ENV !== "production") {
-      console.log(
-        `[Hydration-Roots] ${componentId} candidate from marker search ('${candidate.textContent}'):`,
-        candidate.nodeName,
-      );
-    }
-
     // 2. Data-selector fallback if no markers found
     if (!candidate) {
       const hData = hydrationDataStorage.data;
-      const ctxSelector = !parentCtx && !isEmpty(hData?.ctxID) ? `[data-seidr-root~="${hData.ctxID}"],` : "";
-      const rootSelector = !parentCtx ? `[data-seidr-root~="${numericId}"],` : "";
-      const selector = `${ctxSelector}${rootSelector}[data-seidr-id~="${numericId}"]`;
+      const ctxSelector = !parentCtx && !isEmpty(hData?.ctxID) ? `[${ROOT_ATTRIBUTE}~="${hData.ctxID}"],` : "";
+      const rootSelector = !parentCtx ? `[${ROOT_ATTRIBUTE}~="${numericId}"],` : "";
+      const selector = `${ctxSelector}${rootSelector}[${HYDRATION_ID_ATTRIBUTE}~="${numericId}"]`;
       const el = container.matches?.(selector) ? container : container.querySelector(selector);
       if (el) {
         candidate = el;
-        if (process.env.NODE_ENV !== "production") {
-          console.log(
-            `[Hydration-Roots] ${componentId} candidate from selector ${selector}:`,
-            candidate.nodeName,
-            (candidate as HTMLElement).getAttribute("data-seidr-root") ||
-              (candidate as HTMLElement).getAttribute("data-seidr-id"),
-          );
-        }
       }
     }
-  }
-
-  if (!candidate && process.env.NODE_ENV !== "production") {
-    console.log(
-      `[Hydration-Roots] ${componentId} - NO CANDIDATE FOUND in container ${container?.id || container?.tagName}`,
-    );
   }
 
   if (!candidate) return [];

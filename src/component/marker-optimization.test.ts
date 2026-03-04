@@ -3,6 +3,7 @@ import { component } from "../component/component";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { getAppState } from "../render-context";
+import { ROOT_ATTRIBUTE } from "../constants";
 
 describe("Component Marker Optimization", () => {
   beforeEach(() => {
@@ -18,7 +19,7 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeUndefined();
     expect(comp.endMarker).toBeUndefined();
-    expect(container.innerHTML).toContain('data-seidr-root="0"');
+    expect(container.innerHTML).toContain(`${ROOT_ATTRIBUTE}="0"`);
     expect(container.innerHTML).toContain(">Hello</div>");
     unmount();
   });
@@ -33,7 +34,7 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeUndefined();
     expect(comp.endMarker).toBeUndefined();
-    expect(container.innerHTML).toContain('data-seidr-root="0">');
+    expect(container.innerHTML).toContain(`${ROOT_ATTRIBUTE}="0">`);
     expect(container.innerHTML).toContain(">Child</div>");
     unmount();
   });

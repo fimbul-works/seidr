@@ -28,3 +28,6 @@ export const SEIDR_COMPONENT_END_PREFIX = "/";
 /** Storage type constants */
 export const STORAGE_SESSION = "session";
 export const STORAGE_LOCAL = "local";
+
+export const HYDRATION_ID_ATTRIBUTE = "data-seidr-id";
+export const ROOT_ATTRIBUTE = "data-seidr-root";
