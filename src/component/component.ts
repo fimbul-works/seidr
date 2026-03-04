@@ -84,7 +84,7 @@ export const component = <P = void>(
       },
       onUnmount(cleanup: CleanupFunction): void {
         if (destroyed) {
-          if (process.env.NODE_ENV !== "production") {
+          if (process.env.DEBUG) {
             console.warn(`[${fullComponentId}] Tracking cleanup on already destroyed component`);
           }
           return cleanup();
@@ -125,7 +125,7 @@ export const component = <P = void>(
       },
       attached(parent: Node) {
         if (attachedParent) {
-          if (process.env.NODE_ENV !== "production") {
+          if (process.env.DEBUG) {
             console.warn(`[${fullComponentId}] Calling attached on an already attached component`);
           }
           return; // Already attached
@@ -157,7 +157,7 @@ export const component = <P = void>(
       },
       unmount() {
         if (destroyed) {
-          if (process.env.NODE_ENV !== "production") {
+          if (process.env.DEBUG) {
             console.warn(`[${fullComponentId}] Unmounting already unmounted component`);
           }
           return;

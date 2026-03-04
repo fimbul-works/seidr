@@ -82,8 +82,6 @@ describe("Hydration List", () => {
     // Wait for microtasks
     await new Promise((r) => setTimeout(r, 10));
 
-    console.log(JSON.stringify(hydrationData));
-    console.log(container.innerHTML);
     const hydratedArticles = container.querySelectorAll("article");
     expect(hydratedArticles.length).toBe(2);
   });

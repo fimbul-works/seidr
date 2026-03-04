@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { component } from "../../component";
+import { type ComponentFactoryFunction, component } from "../../component";
 import { mount } from "../../dom";
 import { $ } from "../../element";
+import { Seidr } from "../../seidr";
 import { describeDualMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { getCurrentPath } from "../get-current-path";
@@ -138,5 +139,53 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
 
     navigate("/post/abc"); // No match
     expect(container.textContent).not.toContain("Post 123");
+  });
+
+  it("should support reactive routes and update dynamically", () => {
+    const CompA = component(() => $("div", { id: "comp-a", textContent: "Component A" }), "CompA");
+    const CompB = component(() => $("div", { id: "comp-b", textContent: "Component B" }), "CompB");
+
+    const dynamicRoutes = new Seidr<import("../types").RouteDefinition[]>([["/a", CompA]]);
+    const App = component(() => Router(dynamicRoutes), "App");
+
+    const navigate = useNavigate();
+    navigate("/b");
+    unmount = mount(App, container);
+
+    expect(document.getElementById("comp-a")).toBeFalsy();
+    expect(document.getElementById("comp-b")).toBeFalsy();
+
+    dynamicRoutes.value = [
+      ["/a", CompA],
+      ["/b", CompB],
+    ];
+
+    // Router should automatically detect the new routes array and match /b
+    expect(document.getElementById("comp-b")).toBeTruthy();
+
+    const CompC = component(() => $("div", { id: "comp-c", textContent: "Component C" }), "CompC");
+    dynamicRoutes.value = [["/b", CompC]];
+
+    // Router should automatically swap CompB with CompC at /b
+    expect(document.getElementById("comp-b")).toBeFalsy();
+    expect(document.getElementById("comp-c")).toBeTruthy();
+  });
+
+  it("should support reactive fallback component", () => {
+    const Fallback1 = component(() => $("div", { id: "fallback-1", textContent: "Fallback 1" }), "Fallback1");
+    const Fallback2 = () => $("div", { id: "fallback-2", textContent: "Fallback 2" });
+
+    const dynamicFallback = new Seidr<ComponentFactoryFunction | undefined>(Fallback1);
+    const App = component(() => Router([], dynamicFallback), "App");
+
+    const navigate = useNavigate();
+    navigate("/unknown");
+    unmount = mount(App, container);
+
+    expect(document.getElementById("fallback-1")).toBeTruthy();
+
+    dynamicFallback.value = Fallback2;
+    expect(document.getElementById("fallback-1")).toBeFalsy();
+    expect(document.getElementById("fallback-2")).toBeTruthy();
   });
 });

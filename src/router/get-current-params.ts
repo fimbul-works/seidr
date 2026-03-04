@@ -1,7 +1,6 @@
 import { getAppState } from "../render-context/render-context";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
-import { isServer } from "../util/environment/server";
 import { PARAMS_DATA_KEY, PARAMS_SEIDR_ID } from "./constants";
 
 /** Clear cached params from appState */
@@ -29,12 +28,6 @@ export const getCurrentParams = (): Seidr<Record<string, string>> => {
   if (!observable) {
     observable = new Seidr<Record<string, string>>({}, { ...NO_HYDRATE, id: PARAMS_SEIDR_ID });
     state.setData(PARAMS_DATA_KEY, observable);
-
-    if (isServer()) {
-      // Server-side initialization if needed
-    } else if (typeof window !== "undefined") {
-      // Client-side initialization if needed
-    }
   }
 
   return observable;

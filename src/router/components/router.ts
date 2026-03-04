@@ -3,6 +3,9 @@ import { getCurrentComponent } from "../../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";
+import type { Seidr } from "../../seidr";
+import { NO_HYDRATE } from "../../seidr/constants";
+import { wrapSeidr } from "../../seidr/wrap-seidr";
 import { isFn } from "../../util/type-guards/primitive-types";
 import { getCurrentParams } from "../get-current-params";
 import { getCurrentPath } from "../get-current-path";
@@ -13,25 +16,32 @@ import type { RouteDefinition } from "../types";
  * Router component props.
  */
 export interface RouterProps<C extends ComponentFactoryFunction = ComponentFactoryFunction> {
-  routes: Array<RouteDefinition>;
-  fallback?: C;
+  routes: Array<RouteDefinition> | Seidr<Array<RouteDefinition>>;
+  fallback?: C | Seidr<C | undefined>;
 }
 
 /**
  * Router component - renders the first matching route or a fallback.
  */
-export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFactoryFunction): Component =>
-  component(({ routes, fallback }: RouterProps) => {
+export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunction>(
+  routes: Array<RouteDefinition> | Seidr<Array<RouteDefinition>>,
+  fallback?: C | Seidr<C | undefined>,
+): Component =>
+  component(({ routes: routesProp, fallback: fallbackProp }: RouterProps<C>) => {
     const router = getCurrentComponent()!;
+
+    const routes = wrapSeidr(routesProp, NO_HYDRATE);
+    const fallback = wrapSeidr(fallbackProp, NO_HYDRATE);
 
     const currentPath = getCurrentPath();
     const currentParams = getCurrentParams();
 
     let currentRouteIndex = -100;
     let currentComponent: Component | undefined;
+    let currentFactory: ComponentFactoryFunction | undefined;
 
     const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
-      const match = matchRoute(currentPath.value ?? "/", routes);
+      const match = matchRoute(currentPath.value ?? "/", routes.value);
       return match
         ? {
             index: match.index,
@@ -49,9 +59,13 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
       }
     };
 
+    const getMatchedFactory = (index: number) => {
+      return index > -1 ? routes.value[index][1] : isFn(fallback.value) ? fallback.value : undefined;
+    };
+
     const updateComponent = (index: number) => {
-      currentComponent =
-        index > -1 ? wrapComponent(routes[index][1])() : isFn(fallback) ? wrapComponent(fallback)() : undefined;
+      currentFactory = getMatchedFactory(index);
+      currentComponent = currentFactory ? wrapComponent(currentFactory)() : undefined;
     };
 
     const { index: initialIndex, params: initialParams } = matchCurrentPath();
@@ -70,9 +84,10 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
 
     const updateRoutes = () => {
       const { index: matchedIndex, params: matchedParams } = matchCurrentPath();
+      const matchedFactory = getMatchedFactory(matchedIndex);
 
       // If route hasn't changed, only update params and skip re-render
-      if (matchedIndex === currentRouteIndex) {
+      if (matchedFactory === currentFactory) {
         updateRouteTarget(matchedIndex, matchedParams);
         return;
       }
@@ -100,6 +115,8 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
     };
 
     router.observe(currentPath, updateRoutes);
+    router.observe(routes, updateRoutes);
+    router.observe(fallback, updateRoutes);
     router.onUnmount(() => currentComponent?.unmount());
 
     return currentComponent;
