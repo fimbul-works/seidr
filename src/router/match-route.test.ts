@@ -28,6 +28,16 @@ describeDualMode("matchRoute", () => {
     expect(match?.params).toEqual({});
   });
 
+  it("should match route with search parameters and hash", () => {
+    const route: RouteDefinition = ["/home", comp];
+    const match = matchRoute("/home?foo=bar#baz", [route]);
+
+    expect(match).not.toBeNull();
+    expect(match?.route).toBe(route);
+    expect(match?.index).toBe(0);
+    expect(match?.params).toEqual({});
+  });
+
   it("should match route with parameters", () => {
     const route: RouteDefinition = [
       "/user/:id",

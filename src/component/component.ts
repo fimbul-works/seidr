@@ -16,7 +16,7 @@ import {
   pushHydrationContext,
 } from "../ssr/hydrate/hydration-context";
 import { getHydrationData, getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
-import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
+import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";

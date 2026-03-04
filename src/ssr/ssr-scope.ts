@@ -1,6 +1,61 @@
-import type { Seidr } from "../../seidr/seidr";
-import { buildStructureMap, type StructureMapTuple } from "../structure/structure-map";
-import type { SSRScopeCapture } from "./types";
+import { getAppState } from "../render-context/render-context";
+import type { AppState } from "../render-context/types";
+import type { Seidr } from "../seidr/seidr";
+import { isClient } from "../util/environment/client";
+import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
+
+export const SSR_SCOPE_KEY = "seidr.ssr.scope";
+
+/**
+ * Internal hydration data captured by SSRScope.
+ * This is combined with ctxID to form the complete HydrationData.
+ */
+export interface SSRScopeCapture {
+  /**
+   * Seidr ID -> value mapping for root observables.
+   * Only contains root observables (isDerived = false).
+   */
+  state?: Record<string, any>;
+
+  /**
+   * Component ID -> Structure Map mapping.
+   */
+  components: Record<string, StructureMapTuple[]>;
+}
+
+/**
+ * Gets the SSR scope for the current render context.
+ * Returns undefined if not in SSR mode or no scope is active for this context.
+ *
+ * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
+ */
+export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSRScope>(SSR_SCOPE_KEY);
+
+/**
+ * Sets the active SSR scope for the current application state.
+ * Call this before starting a render pass.
+ *
+ * @param {(SSRScope | undefined)} scope - The scope to activate for the current application state
+ */
+export function setSSRScope(scope: SSRScope | undefined): void {
+  if (isClient()) {
+    return;
+  }
+
+  let state: AppState;
+  try {
+    state = getAppState();
+  } catch {
+    // If no AppState is available, we cannot store the scope.
+    return;
+  }
+
+  if (scope === undefined) {
+    state.deleteData(SSR_SCOPE_KEY);
+  } else {
+    state.setData(SSR_SCOPE_KEY, scope);
+  }
+}
 
 /**
  * SSRScope manages observables created during a single server-side render pass.

@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { resetNextId } from "../../render-context/reset-next-id";
-import { Seidr } from "../../seidr";
-import { enableSSRMode } from "../../test-setup";
-import { clearHydrationData } from "../hydrate/storage";
-import { SSRScope, setSSRScope } from "./index";
+import { resetNextId } from "../render-context/reset-next-id";
+import { Seidr } from "../seidr";
+import { enableSSRMode } from "../test-setup";
+import { clearHydrationData } from "./hydrate/storage";
+import { SSRScope, setSSRScope } from "./ssr-scope";
 
 // Store original SSR env var
 const originalSSREnv = process.env.SEIDR_TEST_SSR;

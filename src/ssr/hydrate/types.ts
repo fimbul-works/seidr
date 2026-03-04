@@ -1,6 +1,6 @@
 import type { Seidr } from "../../seidr/seidr";
 import type { ServerElement } from "../dom/types";
-import type { SSRScopeCapture } from "../ssr-scope/types";
+import type { SSRScopeCapture } from "../ssr-scope";
 
 /**
  * Complete hydration data for client-side restoration.

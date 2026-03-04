@@ -3,7 +3,7 @@ import { SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
 import { isServer } from "../util/environment/server";
 import { registerHydratingSeidr } from "./hydrate/register-hydrating-seidr";
-import { getSSRScope } from "./ssr-scope/get-ssr-scope";
+import { getSSRScope } from "./ssr-scope";
 
 /**
  * Registers a Seidr instance for SSR/hydration.

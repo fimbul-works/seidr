@@ -7,7 +7,7 @@ import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { renderToString } from "./render-to-string";
-import { setSSRScope } from "./ssr-scope/set-ssr-scope";
+import { setSSRScope } from "./ssr-scope";
 
 describe("renderToString", () => {
   let observables: Seidr[] = [];

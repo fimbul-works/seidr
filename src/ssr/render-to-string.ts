@@ -11,7 +11,7 @@ import { Seidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
-import { clearSSRScope, SSRScope, setSSRScope } from "./ssr-scope/index";
+import { SSRScope, setSSRScope } from "./ssr-scope";
 import type { SSRRenderResult } from "./types";
 
 /**
@@ -87,7 +87,6 @@ export async function renderToString<C extends ComponentReturnValue>(
         return { html, hydrationData };
       } finally {
         setSSRScope(undefined);
-        clearSSRScope(state.ctxID);
         if (state.markers) {
           state.markers.clear();
         }

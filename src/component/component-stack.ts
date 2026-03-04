@@ -1,29 +1,28 @@
-import { getAppStateID } from "../render-context/render-context";
+import { getAppState } from "../render-context/render-context";
 import type { Component } from "./types";
 
-/** Map of current component cursor by render context ID */
-const renderContextCursors = new Map<number, Component | null>();
+export const COMPONENT_CURSOR_KEY = "seidr.component.cursor";
 
 /**
  * Get the current component from the component tree.
  * @returns {Component | null} Current Component cursor, or null.
  */
-export const getCurrentComponent = (): Component | null => renderContextCursors.get(getAppStateID()) ?? null;
+export const getCurrentComponent = (): Component | null =>
+  getAppState().getData<Component>(COMPONENT_CURSOR_KEY) ?? null;
 
 /**
  * Pushes a component as the current context cursor.
  * @param {Component} component - The component to set as current.
  */
-export const push = (component: Component): void => (renderContextCursors.set(getAppStateID(), component), void 0);
+export const push = (component: Component): void => getAppState().setData(COMPONENT_CURSOR_KEY, component);
 
 /**
  * Pops the current component cursor, moving up to the parent.
  */
 export const pop = (): void => {
-  const id = getAppStateID();
-  const current = renderContextCursors.get(id);
+  const current = getAppState().getData<Component>(COMPONENT_CURSOR_KEY);
   if (current) {
-    renderContextCursors.set(id, current.parent);
+    getAppState().setData(COMPONENT_CURSOR_KEY, current.parent);
   }
 };
 
@@ -32,8 +31,7 @@ export const pop = (): void => {
  * @returns {Component | null} The root component, or null if none found.
  */
 export const getRootComponent = (): Component | null => {
-  const id = getAppStateID();
-  let current = renderContextCursors.get(id);
+  let current = getAppState().getData<Component>(COMPONENT_CURSOR_KEY);
   if (!current) {
     return null;
   }
@@ -52,15 +50,15 @@ export const getRootComponent = (): Component | null => {
  * @returns {T} The result of the function.
  */
 export const executeInContext = <T>(component: Component, fn: () => T): T => {
-  const id = getAppStateID();
-  const previous = renderContextCursors.get(id) ?? null;
+  const state = getAppState();
+  const previous = state.getData<Component>(COMPONENT_CURSOR_KEY) ?? null;
   try {
-    renderContextCursors.set(id, component);
+    state.setData(COMPONENT_CURSOR_KEY, component);
     return fn();
   } catch (error) {
     console.warn(error);
     return null as T;
   } finally {
-    renderContextCursors.set(id, previous);
+    state.setData(COMPONENT_CURSOR_KEY, previous);
   }
 };

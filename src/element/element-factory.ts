@@ -22,5 +22,5 @@ import type { SeidrChild, SeidrElementProps } from "./types";
  */
 export const $factory =
   <K extends keyof HTMLElementTagNameMap>(tagName: K, initialProps: SeidrElementProps<K> = {}) =>
-  (props: SeidrElementProps<K> | null, children?: SeidrChild | SeidrChild[]): HTMLElementTagNameMap[K] =>
+  (props?: SeidrElementProps<K> | null, children?: SeidrChild | SeidrChild[]): HTMLElementTagNameMap[K] =>
     $(tagName, { ...initialProps, ...(props ?? {}) }, children);
