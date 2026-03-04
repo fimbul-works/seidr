@@ -1,7 +1,6 @@
 import { component } from "../component/component";
 import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
 import { getComponent, getLastNode, mountComponent } from "../component/util";
 import type { Seidr } from "../seidr";
 
@@ -28,8 +27,7 @@ export const Switch = <
   name?: string,
 ): Component =>
   component(() => {
-    const scope = useScope();
-    const comp = getCurrentComponent()!;
+    const switchComponent = getCurrentComponent()!;
 
     let currentComponent: Component | undefined = getComponent(factories, observable.value, fallbackFactory);
 
@@ -41,8 +39,8 @@ export const Switch = <
     const update = (value: K) => {
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent!) : null;
-      const anchor = lastNode?.nextSibling || comp.endMarker || null;
-      const parent = lastNode?.parentNode || comp.endMarker?.parentNode || scope.parentNode;
+      const anchor = lastNode?.nextSibling || switchComponent.endMarker || null;
+      const parent = lastNode?.parentNode || switchComponent.endMarker?.parentNode || switchComponent.parentNode;
 
       // 2. Unmount previous component
       if (currentComponent) {
@@ -52,14 +50,14 @@ export const Switch = <
 
       currentComponent = getComponent(factories, value, fallbackFactory);
       if (currentComponent) {
-        scope.child(currentComponent);
+        switchComponent.child(currentComponent);
         mountComponent(currentComponent, anchor, parent!);
       }
     };
 
     // Use scope.observe to ensure updates happen in the component's context
-    scope.observe(observable, update);
-    scope.onUnmount(() => currentComponent?.unmount());
+    switchComponent.observe(observable, update);
+    switchComponent.onUnmount(() => currentComponent?.unmount());
 
-    return currentComponent ? scope.child(currentComponent) : undefined;
+    return currentComponent ? switchComponent.child(currentComponent) : undefined;
   }, name ?? "Switch")();

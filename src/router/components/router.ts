@@ -1,7 +1,6 @@
 import { component } from "../../component/component";
-import { getMarkerComments } from "../../component/get-marker-comments";
+import { getCurrentComponent } from "../../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
-import { useScope } from "../../component/use-scope";
 import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";
 import { isFn } from "../../util/type-guards/primitive-types";
@@ -23,9 +22,8 @@ export interface RouterProps<C extends ComponentFactoryFunction = ComponentFacto
  */
 export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFactoryFunction): Component =>
   component(({ routes, fallback }: RouterProps) => {
-    const scope = useScope();
+    const router = getCurrentComponent()!;
 
-    const [, endMarker] = getMarkerComments(scope.id);
     const currentPath = getCurrentPath();
     const currentParams = getCurrentParams();
 
@@ -64,9 +62,9 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
     updateComponent(currentRouteIndex);
 
     if (currentComponent) {
-      scope.child(currentComponent);
-      if (scope.parentNode) {
-        currentComponent.attached(scope.parentNode);
+      router.child(currentComponent);
+      if (router.parentNode) {
+        currentComponent.attached(router.parentNode);
       }
     }
 
@@ -81,8 +79,8 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
 
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent) : null;
-      const anchor = lastNode?.nextSibling || endMarker;
-      const parent = lastNode?.parentNode || endMarker?.parentNode || scope.parentNode;
+      const anchor = lastNode?.nextSibling || router.endMarker || null;
+      const parent = lastNode?.parentNode || router.endMarker?.parentNode || router.parentNode;
 
       // 2. Full swap
       if (currentComponent) {
@@ -99,13 +97,13 @@ export const Router = (routes: Array<RouteDefinition>, fallback?: ComponentFacto
       updateComponent(matchedIndex);
 
       if (currentComponent) {
-        scope.child(currentComponent);
+        router.child(currentComponent);
         mountComponent(currentComponent, anchor, parent!);
       }
     };
 
-    scope.observe(currentPath, updateRoutes);
-    scope.onUnmount(() => currentComponent?.unmount());
+    router.observe(currentPath, updateRoutes);
+    router.onUnmount(() => currentComponent?.unmount());
 
     return currentComponent;
   }, "Router")({ routes, fallback });

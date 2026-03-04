@@ -21,18 +21,10 @@ export interface HydrationData extends SSRScopeCapture {
 
   /**
    * State values from the server.
-   *
-   * This record contains all non-derived Seidr instances that were stored
-   * in the state system during SSR. The keys are the string names from
-   * the state symbols, and the values are the Seidr values.
-   *
-   * During hydration, these values are restored to the state storage
-   * for the render context, so that useState() calls return the same
-   * values that were used on the server.
    */
   state?: Record<string, unknown>;
 
-  /** Serialized feature/app data */
+  /** Serialized app data */
   data?: Record<string, any>;
 
   /**

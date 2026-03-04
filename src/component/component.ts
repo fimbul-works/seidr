@@ -1,7 +1,7 @@
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
-import { getAppState, getAppStateID, getNextComponentId } from "../render-context/render-context";
+import { getAppStateID, getNextComponentId } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
 import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
@@ -12,7 +12,6 @@ import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
-import { ON_PROMISE_DATA_KEY } from "./feature";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
 import { getFirstNode } from "./util/component-nodes";
@@ -87,9 +86,7 @@ export const component = <P = void>(
           return promise;
         }
 
-        // We use a predefined key for onPromise during transition
-        const onPromise = getAppState().getData<(p: Promise<any>) => void>(ON_PROMISE_DATA_KEY);
-        onPromise?.(promise);
+        getSSRScope()?.addPromise(promise);
 
         return promise;
       },

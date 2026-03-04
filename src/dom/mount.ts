@@ -1,11 +1,9 @@
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { getAppState } from "../render-context/render-context";
-import type { AppState } from "../render-context/types";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { appendChild } from "./append-child";
-import { rootComponentFeature, rootNodeFeature } from "./feature";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -29,12 +27,14 @@ export const mount = <C extends ComponentType = ComponentType>(
   componentOrFactory: C,
   container: HTMLElement,
 ): CleanupFunction => {
+  const rootNodeId = 'rootNode';
+  const rootComponentId = 'rootComponent';
   // Bind the container to the application state if not already bound
   const state = getAppState();
-  const currentRootNode = state.getData<HTMLElement>(rootNodeFeature.id);
+  const currentRootNode = state.getData<HTMLElement>(rootNodeId);
   if (!currentRootNode) {
-    state.setData(rootNodeFeature.id, container);
-  } else if (state.getData(rootComponentFeature.id)) {
+    state.setData(rootNodeId, container);
+  } else if (state.getData(rootComponentId)) {
     throw new SeidrError("Container already bound to a different root node");
   }
 
@@ -43,15 +43,15 @@ export const mount = <C extends ComponentType = ComponentType>(
     ? componentOrFactory
     : wrapComponent(componentOrFactory)();
 
-  state.setData(rootComponentFeature.id, component);
+  state.setData(rootComponentId, component);
   appendChild(container, component);
 
   // Return cleanup function
   return () => {
     component.unmount();
-    state.deleteData(rootComponentFeature.id);
-    if (state.getData(rootNodeFeature.id) === container) {
-      state.deleteData(rootNodeFeature.id);
+    state.deleteData(rootComponentId);
+    if (state.getData(rootNodeId) === container) {
+      state.deleteData(rootNodeId);
     }
   };
 };

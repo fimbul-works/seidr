@@ -12,6 +12,6 @@ export const isClient = (): boolean => typeof window !== "undefined" && !process
  * @template T
  *
  * @param {() => T} fn - The function to execute purely on the client
- * @returns {T | false} The result of the function, or false if on the server
+ * @returns {T} The result of the function
  */
-export const inClient = <T>(fn: () => T): T | false => isClient() && fn();
+export const inClient = <T>(fn: () => T): T => (isClient() && fn()) as T;

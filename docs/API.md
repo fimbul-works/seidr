@@ -4,10 +4,6 @@
   - [`Seidr`](Seidr.md#seidr-class) - The core reactive state class.
   - [`wrapSeidr()`](Seidr.md#wrapseidr) - Wrap a value in a Seidr observable.
   - [`unwrapSeidr()`](Seidr.md#unwrapseidr) - Unwrap a Seidr observable to its value.
-  - [Global State Management](state.md)
-    - [`useState()`](state.md#usestate) - A hook for managing shared application state as a global Seidr singleton.
-    - [`useStorage()`](state.md#usestorage) - Helper function to use local storage or session Storage as a reactive state.
-    - [`createStateKey()`](state.md#createstatekey) - Create a unique key for a global state that captures the type of the state.
 ## [DOM Elements](DOM.md)
   - [`$()`](DOM.md#--create-dom-elements) - Create a DOM element.
   - [`$factory()`](DOM.md#factory) - Create a custom element creator.

@@ -455,29 +455,6 @@ const GoodComponent = () => {
 };
 ```
 
-### Global State Management
-
-Seidr provides a simple, type-safe global state management system via the `useState()` hook.
-
-> ⚠️ **Crucial Difference from React:** Unlike React's `useState` which is local to a specific component instance, Seidr's `useState` is **global**. It uses a singleton pattern: every call with the same key returns the exact same observable instance, effectively acting as "Shared State" across your entire application.
-
-```typescript
-import { useState, $button, $span } from '@fimbul-works/seidr';
-
-const Counter = () => {
-  const [userCount, setUserCount] = useState('user-count', 0);
-
-  return $button({
-    textContent: userCount.as(n => `Users: ${n}`),
-    onclick: () => setUserCount(userCount.value! + 1)
-  });
-};
-```
-
-**SSR Best Practice:** The `useState` hook is safe for SSR because it resolves the state context lazily when called, ensuring that state is isolated per-request during server rendering.
-
-**Learn more:** [useState()](docs/state.md#usestate)
-
 ### Custom Element Factories
 
 Create reusable element creators with default props:

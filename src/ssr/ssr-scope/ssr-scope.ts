@@ -1,7 +1,4 @@
-import { getAppState } from "../../render-context/render-context";
 import type { Seidr } from "../../seidr/seidr";
-import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
-import { symbolNames } from "../../state/storage";
 import { buildStructureMap, type StructureMapTuple } from "../structure/structure-map";
 import type { SSRScopeCapture } from "./types";
 
@@ -103,15 +100,10 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
-    const appState = getAppState();
-    const globalState = appState.getData<Map<symbol, unknown>>(GLOBAL_STATE_FEATURE_ID) || new Map();
-
     const state: Record<string, any> = {};
     for (const seidr of this.state.values()) {
-      const symbol = symbolNames.get(seidr.id);
-      if (!seidr.isDerived && (!symbol || !globalState.has(symbol))) {
-        state[seidr.id] = seidr.value;
-      }
+      if (seidr.isDerived) continue;
+      state[seidr.id] = seidr.value;
     }
 
     const components: Record<string, StructureMapTuple[]> = {};

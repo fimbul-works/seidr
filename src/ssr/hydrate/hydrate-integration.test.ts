@@ -2,8 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { List } from "../../components/list";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
-import { GLOBAL_STATE_FEATURE_ID } from "../../state/feature";
-import { useState } from "../../state/use-state";
 import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { str } from "../../util/string";
@@ -28,8 +26,8 @@ describe("Hydration Integration", () => {
   });
 
   function TestApp() {
-    const [count, setCount] = useState("count", 0);
-    const [title] = useState("title", "My App");
+    const count = new Seidr(0);
+    const title = new Seidr("My App", { id: "title" });
     const items = new Seidr([1, 2, 3]);
 
     return $("div", { id: "app" }, [
@@ -37,7 +35,7 @@ describe("Hydration Integration", () => {
       $("p", { id: "desc", textContent: count.as((c) => `Count: ${c}`) }),
       $("button", {
         id: "increment",
-        onclick: () => setCount(count.value + 1),
+        onclick: () => (count.value = count.value + 1),
       }),
       $("ul", null, [
         List(
@@ -140,9 +138,10 @@ describe("Hydration Integration", () => {
     cleanupMode = enableClientMode();
     container.innerHTML = html;
 
+    console.log("hydrationData", hydrationData);
     // We deliberately alter the server state to something else before hydration
-    if (hydrationData.data?.[GLOBAL_STATE_FEATURE_ID]) {
-      hydrationData.data[GLOBAL_STATE_FEATURE_ID]["title"] = "Modified App Title";
+    if (hydrationData.state?.title) {
+      hydrationData.state.title = "Modified App Title";
     }
 
     console.log("container.innerHTML", container.innerHTML, hydrationData);

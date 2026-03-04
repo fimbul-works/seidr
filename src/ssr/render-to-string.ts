@@ -1,10 +1,8 @@
-import { ON_PROMISE_DATA_KEY } from "../component/feature";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import type { SeidrNode } from "../element/types";
-import { serializeAppState } from "../render-context/feature";
 import { getAppState } from "../render-context/render-context";
 import { runWithAppState } from "../render-context/render-context.node";
 import { PATH_DATA_KEY } from "../router/feature";
@@ -52,7 +50,6 @@ export async function renderToString<C extends SeidrNode>(
 
       const activeScope = options.scope ?? new SSRScope();
       setSSRScope(activeScope);
-      state.setData(ON_PROMISE_DATA_KEY, (p: Promise<any>) => activeScope.addPromise(p));
 
       try {
         const comp = wrapComponent(factory)();
@@ -74,7 +71,6 @@ export async function renderToString<C extends SeidrNode>(
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
-          data: serializeAppState(state),
           ctxID: state.ctxID,
         };
 

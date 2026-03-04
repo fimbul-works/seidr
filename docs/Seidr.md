@@ -2,8 +2,6 @@
 
 Seidr consists of a single class for reactive state, the [`Seidr`](#seidr-class) class. It is a simple, lightweight, and efficient reactive state management system.
 
-For global state management, see [`useState()`](state.md#usestate).
-
 ## Seidr class
 
 The core reactive state class.

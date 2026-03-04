@@ -11,10 +11,10 @@ import {
   isServer,
   Link,
   List,
-  type Seidr,
+  Seidr,
   Suspense,
   Switch,
-  useState,
+  useParams,
 } from "../../src/index.browser.js";
 import { getPost, getPosts } from "./data.js";
 import type { BlogPost } from "./types.js";
@@ -28,24 +28,25 @@ const PostCard = (post: BlogPost) =>
   ]);
 
 export const HomePage = () => {
-  let postsPromise: Promise<Seidr<BlogPost[]>>;
-  const [posts, setPosts] = useState<BlogPost[]>("posts");
+  let postsPromise: Promise<BlogPost[]>;
+  const posts = new Seidr<BlogPost[]>([]);
 
   if (isServer()) {
     // Server-side fetch (direct DB access)
     postsPromise = inServer(async () => {
-      setPosts(await getPosts());
-      return posts;
+      posts.value = await getPosts();
+      return posts.value;
     });
   } else {
     // Client-side fetch if empty
     postsPromise = inClient(async () => {
       if (posts?.value?.length > 0) {
-        return posts;
+        return posts.value;
       } else {
         const res = await fetch("/api/posts");
         const data = await res.json();
-        return setPosts(data);
+        posts.value = data;
+        return posts.value;
       }
     });
   }
@@ -56,34 +57,35 @@ export const HomePage = () => {
       resolved: () =>
         $div({ className: "home-page" }, [
           $h1({ textContent: "Latest Posts" }),
-          $ul({ className: "post-list" }, [List(value, (p) => p.slug, PostCard)]),
+          $ul({ className: "post-list" }, [List(value as Seidr<BlogPost[]>, (p) => p.slug, PostCard)]),
         ]),
       error: () => $div({ textContent: error.value?.message || "Error" }),
     });
   });
 };
 
-export const PostPage = (params: Seidr<{ slug: string }>) => {
+export const PostPage = () => {
+  const params = useParams()
   const slug = params.value.slug;
-  const [post, setPost] = useState<BlogPost>("currentPost");
-  let postPromise: Promise<Seidr<BlogPost>>;
+  const post = new Seidr<BlogPost>(null as any);
+  let postPromise: Promise<BlogPost>;
 
   if (isServer()) {
     postPromise = inServer(async () => {
       const data = await getPost(slug);
-      if (data) setPost(data);
-      return post;
+      if (data) post.value = data;
+      return post.value;
     });
   } else {
     postPromise = inClient(async () => {
       if (post.value?.slug === slug) {
-        return post;
+        return post.value;
       }
       const res = await fetch(`/api/posts/${slug}`);
       if (res.ok) {
-        setPost(await res.json());
+        post.value = await res.json();
       }
-      return post;
+      return post.value;
     });
   }
 

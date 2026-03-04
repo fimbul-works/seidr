@@ -16,11 +16,11 @@ export const isServer = (): boolean => !isClient();
  * @template T
  *
  * @param {() => T} fn - The function to execute purely on the server
- * @returns {T | false} The result of the function, or `false` if in the browser
+ * @returns {T} The result of the function
  */
-export const inServer = <T>(fn: () => T): T | false => {
+export const inServer = <T>(fn: () => T): T => {
   if (!isServer()) {
-    return false;
+    return false as T;
   }
 
   const result = fn();

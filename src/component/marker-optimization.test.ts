@@ -1,16 +1,12 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { component } from "../component/component";
-import { rootComponentFeature, rootNodeFeature } from "../dom/feature";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { getAppState } from "../render-context";
-import { setFeature } from "../render-context/feature";
 
 describe("Component Marker Optimization", () => {
   beforeEach(() => {
     const ctx = getAppState();
-    setFeature(rootComponentFeature, undefined, ctx);
-    setFeature(rootNodeFeature, undefined, ctx);
     ctx.markers.clear();
   });
 

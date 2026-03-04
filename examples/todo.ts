@@ -11,7 +11,6 @@ import {
   List,
   mount,
   Seidr,
-  useState,
 } from "../src/index.core.js";
 
 type Todo = { id: number; text: string; completed: boolean };
@@ -46,14 +45,14 @@ const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => vo
 
 export const TodoApp = (initialTodos: Todo[] = []) => {
   // Store todos in global app state
-  const [todos, setTodos] = useState<Todo[]>("todos", initialTodos);
+  const todos = new Seidr<Todo[]>(initialTodos);
   const newTodoText = new Seidr("");
 
   const addTodo = (e: Event) => {
     e.preventDefault();
     const text = newTodoText.value.trim();
     if (text) {
-      setTodos([...todos.value, { id: Date.now(), text, completed: false }]);
+      todos.value = [...todos.value, { id: Date.now(), text, completed: false }];
       newTodoText.value = "";
     }
   };
