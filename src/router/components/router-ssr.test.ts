@@ -43,8 +43,6 @@ describe("Router SSR", () => {
     const { html } = await renderToString(App, { path: "/" });
     expect(html).toContain('class="home"');
     expect(html).toContain("Home Component");
-    expect(html).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Router-`);
-    expect(html).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Router-`);
     expect(html).not.toContain("About Component");
   });
 

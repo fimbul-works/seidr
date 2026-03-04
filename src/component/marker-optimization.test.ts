@@ -68,14 +68,14 @@ describe("Component Marker Optimization", () => {
     unmount();
   });
 
-  it("should have markers when returning text", () => {
+  it("should not have markers when returning text", () => {
     const MyComp = component(() => "Just text", "MyComp");
     const container = document.createElement("div");
     const comp = MyComp();
     const unmount = mount(comp, container);
 
-    expect(comp.startMarker).toBeDefined();
-    expect(comp.endMarker).toBeDefined();
+    expect(comp.startMarker).not.toBeDefined();
+    expect(comp.endMarker).not.toBeDefined();
     expect(container.textContent).toBe("Just text");
     unmount();
   });

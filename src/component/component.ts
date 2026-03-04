@@ -9,7 +9,7 @@ import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
 import { str } from "../util/string";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
-import { isArray, isNum, isStr } from "../util/type-guards/primitive-types";
+import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
 import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { ON_PROMISE_DATA_KEY } from "./feature";
@@ -237,7 +237,7 @@ export const component = <P = void>(
       }
 
       // Only add markers if the component returns an array or a nullish/text value.
-      const shouldAddMarkerComments = isArray(comp.element) || !isHTMLElement(comp.element);
+      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element);
 
       if (shouldAddMarkerComments && !comp.startMarker) {
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);

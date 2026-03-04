@@ -57,9 +57,6 @@ describeDualMode("Switch Component", ({ getDocument }) => {
 
     const parentEl = container.querySelector(".parent")!;
     expect(parentEl.innerHTML).toContain("View A");
-    // Switch returns a component, so it gets markers
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
 
     mode.value = "B";
     expect(parentEl.innerHTML).toContain("View B");
@@ -67,8 +64,6 @@ describeDualMode("Switch Component", ({ getDocument }) => {
 
     mode.value = "C"; // No match
     expect(parentEl.innerHTML).not.toContain("View B");
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Switch-`);
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Switch-`);
   });
 
   it("should call onMount when switching components", () => {

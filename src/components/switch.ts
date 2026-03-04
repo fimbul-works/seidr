@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getMarkerComments } from "../component/get-marker-comments";
+import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { getComponent, getLastNode, mountComponent } from "../component/util";
@@ -29,7 +29,7 @@ export const Switch = <
 ): Component =>
   component(() => {
     const scope = useScope();
-    const [, endMarker] = getMarkerComments(scope.id);
+    const comp = getCurrentComponent()!;
 
     let currentComponent: Component | undefined = getComponent(factories, observable.value, fallbackFactory);
 
@@ -41,8 +41,8 @@ export const Switch = <
     const update = (value: K) => {
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent!) : null;
-      const anchor = lastNode?.nextSibling || endMarker;
-      const parent = lastNode?.parentNode || endMarker?.parentNode || scope.parentNode;
+      const anchor = lastNode?.nextSibling || comp.endMarker || null;
+      const parent = lastNode?.parentNode || comp.endMarker?.parentNode || scope.parentNode;
 
       // 2. Unmount previous component
       if (currentComponent) {

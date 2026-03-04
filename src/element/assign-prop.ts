@@ -1,6 +1,7 @@
 import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
 import { hydrationMap } from "../ssr/hydrate/node-map";
+import { SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/is-observable";
@@ -22,9 +23,9 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   // Handle ref
   if (prop === "ref") {
     if (!isSeidr<HTMLElement | null>(value)) {
-      throw new Error("ref must be a Seidr");
+      throw new SeidrError("ref must be a Seidr");
     }
-    value.value = el;
+    scope.onMount(() => (value.value = el));
     scope.onUnmount(() => (value.value = null));
     return;
   }
@@ -52,8 +53,6 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       useAttribute = true;
     }
   }
-
-  const target: any = el;
 
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
@@ -109,22 +108,22 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       effectiveProp.toLowerCase(),
     );
 
-  const applyValue = (target: any, prop: string, value: any) => {
-    if (useAttribute || !(prop in target) || isBoolProp) {
+  const applyValue = (target: any, value: any) => {
+    if (useAttribute || !(effectiveProp in target) || isBoolProp) {
       if (isBoolProp) {
-        value ? target.setAttribute(prop, "") : target.removeAttribute(prop);
+        value ? target.setAttribute(effectiveProp, "") : target.removeAttribute(effectiveProp);
       } else {
-        isEmpty(value) ? target.removeAttribute(prop) : target.setAttribute(prop, value);
+        isEmpty(value) ? target.removeAttribute(effectiveProp) : target.setAttribute(effectiveProp, value);
       }
     }
-    if (!(useAttribute || !(prop in target))) {
-      target[prop] = value;
+    if (!(useAttribute || !(effectiveProp in target))) {
+      target[effectiveProp] = value;
     }
   };
 
   if (isSeidr(value)) {
-    scope.onUnmount(value.bind(el, (val, element) => applyValue(elFromHydration(element), effectiveProp, val)));
+    scope.onUnmount(value.bind(el, (val, element) => applyValue(elFromHydration(element), val)));
   } else {
-    applyValue(target, effectiveProp, value);
+    applyValue(elFromHydration(el), value);
   }
 };
