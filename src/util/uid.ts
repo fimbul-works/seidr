@@ -1,19 +1,6 @@
 import { decodeBase62, encodeBase62, randomString } from "./base62";
 import { isServer } from "./environment/server";
 
-/** Process ID (if available in Node.js environment) */
-const PID = isServer() ? process.pid : null;
-
-/**
- * Generates a timestamp component in base-62.
- */
-const timestamp = () => encodeBase62(Date.now());
-
-/**
- * Generates a process ID component in base-62 (or random if not available).
- */
-const pid = () => (PID ? encodeBase62(PID) : randomString(3));
-
 /**
  * Generates a unique identifier (UID).
  *
@@ -24,7 +11,8 @@ const pid = () => (PID ? encodeBase62(PID) : randomString(3));
  *
  * @returns {string} A unique identifier string (approximately 20 characters)
  */
-export const uid = (): string => [timestamp(), pid(), randomString(8)].join("-");
+export const uid = (): string =>
+  [encodeBase62(Date.now()), isServer() ? encodeBase62(process.pid) : randomString(3), randomString(8)].join("-");
 
 /**
  * Extracts the creation timestamp from a UID.

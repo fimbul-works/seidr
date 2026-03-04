@@ -4,7 +4,7 @@ import { getHydrationMap } from "../ssr/hydrate";
 import { SeidrError } from "../types";
 import { isServer } from "../util/environment/server";
 import { camelToKebab } from "../util/string";
-import { isSeidr } from "../util/type-guards/is-observable";
+import { isSeidr } from "../util/type-guards/obserbable-types";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
 
 /**

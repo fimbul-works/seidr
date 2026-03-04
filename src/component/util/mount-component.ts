@@ -1,9 +1,9 @@
 import type { Component, ComponentChildren } from "../../component/types";
 import { getHydrationMap } from "../../ssr/hydrate/storage";
 import { SeidrError } from "../../types";
+import { isComponent } from "../../util/type-guards/component-types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
-import { isComponent } from "../../util/type-guards/seidr-dom-types";
 
 /**
  * Mounts a component into the DOM.

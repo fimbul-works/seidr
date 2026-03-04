@@ -4,7 +4,7 @@ import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
-import { isSeidr } from "../util/type-guards/is-observable";
+import { isSeidr } from "../util/type-guards/obserbable-types";
 import { wrapError } from "../util/wrap-error";
 
 const PROMISE_PENDING = "pending";

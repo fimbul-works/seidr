@@ -1,5 +1,5 @@
+import { isComponent } from "../../util/type-guards/component-types";
 import { isArray } from "../../util/type-guards/primitive-types";
-import { isComponent } from "../../util/type-guards/seidr-dom-types";
 import type { Component } from "../types";
 
 /**

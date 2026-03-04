@@ -4,7 +4,6 @@ import { wrapComponent } from "../../component/wrap-component";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { describeDualMode } from "../../test-setup";
-import { str } from "../string";
 import {
   isArray,
   isBool,

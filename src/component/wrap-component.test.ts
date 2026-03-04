@@ -3,7 +3,7 @@ import { $div } from "../elements";
 import { enableClientMode } from "../test-setup";
 import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
-import { isComponentFactory } from "../util/type-guards/seidr-dom-types";
+import { isComponentFactory } from "../util/type-guards/component-types";
 import { component } from "./component";
 import { wrapComponent } from "./wrap-component";
 

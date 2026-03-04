@@ -2,7 +2,7 @@ import { getAppState } from "../app-state/app-state";
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { type CleanupFunction, SeidrError } from "../types";
-import { isComponent } from "../util/type-guards/seidr-dom-types";
+import { isComponent } from "../util/type-guards/component-types";
 import { appendChild } from "./append-child";
 
 /**
