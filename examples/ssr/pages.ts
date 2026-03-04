@@ -65,7 +65,7 @@ export const HomePage = () => {
 };
 
 export const PostPage = () => {
-  const params = useParams()
+  const params = useParams();
   const slug = params.value.slug;
   const post = new Seidr<BlogPost>(null as any);
   let postPromise: Promise<BlogPost>;

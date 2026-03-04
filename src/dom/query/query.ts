@@ -13,5 +13,7 @@ import { getDocument } from "../get-document";
  * @param {HTMLElement} [el] - The element to query within (defaults: document.body)
  * @returns {T | null} The first element matching the selector, or null if not found
  */
-export const $query = <T extends HTMLElement>(query: string, el: HTMLElement = getDocument().documentElement): T | null =>
-  el.querySelector(query) as T;
+export const $query = <T extends HTMLElement>(
+  query: string,
+  el: HTMLElement = getDocument().documentElement,
+): T | null => el.querySelector(query) as T;

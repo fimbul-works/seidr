@@ -154,12 +154,12 @@ describe("SSR Integration Tests", () => {
       ]);
 
       const list = $("ul", { className: "todo-list" }, [
-        ...(todos.value.map((todo) =>
+        ...todos.value.map((todo) =>
           $("li", {
             className: todo.completed ? "completed" : "",
             textContent: todo.text,
           }),
-        )),
+        ),
       ]);
 
       const html = list.toString();
