@@ -1,3 +1,4 @@
+import type { Seidr } from "../../seidr/seidr";
 import type { ServerElement } from "../dom/types";
 import type { SSRScopeCapture } from "../ssr-scope/types";
 
@@ -19,11 +20,6 @@ export interface HydrationData extends SSRScopeCapture {
    */
   ctxID: number;
 
-  /**
-   * State values from the server.
-   */
-  state?: Record<string, unknown>;
-
   /** Serialized app data */
   data?: Record<string, any>;
 
@@ -31,4 +27,19 @@ export interface HydrationData extends SSRScopeCapture {
    * Root container for path traversal relative lookup (client-side only).
    */
   root?: Element | ServerElement;
+}
+
+/**
+ * Storage for hydration data and Seidr instances.
+ */
+export interface HydrationDataStorage {
+  /**
+   * Hydration data containing serialized app state and component structure.
+   */
+  data: HydrationData | undefined;
+
+  /**
+   * Set of Seidr instances that have been hydrated.
+   */
+  registry: Set<Seidr>;
 }

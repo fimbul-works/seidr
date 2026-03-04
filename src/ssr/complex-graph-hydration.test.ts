@@ -4,7 +4,7 @@ import { Seidr } from "../seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { hydrate } from "./hydrate";
-import { clearHydrationData } from "./hydrate/clear-hydration-data";
+import { clearHydrationData } from "./hydrate/storage";
 import { renderToString } from "./render-to-string";
 
 describe("Complex Graph Hydration (4+ levels)", () => {
@@ -66,10 +66,10 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">16<"); // final
 
     // Verify hydration data has captured observables
-    expect(Object.keys(hydrationData.state).length).toBeGreaterThanOrEqual(3);
+    expect(Object.keys(hydrationData.state!).length).toBeGreaterThanOrEqual(3);
 
     // Only root observables should be captured (a, b, c)
-    const observableValues = Object.values(hydrationData.state);
+    const observableValues = Object.values(hydrationData.state!);
     expect(observableValues).toContain(1);
     expect(observableValues).toContain(2);
     expect(observableValues).toContain(3);
@@ -123,7 +123,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">28<"); // abc
 
     // Only a should be captured (it's the root that dependencies lead to)
-    const observableValues = Object.values(hydrationData.state);
+    const observableValues = Object.values(hydrationData.state!);
     expect(observableValues).toContain(10);
 
     // Switch to client mode and hydrate
@@ -178,7 +178,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">27<"); // l5
 
     // Only roots (a, b) should be captured
-    const observableValues = Object.values(hydrationData.state);
+    const observableValues = Object.values(hydrationData.state!);
     expect(observableValues).toEqual([1, 1]);
 
     // Switch to client mode and hydrate

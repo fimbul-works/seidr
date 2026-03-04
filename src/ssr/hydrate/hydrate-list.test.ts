@@ -7,7 +7,7 @@ import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { inServer } from "../../util/environment";
 import { renderToString } from "../render-to-string";
-import { clearHydrationData, hydrate } from "./index";
+import { hydrate } from "./hydrate";
 
 describe("Hydration List", () => {
   let container: HTMLElement;
@@ -20,10 +20,7 @@ describe("Hydration List", () => {
 
   afterEach(() => {
     unmount?.();
-    clearHydrationData();
-    if (cleanupClientMode) {
-      cleanupClientMode();
-    }
+    cleanupClientMode?.();
   });
 
   const Link = (props: { to: string; textContent: string }) =>
@@ -85,6 +82,8 @@ describe("Hydration List", () => {
     // Wait for microtasks
     await new Promise((r) => setTimeout(r, 10));
 
+    console.log(JSON.stringify(hydrationData));
+    console.log(container.innerHTML);
     const hydratedArticles = container.querySelectorAll("article");
     expect(hydratedArticles.length).toBe(2);
   });

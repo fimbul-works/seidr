@@ -1,17 +1,21 @@
-import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import {
+  HYDRATION_ID_ATTRIBUTE,
+  ROOT_ATTRIBUTE,
+  TYPE_COMPONENT,
+  TYPE_COMPONENT_FACTORY,
+  TYPE_PROP,
+} from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import { getAppStateID, getNextComponentId } from "../render-context/render-context";
 import type { Seidr } from "../seidr";
-import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
 import {
   getRootsForHydration,
   HydrationContext,
   popHydrationContext,
   pushHydrationContext,
 } from "../ssr/hydrate/hydration-context";
-import { hydrationMap } from "../ssr/hydrate/node-map";
-import { hydrationDataStorage } from "../ssr/hydrate/storage";
+import { getHydrationData, getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope/get-ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/server";
@@ -22,7 +26,6 @@ import { isComponent } from "../util/type-guards/seidr-dom-types";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
-import { getFirstNode } from "./util/component-nodes";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -171,7 +174,7 @@ export const component = <P = void>(
 
         // 3. Remove from DOM
         const mappedStart = comp.startMarker
-          ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(comp.startMarker)) || comp.startMarker
+          ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(comp.startMarker)) || comp.startMarker
           : undefined;
 
         (mappedStart as Comment)?.remove();
@@ -180,7 +183,7 @@ export const component = <P = void>(
           if (isComponent(child)) {
             child.unmount();
           } else if (isDOMNode(child)) {
-            const mapped = (!process.env.CORE_DISABLE_SSR && hydrationMap.get(child)) || child;
+            const mapped = (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(child)) || child;
 
             (mapped as Element).remove();
           }
@@ -194,7 +197,7 @@ export const component = <P = void>(
         }
 
         const mappedEnd = comp.endMarker
-          ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(comp.endMarker)) || comp.endMarker
+          ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(comp.endMarker)) || comp.endMarker
           : undefined;
         (mappedEnd as Comment)?.remove();
       },
@@ -212,10 +215,10 @@ export const component = <P = void>(
       // Create HydrationContext if hydrating
       let hCtx: HydrationContext | null = null;
       if (!process.env.CORE_DISABLE_SSR && hasHydrationData()) {
-        const hData = hydrationDataStorage.data;
-        const compMap = hData?.components?.[fullComponentId];
+        const hData = getHydrationData()!;
+        const compMap = hData.data?.components?.[fullComponentId];
         if (compMap) {
-          const roots = getRootsForHydration(fullComponentId, hData.root as HTMLElement);
+          const roots = getRootsForHydration(fullComponentId, hData.data?.root as HTMLElement);
           if (roots.length > 0) {
             hCtx = new HydrationContext(fullComponentId, compMap, roots);
             pushHydrationContext(hCtx);
@@ -234,7 +237,7 @@ export const component = <P = void>(
       // Render the component via factory
       const result = factory(props);
 
-      if (hCtx) {
+      if (!process.env.CORE_DISABLE_SSR && hCtx) {
         popHydrationContext();
       }
 

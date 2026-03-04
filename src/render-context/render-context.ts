@@ -27,12 +27,12 @@ if (!isClient() || process.env.VITEST) {
  * @internal
  */
 export const setAppStateID = (id: number) => {
-  const ctx = getAppState();
-  ctx.ctxID = id;
-  ctx.sID = 0;
-  ctx.cID = 0;
-  ctx.data.clear();
-  ctx.markers.clear();
+  const state = getAppState();
+  state.ctxID = id;
+  state.sID = 0;
+  state.cID = 0;
+  state.data.clear();
+  state.markers.clear();
 };
 
 /**

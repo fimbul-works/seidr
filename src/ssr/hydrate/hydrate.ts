@@ -2,9 +2,7 @@ import type { ComponentType } from "../../component/types";
 import { mount } from "../../dom/mount";
 import type { CleanupFunction } from "../../types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
-import { clearHydrationData } from "./clear-hydration-data";
-
-import { setHydrationData } from "./set-hydration-data";
+import { clearHydrationData, setHydrationData } from "./storage";
 import type { HydrationData } from "./types";
 
 /**

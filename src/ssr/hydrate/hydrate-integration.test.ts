@@ -6,7 +6,7 @@ import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { str } from "../../util/string";
 import { renderToString } from "../render-to-string";
-import { clearHydrationData, hydrate } from "./index";
+import { hydrate } from "./hydrate";
 
 describe("Hydration Integration", () => {
   let container: HTMLElement;
@@ -21,7 +21,6 @@ describe("Hydration Integration", () => {
 
   afterEach(() => {
     unmount?.();
-    clearHydrationData();
     cleanupMode?.();
   });
 

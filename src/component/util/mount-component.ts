@@ -1,5 +1,5 @@
 import type { Component, ComponentChildren } from "../../component/types";
-import { hydrationMap } from "../../ssr/hydrate/node-map";
+import { getHydrationMap } from "../../ssr/hydrate";
 import { SeidrError } from "../../types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
@@ -12,8 +12,8 @@ import { isComponent } from "../../util/type-guards/seidr-dom-types";
  * @param {Node} [parent] Optional parent to mount into if anchor is null or not in DOM
  */
 export const mountComponent = (component: Component, anchor?: Node | null, parent?: Node): void => {
-  const realAnchor = anchor ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(anchor)) || anchor : null;
-  let realParent = parent ? (!process.env.CORE_DISABLE_SSR && hydrationMap.get(parent)) || parent : null;
+  const realAnchor = anchor ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(anchor)) || anchor : null;
+  let realParent = parent ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(parent)) || parent : null;
 
   if (realAnchor) {
     if (realParent && realAnchor.parentNode !== realParent) {

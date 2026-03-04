@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetNextId } from "../../render-context/reset-next-id";
 import { Seidr } from "../../seidr";
 import { enableSSRMode } from "../../test-setup";
-import { clearHydrationData } from "../hydrate/clear-hydration-data";
+import { clearHydrationData } from "../hydrate/storage";
 import { SSRScope, setSSRScope } from "./index";
 
 // Store original SSR env var
@@ -71,10 +71,10 @@ describe("SSRScope", () => {
 
     const hydrationData = scope.captureHydrationData();
 
-    expect(Object.keys(hydrationData.state)).toHaveLength(2);
+    expect(Object.keys(hydrationData.state!)).toHaveLength(2);
     // root1 is registered first (index 0), root2 is second (index 1)
-    expect(hydrationData.state[1]).toBe(10);
-    expect(hydrationData.state[2]).toBe("hello");
+    expect(hydrationData.state![1]).toBe(10);
+    expect(hydrationData.state![2]).toBe("hello");
   });
 
   it("should capture complex types", () => {
@@ -86,8 +86,8 @@ describe("SSRScope", () => {
 
     const hydrationData = scope.captureHydrationData();
 
-    expect(hydrationData.state[1]).toEqual({ foo: "bar", nested: { value: 42 } });
-    expect(hydrationData.state[2]).toEqual([1, 2, 3]);
+    expect(hydrationData.state![1]).toEqual({ foo: "bar", nested: { value: 42 } });
+    expect(hydrationData.state![2]).toEqual([1, 2, 3]);
   });
 
   it("should clear all observables", () => {

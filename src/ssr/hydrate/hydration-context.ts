@@ -3,8 +3,7 @@ import { str } from "../../util/string";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { StructureMapTuple } from "../structure/structure-map";
-import { hydrationMap } from "./node-map";
-import { hydrationDataStorage } from "./storage";
+import { getHydrationData, getHydrationMap } from "./storage";
 
 /**
  * Checks if a physical DOM node matches a structure map tag.
@@ -13,7 +12,7 @@ function nodeMatches(node: Node, tag: string): boolean {
   if (tag === "#text") return isTextNode(node);
   if (tag === "#comment") return isComment(node);
   if (tag.startsWith("#component:")) {
-      const id = tag.split(":")[1];
+    const id = tag.split(":")[1];
     // Component boundaries can be markers (comments) or elements with data-seidr-id
     if (isComment(node)) {
       // Match markers like <!--#ID--> or <!--List:ID-->
@@ -34,6 +33,7 @@ function nodeMatches(node: Node, tag: string): boolean {
  * @param roots Initial root elements of the component
  */
 export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): Node[] {
+  const hydrationMap = getHydrationMap();
   const resolved = new Array<Node>(structureMap.length);
   const isChild = new Set<number>();
 
@@ -211,6 +211,8 @@ export function popHydrationContext(): void {
  * Discovers the physical DOM roots for a component being hydrated.
  */
 export function getRootsForHydration(componentId: string, container?: HTMLElement): Node[] {
+  const hydrationDataStorage = getHydrationData()!;
+
   const parentCtx = getHydrationContext();
   let candidate: Node | undefined;
 

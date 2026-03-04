@@ -9,7 +9,13 @@ import { getDocument } from "../get-document";
  * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
-  const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
+  if (process.env.CORE_DISABLE_SSR) {
+    return getDocument().createComment(text);
+  }
+
+  const doc = getDocument();
+  const hydrationContext = getHydrationContext();
+
   if (hydrationContext) {
     const node = hydrationContext.claim("#comment") as Comment;
     if (node) {
@@ -23,7 +29,7 @@ export const $comment = (text: string): Comment => {
     } else {
       // Structural mismatch
       const mismatchNode = hydrationContext.lastAttemptedNode;
-      const newNode = getDocument().createComment(text);
+      const newNode = doc.createComment(text);
       if (mismatchNode?.parentNode) {
         console.warn(
           `[Hydration] Tag mismatch: expected #comment but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
@@ -34,9 +40,9 @@ export const $comment = (text: string): Comment => {
     }
   }
 
-  const node = getDocument().createComment(text);
+  const node = doc.createComment(text);
 
-  if (!process.env.CORE_DISABLE_SSR && isServer()) {
+  if (isServer()) {
     getCurrentComponent()?.trackNode?.(node);
   }
 

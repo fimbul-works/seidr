@@ -2,7 +2,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
-import { hydrationMap } from "../ssr/hydrate/node-map";
+import { getHydrationMap } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/server";
 import { isArray, isEmpty, isHTMLElement } from "../util/type-guards";
 import { assignProps } from "./assign-props";
@@ -51,7 +51,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 
     if (claimedNode) {
       // Store the relationship for reactive updates
-      hydrationMap.set(claimedNode, claimedNode);
+      getHydrationMap().set(claimedNode, claimedNode);
 
       if (isHTMLElement(claimedNode)) {
         if (props) {
@@ -78,7 +78,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
         mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
       }
 
-      hydrationMap.set(newNode, newNode);
+      getHydrationMap().set(newNode, newNode);
 
       // Procedural render for children of the new node
       if (props) {

@@ -4,7 +4,7 @@ import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
-import { hydrationMap } from "../ssr/hydrate/node-map";
+import { getHydrationMap } from "../ssr/hydrate";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -31,7 +31,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
     const update = (items: T[]) => {
       const realEndMarker =
-        (!process.env.CORE_DISABLE_SSR && hydrationMap.get(listComponent.endMarker!)) || listComponent.endMarker;
+        (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(listComponent.endMarker!)) || listComponent.endMarker;
       const parent = realEndMarker?.parentNode;
       if (!parent) {
         return;
@@ -61,7 +61,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
         let lastNode = getLastNode(itemComponent);
         if (!process.env.CORE_DISABLE_SSR) {
-          lastNode = hydrationMap.get(lastNode) || lastNode;
+          lastNode = getHydrationMap().get(lastNode) || lastNode;
         }
 
         if (lastNode !== currentAnchor.previousSibling) {
@@ -70,7 +70,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
         currentAnchor = getFirstNode(itemComponent);
         if (!process.env.CORE_DISABLE_SSR) {
-          currentAnchor = hydrationMap.get(currentAnchor) || currentAnchor;
+          currentAnchor = getHydrationMap().get(currentAnchor) || currentAnchor;
         }
       }
     };

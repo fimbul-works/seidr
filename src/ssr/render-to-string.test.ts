@@ -6,7 +6,6 @@ import { resetRequestIdCounter } from "../render-context/render-context.node";
 import { Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { clearHydrationData } from "./hydrate/clear-hydration-data";
 import { renderToString } from "./render-to-string";
 import { setSSRScope } from "./ssr-scope/set-ssr-scope";
 
@@ -27,9 +26,6 @@ describe("renderToString", () => {
 
     // Restore original environment
     cleanupEnv();
-
-    // Clear hydration context
-    clearHydrationData();
 
     // Verify all observables have zero observers after SSR
     observables.forEach((obs) => {

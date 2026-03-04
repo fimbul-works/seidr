@@ -1,6 +1,6 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
-import { hydrationMap } from "../../ssr/hydrate/node-map";
+import { getHydrationMap } from "../../ssr/hydrate/storage";
 import { isServer } from "../../util/environment/server";
 import { str } from "../../util/string";
 import { getDocument } from "../get-document";
@@ -11,7 +11,14 @@ import { getDocument } from "../get-document";
  * @returns {Text} DOM Text node
  */
 export const $text = (text: unknown): Text => {
-  const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
+  if (process.env.CORE_DISABLE_SSR) {
+    return getDocument().createTextNode(str(text));
+  }
+
+  const hydrationContext = getHydrationContext();
+  const hydrationMap = getHydrationMap();
+  const doc = getDocument();
+
   if (hydrationContext) {
     const node = hydrationContext.claim("#text") as Text;
     if (node) {
@@ -28,7 +35,7 @@ export const $text = (text: unknown): Text => {
     } else {
       // Structural mismatch: what we found at this index is NOT a text node
       const mismatchNode = hydrationContext.lastAttemptedNode;
-      const newNode: Text = getDocument().createTextNode(str(text));
+      const newNode: Text = doc.createTextNode(str(text));
 
       if (mismatchNode?.parentNode) {
         console.warn(
@@ -42,9 +49,9 @@ export const $text = (text: unknown): Text => {
     }
   }
 
-  const node: Text = getDocument().createTextNode(str(text));
+  const node: Text = doc.createTextNode(str(text));
 
-  if (!process.env.CORE_DISABLE_SSR && isServer()) {
+  if (isServer()) {
     getCurrentComponent()?.trackNode?.(node);
   }
 

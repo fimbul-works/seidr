@@ -2,8 +2,7 @@ import { getCurrentComponent, pop, push } from "../component/component-stack";
 import { useScope } from "../component/use-scope";
 import { getFirstNode } from "../component/util";
 import type { SeidrChild } from "../element/types";
-import { hasHydrationData } from "../ssr/hydrate/has-hydration-data";
-import { hydrationMap } from "../ssr/hydrate/node-map";
+import { getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/server";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";
@@ -73,7 +72,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   const childNode = isDOMNode(child) ? child : $text(child);
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
-    const mapped = hydrationMap.get(childNode);
+    const mapped = getHydrationMap().get(childNode);
     if (mapped) {
       if (mapped.parentNode === target) {
         return;
