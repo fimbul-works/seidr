@@ -3,7 +3,7 @@ import { useScope } from "../component/use-scope";
 import { getFirstNode } from "../component/util";
 import type { SeidrChild } from "../element/types";
 import { getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
 import { isArray } from "../util/type-guards/primitive-types";

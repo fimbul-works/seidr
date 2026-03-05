@@ -1,5 +1,5 @@
 import { decodeBase62, encodeBase62, randomString } from "./base62";
-import { isServer } from "./environment/server";
+import { isServer } from "./environment/is-server";
 
 /**
  * Generates a unique identifier (UID).

@@ -1,12 +1,5 @@
 import { getSSRScope } from "../../ssr/ssr-scope";
-import { isClient } from "./client";
-
-/**
- * Returns true if the current environment is the server (Node.js/SSR).
- *
- * @returns {boolean} `true` if in server, `false` otherwise
- */
-export const isServer = (): boolean => !isClient();
+import { isServer } from "./is-server";
 
 /**
  * Executes a function only in the server environment (SSR).
@@ -19,7 +12,7 @@ export const isServer = (): boolean => !isClient();
  * @returns {T} The result of the function
  */
 export const inServer = <T>(fn: () => T): T => {
-  if (!isServer()) {
+  if (!isServer() && !import.meta.env.SSR) {
     return false as T;
   }
 

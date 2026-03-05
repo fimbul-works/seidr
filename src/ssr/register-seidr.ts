@@ -1,7 +1,7 @@
 import type { Seidr } from "../seidr";
 import { SeidrError } from "../types";
 import { isClient } from "../util/environment/client";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { registerHydratingSeidr } from "./hydrate/register-hydrating-seidr";
 import { getSSRScope } from "./ssr-scope";
 
@@ -33,11 +33,11 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
     return;
   }
 
-  if (isClient()) {
-    // Client-side: register immediately for hydration
-    registerHydratingSeidr(seidr);
-  } else if (isServer()) {
+  if (isServer() || import.meta.env.SSR) {
     // Server-side: register with active SSR scope
     getSSRScope()?.register(seidr);
+  } else if (isClient()) {
+    // Client-side: register immediately for hydration
+    registerHydratingSeidr(seidr);
   }
 };

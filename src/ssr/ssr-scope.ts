@@ -1,7 +1,7 @@
 import { getAppState } from "../app-state/app-state";
 import type { AppState } from "../app-state/types";
 import type { Seidr } from "../seidr/seidr";
-import { isClient } from "../util/environment/client";
+import { isServer } from "../util/environment/is-server";
 import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
 
 export const SSR_SCOPE_KEY = "seidr.ssr.scope";
@@ -38,23 +38,18 @@ export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSR
  * @param {(SSRScope | undefined)} scope - The scope to activate for the current application state
  */
 export function setSSRScope(scope: SSRScope | undefined): void {
-  if (isClient()) {
+  if (!import.meta.env.SSR && !isServer()) {
     return;
   }
 
-  let state: AppState;
   try {
-    state = getAppState();
-  } catch {
-    // If no AppState is available, we cannot store the scope.
-    return;
-  }
-
-  if (scope === undefined) {
-    state.deleteData(SSR_SCOPE_KEY);
-  } else {
-    state.setData(SSR_SCOPE_KEY, scope);
-  }
+    const state: AppState = getAppState();
+    if (scope === undefined) {
+      state.deleteData(SSR_SCOPE_KEY);
+    } else {
+      state.setData(SSR_SCOPE_KEY, scope);
+    }
+  } catch (_e) {}
 }
 
 /**

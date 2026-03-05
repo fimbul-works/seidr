@@ -3,7 +3,7 @@ import { getRootComponent } from "../../component/component-stack";
 import { useScope } from "../../component/use-scope";
 import { NO_HYDRATE } from "../../seidr/constants";
 import { Seidr } from "../../seidr/seidr";
-import { isServer } from "../../util/environment/server";
+import { isServer } from "../../util/environment/is-server";
 import { HASH_SEIDR_ID } from "../constants";
 
 /**

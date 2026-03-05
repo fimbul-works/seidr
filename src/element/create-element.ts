@@ -3,7 +3,7 @@ import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { getHydrationMap } from "../ssr/hydrate/storage";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { isArray, isEmpty, isHTMLElement } from "../util/type-guards";
 import { assignProps } from "./assign-props";
 import type { SeidrChild, SeidrElementProps } from "./types";

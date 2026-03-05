@@ -6,5 +6,7 @@ export default [
   makeClientBundle("src/index.core.ts", "dist/seidr.core", false, {
     "process.env.CORE_DISABLE_SSR": "true",
     "hasHydrationData()": "false",
+    "import.meta.env.SSR": "false",
+    process: "{}",
   }),
 ];

@@ -1,11 +1,9 @@
 import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
+import { marked } from "marked";
 import type { ViteDevServer } from "vite";
-import { getPost, getPosts } from "./data.js";
-import type { BlogPost } from "./types.js";
 import { str } from "../../src/util/string.js";
-
-export type PageContext = { initialPosts?: BlogPost[]; initialCurrentPost?: BlogPost };
+import { getPost, getPosts } from "./blog-api.js";
 
 // Constants
 const isProduction = process.env.NODE_ENV === "production";
@@ -24,6 +22,7 @@ let vite: ViteDevServer;
 if (!isProduction) {
   const { createServer } = await import("vite");
   vite = await createServer({
+    configFile: "./vite.examples-ssr.config.ts",
     server: { middlewareMode: true },
     appType: "custom",
     base,
@@ -38,14 +37,14 @@ if (!isProduction) {
 app.get("/api/posts", async (_req: Request, res: Response) => {
   const posts = await getPosts();
   // Strip content for list view to reduce size
-  const list = posts.map((p) => ({ ...p, content: "" }));
+  const list = await Promise.all(posts.map(async (p) => ({ ...p, excerpt: await marked(p.excerpt!), content: "" })));
   res.json(list);
 });
 
 app.get("/api/posts/:slug", async (req: Request, res: Response) => {
   const post = await getPost(req.params.slug as string);
   if (post) {
-    res.json(post);
+    res.json({ ...post, excerpt: await marked(post.excerpt!), content: await marked(post.content) });
   } else {
     res.status(404).json({ error: "Post not found" });
   }
@@ -55,7 +54,7 @@ app.get("/api/posts/:slug", async (req: Request, res: Response) => {
 app.get(/.*/, async (req, res) => {
   try {
     let url = req.originalUrl.replace(base, "");
-    if (!url.startsWith("/")) url = "/" + url;
+    if (!url.startsWith("/")) url = `/${url}`;
 
     // Ignore weird requests (source maps, devtools, favicon, etc)
     if (url.match(/\.(json|map|ico|png|svg)$/)) {
@@ -64,20 +63,20 @@ app.get(/.*/, async (req, res) => {
     }
 
     let template: string;
-    let render: (url: string, ctx: PageContext) => any;
+    let render: (url: string) => any;
 
     if (!isProduction) {
       // Always read fresh template in development
       template = await fs.readFile("./examples/ssr/index.html", "utf-8");
       template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule("/examples/ssr/entry-server.ts")).render;
+      render = (await vite.ssrLoadModule("./entry-server.ts")).render;
     } else {
       template = templateHtml;
       render = (await import("./entry-server.js")).render;
     }
 
     // Data is now fetched by components themselves using inServer/inClient
-    const rendered = await render(url, {});
+    const rendered = await render(url);
 
     const html = template
       .replace(`<!--app-head-->`, rendered.head ?? "")

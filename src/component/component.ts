@@ -18,7 +18,7 @@ import {
 import { getHydrationData, getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
@@ -44,7 +44,7 @@ export const component = <P = void>(
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
     const componentId = str(getNextComponentId());
-    const fullComponentId = process.env.NODE_ENV !== "production" ? `${name}-${componentId}` : `${componentId}`;
+    const fullComponentId = `${name}-${componentId}`;
 
     // Lifecycle state
     const children = new Map<string, Component>();

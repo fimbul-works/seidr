@@ -1,7 +1,7 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
 import { getHydrationMap } from "../../ssr/hydrate/storage";
-import { isServer } from "../../util/environment/server";
+import { isServer } from "../../util/environment/is-server";
 import { str } from "../../util/string";
 import { getDocument } from "../get-document";
 

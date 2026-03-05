@@ -5,7 +5,7 @@ import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
 import { getDocument as getSSRDocument } from "../dom/get-document.node";
 import { Seidr } from "../seidr";
 import { registerSeidrForSSR } from "../ssr/register-seidr";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { getAppState, testAppState } from "./app-state";
 
 Seidr.register = registerSeidrForSSR;

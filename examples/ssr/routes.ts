@@ -1,4 +1,4 @@
-import type { RouteDefinition } from "../../src/index.shared.js";
+import type { RouteDefinition } from "../../src/index.browser.js";
 import { HomePage, PostPage } from "./pages.js";
 
 export const routes: RouteDefinition[] = [

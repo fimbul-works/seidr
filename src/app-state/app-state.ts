@@ -1,4 +1,3 @@
-import { isClient } from "../util/environment/client";
 import { appState } from "./storage";
 import type { AppState } from "./types";
 
@@ -15,11 +14,7 @@ export let getAppState = (): AppState => appState;
  * @param {(() => AppState)} fn
  * @internal
  */
-export let setInternalAppState: (fn: () => AppState) => void;
-
-if (!isClient() || process.env.VITEST) {
-  setInternalAppState = (fn: () => AppState) => (getAppState = fn);
-}
+export const setInternalAppState: (fn: () => AppState) => void = (fn: () => AppState) => (getAppState = fn);
 
 /**
  * Set the application state ID (used during hydration to match server-side IDs).

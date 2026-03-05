@@ -2,7 +2,7 @@ import { getAppState } from "../app-state/app-state";
 import { getRootComponent } from "../component/component-stack";
 import { NO_HYDRATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "./constants";
 
 /** Clear cached path from appState */

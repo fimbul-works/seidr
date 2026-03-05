@@ -1,6 +1,6 @@
 import { getNextSeidrId } from "../app-state/app-state";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { str } from "../util/string";
 import { scheduleUpdate } from "./scheduler";
 import type { Observable, ObservableOptions } from "./types";

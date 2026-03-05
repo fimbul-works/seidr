@@ -1,7 +1,5 @@
-import { $a, $div, $footer, $nav, inServer, Link, Router, Seidr } from "../../src/index.browser.js";
+import { $a, $div, $footer, $nav, Link, Router } from "../../src/index.core.js";
 import { routes } from "./routes.js";
-import type { PageContext } from "./server.js";
-import type { BlogPost } from "./types.js";
 
 // Components
 const Header = () =>
@@ -14,21 +12,7 @@ const Header = () =>
   ]);
 
 // Main App
-export const BlogApp = ({ initialPosts = [], initialCurrentPost = undefined }: PageContext = {}) => {
-  const posts = new Seidr<BlogPost[]>(initialPosts);
-  const currentPost = new Seidr<BlogPost | undefined>(initialCurrentPost);
-
-  // Initialize state from props on the server
-  inServer(() => {
-    if (initialPosts.length) {
-      posts.value = initialPosts;
-    }
-
-    if (initialCurrentPost) {
-      currentPost.value = initialCurrentPost;
-    }
-  });
-
+export const BlogApp = () => {
   return $div({ className: "app-container" }, [
     Header(),
     $div({ className: "main-content" }, [Router(routes, () => $div({ textContent: "404 Not Found" }))]),

@@ -1,12 +1,23 @@
+import { resolve } from "node:path";
+import replace from "@rollup/plugin-replace";
 import { defineConfig } from "vite";
 
-export default defineConfig((_config) => {
+export default defineConfig((config) => {
   return {
     root: "examples/ssr",
-    define: {
-      process: "undefined",
-      "process.env.NODE_ENV": JSON.stringify("production"),
-    },
+    plugins: [
+      replace({
+        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        "process.env.CORE_DISABLE_SSR": "false",
+        "process.env.VITEST": "false",
+        "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
+        "process.env.DEBUG": "false",
+        "isServer()": config.isSsrBuild ? "true" : "false",
+        "isClient()": config.isSsrBuild ? "false" : "true",
+        preventAssignment: true,
+        window: config.isSsrBuild ? "undefined" : "window",
+      }),
+    ],
     build: {
       outDir: "examples/ssr/dist",
       emptyOutDir: true,
@@ -14,7 +25,7 @@ export default defineConfig((_config) => {
       minify: "terser",
       target: "esnext",
       rollupOptions: {
-        input: `examples/ssr/entry-client.ts`,
+        input: resolve("examples/ssr", "entry-client.ts"),
         output: {
           dir: "examples/ssr/dist",
           format: "es",
@@ -24,10 +35,6 @@ export default defineConfig((_config) => {
         },
         treeshake: "smallest",
       },
-    },
-    server: {
-      port: 3000,
-      open: "/examples/ssr/index.html",
     },
   };
 });

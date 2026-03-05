@@ -17,17 +17,16 @@ export async function getPosts(): Promise<BlogPost[]> {
     files
       .filter((file) => file.endsWith(".md"))
       .map(async (file) => {
-        const content = await fs.readFile(path.join(CONTENT_DIR, file), "utf-8");
-        const { attributes, body } = fm<FrontMatter>(content);
+        const markdown = await fs.readFile(path.join(CONTENT_DIR, file), "utf-8");
+        const { attributes, body } = fm<FrontMatter>(markdown);
         const slug = file.replace(".md", "");
-        const html = await marked(body);
-
+        const excerpt = await marked(`${body.split(". ").shift()!}...`);
         return {
           slug,
           title: attributes.title,
           date: attributes.date,
-          content: html,
-          excerpt: `${body.substring(0, 150)}...`,
+          excerpt,
+          content: "",
         };
       }),
   );

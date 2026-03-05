@@ -2,7 +2,7 @@ import { useScope } from "../component/use-scope";
 import type { Seidr } from "../seidr";
 import { getHydrationMap } from "../ssr/hydrate";
 import { SeidrError } from "../types";
-import { isServer } from "../util/environment/server";
+import { isServer } from "../util/environment/is-server";
 import { camelToKebab } from "../util/string";
 import { isSeidr } from "../util/type-guards/obserbable-types";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";

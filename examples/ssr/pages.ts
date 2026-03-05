@@ -8,50 +8,53 @@ import {
   $ul,
   inClient,
   inServer,
-  isServer,
+  isClient,
   Link,
   List,
   Seidr,
   Suspense,
   Switch,
   useParams,
-} from "../../src/index.browser.js";
-import { getPost, getPosts } from "./data.js";
+} from "../../src/index.core.js";
 import type { BlogPost } from "./types.js";
 
 const PostCard = (post: BlogPost) =>
   $li({ className: "post-card" }, [
     $h2({}, [Link({ to: `/post/${post.slug}`, textContent: post.title })]),
     $div({ className: "meta", textContent: new Date(post.date).toLocaleDateString() }),
-    $p({ className: "excerpt", textContent: post.excerpt }),
+    $p({ className: "excerpt", innerHTML: post.excerpt }),
     Link({ to: `/post/${post.slug}`, className: "read-more", textContent: "Read more →" }),
   ]);
 
 export const HomePage = () => {
   let postsPromise: Promise<BlogPost[]>;
   const posts = new Seidr<BlogPost[]>([]);
+  const loadTime = new Seidr<number>(0);
 
-  if (isServer()) {
+  if (import.meta.env.SSR) {
     // Server-side fetch (direct DB access)
     postsPromise = inServer(async () => {
-      posts.value = await getPosts();
+      const postsApi = await import("./blog-api.js");
+      posts.value = await postsApi.getPosts();
+      loadTime.value = Date.now();
       return posts.value;
     });
-  } else {
-    // Client-side fetch if empty
+  } else if (isClient()) {
+    // Client-side fetch if empty or stale
     postsPromise = inClient(async () => {
-      if (posts?.value?.length > 0) {
+      if (posts?.value?.length > 0 && Date.now() - loadTime.value < 60000) {
         return posts.value;
       } else {
         const res = await fetch("/api/posts");
         const data = await res.json();
         posts.value = data;
+        loadTime.value = Date.now();
         return posts.value;
       }
     });
   }
 
-  return Suspense(postsPromise, ({ state, value, error }) => {
+  return Suspense(postsPromise!, ({ state, value, error }) => {
     return Switch(state, {
       pending: () => $div({ textContent: "Loading posts..." }),
       resolved: () =>
@@ -67,13 +70,13 @@ export const HomePage = () => {
 export const PostPage = () => {
   const params = useParams();
   const slug = params.value.slug;
-  const post = new Seidr<BlogPost>(null as any);
-  let postPromise: Promise<BlogPost>;
+  const post = new Seidr<BlogPost | null>(null);
+  let postPromise: Promise<BlogPost | null>;
 
-  if (isServer()) {
+  if (import.meta.env.SSR) {
     postPromise = inServer(async () => {
-      const data = await getPost(slug);
-      if (data) post.value = data;
+      const postsApi = await import("./blog-api.js");
+      post.value = await postsApi.getPost(slug);
       return post.value;
     });
   } else {

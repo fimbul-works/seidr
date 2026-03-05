@@ -22,7 +22,7 @@ EXAMPLE=pomodoro npx vite build --config vite.examples.config.ts
 mv examples/dist/pomodoro.js examples/temp/pomodoro.js
 
 echo "Building SSR example..."
-EXAMPLE=todo npx vite build --config vite.examples-ssr.config.ts
+npx vite build --config vite.examples-ssr.config.ts
 
 # Copy both files to final location
 cp examples/temp/hello-world.js examples/dist/hello-world.js
