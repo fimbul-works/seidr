@@ -25,21 +25,26 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] => {
   const comp = getCurrentComponent();
 
-  if (process.env.CORE_DISABLE_SSR || isServer()) {
+  if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
     const el = getDocument().createElement(tagName);
-
-    if (!process.env.CORE_DISABLE_SSR) {
-      comp?.trackNode?.(el);
-    }
 
     if (props) {
       assignProps(el, props);
     }
 
     if (isArray(children)) {
-      children.forEach((child) => appendChild(el, child));
+      children.forEach((child) => {
+        if (typeof child === "string" && !child.trim()) return;
+        appendChild(el, child);
+      });
     } else if (!isEmpty(children)) {
-      appendChild(el, children);
+      if (!(typeof children === "string" && !children.trim())) {
+        appendChild(el, children);
+      }
+    }
+
+    if (!process.env.CORE_DISABLE_SSR) {
+      comp?.trackNode?.(el);
     }
 
     return el;
@@ -50,6 +55,9 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     const claimedNode = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
 
     if (claimedNode) {
+      if (process.env.DEBUG_HYDRATION) {
+        console.log(`[$] Claimed <${tagName}>`, claimedNode);
+      }
       // Store the relationship for reactive updates
       getHydrationMap().set(claimedNode, claimedNode);
 
@@ -59,9 +67,14 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
         }
 
         if (isArray(children)) {
-          children.forEach((child) => appendChild(claimedNode, child));
+          children.forEach((child) => {
+            if (typeof child === "string" && !child.trim()) return;
+            appendChild(claimedNode, child);
+          });
         } else if (!isEmpty(children)) {
-          appendChild(claimedNode, children);
+          if (!(typeof children === "string" && !children.trim())) {
+            appendChild(claimedNode, children);
+          }
         }
       }
 
@@ -74,6 +87,10 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
       if (mismatchNode?.parentNode) {
         console.warn(
           `[Hydration] Tag mismatch: expected <${tagName}> but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+          "node:",
+          mismatchNode,
+          "in component:",
+          hydrationContext.componentId,
         );
         mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
       }
@@ -85,9 +102,14 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
         assignProps(newNode, props);
       }
       if (isArray(children)) {
-        children.forEach((child) => appendChild(newNode, child));
+        children.forEach((child) => {
+          if (typeof child === "string" && !child.trim()) return;
+          appendChild(newNode, child);
+        });
       } else if (!isEmpty(children)) {
-        appendChild(newNode, children);
+        if (!(typeof children === "string" && !children.trim())) {
+          appendChild(newNode, children);
+        }
       }
 
       return newNode as HTMLElementTagNameMap[K];
@@ -101,9 +123,14 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   }
 
   if (isArray(children)) {
-    children.forEach((child) => appendChild(el, child));
+    children.forEach((child) => {
+      if (typeof child === "string" && !child.trim()) return;
+      appendChild(el, child);
+    });
   } else if (!isEmpty(children)) {
-    appendChild(el, children);
+    if (!(typeof children === "string" && !children.trim())) {
+      appendChild(el, children);
+    }
   }
 
   return el;

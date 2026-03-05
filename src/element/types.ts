@@ -140,7 +140,7 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
     ReactiveARIAKebabCase &
     ReactiveDataKebabCase &
     ReactiveDataCamelCase
-> & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string> };
+> & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string>; ref?: Seidr<Element | null> };
 
 /**
  * Union type representing allowed nodes for Seidr elements.

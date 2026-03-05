@@ -1,6 +1,7 @@
 import { getAppState } from "../app-state/app-state";
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
+import { getHydrationData, hasHydrationData } from "../ssr/hydrate/storage";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isComponent } from "../util/type-guards/component-types";
 import { appendChild } from "./append-child";
@@ -44,7 +45,23 @@ export const mount = <C extends ComponentType = ComponentType>(
     : wrapComponent(componentOrFactory)();
 
   state.setData(rootComponentId, component);
-  appendChild(container, component);
+
+  // During hydration, skip appendChild if the container already contains the root component's element
+  let skipAppend = false;
+  if (hasHydrationData()) {
+    const hydrationData = getHydrationData();
+    // If the hydration root is the container itself, the elements are already inside
+    if (hydrationData?.data?.root === container) {
+      if (process.env.DEBUG_HYDRATION) {
+        console.log("[mount] Skipping appendChild because container is the hydration root");
+      }
+      skipAppend = true;
+    }
+  }
+
+  if (!skipAppend) {
+    appendChild(container, component);
+  }
 
   // Return cleanup function
   return () => {

@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import fm from "front-matter";
-import { marked } from "marked";
+import MarkdownIt from "markdown-it";
 import type { BlogPost } from "./types";
 
 const CONTENT_DIR = path.resolve("examples/ssr/blog-content");
@@ -11,16 +11,18 @@ interface FrontMatter {
   date: string;
 }
 
+const markdown = new MarkdownIt();
+
 export async function getPosts(): Promise<BlogPost[]> {
   const files = await fs.readdir(CONTENT_DIR);
   const posts = await Promise.all(
     files
       .filter((file) => file.endsWith(".md"))
       .map(async (file) => {
-        const markdown = await fs.readFile(path.join(CONTENT_DIR, file), "utf-8");
-        const { attributes, body } = fm<FrontMatter>(markdown);
+        const md = await fs.readFile(path.join(CONTENT_DIR, file), "utf-8");
+        const { attributes, body } = fm<FrontMatter>(md);
         const slug = file.replace(".md", "");
-        const excerpt = await marked(`${body.split(". ").shift()!}...`);
+        const excerpt = markdown.render(`${body.split(". ").shift()!}...`);
         return {
           slug,
           title: attributes.title,
@@ -35,19 +37,15 @@ export async function getPosts(): Promise<BlogPost[]> {
 }
 
 export async function getPost(slug: string): Promise<BlogPost | null> {
-  try {
-    const filePath = path.join(CONTENT_DIR, `${slug}.md`);
-    const content = await fs.readFile(filePath, "utf-8");
-    const { attributes, body } = fm<FrontMatter>(content);
-    const html = await marked(body);
+  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
+  const md = await fs.readFile(filePath, "utf-8");
+  const { attributes, body } = fm<FrontMatter>(md);
+  const content = markdown.render(body);
 
-    return {
-      slug,
-      title: attributes.title,
-      date: attributes.date,
-      content: html,
-    };
-  } catch (_e) {
-    return null;
-  }
+  return {
+    slug,
+    title: attributes.title,
+    date: attributes.date,
+    content,
+  };
 }

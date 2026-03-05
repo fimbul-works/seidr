@@ -113,6 +113,7 @@ export class SSRScope {
    * @param {any} comp - The component instance
    */
   registerComponent(comp: any): void {
+    console.log("Registering component", comp.id);
     this.components.set(comp.id, comp);
   }
 
@@ -164,8 +165,10 @@ export class SSRScope {
 
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
+      console.log(`[SSR] Capturing component: ${comp.id}`);
       if (comp.indexedNodes && comp.indexedNodes.length > 0) {
         const map = buildStructureMap(comp);
+        console.log(`[SSR] Component ${comp.id} map:`, JSON.stringify(map));
         components[comp.id] = map;
       }
     }

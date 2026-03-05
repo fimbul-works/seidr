@@ -51,11 +51,11 @@ describe("buildStructureMap integration", () => {
     // 5: div (created last)
     expect(structureMap).toEqual([
       ["canvas"], // 0
-      ["h1", 2], // 1, child is #text(2)
-      ["#text"], // 2
-      ["section", 1, 0, 4], // 3, children are h1(1), canvas(0)
-      ["#component:Message-2"], // 4
-      ["div", 3], // 5, child is section(3)
+      ["#text"], // 1
+      ["h1", 1], // 2, child is #text(1)
+      ["#component:Message-2"], // 3
+      ["section", 2, 0, 3], // 4, children are h1(2), canvas(0), message(3)
+      ["div", 4], // 5, child is section(4)
     ]);
   });
 

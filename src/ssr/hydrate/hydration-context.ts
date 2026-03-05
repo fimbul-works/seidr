@@ -1,5 +1,4 @@
 import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE } from "../../constants";
-import { str } from "../../util/string";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { StructureMapTuple } from "../structure/structure-map";
@@ -10,16 +9,46 @@ import { getHydrationData, getHydrationMap } from "./storage";
  */
 function nodeMatches(node: Node, tag: string): boolean {
   if (tag === "#text") return isTextNode(node);
-  if (tag === "#comment") return isComment(node);
+  if (tag.startsWith("#comment")) {
+    if (tag.includes(":")) {
+      const expected = tag.split(":")[1];
+      return isComment(node) && node.nodeValue === expected;
+    }
+    return isComment(node);
+  }
   if (tag.startsWith("#component:")) {
     const id = tag.split(":")[1];
     // Component boundaries can be markers (comments) or elements with data-seidr-id
     if (isComment(node)) {
       // Match markers like <!--#ID--> or <!--List:ID-->
-      return node.data.endsWith(id);
+      return node.nodeValue?.endsWith(id) ?? false;
     }
     if (isHTMLElement(node)) {
-      return id === node.getAttribute(HYDRATION_ID_ATTRIBUTE);
+      if (id === node.getAttribute(HYDRATION_ID_ATTRIBUTE)) {
+        return true;
+      }
+
+      // Fallback: check if this is a passthrough component whose first child matches
+      const hData = getHydrationData()?.data;
+      let currentId = id;
+
+      while (currentId) {
+        const compMap = hData?.components?.[currentId];
+        if (!compMap || compMap.length === 0) break;
+
+        const rootTuple = compMap[0];
+        const descendantTag = rootTuple[0];
+
+        if (descendantTag.startsWith("#component:")) {
+          const descendantId = descendantTag.split(":")[1];
+          if (descendantId === node.getAttribute(HYDRATION_ID_ATTRIBUTE)) {
+            return true;
+          }
+          currentId = descendantId;
+        } else {
+          break;
+        }
+      }
     }
     return false;
   }
@@ -34,7 +63,7 @@ function nodeMatches(node: Node, tag: string): boolean {
  */
 export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): Node[] {
   const hydrationMap = getHydrationMap();
-  const resolved = new Array<Node>(structureMap.length);
+  const resolved = new Array<Node | undefined>(structureMap.length);
   const isChild = new Set<number>();
 
   for (const tuple of structureMap) {
@@ -45,77 +74,54 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
 
   const rootsInMap = structureMap.map((_, i) => i).filter((i) => !isChild.has(i));
 
-  // 1. Initial Mapping of Roots (Flat Sequence)
-  // These mapping indices correspond to the components' top-level nodes (roots).
-  let domRootIdx = 0;
-  for (const rootIdx of rootsInMap) {
-    const expectedTag = structureMap[rootIdx][0];
-    let matchedNode: Node | null = null;
-    let searchIdx = domRootIdx;
+  // Recursive resolution function
+  const resolve = (mapIdx: number, domNode: Node) => {
+    if (resolved[mapIdx]) return;
+    resolved[mapIdx] = domNode;
+    hydrationMap.set(domNode, domNode);
 
-    while (roots[searchIdx]) {
-      const matches = nodeMatches(roots[searchIdx], expectedTag);
-      if (matches) {
-        matchedNode = roots[searchIdx];
-        break;
-      }
-      searchIdx++;
-    }
+    const tuple = structureMap[mapIdx];
+    const tag = tuple[0];
 
-    if (matchedNode) {
-      resolved[rootIdx] = matchedNode;
-      hydrationMap.set(matchedNode, matchedNode);
-      domRootIdx = searchIdx + 1;
-    } else if (roots[domRootIdx]) {
-      resolved[rootIdx] = roots[domRootIdx];
-      hydrationMap.set(roots[domRootIdx], roots[domRootIdx]);
-      domRootIdx++;
-    }
-  }
+    // Component boundaries are placeholders in the parent map
+    if (tag.startsWith("#component:")) return;
 
-  // 2. Recursive resolution for children of already resolved nodes
-  const resolveChildren = (idx: number) => {
-    const parentNode = resolved[idx];
-    if (!parentNode || !isHTMLElement(parentNode)) return;
+    // Resolve children topologicaly
+    if (tuple.length > 1) {
+      const children = Array.from(domNode.childNodes);
+      let domSearchIdx = 0;
 
-    const tuple = structureMap[idx];
-    let domChildIdx = 0;
-    const children = Array.from((parentNode as ParentNode).childNodes || []);
+      for (let i = 1; i < tuple.length; i++) {
+        const childMapIdx = tuple[i] as number;
+        const expectedTag = structureMap[childMapIdx][0];
 
-    for (let i = 1; i < tuple.length; i++) {
-      const childMapIdx = tuple[i] as number;
-      const expectedTag = structureMap[childMapIdx][0];
-
-      let matchedNode: Node | null = null;
-      let searchIdx = domChildIdx;
-
-      while (children[searchIdx]) {
-        if (nodeMatches(children[searchIdx], expectedTag)) {
-          matchedNode = children[searchIdx];
-          break;
+        for (let j = domSearchIdx; j < children.length; j++) {
+          if (nodeMatches(children[j], expectedTag)) {
+            resolve(childMapIdx, children[j]);
+            domSearchIdx = j + 1;
+            break;
+          }
         }
-        searchIdx++;
-      }
-
-      if (matchedNode) {
-        resolved[childMapIdx] = matchedNode;
-        hydrationMap.set(matchedNode, matchedNode);
-        resolveChildren(childMapIdx);
-        domChildIdx = searchIdx + 1;
-      } else if (children[domChildIdx]) {
-        resolved[childMapIdx] = children[domChildIdx];
-        hydrationMap.set(children[domChildIdx], children[domChildIdx]);
-        domChildIdx++;
       }
     }
   };
 
-  rootsInMap.forEach((idx) => {
-    resolveChildren(idx);
-  });
+  // Resolve starting from roots
+  let domRootIdx = 0;
+  for (const rootMapIdx of rootsInMap) {
+    const expectedTag = structureMap[rootMapIdx][0];
+    for (let j = domRootIdx; j < roots.length; j++) {
+      if (nodeMatches(roots[j], expectedTag)) {
+        resolve(rootMapIdx, roots[j]);
+        domRootIdx = j + 1;
+        break;
+      }
+    }
+  }
 
-  return resolved;
+  return resolved as Node[];
 }
+
 /**
  * HydrationContext provides a sequential way to consume resolved nodes
  * during component rendering.
@@ -141,8 +147,17 @@ export class HydrationContext {
     const node = this.resolvedNodes[this.currentIndex++];
     this.lastAttemptedNode = node;
 
+    if (process.env.DEBUG_HYDRATION) {
+      console.log(
+        `[${this.componentId}] claim index ${this.currentIndex - 1}: expected <${expectedTag}>, found <${node ? (node as any).tagName || node.nodeName : "null"}>`,
+        node,
+      );
+    }
+
     if (expectedTag && node) {
       if (!nodeMatches(node, expectedTag)) {
+        if (process.env.DEBUG_HYDRATION)
+          console.warn(`[${this.componentId}] mismatch at index ${this.currentIndex - 1}`);
         return undefined;
       }
     }
@@ -155,6 +170,13 @@ export class HydrationContext {
    */
   claimBoundary(id: string): Node | undefined {
     const node = this.peek();
+
+    if (process.env.DEBUG_HYDRATION) {
+      console.log(
+        `[${this.componentId}] claimBoundary for ${id}: peek found <${node ? (node as any).tagName || node.nodeName : "null"}>`,
+      );
+    }
+
     if (!node) return undefined;
 
     const numericId = id.split("-").pop();
@@ -209,83 +231,113 @@ export function popHydrationContext(): void {
 
 /**
  * Discovers the physical DOM roots for a component being hydrated.
+ * It does this by using the actual hydration Map of components to figure out what DOM
+ * nodes and component boundaries we expect, looking at the hydration structure recursively.
  */
 export function getRootsForHydration(componentId: string, container?: HTMLElement): Node[] {
-  const hydrationDataStorage = getHydrationData()!;
+  const hydrationDataStorage = getHydrationData();
+  const hData = hydrationDataStorage?.data;
+
+  if (!hData || !hData.components) {
+    return [];
+  }
 
   const parentCtx = getHydrationContext();
   let candidate: Node | undefined;
 
+  // 1. Contextual discovery: if we are within a parent parsing its children sequentially
   if (parentCtx) {
     candidate = parentCtx.claimBoundary(componentId);
   }
 
+  // 2. Data Driven Discovery: if we are building the top-level tree or context failed
   if (!candidate && container) {
-    // Top-level discovery: Prefer Markers if they exist, then fallback to Data-selector
-    const hData = hydrationDataStorage.data;
-    const numericId = componentId.split("-").pop() || "";
-    const lookFor = [componentId, numericId];
-    if (numericId) lookFor.push(`#${numericId}`);
-    lookFor.push(`#${componentId}`);
+    const compMap = hData.components[componentId];
+    if (compMap && compMap.length > 0) {
+      // Look at the first element/node in the structure map
+      const rootTuple = compMap[0];
+      const rootTag = rootTuple[0];
 
-    if (!parentCtx && !isEmpty(hData?.ctxID)) {
-      lookFor.push(str(hData.ctxID));
-    }
+      // Array/Fragment with markers
+      if (rootTag.startsWith("#comment")) {
+        const text = rootTag.replace("#comment:", "");
 
-    // Direct children
-    const nodes = Array.from(container.childNodes);
-    for (const node of nodes) {
-      if (isComment(node) && lookFor.includes(node.textContent?.trim() || "")) {
-        candidate = node;
-        break;
-      }
-    }
+        // Find start marker
+        let startMarker: Comment | undefined;
+        const walker = document.createTreeWalker(container, NodeFilter.SHOW_COMMENT);
+        let node: Node | null;
+        while ((node = walker.nextNode())) {
+          if (node.textContent?.trim() === text) {
+            startMarker = node as Comment;
+            break;
+          }
+        }
 
-    // Descendants
-    if (!candidate) {
-      const walker = document.createTreeWalker(container, NodeFilter.SHOW_COMMENT);
-      let node: Node | null;
-      while ((node = walker.nextNode())) {
-        if (lookFor.includes(node.textContent?.trim() || "")) {
-          candidate = node;
-          break;
+        if (startMarker) {
+          const endLabel = `/${text}`;
+          const nodes: Node[] = [startMarker];
+          let current = startMarker.nextSibling;
+          while (current) {
+            nodes.push(current);
+            if (isComment(current) && current.textContent === endLabel) {
+              break;
+            }
+            current = current.nextSibling;
+          }
+          return nodes;
         }
       }
-    }
 
-    // 2. Data-selector fallback if no markers found
-    if (!candidate) {
-      const hData = hydrationDataStorage.data;
-      const ctxSelector = !parentCtx && !isEmpty(hData?.ctxID) ? `[${ROOT_ATTRIBUTE}~="${hData.ctxID}"],` : "";
-      const rootSelector = !parentCtx ? `[${ROOT_ATTRIBUTE}~="${numericId}"],` : "";
-      const selector = `${ctxSelector}${rootSelector}[${HYDRATION_ID_ATTRIBUTE}~="${numericId}"]`;
-      const el = container.matches?.(selector) ? container : container.querySelector(selector);
+      // Natively wraps a child component (passthrough)
+      if (rootTag.startsWith("#component:")) {
+        const descendantId = rootTag.split(":")[1];
+        return getRootsForHydration(descendantId, container);
+      }
+
+      // Natively wraps a single DOM element
+      const numericId = componentId.split("-").pop() || "";
+      const ctxSelector = !parentCtx && hData.ctxID ? `[${ROOT_ATTRIBUTE}~="${hData.ctxID}"]` : "";
+      const idSelector = `[${HYDRATION_ID_ATTRIBUTE}~="${numericId}"]`;
+
+      // 1. Try finding by ctxID on container or children (primary for root components)
+      if (ctxSelector) {
+        const el = container.matches?.(ctxSelector) ? container : container.querySelector(ctxSelector);
+        if (isHTMLElement(el)) {
+          // Verify it's actually for this component if possible
+          if (el.getAttribute(HYDRATION_ID_ATTRIBUTE) === numericId || el.hasAttribute(HYDRATION_ID_ATTRIBUTE)) {
+            return [el];
+          }
+        }
+      }
+
+      // 2. Fallback to finding by component ID
+      const el = container.matches?.(idSelector) ? container : container.querySelector(idSelector);
       if (el) {
-        candidate = el;
+        return [el];
       }
     }
   }
 
-  if (!candidate) return [];
-
-  // If candidate is a start marker, return the full range until the end marker (including markers)
-  if (isComment(candidate)) {
-    const text = candidate.textContent || "";
-    // Boundary match (e.g. Component-1 or List-2)
-    if (!text.startsWith("/")) {
-      const endLabel = `/${text}`;
-      const nodes: Node[] = [candidate];
-      let current = candidate.nextSibling;
-      while (current) {
-        nodes.push(current);
-        if (isComment(current) && current.textContent === endLabel) {
-          break;
+  if (candidate) {
+    // If the candidate was claimed from context and it's a marker, return full range
+    if (isComment(candidate)) {
+      const text = candidate.textContent || "";
+      if (!text.startsWith("/")) {
+        const endLabel = `/${text}`;
+        const nodes: Node[] = [candidate];
+        let current = candidate.nextSibling;
+        while (current) {
+          nodes.push(current);
+          if (isComment(current) && current.textContent === endLabel) {
+            break;
+          }
+          current = current.nextSibling;
         }
-        current = current.nextSibling;
+        return nodes;
       }
-      return nodes;
     }
+    return [candidate];
   }
 
-  return [candidate];
+  return [];
 }

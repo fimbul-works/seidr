@@ -38,7 +38,12 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
     } else if (isTextNode(node)) {
       tagName = "#text";
     } else if (isComment(node)) {
-      tagName = "#comment";
+      const text = node.nodeValue?.replace(/^\//, "");
+      if (text && component.id.indexOf(text) !== -1) {
+        tagName = `#comment:${node.nodeValue}`;
+      } else {
+        tagName = "#comment";
+      }
     } else {
       tagName = "#unknown";
     }

@@ -134,17 +134,8 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
   }
 
   normalize(): void {
-    const nodes = this.serverChildNodes.nodes;
-    for (let i = 0; i < nodes.length - 1; i++) {
-      const current = nodes[i];
-      const next = nodes[i + 1];
-      if (current.nodeType === 3 && next.nodeType === 3) {
-        (current as Text).data += (next as Text).data;
-        nodes.splice(i + 1, 1);
-        (next as any).parentNode = null;
-        i--;
-      }
-    }
+    // We intentionally don't normalize text nodes in SSR to maintain exact 1:1 mapping with client-side reactive text nodes.
+    // Client side might produce multiple text nodes adjacent to each other that are individually updated.
   }
 
   isSameNode(otherNode: Node | null): boolean {
@@ -152,8 +143,60 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
     return (this as Node) === otherNode;
   }
 
-  compareDocumentPosition(_other: Node): number {
-    throw new Error("Method not implemented.");
+  compareDocumentPosition(other: Node): number {
+    if (this === other) return 0;
+
+    let node1: Node | null = this as unknown as Node;
+    let node2: Node | null = other;
+
+    // Build ancestor paths
+    const path1: Node[] = [];
+    const path2: Node[] = [];
+
+    while (node1) {
+      path1.push(node1);
+      node1 = node1.parentNode;
+    }
+
+    while (node2) {
+      path2.push(node2);
+      node2 = node2.parentNode;
+    }
+
+    // Nodes are not in the same tree
+    if (path1[path1.length - 1] !== path2[path2.length - 1]) {
+      return this.DOCUMENT_POSITION_DISCONNECTED | this.DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC;
+    }
+
+    // Find the lowest common ancestor
+    let lcaIndex = 1;
+    while (
+      lcaIndex <= path1.length &&
+      lcaIndex <= path2.length &&
+      path1[path1.length - lcaIndex] === path2[path2.length - lcaIndex]
+    ) {
+      lcaIndex++;
+    }
+    lcaIndex--;
+
+    const lca = path1[path1.length - lcaIndex];
+
+    if (lca === this) return this.DOCUMENT_POSITION_CONTAINS | this.DOCUMENT_POSITION_PRECEDING;
+    if (lca === other) return this.DOCUMENT_POSITION_CONTAINED_BY | this.DOCUMENT_POSITION_FOLLOWING;
+
+    // Find which child comes first
+    const child1 = path1[path1.length - lcaIndex - 1];
+    const child2 = path2[path2.length - lcaIndex - 1];
+
+    const children = Array.from(lca.childNodes);
+    const index1 = children.indexOf(child1 as ChildNode);
+    const index2 = children.indexOf(child2 as ChildNode);
+
+    if (index1 < index2) {
+      return this.DOCUMENT_POSITION_FOLLOWING; // 'other' follows 'this'
+    } else {
+      return this.DOCUMENT_POSITION_PRECEDING; // 'other' precedes 'this'
+    }
   }
 
   isDefaultNamespace(_namespace: string | null): boolean {

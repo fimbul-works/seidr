@@ -25,16 +25,17 @@ export const getCurrentPath = (): Seidr<string> => {
   let observable = state.getData<Seidr<string>>(PATH_DATA_KEY);
 
   if (!observable) {
-    const initialPath = isServer()
-      ? (state.getData<string>(PATH_DATA_KEY) ?? "/")
-      : window.location
-        ? window.location.pathname + window.location.search + window.location.hash
-        : "/";
+    const initialPath =
+      isServer() || import.meta.env.SSR
+        ? (state.getData<string>(PATH_DATA_KEY) ?? "/")
+        : window.location
+          ? window.location.pathname + window.location.search + window.location.hash
+          : "/";
 
     observable = new Seidr<string>(initialPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
     state.setData(PATH_DATA_KEY, observable);
 
-    if (!isServer() && typeof window !== "undefined") {
+    if (!isServer() && !import.meta.env.SSR && typeof window !== "undefined") {
       // Handle history.back
       const popStateHandler = () =>
         (observable!.value = window.location.pathname + window.location.search + window.location.hash);

@@ -51,7 +51,7 @@ export const $text = (text: unknown): Text => {
 
   const node: Text = doc.createTextNode(str(text));
 
-  if (isServer()) {
+  if (isServer() || import.meta.env.SSR) {
     getCurrentComponent()?.trackNode?.(node);
   }
 

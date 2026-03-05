@@ -1,12 +1,12 @@
-import { getCurrentComponent, pop, push } from "../component/component-stack";
+import { pop, push } from "../component/component-stack";
 import { useScope } from "../component/use-scope";
-import { getFirstNode } from "../component/util";
 import type { SeidrChild } from "../element/types";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
-import { isArray } from "../util/type-guards/primitive-types";
+import { isArray, isEmpty } from "../util/type-guards/primitive-types";
 import { $text } from "./node/text";
 
 /**
@@ -17,7 +17,7 @@ import { $text } from "./node/text";
  */
 export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | null | undefined) => {
   // Skip empty children
-  if (!child) {
+  if (isEmpty(child) || child === "") {
     return;
   }
 
@@ -32,7 +32,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+    if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
       push(child);
       appendChild(parent, child.element);
       pop();
@@ -44,14 +44,10 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.endMarker);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && isServer()) {
-      const current = getCurrentComponent();
-      if (current) {
-        const boundary = child.startMarker || getFirstNode(child);
-        if (boundary) {
-          current.trackNode(boundary);
-          current.childComponentNodes.set(boundary, child.id);
-        }
+    if (!process.env.CORE_DISABLE_SSR && !isServer() && !import.meta.env.SSR && hasHydrationData()) {
+      const ctx = getHydrationContext();
+      if (ctx) {
+        ctx.claimBoundary(child.id);
       }
     }
 
@@ -69,19 +65,40 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   }
 
   const target = parent as ParentNode;
+
+  if (typeof child === "string" && !child.trim()) {
+    return; // Do not append pure whitespace nodes
+  }
+
   const childNode = isDOMNode(child) ? child : $text(child);
 
   if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
     const mapped = getHydrationMap().get(childNode);
     if (mapped) {
       if (mapped.parentNode === target) {
+        if (process.env.DEBUG_HYDRATION) {
+          console.log(
+            "[appendChild] Skipping",
+            (childNode as any).tagName || childNode.nodeName,
+            "because it's already in parent",
+            (target as any).id || (target as any).nodeName,
+          );
+        }
         return;
       }
     }
   }
 
+  if (process.env.DEBUG_HYDRATION) {
+    console.log(
+      "[appendChild] Appending",
+      (childNode as any).tagName || childNode.nodeName,
+      "to",
+      (target as any).id || (target as any).nodeName,
+    );
+  }
+
   // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.
-  // Note: Only Elements/Documents support .contains() on other nodes reliably in JSDOM.
   const canContain = childNode.nodeType === 1 || childNode.nodeType === 9;
   if (childNode !== target && (!canContain || !childNode.contains(target))) {
     target.appendChild(childNode);

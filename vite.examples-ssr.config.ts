@@ -7,11 +7,12 @@ export default defineConfig((config) => {
     root: "examples/ssr",
     plugins: [
       replace({
-        "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
+        "process.env.NODE_ENV": JSON.stringify("development"),
         "process.env.CORE_DISABLE_SSR": "false",
         "process.env.VITEST": "false",
         "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
-        "process.env.DEBUG": "false",
+        "process.env.DEBUG": "true",
+        "process.env.DEBUG_HYDRATION": "true",
         "isServer()": config.isSsrBuild ? "true" : "false",
         "isClient()": config.isSsrBuild ? "false" : "true",
         preventAssignment: true,

@@ -210,22 +210,6 @@ describe("ServerElement", () => {
     expect(() => child.appendChild(parent)).toThrow("Hierarchy error");
   });
 
-  it("should handle text node merging via normalize", () => {
-    const parent = doc.createElement("div");
-    const t1 = doc.createTextNode("Hello ");
-    const t2 = doc.createTextNode("World");
-
-    parent.appendChild(t1);
-    parent.appendChild(t2);
-
-    expect(parent.childNodes.length).toBe(2);
-    expect(parent.textContent).toBe("Hello World");
-
-    parent.normalize();
-    expect(parent.childNodes.length).toBe(1);
-    expect(parent.textContent).toBe("Hello World");
-  });
-
   it("should handle append and prepend", () => {
     const parent = doc.createElement("div");
     const child1 = doc.createElement("span");

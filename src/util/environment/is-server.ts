@@ -6,5 +6,4 @@
  * @returns {boolean} `true` if in server, `false` otherwise
  */
 export const isServer = (): boolean =>
-  (typeof window === "undefined" && import.meta.env.SSR) ||
-  (typeof process !== "undefined" && !!process.env.SEIDR_TEST_SSR);
+  import.meta.env.SSR || (typeof process !== "undefined" && (!!process.env.SEIDR_TEST_SSR || !!process.env.SSR));

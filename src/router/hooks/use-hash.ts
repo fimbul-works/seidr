@@ -21,7 +21,10 @@ export const useHash = (): Seidr<string> => {
   // Create the hash seidr if not already initialized
   const hash: Seidr<string> = isInitialized
     ? appState.getData(DATA_KEY)!
-    : new Seidr<string>(isServer() ? "" : window.location.hash, { ...NO_HYDRATE, id: HASH_SEIDR_ID });
+    : new Seidr<string>(isServer() || import.meta.env.SSR ? "" : window.location.hash, {
+        ...NO_HYDRATE,
+        id: HASH_SEIDR_ID,
+      });
 
   if (!isInitialized) {
     appState.setData(DATA_KEY, hash);
@@ -35,7 +38,7 @@ export const useHash = (): Seidr<string> => {
   scope.onUnmount(() => derivedHash.destroy());
 
   // Return the hash directly on the server
-  if (isServer()) {
+  if (isServer() || import.meta.env.SSR) {
     return derivedHash;
   }
 

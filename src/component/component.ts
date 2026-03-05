@@ -26,6 +26,7 @@ import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-ty
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
+import { getFirstNode } from "./util/component-nodes";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -45,6 +46,7 @@ export const component = <P = void>(
     const parent = getCurrentComponent();
     const componentId = str(getNextComponentId());
     const fullComponentId = `${name}-${componentId}`;
+    const shouldCapture = isServer() || import.meta.env.SSR;
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -79,6 +81,13 @@ export const component = <P = void>(
         return childComponentNodes;
       },
       trackNode(node: Node) {
+        if (process.env.DEBUG_HYDRATION) {
+          console.log(
+            `[${fullComponentId}] tracking node:`,
+            node.nodeName,
+            node.nodeType === 3 ? `"${node.textContent}"` : "",
+          );
+        }
         trackedNodes.push(node);
       },
       onUnmount(cleanup: CleanupFunction): void {
@@ -130,7 +139,7 @@ export const component = <P = void>(
           return; // Already attached
         }
 
-        if (!process.env.CORE_DISABLE_SSR && isServer()) {
+        if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
           getSSRScope()?.registerComponent(comp);
         }
 
@@ -206,7 +215,7 @@ export const component = <P = void>(
     push(comp);
 
     // Register component with SSR scope for hydration path mapping
-    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+    if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
       getSSRScope()?.registerComponent(comp);
     }
 
@@ -217,13 +226,17 @@ export const component = <P = void>(
         const hData = getHydrationData()!;
         const compMap = hData.data?.components?.[fullComponentId];
         if (compMap) {
+          if (process.env.DEBUG_HYDRATION) console.log(`[Hydration] Hydrating component: ${fullComponentId}`);
+          if (process.env.DEBUG_HYDRATION) console.log(`[Hydration] Attempting to find roots for ${fullComponentId}`);
           const roots = getRootsForHydration(fullComponentId, hData.data?.root as HTMLElement);
           if (roots.length > 0) {
+            if (process.env.DEBUG_HYDRATION)
+              console.log(`[Hydration] Found ${roots.length} roots for ${fullComponentId}`);
             hCtx = new HydrationContext(fullComponentId, compMap, roots);
             pushHydrationContext(hCtx);
             // If the component has markers (e.g. it's a fragment), claim the start marker
-            if (compMap[0]?.[0] === "#comment") {
-              hCtx.claim("#comment");
+            if (compMap[0]?.[0]?.startsWith("#comment")) {
+              hCtx.claim(compMap[0][0]);
             }
           } else {
             console.warn(
@@ -241,8 +254,22 @@ export const component = <P = void>(
       }
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
-      const toNode = (item: SeidrChild): ComponentChildren => (isStr(item) || isNum(item) ? $text(item) : item);
-      const element = isArray(result) ? (result.map(toNode).filter(Boolean) as ComponentChildren) : toNode(result);
+      const toNode = (item: SeidrChild): ComponentChildren => {
+        if (isStr(item) || isNum(item)) {
+          return $text(item);
+        }
+        return item;
+      };
+
+      const filterEmptyText = (item: ComponentChildren): boolean => {
+        if (!item) return false;
+        if ((item as Node).nodeType === 3 && !(item as Node).textContent?.trim()) return false;
+        return true;
+      };
+
+      const element = isArray(result)
+        ? (result.map(toNode).filter(filterEmptyText) as ComponentChildren)
+        : toNode(result);
 
       comp.element = element;
 
@@ -253,10 +280,16 @@ export const component = <P = void>(
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
+      }
 
-        if (!process.env.CORE_DISABLE_SSR && isServer()) {
-          comp.trackNode(comp.startMarker);
-          comp.trackNode(comp.endMarker);
+      // Track component boundary in parent immediately to match evaluation order
+      if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
+        if (parent) {
+          const boundary = comp.startMarker || getFirstNode(comp);
+          if (boundary) {
+            parent.trackNode(boundary);
+            parent.childComponentNodes.set(boundary, comp.id);
+          }
         }
       }
     } catch (err) {

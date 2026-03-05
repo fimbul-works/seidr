@@ -55,6 +55,9 @@ describe("Hydration Integration", () => {
     cleanupMode = enableClientMode();
     container.innerHTML = html;
 
+    console.log("HTML before hydrate:", html);
+    console.log("HYDRATION DATA:", JSON.stringify(hydrationData, null, 2));
+
     // Grab references to the raw DOM nodes before hydration
     const originalAppDiv = container.querySelector("#app");
     const originalH1 = container.querySelector("h1");

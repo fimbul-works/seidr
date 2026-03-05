@@ -20,7 +20,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   for (const parent of seidr.parents) {
     if (parent.id === seidr.id) {
       // In SSR we throw, but in the browser we just warn and return
-      if (isServer()) {
+      if (isServer() || import.meta.env.SSR) {
         throw new SeidrError(`Seidr ID must be unique`, { cause: seidr });
       }
       console.warn(`Seidr ID must be unique`);

@@ -37,57 +37,65 @@ export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
-  return await runWithAppState(async () => {
-    const state = getAppState();
-    if (!state) {
-      throw new SeidrError("No AppState available.");
-    }
+  const prevSSR = process.env.SEIDR_TEST_SSR;
+  process.env.SEIDR_TEST_SSR = "true";
 
-    let pathSeidr: Seidr<string> | undefined;
-    if (isStr(options.path)) {
-      pathSeidr = new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
-      state.setData(PATH_DATA_KEY, pathSeidr);
-    }
-
-    const activeScope = options.scope || new SSRScope();
-    setSSRScope(activeScope);
-
-    try {
-      const comp = wrapComponent(factory)();
-
-      // Ensure root is attached to something so it can render content (especially for marker-based components)
-      // We use a temporary div as a container for initial rendering.
-      const doc = getDocument().createElement("div");
-      const anchor = getDocument().createComment("ssr-anchor");
-      doc.appendChild(anchor);
-
-      // Mount the component properly using the recursive mountComponent
-      mountComponent(comp, anchor);
-
-      await activeScope.waitForPromises();
-      anchor.remove();
-
-      // Use innerHTML to get the stringified content without the wrapping div
-      const html = doc.innerHTML;
-
-      const hydrationData = {
-        ...activeScope.captureHydrationData(),
-        ctxID: state.ctxID,
-      };
-
-      comp.unmount();
-      pathSeidr?.destroy();
-      clearPathCache();
-
-      return { html, hydrationData };
-    } finally {
-      setSSRScope(undefined);
-      if (state.markers) {
-        state.markers.clear();
+  try {
+    return await runWithAppState(async () => {
+      const state = getAppState();
+      if (!state) {
+        throw new SeidrError("No AppState available.");
       }
-      if (!options.scope) {
-        activeScope.clear();
+
+      let pathSeidr: Seidr<string> | undefined;
+      if (isStr(options.path)) {
+        pathSeidr = new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+        state.setData(PATH_DATA_KEY, pathSeidr);
       }
-    }
-  });
+
+      const activeScope = options.scope || new SSRScope();
+      setSSRScope(activeScope);
+
+      try {
+        const comp = wrapComponent(factory)();
+
+        // Ensure root is attached to something so it can render content (especially for marker-based components)
+        // We use a temporary div as a container for initial rendering.
+        const doc = getDocument().createElement("div");
+        const anchor = getDocument().createComment("ssr-anchor");
+        doc.appendChild(anchor);
+
+        // Mount the component properly using the recursive mountComponent
+        mountComponent(comp, anchor);
+
+        await activeScope.waitForPromises();
+        anchor.remove();
+
+        // Use innerHTML to get the stringified content without the wrapping div
+        const html = doc.innerHTML;
+
+        const hydrationData = {
+          ...activeScope.captureHydrationData(),
+          ctxID: state.ctxID,
+        };
+
+        comp.unmount();
+        pathSeidr?.destroy();
+        clearPathCache();
+
+        return { html, hydrationData };
+      } finally {
+        setSSRScope(undefined);
+        if (state.markers) {
+          state.markers.clear();
+        }
+        if (!options.scope) {
+          activeScope.clear();
+        }
+      }
+    });
+  } finally {
+    if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
+    else process.env.SEIDR_TEST_SSR = prevSSR;
+  }
 }
