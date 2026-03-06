@@ -1,13 +1,14 @@
 import puppeteer from "puppeteer";
+import { renderFullStructureTree } from "../../src/ssr/structure/structure-map.js";
 
-async function runTest(url) {
+async function runTest(url: string) {
   const browser = await puppeteer.launch({
-    headless: "new",
+    headless: true,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
   const page = await browser.newPage();
 
-  const consoleMessages = [];
+  const consoleMessages: string[] = [];
   page.on("console", (msg) => {
     const text = msg.text();
     consoleMessages.push(text);
@@ -15,7 +16,7 @@ async function runTest(url) {
   });
 
   await page.evaluateOnNewDocument(() => {
-    window.process = { env: { DEBUG_HYDRATION: "true" } };
+    (window as any).process = { env: { DEBUG_HYDRATION: "true" } };
   });
 
   await page.goto(url);
@@ -23,7 +24,7 @@ async function runTest(url) {
   // Wait a bit for hydration to settle
   await new Promise((r) => setTimeout(r, 2000));
 
-  const results = await page.evaluate(() => {
+  const pageResults = await page.evaluate(() => {
     const navbars = document.querySelectorAll(".navbar");
     const appContainers = document.querySelectorAll(".app-container");
     const appDiv = document.getElementById("app");
@@ -37,13 +38,24 @@ async function runTest(url) {
         .join(" "),
     }));
 
+    const rawData = (window as any).__SEIDR_HYDRATION_DATA__;
+
     return {
       navbarCount: navbars.length,
       appContainerCount: appContainers.length,
       containersInfo,
+      rawData,
       bodyHtml: document.body.innerHTML.substring(0, 500) + "...",
     };
   });
+
+  const tree = pageResults.rawData ? renderFullStructureTree(pageResults.rawData) : null;
+
+  const results = {
+    ...pageResults,
+    rawData: pageResults.rawData,
+    structureTree: tree,
+  };
 
   console.log("Results:", JSON.stringify(results, null, 2));
 

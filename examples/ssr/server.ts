@@ -34,14 +34,14 @@ if (!isProduction) {
 }
 
 // API Routes
-app.get("/api/posts", async (_req: Request, res: Response) => {
+app.get("/api/post", async (_req: Request, res: Response) => {
   console.log("[API] Fetching all posts");
   const posts = await getPosts();
   // Strip content for list view to reduce size
   res.json(posts);
 });
 
-app.get("/api/posts/:slug", async (req: Request, res: Response) => {
+app.get("/api/post/:slug", async (req: Request, res: Response) => {
   console.log(`[API] Fetching post: ${req.params.slug}`);
   const post = await getPost(req.params.slug as string);
   if (post) {

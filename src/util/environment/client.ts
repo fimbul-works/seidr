@@ -5,9 +5,8 @@
  */
 export const isClient = (): boolean =>
   typeof window !== "undefined" &&
-  !import.meta.env.SSR &&
-  typeof process !== "undefined" &&
-  !process.env.SEIDR_TEST_SSR;
+  !(typeof import.meta !== "undefined" && (import.meta as any).env?.SSR) &&
+  !(typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR));
 
 /**
  * Executes a function only in the browser environment.

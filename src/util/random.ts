@@ -26,7 +26,11 @@ export const random = (): number => {
 
   // Initialize state if not present
   if (!rngState) {
-    const seed = state.ctxID + getNextSeidrId() + LCG_M / 1;
+    const sId = getNextSeidrId();
+    const seed = state.ctxID + sId + LCG_M / 1;
+    if (process.env.DEBUG) {
+      console.log(`[random] Initializing RNG: ctxID=${state.ctxID}, sID=${sId}, seed=${seed}`);
+    }
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;
@@ -42,8 +46,7 @@ export const random = (): number => {
   r2 = t - i;
 
   // Save the state back to context
-  const nextRngState: [number, number, number, number] = [r0, r1, r2, i];
-  state.setData(RANDOM_DATA_KEY, nextRngState);
+  state.setData(RANDOM_DATA_KEY, [r0, r1, r2, i]);
 
   return r2;
 };

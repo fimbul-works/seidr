@@ -1,7 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import fm from "front-matter";
-import MarkdownIt from "markdown-it";
+import { marked } from "marked";
 import type { BlogPost } from "./types";
 
 const CONTENT_DIR = path.resolve("examples/ssr/blog-content");
@@ -10,8 +10,6 @@ interface FrontMatter {
   title: string;
   date: string;
 }
-
-const markdown = new MarkdownIt();
 
 export async function getPosts(): Promise<BlogPost[]> {
   const files = await fs.readdir(CONTENT_DIR);
@@ -22,7 +20,7 @@ export async function getPosts(): Promise<BlogPost[]> {
         const md = await fs.readFile(path.join(CONTENT_DIR, file), "utf-8");
         const { attributes, body } = fm<FrontMatter>(md);
         const slug = file.replace(".md", "");
-        const excerpt = markdown.render(`${body.split(". ").shift()!}...`);
+        const excerpt = await marked.parse(`${body.split(". ").shift()!}...`);
         return {
           slug,
           title: attributes.title,
@@ -40,7 +38,7 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
   const filePath = path.join(CONTENT_DIR, `${slug}.md`);
   const md = await fs.readFile(filePath, "utf-8");
   const { attributes, body } = fm<FrontMatter>(md);
-  const content = markdown.render(body);
+  const content = await marked.parse(body);
 
   return {
     slug,

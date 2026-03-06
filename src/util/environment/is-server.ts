@@ -5,5 +5,12 @@
  *
  * @returns {boolean} `true` if in server, `false` otherwise
  */
-export const isServer = (): boolean =>
-  import.meta.env.SSR || (typeof process !== "undefined" && (!!process.env.SEIDR_TEST_SSR || !!process.env.SSR));
+export const isServer = () => {
+  if (typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR)) return true;
+  if (typeof import.meta !== "undefined") {
+    const env = import.meta.env;
+    if (env.SSR) return true;
+    if (env.env?.SSR) return true;
+  }
+  return false;
+};

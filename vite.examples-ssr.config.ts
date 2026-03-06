@@ -12,13 +12,12 @@ export default defineConfig((config) => {
         "process.env.VITEST": "false",
         "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
         "process.env.DEBUG": "true",
-        "process.env.DEBUG_HYDRATION": "true",
-        "isServer()": config.isSsrBuild ? "true" : "false",
-        "isClient()": config.isSsrBuild ? "false" : "true",
         preventAssignment: true,
-        window: config.isSsrBuild ? "undefined" : "window",
       }),
     ],
+    ssr: {
+      noExternal: ["@fimbul-works/seidr"],
+    },
     build: {
       outDir: "examples/ssr/dist",
       emptyOutDir: true,
