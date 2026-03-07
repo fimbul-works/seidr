@@ -20,7 +20,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   for (const parent of seidr.parents) {
     if (parent.id === seidr.id) {
       // In SSR we throw, but in the browser we just warn and return
-      if (isServer() || import.meta.env.SSR) {
+      if (isServer()) {
         throw new SeidrError(`Seidr ID must be unique`, { cause: seidr });
       }
       console.warn(`Seidr ID must be unique`);
@@ -33,7 +33,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
     return;
   }
 
-  if (isServer() || import.meta.env.SSR) {
+  if (isServer()) {
     // Server-side: register with active SSR scope
     getSSRScope()?.register(seidr);
   } else if (isClient()) {

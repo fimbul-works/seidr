@@ -5,7 +5,7 @@ import { enableClientMode, mockUseScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
-import { clearHydrationData, type HydrationData, hasHydrationData, hydrate, setHydrationData } from "./index";
+import { clearHydrationData, type HydrationData, hydrate, isHydrating, setHydrationData } from "./index";
 
 describe("Hydration", () => {
   let container: HTMLElement;
@@ -27,7 +27,7 @@ describe("Hydration", () => {
   });
 
   it("should track hydration state", () => {
-    expect(hasHydrationData()).toBe(false);
+    expect(isHydrating()).toBe(false);
 
     const data = {
       ctxID: 0,
@@ -36,10 +36,10 @@ describe("Hydration", () => {
     };
 
     setHydrationData(data, container);
-    expect(hasHydrationData()).toBe(true);
+    expect(isHydrating()).toBe(true);
 
     clearHydrationData();
-    expect(hasHydrationData()).toBe(false);
+    expect(isHydrating()).toBe(false);
   });
 
   it("should clear registry when setting new context", () => {

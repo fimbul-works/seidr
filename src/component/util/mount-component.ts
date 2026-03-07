@@ -1,6 +1,6 @@
 import type { Component, ComponentChildren } from "../../component/types";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
-import { getHydrationMap, hasHydrationData } from "../../ssr/hydrate/storage";
+import { getHydrationMap, isHydrating } from "../../ssr/hydrate/storage";
 import { SeidrError } from "../../types";
 import { isServer } from "../../util/environment/is-server";
 import { isComponent } from "../../util/type-guards/component-types";
@@ -46,13 +46,13 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
         mountChildNode(item);
       } else if (isComponent(item)) {
         if (!process.env.CORE_DISABLE_SSR) {
-          if (isServer() || import.meta.env.SSR) {
+          if (isServer()) {
             const boundary = item.startMarker || getFirstNode(item);
             if (boundary) {
               component.trackNode(boundary);
               component.childComponentNodes.set(boundary, item.id);
             }
-          } else if (hasHydrationData()) {
+          } else if (isHydrating()) {
             const ctx = getHydrationContext();
             if (ctx) {
               ctx.claimBoundary(item.id);

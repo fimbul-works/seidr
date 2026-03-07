@@ -12,11 +12,7 @@ import { isServer } from "./environment/is-server";
  * @returns {string} A unique identifier string (approximately 20 characters)
  */
 export const uid = (): string =>
-  [
-    encodeBase62(Date.now()),
-    isServer() || import.meta.env.SSR ? encodeBase62(process.pid) : randomString(3),
-    randomString(8),
-  ].join("-");
+  [encodeBase62(Date.now()), isServer() ? encodeBase62(process.pid) : randomString(3), randomString(8)].join("-");
 
 /**
  * Extracts the creation timestamp from a UID.

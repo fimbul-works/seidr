@@ -38,7 +38,7 @@ export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSR
  * @param {(SSRScope | undefined)} scope - The scope to activate for the current application state
  */
 export function setSSRScope(scope: SSRScope | undefined): void {
-  if (!import.meta.env.SSR && !isServer()) {
+  if (!isServer()) {
     return;
   }
 

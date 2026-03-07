@@ -12,7 +12,7 @@ import { isServer } from "./is-server";
  * @returns {T} The result of the function
  */
 export const inServer = <T>(fn: () => T): T => {
-  if (!isServer() && !import.meta.env.SSR) {
+  if (!isServer()) {
     return false as T;
   }
 

@@ -16,11 +16,19 @@ export const getFirstNode = (comp: Component): Node => {
 
   const el = comp.element;
   if (isArray(el)) {
-    return el[0] as Node;
+    const first = el[0];
+    if (isComponent(first)) {
+      return getFirstNode(first);
+    }
+    return first as Node;
   }
 
   if (isComponent(el)) {
-    return getFirstNode(el);
+    const res = getFirstNode(el);
+    if (!res) {
+      console.error(`[getFirstNode] Warning: component ${el.id} returned no first node`);
+    }
+    return res;
   }
 
   return el as Node;
@@ -40,7 +48,11 @@ export const getLastNode = (comp: Component): Node => {
 
   const el = comp.element;
   if (isArray(el)) {
-    return el[el.length - 1] as Node;
+    const last = el[el.length - 1];
+    if (isComponent(last)) {
+      return getLastNode(last);
+    }
+    return last as Node;
   }
 
   if (isComponent(el)) {

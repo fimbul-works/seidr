@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { renderFullStructureTree } from "../../src/ssr/structure/structure-map.js";
+import { buildDomTree } from "../../src/ssr/structure/dom-tree.js";
 
 async function runTest(url: string) {
   const browser = await puppeteer.launch({
@@ -23,6 +23,11 @@ async function runTest(url: string) {
 
   // Wait a bit for hydration to settle
   await new Promise((r) => setTimeout(r, 2000));
+
+  await page.evaluate(() => {
+    const app = document.getElementById("app");
+    console.log("CONTAINER HTML BEFORE HYDRATION:", app?.innerHTML);
+  });
 
   const pageResults = await page.evaluate(() => {
     const navbars = document.querySelectorAll(".navbar");
@@ -49,7 +54,7 @@ async function runTest(url: string) {
     };
   });
 
-  const tree = pageResults.rawData ? renderFullStructureTree(pageResults.rawData) : null;
+  const tree = pageResults.rawData ? buildDomTree(pageResults.rawData.components) : null;
 
   const results = {
     ...pageResults,
@@ -57,7 +62,8 @@ async function runTest(url: string) {
     structureTree: tree,
   };
 
-  console.log("Results:", JSON.stringify(results, null, 2));
+  console.log("Full Hydration Data:", JSON.stringify(results.rawData, null, 2));
+  console.log("Results Summary:", JSON.stringify({ ...results, rawData: undefined }, null, 2));
 
   const mismatches = consoleMessages.filter((m) => m.includes("[Hydration]"));
   if (mismatches.length > 0) {
@@ -71,6 +77,54 @@ async function runTest(url: string) {
   } else {
     console.log("SUCCESS: No duplication detected (at least for .app-container).");
   }
+
+  // --- Start Navigation Test ---
+  console.log("\n--- Testing Navigation ---");
+  // Find a link to a post and click it
+  const postLinkSelector = ".post-list a";
+  await page.waitForSelector(postLinkSelector);
+
+  const postTitleBefore = await page.evaluate((sel) => document.querySelector(sel)?.textContent, postLinkSelector);
+  console.log(`Clicking link: ${postTitleBefore}`);
+
+  await page.click(postLinkSelector);
+
+  // Wait for the new content to appear (e.g. the post page h1)
+  await page.waitForSelector(".post-page h1", { timeout: 5000 }).catch(() => {
+    console.error("FAILURE: Timed out waiting for .post-page h1");
+  });
+
+  // Wait a bit for any dynamic content/mounting to settle
+  await new Promise((r) => setTimeout(r, 1000));
+
+  const navResults = await page.evaluate(() => {
+    const postPages = document.querySelectorAll(".post-page");
+    const homePages = document.querySelectorAll(".home-page");
+    const appContainers = document.querySelectorAll(".app-container");
+
+    return {
+      postPageCount: postPages.length,
+      homePageCount: homePages.length,
+      appContainerCount: appContainers.length,
+      postTitle: document.querySelector(".post-page h1")?.textContent,
+      htmlSample: document.querySelector(".main-content")?.innerHTML.substring(0, 500) + "...",
+    };
+  });
+
+  console.log("Navigation results:", JSON.stringify(navResults, null, 2));
+
+  if (navResults.homePageCount > 0) {
+    console.error("FAILURE: .home-page STILL PERSISTS after navigation! Unmount failed.");
+  } else {
+    console.log("SUCCESS: .home-page was correctly removed.");
+  }
+
+  if (navResults.postPageCount > 1) {
+    console.error(`FAILURE: Found ${navResults.postPageCount} .post-page elements! Duplication on mount.`);
+  } else if (navResults.postPageCount === 1) {
+    console.log("SUCCESS: Single .post-page mounted correctly.");
+  }
+  // --- End Navigation Test ---
 
   await browser.close();
 }

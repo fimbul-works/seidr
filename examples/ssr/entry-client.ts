@@ -1,5 +1,6 @@
 import "../style.css";
 import { $getById, hydrate } from "../../src/index.browser.js";
+import { buildDomTree } from "../../src/ssr/structure/dom-tree.js";
 import { BlogApp } from "./app.js";
 
 const container = $getById("app");
@@ -7,4 +8,5 @@ const container = $getById("app");
 // But we can also pass it explicitly
 const hydrationData = (window as any).__SEIDR_HYDRATION_DATA__;
 console.log(JSON.stringify(hydrationData.components, null, 2));
+// console.log(JSON.stringify(buildDomTree(hydrationData.components), null, 2));
 hydrate(BlogApp, container!, hydrationData);

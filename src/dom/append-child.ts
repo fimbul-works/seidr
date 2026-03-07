@@ -2,7 +2,7 @@ import { pop, push } from "../component/component-stack";
 import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
-import { getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
+import { getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode } from "../util/type-guards/dom-node-types";
@@ -32,7 +32,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
+    if (!process.env.CORE_DISABLE_SSR && isServer()) {
       push(child);
       appendChild(parent, child.element);
       pop();
@@ -44,7 +44,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.endMarker);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && !isServer() && !import.meta.env.SSR && hasHydrationData()) {
+    if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
       const ctx = getHydrationContext();
       if (ctx) {
         ctx.claimBoundary(child.id);
@@ -72,7 +72,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
   const childNode = isDOMNode(child) ? child : $text(child);
 
-  if (hasHydrationData() && !process.env.CORE_DISABLE_SSR) {
+  if (isHydrating() && !process.env.CORE_DISABLE_SSR) {
     const mapped = getHydrationMap().get(childNode);
     if (mapped) {
       if (mapped.parentNode === target) {

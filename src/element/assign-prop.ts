@@ -67,7 +67,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
       styleProp: K,
       styleValue: CSSStyleDeclaration[K],
     ) => {
-      if (isServer() || import.meta.env.SSR) {
+      if (isServer()) {
         styleProp = camelToKebab(styleProp as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {

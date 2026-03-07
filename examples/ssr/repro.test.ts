@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToString } from "../../src/ssr/render-to-string";
-import { renderFullStructureTree } from "../../src/ssr/structure/structure-map";
+import { buildDomTree } from "../../src/ssr/structure/structure-map";
 import { enableSSRMode } from "../../src/test-setup/ssr-mode";
 import { BlogApp } from "./app";
 
@@ -13,7 +13,7 @@ describe("BlogApp Hydration Repro", () => {
       console.log("Captured Hydration Data:");
       console.log(JSON.stringify(hydrationData, null, 2));
 
-      const tree = renderFullStructureTree(hydrationData);
+      const tree = buildDomTree(hydrationData.components);
       console.log("Full Structure Tree:");
       console.log(JSON.stringify(tree, null, 2));
 

@@ -16,7 +16,7 @@ import {
   popHydrationContext,
   pushHydrationContext,
 } from "../ssr/hydrate/hydration-context";
-import { getHydrationData, getHydrationMap, hasHydrationData } from "../ssr/hydrate/storage";
+import { getHydrationData, getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
 import { isServer } from "../util/environment/is-server";
@@ -47,7 +47,7 @@ export const component = <P = void>(
     const parent = getCurrentComponent();
     const componentId = str(getNextComponentId());
     const fullComponentId = `${name}-${componentId}`;
-    const shouldCapture = isServer() || import.meta.env.SSR;
+    const shouldCapture = isServer();
 
     // Lifecycle state
     const children = new Map<string, Component>();
@@ -223,7 +223,7 @@ export const component = <P = void>(
     try {
       // Create HydrationContext if hydrating
       let hCtx: HydrationContext | null = null;
-      if (!process.env.CORE_DISABLE_SSR && hasHydrationData()) {
+      if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
         const hData = getHydrationData()!;
         const compMap = hData.data?.components?.[fullComponentId];
         if (compMap) {
@@ -274,8 +274,10 @@ export const component = <P = void>(
 
       comp.element = element;
 
-      // Only add markers if the component returns an array or a nullish/text value.
-      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element);
+      // Only add markers if the component returns an array, a nullish/text value, or another component.
+      // This ensures pass-through components are correctly tracked in the parent's structure map,
+      // providing a stable boundary even if the child subtree is dynamic (e.g. Suspense).
+      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element) || isComponent(comp.element);
 
       if (shouldAddMarkerComments && !comp.startMarker) {
         const [startMarker, endMarker] = getMarkerComments(fullComponentId);
@@ -284,7 +286,7 @@ export const component = <P = void>(
       }
 
       // Track component boundary in parent immediately to match evaluation order
-      if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
+      if (!process.env.CORE_DISABLE_SSR && isServer()) {
         if (parent) {
           const boundary = comp.startMarker || getFirstNode(comp);
           if (boundary) {

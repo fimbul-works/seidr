@@ -93,12 +93,7 @@ export class Seidr<T = any> implements Observable<T> {
       this.v = v;
 
       // Notify immediately in SSR
-      if (
-        this.options.sync ||
-        isServer() ||
-        import.meta.env.SSR ||
-        (process.env.VITEST && !process.env.USE_SCHEDULER)
-      ) {
+      if (this.options.sync || isServer() || (process.env.VITEST && !process.env.USE_SCHEDULER)) {
         this.notify();
       } else {
         scheduleUpdate(this);

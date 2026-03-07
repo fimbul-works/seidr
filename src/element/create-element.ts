@@ -25,7 +25,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] => {
   const comp = getCurrentComponent();
 
-  if (!process.env.CORE_DISABLE_SSR && (isServer() || import.meta.env.SSR)) {
+  if (!process.env.CORE_DISABLE_SSR && isServer()) {
     const el = getDocument().createElement(tagName);
 
     if (props) {

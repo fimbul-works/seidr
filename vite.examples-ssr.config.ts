@@ -12,6 +12,7 @@ export default defineConfig((config) => {
         "process.env.VITEST": "false",
         "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
         "process.env.DEBUG": "true",
+        "process.env.DEBUG_HYDRATION": "true",
         preventAssignment: true,
       }),
     ],

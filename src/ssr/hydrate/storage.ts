@@ -18,7 +18,7 @@ export const getHydrationData = (): HydrationDataStorage | undefined => getAppSt
  *
  * @returns {boolean} true if in hydration mode with data available
  */
-export const hasHydrationData = (): boolean => !isEmpty(getHydrationData()?.data);
+export const isHydrating = (): boolean => !isEmpty(getHydrationData()?.data);
 
 /**
  * Sets the hydration context for client-side hydration.

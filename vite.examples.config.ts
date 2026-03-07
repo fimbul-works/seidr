@@ -13,7 +13,7 @@ export default defineConfig((_config) => {
         window: "{}",
         "isClient()": "true",
         "isServer()": "false",
-        "hasHydrationData()": "false",
+        "isHydrating()": "false",
         "process.env.NODE_ENV": JSON.stringify("production"),
         "process.env.CORE_DISABLE_SSR": "true",
         "import.meta.env.SSR": "false",

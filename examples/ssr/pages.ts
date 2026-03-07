@@ -74,22 +74,21 @@ export const HomePage = component(() => {
 
 export const PostPage = component(() => {
   const params = useParams();
-  const slug = params.value.slug;
   const post = new Seidr<BlogPost | null>(null);
   let postPromise: Promise<BlogPost | null>;
 
   if (isServer()) {
     postPromise = inServer(async () => {
       const postsApi = await import("./blog-api.js");
-      post.value = await postsApi.getPost(slug);
+      post.value = await postsApi.getPost(params.value.slug);
       return post.value;
     });
   } else {
     postPromise = inClient(async () => {
-      if (post.value?.slug === slug) {
+      if (post.value?.slug === params.value.slug) {
         return post.value;
       }
-      const res = await fetch(`/api/post/${slug}`);
+      const res = await fetch(`/api/post/${params.value.slug}`);
       if (res.ok) {
         post.value = await res.json();
       }

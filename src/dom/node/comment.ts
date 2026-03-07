@@ -43,7 +43,7 @@ export const $comment = (text: string): Comment => {
 
   const node = doc.createComment(text);
 
-  if (isServer() || import.meta.env.SSR) {
+  if (isServer()) {
     getCurrentComponent()?.trackNode?.(node);
   }
 
