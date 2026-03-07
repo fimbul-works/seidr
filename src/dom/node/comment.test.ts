@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { TYPE_COMMENT_NODE } from "../../constants";
+import { TAG_COMMENT, TYPE_COMMENT_NODE } from "../../constants";
 import { describeDualMode } from "../../test-setup";
 import { itHasParity } from "../../test-setup/dual-mode";
 
@@ -9,7 +9,7 @@ describeDualMode("Comment Parity", ({ getDocument }) => {
     const comment = doc.createComment("my comment");
     expect(comment.textContent).toBe("my comment");
     expect(comment.nodeType).toBe(TYPE_COMMENT_NODE);
-    expect(comment.nodeName).toBe("#comment");
+    expect(comment.nodeName).toBe(TAG_COMMENT);
     expect(comment.ownerDocument).toBe(doc);
     return comment;
   });

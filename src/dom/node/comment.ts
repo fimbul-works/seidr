@@ -1,4 +1,5 @@
 import { getCurrentComponent } from "../../component/component-stack";
+import { TAG_COMMENT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
 import { isServer } from "../../util/environment/is-server";
 import { getDocument } from "../get-document";
@@ -17,7 +18,7 @@ export const $comment = (text: string): Comment => {
   const hydrationContext = getHydrationContext();
 
   if (hydrationContext) {
-    const node = hydrationContext.claim("#comment") as Comment;
+    const node = hydrationContext.claim(TAG_COMMENT) as Comment;
     if (node) {
       if (node.textContent !== text) {
         console.warn(
@@ -32,7 +33,7 @@ export const $comment = (text: string): Comment => {
       const newNode = doc.createComment(text);
       if (mismatchNode?.parentNode) {
         console.warn(
-          `[Hydration] Tag mismatch: expected #comment but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+          `[Hydration] Tag mismatch: expected ${TAG_COMMENT} but found ${mismatchNode.nodeName}. Replacing SSR node.`,
         );
         mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
       }

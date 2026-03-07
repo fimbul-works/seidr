@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
 import type { StructureMapTuple } from "../structure/structure-map";
 import { HydrationContext, resolveNodes } from "./hydration-context";
 
@@ -30,9 +31,9 @@ describe("HydrationContext and resolveNodes", () => {
     // </div>
     const structureMap: StructureMapTuple[] = [
       ["canvas"], // 0
-      ["#text"], // 1
+      [TAG_TEXT], // 1
       ["h1", 1], // 2
-      ["#component:2"], // 3
+      [`${TAG_COMPONET_PREFIX}2`], // 3
       ["section", 2, 0, 3], // 4
       ["div", 4], // 5
     ];
@@ -76,7 +77,7 @@ describe("HydrationContext and resolveNodes", () => {
   });
 
   it("claims component boundaries correctly", () => {
-    const structureMap: StructureMapTuple[] = [["#component:2"], ["div", 0]];
+    const structureMap: StructureMapTuple[] = [[`${TAG_COMPONET_PREFIX}2`], ["div", 0]];
     const div = document.createElement("div");
     const marker = document.createComment("#Message-2");
     div.appendChild(marker);

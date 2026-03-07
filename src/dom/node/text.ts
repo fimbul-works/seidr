@@ -1,4 +1,5 @@
 import { getCurrentComponent } from "../../component/component-stack";
+import { TAG_TEXT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
 import { getHydrationMap } from "../../ssr/hydrate/storage";
 import { isServer } from "../../util/environment/is-server";
@@ -20,7 +21,7 @@ export const $text = (text: unknown): Text => {
   const doc = getDocument();
 
   if (hydrationContext) {
-    const node = hydrationContext.claim("#text") as Text;
+    const node = hydrationContext.claim(TAG_TEXT) as Text;
     if (node) {
       if (node.textContent !== str(text)) {
         console.warn(
@@ -39,7 +40,7 @@ export const $text = (text: unknown): Text => {
 
       if (mismatchNode?.parentNode) {
         console.warn(
-          `[Hydration] Tag mismatch: expected #text but found <${mismatchNode.nodeName}>. Replacing SSR node.`,
+          `[Hydration] Tag mismatch: expected ${TAG_TEXT} but found ${mismatchNode.nodeName}. Replacing SSR node.`,
         );
         mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
       }

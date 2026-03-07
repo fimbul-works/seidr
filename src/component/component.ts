@@ -2,6 +2,7 @@ import { getAppStateID, getNextComponentId } from "../app-state/app-state";
 import {
   HYDRATION_ID_ATTRIBUTE,
   ROOT_ATTRIBUTE,
+  TAG_COMMENT,
   TYPE_COMPONENT,
   TYPE_COMPONENT_FACTORY,
   TYPE_PROP,
@@ -235,7 +236,7 @@ export const component = <P = void>(
             hCtx = new HydrationContext(fullComponentId, compMap, roots);
             pushHydrationContext(hCtx);
             // If the component has markers (e.g. it's a fragment), claim the start marker
-            if (compMap[0]?.[0]?.startsWith("#comment")) {
+            if (compMap[0]?.[0]?.startsWith(TAG_COMMENT)) {
               hCtx.claim(compMap[0][0]);
             }
           } else {

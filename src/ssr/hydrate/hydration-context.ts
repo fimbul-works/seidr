@@ -1,6 +1,5 @@
-import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE } from "../../constants";
+import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
-import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { StructureMapTuple } from "../structure/structure-map";
 import { getHydrationData, getHydrationMap } from "./storage";
 
@@ -8,15 +7,15 @@ import { getHydrationData, getHydrationMap } from "./storage";
  * Checks if a physical DOM node matches a structure map tag.
  */
 function nodeMatches(node: Node, tag: string): boolean {
-  if (tag === "#text") return isTextNode(node);
-  if (tag.startsWith("#comment")) {
+  if (tag === TAG_TEXT) return isTextNode(node);
+  if (tag.startsWith(TAG_COMMENT)) {
     if (tag.includes(":")) {
       const expected = tag.split(":")[1];
       return isComment(node) && node.nodeValue === expected;
     }
     return isComment(node);
   }
-  if (tag.startsWith("#component:")) {
+  if (tag.startsWith(TAG_COMPONET_PREFIX)) {
     const id = tag.split(":")[1];
     // Component boundaries can be markers (comments) or elements with data-seidr-id
     if (isComment(node)) {
@@ -39,7 +38,7 @@ function nodeMatches(node: Node, tag: string): boolean {
         const rootTuple = compMap[0];
         const descendantTag = rootTuple[0];
 
-        if (descendantTag.startsWith("#component:")) {
+        if (descendantTag.startsWith(TAG_COMPONET_PREFIX)) {
           const descendantId = descendantTag.split(":")[1];
           if (descendantId === node.getAttribute(HYDRATION_ID_ATTRIBUTE)) {
             return true;
@@ -84,7 +83,7 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
     const tag = tuple[0];
 
     // Component boundaries are placeholders in the parent map
-    if (tag.startsWith("#component:")) return;
+    if (tag.startsWith(TAG_COMPONET_PREFIX)) return;
 
     // Resolve children topologicaly
     if (tuple.length > 1) {
@@ -141,7 +140,7 @@ export class HydrationContext {
 
   /**
    * Consumes the next node in the execution sequence.
-   * @param expectedTag Optional tag to verify against (e.g. "div", "#text", "#component:ID")
+   * @param expectedTag Optional tag to verify against (e.g. "div", TAG_TEXT, TAG_COMPONET_PREFIX+"ID")
    */
   claim(expectedTag?: string): Node | undefined {
     const node = this.resolvedNodes[this.currentIndex++];
@@ -180,7 +179,10 @@ export class HydrationContext {
     if (!node) return undefined;
 
     const numericId = id.split("-").pop();
-    if (nodeMatches(node, `#component:${id}`) || (numericId && nodeMatches(node, `#component:${numericId}`))) {
+    if (
+      nodeMatches(node, `${TAG_COMPONET_PREFIX}${id}`) ||
+      (numericId && nodeMatches(node, `${TAG_COMPONET_PREFIX}${numericId}`))
+    ) {
       return this.claim();
     }
     return undefined;
@@ -259,8 +261,8 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
       const rootTag = rootTuple[0];
 
       // Array/Fragment with markers
-      if (rootTag.startsWith("#comment")) {
-        const text = rootTag.replace("#comment:", "");
+      if (rootTag.startsWith(TAG_COMMENT)) {
+        const text = rootTag.replace(`${TAG_COMMENT}:`, "");
 
         // Find start marker
         let startMarker: Comment | undefined;
@@ -289,7 +291,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
       }
 
       // Natively wraps a child component (passthrough)
-      if (rootTag.startsWith("#component:")) {
+      if (rootTag.startsWith(TAG_COMPONET_PREFIX)) {
         const descendantId = rootTag.split(":")[1];
         return getRootsForHydration(descendantId, container);
       }

@@ -1,5 +1,5 @@
 import { expect } from "vitest";
-import { TYPE_TEXT_NODE } from "../../constants";
+import { TAG_TEXT, TYPE_TEXT_NODE } from "../../constants";
 import { describeDualMode, itHasParity } from "../../test-setup/dual-mode";
 
 describeDualMode("$text", ({ getDocument }) => {
@@ -8,7 +8,7 @@ describeDualMode("$text", ({ getDocument }) => {
     const text = doc.createTextNode("Hello");
     expect(text.textContent).toBe("Hello");
     expect(text.nodeType).toBe(TYPE_TEXT_NODE);
-    expect(text.nodeName).toBe("#text");
+    expect(text.nodeName).toBe(TAG_TEXT);
     expect(text.ownerDocument).toBe(doc);
     return text;
   });

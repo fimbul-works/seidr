@@ -31,3 +31,7 @@ export const STORAGE_LOCAL = "local";
 
 export const HYDRATION_ID_ATTRIBUTE = "data-seidr-id";
 export const ROOT_ATTRIBUTE = "data-seidr-root";
+
+export const TAG_COMMENT = "#comment";
+export const TAG_TEXT = "#text";
+export const TAG_COMPONET_PREFIX = "#component:";

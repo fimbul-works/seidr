@@ -1,4 +1,4 @@
-import { TYPE_COMMENT_NODE } from "../../constants";
+import { TAG_COMMENT, TYPE_COMMENT_NODE } from "../../constants";
 import type { NodeTypeComment } from "../../types";
 import { escapeHTML } from "../../util/escape";
 import { SSRCharacterData } from "./ssr-character-data";
@@ -7,7 +7,7 @@ export class SSRComment extends SSRCharacterData<NodeTypeComment> implements Com
   readonly nodeType = TYPE_COMMENT_NODE;
 
   get nodeName(): string {
-    return "#comment";
+    return TAG_COMMENT;
   }
 
   get mockComment(): Comment {

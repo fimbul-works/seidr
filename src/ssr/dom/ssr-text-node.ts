@@ -1,4 +1,4 @@
-import { TYPE_TEXT_NODE } from "../../constants";
+import { TAG_TEXT, TYPE_TEXT_NODE } from "../../constants";
 import type { NodeTypeText } from "../../types";
 import { escapeHTML } from "../../util/escape";
 import { SSRCharacterData } from "./ssr-character-data";
@@ -7,7 +7,7 @@ export class SSRTextNode extends SSRCharacterData<NodeTypeText> implements Text 
   readonly nodeType = TYPE_TEXT_NODE;
 
   get nodeName(): string {
-    return "#text";
+    return TAG_TEXT;
   }
 
   get mockText(): Text {
