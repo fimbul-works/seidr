@@ -28,9 +28,6 @@ export const random = (): number => {
   if (!rngState) {
     const sId = getNextSeidrId();
     const seed = state.ctxID + sId + LCG_M / 1;
-    if (process.env.DEBUG) {
-      console.log(`[random] Initializing RNG: ctxID=${state.ctxID}, sID=${sId}, seed=${seed}`);
-    }
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;

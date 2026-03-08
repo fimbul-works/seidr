@@ -45,15 +45,15 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parent = getCurrentComponent();
-    const componentId = str(getNextComponentId());
-    const fullComponentId = `${name}-${componentId}`;
+    const numericId = str(getNextComponentId());
+    const componentId = `${name}-${numericId}`;
     const shouldCapture = isServer();
 
     // Lifecycle state
     const children = new Map<string, Component>();
     let cleanups: CleanupFunction[] = [];
     let mountCallbacks: ((parent: Node) => void)[] = [];
-    let destroyed = false;
+    let isMounted = false;
     let attachedParent: Node | null = null;
     const trackedNodes: Node[] = [];
     const childComponentNodes = new Map<Node, string>();
@@ -64,10 +64,10 @@ export const component = <P = void>(
         return TYPE_COMPONENT;
       },
       get id() {
-        return fullComponentId;
+        return componentId;
       },
       get isUnmounted() {
-        return destroyed;
+        return !isMounted;
       },
       get parent() {
         return parent;
@@ -82,19 +82,12 @@ export const component = <P = void>(
         return childComponentNodes;
       },
       trackNode(node: Node) {
-        if (process.env.DEBUG_HYDRATION) {
-          console.log(
-            `[${fullComponentId}] tracking node:`,
-            node.nodeName,
-            node.nodeType === 3 ? `"${node.textContent}"` : "",
-          );
-        }
         trackedNodes.push(node);
       },
       onUnmount(cleanup: CleanupFunction): void {
-        if (destroyed) {
+        if (!isMounted) {
           if (process.env.DEBUG) {
-            console.warn(`[${fullComponentId}] Tracking cleanup on already destroyed component`);
+            console.warn(`[${componentId}] Tracking cleanup on already destroyed component`);
           }
           return cleanup();
         }
@@ -135,7 +128,7 @@ export const component = <P = void>(
       attached(parent: Node) {
         if (attachedParent) {
           if (process.env.DEBUG) {
-            console.warn(`[${fullComponentId}] Calling attached on an already attached component`);
+            console.warn(`[${componentId}] Calling attached on an already attached component`);
           }
           return; // Already attached
         }
@@ -165,14 +158,14 @@ export const component = <P = void>(
         children.clear();
       },
       unmount() {
-        if (destroyed) {
+        if (!isMounted) {
           if (process.env.DEBUG) {
-            console.warn(`[${fullComponentId}] Unmounting already unmounted component`);
+            console.warn(`[${componentId}] Unmounting already unmounted component`);
           }
           return;
         }
 
-        destroyed = true;
+        isMounted = false;
 
         // 1. Run cleanups and clear children
         comp.reset();
@@ -222,26 +215,22 @@ export const component = <P = void>(
 
     try {
       // Create HydrationContext if hydrating
-      let hCtx: HydrationContext | null = null;
+      let hydrationContext: HydrationContext | null = null;
       if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
-        const hData = getHydrationData()!;
-        const compMap = hData.data?.components?.[fullComponentId];
+        const hydrationData = getHydrationData()!;
+        const compMap = hydrationData.data?.components?.[componentId];
         if (compMap) {
-          if (process.env.DEBUG_HYDRATION) console.log(`[Hydration] Hydrating component: ${fullComponentId}`);
-          if (process.env.DEBUG_HYDRATION) console.log(`[Hydration] Attempting to find roots for ${fullComponentId}`);
-          const roots = getRootsForHydration(fullComponentId, hData.data?.root as HTMLElement);
+          const roots = getRootsForHydration(componentId, hydrationData.data?.root as HTMLElement);
           if (roots.length > 0) {
-            if (process.env.DEBUG_HYDRATION)
-              console.log(`[Hydration] Found ${roots.length} roots for ${fullComponentId}`);
-            hCtx = new HydrationContext(fullComponentId, compMap, roots);
-            pushHydrationContext(hCtx);
+            hydrationContext = new HydrationContext(componentId, compMap, roots);
+            pushHydrationContext(hydrationContext);
             // If the component has markers (e.g. it's a fragment), claim the start marker
             if (compMap[0]?.[0]?.startsWith(TAG_COMMENT)) {
-              hCtx.claim(compMap[0][0]);
+              hydrationContext.claim(compMap[0][0]);
             }
           } else {
             console.warn(
-              `[Hydration] Could not find hydration roots for component ${fullComponentId}. Proceeding with client-side render only.`,
+              `[Hydration] Could not find hydration roots for component ${componentId}. Proceeding with client-side render only.`,
             );
           }
         }
@@ -250,7 +239,7 @@ export const component = <P = void>(
       // Render the component via factory
       const result = factory(props);
 
-      if (!process.env.CORE_DISABLE_SSR && hCtx) {
+      if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
         popHydrationContext();
       }
 
@@ -262,25 +251,17 @@ export const component = <P = void>(
         return item;
       };
 
-      const filterEmptyText = (item: ComponentChildren): boolean => {
-        if (!item) return false;
-        if ((item as Node).nodeType === 3 && !(item as Node).textContent?.trim()) return false;
-        return true;
-      };
-
       const element = isArray(result)
-        ? (result.map(toNode).filter(filterEmptyText) as ComponentChildren)
+        ? (result.filter(Boolean).map(toNode) as ComponentChildren)
         : toNode(result);
 
       comp.element = element;
 
-      // Only add markers if the component returns an array, a nullish/text value, or another component.
-      // This ensures pass-through components are correctly tracked in the parent's structure map,
-      // providing a stable boundary even if the child subtree is dynamic (e.g. Suspense).
-      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element) || isComponent(comp.element);
+      // Only add markers if the component returns an array, or a nullish/text value
+      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element);
 
       if (shouldAddMarkerComments && !comp.startMarker) {
-        const [startMarker, endMarker] = getMarkerComments(fullComponentId);
+        const [startMarker, endMarker] = getMarkerComments(componentId);
         comp.startMarker = startMarker;
         comp.endMarker = endMarker;
       }
@@ -316,7 +297,7 @@ export const component = <P = void>(
 
         // Apply component ID marker for hydration discovery
         if (!item.hasAttribute(HYDRATION_ID_ATTRIBUTE)) {
-          item.setAttribute(HYDRATION_ID_ATTRIBUTE, componentId);
+          item.setAttribute(HYDRATION_ID_ATTRIBUTE, numericId);
         }
       } else if (isComponent(item)) {
         applyRootAttributes(item.element);

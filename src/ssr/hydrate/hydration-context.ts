@@ -146,13 +146,6 @@ export class HydrationContext {
     const node = this.resolvedNodes[this.currentIndex++];
     this.lastAttemptedNode = node;
 
-    if (process.env.DEBUG_HYDRATION) {
-      console.log(
-        `[${this.componentId}] claim index ${this.currentIndex - 1}: expected <${expectedTag}>, found <${node ? (node as any).tagName || node.nodeName : "null"}>`,
-        node,
-      );
-    }
-
     if (expectedTag && node) {
       if (!nodeMatches(node, expectedTag)) {
         if (process.env.DEBUG_HYDRATION)
@@ -169,12 +162,6 @@ export class HydrationContext {
    */
   claimBoundary(id: string): Node | undefined {
     const node = this.peek();
-
-    if (process.env.DEBUG_HYDRATION) {
-      console.log(
-        `[${this.componentId}] claimBoundary for ${id}: peek found <${node ? (node as any).tagName || node.nodeName : "null"}>`,
-      );
-    }
 
     if (!node) return undefined;
 

@@ -74,28 +74,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
   if (isHydrating() && !process.env.CORE_DISABLE_SSR) {
     const mapped = getHydrationMap().get(childNode);
-    if (mapped) {
-      if (mapped.parentNode === target) {
-        if (process.env.DEBUG_HYDRATION) {
-          console.log(
-            "[appendChild] Skipping",
-            (childNode as any).tagName || childNode.nodeName,
-            "because it's already in parent",
-            (target as any).id || (target as any).nodeName,
-          );
-        }
-        return;
-      }
+    if (mapped?.parentNode === target) {
+      return;
     }
-  }
-
-  if (process.env.DEBUG_HYDRATION) {
-    console.log(
-      "[appendChild] Appending",
-      (childNode as any).tagName || childNode.nodeName,
-      "to",
-      (target as any).id || (target as any).nodeName,
-    );
   }
 
   // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.

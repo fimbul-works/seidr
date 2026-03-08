@@ -52,9 +52,6 @@ export const mount = <C extends ComponentType = ComponentType>(
     const hydrationData = getHydrationData();
     // If the hydration root is the container itself, the elements are already inside
     if (hydrationData?.data?.root === container) {
-      if (process.env.DEBUG_HYDRATION) {
-        console.log("[mount] Skipping appendChild because container is the hydration root");
-      }
       skipAppend = true;
     }
   }

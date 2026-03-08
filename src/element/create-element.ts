@@ -55,9 +55,6 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     const claimedNode = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
 
     if (claimedNode) {
-      if (process.env.DEBUG_HYDRATION) {
-        console.log(`[$] Claimed <${tagName}>`, claimedNode);
-      }
       // Store the relationship for reactive updates
       getHydrationMap().set(claimedNode, claimedNode);
 
