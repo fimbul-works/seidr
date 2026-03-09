@@ -1,7 +1,8 @@
 import type { Component } from "../../component/types";
 import { collectRootNodes } from "../../component/util/collect-root-nodes";
 import { TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
-import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
+import { SeidrError } from "../../types";
+import { isComment, isComponent, isHTMLElement, isTextNode } from "../../util/type-guards";
 import type { StructureMapTuple } from "./types";
 
 /**
@@ -11,79 +12,89 @@ import type { StructureMapTuple } from "./types";
  * @returns {StructureMapTuple[]} An array of tuples representing the structure of the component
  */
 export function buildStructureMap(component: Component): StructureMapTuple[] {
-  const isRootNodeOf = (node: Node, comp: Component): boolean => {
-    return collectRootNodes(comp).indexOf(node) !== -1;
-  };
+  // Collect child component root nodes
+  const rootNodeSets = new Map<Component, Set<Node>>();
+  for (const childComponent of component.children.values()) {
+    rootNodeSets.set(childComponent, new Set(collectRootNodes(childComponent)));
+  }
 
-  const findChildIndexById = (compId: string, parent: Component): number => {
-    for (let i = 0; i < parent.nodes.length; i++) {
-      if (parent.childComponentNodes.get(parent.nodes[i]) === compId) {
-        return i;
-      }
+  // Build root nodes to component map
+  const rootNodeToComponent = new Map<Node, Component>();
+  for (const [childComponent, roots] of rootNodeSets) {
+    for (const root of roots) {
+      rootNodeToComponent.set(root, childComponent);
     }
-    return -1;
-  };
+  }
 
-  const nodeCreateIndex = component.nodes;
-  if (!nodeCreateIndex || nodeCreateIndex.length === 0) return [];
+  // First pass: record parent nodes and component boundaries
+  const indexMap = new Map<Node | Component, number>();
+  const childParents = new Map<Node | Component, ParentNode>();
 
-  const indexMap = new Map<Node, number>();
-  nodeCreateIndex.forEach((n, i) => indexMap.set(n, i));
+  let index = 0;
+  component.createdIndex.forEach((child) => {
+    // Track parent node
+    childParents.set(child, child.parentNode!);
 
-  return nodeCreateIndex.map((node) => {
-    // 1. Check if boundary
-    let boundaryId = component.childComponentNodes.get(node);
-
-    // 2. JIT fallback for shifted/swapped boundaries
-    if (!boundaryId) {
-      for (const child of component.children.values()) {
-        if (isRootNodeOf(node, child)) {
-          boundaryId = child.id;
-          component.childComponentNodes.set(node, boundaryId);
-          break;
-        }
-      }
-    }
-
+    // If boundary found, we skip the index
+    const boundaryId = component.childCreatedIndex.get(child);
     if (boundaryId) {
-      return [`${TAG_COMPONET_PREFIX}${boundaryId}`];
+      return;
     }
 
-    // 3. Normal node resolution
-    let tagName: string;
-    if (isHTMLElement(node)) {
-      tagName = (node as any).lowerTagName || node.tagName.toLowerCase();
-    } else if (isTextNode(node)) {
-      tagName = TAG_TEXT;
-    } else if (isComment(node)) {
-      const text = node.nodeValue?.replace(/^\//, "");
-      tagName = text && component.id.indexOf(text) !== -1 ? `${TAG_COMMENT}:${node.nodeValue}` : TAG_COMMENT;
-    } else {
-      tagName = "#unknown";
+    // Record index
+    indexMap.set(child, index++);
+
+    // No boundary found, so check if child element is parent of any child component
+    if (!boundaryId && isHTMLElement(child)) {
+      const childComponent = rootNodeToComponent.get(child);
+      if (childComponent) {
+        // Record component boundary
+        component.childCreatedIndex.set(child, childComponent.id);
+        return;
+      }
+    }
+  });
+
+  // Inverse parent node map for faster lookup
+  const parentChildren = childParents.entries().reduce((acc, [child, parent]) => {
+    if (!acc.has(parent)) {
+      acc.set(parent, new Set());
+    }
+    acc.get(parent)!.add(child);
+    return acc;
+  }, new Map<ParentNode, Set<Node | Component>>());
+
+  // Second pass: construct structure tuples
+  const tuples: StructureMapTuple[] = [];
+  component.createdIndex.forEach((child) => {
+    // Skip child components by boundary
+    if (component.childCreatedIndex.has(child)) {
+      return;
     }
 
-    const tuple: StructureMapTuple = [tagName];
-    for (let j = 0; j < node.childNodes.length; j++) {
-      const child = node.childNodes[j] as Node;
-      let childIdx = indexMap.get(child);
-
-      // Recursive JIT for child boundaries
-      if (childIdx === undefined) {
-        for (const childComp of component.children.values()) {
-          if (isRootNodeOf(child, childComp)) {
-            childIdx = findChildIndexById(childComp.id, component);
-            if (childIdx !== -1) {
-              component.childComponentNodes.set(child, childComp.id);
-              indexMap.set(child, childIdx);
-              break;
-            }
+    if (isComponent(child)) {
+      tuples.push([`${TAG_COMPONET_PREFIX}${child.id}`]);
+    } else if (isHTMLElement(child)) {
+      const tuple: StructureMapTuple = [child.tagName.toLowerCase()];
+      // Check if child is a parent node
+      if (parentChildren.has(child)) {
+        for (const childOfParent of parentChildren.get(child)!) {
+          const index = indexMap.get(childOfParent)!;
+          if (index === undefined) {
+            continue;
           }
+          tuple.push(index);
         }
       }
-
-      if (childIdx !== undefined) tuple.push(childIdx);
+      tuples.push(tuple);
+    } else if (isTextNode(child)) {
+      tuples.push([TAG_TEXT]);
+    } else if (isComment(child)) {
+      tuples.push([child.nodeValue!.startsWith(TAG_COMMENT) ? `${TAG_COMMENT}:${child.nodeValue}` : TAG_COMMENT]);
+    } else {
+      throw new SeidrError("Unknown component child", { cause: child });
     }
-
-    return tuple;
   });
+
+  return tuples;
 }

@@ -44,7 +44,7 @@ export const $comment = (text: string): Comment => {
   const node = doc.createComment(text);
 
   if (isServer()) {
-    getCurrentComponent()?.trackNode?.(node);
+    getCurrentComponent()?.trackChild?.(node);
   }
 
   return node;

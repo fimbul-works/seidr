@@ -53,7 +53,7 @@ export const $text = (text: unknown): Text => {
   const node: Text = doc.createTextNode(str(text));
 
   if (isServer()) {
-    getCurrentComponent()?.trackNode?.(node);
+    getCurrentComponent()?.trackChild?.(node);
   }
 
   return node;

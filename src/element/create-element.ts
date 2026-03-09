@@ -25,11 +25,11 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] => {
   const comp = getCurrentComponent();
 
-  if (!process.env.CORE_DISABLE_SSR && isServer()) {
+  if (process.env.CORE_DISABLE_SSR || isServer()) {
     const el = getDocument().createElement(tagName);
 
     if (!process.env.CORE_DISABLE_SSR) {
-      comp?.trackNode?.(el);
+      comp?.trackChild?.(el);
     }
 
     if (props) {
@@ -52,7 +52,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     return el;
   }
 
-  const hydrationContext = !process.env.CORE_DISABLE_SSR ? getHydrationContext() : null;
+  const hydrationContext = getHydrationContext();
   if (hydrationContext) {
     const claimedNode = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
 

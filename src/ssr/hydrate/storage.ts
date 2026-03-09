@@ -55,17 +55,17 @@ export const clearHydrationData = (): void => {
  * and their corresponding hydrated server-side DOM nodes.
  * Used to route reactive updates to the actual elements in the DOM.
  *
- * @returns {WeakMap<Node, Node>} The hydration map
+ * @returns {WeakMap<ChildNode, ChildNode>} The hydration map
  */
-export const getHydrationMap = (): WeakMap<Node, Node> => {
+export const getHydrationMap = (): WeakMap<Node, ChildNode> => {
   if (process.env.CORE_DISABLE_SSR) {
     throw new Error("Hydration is not available in this build");
   }
 
   const appState = getAppState();
-  let hydrationMap: WeakMap<Node, Node>;
+  let hydrationMap: WeakMap<ChildNode, ChildNode>;
   if (!appState.hasData(HYDRATION_MAP_DATA_ID)) {
-    hydrationMap = new WeakMap<Node, Node>();
+    hydrationMap = new WeakMap<ChildNode, ChildNode>();
     appState.setData(HYDRATION_MAP_DATA_ID, hydrationMap);
   }
   return appState.getData(HYDRATION_MAP_DATA_ID)!;

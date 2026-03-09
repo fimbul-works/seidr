@@ -28,7 +28,6 @@ export const Switch = <
 ): Component =>
   component(() => {
     const switchComponent = getCurrentComponent()!;
-
     let currentComponent: Component | undefined = getComponent(factories, observable.value, fallbackFactory);
 
     /**
@@ -40,7 +39,7 @@ export const Switch = <
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent!) : null;
       const anchor = lastNode?.nextSibling || switchComponent.endMarker || null;
-      const parent = lastNode?.parentNode || switchComponent.endMarker?.parentNode || switchComponent.parentNode;
+      const parent = lastNode?.parentNode || switchComponent.parentNode;
 
       // 2. Unmount previous component
       if (currentComponent) {
@@ -51,7 +50,7 @@ export const Switch = <
       currentComponent = getComponent(factories, value, fallbackFactory);
       if (currentComponent) {
         switchComponent.addChild(currentComponent);
-        switchComponent.element = currentComponent; // Triggers robust sync
+        switchComponent.element = currentComponent;
         mountComponent(currentComponent, anchor, parent!);
       } else {
         switchComponent.element = undefined;

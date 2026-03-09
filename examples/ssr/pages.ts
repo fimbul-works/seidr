@@ -59,17 +59,23 @@ export const HomePage = component(() => {
     }
   }
 
-  return Suspense(postsPromise!, ({ state, value, error }) => {
-    return Switch(state, {
-      pending: () => $div({}, "Loading posts..."),
-      resolved: () =>
-        $div({ className: "home-page" }, [
-          $h1({}, "Latest Posts"),
-          $ul({ className: "post-list" }, [List(value as Seidr<BlogPost[]>, (p) => p.slug, PostCard)]),
-        ]),
-      error: () => $div({}, error.value?.message || "Error"),
-    });
-  });
+  return Suspense(
+    postsPromise!,
+    component(({ state, value, error }) => {
+      return Switch(state, {
+        pending: component(() => $div({}, "Loading posts..."), "Pending"),
+        resolved: component(
+          () =>
+            $div({ className: "home-page" }, [
+              $h1({}, "Latest Posts"),
+              $ul({ className: "post-list" }, [List(value as Seidr<BlogPost[]>, (p) => p.slug, PostCard)]),
+            ]),
+          "Resolved",
+        ),
+        error: component(() => $div({}, error.value?.message || "Error"), "Error"),
+      });
+    }, "PostSuspense"),
+  );
 }, "HomePage");
 
 export const PostPage = component(() => {

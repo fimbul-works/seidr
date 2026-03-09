@@ -7,9 +7,9 @@ import type { Component } from "../types";
  * Recursively follows components if they don't have markers.
  *
  * @param {Component} comp - The component to get the last node for
- * @returns {Node} The last DOM node
+ * @returns {ChildNode} The last DOM node
  */
-export const getLastNode = (comp: Component): Node => {
+export const getLastNode = (comp: Component): ChildNode => {
   if (comp.endMarker) {
     return comp.endMarker;
   }
@@ -20,12 +20,12 @@ export const getLastNode = (comp: Component): Node => {
     if (isComponent(last)) {
       return getLastNode(last);
     }
-    return last as Node;
+    return last as ChildNode;
   }
 
   if (isComponent(el)) {
     return getLastNode(el);
   }
 
-  return el as Node;
+  return el as ChildNode;
 };

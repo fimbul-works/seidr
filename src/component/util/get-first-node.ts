@@ -7,9 +7,9 @@ import type { Component } from "../types";
  * Recursively follows components if they don't have markers.
  *
  * @param {Component} comp - The component to get the first node for
- * @returns {Node} The first DOM node
+ * @returns {ChildNode} The first DOM node
  */
-export const getFirstNode = (comp: Component): Node => {
+export const getFirstNode = (comp: Component): ChildNode => {
   if (comp.startMarker) {
     return comp.startMarker;
   }
@@ -20,7 +20,7 @@ export const getFirstNode = (comp: Component): Node => {
     if (isComponent(first)) {
       return getFirstNode(first);
     }
-    return first as Node;
+    return first as ChildNode;
   }
 
   if (isComponent(el)) {
@@ -31,5 +31,5 @@ export const getFirstNode = (comp: Component): Node => {
     return res;
   }
 
-  return el as Node;
+  return el as ChildNode;
 };

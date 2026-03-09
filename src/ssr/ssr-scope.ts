@@ -177,7 +177,7 @@ export class SSRScope {
 
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
-      if (comp.nodes && comp.nodes.length > 0) {
+      if (comp.isMounted && comp.element) {
         const map = buildStructureMap(comp);
         components[comp.id] = map;
       }

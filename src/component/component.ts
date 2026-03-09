@@ -26,7 +26,6 @@ import type {
   ComponentFactoryPureFunction,
   OnMountFunction,
 } from "./types";
-import { collectRootNodes } from "./util/collect-root-nodes";
 import { getFirstNode } from "./util/get-first-node";
 
 /**
@@ -49,11 +48,11 @@ export const component = <P = void>(
     const componentId = `${name}-${numericId}`;
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
-    const nodes: Node[] = [];
+    const createdIndex: (ChildNode | Component)[] = [];
     const children = new Map<string, Component>();
     const childComponentNodes = new Map<Node, string>();
 
-    let parentNode: Node | null = null;
+    let parentNode: ParentNode | null = null;
     let element: ComponentChildren;
     let startMarkerComment: Comment | null = null;
     let endMarkerComment: Comment | null = null;
@@ -61,9 +60,9 @@ export const component = <P = void>(
     const onUnmountCallbacks: CleanupFunction[] = [];
 
     // Create Component instance
-    const instance = {
+    const instance: Component = {
       get [TYPE_PROP]() {
-        return TYPE_COMPONENT;
+        return TYPE_COMPONENT as typeof TYPE_COMPONENT;
       },
       get id() {
         return componentId;
@@ -80,20 +79,26 @@ export const component = <P = void>(
       set element(val: ComponentChildren) {
         if (element === val) return;
 
-        const prevRoots = isSSR ? collectRootNodes(instance) : [];
-        const nextItems = new Set(isArray(val) ? val : [val]);
+        const next = new Set(isArray(val) ? val : [val]);
 
         if (element) {
-          const walk = (item: any) => {
+          const walk = (item: ComponentChildren) => {
             if (isArray(item)) {
               item.forEach(walk);
-            } else if (!nextItems.has(item)) {
-              if (isComponent(item)) {
+            } else {
+              if (isComponent(item) && !next.has(item)) {
                 item.unmount();
               } else if (isDOMNode(item)) {
-                const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(item) as Element)) || item;
+                // Remove DOM node
+                const el: ChildNode =
+                  (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(item) as ChildNode)) || item;
                 if (el.parentNode) {
-                  (el as ChildNode).remove();
+                  el.remove();
+                }
+
+                if (isSSR) {
+                  // Untrack in SSR
+                  this.untrackChild(el);
                 }
               }
             }
@@ -102,16 +107,6 @@ export const component = <P = void>(
         }
 
         element = val;
-
-        if (isSSR) {
-          const nextRoots = collectRootNodes(instance);
-          if (prevRoots.length > 0 && nextRoots.length > 0) {
-            const firstIdx = nodes.indexOf(prevRoots[0]);
-            if (firstIdx !== -1) {
-              nodes.splice(firstIdx, prevRoots.length, ...nextRoots);
-            }
-          }
-        }
       },
       get startMarker() {
         return startMarkerComment;
@@ -122,13 +117,13 @@ export const component = <P = void>(
       get parentNode() {
         return parentNode;
       },
-      get nodes() {
-        return nodes;
+      get createdIndex() {
+        return createdIndex;
       },
       get children() {
         return children;
       },
-      get childComponentNodes() {
+      get childCreatedIndex() {
         return childComponentNodes;
       },
       onMount(callback: (parent: Node) => void) {
@@ -168,7 +163,9 @@ export const component = <P = void>(
         }
 
         if (isSSR) {
+          // Unregister in SSR
           getSSRScope()?.unregisterComponent(instance);
+          createdIndex.length = 0;
         }
 
         // Clean up resources
@@ -186,22 +183,6 @@ export const component = <P = void>(
         startMarker?.remove();
 
         instance.element = null;
-        // const removeChildEntry = (child: ComponentChildren): void => {
-        //   const isComp = isComponent(child);
-        //   const isNode = isDOMNode(child);
-        //   if (isComp && child.isMounted) {
-        //     child.unmount();
-        //   } else if (isNode) {
-        //     const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;
-        //     el.remove();
-        //   }
-        // };
-
-        // if (isArray(element)) {
-        //   element.forEach(removeChildEntry);
-        // } else {
-        //   removeChildEntry(element);
-        // }
 
         const endMarker = endMarkerComment
           ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
@@ -222,14 +203,23 @@ export const component = <P = void>(
       },
       addChild(childComponent: Component): Component {
         children.set(childComponent.id, childComponent);
-        childComponent.onUnmount(() => children.delete(childComponent.id));
-
         onUnmountCallbacks.push(() => childComponent.unmount());
-
+        childComponent.onUnmount(() => {
+          children.delete(childComponent.id);
+          if (isSSR) {
+            instance.untrackChild(childComponent);
+          }
+        });
+        if (isSSR) {
+          instance.trackChild(childComponent);
+        }
         return childComponent;
       },
       removeChild(childComponent: Component): void {
         children.delete(childComponent.id);
+        if (isSSR) {
+          instance.untrackChild(childComponent);
+        }
       },
       observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
         const cleanup = observable.observe((val) => executeInContext(instance, () => callback(val)));
@@ -242,12 +232,20 @@ export const component = <P = void>(
         }
         return getSSRScope()?.addPromise(promise) || promise;
       },
-      trackNode(node: Node) {
-        if (nodes.indexOf(node) === -1) {
-          nodes.push(node);
+      trackChild(child: ChildNode | Component) {
+        if (isSSR && createdIndex.indexOf(child) === -1) {
+          createdIndex.push(child);
         }
       },
-    } as Component;
+      untrackChild(child: ChildNode | Component) {
+        if (isSSR) {
+          const index = createdIndex.indexOf(child);
+          if (index !== -1) {
+            createdIndex.splice(index, 1);
+          }
+        }
+      },
+    };
 
     // Set as current component (Push to tree)
     push(instance);
@@ -309,8 +307,8 @@ export const component = <P = void>(
         if (parentComponent) {
           const boundary = startMarkerComment || getFirstNode(instance);
           if (boundary) {
-            parentComponent.trackNode(boundary);
-            parentComponent.childComponentNodes.set(boundary, componentId);
+            parentComponent.trackChild(boundary);
+            parentComponent.childCreatedIndex.set(boundary, componentId);
           }
         }
       }

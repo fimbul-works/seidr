@@ -89,7 +89,7 @@ export interface Component {
   /**
    * The parent DOM node, if mounted.
    */
-  readonly parentNode: Node | null;
+  readonly parentNode: ParentNode | null;
 
   /**
    * The root element of the component.
@@ -120,14 +120,14 @@ export interface Component {
    * Only present during SSR builds.
    * @internal
    */
-  readonly nodes: Node[];
+  readonly createdIndex: (ChildNode | Component)[];
 
   /**
    * Map of child component root nodes to their component ID.
    * Used during SSR to build the structure map without relying on dataset IDs.
    * @internal
    */
-  readonly childComponentNodes: Map<Node, string>;
+  readonly childCreatedIndex: Map<Node | Component, string>;
 
   /**
    * Callback triggered when the component is mounted to a parent.
@@ -177,7 +177,7 @@ export interface Component {
 
   /**
    * Observes a Seidr observable and executes the callback within the component's context.
-   * @template T
+   * @template T - Type of observable value
    * @param {Seidr<T>} observable - The observable to watch
    * @param {(val: T) => void} callback - The callback to execute when value changes
    * @returns {CleanupFunction} Cleanup function to stop observation
@@ -186,7 +186,8 @@ export interface Component {
 
   /**
    * Register a promise to wait for (SSR integration).
-   * @param promise - The promise to track
+   * @template T - Type of promise value
+   * @param {Promise<T>} promise - The promise to track
    * @returns {Promise<T>} The same promise, for chaining
    */
   waitFor<T>(promise: Promise<T>): Promise<T>;
@@ -194,8 +195,15 @@ export interface Component {
   /**
    * Tracks a created node in the component's execution sequence.
    * Only used during SSR to build the hydration data payload.
-   * @param node The node to track
+   * @param {ChildNode | Component} child - Node or child component to track
    * @internal
    */
-  trackNode(node: Node): void;
+  trackChild(child: ChildNode | Component): void;
+
+  /**
+   * Remove node from tracked index.
+   * @param {ChildNode | Component} child - Node or child component to remove
+   * @internal
+   */
+  untrackChild(child: ChildNode | Component): void;
 }
