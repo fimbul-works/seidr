@@ -47,10 +47,8 @@ export async function renderToString<C extends ComponentReturnValue>(
         throw new SeidrError("No AppState available.");
       }
 
-      let pathSeidr: Seidr<string> | undefined;
       if (isStr(options.path)) {
-        pathSeidr = new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
-        state.setData(PATH_DATA_KEY, pathSeidr);
+        state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
       }
 
       const activeScope = options.scope || new SSRScope();
@@ -80,7 +78,6 @@ export async function renderToString<C extends ComponentReturnValue>(
         };
 
         comp.unmount();
-        pathSeidr?.destroy();
         clearPathCache();
 
         return { html, hydrationData };

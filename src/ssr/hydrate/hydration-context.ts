@@ -60,7 +60,7 @@ function nodeMatches(node: Node, tag: string): boolean {
  * @param structureMap The flat structure map from SSR
  * @param roots Initial root elements of the component
  */
-export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): Node[] {
+export function resolveNodes(structureMap: StructureMapTuple[], roots: ChildNode[]): ChildNode[] {
   const hydrationMap = getHydrationMap();
   const resolved = new Array<Node | undefined>(structureMap.length);
   const isChild = new Set<number>();
@@ -74,7 +74,7 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
   const rootsInMap = structureMap.map((_, i) => i).filter((i) => !isChild.has(i));
 
   // Recursive resolution function
-  const resolve = (mapIdx: number, domNode: Node) => {
+  const resolve = (mapIdx: number, domNode: ChildNode) => {
     if (resolved[mapIdx]) return;
     resolved[mapIdx] = domNode;
     hydrationMap.set(domNode, domNode);
@@ -118,7 +118,7 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
     }
   }
 
-  return resolved as Node[];
+  return resolved as ChildNode[];
 }
 
 /**
@@ -126,14 +126,14 @@ export function resolveNodes(structureMap: StructureMapTuple[], roots: Node[]): 
  * during component rendering.
  */
 export class HydrationContext {
-  private resolvedNodes: Node[];
+  private resolvedNodes: ChildNode[];
   private currentIndex = 0;
   public lastAttemptedNode: Node | undefined;
 
   constructor(
     public readonly componentId: string,
     structureMap: StructureMapTuple[],
-    roots: Node[],
+    roots: ChildNode[],
   ) {
     this.resolvedNodes = resolveNodes(structureMap, roots);
   }
@@ -142,7 +142,7 @@ export class HydrationContext {
    * Consumes the next node in the execution sequence.
    * @param expectedTag Optional tag to verify against (e.g. "div", TAG_TEXT, TAG_COMPONET_PREFIX+"ID")
    */
-  claim(expectedTag?: string): Node | undefined {
+  claim(expectedTag?: string): ChildNode | undefined {
     const node = this.resolvedNodes[this.currentIndex++];
     this.lastAttemptedNode = node;
 
@@ -160,7 +160,7 @@ export class HydrationContext {
   /**
    * Specifically claims a component boundary node.
    */
-  claimBoundary(id: string): Node | undefined {
+  claimBoundary(id: string): ChildNode | undefined {
     const node = this.peek();
 
     if (!node) return undefined;
@@ -223,7 +223,7 @@ export function popHydrationContext(): void {
  * It does this by using the actual hydration Map of components to figure out what DOM
  * nodes and component boundaries we expect, looking at the hydration structure recursively.
  */
-export function getRootsForHydration(componentId: string, container?: HTMLElement): Node[] {
+export function getRootsForHydration(componentId: string, container?: HTMLElement): ChildNode[] {
   const hydrationDataStorage = getHydrationData();
   const hData = hydrationDataStorage?.data;
 
@@ -232,7 +232,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
   }
 
   const parentCtx = getHydrationContext();
-  let candidate: Node | undefined;
+  let candidate: ChildNode | undefined;
 
   // 1. Contextual discovery: if we are within a parent parsing its children sequentially
   if (parentCtx) {
@@ -264,7 +264,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
 
         if (startMarker) {
           const endLabel = `/${text}`;
-          const nodes: Node[] = [startMarker];
+          const nodes: ChildNode[] = [startMarker];
           let current = startMarker.nextSibling;
           while (current) {
             nodes.push(current);
@@ -313,7 +313,7 @@ export function getRootsForHydration(componentId: string, container?: HTMLElemen
       const text = candidate.textContent || "";
       if (!text.startsWith("/")) {
         const endLabel = `/${text}`;
-        const nodes: Node[] = [candidate];
+        const nodes: ChildNode[] = [candidate];
         let current = candidate.nextSibling;
         while (current) {
           nodes.push(current);

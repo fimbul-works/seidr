@@ -32,20 +32,22 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
 
   let index = 0;
   component.createdIndex.forEach((child) => {
-    // Track parent node
-    childParents.set(child, child.parentNode!);
-
     // If boundary found, we skip the index
     const boundaryId = component.childCreatedIndex.get(child);
     if (boundaryId) {
       return;
     }
 
-    // Record index
+    // Track parent node
+    if (child.parentNode) {
+      childParents.set(child, child.parentNode!);
+    }
+
+    // Increment index
     indexMap.set(child, index++);
 
-    // No boundary found, so check if child element is parent of any child component
-    if (!boundaryId && isHTMLElement(child)) {
+    // Check if child element is parent of any child component
+    if (isHTMLElement(child)) {
       const childComponent = rootNodeToComponent.get(child);
       if (childComponent) {
         // Record component boundary
@@ -72,6 +74,7 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
       return;
     }
 
+    // Construct tuples
     if (isComponent(child)) {
       tuples.push([`${TAG_COMPONET_PREFIX}${child.id}`]);
     } else if (isHTMLElement(child)) {
@@ -83,6 +86,7 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
           if (index === undefined) {
             continue;
           }
+          // Add child indices to the element tuple
           tuple.push(index);
         }
       }

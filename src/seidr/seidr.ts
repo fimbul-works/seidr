@@ -207,13 +207,6 @@ export class Seidr<T = any> implements Observable<T> {
 
   /**
    * Removes all observers and executes all registered cleanup functions.
-   *
-   * This method should be called when an observable is no longer needed to
-   * prevent memory leaks and ensure proper cleanup of resources. After calling
-   * destroy(), the observable can no longer be used for observing changes.
-   *
-   * Cleanup functions are executed in a try-catch block to ensure that
-   * errors in one cleanup function don't prevent others from running.
    */
   destroy(): void {
     this.f.clear();

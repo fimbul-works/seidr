@@ -15,6 +15,12 @@ export function reconstructComponentTree(data: Record<string, StructureMapTuple[
   return buildComponentTree(rootId, data);
 }
 
+/**
+ * Builds a virtual DOM tree for a component.
+ * @param {string} componentId
+ * @param {Record<string, StructureMapTuple[]>} data
+ * @return {ComponentTreeNode[]}
+ */
 function buildComponentTree(componentId: string, data: Record<string, StructureMapTuple[]>): ComponentTreeNode[] {
   const tuples = data[componentId];
   if (!tuples || !Array.isArray(tuples)) {
@@ -25,7 +31,7 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
   }
   if (tuples.length === 0) return [];
 
-  // 1. Identify all nodes that are referenced as children
+  // Identify all nodes that are referenced as children
   const referencedAsChild = new Set<number>();
   for (const tuple of tuples) {
     if (!tuple || !Array.isArray(tuple)) continue;
@@ -39,7 +45,7 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
     }
   }
 
-  // 2. Recursive builder
+  // Recursive builder
   const buildNode = (idx: number): ComponentTreeNode => {
     const [tag, ...indices] = tuples[idx];
     const isComp = tag.startsWith(TAG_COMPONET_PREFIX);
@@ -63,7 +69,7 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
     return node;
   };
 
-  // 3. Root nodes of this component are those NOT referenced as a child of another node
+  // Root nodes of this component are those NOT referenced as a child of another node
   return tuples
     .map((_, idx) => idx)
     .filter((idx) => !referencedAsChild.has(idx))
