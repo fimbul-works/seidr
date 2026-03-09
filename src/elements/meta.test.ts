@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $meta } from "./meta";
 
 describeDualMode("Meta Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with name and content", () => {
     return $meta({ name: "description", content: "Description" });

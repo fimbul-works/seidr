@@ -1,9 +1,9 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $fieldset } from "./fieldset";
 import { $legend } from "./legend";
 
 describeDualMode("Legend Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders in fieldset", () => {
     return $fieldset({}, [$legend({}, ["Details"])]);

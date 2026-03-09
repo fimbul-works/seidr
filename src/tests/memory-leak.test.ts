@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { $div, $span, mount, Seidr, useScope } from "../index.browser";
+import { $div, $span, mount, onUnmount, Seidr } from "../index.core";
 
 describe("Memory Leak Benchmark", () => {
   it("should not leak observers when mounting/destroying 1000 times", () => {
@@ -10,11 +10,6 @@ describe("Memory Leak Benchmark", () => {
     expect(derived.observerCount()).toBe(0);
 
     const TestComponent = () => {
-      const scope = useScope();
-
-      // Add some internal tracking
-      scope.onUnmount(() => {});
-
       return $div({}, [$span({ textContent: state }), $span({ textContent: derived })]);
     };
 
@@ -37,16 +32,15 @@ describe("Memory Leak Benchmark", () => {
     }
   });
 
-  it("should clean up internal timers tracked by useScope", () => {
+  it("should clean up internal timers tracked by onUnmount", () => {
     vi.useFakeTimers();
     let cleanupCalled = 0;
 
     const TimerComponent = () => {
-      const scope = useScope();
       const count = new Seidr(0);
 
       const interval = setInterval(() => count.value++, 1000);
-      scope.onUnmount(() => {
+      onUnmount(() => {
         clearInterval(interval);
         cleanupCalled++;
       });

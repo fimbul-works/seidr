@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, useScope } from "../component";
+import { component, onMount, onUnmount } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -72,12 +72,11 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should call onMount when components are added to the list", () => {
-    const onMount = vi.fn();
+    const onMountFn = vi.fn();
     const items = new Seidr([{ id: 1, text: "A" }]);
 
     const Item = component((props: { id: number }) => {
-      const scope = useScope();
-      scope.onMount((parent) => onMount(props.id, parent));
+      onMount((parent) => onMountFn(props.id, parent));
       return $("span", { textContent: `Item ${props.id}` });
     }, "Item");
 
@@ -87,12 +86,12 @@ describeDualMode("List Component", ({ getDocument }) => {
 
     cleanup = mount(Parent, container);
 
-    expect(onMount).toHaveBeenCalledWith(1, expect.anything());
-    onMount.mockClear();
+    expect(onMountFn).toHaveBeenCalledWith(1, expect.anything());
+    onMountFn.mockClear();
 
     // Add another item
     items.value = [...items.value, { id: 2, text: "B" }];
-    expect(onMount).toHaveBeenCalledWith(2, expect.anything());
+    expect(onMountFn).toHaveBeenCalledWith(2, expect.anything());
   });
 
   it("should destroy scopes of removed items", () => {
@@ -103,8 +102,7 @@ describeDualMode("List Component", ({ getDocument }) => {
     const destroyedIds: number[] = [];
 
     const Item = (props: { id: number }) => {
-      const scope = useScope();
-      scope.onUnmount(() => destroyedIds.push(props.id));
+      onUnmount(() => destroyedIds.push(props.id));
       return $("span", { textContent: `Item ${props.id}` });
     };
 

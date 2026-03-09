@@ -12,7 +12,7 @@ Seidr.register = registerSeidrForSSR;
 
 export { getAppState, setAppStateID, testAppState } from "./app-state";
 export { enableClientMode } from "./client-mode";
-export { describeDualMode, mockUseScope } from "./dual-mode";
+export { describeDualMode, mockComponentScope } from "./dual-mode";
 export { enableSSRMode } from "./ssr-mode";
 
 setInternalAppState(getAppState);

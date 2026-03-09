@@ -1,9 +1,9 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $details } from "./details";
 import { $summary } from "./summary";
 
 describeDualMode("Summary Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders in details", () => {
     return $details({}, [$summary({}, ["Click to see more"])]);

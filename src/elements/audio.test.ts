@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $audio } from "./audio";
 
 describeDualMode("Audio Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with src and controls", () => {
     return $audio({ src: "audio.mp3", controls: true });

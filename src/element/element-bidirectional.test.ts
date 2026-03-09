@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../seidr";
-import { enableClientMode, enableSSRMode, mockUseScope } from "../test-setup";
+import { enableClientMode, enableSSRMode, mockComponentScope } from "../test-setup";
 import { $ } from "./create-element";
 
 describe("$ Bidirectional Mapping", () => {
-  mockUseScope();
+  mockComponentScope();
 
   describe("SSR Mode", () => {
     let cleanup: () => void;

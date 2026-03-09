@@ -1,4 +1,5 @@
-import { useScope } from "../component/use-scope";
+import { onMount } from "../component/on-mount";
+import { onUnmount } from "../component/on-unmount";
 import type { Seidr } from "../seidr";
 import { getHydrationMap } from "../ssr/hydrate";
 import { SeidrError } from "../types";
@@ -18,19 +19,18 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   // Helper functions
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
-  const scope = useScope();
 
   // Handle ref
   if (prop === "ref") {
     if (!isSeidr<HTMLElement | null>(value)) {
       throw new SeidrError("ref must be a Seidr");
     }
-    scope.onMount(() => (value.value = el));
-    scope.onUnmount(() => (value.value = null));
+    onMount(() => (value.value = el), false);
+    onUnmount(() => (value.value = null), false);
     return;
   }
 
-  const elFromHydration = (element: HTMLElement): any =>
+  const currentElement = (element: HTMLElement): any =>
     (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(element)) || element;
 
   let effectiveProp = prop;
@@ -57,7 +57,10 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        scope.onUnmount(cssText.bind(el, (val, element) => (elFromHydration(element).style = val)));
+        onUnmount(
+          cssText.bind(el, (val, element) => (currentElement(element).style = val)),
+          false,
+        );
       } else {
         el.style = cssText as string;
       }
@@ -71,7 +74,10 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
         styleProp = camelToKebab(styleProp as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {
-        scope.onUnmount(styleValue.bind(el, (val, element) => (elFromHydration(element).style[styleProp] = val)));
+        onUnmount(
+          styleValue.bind(el, (val, element) => (currentElement(element).style[styleProp] = val)),
+          false,
+        );
       } else {
         el.style[styleProp] = styleValue;
       }
@@ -79,9 +85,9 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
 
     if (isSeidr(value)) {
       if (isStr(value.value)) {
-        scope.onUnmount(
+        onUnmount(
           value.bind(el, (val, element) => {
-            const activeElement = elFromHydration(element);
+            const activeElement = currentElement(element);
             if (isSeidr<string>(val)) {
               // edgecase
               activeElement.style = val.value;
@@ -89,9 +95,13 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
               activeElement.style = val;
             }
           }),
+          false,
         );
       } else {
-        scope.onUnmount(value.bind(el, (val, element) => (elFromHydration(element).style = val)));
+        onUnmount(
+          value.bind(el, (val, element) => (currentElement(element).style = val)),
+          false,
+        );
       }
     } else if (isStr(value)) {
       setCSSText(value);
@@ -122,8 +132,11 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   };
 
   if (isSeidr(value)) {
-    scope.onUnmount(value.bind(el, (val, element) => applyValue(elFromHydration(element), val)));
+    onUnmount(
+      value.bind(el, (val, element) => applyValue(currentElement(element), val)),
+      false,
+    );
   } else {
-    applyValue(elFromHydration(el), value);
+    applyValue(currentElement(el), value);
   }
 };

@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $link } from "./link";
 
 describeDualMode("Link Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders for stylesheet with disabled", () => {
     return $link({

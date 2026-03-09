@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $button } from "./button";
 
 describeDualMode("Button Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with type and name", () => {
     return $button({ type: "submit", name: "send" }, ["Submit"]);

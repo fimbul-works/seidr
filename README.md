@@ -354,14 +354,13 @@ const message = count.as(n => n > 5 ? 'Many!' : `Count: ${n}`);
 Seidr components are simple functions that return UI elements. They are lightweight, easy to test, and have full access to Seidr's reactivity and lifecycle management.
 
 ```typescript
-import { useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
+import { Seidr, $div, $span, $button, onUnmount } from '@fimbul-works/seidr';
 
 const UserProfile = ({ name, initialAge = 30 }) => {
-  const scope = useScope(); // Access component lifecycle
   const age = new Seidr(initialAge);
 
   // Track custom cleanup logic
-  scope.onUnmount(() => console.log('Profile destroyed'));
+  onUnmount(() => console.log('Profile destroyed'));
 
   return $div({ className: 'user-profile' }, [
     $span({ textContent: name }),
@@ -374,7 +373,7 @@ const UserProfile = ({ name, initialAge = 30 }) => {
 };
 ```
 
-> **The Magic:** When you mount a function using `mount()`, `List()`, `Conditional()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `useScope()` and automatic cleanup work perfectly in plain functions!
+> **The Magic:** When you mount a function using `mount()`, `List()`, `Conditional()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `onUnmount()` and automatic cleanup work perfectly in plain functions!
 
 #### Creating Reusable Factories with component()
 
@@ -430,7 +429,7 @@ mount(Counter, document.body);
 
 ### Memory Management
 
-Seidr automatically cleans up reactive bindings created within a component. However, for external resources like intervals, event listeners, or network connections, you should use the `useScope()` hook to track cleanup and avoid memory leaks.
+Seidr automatically cleans up reactive bindings created within a component. However, for external resources like intervals, event listeners, or network connections, you should use the `onUnmount()` hook to track cleanup and avoid memory leaks.
 
 ```typescript
 // ❌ WRONG: Leaks memory when component is destroyed
@@ -445,11 +444,10 @@ const BadComponent = () => {
 
 // ✅ CORRECT: Cleanup tracked automatically
 const GoodComponent = () => {
-  const scope = useScope();
   const count = new Seidr(0);
 
   const interval = setInterval(() => count.value++, 1000);
-  scope.onUnmount(() => clearInterval(interval));
+  onUnmount(() => clearInterval(interval));
 
   return $div({ textContent: count });
 };

@@ -24,9 +24,9 @@ import type {
   ComponentChildren,
   ComponentFactory,
   ComponentFactoryPureFunction,
-  OnMountCallback,
+  OnMountFunction,
 } from "./types";
-import { getFirstNode } from "./util/component-nodes";
+import { getFirstNode } from "./util/get-first-node";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -56,7 +56,7 @@ export const component = <P = void>(
     let element: ComponentChildren;
     let startMarkerComment: Comment | null = null;
     let endMarkerComment: Comment | null = null;
-    const onMountCallbacks: OnMountCallback[] = [];
+    const onMountCallbacks: OnMountFunction[] = [];
     const onUnmountCallbacks: CleanupFunction[] = [];
 
     // Create Component instance
@@ -127,7 +127,7 @@ export const component = <P = void>(
       },
       unmount(): void {
         if (!parentNode) {
-          if (process.env.DEBUG || process.env.VITEST) {
+          if (process.env.DEBUG) {
             console.trace(`[${componentId}] Unmounting already unmounted component`);
           } else {
             console.warn(`[${componentId}] Unmounting already unmounted component`);
@@ -156,7 +156,7 @@ export const component = <P = void>(
         startMarker?.remove();
 
         const removeChildEntry = (child: ComponentChildren): void => {
-          if (isComponent(child)) {
+          if (isComponent(child) && child.isMounted) {
             child.unmount();
           } else if (isDOMNode(child)) {
             const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;

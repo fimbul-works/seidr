@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $body } from "./body";
 
 describeDualMode("Body Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with legacy attributes", () => {
     return $body(

@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $strong } from "./strong";
 
 describeDualMode("Strong Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders correctly", () => {
     return $strong({}, ["Strong"]);

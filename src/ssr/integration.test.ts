@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element/create-element";
 import { Seidr } from "../seidr/seidr";
-import { enableSSRMode, mockUseScope } from "../test-setup";
+import { enableSSRMode, mockComponentScope } from "../test-setup";
 
 describe("SSR Integration Tests", () => {
   let cleanup: () => void;
 
-  mockUseScope();
+  mockComponentScope();
 
   beforeEach(() => {
     cleanup = enableSSRMode();

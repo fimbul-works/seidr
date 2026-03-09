@@ -1,6 +1,6 @@
 # Component API
 
-Seidr components are functions that return UI elements. They can receive data via arguments (*"props"*) and use the [`useScope()`](#usescope) hook for lifecycle management.
+Seidr components are functions that return UI elements. They can receive data via arguments (*"props"*) and use the [`onMount()`](#onmount) and [`onUnmount()`](#onunmount) for lifecycle management.
 
 ## component()
 
@@ -94,21 +94,39 @@ unmount();
 
 ---
 
-## useScope()
+## onMount()
 
-Call `useScope()` inside the [component factory](#component) to get the scope object for tracking cleanup:
+Call `onMount()` inside the [component factory](#component) to register a callback that is triggered when the component is mounted.
 
 ```typescript
-import { useScope, Seidr, $div, $span, $button } from '@fimbul-works/seidr';
+import { onMount, $div } from '@fimbul-works/seidr';
+
+const Example = () => {
+  onMount((parent) => console.log("Mounted to element", parent));
+
+  return $div({ textContent: count });
+};
+
+// Callback is triggered
+mount(Example, document.body);
+```
+
+---
+
+## onUnmount()
+
+Call `onUnmount()` inside the [component factory](#component) to register a callback that is triggered when the component is unmounted.
+
+```typescript
+import { onUnmount, Seidr, $div } from '@fimbul-works/seidr';
 
 const Timer = () => {
-  const scope = useScope();
   const count = new Seidr(0);
 
   const interval = setInterval(() => count.value++, 1000);
 
   // Cleanup function
-  scope.onUnmount(() => clearInterval(interval));
+  onUnmount(() => clearInterval(interval));
 
   return $div({ textContent: count });
 };
@@ -116,7 +134,6 @@ const Timer = () => {
 // Mount it
 const unmount = mount(Timer, document.body);
 
-// When done:
 unmount(); // Cleans up the interval
 ```
 
@@ -205,63 +222,6 @@ export interface SeidrComponent {
    * Unmounts the component, destroying its scope and removing its elements from the DOM.
    */
   unmount(): void;
-}
-```
-
----
-
-### LifecycleScope type
-
-```typescript
-/**
- * Lifecycle and resource management interface for components.
- * This is the public API surface exposed via useScope().
- */
-export interface LifecycleScope {
-  /**
-   * The unique identifier of the component.
-   */
-  readonly id: string;
-
-  /**
-   * Whether the component has been destroyed.
-   */
-  readonly isUnmounted: boolean;
-
-  /**
-   * Tracks a cleanup function to be executed when the component is destroyed.
-   * @param {CleanupFunction} cleanup - The cleanup function to execute
-   */
-  onUnmount(cleanup: CleanupFunction): void;
-
-  /**
-   * Observes a Seidr observable and executes the callback within the component's context.
-   * @template T
-   * @param {Seidr<T>} observable - The observable to watch
-   * @param {(val: T) => void} callback - The callback to execute when value changes
-   * @returns {CleanupFunction} Cleanup function to stop observation
-   */
-  observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction;
-
-  /**
-   * Register a promise to wait for (SSR integration).
-   * @param promise - The promise to track
-   * @returns {Promise<T>} The same promise, for chaining
-   */
-  waitFor<T>(promise: Promise<T>): Promise<T>;
-
-  /**
-   * Tracks a child component for automatic cleanup.
-   * @param {Component} component - The child component to track
-   * @returns {Component} The same child Component
-   */
-  child(component: Component): Component;
-
-  /**
-   * Callback triggered when the component is attached to a parent.
-   * @param {(parent: Node) => void} callback - The callback to execute when attached
-   */
-  onMount(callback: (parent: Node) => void): void;
 }
 ```
 

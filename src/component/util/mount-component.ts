@@ -6,7 +6,7 @@ import { isServer } from "../../util/environment/is-server";
 import { isComponent } from "../../util/type-guards/component-types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
-import { getFirstNode } from "./component-nodes";
+import { getFirstNode } from "./get-first-node";
 
 /**
  * Mounts a component into the DOM.
@@ -59,7 +59,9 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
             }
           }
         }
-        mountComponent(item, realAnchor, realParent!);
+        if (!item.isMounted) {
+          mountComponent(item, realAnchor, realParent!);
+        }
       }
     };
 

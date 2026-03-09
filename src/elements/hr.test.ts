@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $hr } from "./hr";
 
 describeDualMode("Horizontal Rule Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with attributes", () => {
     return $hr({

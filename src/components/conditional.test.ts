@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { useScope } from "../component";
+import { onMount, onUnmount } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -43,12 +43,11 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
   });
 
   it("should call onMount when component is shown", () => {
-    const onMount = vi.fn();
+    const mountFn = vi.fn();
     const isVisible = new Seidr(false);
 
     const View = () => {
-      const scope = useScope();
-      scope.onMount((parent) => onMount(parent));
+      onMount((parent) => mountFn(parent));
       return $("span", { textContent: "Visible" });
     };
 
@@ -59,7 +58,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     unmount = mount(Parent, container);
 
     isVisible.value = true;
-    expect(onMount).toHaveBeenCalledWith(expect.anything());
+    expect(mountFn).toHaveBeenCalledWith(expect.anything());
   });
 
   it("should destroy scope when condition becomes false", () => {
@@ -67,8 +66,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     let scopeDestroyed = false;
 
     const View = () => {
-      const scope = useScope();
-      scope.onUnmount(() => (scopeDestroyed = true));
+      onUnmount(() => (scopeDestroyed = true));
       return $("span", { textContent: "Visible" });
     };
 

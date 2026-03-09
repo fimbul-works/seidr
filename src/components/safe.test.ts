@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type Component, useScope } from "../component";
+import { type Component, onUnmount } from "../component";
+import { ROOT_ATTRIBUTE } from "../constants";
 import { appendChild } from "../dom/append-child";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
-import { ROOT_ATTRIBUTE } from "../constants";
 
 describeDualMode("Safe", ({ getDocument, isSSR }) => {
   let container: HTMLElement;
@@ -43,39 +43,12 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
       expect(container.textContent).toBe(`Error: ${errorMessage}`);
     });
 
-    it("should create new scope for error boundary", () => {
-      let errorBoundaryScope: any = null;
-      let factoryScope: any = null;
-
-      const comp = Safe(
-        () => {
-          const scope = useScope();
-          factoryScope = scope;
-          throw new SeidrError("Error");
-        },
-        (_err) => {
-          const scope = useScope();
-          errorBoundaryScope = scope;
-          return $("div");
-        },
-      );
-
-      unmount = mount(comp, container);
-
-      expect(errorBoundaryScope).not.toBe(factoryScope);
-      expect(errorBoundaryScope).toBeDefined();
-      expect(factoryScope).toBeDefined();
-    });
-
     it("should destroy original scope before creating error boundary", () => {
-      let originalScopeDestroyed = false;
+      const originalScopeDestroyed = vi.fn();
 
       const comp = Safe(
         () => {
-          const scope = useScope();
-          scope.onUnmount(() => {
-            originalScopeDestroyed = true;
-          });
+          onUnmount(originalScopeDestroyed);
           throw new SeidrError("Error");
         },
         (_err) => {
@@ -85,7 +58,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
       unmount = mount(comp, container);
 
-      expect(originalScopeDestroyed).toBe(true);
+      expect(originalScopeDestroyed).toBeCalled();
     });
   });
 
@@ -154,8 +127,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
           throw new SeidrError("Error");
         },
         (_err) => {
-          const scope = useScope();
-          scope.onUnmount(() => {
+          onUnmount(() => {
             errorBoundaryDestroyed = true;
           });
           return $("div");
@@ -174,15 +146,13 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
       const comp = Safe(
         () => {
-          const scope = useScope();
-          scope.onUnmount(() => {
+          onUnmount(() => {
             cleanupLog.push("factory cleanup");
           });
           throw new SeidrError("Error");
         },
         (_err) => {
-          const scope = useScope();
-          scope.onUnmount(() => {
+          onUnmount(() => {
             cleanupLog.push("error boundary cleanup");
           });
           return $("div");

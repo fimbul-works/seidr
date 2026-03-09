@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
-import { describeDualMode, mockUseScope } from "../test-setup";
+import { describeDualMode, mockComponentScope } from "../test-setup";
 import { assignProps } from "./assign-props";
 
 describeDualMode("assignProps", ({ getDocument }) => {
-  mockUseScope();
+  mockComponentScope();
 
   it("should assign basic props", () => {
     const factory = getDocument();

@@ -1,10 +1,10 @@
 import { expect, it } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
-import { describeDualMode, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, mockComponentScope } from "../test-setup/dual-mode";
 
 describeDualMode("App Parity Test", ({ isSSR }) => {
-  mockUseScope();
+  mockComponentScope();
 
   it("should render a component with attributes, styles, and reactivity perfectly match browser", () => {
     const fontSize = new Seidr("16px");

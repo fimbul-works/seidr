@@ -1,20 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../../component";
+import { $text } from "../../dom";
 import { $div, $h1, $p, $section } from "../../elements";
 import { Link, Router, useLocation } from "../../router";
-import { enableClientMode, enableSSRMode, mockUseScope } from "../../test-setup";
+import { enableClientMode, enableSSRMode, mockComponentScope } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
 import { clearHydrationData, hydrate } from "./index";
-import { $text } from "../../dom";
 
 describe("Hydration of a multi-page app", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
 
-  mockUseScope();
+  mockComponentScope();
 
   beforeEach(() => {
     container = document.createElement("div");
@@ -29,11 +29,8 @@ describe("Hydration of a multi-page app", () => {
   });
 
   const homePage = component(() => {
-    const message = $text('Welcome to my homepage')
-    return $section({ className: "home-page" }, [
-      $h1(null, "Home"),
-      $div(null, message),
-    ]);
+    const message = $text("Welcome to my homepage");
+    return $section({ className: "home-page" }, [$h1(null, "Home"), $div(null, message)]);
   }, "HomePage");
 
   const aboutPage = component(() => {

@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $col } from "./col";
 
 describeDualMode("Column Elements Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders col with span", () => {
     return $col({ span: 2 });

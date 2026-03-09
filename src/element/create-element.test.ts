@@ -1,13 +1,13 @@
 import { beforeEach, expect, it } from "vitest";
 import "../dom/get-document.browser";
-import { describeDualMode, mockUseScope } from "../test-setup";
+import { describeDualMode, mockComponentScope } from "../test-setup";
 import { isHTMLElement } from "../util/type-guards/dom-node-types";
 import { $ } from "./create-element";
 
 describeDualMode("$ (createElement)", ({ getDocument }) => {
   let document: Document;
 
-  mockUseScope();
+  mockComponentScope();
 
   beforeEach(() => {
     document = getDocument();

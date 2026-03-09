@@ -1,10 +1,10 @@
 import { expect, it } from "vitest";
 import { Seidr } from "../seidr/seidr";
-import { describeDualMode, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, mockComponentScope } from "../test-setup/dual-mode";
 import { assignProp } from "./assign-prop";
 
 describeDualMode("assignProp", ({ getDocument }) => {
-  mockUseScope();
+  mockComponentScope();
 
   it("should assign static properties", () => {
     const el = getDocument().createElement("div");

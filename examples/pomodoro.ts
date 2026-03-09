@@ -1,8 +1,6 @@
-import { $button, $div, $h1, isClient, mount, Seidr, useScope } from "../src/index.browser.js";
+import { $button, $div, $h1, isClient, mount, Seidr, onUnmount } from "../src/index.browser.js";
 
 const PomodoroTimer = () => {
-  const scope = useScope();
-
   const WORK_TIME = 25 * 60;
   const SHORT_BREAK = 5 * 60;
   const LONG_BREAK = 15 * 60;
@@ -53,7 +51,7 @@ const PomodoroTimer = () => {
     audio.play().catch(() => {});
   };
 
-  scope.onUnmount(
+  onUnmount(
     isRunning.observe((running) => {
       if (running) {
         interval = setInterval(tick, 1000);

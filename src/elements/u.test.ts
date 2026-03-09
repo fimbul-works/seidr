@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $u } from "./u";
 
 describeDualMode("Underline Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders correctly", () => {
     return $u({}, ["Underlined text"]);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { HYDRATION_ID_ATTRIBUTE } from "../../constants";
 import { SSRDocument } from "../dom/ssr-document";
-import { getComponentBoundaryId } from "./boundary";
+import { getComponentBoundaryId } from "./get-component-boundary-id";
 
 describe("getComponentBoundaryId", () => {
   const document = new SSRDocument();

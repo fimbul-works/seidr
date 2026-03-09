@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, useScope } from "../component";
+import { component, onMount, onUnmount } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -67,18 +67,16 @@ describeDualMode("Switch Component", ({ getDocument }) => {
   });
 
   it("should call onMount when switching components", () => {
-    const onMount = vi.fn();
+    const onMountFn = vi.fn();
     const mode = new Seidr("A");
 
     const CompA = () => {
-      const scope = useScope();
-      scope.onMount((parent) => onMount("A", parent));
+      onMount((parent) => onMountFn("A", parent));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
-      const scope = useScope();
-      scope.onMount((parent) => onMount("B", parent));
+      onMount((parent) => onMountFn("B", parent));
       return $("span", { textContent: "View B" });
     };
 
@@ -92,11 +90,11 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     };
 
     unmount = mount(Parent, container);
-    expect(onMount).toHaveBeenCalledWith("A", expect.anything());
+    expect(onMountFn).toHaveBeenCalledWith("A", expect.anything());
 
-    onMount.mockClear();
+    onMountFn.mockClear();
     mode.value = "B";
-    expect(onMount).toHaveBeenCalledWith("B", expect.anything());
+    expect(onMountFn).toHaveBeenCalledWith("B", expect.anything());
   });
 
   it("should destroy scope of previous component when switching", () => {
@@ -105,14 +103,12 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     let scopeBDestroyed = false;
 
     const CompA = () => {
-      const scope = useScope();
-      scope.onUnmount(() => (scopeADestroyed = true));
+      onUnmount(() => (scopeADestroyed = true));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
-      const scope = useScope();
-      scope.onUnmount(() => (scopeBDestroyed = true));
+      onUnmount(() => (scopeBDestroyed = true));
       return $("span", { textContent: "View B" });
     };
 

@@ -177,25 +177,30 @@ function normalizeHtml(html: string): string {
   return normalized.replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
 }
 
-import type { ComponentScope } from "../component";
-import * as useScopeModule from "../component/use-scope";
+import * as onMountModule from "../component/on-mount";
+import * as onUnmountModule from "../component/on-unmount";
 import { str } from "../util/string";
 
 /**
- * Mocks the useScope hook for tests that need to run in SSR mode
+ * Mocks the component lifecycle hooks for tests that need to run in SSR mode
  * but don't actually need scope tracking.
  */
-export function mockUseScope() {
-  let spy: any;
+export function mockComponentScope() {
+  let onMountSpy: any;
+  let onUnmountSpy: any;
 
   beforeEach(() => {
-    spy = vi.spyOn(useScopeModule, "useScope").mockReturnValue({
-      onUnmount: () => {},
-    } as unknown as ComponentScope);
+    onMountSpy = vi.spyOn(onMountModule, "onMount").mockReturnValue({
+      onMount: () => {},
+    } as any);
+    onUnmountSpy = vi.spyOn(onUnmountModule, "onUnmount").mockReturnValue({
+      onMount: () => {},
+    } as any);
   });
 
   afterEach(() => {
-    spy?.mockRestore();
+    onMountSpy?.mockRestore();
+    onUnmountSpy?.mockRestore();
   });
 }
 

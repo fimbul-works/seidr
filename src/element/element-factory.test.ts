@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { mockUseScope } from "../test-setup";
+import { mockComponentScope } from "../test-setup";
 import { $ } from "./create-element";
 import { $factory } from "./element-factory";
 
 describe("elementFactory", () => {
-  mockUseScope();
+  mockComponentScope();
 
   it("should return a function that creates elements", () => {
     const createDiv = $factory("div");

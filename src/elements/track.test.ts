@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $track } from "./track";
 
 describeDualMode("Track Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with various attributes", () => {
     return $track({

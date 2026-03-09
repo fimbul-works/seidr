@@ -55,13 +55,22 @@ export type ComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
 /**
  * Function to execute when a componnent is mounted.
  */
-export type OnMountCallback = (parent: Node) => void;
+export type OnMountFunction = (parent: Node) => void;
 
 /**
- * Lifecycle and resource management interface for components.
- * This is the public API surface exposed via useScope().
+ * Represents a Seidr component with automatic lifecycle management.
+ *
+ * Components are the primary building blocks of Seidr applications, encapsulating
+ * both the visual element and the cleanup logic needed for proper resource
+ * management.
  */
-export interface ComponentScope {
+export interface Component {
+  /**
+   * Read-only identifier for Seidr components.
+   * @type {typeof TYPE.COMPONENT}
+   */
+  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
+
   /**
    * The unique identifier of the component.
    */
@@ -81,33 +90,6 @@ export interface ComponentScope {
    * The parent DOM node, if attached.
    */
   readonly parentNode: Node | null;
-
-  /**
-   * Callback triggered when the component is attached to a parent.
-   * @param {OnMountCallback} callback - The callback to execute when attached
-   */
-  onMount(callback: OnMountCallback): void;
-
-  /**
-   * Tracks a cleanup function to be executed when the component is destroyed.
-   * @param {CleanupFunction} cleanup - The cleanup function to execute
-   */
-  onUnmount(cleanup: CleanupFunction): void;
-}
-
-/**
- * Represents a Seidr component with automatic lifecycle management.
- *
- * Components are the primary building blocks of Seidr applications, encapsulating
- * both the visual element and the cleanup logic needed for proper resource
- * management.
- */
-export interface Component extends ComponentScope {
-  /**
-   * Read-only identifier for Seidr components.
-   * @type {typeof TYPE.COMPONENT}
-   */
-  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
 
   /**
    * The root element of the component.
@@ -140,6 +122,18 @@ export interface Component extends ComponentScope {
    * @internal
    */
   readonly childComponentNodes: Map<Node, string>;
+
+  /**
+   * Callback triggered when the component is attached to a parent.
+   * @param {OnMountFunction} callback - The callback to execute when attached
+   */
+  onMount(callback: OnMountFunction): void;
+
+  /**
+   * Tracks a cleanup function to be executed when the component is destroyed.
+   * @param {CleanupFunction} cleanup - The cleanup function to execute
+   */
+  onUnmount(cleanup: CleanupFunction): void;
 
   /**
    * Attach the component to a parent DOM node.

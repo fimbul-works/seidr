@@ -15,7 +15,8 @@
 ## [Components](components.md)
   - [`component()`](components.md#component) - Create a component.
   - [`mount()`](components.md#mount) - Mount a component to the DOM.
-  - [`useScope()`](components.md#usescope) - Get the scope of a component.
+  - [`onMount()`](components.md#onmount) - Register a callback to be executed when component is mounted.
+  - [`onUnmount()`](components.md#onunmount) - Register a callback to be executed when component is unmounted.
   - [`wrapComponent()`](components.md#wrapcomponent) - Convert a function into a component.
   - [`SeidrComponent`](components.md#seidrcomponent-type) - The type of a Seidr component.
   - [Built-In Components](components.md#built-in-components)

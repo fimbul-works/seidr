@@ -1,10 +1,10 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $img } from "./img";
 import { $picture } from "./picture";
 import { $source } from "./source";
 
 describeDualMode("Picture Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with source and img", () => {
     return $picture({}, [$source({ srcset: "img.webp", type: "image/webp" }), $img({ src: "img.jpg", alt: "alt" })]);

@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $video } from "./video";
 
 describeDualMode("Video Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with media attributes", () => {
     return $video({

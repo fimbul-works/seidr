@@ -4,7 +4,7 @@ export * from "./components/index";
 export * from "./dom/index";
 export * from "./element/index";
 export * from "./elements/index";
-export * from "./helper/index";
+export * from "./form/index";
 export * from "./router/index";
 export * from "./seidr/index";
 export * from "./types";

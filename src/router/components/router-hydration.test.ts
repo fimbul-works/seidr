@@ -1,7 +1,7 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../../app-state/app-state";
 import { resetRequestIdCounter } from "../../app-state/app-state.node";
-import { component, useScope } from "../../component";
+import { component, onUnmount } from "../../component";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { NO_HYDRATE } from "../../seidr/constants";
@@ -21,16 +21,14 @@ describe("Router Hydration", () => {
   let fallbackUnmounted = false;
 
   const Home = component(() => {
-    const scope = useScope();
-    scope.onUnmount(() => {
+    onUnmount(() => {
       homeUnmounted = true;
     });
     return $("div", { className: "home", textContent: "Home" });
   }, "Home");
 
   const Fallback = component(() => {
-    const scope = useScope();
-    scope.onUnmount(() => {
+    onUnmount(() => {
       fallbackUnmounted = true;
     });
     return $("div", { className: "fallback", textContent: "404" });

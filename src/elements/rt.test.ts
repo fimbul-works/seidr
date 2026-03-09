@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $rt } from "./rt";
 
 describeDualMode("Ruby Text Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders correctly", () => {
     return $rt({}, ["かん"]);

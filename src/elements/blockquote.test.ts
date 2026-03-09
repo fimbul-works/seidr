@@ -1,8 +1,8 @@
-import { describeDualMode, itHasParity, mockUseScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
 import { $blockquote } from "./blockquote";
 
 describeDualMode("Block Quotation Element Parity", () => {
-  mockUseScope();
+  mockComponentScope();
 
   itHasParity("renders with cite attribute", () => {
     return $blockquote({ cite: "https://www.huxley.net/bnw/four.html" }, [
