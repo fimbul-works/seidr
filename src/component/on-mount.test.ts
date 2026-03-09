@@ -56,7 +56,7 @@ describeDualMode("component", ({ getDocument }) => {
     expect(mount2).toHaveBeenCalledWith(parentNode);
   });
 
-  it("should execute onMount recursively", () => {
+  it("should call onMount when child is mounted", () => {
     const mount = vi.fn();
 
     const Child = component(() => {
@@ -68,11 +68,7 @@ describeDualMode("component", ({ getDocument }) => {
       return $("div", null, Child());
     }, "Parent");
 
-    const parentInstance = Parent();
-    expect(mount).not.toHaveBeenCalled();
-
-    parentInstance.mount(container);
-
+    Parent();
     expect(mount).toHaveBeenCalled();
   });
 });

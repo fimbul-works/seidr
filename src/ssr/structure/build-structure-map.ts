@@ -1,69 +1,89 @@
 import type { Component } from "../../component/types";
+import { collectRootNodes } from "../../component/util/collect-root-nodes";
 import { TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
 import type { StructureMapTuple } from "./types";
 
 /**
- * Converts a component's execution sequence of DOM nodes into the Seidr Structure Map.
- * @param {Component} component - Component to map the structure of
- * @return {StructureMapTuple[]} Array representing the component's children
+ * Builds a structure map for the given component.
+ *
+ * @param {Component} component - The component to build the structure map for
+ * @returns {StructureMapTuple[]} An array of tuples representing the structure of the component
  */
 export function buildStructureMap(component: Component): StructureMapTuple[] {
+  const isRootNodeOf = (node: Node, comp: Component): boolean => {
+    return collectRootNodes(comp).indexOf(node) !== -1;
+  };
+
+  const findChildIndexById = (compId: string, parent: Component): number => {
+    for (let i = 0; i < parent.nodes.length; i++) {
+      if (parent.childComponentNodes.get(parent.nodes[i]) === compId) {
+        return i;
+      }
+    }
+    return -1;
+  };
+
   const nodeCreateIndex = component.nodes;
-  if (!nodeCreateIndex || nodeCreateIndex.length === 0) {
-    return [];
-  }
+  if (!nodeCreateIndex || nodeCreateIndex.length === 0) return [];
 
-  // 1. Map Node to CreationIndex for O(1) child lookups
   const indexMap = new Map<Node, number>();
-  for (let i = 0; i < nodeCreateIndex.length; i++) {
-    indexMap.set(nodeCreateIndex[i], i);
-  }
+  nodeCreateIndex.forEach((n, i) => indexMap.set(n, i));
 
-  // 2. Build the output array
-  const structureMap: StructureMapTuple[] = new Array(nodeCreateIndex.length);
+  return nodeCreateIndex.map((node) => {
+    // 1. Check if boundary
+    let boundaryId = component.childComponentNodes.get(node);
 
-  for (let i = 0; i < nodeCreateIndex.length; i++) {
-    const node = nodeCreateIndex[i];
-
-    // Check if it's a child component boundary using explicit map
-    const boundaryId = component.childComponentNodes.get(node);
-    if (boundaryId) {
-      structureMap[i] = [`${TAG_COMPONET_PREFIX}${boundaryId}`];
-      continue;
+    // 2. JIT fallback for shifted/swapped boundaries
+    if (!boundaryId) {
+      for (const child of component.children.values()) {
+        if (isRootNodeOf(node, child)) {
+          boundaryId = child.id;
+          component.childComponentNodes.set(node, boundaryId);
+          break;
+        }
+      }
     }
 
-    // It's part of the component, resolve standard info
+    if (boundaryId) {
+      return [`${TAG_COMPONET_PREFIX}${boundaryId}`];
+    }
+
+    // 3. Normal node resolution
     let tagName: string;
     if (isHTMLElement(node)) {
-      tagName = node.tagName.toLowerCase();
+      tagName = (node as any).lowerTagName || node.tagName.toLowerCase();
     } else if (isTextNode(node)) {
       tagName = TAG_TEXT;
     } else if (isComment(node)) {
       const text = node.nodeValue?.replace(/^\//, "");
-      if (text && component.id.indexOf(text) !== -1) {
-        tagName = `${TAG_COMMENT}:${node.nodeValue}`;
-      } else {
-        tagName = TAG_COMMENT;
-      }
+      tagName = text && component.id.indexOf(text) !== -1 ? `${TAG_COMMENT}:${node.nodeValue}` : TAG_COMMENT;
     } else {
       tagName = "#unknown";
     }
 
     const tuple: StructureMapTuple = [tagName];
-
-    // Find children that are in our index map
     for (let j = 0; j < node.childNodes.length; j++) {
       const child = node.childNodes[j] as Node;
-      const childIndex = indexMap.get(child);
+      let childIdx = indexMap.get(child);
 
-      if (childIndex !== undefined) {
-        tuple.push(childIndex);
+      // Recursive JIT for child boundaries
+      if (childIdx === undefined) {
+        for (const childComp of component.children.values()) {
+          if (isRootNodeOf(child, childComp)) {
+            childIdx = findChildIndexById(childComp.id, component);
+            if (childIdx !== -1) {
+              component.childComponentNodes.set(child, childComp.id);
+              indexMap.set(child, childIdx);
+              break;
+            }
+          }
+        }
       }
+
+      if (childIdx !== undefined) tuple.push(childIdx);
     }
 
-    structureMap[i] = tuple;
-  }
-
-  return structureMap;
+    return tuple;
+  });
 }

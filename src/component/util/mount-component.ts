@@ -1,12 +1,9 @@
 import type { Component, ComponentChildren } from "../../component/types";
-import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
-import { getHydrationMap, isHydrating } from "../../ssr/hydrate/storage";
+import { getHydrationMap } from "../../ssr/hydrate/storage";
 import { SeidrError } from "../../types";
-import { isServer } from "../../util/environment/is-server";
 import { isComponent } from "../../util/type-guards/component-types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
-import { getFirstNode } from "./get-first-node";
 
 /**
  * Mounts a component into the DOM.
@@ -45,23 +42,7 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
       if (isDOMNode(item)) {
         mountChildNode(item);
       } else if (isComponent(item)) {
-        if (!process.env.CORE_DISABLE_SSR) {
-          if (isServer()) {
-            const boundary = item.startMarker || getFirstNode(item);
-            if (boundary) {
-              component.trackNode(boundary);
-              component.childComponentNodes.set(boundary, item.id);
-            }
-          } else if (isHydrating()) {
-            const ctx = getHydrationContext();
-            if (ctx) {
-              ctx.claimBoundary(item.id);
-            }
-          }
-        }
-        if (!item.isMounted) {
-          mountComponent(item, realAnchor, realParent!);
-        }
+        mountComponent(item, realAnchor, realParent!);
       }
     };
 

@@ -73,6 +73,8 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
           currentAnchor = getHydrationMap().get(currentAnchor) || currentAnchor;
         }
       }
+
+      listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
     listComponent.observe(observable, update);

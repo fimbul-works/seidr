@@ -75,6 +75,5 @@ export const Suspense = <T>(
       parentComponent.onUnmount(promiseOrSeidr.observe((prom) => parentComponent.waitFor(handlePromise(prom))));
     }
 
-    const childComponent = wrapComponent(factory)({ value, state: status, error });
-    return childComponent ? parentComponent.addChild(childComponent) : undefined;
+    return parentComponent.addChild(wrapComponent(factory)({ value, state: status, error }));
   }, name ?? "Suspense")();

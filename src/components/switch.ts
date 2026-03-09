@@ -51,7 +51,10 @@ export const Switch = <
       currentComponent = getComponent(factories, value, fallbackFactory);
       if (currentComponent) {
         switchComponent.addChild(currentComponent);
+        switchComponent.element = currentComponent; // Triggers robust sync
         mountComponent(currentComponent, anchor, parent!);
+      } else {
+        switchComponent.element = undefined;
       }
     };
 
@@ -59,5 +62,6 @@ export const Switch = <
     switchComponent.observe(observable, update);
     switchComponent.onUnmount(() => currentComponent?.unmount());
 
+    switchComponent.element = currentComponent;
     return currentComponent ? switchComponent.addChild(currentComponent) : undefined;
   }, name ?? "Switch")();

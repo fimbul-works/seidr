@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { renderToString } from "../../src/ssr/render-to-string";
-import { buildDomTree } from "../../src/ssr/structure/structure-map";
+import { reconstructComponentTree } from "../../src/ssr/structure/index";
 import { enableSSRMode } from "../../src/test-setup/ssr-mode";
 import { BlogApp } from "./app";
 
@@ -8,17 +8,17 @@ describe("BlogApp Hydration Repro", () => {
   it("captures correct structure map for BlogApp", async () => {
     const cleanup = enableSSRMode();
     try {
-      const { hydrationData } = await renderToString(BlogApp);
+      const { hydrationData } = await renderToString(() => BlogApp());
 
       console.log("Captured Hydration Data:");
       console.log(JSON.stringify(hydrationData, null, 2));
 
-      const tree = buildDomTree(hydrationData.components);
-      console.log("Full Structure Tree:");
-      console.log(JSON.stringify(tree, null, 2));
+      const { reconstructComponentTree } = await import("../../src/ssr/structure/index.js");
+      const tree = reconstructComponentTree(hydrationData.components);
 
+      expect(tree).toBeDefined();
       expect(tree).toHaveLength(1);
-      expect(tree[0].tag).toBe("div");
+      expect(tree[0].tag).toBe("$:BlogApp-2");
 
       const blogAppEntryId = Object.keys(hydrationData.components).find((id) => id.startsWith("BlogApp"));
       const blogAppData = hydrationData.components[blogAppEntryId!];
@@ -34,6 +34,8 @@ describe("BlogApp Hydration Repro", () => {
       // Verify main content div (has children)
       const mainContentDiv = blogAppData.find((entry) => entry[0] === "div" && entry !== appContainer);
       expect(mainContentDiv).toBeDefined();
+      // The bug is here: mainContentDiv should have a child index pointing to Router
+      expect(mainContentDiv!.length).toBeGreaterThan(1);
     } finally {
       cleanup();
     }

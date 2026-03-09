@@ -87,7 +87,7 @@ export interface Component {
   readonly parent: Component | null;
 
   /**
-   * The parent DOM node, if attached.
+   * The parent DOM node, if mounted.
    */
   readonly parentNode: Node | null;
 
@@ -95,7 +95,13 @@ export interface Component {
    * The root element of the component.
    * @type {ComponentChildren}
    */
-  readonly element: ComponentChildren;
+  element: ComponentChildren;
+
+  /**
+   * The child components.
+   * @internal
+   */
+  readonly children: Map<string, Component>;
 
   /**
    * The start marker of the component.
@@ -124,8 +130,8 @@ export interface Component {
   readonly childComponentNodes: Map<Node, string>;
 
   /**
-   * Callback triggered when the component is attached to a parent.
-   * @param {OnMountFunction} callback - The callback to execute when attached
+   * Callback triggered when the component is mounted to a parent.
+   * @param {OnMountFunction} callback - The callback to execute when mounted
    */
   onMount(callback: OnMountFunction): void;
 

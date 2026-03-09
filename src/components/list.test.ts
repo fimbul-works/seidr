@@ -153,11 +153,31 @@ describeDualMode("List Component", ({ getDocument }) => {
     items.value = [{ id: 4, text: "Only New" }];
     expect(container.textContent).toBe("Only New");
 
-    // Reorder
     items.value = [
       { id: 1, text: "One" },
       { id: 2, text: "Two" },
     ];
     expect(container.textContent).toBe("OneTwo");
+  });
+
+  it("should update element reference when list changes", () => {
+    const items = new Seidr([{ id: 1, text: "A" }]);
+    const Item = component((props: { text: string }) => $("span", { textContent: props.text }), "Item");
+    const list = List(
+      items,
+      (i) => i.id,
+      (i) => Item(i),
+    );
+
+    cleanup = mount(() => list, container);
+
+    expect(Array.isArray(list.element)).toBe(true);
+    expect((list.element as any[]).length).toBe(1);
+
+    items.value = [
+      { id: 1, text: "A" },
+      { id: 2, text: "B" },
+    ];
+    expect((list.element as any[]).length).toBe(2);
   });
 });

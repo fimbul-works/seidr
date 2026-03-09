@@ -26,6 +26,7 @@ import type {
   ComponentFactoryPureFunction,
   OnMountFunction,
 } from "./types";
+import { collectRootNodes } from "./util/collect-root-nodes";
 import { getFirstNode } from "./util/get-first-node";
 
 /**
@@ -46,7 +47,7 @@ export const component = <P = void>(
     const parentComponent = getCurrentComponent();
     const numericId = str(getNextComponentId());
     const componentId = `${name}-${numericId}`;
-    const shouldCapture = isServer();
+    const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     const nodes: Node[] = [];
     const children = new Map<string, Component>();
@@ -76,6 +77,42 @@ export const component = <P = void>(
       get element() {
         return element;
       },
+      set element(val: ComponentChildren) {
+        if (element === val) return;
+
+        const prevRoots = isSSR ? collectRootNodes(instance) : [];
+        const nextItems = new Set(isArray(val) ? val : [val]);
+
+        if (element) {
+          const walk = (item: any) => {
+            if (isArray(item)) {
+              item.forEach(walk);
+            } else if (!nextItems.has(item)) {
+              if (isComponent(item)) {
+                item.unmount();
+              } else if (isDOMNode(item)) {
+                const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(item) as Element)) || item;
+                if (el.parentNode) {
+                  (el as ChildNode).remove();
+                }
+              }
+            }
+          };
+          walk(element);
+        }
+
+        element = val;
+
+        if (isSSR) {
+          const nextRoots = collectRootNodes(instance);
+          if (prevRoots.length > 0 && nextRoots.length > 0) {
+            const firstIdx = nodes.indexOf(prevRoots[0]);
+            if (firstIdx !== -1) {
+              nodes.splice(firstIdx, prevRoots.length, ...nextRoots);
+            }
+          }
+        }
+      },
       get startMarker() {
         return startMarkerComment;
       },
@@ -88,6 +125,9 @@ export const component = <P = void>(
       get nodes() {
         return nodes;
       },
+      get children() {
+        return children;
+      },
       get childComponentNodes() {
         return childComponentNodes;
       },
@@ -99,7 +139,7 @@ export const component = <P = void>(
       },
       mount(parent: Element): void {
         if (parentNode) {
-          if (process.env.DEBUG || process.env.VITEST) {
+          if (process.env.DEBUG) {
             console.trace(`[${componentId}] Mounting an already mounted component`);
           } else {
             console.warn(`[${componentId}] Mounting an already mounted component`);
@@ -107,23 +147,15 @@ export const component = <P = void>(
           return;
         }
 
-        console.log("Mounting component", componentId);
-
-        if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
-          getSSRScope()?.registerComponent(instance);
-        }
-
         parentNode = parent;
         onMountCallbacks.forEach((cb) => {
           try {
-            cb(parent);
+            cb(parentNode!);
           } catch (error) {
             console.error(`[${componentId}] Error in onMount callback`, error);
           }
         });
         onMountCallbacks.length = 0;
-
-        children.forEach((c) => c.mount(parent));
       },
       unmount(): void {
         if (!parentNode) {
@@ -135,9 +167,7 @@ export const component = <P = void>(
           return;
         }
 
-        console.log("Unmounting component", componentId);
-
-        if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
+        if (isSSR) {
           getSSRScope()?.unregisterComponent(instance);
         }
 
@@ -155,21 +185,23 @@ export const component = <P = void>(
           : null;
         startMarker?.remove();
 
-        const removeChildEntry = (child: ComponentChildren): void => {
-          if (isComponent(child) && child.isMounted) {
-            child.unmount();
-          } else if (isDOMNode(child)) {
-            const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;
-            el.remove();
-            console.log("removing", (el as Element).tagName, (el as Element).className);
-          }
-        };
+        instance.element = null;
+        // const removeChildEntry = (child: ComponentChildren): void => {
+        //   const isComp = isComponent(child);
+        //   const isNode = isDOMNode(child);
+        //   if (isComp && child.isMounted) {
+        //     child.unmount();
+        //   } else if (isNode) {
+        //     const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;
+        //     el.remove();
+        //   }
+        // };
 
-        if (isArray(element)) {
-          element.forEach(removeChildEntry);
-        } else {
-          removeChildEntry(element);
-        }
+        // if (isArray(element)) {
+        //   element.forEach(removeChildEntry);
+        // } else {
+        //   removeChildEntry(element);
+        // }
 
         const endMarker = endMarkerComment
           ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
@@ -211,7 +243,9 @@ export const component = <P = void>(
         return getSSRScope()?.addPromise(promise) || promise;
       },
       trackNode(node: Node) {
-        nodes.push(node);
+        if (nodes.indexOf(node) === -1) {
+          nodes.push(node);
+        }
       },
     } as Component;
 
@@ -219,7 +253,7 @@ export const component = <P = void>(
     push(instance);
 
     // Register component with SSR scope for hydration path mapping
-    if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
+    if (isSSR) {
       getSSRScope()?.registerComponent(instance);
     }
 

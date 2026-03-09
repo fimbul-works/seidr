@@ -188,4 +188,18 @@ describeDualMode("Router Component", ({ getDocument, isSSR }) => {
     expect(document.getElementById("fallback-1")).toBeFalsy();
     expect(document.getElementById("fallback-2")).toBeTruthy();
   });
+
+  it("should update element reference when navigating", () => {
+    const r = Router([
+      ["/", Home],
+      ["/about", About],
+    ]);
+    const navigate = useNavigate();
+    unmount = mount(() => r, container);
+
+    expect((r.element as any).id).toContain("Home");
+
+    navigate("/about");
+    expect((r.element as any).id).toContain("About");
+  });
 });

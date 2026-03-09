@@ -121,4 +121,18 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     mode.value = "A";
     expect(scopeBDestroyed).toBe(true);
   });
+
+  it("should update element reference when switching", () => {
+    const mode = new Seidr("A");
+    const CompA = component(() => $("span", { textContent: "View A" }), "CompA");
+    const CompB = component(() => $("span", { textContent: "View B" }), "CompB");
+
+    const sw = Switch(mode, { A: CompA, B: CompB });
+    unmount = mount(() => sw, container);
+
+    expect((sw.element as any).id).toContain("CompA");
+
+    mode.value = "B";
+    expect((sw.element as any).id).toContain("CompB");
+  });
 });

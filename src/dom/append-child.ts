@@ -43,6 +43,10 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.endMarker);
     }
 
+    if (!child.isMounted) {
+      child.mount(parent);
+    }
+
     if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
       const ctx = getHydrationContext();
       if (ctx) {

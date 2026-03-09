@@ -7,12 +7,14 @@ export const clientReplace = {
   "process.env.SEIDR_TEST_SSR": "false",
   "process.env.USE_SCHEDULER": "true",
   "process.env.VITEST": "false",
+  "process.env.DEBUG": "false",
 };
 
 export const nodeReplace = {
   "process.env.SEIDR_TEST_SSR": "false",
   "process.env.USE_SCHEDULER": "false",
   "process.env.VITEST": "false",
+  "process.env.DEBUG": "false",
   window: "undefined",
 };
 

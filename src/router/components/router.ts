@@ -110,7 +110,10 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
 
       if (currentComponent) {
         router.addChild(currentComponent);
+        router.element = currentComponent; // Triggers robust sync
         mountComponent(currentComponent, anchor, parent!);
+      } else {
+        router.element = undefined;
       }
     };
 
@@ -119,5 +122,6 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     router.observe(fallback, updateRoutes);
     router.onUnmount(() => currentComponent?.unmount());
 
+    router.element = currentComponent;
     return currentComponent;
   }, "Router")({ routes, fallback });

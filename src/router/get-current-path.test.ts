@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getAppState } from "../app-state/app-state";
 import { component } from "../component/component";
+import { PATH_DATA_KEY } from "./constants";
 import { getCurrentPath } from "./get-current-path";
 
 describe("getCurrentPath", () => {
@@ -42,7 +43,7 @@ describe("getCurrentPath", () => {
     expect(path2.value).toBe("/");
 
     // Verify app state
-    expect(appState.hasData("seidr.router.path")).toBe(true);
+    expect(appState.hasData(PATH_DATA_KEY)).toBe(true);
   });
 
   it("should update path correctly", () => {
@@ -78,14 +79,14 @@ describe("getCurrentPath", () => {
     const root = RootComponent();
 
     expect(addEventListenerSpy).toHaveBeenCalledWith("popstate", expect.any(Function));
-    expect(appState.hasData("seidr.router.path")).toBe(true);
+    expect(appState.hasData(PATH_DATA_KEY)).toBe(true);
 
     // Unmount root component
     root.unmount();
 
     // Cleanup should occur based on root component unmount
     expect(removeEventListenerSpy).toHaveBeenCalledWith("popstate", expect.any(Function));
-    expect(appState.hasData("seidr.router.path")).toBe(false);
+    expect(appState.hasData(PATH_DATA_KEY)).toBe(false);
 
     // Verify derived seidrs are cleaned up
     expect(pathInstance.observerCount()).toBe(0);
