@@ -1,4 +1,4 @@
-## Conditional()
+## Show()
 
 Conditionally renders a component based on a boolean observable.
 
@@ -10,14 +10,14 @@ Conditionally renders a component based on a boolean observable.
 
 **Example:**
 ```typescript
-import { Conditional, Seidr, $div, mount } from '@fimbul-works/seidr';
+import { Show, Seidr, $div, mount } from '@fimbul-works/seidr';
 
 const isVisible = new Seidr(false);
 const MyComp = () => $div({ textContent: 'I am here' });
 
 const View = () => {
   return $div({ className: 'container' }, [
-    Conditional(isVisible, MyComp)
+    Show(isVisible, MyComp)
   ]);
 };
 
@@ -25,7 +25,7 @@ mount(View, document.body);
 
 // Behavior:
 isVisible.value = true;
-// container contains: <div>I am here</div><!--seidr-conditional:...-->
+// container contains: <div>I am here</div><!--seidr-show:...-->
 ```
 
 ---

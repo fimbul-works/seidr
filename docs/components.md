@@ -162,7 +162,7 @@ const component = factory(); // returns SeidrComponent
 ## Built-in Components
 
 For built in components, see:
-- [`Conditional()`](Conditional.md#conditional)
+- [`Show()`](Show.md#show)
 - [`List()`](List.md#list)
 - [`Switch()`](Switch.md#switch)
 - [`Safe()`](Safe.md#safe)

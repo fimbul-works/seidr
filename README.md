@@ -373,7 +373,7 @@ const UserProfile = ({ name, initialAge = 30 }) => {
 };
 ```
 
-> **The Magic:** When you mount a function using `mount()`, `List()`, `Conditional()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `onUnmount()` and automatic cleanup work perfectly in plain functions!
+> **The Magic:** When you mount a function using `mount()`, `List()`, `Show()`, or `Switch()`, Seidr automatically provides a reactive scope. This means `onUnmount()` and automatic cleanup work perfectly in plain functions!
 
 #### Creating Reusable Factories with component()
 

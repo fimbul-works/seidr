@@ -37,7 +37,7 @@ A simple counter demonstrating:
 - Reactive state management with `Seidr<T>`
 - Derived values using `.as()`
 - Automatic DOM binding
-- Conditional properties (disabled state)
+- Show properties (disabled state)
 
 ### ✅ Todo App
 

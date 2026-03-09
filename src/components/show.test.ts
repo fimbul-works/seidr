@@ -6,9 +6,9 @@ import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { Conditional } from "./conditional";
+import { Show } from "./show";
 
-describeDualMode("Conditional Component", ({ getDocument }) => {
+describeDualMode("Show Component", ({ getDocument }) => {
   let container: HTMLDivElement;
   let unmount: CleanupFunction;
 
@@ -26,13 +26,13 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     const isVisible = new Seidr(false);
     const View = () => $("span", { textContent: "Visible" });
 
-    const Parent = () => $("div", { className: "parent" }, [Conditional(isVisible, View)]);
+    const Parent = () => $("div", { className: "parent" }, [Show(isVisible, View)]);
 
     unmount = mount(Parent, container);
 
     const parentEl = container.querySelector(".parent")!;
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Conditional-`);
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Conditional-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Show-`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Show-`);
     expect(parentEl.innerHTML).not.toContain("Visible");
 
     isVisible.value = true;
@@ -52,7 +52,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
     };
 
     const Parent = () => {
-      return $("div", { className: "parent" }, [Conditional(isVisible, View)]);
+      return $("div", { className: "parent" }, [Show(isVisible, View)]);
     };
 
     unmount = mount(Parent, container);
@@ -70,7 +70,7 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
       return $("span", { textContent: "Visible" });
     };
 
-    unmount = mount(() => Conditional(isVisible, View), container);
+    unmount = mount(() => Show(isVisible, View), container);
 
     isVisible.value = false;
 

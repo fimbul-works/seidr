@@ -13,7 +13,7 @@ import { Switch } from "./switch";
  * @param {string} name - Optional name for the component
  * @returns {Component} The component
  */
-export const Conditional = <C extends ComponentFactoryFunction = ComponentFactoryFunction>(
+export const Show = <C extends ComponentFactoryFunction = ComponentFactoryFunction>(
   condition: Seidr,
   factory: C,
   fallbackFactory?: C | null,
@@ -23,5 +23,5 @@ export const Conditional = <C extends ComponentFactoryFunction = ComponentFactor
     condition.as<string>((v) => v && "true"),
     { true: factory },
     fallbackFactory,
-    name ?? "Conditional",
+    name ?? "Show",
   );

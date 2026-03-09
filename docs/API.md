@@ -20,7 +20,7 @@
   - [`wrapComponent()`](components.md#wrapcomponent) - Convert a function into a component.
   - [`SeidrComponent`](components.md#seidrcomponent-type) - The type of a Seidr component.
   - [Built-In Components](components.md#built-in-components)
-    - [`Conditional()`](Conditional.md#conditional) - A component that conditionally renders its children.
+    - [`Show()`](Show.md#show) - A component that conditionally renders its children.
     - [`List()`](List.md#list) - A component that renders a list of items.
     - [`Switch()`](Switch.md#switch) - A component that renders a single child based on a condition.
     - [`Safe()`](Safe.md#safe) - A component that safely renders its children.

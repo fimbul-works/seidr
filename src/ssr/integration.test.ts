@@ -195,7 +195,7 @@ describe("SSR Integration Tests", () => {
       expect(html).toContain('href="/home"');
     });
 
-    it("should handle conditional class binding based on multiple states", () => {
+    it("should handle show class binding based on multiple states", () => {
       const isLoading = new Seidr(false);
       const hasError = new Seidr(false);
       const isSuccess = new Seidr(true);
