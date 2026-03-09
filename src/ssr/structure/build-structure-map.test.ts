@@ -35,7 +35,7 @@ describe("buildStructureMap", () => {
     expect(structure).toEqual([["div", 1], [TAG_TEXT]]);
   });
 
-  it("should reconstruct complex application tree", async () => {
+  it("should handle complex application structure", async () => {
     type BlogPost = {
       slug: string;
       title: string;

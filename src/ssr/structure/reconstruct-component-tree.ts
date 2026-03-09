@@ -59,11 +59,9 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
       if (subtree.length > 0) {
         node.children = subtree;
       }
-    } else {
+    } else if (indices.length > 0) {
       // Regular node: recursively build explicit children
-      if (indices.length > 0) {
-        node.children = indices.map(buildNode);
-      }
+      node.children = indices.map(buildNode);
     }
 
     return node;

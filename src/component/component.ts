@@ -153,6 +153,21 @@ export const component = <P = void>(
         onMountCallbacks.length = 0;
       },
       unmount(): void {
+        if (isSSR) {
+          // Unregister in SSR
+          getSSRScope()?.unregisterComponent(instance);
+          createdIndex.length = 0;
+        }
+
+        // Clean up resources and unmount children
+        instance.cleanup();
+
+        // Ensure element is cleared to trigger child unmounting via setter
+        instance.element = null;
+
+        // Always remove from parent component tracking
+        parentComponent?.removeChild(instance);
+
         if (!parentNode) {
           if (process.env.DEBUG) {
             console.trace(`[${componentId}] Unmounting already unmounted component`);
@@ -162,18 +177,8 @@ export const component = <P = void>(
           return;
         }
 
-        if (isSSR) {
-          // Unregister in SSR
-          getSSRScope()?.unregisterComponent(instance);
-          createdIndex.length = 0;
-        }
-
-        // Clean up resources
-        instance.cleanup();
-
         // Remove from parent
         parentNode = null;
-        parentComponent?.removeChild(instance);
 
         // Remove from DOM
         const startMarker = startMarkerComment
@@ -181,8 +186,6 @@ export const component = <P = void>(
             startMarkerComment
           : null;
         startMarker?.remove();
-
-        instance.element = null;
 
         const endMarker = endMarkerComment
           ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment

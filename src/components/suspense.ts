@@ -42,8 +42,8 @@ export const Suspense = <T>(
 
     let currentPromiseId = 0;
 
-    const handlePromise = async (prom: Promise<T>): Promise<void> => {
-      if (!prom || parentComponent.isMounted) {
+    const handlePromise = async (currentPromise: Promise<T>): Promise<void> => {
+      if (!currentPromise) {
         return;
       }
 
@@ -51,7 +51,7 @@ export const Suspense = <T>(
       const currentId = ++currentPromiseId;
 
       try {
-        const resolved = await prom;
+        const resolved = await currentPromise;
         if (currentId === currentPromiseId) {
           value.value = resolved;
           status.value = PROMISE_RESOLVED;
