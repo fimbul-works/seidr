@@ -65,7 +65,7 @@ export interface LifecycleScope {
   /**
    * Whether the component has been destroyed.
    */
-  readonly isUnmounted: boolean;
+  readonly isMounted: boolean;
 
   /**
    * The parent DOM node, if attached.

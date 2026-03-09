@@ -43,7 +43,7 @@ export const Suspense = <T>(
     let currentPromiseId = 0;
 
     const handlePromise = async (prom: Promise<T>): Promise<void> => {
-      if (!prom || scope.isUnmounted) {
+      if (!prom || scope.isMounted) {
         return;
       }
 

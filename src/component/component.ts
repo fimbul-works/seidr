@@ -66,8 +66,8 @@ export const component = <P = void>(
       get id() {
         return componentId;
       },
-      get isUnmounted() {
-        return !isMounted;
+      get isMounted() {
+        return isMounted;
       },
       get parent() {
         return parent;
@@ -110,7 +110,7 @@ export const component = <P = void>(
       child(childComponent: Component) {
         children.set(childComponent.id, childComponent);
         childComponent.onUnmount(() => children.delete(childComponent.id));
-        comp.onUnmount(() => !childComponent.isUnmounted && childComponent.unmount());
+        comp.onUnmount(() => !childComponent.isMounted && childComponent.unmount());
 
         if (attachedParent) {
           childComponent.attached(attachedParent);
@@ -251,9 +251,7 @@ export const component = <P = void>(
         return item;
       };
 
-      const element = isArray(result)
-        ? (result.filter(Boolean).map(toNode) as ComponentChildren)
-        : toNode(result);
+      const element = isArray(result) ? (result.filter(Boolean).map(toNode) as ComponentChildren) : toNode(result);
 
       comp.element = element;
 

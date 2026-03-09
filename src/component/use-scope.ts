@@ -16,13 +16,13 @@ export const useScope = (): Readonly<LifecycleScope> => {
   if (!current) {
     throw new SeidrError("useScope() must be called within a component");
   }
-  const { id, isUnmounted, parentNode, onMount, child, observe, waitFor, onUnmount } = current;
+  const { id, isMounted, parentNode, onMount, child, observe, waitFor, onUnmount } = current;
   return {
     get id() {
       return id;
     },
-    get isUnmounted() {
-      return isUnmounted;
+    get isMounted() {
+      return isMounted;
     },
     get parentNode() {
       return parentNode;
