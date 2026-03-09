@@ -136,6 +136,12 @@ export interface Component {
   onMount(callback: OnMountFunction): void;
 
   /**
+   * Callback triggered when the component tree is attached to a document.
+   * @param {() => void} callback - The callback to execute when attached
+   */
+  onAttached(callback: () => void): void;
+
+  /**
    * Tracks a cleanup function to be executed when the component is destroyed.
    * @param {CleanupFunction} cleanup - The cleanup function to execute
    */
@@ -153,6 +159,12 @@ export interface Component {
    * @internal
    */
   unmount(): void;
+
+  /**
+   * Call onAttached callbacks when attached to the documment.
+   * @internal
+   */
+  attached(): void;
 
   /**
    * Call onUnmount callbacks and clean up resources.

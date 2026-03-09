@@ -4,9 +4,10 @@ import { enableClientMode } from "../test-setup";
 import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
 import { component } from "./component";
+import { onAttached } from "./on-attached";
 import { onMount } from "./on-mount";
 
-describeDualMode("onMount", ({ getDocument }) => {
+describeDualMode("onAttached", ({ getDocument }) => {
   let restoreClientMode: CleanupFunction;
   let container: Element;
 
@@ -20,47 +21,45 @@ describeDualMode("onMount", ({ getDocument }) => {
     restoreClientMode();
   });
 
-  it("should execute callback when mounted", () => {
-    const mount = vi.fn();
-    const parentNode = document.createElement("div");
+  it("should execute callback when attached to the DOM", () => {
+    const attached = vi.fn();
 
     const comp = component(() => {
-      onMount(mount);
+      onAttached(attached);
       return $("span");
     })();
 
-    expect(mount).not.toHaveBeenCalled();
+    expect(attached).not.toHaveBeenCalled();
 
-    comp.mount(parentNode);
+    comp.mount(container);
 
-    expect(mount).toHaveBeenCalledWith(parentNode);
+    expect(attached).toHaveBeenCalled();
   });
 
-  it("should support multiple onMount callbacks", () => {
-    const mount1 = vi.fn();
-    const mount2 = vi.fn();
-    const parentNode = document.createElement("div");
+  it("should support multiple onAttached callbacks", () => {
+    const attached1 = vi.fn();
+    const attached2 = vi.fn();
 
     const comp = component(() => {
-      onMount(mount1);
-      onMount(mount2);
+      onMount(attached1);
+      onMount(attached2);
       return $("span");
     })();
 
-    expect(mount1).not.toHaveBeenCalled();
-    expect(mount2).not.toHaveBeenCalled();
+    expect(attached1).not.toHaveBeenCalled();
+    expect(attached2).not.toHaveBeenCalled();
 
-    comp.mount(parentNode);
+    comp.mount(container);
 
-    expect(mount1).toHaveBeenCalledWith(parentNode);
-    expect(mount2).toHaveBeenCalledWith(parentNode);
+    expect(attached1).toHaveBeenCalled();
+    expect(attached2).toHaveBeenCalled();
   });
 
-  it("should call onMount when child is mounted", () => {
-    const mount = vi.fn();
+  it("should call onAttached when child is added to the DOM", () => {
+    const attached = vi.fn();
 
     const Child = component(() => {
-      onMount(mount);
+      onMount(attached);
       return $("span");
     }, "Child");
 
@@ -68,7 +67,10 @@ describeDualMode("onMount", ({ getDocument }) => {
       return $("div", null, Child());
     }, "Parent");
 
-    Parent();
-    expect(mount).toHaveBeenCalled();
+    expect(attached).not.toHaveBeenCalled();
+
+    Parent().mount(container);
+
+    expect(attached).toHaveBeenCalled();
   });
 });

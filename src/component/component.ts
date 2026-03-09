@@ -48,6 +48,10 @@ export const component = <P = void>(
     const componentId = `${name}-${numericId}`;
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
+    const onMountFns: OnMountFunction[] = [];
+    const onAttachedFns: (() => void)[] = [];
+    const onUnmountFns: CleanupFunction[] = [];
+
     const createdIndex: (ChildNode | Component)[] = [];
     const children = new Map<string, Component>();
     const childComponentNodes = new Map<Node, string>();
@@ -56,8 +60,6 @@ export const component = <P = void>(
     let element: ComponentChildren;
     let startMarkerComment: Comment | null = null;
     let endMarkerComment: Comment | null = null;
-    const onMountCallbacks: OnMountFunction[] = [];
-    const onUnmountCallbacks: CleanupFunction[] = [];
 
     // Create Component instance
     const instance: Component = {
@@ -126,11 +128,19 @@ export const component = <P = void>(
       get childCreatedIndex() {
         return childComponentNodes;
       },
-      onMount(callback: (parent: Node) => void) {
-        onMountCallbacks.push(callback);
+      onMount(fn: OnMountFunction) {
+        onMountFns.push(fn);
       },
-      onUnmount(cleanup: CleanupFunction): void {
-        onUnmountCallbacks.push(cleanup);
+      onAttached(fn: () => void) {
+        // Invoke immediately if parent is already attached
+        if (parentNode?.isConnected) {
+          fn();
+        } else {
+          onAttachedFns.push(fn);
+        }
+      },
+      onUnmount(fn: CleanupFunction): void {
+        onUnmountFns.push(fn);
       },
       mount(parent: Element): void {
         if (parentNode) {
@@ -143,14 +153,18 @@ export const component = <P = void>(
         }
 
         parentNode = parent;
-        onMountCallbacks.forEach((cb) => {
+        onMountFns.forEach((cb) => {
           try {
             cb(parentNode!);
           } catch (error) {
             console.error(`[${componentId}] Error in onMount callback`, error);
           }
         });
-        onMountCallbacks.length = 0;
+        onMountFns.length = 0;
+
+        if (parent.isConnected) {
+          instance.attached();
+        }
       },
       unmount(): void {
         if (isSSR) {
@@ -192,21 +206,31 @@ export const component = <P = void>(
           : null;
         endMarker?.remove();
       },
-      cleanup(): void {
-        // Clean up callbacks
-        onUnmountCallbacks.forEach((fn) => {
+      attached(): void {
+        onAttachedFns.forEach((fn) => {
           try {
             fn();
           } catch (error) {
             console.warn(error);
           }
         });
-        onUnmountCallbacks.length = 0;
+        onAttachedFns.length = 0;
+        children.forEach((child) => child.attached());
+      },
+      cleanup(): void {
+        onUnmountFns.forEach((fn) => {
+          try {
+            fn();
+          } catch (error) {
+            console.warn(error);
+          }
+        });
+        onUnmountFns.length = 0;
         children.clear();
       },
       addChild(childComponent: Component): Component {
         children.set(childComponent.id, childComponent);
-        onUnmountCallbacks.push(() => childComponent.unmount());
+        onUnmountFns.push(() => childComponent.unmount());
         childComponent.onUnmount(() => {
           children.delete(childComponent.id);
           if (isSSR) {
