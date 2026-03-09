@@ -161,6 +161,7 @@ export const component = <P = void>(
           } else if (isDOMNode(child)) {
             const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;
             el.remove();
+            console.log("removing", (el as Element).tagName, (el as Element).className);
           }
         };
 

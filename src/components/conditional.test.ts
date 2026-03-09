@@ -63,10 +63,10 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
 
   it("should destroy scope when condition becomes false", () => {
     const isVisible = new Seidr(true);
-    let scopeDestroyed = false;
+    const scopeDestroyed = vi.fn();
 
     const View = () => {
-      onUnmount(() => (scopeDestroyed = true));
+      onUnmount(scopeDestroyed);
       return $("span", { textContent: "Visible" });
     };
 
@@ -74,6 +74,6 @@ describeDualMode("Conditional Component", ({ getDocument }) => {
 
     isVisible.value = false;
 
-    expect(scopeDestroyed).toBe(true);
+    expect(scopeDestroyed).toBeCalled();
   });
 });

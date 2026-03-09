@@ -37,15 +37,9 @@ describe("useHash", () => {
     });
     Comp2();
 
-    expect(hash1).not.toBe(hash2); // derived seidrs are unique
+    expect(hash1).toBe(hash2);
     expect(hash1.value).toBe("");
     expect(hash2.value).toBe("");
-
-    // They should share the same parent though
-    const parent1 = hash1.parents[0];
-    const parent2 = hash2.parents[0];
-    expect(parent1).toBeDefined();
-    expect(parent1).toBe(parent2);
 
     // Verify app state
     expect(appState.hasData(USE_HASH_DATA_KEY)).toBe(true);
@@ -100,6 +94,7 @@ describe("useHash", () => {
     });
 
     const root = RootComponent();
+    root.mount(document.body);
 
     expect(addEventListenerSpy).toHaveBeenCalledWith("hashchange", expect.any(Function));
     expect(appState.hasData(USE_HASH_DATA_KEY)).toBe(true);

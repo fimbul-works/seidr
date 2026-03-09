@@ -1,11 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
+import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { mount } from "./mount";
 
-describe("mount", () => {
+describeDualMode("mount", () => {
   let container: HTMLElement;
   let unmount: CleanupFunction;
 
