@@ -1,6 +1,6 @@
 import { component } from "../component/component";
+import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { wrapError } from "../util/wrap-error";
 
@@ -26,13 +26,13 @@ export const Safe = <
   name?: string,
 ): Component =>
   component(() => {
-    const scope = useScope();
+    const instance = getCurrentComponent();
 
     try {
       return wrapComponent(factory)();
     } catch (err) {
       // Clean up any resources tracked during the failed factory call
-      (scope as Component).reset?.();
+      instance?.cleanup();
 
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }

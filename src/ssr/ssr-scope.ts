@@ -1,8 +1,10 @@
 import { getAppState } from "../app-state/app-state";
 import type { AppState } from "../app-state/types";
+import type { Component } from "../component";
 import type { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/is-server";
-import { buildStructureMap, type StructureMapTuple } from "./structure/structure-map";
+import { buildStructureMap } from "./structure/build-structure-map";
+import type { StructureMapTuple } from "./structure/types";
 
 export const SSR_SCOPE_KEY = "seidr.ssr.scope";
 
@@ -63,7 +65,7 @@ export class SSRScope {
   // id -> instance
   private state = new Map<string, Seidr>();
   // id -> Component
-  private components = new Map<string, any>();
+  private components = new Map<string, Component>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
 
@@ -71,10 +73,13 @@ export class SSRScope {
    * Registers a promise to be awaited before finishing the SSR render.
    * Useful for inServer() async tasks.
    *
-   * @param {Promise<any>} promise - The promise to track
+   * @template T - Type the promise resolves to
+   * @param {Promise<T>} promise - The promise to track
+   * @return {Promise<T>} The promise for chaining
    */
-  addPromise(promise: Promise<any>): void {
+  addPromise<T>(promise: Promise<T>): Promise<T> {
     this.promises.push(promise);
+    return promise;
   }
 
   /**
@@ -110,10 +115,18 @@ export class SSRScope {
 
   /**
    * Registers a component with this scope for hydration path mapping.
-   * @param {any} comp - The component instance
+   * @param {Component} comp - The component instance
    */
-  registerComponent(comp: any): void {
+  registerComponent(comp: Component): void {
     this.components.set(comp.id, comp);
+  }
+
+  /**
+   * Unregisters a component from this scope.
+   * @param {Component} comp - The component instance
+   */
+  unregisterComponent(comp: Component): void {
+    this.components.delete(comp.id);
   }
 
   /**
@@ -164,7 +177,7 @@ export class SSRScope {
 
     const components: Record<string, StructureMapTuple[]> = {};
     for (const comp of this.components.values()) {
-      if (comp.indexedNodes && comp.indexedNodes.length > 0) {
+      if (comp.nodes && comp.nodes.length > 0) {
         const map = buildStructureMap(comp);
         components[comp.id] = map;
       }

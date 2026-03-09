@@ -1,6 +1,6 @@
 import { SeidrError } from "../types";
 import { getCurrentComponent } from "./component-stack";
-import type { LifecycleScope } from "./types";
+import type { ComponentScope } from "./types";
 
 /**
  * Gets the scope of the current component.
@@ -9,14 +9,14 @@ import type { LifecycleScope } from "./types";
  * for tracking cleanup functions and child components. It must be called within a component.
  *
  * @throws {Error} If called outside of a component context
- * @returns {LifecycleScope} The scope of the current component
+ * @returns {ComponentScope} The scope of the current component
  */
-export const useScope = (): Readonly<LifecycleScope> => {
+export const useScope = (): Readonly<ComponentScope> => {
   const current = getCurrentComponent();
   if (!current) {
     throw new SeidrError("useScope() must be called within a component");
   }
-  const { id, isMounted, parentNode, onMount, child, observe, waitFor, onUnmount } = current;
+  const { id, isMounted, parent, parentNode, onMount, onUnmount } = current;
   return {
     get id() {
       return id;
@@ -24,13 +24,13 @@ export const useScope = (): Readonly<LifecycleScope> => {
     get isMounted() {
       return isMounted;
     },
+    get parent() {
+      return parent;
+    },
     get parentNode() {
       return parentNode;
     },
     onMount,
-    child,
-    observe,
-    waitFor,
     onUnmount,
   };
 };

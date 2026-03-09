@@ -73,8 +73,8 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
       mountChildNode(endNode);
     }
 
-    if (!component.parentNode) {
-      component.attached(realParent);
+    if (!component.isMounted) {
+      component.mount(realParent);
     }
   }
 };

@@ -1,5 +1,4 @@
 import { pop, push } from "../component/component-stack";
-import { useScope } from "../component/use-scope";
 import type { SeidrChild } from "../element/types";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context";
 import { getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
@@ -49,17 +48,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       if (ctx) {
         ctx.claimBoundary(child.id);
       }
-    }
-
-    if (!child.parentNode) {
-      child.attached(parent);
-    }
-
-    try {
-      const scope = useScope();
-      scope.child(child);
-    } catch (_e) {
-      // Ignore if not in a component context
     }
     return;
   }

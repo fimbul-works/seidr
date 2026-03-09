@@ -1,6 +1,6 @@
 import { HYDRATION_ID_ATTRIBUTE, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types";
-import type { StructureMapTuple } from "../structure/structure-map";
+import type { StructureMapTuple } from "../structure/types";
 import { getHydrationData, getHydrationMap } from "./storage";
 
 /**

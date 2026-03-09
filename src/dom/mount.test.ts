@@ -36,7 +36,7 @@ describe("mount", () => {
     });
     const comp = createComp();
 
-    const unmount = mount(comp, container);
+    unmount = mount(comp, container);
 
     expect(typeof unmount).toBe("function");
     expect(container.contains(mockElement)).toBe(true);

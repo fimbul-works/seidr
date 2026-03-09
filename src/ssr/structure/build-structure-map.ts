@@ -5,6 +5,8 @@ import type { StructureMapTuple } from "./types";
 
 /**
  * Converts a component's execution sequence of DOM nodes into the Seidr Structure Map.
+ * @param {Component} component - Component to map the structure of
+ * @return {StructureMapTuple[]} Array representing the component's children
  */
 export function buildStructureMap(component: Component): StructureMapTuple[] {
   const nodeCreateIndex = component.nodes;

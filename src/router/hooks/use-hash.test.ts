@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getAppState } from "../../app-state/app-state";
 import { component } from "../../component/component";
-import { useHash } from "./use-hash";
+import { USE_HASH_DATA_KEY, useHash } from "./use-hash";
 
 describe("useHash", () => {
   let appState: ReturnType<typeof getAppState>;
@@ -48,7 +48,7 @@ describe("useHash", () => {
     expect(parent1).toBe(parent2);
 
     // Verify app state
-    expect(appState.hasData("seidr.router.hash")).toBe(true);
+    expect(appState.hasData(USE_HASH_DATA_KEY)).toBe(true);
   });
 
   it("should update all subscribers when hash changes", () => {
@@ -102,14 +102,14 @@ describe("useHash", () => {
     const root = RootComponent();
 
     expect(addEventListenerSpy).toHaveBeenCalledWith("hashchange", expect.any(Function));
-    expect(appState.hasData("seidr.router.hash")).toBe(true);
+    expect(appState.hasData(USE_HASH_DATA_KEY)).toBe(true);
 
     // Unmount root component
     root.unmount();
 
     // Cleanup should occur based on root component unmount
     expect(removeEventListenerSpy).toHaveBeenCalledWith("hashchange", expect.any(Function));
-    expect(appState.hasData("seidr.router.hash")).toBe(false);
+    expect(appState.hasData(USE_HASH_DATA_KEY)).toBe(false);
 
     // Verify derived seidrs are cleaned up
     expect(hash1.observerCount()).toBe(0);

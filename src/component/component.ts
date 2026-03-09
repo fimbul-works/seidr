@@ -1,12 +1,5 @@
 import { getAppStateID, getNextComponentId } from "../app-state/app-state";
-import {
-  HYDRATION_ID_ATTRIBUTE,
-  ROOT_ATTRIBUTE,
-  TAG_COMMENT,
-  TYPE_COMPONENT,
-  TYPE_COMPONENT_FACTORY,
-  TYPE_PROP,
-} from "../constants";
+import { ROOT_ATTRIBUTE, TAG_COMMENT, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import type { Seidr } from "../seidr";
@@ -26,7 +19,13 @@ import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
-import type { Component, ComponentChildren, ComponentFactory, ComponentFactoryPureFunction } from "./types";
+import type {
+  Component,
+  ComponentChildren,
+  ComponentFactory,
+  ComponentFactoryPureFunction,
+  OnMountCallback,
+} from "./types";
 import { getFirstNode } from "./util/component-nodes";
 
 /**
@@ -44,22 +43,24 @@ export const component = <P = void>(
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
-    const parent = getCurrentComponent();
+    const parentComponent = getCurrentComponent();
     const numericId = str(getNextComponentId());
     const componentId = `${name}-${numericId}`;
     const shouldCapture = isServer();
 
-    // Lifecycle state
+    const nodes: Node[] = [];
     const children = new Map<string, Component>();
-    let cleanups: CleanupFunction[] = [];
-    let mountCallbacks: ((parent: Node) => void)[] = [];
-    let isMounted = false;
-    let attachedParent: Node | null = null;
-    const trackedNodes: Node[] = [];
     const childComponentNodes = new Map<Node, string>();
 
+    let parentNode: Node | null = null;
+    let element: ComponentChildren;
+    let startMarkerComment: Comment | null = null;
+    let endMarkerComment: Comment | null = null;
+    const onMountCallbacks: OnMountCallback[] = [];
+    const onUnmountCallbacks: CleanupFunction[] = [];
+
     // Create Component instance
-    const comp = {
+    const instance = {
       get [TYPE_PROP]() {
         return TYPE_COMPONENT;
       },
@@ -67,150 +68,158 @@ export const component = <P = void>(
         return componentId;
       },
       get isMounted() {
-        return isMounted;
+        return !!parentNode;
       },
       get parent() {
-        return parent;
+        return parentComponent;
+      },
+      get element() {
+        return element;
+      },
+      get startMarker() {
+        return startMarkerComment;
+      },
+      get endMarker() {
+        return endMarkerComment;
       },
       get parentNode() {
-        return attachedParent;
+        return parentNode;
       },
-      get indexedNodes() {
-        return trackedNodes;
+      get nodes() {
+        return nodes;
       },
       get childComponentNodes() {
         return childComponentNodes;
       },
-      trackNode(node: Node) {
-        trackedNodes.push(node);
+      onMount(callback: (parent: Node) => void) {
+        onMountCallbacks.push(callback);
       },
       onUnmount(cleanup: CleanupFunction): void {
-        if (!isMounted) {
-          if (process.env.DEBUG) {
-            console.warn(`[${componentId}] Tracking cleanup on already destroyed component`);
+        onUnmountCallbacks.push(cleanup);
+      },
+      mount(parent: Element): void {
+        if (parentNode) {
+          if (process.env.DEBUG || process.env.VITEST) {
+            console.trace(`[${componentId}] Mounting an already mounted component`);
+          } else {
+            console.warn(`[${componentId}] Mounting an already mounted component`);
           }
-          return cleanup();
-        }
-        cleanups.push(cleanup);
-      },
-      observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
-        const cleanup = observable.observe((val) => executeInContext(comp, () => callback(val)));
-        comp.onUnmount(cleanup);
-        return cleanup;
-      },
-      waitFor<T>(promise: Promise<T>): Promise<T> {
-        if (process.env.CORE_DISABLE_SSR) {
-          return promise;
+          return;
         }
 
-        getSSRScope()?.addPromise(promise);
-
-        return promise;
-      },
-      child(childComponent: Component) {
-        children.set(childComponent.id, childComponent);
-        childComponent.onUnmount(() => children.delete(childComponent.id));
-        comp.onUnmount(() => !childComponent.isMounted && childComponent.unmount());
-
-        if (attachedParent) {
-          childComponent.attached(attachedParent);
-        }
-
-        return childComponent;
-      },
-      onMount(callback: (parent: Node) => void) {
-        if (attachedParent) {
-          callback(attachedParent);
-        } else {
-          mountCallbacks.push(callback);
-        }
-      },
-      attached(parent: Node) {
-        if (attachedParent) {
-          if (process.env.DEBUG) {
-            console.warn(`[${componentId}] Calling attached on an already attached component`);
-          }
-          return; // Already attached
-        }
+        console.log("Mounting component", componentId);
 
         if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
-          getSSRScope()?.registerComponent(comp);
+          getSSRScope()?.registerComponent(instance);
         }
 
-        attachedParent = parent;
-        mountCallbacks.forEach((cb) => cb(parent));
-        mountCallbacks = [];
+        parentNode = parent;
+        onMountCallbacks.forEach((cb) => {
+          try {
+            cb(parent);
+          } catch (error) {
+            console.error(`[${componentId}] Error in onMount callback`, error);
+          }
+        });
+        onMountCallbacks.length = 0;
 
-        children.forEach((c) => !c.parentNode && c.attached(parent));
+        children.forEach((c) => c.mount(parent));
       },
-      removeChild(childComponent: Component) {
-        children.delete(childComponent.id);
+      unmount(): void {
+        if (!parentNode) {
+          if (process.env.DEBUG || process.env.VITEST) {
+            console.trace(`[${componentId}] Unmounting already unmounted component`);
+          } else {
+            console.warn(`[${componentId}] Unmounting already unmounted component`);
+          }
+          return;
+        }
+
+        console.log("Unmounting component", componentId);
+
+        if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
+          getSSRScope()?.unregisterComponent(instance);
+        }
+
+        // Clean up resources
+        instance.cleanup();
+
+        // Remove from parent
+        parentNode = null;
+        parentComponent?.removeChild(instance);
+
+        // Remove from DOM
+        const startMarker = startMarkerComment
+          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(startMarkerComment) as Comment)) ||
+            startMarkerComment
+          : null;
+        startMarker?.remove();
+
+        const removeChildEntry = (child: ComponentChildren): void => {
+          if (isComponent(child)) {
+            child.unmount();
+          } else if (isDOMNode(child)) {
+            const el = (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(child) as Element)) || child;
+            el.remove();
+          }
+        };
+
+        if (isArray(element)) {
+          element.forEach(removeChildEntry);
+        } else {
+          removeChildEntry(element);
+        }
+
+        const endMarker = endMarkerComment
+          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
+          : null;
+        endMarker?.remove();
       },
-      reset() {
-        cleanups.forEach((fn) => {
+      cleanup(): void {
+        // Clean up callbacks
+        onUnmountCallbacks.forEach((fn) => {
           try {
             fn();
           } catch (error) {
             console.warn(error);
           }
         });
-        cleanups = [];
+        onUnmountCallbacks.length = 0;
         children.clear();
       },
-      unmount() {
-        if (!isMounted) {
-          if (process.env.DEBUG) {
-            console.warn(`[${componentId}] Unmounting already unmounted component`);
-          }
-          return;
+      addChild(childComponent: Component): Component {
+        children.set(childComponent.id, childComponent);
+        childComponent.onUnmount(() => children.delete(childComponent.id));
+
+        onUnmountCallbacks.push(() => childComponent.unmount());
+
+        return childComponent;
+      },
+      removeChild(childComponent: Component): void {
+        children.delete(childComponent.id);
+      },
+      observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
+        const cleanup = observable.observe((val) => executeInContext(instance, () => callback(val)));
+        instance.onUnmount(cleanup);
+        return cleanup;
+      },
+      waitFor<T>(promise: Promise<T>): Promise<T> {
+        if (process.env.CORE_DISABLE_SSR) {
+          return promise;
         }
-
-        isMounted = false;
-
-        // 1. Run cleanups and clear children
-        comp.reset();
-        attachedParent = null;
-
-        // 2. Remove from parent
-        parent?.removeChild(comp);
-
-        // 3. Remove from DOM
-        const mappedStart = comp.startMarker
-          ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(comp.startMarker)) || comp.startMarker
-          : undefined;
-
-        (mappedStart as Comment)?.remove();
-
-        const removeChildEntry = (child: ComponentChildren): void => {
-          if (isComponent(child)) {
-            child.unmount();
-          } else if (isDOMNode(child)) {
-            const mapped = (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(child)) || child;
-
-            (mapped as Element).remove();
-          }
-        };
-
-        const el = comp.element;
-        if (isArray(el)) {
-          el.forEach(removeChildEntry);
-        } else {
-          removeChildEntry(el);
-        }
-
-        const mappedEnd = comp.endMarker
-          ? (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(comp.endMarker)) || comp.endMarker
-          : undefined;
-        (mappedEnd as Comment)?.remove();
+        return getSSRScope()?.addPromise(promise) || promise;
+      },
+      trackNode(node: Node) {
+        nodes.push(node);
       },
     } as Component;
 
     // Set as current component (Push to tree)
-    push(comp);
+    push(instance);
 
     // Register component with SSR scope for hydration path mapping
     if (!process.env.CORE_DISABLE_SSR && shouldCapture) {
-      getSSRScope()?.registerComponent(comp);
+      getSSRScope()?.registerComponent(instance);
     }
 
     try {
@@ -251,32 +260,28 @@ export const component = <P = void>(
         return item;
       };
 
-      const element = isArray(result) ? (result.filter(Boolean).map(toNode) as ComponentChildren) : toNode(result);
-
-      comp.element = element;
+      element = isArray(result) ? (result.filter(Boolean).map(toNode) as ComponentChildren) : toNode(result);
 
       // Only add markers if the component returns an array, or a nullish/text value
-      const shouldAddMarkerComments = isArray(comp.element) || isEmpty(comp.element);
+      const shouldAddMarkerComments = isArray(element) || isEmpty(element);
 
-      if (shouldAddMarkerComments && !comp.startMarker) {
-        const [startMarker, endMarker] = getMarkerComments(componentId);
-        comp.startMarker = startMarker;
-        comp.endMarker = endMarker;
+      if (shouldAddMarkerComments && !startMarkerComment) {
+        [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
       }
 
       // Track component boundary in parent immediately to match evaluation order
       if (!process.env.CORE_DISABLE_SSR && isServer()) {
-        if (parent) {
-          const boundary = comp.startMarker || getFirstNode(comp);
+        if (parentComponent) {
+          const boundary = startMarkerComment || getFirstNode(instance);
           if (boundary) {
-            parent.trackNode(boundary);
-            parent.childComponentNodes.set(boundary, comp.id);
+            parentComponent.trackNode(boundary);
+            parentComponent.childComponentNodes.set(boundary, componentId);
           }
         }
       }
     } catch (err) {
       // Restore previous component (Pop from tree)
-      comp.unmount();
+      instance.unmount();
       throw err;
     } finally {
       pop();
@@ -289,36 +294,25 @@ export const component = <P = void>(
     const applyRootAttributes = (item: ComponentChildren): void => {
       if (isHTMLElement(item)) {
         // Apply app root marker if top-level
-        if (!parent) {
+        if (!parentComponent) {
           item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
-        }
-
-        // Apply component ID marker for hydration discovery
-        if (!item.hasAttribute(HYDRATION_ID_ATTRIBUTE)) {
-          item.setAttribute(HYDRATION_ID_ATTRIBUTE, numericId);
         }
       } else if (isComponent(item)) {
         applyRootAttributes(item.element);
       } else if (isArray(item)) {
         for (const child of item) {
           applyRootAttributes(child);
-          // Only mark the first one found in the array to avoid multiple roots
-          const firstMarked =
-            isHTMLElement(child) ||
-            (isComponent(child) && !!(child.element as HTMLElement)?.getAttribute?.(HYDRATION_ID_ATTRIBUTE));
-          if (firstMarked) break;
         }
       }
     };
 
     if (!process.env.CORE_DISABLE_SSR) {
-      applyRootAttributes(comp.element);
+      applyRootAttributes(element);
     }
 
-    // Register as child component after factory runs to ensure onMount handlers are set
-    parent?.child(comp);
+    parentComponent?.addChild(instance);
 
-    return comp;
+    return instance;
   }) as ComponentFactory<P>;
 
   Object.defineProperties(componentFactory, {

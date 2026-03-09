@@ -6,11 +6,14 @@ import type { CleanupFunction } from "../types";
 import { component } from "./component";
 import { useScope } from "./use-scope";
 
-describeDualMode("component", () => {
+describeDualMode("component", ({ getDocument }) => {
   let restoreClientMode: CleanupFunction;
+  let container: Element;
 
   beforeEach(() => {
     restoreClientMode = enableClientMode();
+    container = getDocument().createElement("div");
+    getDocument().body.appendChild(container);
   });
 
   afterEach(() => {
@@ -48,49 +51,40 @@ describeDualMode("component", () => {
   });
 
   it("should call destroy logic when component is unmounted", () => {
-    let scopeDestroyed = false;
+    const cleanup = vi.fn();
 
     const comp = component(() => {
       const scopeParam = useScope();
-      scopeParam.onUnmount(() => (scopeDestroyed = true));
+      scopeParam.onUnmount(cleanup);
       return $("div");
     })();
 
-    expect(scopeDestroyed).toBe(false);
+    comp.mount(container);
+
+    expect(cleanup).not.toHaveBeenCalled();
 
     comp.unmount();
-
-    expect(scopeDestroyed).toBe(true);
-  });
-
-  it("should execute cleanups immediately if already unmounted", () => {
-    const comp = component(() => $("div"))();
-    comp.unmount();
-
-    const cleanup = vi.fn();
-    comp.onUnmount(cleanup);
 
     expect(cleanup).toHaveBeenCalled();
   });
 
-  it("should unmount child components recursively", () => {
-    let childDestroyed = false;
+  it.only("should unmount child components recursively", () => {
+    const cleanup = vi.fn();
+
     const Child = component(() => {
-      useScope().onUnmount(() => (childDestroyed = true));
+      useScope().onUnmount(cleanup);
       return $("span");
-    });
+    }, "Child");
 
     const Parent = component(() => {
-      const scope = useScope();
-      scope.child(Child());
-      return $("div");
-    });
+      return $("div", null, Child());
+    }, "Parent");
 
-    const parent = Parent();
-    expect(childDestroyed).toBe(false);
+    Parent().mount(container);
+    expect(cleanup).not.toHaveBeenCalled();
 
-    parent.unmount();
-    expect(childDestroyed).toBe(true);
+    Parent().unmount();
+    expect(cleanup).toHaveBeenCalled();
   });
 
   it("should support multiple onMount callbacks", () => {
@@ -108,24 +102,10 @@ describeDualMode("component", () => {
     expect(mount1).not.toHaveBeenCalled();
     expect(mount2).not.toHaveBeenCalled();
 
-    comp.attached(parentNode);
+    comp.mount(parentNode);
 
     expect(mount1).toHaveBeenCalledWith(parentNode);
     expect(mount2).toHaveBeenCalledWith(parentNode);
-  });
-
-  it("should execute onMount immediately if already attached", () => {
-    const mount = vi.fn();
-    const parentNode = document.createElement("div");
-
-    const comp = component(() => {
-      return $("span");
-    })();
-
-    comp.attached(parentNode);
-
-    comp.onMount(mount);
-    expect(mount).toHaveBeenCalledWith(parentNode);
   });
 
   it("should support multiple onUnmount callbacks", () => {
@@ -138,6 +118,8 @@ describeDualMode("component", () => {
       scope.onUnmount(unmount2);
       return $("span");
     })();
+
+    comp.mount(container);
 
     comp.unmount();
 

@@ -1,6 +1,6 @@
 import { component } from "../component/component";
+import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
@@ -35,7 +35,7 @@ export const Suspense = <T>(
   name?: string,
 ): Component =>
   component(() => {
-    const scope = useScope();
+    const parentComponent = getCurrentComponent() as Component;
     const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, NO_HYDRATE);
     const value = new Seidr<T | null>(null, NO_HYDRATE);
     const error = new Seidr<Error | null>(null, NO_HYDRATE);
@@ -43,7 +43,7 @@ export const Suspense = <T>(
     let currentPromiseId = 0;
 
     const handlePromise = async (prom: Promise<T>): Promise<void> => {
-      if (!prom || scope.isMounted) {
+      if (!prom || parentComponent.isMounted) {
         return;
       }
 
@@ -67,14 +67,14 @@ export const Suspense = <T>(
     // Track initial promise
     const initialProm = unwrapSeidr(promiseOrSeidr);
     if (initialProm) {
-      scope.waitFor(handlePromise(initialProm));
+      parentComponent.waitFor(handlePromise(initialProm));
     }
 
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      scope.onUnmount(promiseOrSeidr.observe((prom) => scope.waitFor(handlePromise(prom))));
+      parentComponent.onUnmount(promiseOrSeidr.observe((prom) => parentComponent.waitFor(handlePromise(prom))));
     }
 
     const childComponent = wrapComponent(factory)({ value, state: status, error });
-    return childComponent ? scope.child(childComponent) : undefined;
+    return childComponent ? parentComponent.addChild(childComponent) : undefined;
   }, name ?? "Suspense")();

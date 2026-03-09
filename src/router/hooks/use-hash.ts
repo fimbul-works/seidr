@@ -1,10 +1,11 @@
 import { getAppState } from "../../app-state/app-state";
 import { getRootComponent } from "../../component/component-stack";
-import { useScope } from "../../component/use-scope";
 import { NO_HYDRATE } from "../../seidr/constants";
 import { Seidr } from "../../seidr/seidr";
 import { isServer } from "../../util/environment/is-server";
 import { HASH_SEIDR_ID } from "../constants";
+
+export const USE_HASH_DATA_KEY = "seidr.router.hash";
 
 /**
  * Returns the current hash as a derived Seidr.
@@ -13,33 +14,24 @@ import { HASH_SEIDR_ID } from "../constants";
  * @returns {Seidr<string>} Derived Seidr of the current hash
  */
 export const useHash = (): Seidr<string> => {
-  const DATA_KEY = "seidr.router.hash";
-
   const appState = getAppState();
-  const isInitialized = appState.hasData(DATA_KEY);
+  const isInitialized = appState.hasData(USE_HASH_DATA_KEY);
 
   // Create the hash seidr if not already initialized
-  const hash: Seidr<string> = isInitialized
-    ? appState.getData(DATA_KEY)!
+  const hashSeidr: Seidr<string> = isInitialized
+    ? appState.getData(USE_HASH_DATA_KEY)!
     : new Seidr<string>(isServer() ? "" : window.location.hash, {
         ...NO_HYDRATE,
         id: HASH_SEIDR_ID,
       });
 
   if (!isInitialized) {
-    appState.setData(DATA_KEY, hash);
+    appState.setData(USE_HASH_DATA_KEY, hashSeidr);
   }
-
-  // Derived seidr for the specific component using the hook
-  const derivedHash = hash.as((hash) => hash);
-
-  // Clean up when the component unmounts
-  const scope = useScope();
-  scope.onUnmount(() => derivedHash.destroy());
 
   // Return the hash directly on the server
   if (isServer()) {
-    return derivedHash;
+    return hashSeidr;
   }
 
   // Add event listeners for hash changes if not already initialized
@@ -50,20 +42,22 @@ export const useHash = (): Seidr<string> => {
     const unlisten = w.removeEventListener.bind(w);
     const HASH_CHANGE = "hashchange";
     const POP_STATE = "popstate";
-    const updateHashValue = () => (hash.value = window.location.hash);
+    const updateHashValue = () => (hashSeidr.value = window.location.hash);
 
     listen(HASH_CHANGE, updateHashValue);
     listen(POP_STATE, updateHashValue);
 
     // Clean up when the root component unmounts
     getRootComponent()?.onUnmount(() => {
-      hash.destroy();
+      hashSeidr.destroy();
       unlisten(HASH_CHANGE, updateHashValue);
       unlisten(POP_STATE, updateHashValue);
 
-      appState.deleteData(DATA_KEY);
+      appState.deleteData(USE_HASH_DATA_KEY);
     });
+
+    hashSeidr.observe((hash) => (window.location.hash = hash));
   }
 
-  return derivedHash;
+  return hashSeidr;
 };

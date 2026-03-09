@@ -17,8 +17,8 @@ describe("Component Marker Optimization", () => {
     const comp = MyComp();
     const unmount = mount(comp, container);
 
-    expect(comp.startMarker).toBeUndefined();
-    expect(comp.endMarker).toBeUndefined();
+    expect(comp.startMarker).toBeNull();
+    expect(comp.endMarker).toBeNull();
     expect(container.innerHTML).toContain(`${ROOT_ATTRIBUTE}="0"`);
     expect(container.innerHTML).toContain(">Hello</div>");
     unmount();
@@ -32,8 +32,8 @@ describe("Component Marker Optimization", () => {
     const comp = Parent();
     const unmount = mount(comp, container);
 
-    expect(comp.startMarker).toBeUndefined();
-    expect(comp.endMarker).toBeUndefined();
+    expect(comp.startMarker).toBeNull();
+    expect(comp.endMarker).toBeNull();
     expect(container.innerHTML).toContain(`${ROOT_ATTRIBUTE}="0">`);
     expect(container.innerHTML).toContain(">Child</div>");
     unmount();
@@ -71,8 +71,8 @@ describe("Component Marker Optimization", () => {
     const comp = MyComp();
     const unmount = mount(comp, container);
 
-    expect(comp.startMarker).not.toBeDefined();
-    expect(comp.endMarker).not.toBeDefined();
+    expect(comp.startMarker).toBeNull();
+    expect(comp.endMarker).toBeNull();
     expect(container.textContent).toBe("Just text");
     unmount();
   });

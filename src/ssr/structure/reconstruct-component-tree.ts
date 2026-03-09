@@ -1,10 +1,12 @@
 import { TAG_COMPONET_PREFIX } from "../../constants";
-import type { StructureMapTuple, StructureTreeNode } from "./types";
+import type { ComponentTreeNode, StructureMapTuple } from "./types";
 
 /**
  * Builds a complete virtual DOM tree from hydration component data.
+ * @param {Record<string, StructureMapTuple[]>} data - Map of component ID to it's child structure
+ * @return {ComponentTreeNode[]} Reconstructed component DOM tree
  */
-export function buildDomTree(data: Record<string, StructureMapTuple[]>): StructureTreeNode[] {
+export function reconstructComponentTree(data: Record<string, StructureMapTuple[]>): ComponentTreeNode[] {
   const componentIds = Object.keys(data);
   if (componentIds.length === 0) return [];
 
@@ -13,7 +15,7 @@ export function buildDomTree(data: Record<string, StructureMapTuple[]>): Structu
   return buildComponentTree(rootId, data);
 }
 
-function buildComponentTree(componentId: string, data: Record<string, StructureMapTuple[]>): StructureTreeNode[] {
+function buildComponentTree(componentId: string, data: Record<string, StructureMapTuple[]>): ComponentTreeNode[] {
   const tuples = data[componentId];
   if (!tuples || !Array.isArray(tuples)) {
     if (tuples) {
@@ -38,12 +40,12 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
   }
 
   // 2. Recursive builder
-  const buildNode = (idx: number): StructureTreeNode => {
+  const buildNode = (idx: number): ComponentTreeNode => {
     const [tag, ...indices] = tuples[idx];
     const isComp = tag.startsWith(TAG_COMPONET_PREFIX);
     const id = isComp ? tag.slice(TAG_COMPONET_PREFIX.length) : undefined;
 
-    const node: StructureTreeNode = { _idx: idx, tag, id };
+    const node: ComponentTreeNode = { creationIndex: idx, tag, id };
 
     if (isComp && id) {
       // Component: expand recursively from its own data entry

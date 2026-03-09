@@ -50,7 +50,7 @@ export const Switch = <
 
       currentComponent = getComponent(factories, value, fallbackFactory);
       if (currentComponent) {
-        switchComponent.child(currentComponent);
+        switchComponent.addChild(currentComponent);
         mountComponent(currentComponent, anchor, parent!);
       }
     };
@@ -59,5 +59,5 @@ export const Switch = <
     switchComponent.observe(observable, update);
     switchComponent.onUnmount(() => currentComponent?.unmount());
 
-    return currentComponent ? switchComponent.child(currentComponent) : undefined;
+    return currentComponent ? switchComponent.addChild(currentComponent) : undefined;
   }, name ?? "Switch")();

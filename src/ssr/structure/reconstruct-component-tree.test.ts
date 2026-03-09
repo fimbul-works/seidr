@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
+import { TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
 import type { HydrationData } from "../hydrate/types";
-import { buildDomTree } from "./build-dom-tree";
+import { reconstructComponentTree } from "./reconstruct-component-tree";
 
-describe("buildDomTree", () => {
+describe("recontructComponentTree", () => {
   it("builds the correct virtual DOM tree from component hydration data", () => {
     const hydrationData: HydrationData = {
       state: {},
@@ -86,13 +86,13 @@ describe("buildDomTree", () => {
       },
       ctxID: 0,
     };
-    const tree = buildDomTree(hydrationData.components);
+    const tree = reconstructComponentTree(hydrationData.components);
 
     // Single root: BlogApp-1's outer div
     expect(tree).toHaveLength(1);
     const root = tree[0];
     expect(root.tag).toBe("div");
-    expect(root._idx).toBe(5);
+    expect(root.creationIndex).toBe(5);
 
     // Outer div has three children: Header-2, div.main-content (with Router-5 injected), footer
     expect(root.children).toHaveLength(3);
@@ -107,7 +107,7 @@ describe("buildDomTree", () => {
 
     // div.main-content has Router-5 injected as its child (orphan resolution)
     expect(mainContent.tag).toBe("div");
-    expect(mainContent._idx).toBe(2);
+    expect(mainContent.creationIndex).toBe(2);
     expect(mainContent.children).toHaveLength(1);
     const router = mainContent.children![0];
     expect(router.tag).toBe(`${TAG_COMPONET_PREFIX}Router-5`);

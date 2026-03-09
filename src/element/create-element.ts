@@ -28,23 +28,25 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   if (!process.env.CORE_DISABLE_SSR && isServer()) {
     const el = getDocument().createElement(tagName);
 
+    if (!process.env.CORE_DISABLE_SSR) {
+      comp?.trackNode?.(el);
+    }
+
     if (props) {
       assignProps(el, props);
     }
 
     if (isArray(children)) {
       children.forEach((child) => {
-        if (typeof child === "string" && !child.trim()) return;
+        if (typeof child === "string" && child === "") {
+          return;
+        }
         appendChild(el, child);
       });
     } else if (!isEmpty(children)) {
-      if (!(typeof children === "string" && !children.trim())) {
+      if (!(typeof children === "string" && children === "")) {
         appendChild(el, children);
       }
-    }
-
-    if (!process.env.CORE_DISABLE_SSR) {
-      comp?.trackNode?.(el);
     }
 
     return el;
