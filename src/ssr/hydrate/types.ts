@@ -26,7 +26,7 @@ export interface HydrationData extends SSRScopeCapture {
   /**
    * Root container for path traversal relative lookup (client-side only).
    */
-  root?: Element | ServerElement;
+  root?: Element;
 }
 
 /**

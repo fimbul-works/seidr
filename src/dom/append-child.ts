@@ -1,6 +1,6 @@
 import { pop, push } from "../component/component-stack";
 import type { SeidrChild } from "../element/types";
-import { getHydrationContext } from "../ssr/hydrate/hydration-context";
+import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isComponent } from "../util/type-guards/component-types";
@@ -47,12 +47,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       child.mount(parent);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
-      const ctx = getHydrationContext();
-      if (ctx) {
-        ctx.claimBoundary(child.id);
-      }
-    }
     return;
   }
 

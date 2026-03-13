@@ -1,7 +1,9 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { TAG_COMMENT } from "../../constants";
-import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
+import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
+import { getHydrationMap, isHydrating } from "../../ssr/hydrate/storage";
 import { isServer } from "../../util/environment/is-server";
+import { str } from "../../util/string";
 import { getDocument } from "../get-document";
 
 /**
@@ -15,29 +17,21 @@ export const $comment = (text: string): Comment => {
   }
 
   const doc = getDocument();
-  const hydrationContext = getHydrationContext();
 
-  if (hydrationContext) {
-    const node = hydrationContext.claim(TAG_COMMENT) as Comment;
+  if (isHydrating()) {
+    const node = getHydrationContext()?.claim<Comment>(TAG_COMMENT);
     if (node) {
-      if (node.textContent !== text) {
-        console.warn(
-          `[Hydration] Comment mismatch: expected "${text}" but found "${node.textContent}". Updating content.`,
-        );
-        node.textContent = text;
+      if (node.textContent !== str(text)) {
+        console.warn(`[Hydration] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`);
+        node.textContent = str(text);
       }
+      // Store the relationship for reactive updates
+      getHydrationMap()?.set(node, node);
       return node;
     } else {
-      // Structural mismatch
-      const mismatchNode = hydrationContext.lastAttemptedNode;
-      const newNode = doc.createComment(text);
-      if (mismatchNode?.parentNode) {
-        console.warn(
-          `[Hydration] Tag mismatch: expected ${TAG_COMMENT} but found ${mismatchNode.nodeName}. Replacing SSR node.`,
-        );
-        mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
-      }
-      return newNode;
+      const node = doc.createComment(text);
+      getHydrationMap()?.set(node, node);
+      return node;
     }
   }
 

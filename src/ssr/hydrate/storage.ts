@@ -1,5 +1,6 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state";
 import type { Seidr } from "../../seidr/seidr";
+import { SeidrError } from "../../types";
 import { isEmpty } from "../../util";
 import type { HydrationData, HydrationDataStorage } from "./types";
 
@@ -28,6 +29,10 @@ export const isHydrating = (): boolean => !isEmpty(getHydrationData()?.data);
  * @param {HTMLElement} root - The root element for hydration
  */
 export function setHydrationData(data: HydrationData, root: HTMLElement): void {
+  if (isEmpty(data.ctxID)) {
+    throw new SeidrError("Hydration data is missing context ID");
+  }
+
   setAppStateID(data.ctxID);
 
   const appState = getAppState();

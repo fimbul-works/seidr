@@ -20,7 +20,7 @@ export const TYPE_COMPONENT_FACTORY = 101;
 export const TYPE_PROP = "$type";
 
 /** Prefix used for marker comments */
-export const SEIDR_COMPONENT_START_PREFIX = "";
+export const SEIDR_COMPONENT_START_PREFIX = "$";
 
 /** Suffix used for marker comments */
 export const SEIDR_COMPONENT_END_PREFIX = "/";
@@ -34,4 +34,4 @@ export const ROOT_ATTRIBUTE = "data-seidr-root";
 
 export const TAG_COMMENT = "#comment";
 export const TAG_TEXT = "#text";
-export const TAG_COMPONET_PREFIX = "$:";
+export const TAG_COMPONET_PREFIX = "$";

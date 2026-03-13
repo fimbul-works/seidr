@@ -1,7 +1,7 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { TAG_TEXT } from "../../constants";
-import { getHydrationContext } from "../../ssr/hydrate/hydration-context";
-import { getHydrationMap } from "../../ssr/hydrate/storage";
+import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
+import { getHydrationMap, isHydrating } from "../../ssr/hydrate/storage";
 import { isServer } from "../../util/environment/is-server";
 import { str } from "../../util/string";
 import { getDocument } from "../get-document";
@@ -16,16 +16,15 @@ export const $text = (text: unknown): Text => {
     return getDocument().createTextNode(str(text));
   }
 
-  const hydrationContext = getHydrationContext();
   const hydrationMap = getHydrationMap();
   const doc = getDocument();
 
-  if (hydrationContext) {
-    const node = hydrationContext.claim(TAG_TEXT) as Text;
+  if (isHydrating()) {
+    const node = getHydrationContext()?.claim<Text>(TAG_TEXT);
     if (node) {
       if (node.textContent !== str(text)) {
         console.warn(
-          `[Hydration] Text mismatch: expected "${str(text)}" but found "${node.textContent}". Updating content.`,
+          `[Hydration] Text mismatch: expected "${str(text)}" but found "${node.textContent}"`,
         );
         node.textContent = str(text);
       }
@@ -34,23 +33,13 @@ export const $text = (text: unknown): Text => {
 
       return node;
     } else {
-      // Structural mismatch: what we found at this index is NOT a text node
-      const mismatchNode = hydrationContext.lastAttemptedNode;
-      const newNode: Text = doc.createTextNode(str(text));
-
-      if (mismatchNode?.parentNode) {
-        console.warn(
-          `[Hydration] Tag mismatch: expected ${TAG_TEXT} but found ${mismatchNode.nodeName}. Replacing SSR node.`,
-        );
-        mismatchNode.parentNode.replaceChild(newNode, mismatchNode);
-      }
-
-      hydrationMap.set(newNode, newNode);
-      return newNode;
+      const node = doc.createTextNode(str(text));
+      hydrationMap.set(node, node);
+      return node;
     }
   }
 
-  const node: Text = doc.createTextNode(str(text));
+  const node = doc.createTextNode(str(text));
 
   if (isServer()) {
     getCurrentComponent()?.trackChild?.(node);

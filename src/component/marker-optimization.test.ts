@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../app-state/app-state";
 import { component } from "../component/component";
-import { ROOT_ATTRIBUTE } from "../constants";
+import { ROOT_ATTRIBUTE, SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 
@@ -47,7 +47,8 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeDefined();
     expect(comp.endMarker).toBeDefined();
-    expect(container.innerHTML).toContain("<!--MyComp-");
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}MyComp-`);
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}MyComp-`);
     expect(container.innerHTML).toContain("One</div>");
     expect(container.innerHTML).toContain(">Two</div>");
     unmount();
@@ -61,7 +62,8 @@ describe("Component Marker Optimization", () => {
 
     expect(comp.startMarker).toBeDefined();
     expect(comp.endMarker).toBeDefined();
-    expect(container.innerHTML).toContain("<!--MyComp-");
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}MyComp-`);
+    expect(container.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}MyComp-`);
     unmount();
   });
 

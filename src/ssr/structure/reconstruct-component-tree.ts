@@ -67,7 +67,7 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
     return node;
   };
 
-  // Root nodes of this component are those NOT referenced as a child of another node
+  // Root nodes of this component are those that are not referenced as children of any other node.
   return tuples
     .map((_, idx) => idx)
     .filter((idx) => !referencedAsChild.has(idx))

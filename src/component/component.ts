@@ -3,12 +3,8 @@ import { ROOT_ATTRIBUTE, TAG_COMMENT, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TY
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import type { Seidr } from "../seidr";
-import {
-  getRootsForHydration,
-  HydrationContext,
-  popHydrationContext,
-  pushHydrationContext,
-} from "../ssr/hydrate/hydration-context";
+import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
+import type { HydrationContext } from "../ssr/hydrate/context/types";
 import { getHydrationData, getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import type { CleanupFunction } from "../types";
@@ -58,6 +54,7 @@ export const component = <P = void>(
 
     let parentNode: ParentNode | null = null;
     let element: ComponentChildren;
+
     let startMarkerComment: Comment | null = null;
     let endMarkerComment: Comment | null = null;
 
@@ -176,7 +173,17 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
-        // Ensure element is cleared to trigger child unmounting via setter
+        // Remove from DOM
+        const startMarker = startMarkerComment
+          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(startMarkerComment) as Comment)) ||
+            startMarkerComment
+          : null;
+        startMarker?.remove();
+
+        const endMarker = endMarkerComment
+          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
+          : null;
+        endMarker?.remove();
         instance.element = null;
 
         // Always remove from parent component tracking
@@ -193,18 +200,6 @@ export const component = <P = void>(
 
         // Remove from parent
         parentNode = null;
-
-        // Remove from DOM
-        const startMarker = startMarkerComment
-          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(startMarkerComment) as Comment)) ||
-            startMarkerComment
-          : null;
-        startMarker?.remove();
-
-        const endMarker = endMarkerComment
-          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
-          : null;
-        endMarker?.remove();
       },
       attached(): void {
         onAttachedFns.forEach((fn) => {
@@ -274,43 +269,21 @@ export const component = <P = void>(
       },
     };
 
-    // Set as current component (Push to tree)
-    push(instance);
-
-    // Register component with SSR scope for hydration path mapping
-    if (isSSR) {
-      getSSRScope()?.registerComponent(instance);
-    }
-
     try {
-      // Create HydrationContext if hydrating
-      let hydrationContext: HydrationContext | null = null;
-      if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
-        const hydrationData = getHydrationData()!;
-        const compMap = hydrationData.data?.components?.[componentId];
-        if (compMap) {
-          const roots = getRootsForHydration(componentId, hydrationData.data?.root as HTMLElement);
-          if (roots.length > 0) {
-            hydrationContext = new HydrationContext(componentId, compMap, roots);
-            pushHydrationContext(hydrationContext);
-            // If the component has markers (e.g. it's a fragment), claim the start marker
-            if (compMap[0]?.[0]?.startsWith(TAG_COMMENT)) {
-              hydrationContext.claim(compMap[0][0]);
-            }
-          } else {
-            console.warn(
-              `[Hydration] Could not find hydration roots for component ${componentId}. Proceeding with client-side render only.`,
-            );
-          }
+      // Set as current component (Push to tree)
+      push(instance);
+
+      // Register component with SSR scope for hydration path mapping
+      if (!process.env.CORE_DISABLE_SSR) {
+        if (isSSR) {
+          getSSRScope()?.registerComponent(instance);
+        } else if (isHydrating()) {
+          getHydrationContext()?.pushComponent(instance);
         }
       }
 
       // Render the component via factory
       const result = factory(props);
-
-      if (!process.env.CORE_DISABLE_SSR && hydrationContext) {
-        popHydrationContext();
-      }
 
       // Helper to normalize SeidrNode to DOM Node (or string in SSR)
       const toNode = (item: SeidrChild): ComponentChildren => {
@@ -325,8 +298,24 @@ export const component = <P = void>(
       // Only add markers if the component returns an array, or a nullish/text value
       const shouldAddMarkerComments = isArray(element) || isEmpty(element);
 
-      if (shouldAddMarkerComments && !startMarkerComment) {
-        [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
+      if (shouldAddMarkerComments) {
+        if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+          const ctx = getHydrationContext();
+          if (ctx) {
+            const markers = ctx.claimComponentMarkers(componentId);
+            if (markers.startMarker) {
+              startMarkerComment = markers.startMarker;
+              getHydrationMap().set(startMarkerComment, startMarkerComment);
+            }
+            if (markers.endMarker) {
+              endMarkerComment = markers.endMarker;
+              getHydrationMap().set(endMarkerComment, endMarkerComment);
+            }
+          }
+        }
+        if (!startMarkerComment) {
+          [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
+        }
       }
 
       // Track component boundary in parent immediately to match evaluation order
@@ -341,10 +330,17 @@ export const component = <P = void>(
       }
     } catch (err) {
       // Restore previous component (Pop from tree)
-      instance.unmount();
+      if (process.env.NODE_ENV === "development") {
+        console.error(instance.id, err);
+      }
       throw err;
     } finally {
       pop();
+      if (!process.env.CORE_DISABLE_SSR) {
+        if (isHydrating()) {
+          getHydrationContext()?.popComponent();
+        }
+      }
     }
 
     /**

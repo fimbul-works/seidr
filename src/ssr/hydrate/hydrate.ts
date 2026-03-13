@@ -1,8 +1,9 @@
 import type { ComponentType } from "../../component/types";
 import { mount } from "../../dom/mount";
-import type { CleanupFunction } from "../../types";
+import { type CleanupFunction, SeidrError } from "../../types";
 import { isEmpty } from "../../util/type-guards/primitive-types";
-import { clearHydrationData, setHydrationData } from "./storage";
+import { initHydrationContext } from "./context/hydration-context";
+import { clearHydrationData, isHydrating, setHydrationData } from "./storage";
 import type { HydrationData } from "./types";
 
 /**
@@ -19,16 +20,25 @@ export const hydrate = <T extends ComponentType>(
   container: HTMLElement,
   hydrationData: HydrationData,
 ): CleanupFunction => {
-  if (isEmpty(hydrationData.ctxID)) {
-    console.warn("Hydration data is missing context ID, falling back to normal mount");
+  // If SSR is disabled, just mount
+  if (process.env.CORE_DISABLE_SSR) {
     return mount(factory, container);
   }
 
-  if (!process.env.CORE_DISABLE_SSR) {
-    setHydrationData(hydrationData, container);
-  }
+  try {
+    if (isHydrating()) {
+      throw new SeidrError("Hydration is already active");
+    }
 
-  const unmount = mount(factory, container);
-  clearHydrationData();
-  return unmount;
+    // Initialize hydration context
+    setHydrationData(hydrationData, container);
+    initHydrationContext();
+
+    const unmount = mount(factory, container);
+    clearHydrationData();
+    return unmount;
+  } catch (error) {
+    console.warn("Hydration failed, falling back to normal mount", error);
+    return mount(factory, container);
+  }
 };

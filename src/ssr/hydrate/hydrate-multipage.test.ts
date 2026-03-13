@@ -85,7 +85,6 @@ describe("Hydration of a multi-page app", () => {
     cleanupSSR();
 
     container.innerHTML = html;
-    console.log(html, JSON.stringify(hydrationData, null, 2));
 
     unmount = hydrate(app, container, hydrationData);
 

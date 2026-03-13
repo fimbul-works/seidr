@@ -1,4 +1,10 @@
-import { TYPE_COMMENT_NODE, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
+import {
+  SEIDR_COMPONENT_END_PREFIX,
+  SEIDR_COMPONENT_START_PREFIX,
+  TYPE_COMMENT_NODE,
+  TYPE_ELEMENT,
+  TYPE_TEXT_NODE,
+} from "../../constants";
 import { isObj } from "./primitive-types";
 
 /**
@@ -32,3 +38,13 @@ export const isHTMLElement = <K extends keyof HTMLElementTagNameMap | string>(
  * @returns {boolean} `true` if the value is a Text node, `false` otherwise
  */
 export const isTextNode = (v: any): v is Text => isDOMNode(v) && v.nodeType === TYPE_TEXT_NODE;
+
+/**
+ * Check if a value is a Seidr component boundary marker comment (e.g. `<!--$Component-1-->` or `<!--/Component-1-->`).
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a marker comment.
+ */
+export const isMarkerComment = (v: any): v is Comment =>
+  isComment(v) &&
+  (v.textContent.startsWith(SEIDR_COMPONENT_START_PREFIX) || v.textContent.startsWith(SEIDR_COMPONENT_END_PREFIX)) &&
+  /\d+$/.test(v.textContent || "");

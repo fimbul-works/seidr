@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { component } from "../../component/index";
 import { wrapComponent } from "../../component/wrap-component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
 import { describeDualMode } from "../../test-setup";
@@ -14,6 +15,7 @@ import {
   isEmpty,
   isFn,
   isHTMLElement,
+  isMarkerComment,
   isNum,
   isObj,
   isSeidr,
@@ -248,6 +250,17 @@ describe("Type Guard Utilities", () => {
 
       it("should return false for non-Text nodes", () => {
         expect(isTextNode(getDocument().createComment("comment"))).toBe(false);
+      });
+    });
+
+    describe("isMarkerComment", () => {
+      it("should return true for marker comments", () => {
+        expect(isMarkerComment(getDocument().createComment(`${SEIDR_COMPONENT_START_PREFIX}Component-1`))).toBe(true);
+        expect(isMarkerComment(getDocument().createComment(`${SEIDR_COMPONENT_END_PREFIX}Component-1`))).toBe(true);
+      });
+
+      it("should return false for non-marker comments", () => {
+        expect(isMarkerComment(getDocument().createTextNode("text"))).toBe(false);
       });
     });
   });

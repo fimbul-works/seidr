@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { List } from "../components/list";
+import { SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
 import { str } from "../util/string";
@@ -17,6 +18,6 @@ describe("ssr limits", () => {
         ),
       ]);
     });
-    expect(html).toContain("<!--List");
+    expect(html).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}List`);
   });
 });
