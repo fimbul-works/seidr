@@ -191,9 +191,9 @@ export const component = <P = void>(
 
         if (!parentNode) {
           if (process.env.DEBUG) {
-            console.trace(`[${componentId}] Unmounting already unmounted component`);
+            // console.trace(`[${componentId}] Unmounting already unmounted component`);
           } else {
-            console.warn(`[${componentId}] Unmounting already unmounted component`);
+            // console.warn(`[${componentId}] Unmounting already unmounted component`);
           }
           return;
         }

@@ -1,7 +1,6 @@
 import type { ComponentType } from "../../component/types";
 import { mount } from "../../dom/mount";
 import { type CleanupFunction, SeidrError } from "../../types";
-import { isEmpty } from "../../util/type-guards/primitive-types";
 import { initHydrationContext } from "./context/hydration-context";
 import { clearHydrationData, isHydrating, setHydrationData } from "./storage";
 import type { HydrationData } from "./types";

@@ -34,4 +34,4 @@ export const ROOT_ATTRIBUTE = "data-seidr-root";
 
 export const TAG_COMMENT = "#comment";
 export const TAG_TEXT = "#text";
-export const TAG_COMPONET_PREFIX = "$";
+export const TAG_COMPONENT_PREFIX = "$";

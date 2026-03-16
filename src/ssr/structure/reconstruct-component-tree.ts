@@ -1,28 +1,33 @@
-import { TAG_COMPONET_PREFIX } from "../../constants";
+import { TAG_COMPONENT_PREFIX } from "../../constants";
 import type { ComponentTreeNode, StructureMapTuple } from "./types";
 
 /**
  * Builds a complete virtual DOM tree from hydration component data.
- * @param {Record<string, StructureMapTuple[]>} data - Map of component ID to it's child structure
+ * @param {Record<string, StructureMapTuple[]>} componentStructures - Map of component ID to it's child structure
  * @return {ComponentTreeNode[]} Reconstructed component DOM tree
  */
-export function reconstructComponentTree(data: Record<string, StructureMapTuple[]>): ComponentTreeNode[] {
-  const componentIds = Object.keys(data);
+export function reconstructComponentTree(
+  componentStructures: Record<string, StructureMapTuple[]>,
+): ComponentTreeNode[] {
+  const componentIds = Object.keys(componentStructures);
   if (componentIds.length === 0) return [];
 
   // Root is usually the first component registered (e.g. App-1)
   const rootId = componentIds[0];
-  return buildComponentTree(rootId, data);
+  return buildComponentTree(rootId, componentStructures);
 }
 
 /**
  * Builds a virtual DOM tree for a component.
  * @param {string} componentId
- * @param {Record<string, StructureMapTuple[]>} data
+ * @param {Record<string, StructureMapTuple[]>} componentStructures
  * @return {ComponentTreeNode[]}
  */
-function buildComponentTree(componentId: string, data: Record<string, StructureMapTuple[]>): ComponentTreeNode[] {
-  const tuples = data[componentId];
+function buildComponentTree(
+  componentId: string,
+  componentStructures: Record<string, StructureMapTuple[]>,
+): ComponentTreeNode[] {
+  const tuples = componentStructures[componentId];
   if (!tuples || !Array.isArray(tuples)) {
     if (tuples) {
       console.error(`[dom-tree] Warning: Component data for ${componentId} is not an array:`, typeof tuples);
@@ -38,7 +43,7 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
     const [tag, ...indices] = tuple;
     // Note: Component boundaries themselves (#component:X) don't list their indices in the tuple,
     // their structure is defined in data[X].
-    if (!tag.startsWith(TAG_COMPONET_PREFIX)) {
+    if (!tag.startsWith(TAG_COMPONENT_PREFIX)) {
       for (const idx of indices) {
         referencedAsChild.add(idx);
       }
@@ -48,14 +53,12 @@ function buildComponentTree(componentId: string, data: Record<string, StructureM
   // Recursive builder
   const buildNode = (idx: number): ComponentTreeNode => {
     const [tag, ...indices] = tuples[idx];
-    const isComp = tag.startsWith(TAG_COMPONET_PREFIX);
-    const id = isComp ? tag.slice(TAG_COMPONET_PREFIX.length) : undefined;
-
+    const id = tag.startsWith(TAG_COMPONENT_PREFIX) ? tag.slice(TAG_COMPONENT_PREFIX.length) : undefined;
     const node: ComponentTreeNode = { creationIndex: idx, tag, id };
 
-    if (isComp && id) {
+    if (id) {
       // Component: expand recursively from its own data entry
-      const subtree = buildComponentTree(id, data);
+      const subtree = buildComponentTree(id, componentStructures);
       if (subtree.length > 0) {
         node.children = subtree;
       }

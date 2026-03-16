@@ -1,6 +1,6 @@
 import type { Component } from "../../component/types";
 import { collectRootNodes } from "../../component/util/collect-root-nodes";
-import { TAG_COMMENT, TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
+import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import { SeidrError } from "../../types";
 import { isComment, isComponent, isHTMLElement, isTextNode } from "../../util/type-guards";
 import type { StructureMapTuple } from "./types";
@@ -76,7 +76,7 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
 
     // Construct tuples
     if (isComponent(child)) {
-      tuples.push([`${TAG_COMPONET_PREFIX}${child.id}`]);
+      tuples.push([`${TAG_COMPONENT_PREFIX}${child.id}`]);
     } else if (isHTMLElement(child)) {
       const tuple: StructureMapTuple = [child.tagName.toLowerCase()];
       // Check if child is a parent node
