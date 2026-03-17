@@ -1,8 +1,8 @@
 import { afterEach } from "vitest";
 import { setInternalAppState } from "../app-state/app-state";
 import { setInternalGetDocument } from "../dom/get-document";
-import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
-import { getDocument as getSSRDocument } from "../dom/get-document.node";
+import { getDocument as getBrowserDocument } from "../dom/get-document.client";
+import { getDocument as getSSRDocument } from "../dom/get-document.server";
 import { Seidr } from "../seidr";
 import { registerSeidrForSSR } from "../ssr/register-seidr";
 import { isServer } from "../util/environment/is-server";

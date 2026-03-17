@@ -1,9 +1,9 @@
 import { setInternalAppState } from "../app-state/app-state";
 import { getDocument, setInternalGetDocument } from "../dom/get-document";
-import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
+import { getDocument as getBrowserDocument } from "../dom/get-document.client";
 import type { CleanupFunction } from "../types";
 import { isClient } from "../util/environment/client";
-import { getAppState, clearTestAppState } from "./app-state";
+import { clearTestAppState, getAppState } from "./app-state";
 import type { TestEnvironmentState } from "./types";
 
 /**

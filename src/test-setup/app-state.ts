@@ -1,4 +1,4 @@
-import type { AppState } from "../app-state/types";
+import type { AppState } from "../app-state";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = {

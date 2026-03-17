@@ -33,27 +33,32 @@
     "zero-dependencies",
     "virtual-dom-free"
   ],
-  "main": "./dist/seidr.node.cjs",
-  "module": "./dist/seidr.node.js",
-  "browser": "./dist/seidr.js",
-  "types": "./dist/seidr.node.d.ts",
+  "types": "./dist/seidr.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/seidr.d.ts",
+      "node": {
+        "import": "./dist/seidr.server.js",
+        "require": "./dist/seidr.server.cjs"
+      },
       "browser": {
-        "types": "./dist/seidr.d.ts",
         "import": "./dist/seidr.js",
         "require": "./dist/seidr.cjs"
       },
-      "node": {
-        "types": "./dist/seidr.node.d.ts",
-        "import": "./dist/seidr.node.js",
-        "require": "./dist/seidr.node.cjs"
-      },
-      "default": "./dist/seidr.js"
+      "default": {
+        "import": "./dist/seidr.js",
+        "require": "./dist/seidr.cjs"
+      }
+    },
+    "./testing": {
+      "types": "./dist/testing.d.ts",
+      "import": "./dist/testing.js",
+      "require": "./dist/testing.cjs"
     }
   },
   "files": [
     "dist/**/*.js",
+    "dist/**/*.cjs",
     "dist/**/*.d.ts",
     "dist/**/*.map",
     "seidr-logo.svg",
@@ -70,11 +75,8 @@
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
     "build": "pnpm build:javascript && pnpm build:types",
-    "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c",
-    "build:types": "pnpm build:types:node && pnpm build:types:browser && pnpm build:types:core",
-    "build:types:browser": "dts-bundle-generator -o dist/seidr.d.ts src/index.browser.ts",
-    "build:types:core": "dts-bundle-generator -o dist/seidr.core.d.ts src/index.core.ts",
-    "build:types:node": "dts-bundle-generator -o dist/seidr.node.d.ts src/index.node.ts",
+    "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c rollup.config.js --configPlugin esbuild",
+    "build:types": "tsx scripts/build-dts.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
     "sizes": "./calculate-bundle-sizes.sh",
@@ -107,6 +109,7 @@
     "marked": "^17.0.4",
     "puppeteer": "^24.37.5",
     "rollup": "^4.58.0",
+    "rollup-plugin-esbuild": "^6.2.1",
     "sirv": "^3.0.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",

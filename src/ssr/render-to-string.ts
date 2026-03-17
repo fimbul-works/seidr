@@ -1,10 +1,10 @@
 import { getAppState, setAppStateID } from "../app-state/app-state";
-import { runWithAppState } from "../app-state/app-state.node";
+import { runWithAppState } from "../app-state/app-state.server";
 import type { ComponentReturnValue } from "../component";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument } from "../dom/get-document";
-import { DOCUMENT_DATA_KEY } from "../dom/get-document.node";
+import { DOCUMENT_DATA_KEY } from "../dom/get-document.server";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../router/constants";
 import { clearPathCache } from "../router/get-current-path";
 import { Seidr } from "../seidr";

@@ -1,12 +1,19 @@
-import { makeClientBundle, makeNodeBundle } from "./rollup.shared.js";
+import { makeClientBundle, makeNodeBundle, makeTestBundle } from "./rollup.shared.js";
 
 export default [
-  makeNodeBundle("src/index.node.ts", "dist/seidr.node", true, { "process.env.CORE_DISABLE_SSR": "false" }),
-  makeClientBundle("src/index.browser.ts", "dist/seidr", true, { "process.env.CORE_DISABLE_SSR": "false" }),
-  makeClientBundle("src/index.core.ts", "dist/seidr.core", false, {
-    "process.env.CORE_DISABLE_SSR": "true",
-    "isHydrating()": "false",
-    "import.meta.env.SSR": "false",
-    process: "{}",
-  }),
+  makeTestBundle("src/test-setup/index.ts", "dist/seidr.test", false, {}, { target: "esnext", platform: "neutral" }),
+  makeNodeBundle("src/index.server.ts", "dist/seidr.server", true, { "process.env.CORE_DISABLE_SSR": "false" }),
+  makeClientBundle("src/index.client.ts", "dist/seidr", true, { "process.env.CORE_DISABLE_SSR": "false" }),
+  makeClientBundle(
+    "src/index.core.ts",
+    "dist/seidr.core",
+    false,
+    {
+      "process.env.CORE_DISABLE_SSR": "true",
+      "isHydrating()": "false",
+      "import.meta.env.SSR": "false",
+      process: "{}",
+    },
+    { define: { process: "{}" } },
+  ),
 ];

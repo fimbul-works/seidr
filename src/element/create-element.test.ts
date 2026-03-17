@@ -1,5 +1,5 @@
 import { beforeEach, expect, it } from "vitest";
-import "../dom/get-document.browser";
+import "../dom/get-document.client";
 import { describeDualMode, mockComponentScope } from "../test-setup";
 import { isHTMLElement } from "../util/type-guards/dom-node-types";
 import { $ } from "./create-element";
