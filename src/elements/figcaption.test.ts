@@ -1,4 +1,5 @@
-import { describeDualMode, itHasParity, mockComponentScope } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
+import { mockComponentScope } from "../test-setup/mock";
 import { $figcaption } from "./figcaption";
 
 describeDualMode("Figcaption Element Parity", () => {

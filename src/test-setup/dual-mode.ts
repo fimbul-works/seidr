@@ -1,12 +1,8 @@
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { getDocument } from "../dom";
-import { Seidr } from "../seidr";
-import { registerSeidrForSSR } from "../ssr/register-seidr";
-import { escapeHTML } from "../util/escape";
-import { isArray, isEmpty, isFn, isObj } from "../util/type-guards";
-import { enableClientMode, enableSSRMode } from ".";
-
-Seidr.register = registerSeidrForSSR;
+import { afterAll, beforeAll, describe, it, expect } from "vitest";
+import { getDocument } from "../dom/get-document";
+import { enableClientMode } from "./client-mode";
+import { enableSSRMode } from "./ssr-mode";
+import { renderToHtml, normalizeHtml } from "./dom";
 
 /**
  * Interface for the context provided to dual-mode tests.
@@ -19,20 +15,10 @@ export interface DualModeContext {
 
 /**
  * Helper to run tests against both Browser (JSDOM) and SSR (Node) environments.
- *
- * It respects the SEIDR_RENDER_MODE environment variable:
- * - "browser": Runs only browser tests
- * - "ssr": Runs only SSR tests
- * - unset / other: Runs both
- *
- * @param name - Suite name
- * @param fn - Test function receiving the context
  */
 export function describeDualMode(name: string, fn: (context: DualModeContext) => void) {
   if (process.env.SEIDR_SKIP_DUAL_MODE === "true") {
-    describe.skip(name, () => {
-      // Skipped
-    });
+    describe.skip(name, () => {});
     return;
   }
   const envMode = process.env.SEIDR_RENDER_MODE?.toLowerCase();
@@ -62,6 +48,7 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
   describe.each(activeModes)(`${name} ($name)`, (mode) => {
     let cleanup: () => void;
 
+    // Use beforeAll for environment setup to avoid polluting collection phase
     beforeAll(() => {
       cleanup = mode.setup();
     });
@@ -75,132 +62,6 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
       isSSR: mode.isSSR,
       getDocument: () => getDocument(),
     });
-  });
-}
-
-/**
- * Renders a node or component to its HTML string representation.
- * Handles both Browser (DOM) nodes and SSR (ServerNode) nodes.
- *
- * @param node - The node, element, or component to render
- * @returns HTML string
- */
-export function renderToHtml(node: any, depth = 0): string {
-  if (depth > 100) {
-    console.error("renderToHtml: possible circular reference detected");
-    return "[Circular]";
-  }
-  if (isEmpty(node)) return "";
-
-  // Handle Component
-  if (isObj(node) && "element" in node) {
-    node = node.element;
-  }
-
-  // Handle Browser/JSDOM nodes
-  if (typeof window !== "undefined") {
-    if (node instanceof Element) {
-      return node.outerHTML;
-    }
-    if (node instanceof Text) {
-      return escapeHTML(node.textContent || "");
-    }
-    if (node instanceof Comment) {
-      return `<!--${node.nodeValue}-->`;
-    }
-  }
-
-  // Handle SSR nodes
-  // We check if it's NOT a native DOM node that returns [object ...]
-  if (isFn(node.toString)) {
-    const str = node.toString();
-    if (str !== "[object HTMLElement]" && !str.startsWith("[object HTML")) {
-      return str;
-    }
-  }
-
-  // Handle arrays (SSR)
-  if (isArray(node)) {
-    return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
-  }
-
-  return str(node);
-}
-
-/**
- * Normalizes an HTML string for comparison.
- * Sorts attributes and normalizes whitespace.
- *
- * @param html - RAW HTML string
- * @returns Normalized HTML string
- */
-function normalizeHtml(html: string): string {
-  if (!html) return "";
-
-  // 1. Sort attributes within tags
-  let normalized = html.replace(/<([a-z0-9-]+)([^>]*)>/gi, (_match, tag, attrs) => {
-    // Handle self-closing end slash
-    const isSelfClosing = attrs.trim().endsWith("/");
-    let cleanAttrs = attrs.trim();
-    if (isSelfClosing) {
-      cleanAttrs = cleanAttrs.slice(0, -1).trim();
-    }
-
-    // Split attributes by space, but respect quoted values
-    // Regex matches: key="value" or key='value' or key
-    const attrMatches = cleanAttrs.match(/(?:[^\s"'=]+(?:=(?:"[^"]*"|'[^']*'|[^\s"']+))?)/g) || [];
-
-    // Normalize boolean attributes: transform 'key=""' to 'key'
-    const normalizedAttrList = attrMatches.map((attr: string) => {
-      if (attr.endsWith('=""')) {
-        const key = attr.slice(0, -3);
-        // We can be aggressive and strip it for any attribute for comparison purposes,
-        // or just for-sure booleans. Let's do any empty string attribute.
-        return key;
-      }
-      return attr;
-    });
-
-    const sortedAttrs = normalizedAttrList.sort().join(" ");
-
-    // We normalize to NO slash for self-closing tags to match JSDOM,
-    // as Seidr SSR uses slashes but JSDOM doesn't for HTML5.
-    return `<${tag.toLowerCase()}${sortedAttrs ? ` ${sortedAttrs}` : ""}>`;
-  });
-
-  // 2. Normalize case for closing tags
-  normalized = normalized.replace(/<\/([a-z0-9-]+)>/gi, (_match, tag) => {
-    return `</${tag.toLowerCase()}>`;
-  });
-
-  // 3. Normalize whitespace
-  return normalized.replace(/\s+/g, " ").replace(/>\s+</g, "><").trim();
-}
-
-import * as onMountModule from "../component/on-mount";
-import * as onUnmountModule from "../component/on-unmount";
-import { str } from "../util/string";
-
-/**
- * Mocks the component lifecycle hooks for tests that need to run in SSR mode
- * but don't actually need scope tracking.
- */
-export function mockComponentScope() {
-  let onMountSpy: any;
-  let onUnmountSpy: any;
-
-  beforeEach(() => {
-    onMountSpy = vi.spyOn(onMountModule, "onMount").mockReturnValue({
-      onMount: () => {},
-    } as any);
-    onUnmountSpy = vi.spyOn(onUnmountModule, "onUnmount").mockReturnValue({
-      onMount: () => {},
-    } as any);
-  });
-
-  afterEach(() => {
-    onMountSpy?.mockRestore();
-    onUnmountSpy?.mockRestore();
   });
 }
 

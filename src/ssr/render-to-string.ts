@@ -40,6 +40,7 @@ export async function renderToString<C extends ComponentReturnValue>(
 ): Promise<SSRRenderResult> {
   const prevSSR = process.env.SEIDR_TEST_SSR;
   process.env.SEIDR_TEST_SSR = "true";
+  (global as any).__SEIDR_SSR_ACTIVE__ = true;
 
   try {
     return await runWithAppState(async () => {
@@ -131,6 +132,7 @@ export async function renderToString<C extends ComponentReturnValue>(
       }
     });
   } finally {
+    (global as any).__SEIDR_SSR_ACTIVE__ = false;
     if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
     else process.env.SEIDR_TEST_SSR = prevSSR;
   }

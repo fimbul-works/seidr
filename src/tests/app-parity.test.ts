@@ -1,7 +1,8 @@
 import { expect, it } from "vitest";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
-import { describeDualMode, mockComponentScope } from "../test-setup/dual-mode";
+import { describeDualMode } from "../test-setup/dual-mode";
+import { mockComponentScope } from "../test-setup/mock";
 
 describeDualMode("App Parity Test", ({ isSSR }) => {
   mockComponentScope();

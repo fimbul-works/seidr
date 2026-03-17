@@ -26,8 +26,7 @@ export const random = (): number => {
 
   // Initialize state if not present
   if (!rngState) {
-    const sId = getNextSeidrId();
-    const seed = state.ctxID + sId + LCG_M / 1;
+    const seed = ((state.ctxID * 31 + getNextSeidrId()) ^ LCG_M) >>> 0;
     const s0 = (seed * LCG_M + 1) >>> 0;
     const s1 = (s0 * LCG_M + 1) >>> 0;
     const s2 = (s1 * LCG_M + 1) >>> 0;

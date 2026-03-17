@@ -26,4 +26,7 @@ export interface AppState {
   // Hydration strategies
   defineDataStrategy<T>(key: string, captureFn: (value: T) => any, restoreFn: (value: any) => T): void;
   getDataStrategy(key: string): [((value: any) => any) | undefined, ((value: any) => any) | undefined] | undefined;
+
+  /** Whether the current state is for SSR */
+  isSSR?: boolean;
 }

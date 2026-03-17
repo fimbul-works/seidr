@@ -1,7 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { TAG_COMPONET_PREFIX } from "../../src/constants.js";
+import { TAG_COMPONENT_PREFIX } from "../../src/constants.js";
 import { renderToString } from "../../src/ssr/render-to-string";
-import { reconstructComponentTree } from "../../src/ssr/structure/index";
 import { enableSSRMode } from "../../src/test-setup/ssr-mode";
 import { BlogApp } from "./app";
 
@@ -19,7 +18,7 @@ describe("BlogApp Hydration Repro", () => {
 
       expect(tree).toBeDefined();
       expect(tree).toHaveLength(1);
-      expect(tree[0].tag).toBe(`${TAG_COMPONET_PREFIX}BlogApp-2`);
+      expect(tree[0].tag).toBe(`${TAG_COMPONENT_PREFIX}BlogApp-2`);
 
       const blogAppEntryId = Object.keys(hydrationData.components).find((id) => id.startsWith("BlogApp"));
       const blogAppData = hydrationData.components[blogAppEntryId!];

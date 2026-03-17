@@ -1,12 +1,24 @@
+import { getAppState } from "../../app-state/app-state";
+
 /**
  * Returns true if the current environment is the browser.
  *
  * @returns {boolean} `true` if in browser, `false` otherwise
  */
-export const isClient = (): boolean =>
-  typeof window !== "undefined" &&
-  !(typeof import.meta !== "undefined" && (import.meta as any).env?.SSR) &&
-  !(typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR));
+export const isClient = (): boolean => {
+  if (process.env.CODE_DISABLE_SSR) {
+    return true;
+  }
+
+  const state = getAppState();
+  if (process.env.VITEST && state?.isSSR !== undefined) return !state.isSSR;
+
+  return (
+    typeof window !== "undefined" &&
+    !(typeof import.meta !== "undefined" && (import.meta as any).env?.SSR) &&
+    !(typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR))
+  );
+};
 
 /**
  * Executes a function only in the browser environment.

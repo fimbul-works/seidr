@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.node";
+import { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.server";
 import { resetNextId } from "../app-state/reset-next-id";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";

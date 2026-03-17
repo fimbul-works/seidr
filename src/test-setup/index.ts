@@ -1,37 +1,9 @@
-import { afterEach } from "vitest";
-import { setInternalAppState } from "../app-state/app-state";
-import { setInternalGetDocument } from "../dom/get-document";
-import { getDocument as getBrowserDocument } from "../dom/get-document.client";
-import { getDocument as getSSRDocument } from "../dom/get-document.server";
-import { Seidr } from "../seidr";
-import { registerSeidrForSSR } from "../ssr/register-seidr";
-import { isServer } from "../util/environment/is-server";
-import { getAppState, testAppState } from "./app-state";
-
-Seidr.register = registerSeidrForSSR;
-
-export { getAppState, setAppStateID, testAppState } from "./app-state";
-export { enableClientMode } from "./client-mode";
-export { describeDualMode, mockComponentScope } from "./dual-mode";
-export { enableSSRMode } from "./ssr-mode";
-
-setInternalAppState(getAppState);
-setInternalGetDocument(isServer() ? getSSRDocument : getBrowserDocument);
-
-afterEach(() => {
-  // Reset browser context counters for next test
-  testAppState.markers.clear();
-  testAppState.data.clear();
-
-  // Clean up DOM after each test
-  document.body.innerHTML = "";
-  document.head.innerHTML = "";
-});
-
-// Mock DOM environment for testing
-Object.defineProperty(window, "navigator", {
-  value: {
-    userAgent: "test",
-  },
-  writable: true,
-});
+export * from "./app-state";
+export * from "./client-mode";
+export * from "./ssr-mode";
+export * from "./dual-mode";
+export * from "./lifecycle";
+export * from "./dom";
+export * from "./mock";
+export * from "./types";
+export { clearPathCache } from "../router/get-current-path";

@@ -7,9 +7,9 @@ export interface TestEnvironmentState {
    */
   seidrSSR?: string;
   /**
-   * Whether the test environment is Vitest.
+   * Whether the test environment is Vitest. (Actually the string value or boolean)
    */
-  vitest?: boolean;
+  vitest?: string | boolean;
   /**
    * The window object of the test environment.
    */
@@ -18,4 +18,8 @@ export interface TestEnvironmentState {
    * The DOM factory of the test environment.
    */
   getDocument?: () => Document;
+  /**
+   * Whether SSR state isolation is active.
+   */
+  ssrActive?: boolean;
 }

@@ -4,20 +4,18 @@ import {
   $h1,
   $h2,
   $li,
-  $p,
   $ul,
   component,
   inClient,
   inServer,
   isClient,
   isServer,
-  Link,
   List,
   Seidr,
   Suspense,
   Switch,
-  useParams,
 } from "../../src/index.core.js";
+import { Link, useParams } from "../../src/router/index.js";
 import type { BlogPost } from "./types.js";
 
 const PostCard = component(

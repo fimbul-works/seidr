@@ -1,12 +1,20 @@
+import { setInternalAppState } from "./app-state/app-state";
+import { getSSRAppState } from "./app-state/app-state.server";
 import { setInternalGetDocument } from "./dom/get-document";
 import { getDocument } from "./dom/get-document.server";
-import "./app-state/app-state.server";
 
 import { Seidr } from "./seidr/seidr";
 import { registerSeidrForSSR } from "./ssr/register-seidr";
 
-Seidr.register = registerSeidrForSSR;
-setInternalGetDocument(getDocument);
+/**
+ * Initializes Seidr for server-side use.
+ * This performs necessary global registrations and should be called before any other Seidr functions.
+ */
+export const setupServer = (): void => {
+  Seidr.register = registerSeidrForSSR;
+  setInternalGetDocument(getDocument);
+  setInternalAppState(getSSRAppState);
+};
 
 export * from "./index.core";
 export * from "./ssr/render-to-string";

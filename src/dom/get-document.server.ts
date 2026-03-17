@@ -20,5 +20,3 @@ export const getDocument = (): Document => {
   state.setData(DOCUMENT_DATA_KEY, doc);
   return doc;
 };
-
-setInternalGetDocument(getDocument);

@@ -5,5 +5,3 @@ import { setInternalGetDocument } from "./get-document";
  * @returns {Document} Browser Document implementation.
  */
 export const getDocument = (): Document => document;
-
-setInternalGetDocument(getDocument);

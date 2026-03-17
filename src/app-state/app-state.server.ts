@@ -10,15 +10,10 @@ let requestIdCounter = 0;
 export const resetRequestIdCounter = () => (requestIdCounter = 0);
 
 /** Storage for per-request AppState */
-const contextLocalStorage = new AsyncLocalStorage<AppState>();
+export const contextLocalStorage = new AsyncLocalStorage<AppState>();
 
 /** Global strategies map for SSR (could also be per-context if needed, but usually global) */
 const strategies = new Map<string, [((value: any) => any) | undefined, ((value: any) => any) | undefined]>();
-
-// Expose store globally for test-setup access in tests
-if (process.env.VITEST && typeof global !== "undefined") {
-  (global as any).__SEIDR_CONTEXT_STORE__ = contextLocalStorage;
-}
 
 /**
  * Get the current application state.
@@ -32,7 +27,7 @@ export const getSSRAppState = (): AppState => {
 };
 
 // Pass the SSR getAppState to contract
-setInternalAppState(getSSRAppState);
+// setInternalAppState(getSSRAppState); // Removed side-effect
 
 /**
  * Run a function within a new application state.
@@ -72,6 +67,7 @@ export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T>
     getDataStrategy(key: string) {
       return strategies.get(key);
     },
+    isSSR: true,
   };
 
   return contextLocalStorage.run(context, callback);
@@ -112,6 +108,7 @@ export const setMockAppStateForTests = (): CleanupFunction => {
     getDataStrategy(key: string) {
       return strategies.get(key);
     },
+    isSSR: true,
   };
   const originalGetAppState = getSSRAppState;
 
