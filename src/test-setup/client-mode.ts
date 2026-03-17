@@ -3,7 +3,7 @@ import { getDocument, setInternalGetDocument } from "../dom/get-document";
 import { getDocument as getBrowserDocument } from "../dom/get-document.browser";
 import type { CleanupFunction } from "../types";
 import { isClient } from "../util/environment/client";
-import { getAppState } from "./app-state";
+import { getAppState, clearTestAppState } from "./app-state";
 import type { TestEnvironmentState } from "./types";
 
 /**
@@ -18,6 +18,8 @@ export function enableClientMode(): CleanupFunction {
     window: global.window,
     getDocument: getDocument,
   };
+
+  clearTestAppState();
 
   delete process.env.SEIDR_TEST_SSR;
   delete process.env.VITEST;

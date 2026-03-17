@@ -16,12 +16,30 @@ export const inServer = <T>(fn: () => T): T => {
     return false as T;
   }
 
-  const result = fn();
+  const scope = getSSRScope();
+  if (scope) {
+    const index = scope.callIndex;
+    scope.callIndex = index + 1;
 
-  // Automatically track async work in SSR scope so renderToString can await it
-  if (result instanceof Promise) {
-    getSSRScope()?.addPromise(result);
+    if (scope.hasCachedResult(index)) {
+      return scope.getCachedResult(index);
+    }
+
+    const result = fn();
+
+    if (result instanceof Promise) {
+      scope.addPromise(
+        result.then((val) => {
+          scope.setCachedResult(index, val);
+          return val;
+        }),
+      );
+    } else {
+      scope.setCachedResult(index, result);
+    }
+
+    return result;
   }
 
-  return result;
+  return fn();
 };

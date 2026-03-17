@@ -78,7 +78,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     if (currentComponent) {
       router.addChild(currentComponent);
       if (router.parentNode) {
-        currentComponent.mount(router.parentNode);
+        mountComponent(currentComponent, router.endMarker || null, router.parentNode);
       }
     }
 

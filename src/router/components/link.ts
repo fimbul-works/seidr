@@ -3,6 +3,7 @@ import type { Component } from "../../component/types";
 import { $, type SeidrChild, type SeidrElementProps } from "../../element";
 import type { Seidr } from "../../seidr/seidr";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
+import { isClient } from "../../util/environment";
 import { useNavigate } from "../hooks";
 
 /**
@@ -39,6 +40,10 @@ export const Link = <K extends keyof HTMLElementTagNameMap = keyof HTMLElementTa
       } as SeidrElementProps<K>,
       children,
     );
+
+    if (isClient()) {
+      el.dataset.seidrLink = unwrapSeidr(to);
+    }
 
     return el;
   }, "Link")();

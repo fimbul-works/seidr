@@ -4,6 +4,7 @@ import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
 import { NO_HYDRATE } from "../seidr/constants";
+import { isHydrating } from "../ssr/hydrate/storage";
 import { isSeidr } from "../util/type-guards/obserbable-types";
 import { wrapError } from "../util/wrap-error";
 
@@ -67,7 +68,14 @@ export const Suspense = <T>(
     // Track initial promise
     const initialProm = unwrapSeidr(promiseOrSeidr);
     if (initialProm) {
-      parentComponent.waitFor(handlePromise(initialProm));
+      // Check if it's already resolved in the state (for hydration)
+      if (initialProm instanceof Promise) {
+        parentComponent.waitFor(handlePromise(initialProm));
+      } else {
+        // Already a value, resolve synchronously
+        value.value = initialProm as any;
+        status.value = PROMISE_RESOLVED;
+      }
     }
 
     // Handle reactive promise changes

@@ -41,22 +41,18 @@ export interface HydrationContext {
    */
   popComponent(): void;
 
-  // /**
-  //  * Pushes a node onto the stack.
-  //  */
-  // pushNode(index: number): void;
-  // /**
-  //  * Pops a node from the stack.
-  //  */
-  // popNode(): void;
+  /**
+   * Removes a component from the hydration mapping.
+   */
+  removeComponent(component: Component): void;
 
   /**
-   * Marks the current subtree as mismatched.
+   * Returns true if the current component or any parent is mismatched.
    */
-  markSubtreeMismatched(): void;
+  isMismatched(): boolean;
 
   /**
    * Claims a node from the DOM.
    */
-  claim<T extends ChildNode>(tag: string): T | null;
+  claim<T extends ChildNode>(tag: string): T;
 }

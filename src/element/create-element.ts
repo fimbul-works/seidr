@@ -2,9 +2,9 @@ import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
-import { getHydrationMap } from "../ssr/hydrate/storage";
+import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
-import { isArray, isEmpty, isHTMLElement } from "../util/type-guards";
+import { isArray, isEmpty } from "../util/type-guards";
 import { assignProps } from "./assign-props";
 import type { SeidrChild, SeidrElementProps } from "./types";
 
@@ -25,9 +25,13 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
 ): HTMLElementTagNameMap[K] => {
   const comp = getCurrentComponent();
 
-  if (process.env.CORE_DISABLE_SSR || isServer()) {
-    const el = getDocument().createElement(tagName);
-
+  /**
+   * Apply properties and children to an element.
+   *
+   * @param {HTMLElementTagNameMap[K]} el - The element to decorate
+   * @returns {HTMLElementTagNameMap[K]} The decorated element
+   */
+  const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
     if (isServer()) {
       comp?.trackChild?.(el);
     }
@@ -50,56 +54,37 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     }
 
     return el;
+  };
+
+  // Non-SSR or server side
+  if (process.env.CORE_DISABLE_SSR || isServer()) {
+    return decorateElement(getDocument().createElement(tagName));
   }
 
+  // Hydration
   let element: HTMLElementTagNameMap[K];
+
   const hydrationContext = getHydrationContext();
-  if (hydrationContext) {
-    element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
-
-    if (isHTMLElement(element)) {
-      // Store the relationship for reactive updates
-      getHydrationMap().set(element, element);
-    } else {
-      // Structural mismatch: what we found at this index is NOT the expected tagName
+  if (isHydrating() && hydrationContext) {
+    if (hydrationContext.isMismatched()) {
       element = getDocument().createElement(tagName);
-      getHydrationMap().set(element, element);
+      console.warn("[HYDRATE] Mismatched element found", element.tagName);
+    } else {
+      element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
     }
 
-    // Procedural render for children of the new node
-    if (props) {
-      assignProps(element, props);
-    }
-    if (isArray(children)) {
-      children.forEach((child) => {
-        if (typeof child === "string" && child === "") return;
-        appendChild(element, child);
-      });
-    } else if (!isEmpty(children)) {
-      if (!(typeof children === "string" && children === "")) {
-        appendChild(element, children);
+    if (!element || (element as any).isHydrationMismatch) {
+      const oldNode = element;
+      element = getDocument().createElement(tagName);
+      if (oldNode?.parentNode) {
+        console.warn("[HYDRATE] Replacing mismatched element", oldNode.tagName, "with", element.tagName);
+        oldNode.parentNode.replaceChild(element, oldNode);
       }
     }
 
-    return element as HTMLElementTagNameMap[K];
+    return decorateElement(element);
   }
 
-  const el = getDocument().createElement(tagName);
-
-  if (props) {
-    assignProps(el, props);
-  }
-
-  if (isArray(children)) {
-    children.forEach((child) => {
-      if (typeof child === "string" && child === "") return;
-      appendChild(el, child);
-    });
-  } else if (!isEmpty(children)) {
-    if (!(typeof children === "string" && children === "")) {
-      appendChild(el, children);
-    }
-  }
-
-  return el;
+  // Client sides
+  return decorateElement(getDocument().createElement(tagName));
 };

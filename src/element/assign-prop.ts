@@ -1,7 +1,6 @@
 import { onMount } from "../component/on-mount";
 import { onUnmount } from "../component/on-unmount";
 import type { Seidr } from "../seidr";
-import { getHydrationMap } from "../ssr/hydrate";
 import { SeidrError } from "../types";
 import { isServer } from "../util/environment/is-server";
 import { camelToKebab } from "../util/string";
@@ -30,8 +29,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
     return;
   }
 
-  const currentElement = (element: HTMLElement): any =>
-    (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(element)) || element;
+  const currentElement = (element: HTMLElement): any => element;
 
   let effectiveProp = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);

@@ -68,6 +68,14 @@ export class SSRScope {
   private components = new Map<string, Component>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
+  // Resolved results for inServer caching (callIndex -> result)
+  private cache = new Map<number, any>();
+  // Current inServer call index (resets per render pass)
+  private _callIndex = 0;
+  // Flag to indicate if we are in a stable (synchronous) render pass
+  private _isStable = false;
+  // State preserved from the first pass to populate the second pass
+  private persistedState: Record<string, any> = {};
 
   /**
    * Registers a promise to be awaited before finishing the SSR render.
@@ -103,6 +111,34 @@ export class SSRScope {
     return this.state.size;
   }
 
+  get callIndex(): number {
+    return this._callIndex;
+  }
+
+  set callIndex(val: number) {
+    this._callIndex = val;
+  }
+
+  get isStable(): boolean {
+    return this._isStable;
+  }
+
+  set isStable(val: boolean) {
+    this._isStable = val;
+  }
+
+  hasCachedResult(index: number): boolean {
+    return this.cache.has(index);
+  }
+
+  getCachedResult(index: number): any {
+    return this.cache.get(index);
+  }
+
+  setCachedResult(index: number, result: any): void {
+    this.cache.set(index, result);
+  }
+
   /**
    * Registers an observable with this scope.
    * Called automatically by Seidr during SSR rendering when first observed/bound.
@@ -111,6 +147,11 @@ export class SSRScope {
    */
   register(seidr: Seidr): void {
     this.state.set(seidr.id, seidr);
+
+    // If we are in a stable re-render, populate from persisted state
+    if (this._isStable && this.persistedState[seidr.id] !== undefined) {
+      seidr.value = this.persistedState[seidr.id];
+    }
   }
 
   /**
@@ -151,6 +192,27 @@ export class SSRScope {
     this.state.values().forEach((seidr) => seidr.destroy());
     this.state.clear();
     this.components.clear();
+    this.cache.clear();
+    this._callIndex = 0;
+    this._isStable = false;
+  }
+
+  /**
+   * Resets the scope for a new render pass (keeping the cache).
+   */
+  resetForStableRender(): void {
+    // Capture state before resetting
+    this.persistedState = {};
+    for (const [id, seidr] of this.state) {
+      if (!seidr.isDerived && seidr.options.hydrate !== false) {
+        this.persistedState[id] = seidr.value;
+      }
+    }
+
+    this.components.clear();
+    this._callIndex = 0;
+    this._isStable = true;
+    // We keep this.cache so the next pass is synchronous
   }
 
   /**

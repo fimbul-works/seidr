@@ -1,11 +1,11 @@
 import { pop, push } from "../component/component-stack";
+import { getMarkerComments } from "../component/get-marker-comments";
 import type { SeidrChild } from "../element/types";
-import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
-import { getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
+import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isComponent } from "../util/type-guards/component-types";
-import { isDOMNode } from "../util/type-guards/dom-node-types";
-import { isArray, isEmpty } from "../util/type-guards/primitive-types";
+import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
+import { isArray, isEmpty, isStr } from "../util/type-guards/primitive-types";
 import { $text } from "./node/text";
 
 /**
@@ -23,6 +23,37 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   // Append array of nodes
   if (isArray(child)) {
     return child.forEach((c) => appendChild(parent, c));
+  }
+
+  const target = parent as ParentNode;
+
+  if (isStr(child) && !child.trim()) {
+    return; // Do not append pure whitespace nodes
+  }
+
+  // Hydration guard: if the node/component is already in the target, do nothing
+  if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+    if (isComponent(child)) {
+      // If component is already marked as mounted, we assume it's in the correct place
+      // (either from initial reconstruction or previous hydration step)
+      if (child.isMounted) {
+        return;
+      }
+
+      // Check for markers in the target to see if it was already hydrated
+      const [startMarker, endMarker] = getMarkerComments(child.id);
+      if (startMarker && endMarker) {
+        const hasStart = Array.from(target.childNodes).some((n) => n === startMarker);
+        const hasEnd = Array.from(target.childNodes).some((n) => n === endMarker);
+        if (hasStart && hasEnd) {
+          return;
+        }
+      }
+    } else if (isDOMNode(child)) {
+      if (Array.from(target.childNodes).includes(child as any)) {
+        return;
+      }
+    }
   }
 
   // Append Seidr component
@@ -50,23 +81,10 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     return;
   }
 
-  const target = parent as ParentNode;
-
-  if (typeof child === "string" && !child.trim()) {
-    return; // Do not append pure whitespace nodes
-  }
-
   const childNode = isDOMNode(child) ? child : $text(child);
 
-  if (isHydrating() && !process.env.CORE_DISABLE_SSR) {
-    const mapped = getHydrationMap().get(childNode);
-    if (mapped?.parentNode === target) {
-      return;
-    }
-  }
-
   // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.
-  const canContain = childNode.nodeType === 1 || childNode.nodeType === 9;
+  const canContain = isHTMLElement(childNode);
   if (childNode !== target && (!canContain || !childNode.contains(target))) {
     target.appendChild(childNode);
   }

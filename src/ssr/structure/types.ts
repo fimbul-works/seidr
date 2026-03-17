@@ -20,9 +20,28 @@ export interface ComponentTreeNode {
    */
   id?: string;
   /**
+   * The physical DOM node associated with this virtual node (for elements and text).
+   */
+  domNode?: ChildNode;
+  /**
    * Child nodes.
    */
   children?: ComponentTreeNode[];
+  /**
+   * Specifically for components: holding the list of nodes that this component will "claim".
+   * For non-component nodes, this is usually empty or same as children.
+   */
+  claimNodes?: ChildNode[];
+
+  /**
+   * Whether this component or node has a hydration mismatch.
+   */
+  isMismatched: boolean;
+
+  /**
+   * The tag of the physical DOM node.
+   */
+  domTag?: string;
 }
 
 /**
@@ -50,9 +69,4 @@ export interface ComponentDomTree {
    * Child components instantiated within this component.
    */
   children: Map<string, ComponentDomTree>;
-
-  /**
-   * Parent node in the virtual tree.
-   */
-  parent?: ComponentDomTree;
 }

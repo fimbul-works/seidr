@@ -1,7 +1,7 @@
 import { getCurrentComponent } from "../../component/component-stack";
 import { TAG_COMMENT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
-import { getHydrationMap, isHydrating } from "../../ssr/hydrate/storage";
+import { isHydrating } from "../../ssr/hydrate/storage";
 import { isServer } from "../../util/environment/is-server";
 import { str } from "../../util/string";
 import { getDocument } from "../get-document";
@@ -19,19 +19,22 @@ export const $comment = (text: string): Comment => {
   const doc = getDocument();
 
   if (isHydrating()) {
-    const node = getHydrationContext()?.claim<Comment>(TAG_COMMENT);
-    if (node) {
-      if (node.textContent !== str(text)) {
-        console.warn(`[Hydration] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`);
-        node.textContent = str(text);
+    const ctx = getHydrationContext();
+    if (ctx) {
+      if (ctx.isMismatched()) {
+        const node = doc.createComment(text);
+        return node;
       }
-      // Store the relationship for reactive updates
-      getHydrationMap()?.set(node, node);
-      return node;
-    } else {
-      const node = doc.createComment(text);
-      getHydrationMap()?.set(node, node);
-      return node;
+
+      const node = ctx.claim<Comment>(TAG_COMMENT);
+      if (node) {
+        // This is a new node created due to a mismatch in claim()
+        if (node.textContent !== str(text)) {
+          console.warn(`[Hydration mismatch] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`);
+          node.textContent = str(text);
+        }
+        return node;
+      }
     }
   }
 

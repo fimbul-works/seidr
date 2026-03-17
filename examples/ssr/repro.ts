@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { buildDomTree } from "../../src/ssr/structure/dom-tree.js";
+import { buildStructureMap } from "../../src/ssr/structure/index";
 
 async function runTest(url: string) {
   const browser = await puppeteer.launch({
@@ -54,7 +54,7 @@ async function runTest(url: string) {
     };
   });
 
-  const tree = pageResults.rawData ? buildDomTree(pageResults.rawData.components) : null;
+  const tree = pageResults.rawData ? buildStructureMap(pageResults.rawData.components) : null;
 
   const results = {
     ...pageResults,

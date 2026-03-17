@@ -4,7 +4,7 @@ import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
-import { getHydrationMap } from "../ssr/hydrate";
+import { isHydrating } from "../ssr/hydrate/storage";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -28,11 +28,10 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
   component(() => {
     const listComponent = getCurrentComponent()!;
     const componentMap = new Map<K, Component>();
+    const realEndMarker = listComponent.endMarker;
+    const parent = realEndMarker?.parentNode;
 
     const update = (items: T[]) => {
-      const realEndMarker =
-        (!process.env.CORE_DISABLE_SSR && getHydrationMap().get(listComponent.endMarker!)) || listComponent.endMarker;
-      const parent = realEndMarker?.parentNode;
       if (!parent) {
         return;
       }
@@ -59,19 +58,13 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
           componentMap.set(key, itemComponent);
         }
 
-        let lastNode = getLastNode(itemComponent);
-        if (!process.env.CORE_DISABLE_SSR) {
-          lastNode = getHydrationMap().get(lastNode) || lastNode;
-        }
+        const lastNode = getLastNode(itemComponent);
 
         if (lastNode !== currentAnchor.previousSibling) {
           mountComponent(itemComponent, currentAnchor);
         }
 
         currentAnchor = getFirstNode(itemComponent);
-        if (!process.env.CORE_DISABLE_SSR) {
-          currentAnchor = getHydrationMap().get(currentAnchor) || currentAnchor;
-        }
       }
 
       listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
@@ -86,6 +79,10 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
     return observable.value.map((item) => {
       const itemComponent = wrapComponent<T>(factory)(item);
       componentMap.set(getKey(item), itemComponent);
+
+      if (!process.env.CORE_DISABLE_SSR && isHydrating() && parent) {
+        itemComponent.mount(parent);
+      }
 
       return itemComponent;
     });

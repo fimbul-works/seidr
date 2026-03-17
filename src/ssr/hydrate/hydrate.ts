@@ -37,7 +37,7 @@ export const hydrate = <T extends ComponentType>(
     clearHydrationData();
     return unmount;
   } catch (error) {
-    console.warn("Hydration failed, falling back to normal mount", error);
+    console.error("Hydration failed", error);
     return mount(factory, container);
   }
 };

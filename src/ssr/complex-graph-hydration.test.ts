@@ -79,6 +79,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
 
     // Client-side hydration
     const container = document.createElement("div");
+    container.innerHTML = html;
     unmount = hydrate(App, container, hydrationData);
 
     // Verify all values are correctly hydrated
@@ -129,6 +130,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     // Switch to client mode and hydrate
     cleanupMode = enableClientMode();
     const container = document.createElement("div");
+    container.innerHTML = html;
     unmount = hydrate(App, container, hydrationData);
 
     expect(container.textContent).toContain("15");
@@ -184,6 +186,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     // Switch to client mode and hydrate
     cleanupMode = enableClientMode();
     const container = document.createElement("div");
+    container.innerHTML = html;
     unmount = hydrate(App, container, hydrationData);
 
     expect(container.textContent).toContain("2");

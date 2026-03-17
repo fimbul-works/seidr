@@ -48,7 +48,7 @@ export const mount = <C extends ComponentType = ComponentType>(
 
   // During hydration, skip appendChild if the container already contains the root component's element
   let skipAppend = false;
-  if (isHydrating()) {
+  if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
     const hydrationData = getHydrationData();
     // If the hydration root is the container itself, the elements are already inside
     if (hydrationData?.data?.root === container) {

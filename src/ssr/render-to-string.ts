@@ -1,4 +1,4 @@
-import { getAppState } from "../app-state/app-state";
+import { getAppState, setAppStateID } from "../app-state/app-state";
 import { runWithAppState } from "../app-state/app-state.node";
 import type { ComponentReturnValue } from "../component";
 import { mountComponent } from "../component/util/mount-component";
@@ -55,19 +55,42 @@ export async function renderToString<C extends ComponentReturnValue>(
       setSSRScope(activeScope);
 
       try {
-        const comp = wrapComponent(factory)();
-
-        // Ensure root is attached to something so it can render content (especially for marker-based components)
-        // We use a temporary div as a container for initial rendering.
+        let comp = wrapComponent(factory)();
         const doc = getDocument().createElement("div");
         const anchor = getDocument().createComment("ssr-anchor");
         doc.appendChild(anchor);
 
-        // Mount the component properly using the recursive mountComponent
+        // First pass: trigger all promises
         mountComponent(comp, anchor);
-
         await activeScope.waitForPromises();
-        anchor.remove();
+
+        // If we encountered promises, the tree structure might have changed (e.g. Pending -> Resolved)
+        // Leading to ID drift. We now re-render from a clean state but keep the cached data.
+        if (activeScope.callIndex > 0) {
+          comp.unmount();
+          anchor.remove();
+
+          // Reset AppState component and Seidr ID counters
+          setAppStateID(state.ctxID);
+
+          // Restore necessary state and scope
+          if (isStr(options.path)) {
+            state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
+          }
+          setSSRScope(activeScope);
+
+          // Reset scope for stable re-render (keeps inServer cache!)
+          activeScope.resetForStableRender();
+
+          // Second pass: clean render with resolved data
+          comp = wrapComponent(factory)();
+          const newAnchor = getDocument().createComment("ssr-anchor-stable");
+          doc.appendChild(newAnchor);
+          mountComponent(comp, newAnchor);
+          newAnchor.remove();
+        } else {
+          anchor.remove();
+        }
 
         // Use innerHTML to get the stringified content without the wrapping div
         const html = doc.innerHTML;

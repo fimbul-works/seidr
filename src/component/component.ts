@@ -1,13 +1,12 @@
 import { getAppStateID, getNextComponentId } from "../app-state/app-state";
-import { ROOT_ATTRIBUTE, TAG_COMMENT, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
+import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
 import type { Seidr } from "../seidr";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
-import type { HydrationContext } from "../ssr/hydrate/context/types";
-import { getHydrationData, getHydrationMap, isHydrating } from "../ssr/hydrate/storage";
+import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
-import type { CleanupFunction } from "../types";
+import { SeidrError, type CleanupFunction } from "../types";
 import { isServer } from "../util/environment/is-server";
 import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
@@ -89,8 +88,7 @@ export const component = <P = void>(
                 item.unmount();
               } else if (isDOMNode(item)) {
                 // Remove DOM node
-                const el: ChildNode =
-                  (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(item) as ChildNode)) || item;
+                const el: ChildNode = item;
                 if (el.parentNode) {
                   el.remove();
                 }
@@ -139,13 +137,12 @@ export const component = <P = void>(
       onUnmount(fn: CleanupFunction): void {
         onUnmountFns.push(fn);
       },
-      mount(parent: Element): void {
-        if (parentNode) {
-          if (process.env.DEBUG) {
-            console.trace(`[${componentId}] Mounting an already mounted component`);
-          } else {
-            console.warn(`[${componentId}] Mounting an already mounted component`);
-          }
+      mount(parent: ParentNode): void {
+        if (!parent) {
+          throw new SeidrError("Cannot mount to null parent", { cause: instance });
+        }
+
+        if (instance.isMounted && parentNode === parent) {
           return;
         }
 
@@ -173,16 +170,15 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
+        if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+          getHydrationContext()?.removeComponent(instance);
+        }
+
         // Remove from DOM
-        const startMarker = startMarkerComment
-          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(startMarkerComment) as Comment)) ||
-            startMarkerComment
-          : null;
+        const startMarker = startMarkerComment;
         startMarker?.remove();
 
-        const endMarker = endMarkerComment
-          ? (!process.env.CORE_DISABLE_SSR && (getHydrationMap().get(endMarkerComment) as Comment)) || endMarkerComment
-          : null;
+        const endMarker = endMarkerComment;
         endMarker?.remove();
         instance.element = null;
 
@@ -297,25 +293,8 @@ export const component = <P = void>(
 
       // Only add markers if the component returns an array, or a nullish/text value
       const shouldAddMarkerComments = isArray(element) || isEmpty(element);
-
-      if (shouldAddMarkerComments) {
-        if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
-          const ctx = getHydrationContext();
-          if (ctx) {
-            const markers = ctx.claimComponentMarkers(componentId);
-            if (markers.startMarker) {
-              startMarkerComment = markers.startMarker;
-              getHydrationMap().set(startMarkerComment, startMarkerComment);
-            }
-            if (markers.endMarker) {
-              endMarkerComment = markers.endMarker;
-              getHydrationMap().set(endMarkerComment, endMarkerComment);
-            }
-          }
-        }
-        if (!startMarkerComment) {
-          [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
-        }
+      if (shouldAddMarkerComments && !startMarkerComment) {
+        [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
       }
 
       // Track component boundary in parent immediately to match evaluation order
@@ -336,10 +315,8 @@ export const component = <P = void>(
       throw err;
     } finally {
       pop();
-      if (!process.env.CORE_DISABLE_SSR) {
-        if (isHydrating()) {
-          getHydrationContext()?.popComponent();
-        }
+      if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+        getHydrationContext()?.popComponent();
       }
     }
 

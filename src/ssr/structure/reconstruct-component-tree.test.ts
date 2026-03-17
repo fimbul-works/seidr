@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
+import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import type { HydrationData } from "../hydrate/types";
 import { reconstructComponentTree } from "./reconstruct-component-tree";
 
@@ -9,16 +9,16 @@ describe("recontructComponentTree", () => {
       state: {},
       components: {
         "BlogApp-1": [
-          [`${TAG_COMPONET_PREFIX}Header-2`],
-          [`${TAG_COMPONET_PREFIX}Router-5`],
+          [`${TAG_COMPONENT_PREFIX}Header-2`],
+          [`${TAG_COMPONENT_PREFIX}Router-5`],
           ["div", 1],
           [TAG_TEXT],
           ["footer", 3],
           ["div", 0, 2, 4],
         ],
         "Header-2": [
-          [`${TAG_COMPONET_PREFIX}Link-3`],
-          [`${TAG_COMPONET_PREFIX}Link-4`],
+          [`${TAG_COMPONENT_PREFIX}Link-3`],
+          [`${TAG_COMPONENT_PREFIX}Link-4`],
           [TAG_TEXT],
           ["a", 2],
           ["div", 1, 3],
@@ -26,59 +26,59 @@ describe("recontructComponentTree", () => {
         ],
         "Link-3": [[TAG_TEXT], ["a", 0]],
         "Link-4": [[TAG_TEXT], ["a", 0]],
-        "Router-5": [[`${TAG_COMPONET_PREFIX}HomePage-6`]],
-        "HomePage-6": [[`${TAG_COMPONET_PREFIX}Suspense-7`]],
-        "Suspense-7": [[`${TAG_COMPONET_PREFIX}Component-8`]],
-        "Component-8": [[`${TAG_COMPONET_PREFIX}Switch-9`]],
-        "Switch-9": [[`${TAG_COMPONET_PREFIX}Component-10`], [`${TAG_COMPONET_PREFIX}Component-11`]],
+        "Router-5": [[`${TAG_COMPONENT_PREFIX}HomePage-6`]],
+        "HomePage-6": [[`${TAG_COMPONENT_PREFIX}Suspense-7`]],
+        "Suspense-7": [[`${TAG_COMPONENT_PREFIX}Component-8`]],
+        "Component-8": [[`${TAG_COMPONENT_PREFIX}Switch-9`]],
+        "Switch-9": [[`${TAG_COMPONENT_PREFIX}Component-10`], [`${TAG_COMPONENT_PREFIX}Component-11`]],
         "Component-10": [[TAG_TEXT], ["div", 0]],
-        "Component-11": [[TAG_TEXT], ["h1", 0], [`${TAG_COMPONET_PREFIX}List-12`], ["ul", 2], ["div", 1, 3]],
+        "Component-11": [[TAG_TEXT], ["h1", 0], [`${TAG_COMPONENT_PREFIX}List-12`], ["ul", 2], ["div", 1, 3]],
         "List-12": [
-          [`${TAG_COMPONET_PREFIX}PostCard-13`],
-          [`${TAG_COMPONET_PREFIX}PostCard-16`],
-          [`${TAG_COMPONET_PREFIX}PostCard-19`],
-          [`${TAG_COMPONET_PREFIX}PostCard-22`],
+          [`${TAG_COMPONENT_PREFIX}PostCard-13`],
+          [`${TAG_COMPONENT_PREFIX}PostCard-16`],
+          [`${TAG_COMPONENT_PREFIX}PostCard-19`],
+          [`${TAG_COMPONENT_PREFIX}PostCard-22`],
         ],
         "PostCard-13": [
-          [`${TAG_COMPONET_PREFIX}Link-14`],
+          [`${TAG_COMPONENT_PREFIX}Link-14`],
           ["h2", 0],
           [TAG_TEXT],
           ["div", 2],
           ["div"],
-          [`${TAG_COMPONET_PREFIX}Link-15`],
+          [`${TAG_COMPONENT_PREFIX}Link-15`],
           ["li", 1, 3, 4, 5],
         ],
         "Link-14": [[TAG_TEXT], ["a", 0]],
         "Link-15": [[TAG_TEXT], ["a", 0]],
         "PostCard-16": [
-          [`${TAG_COMPONET_PREFIX}Link-17`],
+          [`${TAG_COMPONENT_PREFIX}Link-17`],
           ["h2", 0],
           [TAG_TEXT],
           ["div", 2],
           ["div"],
-          [`${TAG_COMPONET_PREFIX}Link-18`],
+          [`${TAG_COMPONENT_PREFIX}Link-18`],
           ["li", 1, 3, 4, 5],
         ],
         "Link-17": [[TAG_TEXT], ["a", 0]],
         "Link-18": [[TAG_TEXT], ["a", 0]],
         "PostCard-19": [
-          [`${TAG_COMPONET_PREFIX}Link-20`],
+          [`${TAG_COMPONENT_PREFIX}Link-20`],
           ["h2", 0],
           [TAG_TEXT],
           ["div", 2],
           ["div"],
-          [`${TAG_COMPONET_PREFIX}Link-21`],
+          [`${TAG_COMPONENT_PREFIX}Link-21`],
           ["li", 1, 3, 4, 5],
         ],
         "Link-20": [[TAG_TEXT], ["a", 0]],
         "Link-21": [[TAG_TEXT], ["a", 0]],
         "PostCard-22": [
-          [`${TAG_COMPONET_PREFIX}Link-23`],
+          [`${TAG_COMPONENT_PREFIX}Link-23`],
           ["h2", 0],
           [TAG_TEXT],
           ["div", 2],
           ["div"],
-          [`${TAG_COMPONET_PREFIX}Link-24`],
+          [`${TAG_COMPONENT_PREFIX}Link-24`],
           ["li", 1, 3, 4, 5],
         ],
         "Link-23": [[TAG_TEXT], ["a", 0]],
@@ -99,7 +99,7 @@ describe("recontructComponentTree", () => {
     const [header, mainContent, footer] = root.children!;
 
     // Header-2 component expands into Header-2's own subtree
-    expect(header.tag).toBe(`${TAG_COMPONET_PREFIX}Header-2`);
+    expect(header.tag).toBe(`${TAG_COMPONENT_PREFIX}Header-2`);
     expect(header.id).toBe("Header-2");
     // Header-2's root is a nav containing Link-3, div (which contains Link-4 and a)
     const headerNav = header.children![0];
@@ -110,7 +110,7 @@ describe("recontructComponentTree", () => {
     expect(mainContent.creationIndex).toBe(2);
     expect(mainContent.children).toHaveLength(1);
     const router = mainContent.children![0];
-    expect(router.tag).toBe(`${TAG_COMPONET_PREFIX}Router-5`);
+    expect(router.tag).toBe(`${TAG_COMPONENT_PREFIX}Router-5`);
     expect(router.id).toBe("Router-5");
 
     // Router-5 → HomePage-6 → Suspense-7 → Component-8 → Switch-9

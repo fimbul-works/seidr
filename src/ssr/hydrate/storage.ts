@@ -4,7 +4,6 @@ import { SeidrError } from "../../types";
 import { isEmpty } from "../../util";
 import type { HydrationData, HydrationDataStorage } from "./types";
 
-const HYDRATION_MAP_DATA_ID = "seidr.ssr.hydrationmap";
 const HYDRATION_DATA_ID = "seidr.ssr.hydrationdata";
 
 /**
@@ -52,26 +51,5 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
 export const clearHydrationData = (): void => {
   const appState = getAppState();
   appState.deleteData(HYDRATION_DATA_ID);
-  appState.deleteData(HYDRATION_MAP_DATA_ID);
 };
 
-/**
- * Map storing the relationship between client-created virtual nodes
- * and their corresponding hydrated server-side DOM nodes.
- * Used to route reactive updates to the actual elements in the DOM.
- *
- * @returns {WeakMap<ChildNode, ChildNode>} The hydration map
- */
-export const getHydrationMap = (): WeakMap<Node, ChildNode> => {
-  if (process.env.CORE_DISABLE_SSR) {
-    throw new Error("Hydration is not available in this build");
-  }
-
-  const appState = getAppState();
-  let hydrationMap: WeakMap<ChildNode, ChildNode>;
-  if (!appState.hasData(HYDRATION_MAP_DATA_ID)) {
-    hydrationMap = new WeakMap<ChildNode, ChildNode>();
-    appState.setData(HYDRATION_MAP_DATA_ID, hydrationMap);
-  }
-  return appState.getData(HYDRATION_MAP_DATA_ID)!;
-};
