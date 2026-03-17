@@ -1,7 +1,6 @@
 import { getAppState } from "../app-state/app-state";
 import type { Component, ComponentType } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
-import { getHydrationData, isHydrating } from "../ssr/hydrate/storage";
 import { type CleanupFunction, SeidrError } from "../types";
 import { isComponent } from "../util/type-guards/component-types";
 import { appendChild } from "./append-child";
@@ -28,14 +27,10 @@ export const mount = <C extends ComponentType = ComponentType>(
   componentOrFactory: C,
   container: HTMLElement,
 ): CleanupFunction => {
-  const rootNodeId = "rootNode";
   const rootComponentId = "rootComponent";
   // Bind the container to the application state if not already bound
   const state = getAppState();
-  const currentRootNode = state.getData<HTMLElement>(rootNodeId);
-  if (!currentRootNode) {
-    state.setData(rootNodeId, container);
-  } else if (state.getData(rootComponentId)) {
+  if (state.getData(rootComponentId)) {
     throw new SeidrError("Container already bound to a different root node");
   }
 
@@ -52,8 +47,5 @@ export const mount = <C extends ComponentType = ComponentType>(
   return () => {
     component.unmount();
     state.deleteData(rootComponentId);
-    if (state.getData(rootNodeId) === container) {
-      state.deleteData(rootNodeId);
-    }
   };
 };

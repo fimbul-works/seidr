@@ -50,10 +50,9 @@ export const Suspense = <T>(
         return;
       }
 
-      const scope = getSSRScope();
       const isHydratingNow = !process.env.CORE_DISABLE_SSR && !isServer() && isHydrating();
 
-      if (!scope?.isStable && !isHydratingNow) {
+      if (!process.env.CORE_DISABLE_SSR && !getSSRScope()?.isStable && !isHydratingNow) {
         status.value = PROMISE_PENDING;
       }
       const currentId = ++currentPromiseId;
