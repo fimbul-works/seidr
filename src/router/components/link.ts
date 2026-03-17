@@ -41,9 +41,5 @@ export const Link = <K extends keyof HTMLElementTagNameMap = keyof HTMLElementTa
       children,
     );
 
-    if (isClient()) {
-      el.dataset.seidrLink = unwrapSeidr(to);
-    }
-
     return el;
   }, "Link")();

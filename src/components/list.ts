@@ -1,5 +1,6 @@
 import { component } from "../component/component";
 import { getCurrentComponent } from "../component/component-stack";
+import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
@@ -27,11 +28,12 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 ): Component =>
   component(() => {
     const listComponent = getCurrentComponent()!;
+    // Force marker creation as List always needs them for diffing/hydration
+    const [_, realEndMarker] = getMarkerComments(listComponent.id)!;
     const componentMap = new Map<K, Component>();
-    const realEndMarker = listComponent.endMarker;
-    const parent = realEndMarker?.parentNode;
 
     const update = (items: T[]) => {
+      const parent = realEndMarker?.parentNode;
       if (!parent) {
         return;
       }
@@ -80,8 +82,8 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
       const itemComponent = wrapComponent<T>(factory)(item);
       componentMap.set(getKey(item), itemComponent);
 
-      if (!process.env.CORE_DISABLE_SSR && isHydrating() && parent) {
-        itemComponent.mount(parent);
+      if (!process.env.CORE_DISABLE_SSR && isHydrating() && realEndMarker?.parentNode) {
+        itemComponent.mount(realEndMarker.parentNode);
       }
 
       return itemComponent;

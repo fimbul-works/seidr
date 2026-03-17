@@ -1,3 +1,4 @@
+import { getAppState } from "../../app-state/app-state";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards";
 import type { ComponentTreeNode, StructureMapTuple } from "./types";
@@ -17,8 +18,25 @@ export const reconstructComponentTree = (
   let currentDomIndex = 0;
 
   const skipMarkers = () => {
-    while (currentDomIndex < currentDomNodes.length && isMarkerComment(currentDomNodes[currentDomIndex])) {
-      currentDomIndex++;
+    while (currentDomIndex < currentDomNodes.length) {
+      const node = currentDomNodes[currentDomIndex];
+      if (isComment(node) && isMarkerComment(node)) {
+        const data = (node as Comment).data;
+        const isStart = data.startsWith(TAG_COMPONENT_PREFIX);
+        const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1); // /ID
+
+        const state = getAppState();
+        const markers = state.markers.get(id) || ([null, null] as unknown as [Comment, Comment]);
+        if (isStart) {
+          markers[0] = node as Comment;
+        } else {
+          markers[1] = node as Comment;
+        }
+        state.markers.set(id, markers);
+        currentDomIndex++;
+      } else {
+        break;
+      }
     }
   };
 
@@ -70,10 +88,10 @@ export const reconstructComponentTree = (
         }
         currentDomIndex++;
 
-        if (indices.length > 0 && domNode) {
+        if (indices.length > 0) {
           const savedNodes = currentDomNodes;
           const savedIndex = currentDomIndex;
-          currentDomNodes = Array.from(domNode.childNodes);
+          currentDomNodes = domNode ? Array.from(domNode.childNodes) : [];
           currentDomIndex = 0;
           node.children = indices.map((idx) => buildNode(idx, node.isMismatched));
           currentDomNodes = savedNodes;

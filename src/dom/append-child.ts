@@ -41,8 +41,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       }
 
       // Check for markers in the target to see if it was already hydrated
-      const [startMarker, endMarker] = getMarkerComments(child.id);
-      if (startMarker && endMarker) {
+      const markers = getMarkerComments(child.id, false);
+      if (markers) {
+        const [startMarker, endMarker] = markers;
         const hasStart = Array.from(target.childNodes).some((n) => n === startMarker);
         const hasEnd = Array.from(target.childNodes).some((n) => n === endMarker);
         if (hasStart && hasEnd) {

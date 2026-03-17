@@ -86,7 +86,7 @@ describe("recontructComponentTree", () => {
       },
       ctxID: 0,
     };
-    const tree = reconstructComponentTree(hydrationData.components);
+    const tree = reconstructComponentTree([], hydrationData.components);
 
     // Single root: BlogApp-1's outer div
     expect(tree).toHaveLength(1);

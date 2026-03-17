@@ -96,11 +96,19 @@ export class SSRScope {
    */
   async waitForPromises(): Promise<void> {
     // We loop in case resolving one promise kicks off more async work
+    if (this.promises.length > 0) {
+      this._hasAwaited = true;
+    }
     while (this.promises.length > 0) {
       const pending = [...this.promises];
       this.promises = [];
       await Promise.all(pending);
     }
+  }
+
+  private _hasAwaited = false;
+  get hasAwaited(): boolean {
+    return this._hasAwaited;
   }
 
   /**

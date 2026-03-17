@@ -12,9 +12,6 @@ import type { StructureMapTuple } from "./types";
  * @returns {StructureMapTuple[]} An array of tuples representing the structure of the component
  */
 export function buildStructureMap(component: Component): StructureMapTuple[] {
-  global.console.error(`[SSR] [${component.id}] capture start. children: ${component.children.size}`);
-  console.log(`[SSR] Level: ${component.id} indexing ${component.createdIndex.length} items. Children ids: ${Array.from(component.children.values()).map(c => c.id)}`);
-  console.error(`BUILD_STRUCTURE_MAP [${component.id}] indexing ${component.createdIndex.length} nodes`);
   // Collect child component root nodes
   const rootNodeSets = new Map<Component, Set<Node>>();
   for (const childComponent of component.children.values()) {

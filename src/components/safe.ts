@@ -29,10 +29,13 @@ export const Safe = <
     const instance = getCurrentComponent();
 
     try {
-      return wrapComponent(factory)();
+      // We wrap the factory call to ensure that if it throws, 
+      // we can still attempt to cleanup any partial registration
+      const childFactory = wrapComponent(factory);
+      return childFactory();
     } catch (err) {
       // Clean up any resources tracked during the failed factory call
-      instance?.cleanup();
+      instance?.unmount();
 
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }

@@ -6,7 +6,7 @@ import type { Seidr } from "../seidr";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
-import { SeidrError, type CleanupFunction } from "../types";
+import { type CleanupFunction, SeidrError } from "../types";
 import { isServer } from "../util/environment/is-server";
 import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
@@ -294,20 +294,23 @@ export const component = <P = void>(
       // Only add markers if the component returns an array, or a nullish/text value
       const shouldAddMarkerComments = isArray(element) || isEmpty(element);
       if (shouldAddMarkerComments && !startMarkerComment) {
-        [startMarkerComment, endMarkerComment] = getMarkerComments(componentId);
+        [startMarkerComment, endMarkerComment] = getMarkerComments(componentId)!;
       }
 
       // Track component boundary in parent immediately to match evaluation order
       if (!process.env.CORE_DISABLE_SSR && isServer()) {
         if (parentComponent) {
-          const boundary = startMarkerComment || getFirstNode(instance);
-          if (boundary) {
-            parentComponent.trackChild(boundary);
-            parentComponent.childCreatedIndex.set(boundary, componentId);
+          const start = startMarkerComment || getFirstNode(instance);
+          if (start) {
+            parentComponent.childCreatedIndex.set(start, componentId);
+          }
+          if (endMarkerComment) {
+            parentComponent.childCreatedIndex.set(endMarkerComment, componentId);
           }
         }
       }
     } catch (err) {
+      instance.unmount();
       // Restore previous component (Pop from tree)
       if (process.env.NODE_ENV === "development") {
         console.error(instance.id, err);

@@ -7,9 +7,10 @@ import { getDocument } from "../dom/get-document";
  * Uses AppState cache for stability.
  *
  * @param {string} id - The ID of the component
- * @returns {[Comment, Comment]} - Tuple of start and end markers
+ * @param {boolean} [create=true] - Whether to create markers if they don't exist
+ * @returns {[Comment, Comment] | undefined} - Tuple of start and end markers, or undefined if not created
  */
-export const getMarkerComments = (id: string): [Comment, Comment] => {
+export const getMarkerComments = (id: string, create: boolean = true): [Comment, Comment] | undefined => {
   const state = getAppState();
 
   const cached = state.markers.get(id);
@@ -17,6 +18,10 @@ export const getMarkerComments = (id: string): [Comment, Comment] => {
     return cached;
   }
 
+  if (!create) {
+    return undefined;
+  }
+  
   const doc = getDocument();
   const markers: [Comment, Comment] = [
     doc.createComment(SEIDR_COMPONENT_START_PREFIX + id),

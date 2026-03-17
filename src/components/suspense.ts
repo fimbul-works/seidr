@@ -3,8 +3,9 @@ import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { NO_HYDRATE } from "../seidr/constants";
 import { isHydrating } from "../ssr/hydrate/storage";
+import { getSSRScope } from "../ssr/ssr-scope";
+import { isServer } from "../util/environment/is-server";
 import { isSeidr } from "../util/type-guards/obserbable-types";
 import { wrapError } from "../util/wrap-error";
 
@@ -37,9 +38,10 @@ export const Suspense = <T>(
 ): Component =>
   component(() => {
     const parentComponent = getCurrentComponent() as Component;
-    const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, NO_HYDRATE);
-    const value = new Seidr<T | null>(null, NO_HYDRATE);
-    const error = new Seidr<Error | null>(null, NO_HYDRATE);
+    const componentId = parentComponent.id;
+    const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${componentId}.status` });
+    const value = new Seidr<T | null>(null, { id: `${componentId}.value` });
+    const error = new Seidr<Error | null>(null, { id: `${componentId}.error` });
 
     let currentPromiseId = 0;
 
@@ -48,7 +50,12 @@ export const Suspense = <T>(
         return;
       }
 
-      status.value = PROMISE_PENDING;
+      const scope = getSSRScope();
+      const isHydratingNow = !process.env.CORE_DISABLE_SSR && !isServer() && isHydrating();
+
+      if (!scope?.isStable && !isHydratingNow) {
+        status.value = PROMISE_PENDING;
+      }
       const currentId = ++currentPromiseId;
 
       try {

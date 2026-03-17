@@ -4,6 +4,7 @@ import type { ComponentReturnValue } from "../component";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument } from "../dom/get-document";
+import { DOCUMENT_DATA_KEY } from "../dom/get-document.node";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../router/constants";
 import { clearPathCache } from "../router/get-current-path";
 import { Seidr } from "../seidr";
@@ -66,9 +67,13 @@ export async function renderToString<C extends ComponentReturnValue>(
 
         // If we encountered promises, the tree structure might have changed (e.g. Pending -> Resolved)
         // Leading to ID drift. We now re-render from a clean state but keep the cached data.
-        if (activeScope.callIndex > 0) {
+        if (activeScope.callIndex > 0 || activeScope.hasAwaited) {
           comp.unmount();
           anchor.remove();
+
+          state.deleteData(DOCUMENT_DATA_KEY);
+          state.markers.clear();
+          clearPathCache();
 
           // Reset AppState component and Seidr ID counters
           setAppStateID(state.ctxID);
@@ -84,10 +89,21 @@ export async function renderToString<C extends ComponentReturnValue>(
 
           // Second pass: clean render with resolved data
           comp = wrapComponent(factory)();
+          const doc2 = getDocument().createElement("div");
           const newAnchor = getDocument().createComment("ssr-anchor-stable");
-          doc.appendChild(newAnchor);
+          doc2.appendChild(newAnchor);
           mountComponent(comp, newAnchor);
+          await activeScope.waitForPromises();
           newAnchor.remove();
+
+          const finalHtml = doc2.innerHTML;
+          const hydrationData = {
+            ...activeScope.captureHydrationData(),
+            ctxID: state.ctxID,
+          };
+          comp.unmount();
+          clearPathCache();
+          return { html: finalHtml, hydrationData };
         } else {
           anchor.remove();
         }

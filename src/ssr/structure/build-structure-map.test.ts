@@ -3,7 +3,7 @@ import { setInternalAppState } from "../../app-state/app-state";
 import { component } from "../../component/component";
 import { Suspense, Switch } from "../../components";
 import { List } from "../../components/list";
-import { TAG_COMPONET_PREFIX, TAG_TEXT } from "../../constants";
+import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import { $a, $div, $footer, $h1, $h2, $li, $nav, $ul } from "../../elements";
 import { Link } from "../../router/components/link";
 import { Router } from "../../router/components/router";
@@ -119,16 +119,16 @@ describe("buildStructureMap", () => {
 
     expect(hydrationData.components).toEqual({
       "BlogApp-1": [
-        [`${TAG_COMPONET_PREFIX}Header-2`],
-        [`${TAG_COMPONET_PREFIX}Router-5`],
+        [`${TAG_COMPONENT_PREFIX}Header-2`],
+        [`${TAG_COMPONENT_PREFIX}Router-5`],
         ["div", 1],
         ["footer", 4],
         [TAG_TEXT],
         ["div", 0, 2, 3],
       ],
       "Header-2": [
-        [`${TAG_COMPONET_PREFIX}Link-3`],
-        [`${TAG_COMPONET_PREFIX}Link-4`],
+        [`${TAG_COMPONENT_PREFIX}Link-3`],
+        [`${TAG_COMPONENT_PREFIX}Link-4`],
         ["a", 3],
         [TAG_TEXT],
         ["div", 1, 2],
@@ -136,50 +136,50 @@ describe("buildStructureMap", () => {
       ],
       "Link-3": [["a", 1], [TAG_TEXT]],
       "Link-4": [["a", 1], [TAG_TEXT]],
-      "Router-5": [[`${TAG_COMPONET_PREFIX}HomePage-6`]],
-      "HomePage-6": [[`${TAG_COMPONET_PREFIX}Suspense-7`]],
-      "Suspense-7": [[`${TAG_COMPONET_PREFIX}Posts-8`]],
-      "Posts-8": [[`${TAG_COMPONET_PREFIX}Switch-9`]],
-      "Switch-9": [[`${TAG_COMPONET_PREFIX}Resolved-11`]],
-      "Resolved-11": [["h1", 1], [TAG_TEXT], [`${TAG_COMPONET_PREFIX}List-12`], ["ul", 2], ["div", 0, 3]],
-      "List-12": [
-        [`${TAG_COMPONET_PREFIX}PostCard-13`],
-        [`${TAG_COMPONET_PREFIX}PostCard-16`],
-        [`${TAG_COMPONET_PREFIX}PostCard-19`],
+      "Router-5": [[`${TAG_COMPONENT_PREFIX}HomePage-6`]],
+      "HomePage-6": [[`${TAG_COMPONENT_PREFIX}Suspense-7`]],
+      "Suspense-7": [[`${TAG_COMPONENT_PREFIX}Posts-8`]],
+      "Posts-8": [[`${TAG_COMPONENT_PREFIX}Switch-9`]],
+      "Switch-9": [[`${TAG_COMPONENT_PREFIX}Resolved-10`]],
+      "Resolved-10": [["h1", 1], [TAG_TEXT], [`${TAG_COMPONENT_PREFIX}List-11`], ["ul", 2], ["div", 0, 3]],
+      "List-11": [
+        [`${TAG_COMPONENT_PREFIX}PostCard-12`],
+        [`${TAG_COMPONENT_PREFIX}PostCard-15`],
+        [`${TAG_COMPONENT_PREFIX}PostCard-18`],
       ],
-      "PostCard-13": [
-        [`${TAG_COMPONET_PREFIX}Link-14`],
+      "PostCard-12": [
+        [`${TAG_COMPONENT_PREFIX}Link-13`],
         ["h2", 0],
         ["div", 3],
         [TAG_TEXT],
         ["div"],
-        [`${TAG_COMPONET_PREFIX}Link-15`],
+        [`${TAG_COMPONENT_PREFIX}Link-14`],
         ["li", 1, 2, 4, 5],
       ],
+      "Link-13": [["a", 1], [TAG_TEXT]],
       "Link-14": [["a", 1], [TAG_TEXT]],
-      "Link-15": [["a", 1], [TAG_TEXT]],
-      "PostCard-16": [
-        [`${TAG_COMPONET_PREFIX}Link-17`],
+      "PostCard-15": [
+        [`${TAG_COMPONENT_PREFIX}Link-16`],
         ["h2", 0],
         ["div", 3],
         [TAG_TEXT],
         ["div"],
-        [`${TAG_COMPONET_PREFIX}Link-18`],
+        [`${TAG_COMPONENT_PREFIX}Link-17`],
         ["li", 1, 2, 4, 5],
       ],
+      "Link-16": [["a", 1], [TAG_TEXT]],
       "Link-17": [["a", 1], [TAG_TEXT]],
-      "Link-18": [["a", 1], [TAG_TEXT]],
-      "PostCard-19": [
-        [`${TAG_COMPONET_PREFIX}Link-20`],
+      "PostCard-18": [
+        [`${TAG_COMPONENT_PREFIX}Link-19`],
         ["h2", 0],
         ["div", 3],
         [TAG_TEXT],
         ["div"],
-        [`${TAG_COMPONET_PREFIX}Link-21`],
+        [`${TAG_COMPONENT_PREFIX}Link-20`],
         ["li", 1, 2, 4, 5],
       ],
+      "Link-19": [["a", 1], [TAG_TEXT]],
       "Link-20": [["a", 1], [TAG_TEXT]],
-      "Link-21": [["a", 1], [TAG_TEXT]],
     });
   });
 });
