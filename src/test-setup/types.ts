@@ -9,7 +9,7 @@ export interface TestEnvironmentState {
   /**
    * Whether the test environment is Vitest. (Actually the string value or boolean)
    */
-  vitest?: string | boolean;
+  vitest?: string;
   /**
    * The window object of the test environment.
    */

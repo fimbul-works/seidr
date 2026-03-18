@@ -11,20 +11,17 @@ import { clearHydrationData, hydrate } from "./index";
 
 describe("Hydration of a multi-page app", () => {
   let container: HTMLElement;
-  let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
 
-  mockComponentScope();
+  // mockComponentScope();
 
   beforeEach(() => {
     container = document.createElement("div");
-    cleanupClientMode = enableClientMode();
   });
 
   afterEach(() => {
     unmount?.();
     clearHydrationData();
-    cleanupClientMode();
     setSSRScope(undefined);
   });
 
@@ -86,9 +83,13 @@ describe("Hydration of a multi-page app", () => {
 
     container.innerHTML = html;
 
+    const cleanupClientMode = enableClientMode()
+
     unmount = hydrate(app, container, hydrationData);
 
     expect(container.querySelector("section h1")?.textContent).toBe("Home");
     expect(container.querySelector("a.active")?.textContent).toBe("Home");
+
+    cleanupClientMode()
   });
 });

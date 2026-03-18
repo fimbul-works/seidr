@@ -1,17 +1,20 @@
+/// <reference types="vite/client" />
+
 import { getAppState } from "../../app-state/app-state";
+import { isEmpty } from "../type-guards";
 
 /**
  * Returns true if the current environment is the server (Node.js/SSR).
  *
  * @returns {boolean} `true` if in server, `false` otherwise
  */
-export const isServer = () => {
+export const isServer = (): boolean => {
   if (process.env.CODE_DISABLE_SSR) {
     return false;
   }
 
   const state = getAppState();
-  if (process.env.VITEST && state?.isSSR !== undefined) return state.isSSR;
+  if (process.env.VITEST && !isEmpty(state?.isSSR)) return state.isSSR;
 
   if (typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR)) return true;
   if (typeof import.meta !== "undefined") {

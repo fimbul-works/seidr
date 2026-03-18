@@ -2,9 +2,8 @@ import type { AppState } from "./types";
 
 const strategies = new Map<string, [((value: any) => any) | undefined, ((value: any) => any) | undefined]>();
 
-/** @type {AppState} Client-side application state */
-export const appState: AppState = {
-  ctxID: 0,
+export const createAppState = (ctxId: number): AppState => ({
+  ctxID: ctxId,
   sID: 0,
   cID: 0,
   markers: new Map<string, [Comment, Comment]>(),
@@ -28,4 +27,7 @@ export const appState: AppState = {
   getDataStrategy(key: string) {
     return strategies.get(key);
   },
-};
+});
+
+/** @type {AppState} Client-side application state */
+export const appState: AppState = createAppState(0)

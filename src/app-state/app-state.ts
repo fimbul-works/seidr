@@ -1,12 +1,15 @@
-import { appState } from "./storage";
+import { writeLog } from "../util/debug-log";
 import type { AppState } from "./types";
+import { createAppState } from "./storage";
+
+const defaultAppState: AppState = createAppState(0)
 
 /**
  * Get the current application state.
  *
  * @returns {AppState} AppState object.
  */
-export let getAppState = (): AppState => appState;
+export let getAppState = (): AppState => defaultAppState;
 
 /**
  * Cross-environment getAppState contract dependency injector.
@@ -14,7 +17,9 @@ export let getAppState = (): AppState => appState;
  * @param {(() => AppState)} fn
  * @internal
  */
-export const setInternalAppState: (fn: () => AppState) => void = (fn: () => AppState) => (getAppState = fn);
+export const setInternalAppState: (fn: () => AppState) => void = (fn: () => AppState) => {
+  getAppState = fn;
+};
 
 /**
  * Set the application state ID (used during hydration to match server-side IDs).
@@ -26,7 +31,7 @@ export const setAppStateID = (id: number) => {
   state.ctxID = id;
   state.sID = 0;
   state.cID = 0;
-  state.data.clear();
+  // state.data.clear(); // Removed: Wipes out hydration data!
   state.markers.clear();
 };
 

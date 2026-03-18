@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { type CleanupFunction, SeidrError } from "../types";
 import { setInternalAppState } from "./app-state";
 import type { AppState } from "./types";
+import { createAppState } from "./storage";
 
 /** Global fallback store for request ID generation */
 let requestIdCounter = 0;
@@ -11,9 +12,6 @@ export const resetRequestIdCounter = () => (requestIdCounter = 0);
 
 /** Storage for per-request AppState */
 export const contextLocalStorage = new AsyncLocalStorage<AppState>();
-
-/** Global strategies map for SSR (could also be per-context if needed, but usually global) */
-const strategies = new Map<string, [((value: any) => any) | undefined, ((value: any) => any) | undefined]>();
 
 /**
  * Get the current application state.
@@ -41,34 +39,8 @@ export const getSSRAppState = (): AppState => {
 export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T> => {
   const ctxID = requestIdCounter++;
 
-  const context: AppState = {
-    ctxID,
-    sID: 0,
-    cID: 0,
-    markers: new Map<string, [Comment, Comment]>(),
-    data: new Map<string, any>(),
-
-    hasData(key: string) {
-      return this.data.has(key);
-    },
-    getData<T>(key: string) {
-      return this.data.get(key) as T | undefined;
-    },
-    setData<T>(key: string, value: T) {
-      this.data.set(key, value);
-    },
-    deleteData(key: string) {
-      return this.data.delete(key);
-    },
-
-    defineDataStrategy<T>(key: string, captureFn: (value: T) => any, restoreFn: (value: any) => T) {
-      strategies.set(key, [captureFn, restoreFn]);
-    },
-    getDataStrategy(key: string) {
-      return strategies.get(key);
-    },
-    isSSR: true,
-  };
+  const context: AppState = createAppState(ctxID)
+  context.isSSR = true;
 
   return contextLocalStorage.run(context, callback);
 };
@@ -82,34 +54,9 @@ export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T>
  * @returns {CleanupFunction} Cleanup function to restore the original context
  */
 export const setMockAppStateForTests = (): CleanupFunction => {
-  const mockContext: AppState = {
-    ctxID: 0,
-    sID: 0,
-    cID: 0,
-    markers: new Map<string, [Comment, Comment]>(),
-    data: new Map<string, any>(),
+  const mockContext: AppState = createAppState(0)
+  mockContext.isSSR = true;
 
-    hasData(key: string) {
-      return this.data.has(key);
-    },
-    getData<T>(key: string) {
-      return this.data.get(key) as T | undefined;
-    },
-    setData<T>(key: string, value: T) {
-      this.data.set(key, value);
-    },
-    deleteData(key: string) {
-      return this.data.delete(key);
-    },
-
-    defineDataStrategy<T>(key: string, captureFn: (value: T) => any, restoreFn: (value: any) => T) {
-      strategies.set(key, [captureFn, restoreFn]);
-    },
-    getDataStrategy(key: string) {
-      return strategies.get(key);
-    },
-    isSSR: true,
-  };
   const originalGetAppState = getSSRAppState;
 
   // Override with a simple function that always returns the mock context
