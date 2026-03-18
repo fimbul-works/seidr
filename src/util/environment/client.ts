@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 import { getAppState } from "../../app-state/app-state";
-import { isEmpty } from "../type-guards";
+import { isEmpty } from "../type-guards/primitive-types";
 
 /**
  * Returns true if the current environment is the browser.
@@ -13,8 +13,10 @@ export const isClient = (): boolean => {
     return true;
   }
 
-  const state = getAppState();
-  if (process.env.VITEST && !isEmpty(state?.isSSR)) return !state.isSSR;
+  if (process.env.VITEST) {
+    const state = getAppState();
+    if (!isEmpty(state?.isSSR)) return !state.isSSR;
+  }
 
   return (
     typeof window !== "undefined" &&

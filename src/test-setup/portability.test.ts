@@ -2,8 +2,11 @@ import { describe, expect, it, vi } from "vitest";
 
 describe("Portability and Side-effects", () => {
   it("should not register Seidr or have side effects on import", async () => {
-    // We use dynamic imports to test the state exactly at import time
-    
+    // 0. Ensure clean state (since vitest runs tests in parallel/shared process)
+    const { Seidr: SeidrClass } = await import("../seidr/seidr");
+    (SeidrClass as any).register = undefined;
+    vi.resetModules();
+
     // 1. Check Seidr registration
     const { Seidr } = await import("../seidr/seidr");
     expect(Seidr.register).toBeUndefined();
