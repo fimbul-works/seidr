@@ -30,4 +30,4 @@ export const createAppState = (ctxId: number): AppState => ({
 });
 
 /** @type {AppState} Client-side application state */
-export const appState: AppState = createAppState(0)
+export const appState: AppState = createAppState(0);

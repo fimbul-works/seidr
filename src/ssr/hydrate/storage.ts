@@ -52,4 +52,3 @@ export const clearHydrationData = (): void => {
   const appState = getAppState();
   appState.deleteData(HYDRATION_DATA_ID);
 };
-

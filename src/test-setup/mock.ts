@@ -30,7 +30,7 @@ export function mockComponentScope() {
  */
 export function mockNavigator(userAgent = "test") {
   if (typeof window === "undefined") return;
-  
+
   Object.defineProperty(window, "navigator", {
     value: {
       userAgent,

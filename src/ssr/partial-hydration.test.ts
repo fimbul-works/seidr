@@ -23,11 +23,11 @@ describe("Partial Hydration", () => {
 
     // 1. Server-side render (all divs)
     const { html, hydrationData } = await renderToString(() => {
-        return $("div", { id: "app" }, [
-            Child({ name: "1" }),
-            Child({ name: "2", mismatched: false }), // Server renders a div
-            Child({ name: "3" }),
-        ]);
+      return $("div", { id: "app" }, [
+        Child({ name: "1" }),
+        Child({ name: "2", mismatched: false }), // Server renders a div
+        Child({ name: "3" }),
+      ]);
     });
 
     expect(html).toContain('id="child-2"');
@@ -37,7 +37,7 @@ describe("Partial Hydration", () => {
     enableClientMode();
     const container = document.createElement("div");
     container.innerHTML = html;
-    
+
     // We expect a warning for Component-2
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 

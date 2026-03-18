@@ -39,7 +39,7 @@ export const getSSRAppState = (): AppState => {
 export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T> => {
   const ctxID = requestIdCounter++;
 
-  const context: AppState = createAppState(ctxID)
+  const context: AppState = createAppState(ctxID);
   context.isSSR = true;
 
   return contextLocalStorage.run(context, callback);
@@ -54,7 +54,7 @@ export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T>
  * @returns {CleanupFunction} Cleanup function to restore the original context
  */
 export const setMockAppStateForTests = (): CleanupFunction => {
-  const mockContext: AppState = createAppState(0)
+  const mockContext: AppState = createAppState(0);
   mockContext.isSSR = true;
 
   const originalGetAppState = getSSRAppState;

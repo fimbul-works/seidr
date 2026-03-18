@@ -5,7 +5,7 @@ import { clearPathCache } from "../router/get-current-path";
 import { createAppState } from "../app-state/storage";
 
 // Set up a simple browser app state that returns a valid state object
-export const testAppState: AppState = createAppState(0)
+export const testAppState: AppState = createAppState(0);
 testAppState.isSSR = false;
 
 /**
@@ -25,8 +25,6 @@ export const clearTestAppState = (): void => {
   testAppState.markers.clear();
   testAppState.isSSR = false;
 };
-
-
 
 /**
  * Robust getAppState for tests.

@@ -1,7 +1,7 @@
 import type { AppState } from "./types";
 import { createAppState } from "./storage";
 
-const defaultAppState: AppState = createAppState(0)
+const defaultAppState: AppState = createAppState(0);
 
 /**
  * Get the current application state.

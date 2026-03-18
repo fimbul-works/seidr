@@ -83,13 +83,13 @@ describe("Hydration of a multi-page app", () => {
 
     container.innerHTML = html;
 
-    const cleanupClientMode = enableClientMode()
+    const cleanupClientMode = enableClientMode();
 
     unmount = hydrate(app, container, hydrationData);
 
     expect(container.querySelector("section h1")?.textContent).toBe("Home");
     expect(container.querySelector("a.active")?.textContent).toBe("Home");
 
-    cleanupClientMode()
+    cleanupClientMode();
   });
 });

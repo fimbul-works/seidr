@@ -30,7 +30,9 @@ export const $comment = (text: string): Comment => {
       if (node) {
         // This is a new node created due to a mismatch in claim()
         if (node.textContent !== str(text)) {
-          console.warn(`[Hydration mismatch] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`);
+          console.warn(
+            `[Hydration mismatch] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`,
+          );
           node.textContent = str(text);
         }
         return node;

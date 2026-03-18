@@ -21,7 +21,7 @@ export const getMarkerComments = (id: string, create: boolean = true): [Comment,
   if (!create) {
     return undefined;
   }
-  
+
   const doc = getDocument();
   const markers: [Comment, Comment] = [
     doc.createComment(SEIDR_COMPONENT_START_PREFIX + id),

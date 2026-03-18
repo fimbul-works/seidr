@@ -10,17 +10,17 @@ describe("Portability and Side-effects", () => {
     // 1. Check Seidr registration
     const { Seidr } = await import("../seidr/seidr");
     expect(Seidr.register).toBeUndefined();
-    
+
     // 2. Check getDocument contract
     const { getDocument } = await import("../dom/get-document");
     const { isClient } = await import("../util/environment/client");
-    
+
     if (isClient()) {
       expect(getDocument()).toBe(window.document);
     } else {
       expect(() => getDocument()).toThrow(/not initialized/);
     }
-    
+
     // 3. Check AppState contract
     const { getAppState } = await import("../app-state/app-state");
     expect(getAppState()).toBeDefined();
@@ -30,9 +30,9 @@ describe("Portability and Side-effects", () => {
     const { setupClient } = await import("../index.client");
     const { Seidr } = await import("../seidr/seidr");
     const { getDocument } = await import("../dom/get-document");
-    
+
     setupClient();
-    
+
     expect(Seidr.register).toBeDefined();
     expect(getDocument()).toBeDefined();
     expect(getDocument()).toBe(window.document);

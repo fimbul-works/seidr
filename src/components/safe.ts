@@ -29,7 +29,7 @@ export const Safe = <
     const instance = getCurrentComponent();
 
     try {
-      // We wrap the factory call to ensure that if it throws, 
+      // We wrap the factory call to ensure that if it throws,
       // we can still attempt to cleanup any partial registration
       const childFactory = wrapComponent(factory);
       return childFactory();

@@ -1,4 +1,4 @@
-import { describeDualMode, itHasParity, } from "../test-setup/dual-mode";
+import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 import { mockComponentScope } from "../test-setup/mock";
 import { $blockquote } from "./blockquote";
 
