@@ -14,7 +14,7 @@ describe("BlogApp Hydration Repro", () => {
       console.log(JSON.stringify(hydrationData, null, 2));
 
       const { reconstructComponentTree } = await import("../../src/ssr/structure/index.js");
-      const tree = reconstructComponentTree(hydrationData.components);
+      const tree = reconstructComponentTree([], hydrationData.components);
 
       expect(tree).toBeDefined();
       expect(tree).toHaveLength(1);

@@ -23,6 +23,14 @@ export const initHydrationContext = () => {
     throw new SeidrError("Invalid hydration data");
   }
 
+  if (data?.consumedIds) {
+    const state = getAppState();
+    if (!state.consumedIds) {
+      state.consumedIds = new Set<number>();
+    }
+    data.consumedIds.forEach((id) => state.consumedIds!.add(id));
+  }
+
   const ctx = createHydrationContext(data.root!, data.components);
   getAppState().setData(HYDRATION_CONTEXT_KEY, ctx);
   return ctx;
@@ -188,7 +196,7 @@ export const createHydrationContext = (
       this.next();
 
       if (!node) {
-        console.warn(`[Hydration mismatch] No node found at ${componentId}[${cursor}]`);
+        console.error(`!!!! [Hydration mismatch] No node found at ${componentId}[${cursor}]`);
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }

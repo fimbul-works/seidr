@@ -32,6 +32,7 @@ export const setAppStateID = (id: number) => {
   state.cID = 0;
   // state.data.clear(); // Removed: Wipes out hydration data!
   state.markers.clear();
+  state.consumedIds?.clear();
 };
 
 /**
@@ -51,4 +52,11 @@ export const getNextSeidrId = (): number => getAppState().sID++ + 1;
  * Gets the next available component ID for the AppState.
  * @returns {number} The next available component ID
  */
-export const getNextComponentId = (): number => getAppState().cID++ + 1;
+export const getNextComponentId = (): number => {
+  const state = getAppState();
+  let nextId = state.cID++ + 1;
+  while (state.consumedIds?.has(nextId)) {
+    nextId = state.cID++ + 1;
+  }
+  return nextId;
+};

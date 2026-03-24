@@ -51,9 +51,9 @@
       }
     },
     "./testing": {
-      "types": "./dist/testing.d.ts",
-      "import": "./dist/testing.js",
-      "require": "./dist/testing.cjs"
+      "types": "./dist/seidr.test.d.ts",
+      "import": "./dist/seidr.test.js",
+      "require": "./dist/seidr.test.cjs"
     }
   },
   "files": [

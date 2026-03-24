@@ -1,4 +1,4 @@
-import { getAppStateID, getNextComponentId } from "../app-state/app-state";
+import { getAppState, getAppStateID, getNextComponentId } from "../app-state/app-state";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
@@ -165,6 +165,11 @@ export const component = <P = void>(
           // Unregister in SSR
           getSSRScope()?.unregisterComponent(instance);
           createdIndex.length = 0;
+
+          const numStr = instance.id.split("-").pop();
+          if (numStr) {
+            getAppState().consumedIds?.add(parseInt(numStr, 10));
+          }
         }
 
         // Clean up resources and unmount children

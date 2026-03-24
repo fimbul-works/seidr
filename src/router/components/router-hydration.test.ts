@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../../app-state/app-state";
+import { useNavigate } from "../hooks/use-navigate";
 import { resetRequestIdCounter } from "../../app-state/app-state.server";
 import { component, onUnmount } from "../../component";
 import { $ } from "../../element";
@@ -102,9 +103,9 @@ describe("Router Hydration", () => {
     expect(container.querySelector(".home")).toBeFalsy();
 
     // 4. Navigate to "/"
-    window.history.pushState({}, "", "/");
-    window.dispatchEvent(new PopStateEvent("popstate"));
+    useNavigate()("/");
 
+    await new Promise((r) => setTimeout(r, 10));
     // Verify unmount
     expect(container.querySelector(".fallback")).toBeFalsy();
     expect(container.querySelector(".home")).toBeTruthy();
@@ -133,9 +134,9 @@ describe("Router Hydration", () => {
     expect(container.querySelector(".fallback")).toBeFalsy();
 
     // 4. Navigate to "/unknown"
-    window.history.pushState({}, "", "/unknown");
-    window.dispatchEvent(new PopStateEvent("popstate"));
+    useNavigate()("/unknown");
 
+    await new Promise((r) => setTimeout(r, 10));
     // Verify unmount
     expect(container.querySelector(".home")).toBe(null);
     expect(container.querySelector(".fallback")).toBeTruthy();

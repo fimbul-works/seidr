@@ -8,6 +8,7 @@ export const createAppState = (ctxId: number): AppState => ({
   cID: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
+  consumedIds: new Set<number>(),
 
   hasData(key: string) {
     return this.data.has(key);

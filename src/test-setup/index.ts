@@ -7,3 +7,4 @@ export * from "./dom";
 export * from "./mock";
 export * from "./types";
 export { clearPathCache } from "../router/get-current-path";
+export { performDefaultSetup } from "./setup";

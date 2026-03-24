@@ -29,4 +29,7 @@ export interface AppState {
 
   /** Whether the current state is for SSR */
   isSSR?: boolean;
+
+  /** Set of consumed/unmounted component IDs to skip during hydration */
+  consumedIds?: Set<number>;
 }

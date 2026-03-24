@@ -66,48 +66,7 @@ export async function renderToString<C extends ComponentReturnValue>(
         mountComponent(comp, anchor);
         await activeScope.waitForPromises();
 
-        // If we encountered promises, the tree structure might have changed (e.g. Pending -> Resolved)
-        // Leading to ID drift. We now re-render from a clean state but keep the cached data.
-        if (activeScope.callIndex > 0 || activeScope.hasAwaited) {
-          comp.unmount();
-          anchor.remove();
-
-          state.deleteData(DOCUMENT_DATA_KEY);
-          state.markers.clear();
-          clearPathCache();
-
-          // Reset AppState component and Seidr ID counters
-          setAppStateID(state.ctxID);
-
-          // Restore necessary state and scope
-          if (isStr(options.path)) {
-            state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
-          }
-          setSSRScope(activeScope);
-
-          // Reset scope for stable re-render (keeps inServer cache!)
-          activeScope.resetForStableRender();
-
-          // Second pass: clean render with resolved data
-          comp = wrapComponent(factory)();
-          const doc2 = getDocument().createElement("div");
-          const newAnchor = getDocument().createComment("ssr-anchor-stable");
-          doc2.appendChild(newAnchor);
-          mountComponent(comp, newAnchor);
-          await activeScope.waitForPromises();
-          newAnchor.remove();
-
-          const finalHtml = doc2.innerHTML;
-          const hydrationData = {
-            ...activeScope.captureHydrationData(),
-            ctxID: state.ctxID,
-          };
-          comp.unmount();
-          clearPathCache();
-          return { html: finalHtml, hydrationData };
-        } else {
-          anchor.remove();
-        }
+        anchor.remove();
 
         // Use innerHTML to get the stringified content without the wrapping div
         const html = doc.innerHTML;
@@ -116,6 +75,9 @@ export async function renderToString<C extends ComponentReturnValue>(
           ...activeScope.captureHydrationData(),
           ctxID: state.ctxID,
         };
+
+        // Don't log final unmounts into the consumed list, so we don't leak into subsequent tests mapping the same AppState
+        state.consumedIds?.clear();
 
         comp.unmount();
         clearPathCache();

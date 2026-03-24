@@ -23,6 +23,11 @@ export interface SSRScopeCapture {
    * Component ID -> Structure Map mapping.
    */
   components: Record<string, StructureMapTuple[]>;
+
+  /**
+   * Component IDs that were created and then destroyed during the SSR pass.
+   */
+  consumedIds?: number[];
 }
 
 /**
@@ -258,9 +263,12 @@ export class SSRScope {
     this.state.clear();
     this.components.clear();
 
+    const consumedArray = Array.from(getAppState().consumedIds || []);
+
     return {
       state,
       components,
+      consumedIds: consumedArray.length > 0 ? consumedArray : undefined,
     };
   }
 }
