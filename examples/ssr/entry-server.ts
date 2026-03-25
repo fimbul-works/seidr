@@ -1,4 +1,4 @@
-import { renderToString } from "../../src/index.node.js";
+import { renderToString } from "../../src/index.server.js";
 import { BlogApp } from "./app.js";
 
 export async function render(path: string) {

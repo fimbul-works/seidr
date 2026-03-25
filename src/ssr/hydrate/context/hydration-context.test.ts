@@ -47,7 +47,6 @@ describe("Hydration Context", () => {
 
     // Switch to Client mode
     cleanupClientMode = enableClientMode();
-    getAppState().cID = 0;
 
     unmount = hydrate(SimpleComponent, container, hydrationData);
 
@@ -74,7 +73,6 @@ describe("Hydration Context", () => {
     container.innerHTML = html;
 
     cleanupClientMode = enableClientMode();
-    getAppState().cID = 0;
     unmount = hydrate(LoginFormComponent, container, hydrationData);
 
     // Test 2 failed because JSDOM stringifies `<input type="text">` without a self-closing slash,
@@ -103,7 +101,7 @@ describe("Hydration Context", () => {
     // Reset component ID counter to simulate a fresh client load
     // The SSR pass increments it. If we don't reset, the client mounts the component
     // with ID + 1 compared to the SSR mapping.
-    getAppState().cID = 0;
+    // getAppState().cID = 0; // AppState.cID no longer exists!
     unmount = hydrate(WrapperApp, container, hydrationData);
 
     expect(container.innerHTML).toBe(html);
@@ -194,7 +192,6 @@ describe("Hydration Context", () => {
     container.innerHTML = html;
 
     cleanupClientMode = enableClientMode();
-    getAppState().cID = 0;
     process.stderr.write(`[Test] Hydration map keys: ${Object.keys(hydrationData.components).join(", ")}\n`);
     unmount = hydrate(BlogApp, container, hydrationData);
 

@@ -1,4 +1,4 @@
-import { $button, $div, $h1, isClient, mount, Seidr, onUnmount } from "../src/index.browser.js";
+import { $button, $div, $h1, isClient, mount, onUnmount, Seidr } from "../src/index.client.js";
 
 const PomodoroTimer = () => {
   const WORK_TIME = 25 * 60;

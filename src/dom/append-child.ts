@@ -51,7 +51,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
         }
       }
     } else if (isDOMNode(child)) {
-      if (Array.from(target.childNodes).includes(child as any)) {
+      if (Array.from(target.childNodes).includes(child)) {
         return;
       }
     }

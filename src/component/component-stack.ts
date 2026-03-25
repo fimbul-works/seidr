@@ -8,7 +8,7 @@ export const COMPONENT_CURSOR_KEY = "seidr.component.cursor";
  * @returns {Component | null} Current Component cursor, or null.
  */
 export const getCurrentComponent = (): Component | null =>
-  getAppState().getData<Component>(COMPONENT_CURSOR_KEY) ?? null;
+  getAppState().getData<Component>(COMPONENT_CURSOR_KEY) || null;
 
 /**
  * Pushes a component as the current context cursor.
@@ -51,7 +51,7 @@ export const getRootComponent = (): Component | null => {
  */
 export const executeInContext = <T>(component: Component, fn: () => T): T => {
   const state = getAppState();
-  const previous = state.getData<Component>(COMPONENT_CURSOR_KEY) ?? null;
+  const previous = state.getData<Component>(COMPONENT_CURSOR_KEY) || null;
   try {
     state.setData(COMPONENT_CURSOR_KEY, component);
     return fn();

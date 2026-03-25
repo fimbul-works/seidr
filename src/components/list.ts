@@ -1,4 +1,5 @@
 import { component } from "../component/component";
+import { setNextComponentId } from "../component/component-id";
 import { getCurrentComponent } from "../component/component-stack";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
@@ -6,6 +7,8 @@ import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 import { isHydrating } from "../ssr/hydrate/storage";
+
+const LIST_CHILD_NAME = "ListItem";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -20,7 +23,7 @@ import { isHydrating } from "../ssr/hydrate/storage";
  * @param {C} factory - Component creation function (raw or wrapped)
  * @returns {Component} List component
  */
-export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
+export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
   factory: C,
@@ -56,7 +59,8 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
         let itemComponent = componentMap.get(key);
 
         if (!itemComponent) {
-          itemComponent = wrapComponent<T>(factory)(item);
+          setNextComponentId(key);
+          itemComponent = wrapComponent<T>(factory, LIST_CHILD_NAME)(item);
           componentMap.set(key, itemComponent);
         }
 
@@ -79,8 +83,11 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
     });
 
     return observable.value.map((item) => {
-      const itemComponent = wrapComponent<T>(factory)(item);
-      componentMap.set(getKey(item), itemComponent);
+      const key = getKey(item);
+      setNextComponentId(key);
+      const listFactory = wrapComponent(factory, LIST_CHILD_NAME);
+      const itemComponent = listFactory(item);
+      componentMap.set(key, itemComponent);
 
       if (!process.env.CORE_DISABLE_SSR && isHydrating() && realEndMarker?.parentNode) {
         itemComponent.mount(realEndMarker.parentNode);
@@ -88,4 +95,4 @@ export const List = <T, K, C extends ComponentFactoryFunction<T> = ComponentFact
 
       return itemComponent;
     });
-  }, name ?? "List")();
+  }, name || "List")();

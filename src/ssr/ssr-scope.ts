@@ -1,7 +1,9 @@
 import { getAppState } from "../app-state/app-state";
 import type { AppState } from "../app-state/types";
 import type { Component } from "../component";
+import { SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import type { Seidr } from "../seidr/seidr";
+import { encodeBase62 } from "../util/base62";
 import { isServer } from "../util/environment/is-server";
 import { buildStructureMap } from "./structure/build-structure-map";
 import type { StructureMapTuple } from "./structure/types";
@@ -23,11 +25,6 @@ export interface SSRScopeCapture {
    * Component ID -> Structure Map mapping.
    */
   components: Record<string, StructureMapTuple[]>;
-
-  /**
-   * Component IDs that were created and then destroyed during the SSR pass.
-   */
-  consumedIds?: number[];
 }
 
 /**
@@ -251,11 +248,19 @@ export class SSRScope {
     }
 
     const components: Record<string, StructureMapTuple[]> = {};
-    for (const comp of this.components.values()) {
-      if (comp.isMounted && comp.element) {
-        const map = buildStructureMap(comp);
-        components[comp.id] = map;
-      }
+    const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted && c.element);
+    const compIndices = new Map<string, number>();
+
+    let index = 0;
+    for (const comp of mountedComps) {
+      compIndices.set(comp.id, index);
+
+      const prefix = !comp.parent ? SEIDR_COMPONENT_START_PREFIX : encodeBase62(compIndices.get(comp.parent!.id)!);
+      const key = `${prefix}:${comp.id}`;
+
+      const map = buildStructureMap(comp);
+      components[key] = map;
+      index++;
     }
 
     // Clear observables map to prevent memory leaks
@@ -263,12 +268,9 @@ export class SSRScope {
     this.state.clear();
     this.components.clear();
 
-    const consumedArray = Array.from(getAppState().consumedIds || []);
-
     return {
       state,
       components,
-      consumedIds: consumedArray.length > 0 ? consumedArray : undefined,
     };
   }
 }

@@ -2,6 +2,7 @@ import { getCurrentComponent } from "../component/component-stack";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
+import type { HydrationMismatchNode } from "../ssr/hydrate/context/types";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isArray, isEmpty } from "../util/type-guards";
@@ -73,7 +74,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
       element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
     }
 
-    if (!element || (element as any).isHydrationMismatch) {
+    if (!element || (element as HydrationMismatchNode).isHydrationMismatch) {
       const oldNode = element;
       element = getDocument().createElement(tagName);
       if (oldNode?.parentNode) {

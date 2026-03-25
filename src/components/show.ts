@@ -21,7 +21,7 @@ export const Show = <C extends ComponentFactoryFunction = ComponentFactoryFuncti
 ): Component =>
   Switch(
     condition.as<string>((v) => v && "true"),
-    { true: factory },
-    fallbackFactory,
-    name ?? "Show",
+    { true: factory as ComponentFactoryFunction<string> },
+    fallbackFactory as ComponentFactoryFunction<string>,
+    name || "Show",
   );

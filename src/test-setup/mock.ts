@@ -1,4 +1,5 @@
-import { beforeEach, afterEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
+import * as onAttachedModule from "../component/on-attached";
 import * as onMountModule from "../component/on-mount";
 import * as onUnmountModule from "../component/on-unmount";
 
@@ -7,21 +8,26 @@ import * as onUnmountModule from "../component/on-unmount";
  * but don't actually need scope tracking.
  */
 export function mockComponentScope() {
-  let onMountSpy: any;
-  let onUnmountSpy: any;
+  let onMountSpy: ReturnType<typeof vi.spyOn>;
+  let onUnmountSpy: ReturnType<typeof vi.spyOn>;
+  let onAttachedSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     onMountSpy = vi.spyOn(onMountModule, "onMount").mockReturnValue({
       onMount: () => {},
     } as any);
     onUnmountSpy = vi.spyOn(onUnmountModule, "onUnmount").mockReturnValue({
-      onMount: () => {},
+      onUnmount: () => {},
+    } as any);
+    onAttachedSpy = vi.spyOn(onAttachedModule, "onAttached").mockReturnValue({
+      onAttached: () => {},
     } as any);
   });
 
   afterEach(() => {
     onMountSpy?.mockRestore();
     onUnmountSpy?.mockRestore();
+    onAttachedSpy?.mockRestore();
   });
 }
 

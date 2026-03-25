@@ -25,7 +25,7 @@ export type ComponentFactoryPureFunction<P = void> = P extends void
  *
  * @template P - Props object type (optional)
  */
-export type ComponentFactory<P = void> = (P extends void ? () => Component : (props: P) => Component) &
+export type ComponentFactory<P = void> = (P extends void ? (props?: void) => Component : (props: P) => Component) &
   ComponentFactoryInterface;
 
 /**
@@ -75,6 +75,16 @@ export interface Component {
    * The unique identifier of the component.
    */
   readonly id: string;
+
+  /**
+   * The numeric representation of the identifier, used for generating children's IDs.
+   */
+  readonly numericId: number;
+
+  /**
+   * Requests a deterministic, sequential ID for a child component within this parent.
+   */
+  nextChildId(): number;
 
   /**
    * Whether the component has been destroyed.

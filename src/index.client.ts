@@ -15,5 +15,7 @@ export const setupClient = (): void => {
   setInternalGetDocument(getBrowserDocument);
 };
 
+setupClient();
+
 export * from "./index.core";
 export * from "./ssr/hydrate/hydrate";

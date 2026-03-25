@@ -56,3 +56,10 @@ export interface HydrationContext {
    */
   claim<T extends ChildNode>(tag: string): T;
 }
+
+/**
+ * A node that is mismatched during hydration.
+ */
+export interface HydrationMismatchNode extends HTMLElement {
+  isHydrationMismatch: true;
+}

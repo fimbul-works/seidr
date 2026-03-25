@@ -1,8 +1,11 @@
 import { component } from "../component/component";
+import { setNextComponentId } from "../component/component-id";
 import { getCurrentComponent } from "../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getComponent, getLastNode, mountComponent } from "../component/util";
 import type { Seidr } from "../seidr";
+
+const SWITCH_CHILD_NAME = "SwitchBranch";
 
 /**
  * Switches between different components based on an observable value.
@@ -18,7 +21,9 @@ import type { Seidr } from "../seidr";
  */
 export const Switch = <
   K extends string,
-  C extends ComponentFactoryFunction<K> = ComponentFactoryFunction<K>,
+  C extends ComponentFactoryFunction<K> | ComponentFactoryFunction =
+    | ComponentFactoryFunction<K>
+    | ComponentFactoryFunction,
   M extends Map<K, C> | Record<K, C> = Map<K, C> | Record<K, C>,
 >(
   observable: Seidr<K>,
@@ -28,7 +33,11 @@ export const Switch = <
 ): Component =>
   component(() => {
     const switchComponent = getCurrentComponent()!;
-    let currentComponent: Component | undefined = getComponent(factories, observable.value, fallbackFactory);
+    let currentComponent: Component | undefined;
+
+    // Initial evaluation
+    setNextComponentId(observable.value);
+    currentComponent = getComponent<K, C, M>(factories, observable.value, fallbackFactory, SWITCH_CHILD_NAME);
 
     /**
      * Updates the component based on the new value.
@@ -44,10 +53,11 @@ export const Switch = <
       // 2. Unmount previous component
       if (currentComponent) {
         currentComponent.unmount();
-        currentComponent = undefined;
       }
 
-      currentComponent = getComponent(factories, value, fallbackFactory);
+      setNextComponentId(value);
+      currentComponent = getComponent(factories, value, fallbackFactory, SWITCH_CHILD_NAME);
+
       if (currentComponent) {
         switchComponent.addChild(currentComponent);
         switchComponent.element = currentComponent;
@@ -63,4 +73,4 @@ export const Switch = <
 
     switchComponent.element = currentComponent;
     return currentComponent ? switchComponent.addChild(currentComponent) : undefined;
-  }, name ?? "Switch")();
+  }, name || "Switch")();

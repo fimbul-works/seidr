@@ -47,4 +47,4 @@ export const isTextNode = (v: any): v is Text => isDOMNode(v) && v.nodeType === 
 export const isMarkerComment = (v: any): v is Comment =>
   isComment(v) &&
   (v.textContent.startsWith(SEIDR_COMPONENT_START_PREFIX) || v.textContent.startsWith(SEIDR_COMPONENT_END_PREFIX)) &&
-  /\d+$/.test(v.textContent || "");
+  /[A-Za-z0-9]+$/.test(v.textContent || "");

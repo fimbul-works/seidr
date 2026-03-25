@@ -79,7 +79,7 @@ export const Suspense = <T>(
         parentComponent.waitFor(handlePromise(initialProm));
       } else {
         // Already a value, resolve synchronously
-        value.value = initialProm as any;
+        value.value = initialProm;
         status.value = PROMISE_RESOLVED;
       }
     }
@@ -90,4 +90,4 @@ export const Suspense = <T>(
     }
 
     return parentComponent.addChild(wrapComponent(factory)({ value, state: status, error }));
-  }, name ?? "Suspense")();
+  }, name || "Suspense")();

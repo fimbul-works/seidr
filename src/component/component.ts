@@ -1,4 +1,4 @@
-import { getAppState, getAppStateID, getNextComponentId } from "../app-state/app-state";
+import { getAppStateID } from "../app-state/app-state";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
@@ -7,11 +7,15 @@ import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, SeidrError } from "../types";
+import { encodeBase62 } from "../util/base62";
+import { clampBits } from "../util/clamp-bits";
 import { isServer } from "../util/environment/is-server";
+import { fastMix } from "../util/fast-mix";
 import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
+import { consumeComponentId } from "./component-id";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type {
@@ -39,8 +43,18 @@ export const component = <P = void>(
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
     const parentComponent = getCurrentComponent();
-    const numericId = str(getNextComponentId());
-    const componentId = `${name}-${numericId}`;
+
+    // Determine numeric ID
+    const numericId = clampBits(
+      fastMix(
+        consumeComponentId() || (parentComponent ? parentComponent.nextChildId() : 0),
+        parentComponent ? parentComponent.numericId : getAppStateID(),
+      ),
+    );
+
+    // Base62 encodes the number to create a short, collision-resistant string ID
+    const componentId = `${name}-${encodeBase62(numericId)}`;
+    // const componentId = encodeBase62(numericId);
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     const onMountFns: OnMountFunction[] = [];
@@ -50,6 +64,8 @@ export const component = <P = void>(
     const createdIndex: (ChildNode | Component)[] = [];
     const children = new Map<string, Component>();
     const childComponentNodes = new Map<Node, string>();
+
+    let childCounter = 0;
 
     let parentNode: ParentNode | null = null;
     let element: ComponentChildren;
@@ -64,6 +80,12 @@ export const component = <P = void>(
       },
       get id() {
         return componentId;
+      },
+      get numericId() {
+        return numericId;
+      },
+      nextChildId() {
+        return ++childCounter;
       },
       get isMounted() {
         return !!parentNode;
@@ -165,11 +187,6 @@ export const component = <P = void>(
           // Unregister in SSR
           getSSRScope()?.unregisterComponent(instance);
           createdIndex.length = 0;
-
-          const numStr = instance.id.split("-").pop();
-          if (numStr) {
-            getAppState().consumedIds?.add(parseInt(numStr, 10));
-          }
         }
 
         // Clean up resources and unmount children
@@ -218,7 +235,7 @@ export const component = <P = void>(
           try {
             fn();
           } catch (error) {
-            console.warn(error);
+            console.error(`[${componentId}] Error in onUnmount callback`, error);
           }
         });
         onUnmountFns.length = 0;

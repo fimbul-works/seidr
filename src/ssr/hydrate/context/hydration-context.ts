@@ -7,7 +7,7 @@ import { isEmpty } from "../../../util/type-guards/primitive-types";
 import { reconstructComponentTree } from "../../structure/reconstruct-component-tree";
 import type { ComponentTreeNode, StructureMapTuple } from "../../structure/types";
 import { getHydrationData, isHydrating } from "../storage";
-import type { HydrationContext } from "./types";
+import type { HydrationContext, HydrationMismatchNode } from "./types";
 
 export const HYDRATION_CONTEXT_KEY = "seidr.hydration.context";
 
@@ -23,15 +23,14 @@ export const initHydrationContext = () => {
     throw new SeidrError("Invalid hydration data");
   }
 
-  if (data?.consumedIds) {
-    const state = getAppState();
-    if (!state.consumedIds) {
-      state.consumedIds = new Set<number>();
-    }
-    data.consumedIds.forEach((id) => state.consumedIds!.add(id));
+  const normalizedComponents: Record<string, StructureMapTuple[]> = {};
+  for (const key in data.components) {
+    const parts = key.split(":");
+    const compId = parts.length > 1 ? parts.slice(1).join(":") : key;
+    normalizedComponents[compId] = data.components[key];
   }
 
-  const ctx = createHydrationContext(data.root!, data.components);
+  const ctx = createHydrationContext(data.root!, normalizedComponents);
   getAppState().setData(HYDRATION_CONTEXT_KEY, ctx);
   return ctx;
 };
@@ -232,7 +231,7 @@ export const createHydrationContext = (
           currentComponentNode.isMismatched = true;
         }
         // Return the original node but mark as mismatched
-        (node as any).isHydrationMismatch = true;
+        (node as HydrationMismatchNode).isHydrationMismatch = true;
       }
 
       return node as unknown as T;

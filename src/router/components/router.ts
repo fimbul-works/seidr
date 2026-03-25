@@ -1,4 +1,5 @@
 import { component } from "../../component/component";
+import { setNextComponentId } from "../../component/component-id";
 import { getCurrentComponent } from "../../component/component-stack";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
@@ -65,7 +66,12 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
 
     const updateComponent = (index: number) => {
       currentFactory = getMatchedFactory(index);
-      currentComponent = currentFactory ? wrapComponent(currentFactory)() : undefined;
+      if (currentFactory) {
+        setNextComponentId(currentPath.value ?? "/");
+        currentComponent = wrapComponent(currentFactory, "Route")();
+      } else {
+        currentComponent = undefined;
+      }
     };
 
     const { index: initialIndex, params: initialParams } = matchCurrentPath();

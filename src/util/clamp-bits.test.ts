@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { clampBits } from "./clamp-bits.js";
 import { SeidrError } from "../types";
+import { clampBits } from "./clamp-bits.js";
 
 describe("clampBits", () => {
-  it("should clamp numbers to 20 bits", () => {
-    expect(clampBits(0xfffff, 20)).toBe(0xfffff);
-    expect(clampBits(0x123456, 20)).toBe(0x23456);
-    expect(clampBits(0, 20)).toBe(0);
-    expect(clampBits(-1, 20)).toBe(0xfffff); // -1 >>> 0 is 0xFFFFFFFF, clamped to 20 bits is 0xFFFFF
+  it("should clamp numbers to 24 bits", () => {
+    expect(clampBits(0xfffff, 24)).toBe(0xfffff);
+    expect(clampBits(0x123456, 24)).toBe(0x123456);
+    expect(clampBits(0, 24)).toBe(0);
+    expect(clampBits(-1, 24)).toBe(0xffffff); // -1 >>> 0 is 0xFFFFFFFF, clamped to 24 bits is 0xFFFFFF
   });
 
   it("should clamp numbers to 32 bits and return unsigned", () => {
@@ -21,6 +21,6 @@ describe("clampBits", () => {
     // @ts-expect-error - testing invalid input
     expect(() => clampBits(123, 16)).toThrow(SeidrError);
     // @ts-expect-error - testing invalid input
-    expect(() => clampBits(123, 16)).toThrow("clampBits: expected 20 or 32 bits");
+    expect(() => clampBits(123, 16)).toThrow("clampBits: expected 24 or 32 bits");
   });
 });

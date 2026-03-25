@@ -5,11 +5,8 @@ const strategies = new Map<string, [((value: any) => any) | undefined, ((value: 
 export const createAppState = (ctxId: number): AppState => ({
   ctxID: ctxId,
   sID: 0,
-  cID: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
-  consumedIds: new Set<number>(),
-
   hasData(key: string) {
     return this.data.has(key);
   },

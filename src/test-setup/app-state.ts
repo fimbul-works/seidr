@@ -1,8 +1,8 @@
-import { contextLocalStorage } from "../app-state/app-state.server";
 import { setInternalAppState } from "../app-state/app-state";
+import { contextLocalStorage } from "../app-state/app-state.server";
+import { createAppState } from "../app-state/storage";
 import type { AppState } from "../app-state/types";
 import { clearPathCache } from "../router/get-current-path";
-import { createAppState } from "../app-state/storage";
 
 export { DOCUMENT_PROVIDER_KEY } from "../dom/get-document";
 

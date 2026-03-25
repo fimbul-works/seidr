@@ -39,4 +39,4 @@ export const Safe = <
 
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }
-  }, name ?? "Safe")();
+  }, name || "Safe")();

@@ -3,12 +3,13 @@ import { component } from "./component";
 import type { ComponentFactory, ComponentFactoryFunction } from "./types";
 
 /**
- * Ensures a factory function is wrapped as a ComponentFactory.
- * If already wrapped, returns as-is. Otherwise wraps with component().
+ * Ensures a function is wrapped as a ComponentFactory.
+ * If the provided parameter is already a factory, it returns it unchanged.
  *
- * @template P - The props type of the factory
- * @param {ComponentFactoryFunction<P>} factory - Factory function or component factory
- * @returns {ComponentFactory<P>} A ComponentFactory
+ * @template P - The props type
+ * @param {ComponentFactoryFunction<P>} factory - A pure function or a ComponentFactory
+ * @param {string} [name] - Optional name to assign the component if it isn't already wrapped
+ * @returns {ComponentFactory<P>} The wrapped ComponentFactory
  */
-export const wrapComponent = <P = void>(factory: ComponentFactoryFunction<P>): ComponentFactory<P> =>
-  isComponentFactory<P>(factory) ? factory : component<P>(factory);
+export const wrapComponent = <P = void>(factory: ComponentFactoryFunction<P>, name?: string): ComponentFactory<P> =>
+  isComponentFactory<P>(factory) ? factory : component<P>(factory, name);

@@ -29,10 +29,8 @@ export const setAppStateID = (id: number) => {
   const state = getAppState();
   state.ctxID = id;
   state.sID = 0;
-  state.cID = 0;
   // state.data.clear(); // Removed: Wipes out hydration data!
   state.markers.clear();
-  state.consumedIds?.clear();
 };
 
 /**
@@ -47,16 +45,3 @@ export const getAppStateID = () => getAppState().ctxID;
  * @returns {number} The next available Seidr ID
  */
 export const getNextSeidrId = (): number => getAppState().sID++ + 1;
-
-/**
- * Gets the next available component ID for the AppState.
- * @returns {number} The next available component ID
- */
-export const getNextComponentId = (): number => {
-  const state = getAppState();
-  let nextId = state.cID++ + 1;
-  while (state.consumedIds?.has(nextId)) {
-    nextId = state.cID++ + 1;
-  }
-  return nextId;
-};
