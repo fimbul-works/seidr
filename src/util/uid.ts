@@ -1,5 +1,20 @@
-import { decodeBase62, encodeBase62, randomString } from "./base62";
+import { BASE62_ALPHABET, decodeBase62, encodeBase62 } from "./base62";
 import { isServer } from "./environment/is-server";
+
+/**
+ * Generates a random base-62 string of specified length.
+ *
+ * @param {number} length - The length of the random string to generate
+ * @param {() => number} [random=Math.random] - The random number generator to use
+ * @returns {string} The random base-62 string
+ */
+const randomString = (length: number, random = Math.random): string => {
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    result += BASE62_ALPHABET[Math.floor(random() * 62)];
+  }
+  return result;
+};
 
 /**
  * Generates a unique identifier (UID).
