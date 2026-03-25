@@ -1,4 +1,5 @@
 import type { Seidr } from "../../seidr/seidr";
+import { isServer } from "../../util/environment";
 import { isEmpty } from "../../util/type-guards/primitive-types";
 import { getHydrationData, isHydrating } from "./storage";
 
@@ -9,7 +10,7 @@ import { getHydrationData, isHydrating } from "./storage";
  * @param {Seidr} seidr - The Seidr instance to register
  */
 export const registerHydratingSeidr = (seidr: Seidr): void => {
-  if (seidr.isDerived || !isHydrating()) {
+  if (seidr.isDerived || isServer() || !isHydrating()) {
     return;
   }
 

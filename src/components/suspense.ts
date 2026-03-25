@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getCurrentComponent } from "../component/component-stack";
+import { getCurrentComponent } from "../component/component-stack/get-current-component";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";

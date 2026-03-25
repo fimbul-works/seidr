@@ -1,4 +1,4 @@
-import { getCurrentComponent } from "../component/component-stack";
+import { getCurrentComponent } from "../component/component-stack/get-current-component";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
@@ -66,7 +66,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   let element: HTMLElementTagNameMap[K];
 
   const hydrationContext = getHydrationContext();
-  if (isHydrating() && hydrationContext) {
+  if (!isServer() && isHydrating() && hydrationContext) {
     if (hydrationContext.isMismatched()) {
       element = getDocument().createElement(tagName);
       console.warn("[HYDRATE] Mismatched element found", element.tagName);

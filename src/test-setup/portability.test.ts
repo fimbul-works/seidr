@@ -27,11 +27,14 @@ describe("Portability and Side-effects", () => {
   });
 
   it("should become functional after explicit setup", async () => {
-    const { setupClient } = await import("../index.client");
     const { Seidr } = await import("../seidr/seidr");
     const { getDocument } = await import("../dom/get-document");
+    const { setInternalAppState } = await import("../app-state/app-state");
+    const { appState } = await import("../app-state/storage");
+    const { registerSeidrForSSR } = await import("../ssr/register-seidr");
 
-    setupClient();
+    Seidr.register = registerSeidrForSSR;
+    setInternalAppState(() => appState);
 
     expect(Seidr.register).toBeDefined();
     expect(getDocument()).toBeDefined();

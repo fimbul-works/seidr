@@ -1,6 +1,4 @@
 import { setInternalAppState } from "../app-state/app-state";
-import { getDocument, setInternalGetDocument } from "../dom/get-document";
-import { getDocument as getSSRDocument } from "../dom/get-document.server";
 import { Seidr } from "../seidr/seidr";
 import { registerSeidrForSSR } from "../ssr/register-seidr";
 import type { CleanupFunction } from "../types";
@@ -21,7 +19,7 @@ export const enableSSRMode = (): CleanupFunction => {
     seidrSSR: process.env.SEIDR_TEST_SSR,
     vitest: process.env.VITEST,
     window: global.window,
-    getDocument: getDocument,
+    // getDocument: getDocument,
     ssrActive: (global as any).__SEIDR_SSR_ACTIVE__,
   };
 
@@ -33,7 +31,6 @@ export const enableSSRMode = (): CleanupFunction => {
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
-  setInternalGetDocument(getSSRDocument);
   setInternalAppState(getAppState);
 
   return () => {
@@ -43,6 +40,5 @@ export const enableSSRMode = (): CleanupFunction => {
     else delete process.env.VITEST;
     (global as any).__SEIDR_SSR_ACTIVE__ = currentState.ssrActive;
     if (currentState.window !== undefined) global.window = currentState.window;
-    if (currentState.getDocument !== undefined) setInternalGetDocument(currentState.getDocument);
   };
 };

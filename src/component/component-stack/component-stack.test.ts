@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
-import type { Component } from "./types";
+import type { Component } from "../types";
+import { executeInContext, getCurrentComponent, pop, push } from "./index";
 
 describe("Component Stack", () => {
   const createMockComponent = (id: string, parent: Component | null = null): Component => {

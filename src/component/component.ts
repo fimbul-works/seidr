@@ -192,7 +192,7 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
-        if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+        if (!process.env.CORE_DISABLE_SSR && !isSSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
 
@@ -340,7 +340,7 @@ export const component = <P = void>(
       throw err;
     } finally {
       pop();
-      if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
         getHydrationContext()?.popComponent();
       }
     }

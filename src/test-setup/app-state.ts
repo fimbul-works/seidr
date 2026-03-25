@@ -4,8 +4,6 @@ import { createAppState } from "../app-state/storage";
 import type { AppState } from "../app-state/types";
 import { clearPathCache } from "../router/get-current-path";
 
-export { DOCUMENT_PROVIDER_KEY } from "../dom/get-document";
-
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);
 testAppState.isSSR = false;

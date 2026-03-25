@@ -1,5 +1,5 @@
 import { SeidrError } from "../types";
-import { getCurrentComponent } from "./component-stack";
+import { getCurrentComponent } from "./component-stack/get-current-component";
 import type { OnMountFunction } from "./types";
 
 /**

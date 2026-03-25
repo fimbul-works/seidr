@@ -20,8 +20,7 @@ export const nodeReplace = {
 };
 
 const pluginsCommon = [typescript({ tsconfig: "./tsconfig.json", declaration: false }), resolve(), commonjs()];
-
-export const treeshake = "smallest";
+const treeshake = "smallest";
 
 /**
  * @returns {import('rollup').RollupOptions}

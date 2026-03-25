@@ -1,11 +1,37 @@
-import { execSync } from "node:child_process";
+import { execSync, spawn } from "node:child_process";
 
 const entries = [
-  { entry: "src/index.client.ts", out: "dist/seidr.d.ts" },
-  { entry: "src/index.server.ts", out: "dist/seidr.server.d.ts" },
-  { entry: "src/test-setup/index.ts", out: "dist/seidr.test.d.ts" },
+  { input: "build/types-raw/index.client.d.ts", output: "dist/seidr.d.ts" },
+  { input: "build/types-raw/index.server.d.ts", output: "dist/seidr.server.d.ts" },
+  { input: "build/types-raw/index.core.d.ts", output: "dist/seidr.core.d.ts" },
+  { input: "build/types-raw/test-setup/index.d.ts", output: "dist/testing.d.ts" },
 ];
 
-for (const { entry, out } of entries) {
-  execSync(`npx dts-bundle-generator --out-file ${out} --no-check ${entry}`, { stdio: "inherit" });
+console.log("⏳ Emitting raw declarations...");
+execSync("tsc -p tsconfig.declarations.json", { stdio: "inherit" });
+console.log("✅ Raw declarations emitted\n");
+
+console.log("⏳ Bundling declarations...");
+
+const results = await Promise.allSettled(
+  entries.map(
+    ({ input, output }) =>
+      new Promise<void>((resolve, reject) => {
+        const proc = spawn("dts-bundle-generator", ["--out-file", output, "--no-check", input], { stdio: "inherit" });
+        proc.on("close", (code) =>
+          code === 0 ? resolve() : reject(new Error(`dts-bundle-generator failed for ${input}`)),
+        );
+      }),
+  ),
+);
+
+let failed = false;
+for (const [i, result] of results.entries()) {
+  if (result.status === "rejected") {
+    console.error(`❌ ${entries[i].input}: ${result.reason.message}`);
+    failed = true;
+  }
 }
+
+if (failed) process.exit(1);
+console.log("✅ All declaration bundles written");

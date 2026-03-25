@@ -1,4 +1,4 @@
-import { getCurrentComponent } from "../../component/component-stack";
+import { getCurrentComponent } from "../../component/component-stack/get-current-component";
 import { TAG_TEXT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../../ssr/hydrate/storage";
@@ -18,7 +18,7 @@ export const $text = (text: unknown): Text => {
 
   const doc = getDocument();
 
-  if (isHydrating()) {
+  if (!isServer() && isHydrating()) {
     const ctx = getHydrationContext();
     if (ctx) {
       if (ctx.isMismatched()) {

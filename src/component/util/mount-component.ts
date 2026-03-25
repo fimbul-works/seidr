@@ -1,6 +1,7 @@
 import type { Component, ComponentChildren } from "../../component/types";
 import { isHydrating } from "../../ssr/hydrate";
 import { SeidrError } from "../../types";
+import { isServer } from "../../util/environment";
 import { isComponent } from "../../util/type-guards/component-types";
 import { isDOMNode } from "../../util/type-guards/dom-node-types";
 import { isArray } from "../../util/type-guards/primitive-types";
@@ -23,7 +24,7 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
   }
 
   if (realParent) {
-    if (!process.env.CORE_DISABLE_SSR && isHydrating()) {
+    if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
       // If any part is already in DOM, assume it's hydrated
       const marker = component.startMarker || (isArray(component.element) ? component.element[0] : component.element);
       if (marker && isDOMNode(marker) && marker.parentNode === realParent) {

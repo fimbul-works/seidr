@@ -1,12 +1,13 @@
 import { component } from "../component/component";
 import { setNextComponentId } from "../component/component-id";
-import { getCurrentComponent } from "../component/component-stack";
+import { getCurrentComponent } from "../component/component-stack/get-current-component";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 import { isHydrating } from "../ssr/hydrate/storage";
+import { isServer } from "../util/environment";
 
 const LIST_CHILD_NAME = "ListItem";
 
@@ -89,7 +90,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       const itemComponent = listFactory(item);
       componentMap.set(key, itemComponent);
 
-      if (!process.env.CORE_DISABLE_SSR && isHydrating() && realEndMarker?.parentNode) {
+      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating() && realEndMarker?.parentNode) {
         itemComponent.mount(realEndMarker.parentNode);
       }
 

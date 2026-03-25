@@ -192,7 +192,6 @@ describe("Hydration Context", () => {
     container.innerHTML = html;
 
     cleanupClientMode = enableClientMode();
-    process.stderr.write(`[Test] Hydration map keys: ${Object.keys(hydrationData.components).join(", ")}\n`);
     unmount = hydrate(BlogApp, container, hydrationData);
 
     expect(container.innerHTML).toBe(html);

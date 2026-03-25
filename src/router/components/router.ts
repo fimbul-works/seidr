@@ -1,6 +1,6 @@
 import { component } from "../../component/component";
 import { setNextComponentId } from "../../component/component-id";
-import { getCurrentComponent } from "../../component/component-stack";
+import { getCurrentComponent } from "../../component/component-stack/get-current-component";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";

@@ -71,11 +71,12 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "clean:dist": "rm -rf dist",
+    "clean:dist": "rm -rf dist && rm -rf build",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm build:javascript && pnpm build:types",
+    "build": "pnpm clean:dist && concurrently \"pnpm build:javascript\" \"pnpm build:types\"",
     "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c rollup.config.js --configPlugin esbuild",
+    "build:types-raw": "tsc -p tsconfig.declarations.json",
     "build:types": "tsx scripts/build-dts.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
@@ -84,11 +85,7 @@
     "dev:ssr": "tsx watch examples/ssr/server.ts",
     "format": "npx biome format --write src examples *.json",
     "test": "vitest run",
-    "test:noui": "vitest run --exclude='src/**/*parity.test.ts' --exclude='src/**/*dual*.test.ts'",
-    "test:ui": "vitest run src/**/*parity.test.ts src/**/*dual*.test.ts",
-    "test:careful": "vitest run --isolate --maxConcurrency=1 --no-file-parallelism --pool forks",
     "test:ssr:inspect": "npx tsx examples/ssr/inspect.ts",
-    "docs": "tsx scripts/generate-api-docs.ts",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "devDependencies": {
@@ -102,6 +99,7 @@
     "@types/express": "^5.0.6",
     "@types/jsdom": "^27.0.0",
     "@types/node": "^25.3.0",
+    "concurrently": "^9.2.1",
     "dts-bundle-generator": "^9.5.1",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",

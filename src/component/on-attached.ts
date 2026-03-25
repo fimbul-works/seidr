@@ -1,5 +1,5 @@
 import { SeidrError } from "../types";
-import { getCurrentComponent } from "./component-stack";
+import { getCurrentComponent } from "./component-stack/get-current-component";
 
 /**
  * Register a function to be executed when component tree is attached to DOM.

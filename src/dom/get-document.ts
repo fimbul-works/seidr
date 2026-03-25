@@ -1,37 +1,28 @@
 import { getAppState } from "../app-state/app-state";
+import { SSRDocument } from "../ssr/dom";
 import { SeidrError } from "../types";
-import { isClient } from "../util/environment/client";
-
-/** Key used to store the document provider in AppState data */
-export const DOCUMENT_PROVIDER_KEY = "seidr.internal.document_provider";
+import { isClient, isServer } from "../util/environment";
 
 /**
  * Cross-environment getDocument.
  *
  * @returns {Document} Document object.
  */
-export let getDocument: () => Document = (): Document => {
-  const state = getAppState();
-  const provider = state?.getData<() => Document>(DOCUMENT_PROVIDER_KEY);
-  if (provider) {
-    return provider();
-  }
-
+export const getDocument: () => Document = (): Document => {
   if (isClient()) {
     return document;
-  }
-  throw new SeidrError("getDocument not initialized");
-};
+  } else if (isServer()) {
+    const appState = getAppState();
 
-/**
- * Cross-environment getDocument contract dependency injector.
- *
- * @param {(() => Document)} fn
- */
-export const setInternalGetDocument: (fn: () => Document) => void = (fn: () => Document): void => {
-  const state = getAppState();
-  if (state) {
-    state.setData(DOCUMENT_PROVIDER_KEY, fn);
+    const SSR_DOCUMENT_DATA_KEY = "seidr.ssr.document";
+    if (appState.hasData(SSR_DOCUMENT_DATA_KEY)) {
+      return appState.getData<Document>(SSR_DOCUMENT_DATA_KEY)!;
+    }
+
+    const doc = new SSRDocument() as unknown as Document;
+    appState.setData(SSR_DOCUMENT_DATA_KEY, doc);
+    return doc;
+  } else {
+    throw new SeidrError("getDocument not initialized");
   }
-  getDocument = fn;
 };

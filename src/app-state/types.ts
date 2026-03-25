@@ -26,5 +26,4 @@ export interface AppState {
 
   /** Whether the current state is for SSR */
   isSSR?: boolean;
-
 }

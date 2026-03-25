@@ -119,10 +119,10 @@ describe("buildStructureMap", () => {
 
     const comps = hydrationData.components;
     const keys = Object.keys(comps);
-    
+
     expect(keys.length).toBe(20);
 
-    const kBlogApp = keys.find((k) => k.startsWith("BlogApp-"))!;
+    const kBlogApp = keys.find((k) => k.includes("BlogApp-"))!;
     const kHeader = keys.find((k) => k.includes("Header-"))!;
     const kRouter = keys.find((k) => k.includes("Router-"))!;
     const kHomePage = keys.find((k) => k.includes("HomePage-"))!;
@@ -130,7 +130,7 @@ describe("buildStructureMap", () => {
     const kList = keys.find((k) => k.includes("List-"))!;
 
     expect(kBlogApp).toBeDefined();
-    
+
     // BlogApp should have Header and Router as children
     expect(comps[kBlogApp]).toEqual([
       [`${TAG_COMPONENT_PREFIX}${kHeader.split(":")[1]}`],
@@ -152,9 +152,7 @@ describe("buildStructureMap", () => {
     ]);
 
     // Router should map to HomePage
-    expect(comps[kRouter]).toEqual([
-      [`${TAG_COMPONENT_PREFIX}${kHomePage.split(":")[1]}`]
-    ]);
+    expect(comps[kRouter]).toEqual([[`${TAG_COMPONENT_PREFIX}${kHomePage.split(":")[1]}`]]);
 
     // Resolved state should map h1, List and ul
     expect(comps[kResolved]).toEqual([
