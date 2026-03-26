@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr";
-import { NO_HYDRATE } from "../../seidr/constants";
+import { noHydrate } from "../../seidr/constants";
 import { enableSSRMode } from "../../test-setup";
 import { renderToString } from "../render-to-string";
 
@@ -15,7 +15,7 @@ describe("Seidr Hydration Opt-out", () => {
       const hydrated = new Seidr("keep me");
       hydrated.observe(() => {}); // Force registration
 
-      const transient = new Seidr("drop me", NO_HYDRATE);
+      const transient = new Seidr("drop me", noHydrate);
       transient.observe(() => {}); // Attempt registration (should be ignored)
 
       return `<div>${hydrated.value} ${transient.value}</div>`;

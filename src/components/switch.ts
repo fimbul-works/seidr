@@ -1,11 +1,9 @@
 import { component } from "../component/component";
-import { setNextComponentId } from "../component/component-id";
 import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { componentWithId } from "../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../component/types";
-import { getComponent, getLastNode, mountComponent } from "../component/util";
+import { getLastNode, mountComponent } from "../component/util";
 import type { Seidr } from "../seidr";
-
-const SWITCH_CHILD_NAME = "SwitchBranch";
 
 /**
  * Switches between different components based on an observable value.
@@ -32,36 +30,54 @@ export const Switch = <
   name?: string,
 ): Component =>
   component(() => {
-    const switchComponent = getCurrentComponent()!;
-    let currentComponent: Component | undefined;
+    const SWITCH_CHILD_NAME = "SwitchBranch";
 
-    // Initial evaluation
-    setNextComponentId(observable.value);
-    currentComponent = getComponent<K, C, M>(factories, observable.value, fallbackFactory, SWITCH_CHILD_NAME);
+    /**
+     * Gets the component for the current value of the observable.
+     * @returns {Component | undefined} The component for the current value of the observable.
+     */
+    const getComponent = (): Component | undefined => {
+      if (!factories) {
+        if (fallbackFactory)
+          return componentWithId(
+            observable.value,
+            fallbackFactory as ComponentFactoryFunction<K>,
+            name,
+          )(observable.value);
+        return undefined;
+      }
+
+      const factory =
+        (factories instanceof Map ? factories.get(observable.value) : factories[observable.value as keyof M]) ||
+        fallbackFactory;
+      return factory
+        ? componentWithId(observable.value, factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value)
+        : undefined;
+    };
+
+    const switchComponent = getCurrentComponent()!;
+    let currentBranchComponent = getComponent();
 
     /**
      * Updates the component based on the new value.
-     *
-     * @param {K} value - The new value to update the component with.
      */
-    const update = (value: K) => {
+    const update = () => {
       // 1. Resolve anchor point before unmounting
-      const lastNode = currentComponent ? getLastNode(currentComponent!) : null;
+      const lastNode = currentBranchComponent ? getLastNode(currentBranchComponent!) : null;
       const anchor = lastNode?.nextSibling || switchComponent.endMarker || null;
       const parent = lastNode?.parentNode || switchComponent.parentNode;
 
       // 2. Unmount previous component
-      if (currentComponent) {
-        currentComponent.unmount();
+      if (currentBranchComponent) {
+        currentBranchComponent.unmount();
       }
 
-      setNextComponentId(value);
-      currentComponent = getComponent(factories, value, fallbackFactory, SWITCH_CHILD_NAME);
+      currentBranchComponent = getComponent();
 
-      if (currentComponent) {
-        switchComponent.addChild(currentComponent);
-        switchComponent.element = currentComponent;
-        mountComponent(currentComponent, anchor, parent!);
+      if (currentBranchComponent) {
+        switchComponent.addChild(currentBranchComponent);
+        switchComponent.element = currentBranchComponent;
+        mountComponent(currentBranchComponent, anchor, parent!);
       } else {
         switchComponent.element = undefined;
       }
@@ -69,8 +85,8 @@ export const Switch = <
 
     // Use scope.observe to ensure updates happen in the component's context
     switchComponent.observe(observable, update);
-    switchComponent.onUnmount(() => currentComponent?.unmount());
+    switchComponent.onUnmount(() => currentBranchComponent?.unmount());
 
-    switchComponent.element = currentComponent;
-    return currentComponent ? switchComponent.addChild(currentComponent) : undefined;
+    switchComponent.element = currentBranchComponent;
+    return currentBranchComponent ? switchComponent.addChild(currentBranchComponent) : undefined;
   }, name || "Switch")();

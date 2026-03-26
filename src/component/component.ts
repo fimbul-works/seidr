@@ -15,8 +15,8 @@ import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { consumeComponentId } from "./component-id";
 import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
+import { consumeComponentId } from "./consume-component-id";
 import { getMarkerComments } from "./get-marker-comments";
 import type {
   Component,
@@ -42,20 +42,33 @@ export const component = <P = void>(
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P) => {
-    const parentComponent = getCurrentComponent();
-
-    // Determine numeric ID
-    const numericId = clampBits(
-      fastMix(
-        consumeComponentId() || (parentComponent ? parentComponent.nextChildId() : 0),
-        parentComponent ? parentComponent.numericId : getAppStateID(),
-      ),
-    );
-
-    // Base62 encodes the number to create a short, collision-resistant string ID
-    const componentId = `${name}-${encodeBase62(numericId)}`;
-    // const componentId = encodeBase62(numericId);
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
+
+    // Get parent component and its numeric ID
+    const parentComponent = getCurrentComponent();
+    const parentComponentNumericId = parentComponent ? parentComponent.numericId : getAppStateID();
+
+    /**
+     * Builds a component ID from a numeric ID.
+     * In production, it uses base62 encoding for short IDs.
+     * In development, it includes the component name for easier debugging.
+     * @param numericId - The numeric ID to encode
+     * @returns The component ID string
+     */
+    const buildComponentId = (numericId: number): string =>
+      process.env.NODE_ENV === "production" ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
+
+    // Determine numeric by either consuming a pre-defined component ID, or use the parent component's next child ID
+    let numericId = clampBits(
+      fastMix(consumeComponentId() || (parentComponent ? parentComponent.nextChildId() : 0), parentComponentNumericId),
+    );
+    let componentId = buildComponentId(numericId);
+
+    // Handle collision by incrementing numeric hash value until a free slot is found
+    while (parentComponent?.children.has(componentId)) {
+      numericId = clampBits(fastMix(parentComponent.nextChildId(), parentComponentNumericId));
+      componentId = buildComponentId(numericId);
+    }
 
     const onMountFns: OnMountFunction[] = [];
     const onAttachedFns: (() => void)[] = [];

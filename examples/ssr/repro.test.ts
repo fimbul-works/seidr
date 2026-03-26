@@ -18,9 +18,9 @@ describe("BlogApp Hydration Repro", () => {
 
       expect(tree).toBeDefined();
       expect(tree).toHaveLength(1);
-      expect(tree[0].tag).toBe(`${TAG_COMPONENT_PREFIX}BlogApp-2`);
+      expect(tree[0].tag).toContain(`${TAG_COMPONENT_PREFIX}BlogApp`);
 
-      const blogAppEntryId = Object.keys(hydrationData.components).find((id) => id.startsWith("BlogApp"));
+      const blogAppEntryId = Object.keys(hydrationData.components).find((id) => id.includes("BlogApp"));
       const blogAppData = hydrationData.components[blogAppEntryId!];
 
       // Verification of flat format

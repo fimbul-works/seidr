@@ -1,9 +1,8 @@
 import { component } from "../../component/component";
-import { setNextComponentId } from "../../component/component-id";
 import { getCurrentComponent } from "../../component/component-stack/get-current-component";
+import { componentWithId } from "../../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
-import { wrapComponent } from "../../component/wrap-component";
 import type { Seidr } from "../../seidr";
 import { noHydrate } from "../../seidr/constants";
 import { wrapSeidr } from "../../seidr/wrap-seidr";
@@ -67,8 +66,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     const updateComponent = (index: number) => {
       currentFactory = getMatchedFactory(index);
       if (currentFactory) {
-        setNextComponentId(currentPath.value ?? "/");
-        currentComponent = wrapComponent(currentFactory, "Route")();
+        currentComponent = componentWithId(currentPath.value ?? "/", currentFactory, "Route")();
       } else {
         currentComponent = undefined;
       }

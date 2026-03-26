@@ -1,15 +1,12 @@
 import { component } from "../component/component";
-import { setNextComponentId } from "../component/component-id";
 import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { componentWithId } from "../component/component-with-id";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
-import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment";
-
-const LIST_CHILD_NAME = "ListItem";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -31,13 +28,19 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
   name?: string,
 ): Component =>
   component(() => {
+    const LIST_CHILD_NAME = "ListItem";
     const listComponent = getCurrentComponent()!;
-    // Force marker creation as List always needs them for diffing/hydration
-    const [_, realEndMarker] = getMarkerComments(listComponent.id)!;
     const componentMap = new Map<K, Component>();
 
+    // Force marker creation as List always needs them for diffing/hydration
+    const [, endMarker] = getMarkerComments(listComponent.id)!;
+
+    /**
+     * Updates the list with the new items.
+     * @param {T[]} items - The new items to render
+     */
     const update = (items: T[]) => {
-      const parent = realEndMarker?.parentNode;
+      const parent = endMarker?.parentNode;
       if (!parent) {
         return;
       }
@@ -53,15 +56,14 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       }
 
       // Add or reorder components by iterating backwards from end marker
-      let currentAnchor: Node = realEndMarker;
+      let currentAnchor: Node = endMarker;
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
         let itemComponent = componentMap.get(key);
 
         if (!itemComponent) {
-          setNextComponentId(key);
-          itemComponent = wrapComponent<T>(factory, LIST_CHILD_NAME)(item);
+          itemComponent = componentWithId(key, factory, LIST_CHILD_NAME)(item);
           componentMap.set(key, itemComponent);
         }
 
@@ -85,13 +87,11 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
 
     return observable.value.map((item) => {
       const key = getKey(item);
-      setNextComponentId(key);
-      const listFactory = wrapComponent(factory, LIST_CHILD_NAME);
-      const itemComponent = listFactory(item);
+      const itemComponent = componentWithId(key, factory, LIST_CHILD_NAME)(item);
       componentMap.set(key, itemComponent);
 
-      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating() && realEndMarker?.parentNode) {
-        itemComponent.mount(realEndMarker.parentNode);
+      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating() && endMarker?.parentNode) {
+        itemComponent.mount(endMarker.parentNode);
       }
 
       return itemComponent;
