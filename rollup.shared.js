@@ -2,7 +2,6 @@ import commonjs from "@rollup/plugin-commonjs";
 import resolve from "@rollup/plugin-node-resolve";
 import replace from "@rollup/plugin-replace";
 import typescript from "@rollup/plugin-typescript";
-import esbuild from "rollup-plugin-esbuild";
 
 export const clientReplace = {
   "process.env.SEIDR_TEST_SSR": "false",
@@ -42,13 +41,12 @@ export const makeClientBundle = (input, output, cjs = true, values = {}) => ({
       ...values,
       preventAssignment: true,
     }),
-    esbuild({ target: "esnext", platform: "browser" }),
   ],
   treeshake,
   context: "window",
 });
 
-export const makeNodeBundle = (input, output, cjs = true, values = {}, esbuildOptions = {}) => ({
+export const makeNodeBundle = (input, output, cjs = true, values = {}) => ({
   input,
   output: cjs
     ? [
@@ -59,7 +57,6 @@ export const makeNodeBundle = (input, output, cjs = true, values = {}, esbuildOp
   plugins: [
     ...pluginsCommon,
     replace({ ...nodeReplace, "isClient()": "false", "isServer()": "true", ...values, preventAssignment: true }),
-    esbuild({ target: "esnext", platform: "node", ...esbuildOptions }),
   ],
   treeshake,
   external: ["node:async_hooks"], // Mark Node built-ins as external so they aren't bundled

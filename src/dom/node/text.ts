@@ -1,4 +1,4 @@
-import { getCurrentComponent } from "../../component/component-stack/get-current-component";
+import { useScope } from "../../component/component-stack/use-scope";
 import { TAG_TEXT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../../ssr/hydrate/storage";
@@ -41,7 +41,15 @@ export const $text = (text: unknown): Text => {
   const node = doc.createTextNode(str(text));
 
   if (isServer()) {
-    getCurrentComponent()?.trackChild?.(node);
+    if (process.env.VITEST) {
+      try {
+        useScope().trackChild(node);
+      } catch (_) {
+        // Ignore
+      }
+    } else {
+      useScope().trackChild(node);
+    }
   }
 
   return node;

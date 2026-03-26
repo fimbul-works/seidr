@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { useScope } from "../component/component-stack/use-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { wrapError } from "../util/wrap-error";
@@ -26,17 +26,15 @@ export const Safe = <
   name?: string,
 ): Component =>
   component(() => {
-    const instance = getCurrentComponent();
+    const instance = useScope();
 
     try {
       // We wrap the factory call to ensure that if it throws,
       // we can still attempt to cleanup any partial registration
-      const childFactory = wrapComponent(factory);
-      return childFactory();
+      return wrapComponent(factory)();
     } catch (err) {
       // Clean up any resources tracked during the failed factory call
-      instance?.unmount();
-
+      instance?.cleanup();
       return wrapComponent(errorBoundaryFactory)(wrapError(err));
     }
   }, name || "Safe")();

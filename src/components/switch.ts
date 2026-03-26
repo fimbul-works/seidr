@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { useScope } from "../component/component-stack/use-scope";
 import { componentWithId } from "../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getLastNode, mountComponent } from "../component/util";
@@ -55,7 +55,7 @@ export const Switch = <
         : undefined;
     };
 
-    const switchComponent = getCurrentComponent()!;
+    const switchComponent = useScope()!;
     let currentBranchComponent = getComponent();
 
     /**
@@ -84,7 +84,7 @@ export const Switch = <
     };
 
     // Use scope.observe to ensure updates happen in the component's context
-    switchComponent.observe(observable, update);
+    switchComponent.onUnmount(observable.observe(update));
     switchComponent.onUnmount(() => currentBranchComponent?.unmount());
 
     switchComponent.element = currentBranchComponent;

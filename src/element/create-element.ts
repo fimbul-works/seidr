@@ -1,11 +1,12 @@
-import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { useScope } from "../component/component-stack/use-scope";
+import type { Component } from "../component/types";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import type { HydrationMismatchNode } from "../ssr/hydrate/context/types";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
-import { isArray, isEmpty } from "../util/type-guards";
+import { isArray, isEmpty, isObj, isStr } from "../util/type-guards";
 import { assignProps } from "./assign-props";
 import type { SeidrChild, SeidrElementProps } from "./types";
 
@@ -24,7 +25,14 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   props?: SeidrElementProps<K> | null,
   children?: SeidrChild | SeidrChild[],
 ): HTMLElementTagNameMap[K] => {
-  const comp = getCurrentComponent();
+  let currentComponent: Component | null = null;
+  try {
+    currentComponent = useScope();
+  } catch (error) {
+    if (!process.env.VITEST) {
+      console.error(error);
+    }
+  }
 
   /**
    * Apply properties and children to an element.
@@ -34,22 +42,22 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
    */
   const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
     if (isServer()) {
-      comp?.trackChild?.(el);
+      currentComponent?.trackChild?.(el);
     }
 
-    if (props) {
+    if (isObj(props)) {
       assignProps(el, props);
     }
 
     if (isArray(children)) {
       children.forEach((child) => {
-        if (typeof child === "string" && child === "") {
+        if (isStr(child) && child === "") {
           return;
         }
         appendChild(el, child);
       });
     } else if (!isEmpty(children)) {
-      if (!(typeof children === "string" && children === "")) {
+      if (!(isStr(children) && children === "")) {
         appendChild(el, children);
       }
     }

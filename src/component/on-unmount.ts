@@ -1,5 +1,5 @@
 import { type CleanupFunction, SeidrError } from "../types";
-import { getCurrentComponent } from "./component-stack/get-current-component";
+import { useScope } from "./component-stack/use-scope";
 
 /**
  * Register a function to be executed when component is unmounted.
@@ -7,7 +7,7 @@ import { getCurrentComponent } from "./component-stack/get-current-component";
  *@param {boolean} [throwError=true] - Whether to throw an error when current component is no found (default: `true`)
  */
 export const onUnmount = (callback: CleanupFunction, throwError = true): void => {
-  const component = getCurrentComponent();
+  const component = useScope();
   if (!component && throwError) {
     throw new SeidrError("onUnmount called outside of component");
   }

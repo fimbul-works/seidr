@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Component } from "../types";
-import { executeInContext, getCurrentComponent, pop, push } from "./index";
+import { useScope } from "./index";
+import { pop, push } from "./stack";
 
 describe("Component Stack", () => {
   const createMockComponent = (id: string, parent: Component | null = null): Component => {
@@ -11,16 +12,16 @@ describe("Component Stack", () => {
     return comp as Component;
   };
 
-  it("should return null when stack is empty", () => {
-    expect(getCurrentComponent()).toBeNull();
+  it("should throw when stack is empty", () => {
+    expect(() => useScope()).toThrow();
   });
 
   it("should return current component after push", () => {
     const root = createMockComponent("root");
     push(root);
-    expect(getCurrentComponent()).toBe(root);
+    expect(useScope()).toBe(root);
     pop();
-    expect(getCurrentComponent()).toBeNull();
+    expect(() => useScope()).toThrow();
   });
 
   it("should handle nested components", () => {
@@ -28,45 +29,15 @@ describe("Component Stack", () => {
     const child = createMockComponent("child", root);
 
     push(root);
-    expect(getCurrentComponent()).toBe(root);
+    expect(useScope()).toBe(root);
 
     push(child);
-    expect(getCurrentComponent()).toBe(child);
+    expect(useScope()).toBe(child);
 
     pop();
-    expect(getCurrentComponent()).toBe(root);
+    expect(useScope()).toBe(root);
 
     pop();
-    expect(getCurrentComponent()).toBeNull();
-  });
-
-  it("should execute function in context", () => {
-    const root = createMockComponent("root");
-    const child = createMockComponent("child", root);
-    const isolated = createMockComponent("isolated");
-
-    push(root);
-    push(child);
-    expect(getCurrentComponent()).toBe(child);
-
-    const result = executeInContext(isolated, () => {
-      expect(getCurrentComponent()).toBe(isolated);
-      return "success";
-    });
-
-    expect(result).toBe("success");
-    expect(getCurrentComponent()).toBe(child);
-  });
-
-  it("should restore context even if function throws", () => {
-    const root = createMockComponent("root");
-    push(root);
-
-    executeInContext(createMockComponent("temp"), () => {
-      throw new Error("fail");
-    });
-
-    expect(getCurrentComponent()).toBe(root);
-    pop();
+    expect(() => useScope()).toThrow();
   });
 });

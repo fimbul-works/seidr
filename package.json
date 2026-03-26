@@ -80,7 +80,7 @@
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
     "build": "pnpm clean:dist && concurrently \"pnpm build:javascript\" \"pnpm build:types\"",
-    "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c rollup.config.js --configPlugin esbuild",
+    "build:javascript": "NODE_OPTIONS=\"--max-old-space-size=4096\" rollup -c rollup.config.js",
     "build:types-raw": "tsc -p tsconfig.declarations.json",
     "build:types": "tsx scripts/build-dts.ts",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",

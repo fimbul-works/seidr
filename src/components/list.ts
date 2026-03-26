@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { useScope } from "../component/component-stack/use-scope";
 import { componentWithId } from "../component/component-with-id";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
@@ -29,7 +29,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
 ): Component =>
   component(() => {
     const LIST_CHILD_NAME = "ListItem";
-    const listComponent = getCurrentComponent()!;
+    const listComponent = useScope()!;
     const componentMap = new Map<K, Component>();
 
     // Force marker creation as List always needs them for diffing/hydration
@@ -79,7 +79,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
-    listComponent.observe(observable, update);
+    listComponent.onUnmount(observable.observe(update))
     listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();

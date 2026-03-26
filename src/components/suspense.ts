@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { getCurrentComponent } from "../component/component-stack/get-current-component";
+import { useScope } from "../component/component-stack/use-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
@@ -37,7 +37,7 @@ export const Suspense = <T>(
   name?: string,
 ): Component =>
   component(() => {
-    const parentComponent = getCurrentComponent() as Component;
+    const parentComponent = useScope() as Component;
     const componentId = parentComponent.id;
     const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${componentId}.status` });
     const value = new Seidr<T | null>(null, { id: `${componentId}.value` });

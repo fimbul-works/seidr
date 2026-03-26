@@ -1,6 +1,5 @@
 import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import type { SeidrChild, SeidrNode } from "../element";
-import type { Seidr } from "../seidr";
 import type { CleanupFunction } from "../types";
 
 /**
@@ -196,15 +195,6 @@ export interface Component {
    * @internal
    */
   removeChild(child: Component): void;
-
-  /**
-   * Observes a Seidr observable and executes the callback within the component's context.
-   * @template T - Type of observable value
-   * @param {Seidr<T>} observable - The observable to watch
-   * @param {(val: T) => void} callback - The callback to execute when value changes
-   * @returns {CleanupFunction} Cleanup function to stop observation
-   */
-  observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction;
 
   /**
    * Register a promise to wait for (SSR integration).

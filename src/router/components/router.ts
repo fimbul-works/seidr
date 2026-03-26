@@ -1,5 +1,5 @@
 import { component } from "../../component/component";
-import { getCurrentComponent } from "../../component/component-stack/get-current-component";
+import { useScope } from "../../component/component-stack/use-scope";
 import { componentWithId } from "../../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
@@ -28,7 +28,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
   fallback?: C | Seidr<C | undefined>,
 ): Component =>
   component(({ routes: routesProp, fallback: fallbackProp }: RouterProps<C>) => {
-    const router = getCurrentComponent()!;
+    const router = useScope()!;
 
     const routes = wrapSeidr(routesProp, noHydrate);
     const fallback = wrapSeidr(fallbackProp, noHydrate);
@@ -121,9 +121,9 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
       }
     };
 
-    router.observe(currentPath, updateRoutes);
-    router.observe(routes, updateRoutes);
-    router.observe(fallback, updateRoutes);
+    router.onUnmount(currentPath.observe(updateRoutes));
+    router.onUnmount(routes.observe(updateRoutes));
+    router.onUnmount(fallback.observe(updateRoutes));
     router.onUnmount(() => currentComponent?.unmount());
 
     router.element = currentComponent;

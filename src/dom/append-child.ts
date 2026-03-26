@@ -1,4 +1,4 @@
-import { pop, push } from "../component/component-stack";
+import { pop, push } from "../component/component-stack/stack";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { SeidrChild } from "../element/types";
 import { isHydrating } from "../ssr/hydrate/storage";
@@ -85,8 +85,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   const childNode = isDOMNode(child) ? child : $text(child);
 
   // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.
-  const canContain = isHTMLElement(childNode);
-  if (childNode !== target && (!canContain || !childNode.contains(target))) {
+  if (childNode !== target && (!isHTMLElement(childNode) || !childNode.contains(target))) {
     target.appendChild(childNode);
   }
 };

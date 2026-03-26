@@ -1,5 +1,5 @@
 import { SeidrError } from "../types";
-import { getCurrentComponent } from "./component-stack/get-current-component";
+import { useScope } from "./component-stack/use-scope";
 import type { OnMountFunction } from "./types";
 
 /**
@@ -8,7 +8,7 @@ import type { OnMountFunction } from "./types";
  *@param {boolean} [throwError=true] - Whether to throw an error when current component is no found (default: `true`)
  */
 export const onMount = (callback: OnMountFunction, throwError = true): void => {
-  const component = getCurrentComponent();
+  const component = useScope();
   if (!component && throwError) {
     throw new SeidrError("onMount called outside of component");
   }

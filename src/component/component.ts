@@ -2,7 +2,6 @@ import { getAppStateID } from "../app-state/app-state";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
 import type { SeidrChild } from "../element";
-import type { Seidr } from "../seidr";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
@@ -15,7 +14,8 @@ import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { executeInContext, getCurrentComponent, pop, push } from "./component-stack";
+import { useScope } from "./component-stack";
+import { pop, push } from "./component-stack/stack";
 import { consumeComponentId } from "./consume-component-id";
 import { getMarkerComments } from "./get-marker-comments";
 import type {
@@ -45,8 +45,14 @@ export const component = <P = void>(
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     // Get parent component and its numeric ID
-    const parentComponent = getCurrentComponent();
-    const parentComponentNumericId = parentComponent ? parentComponent.numericId : getAppStateID();
+    let parentComponent: Component | null = null;
+    let parentComponentNumericId: number;
+    try {
+      parentComponent = useScope();
+      parentComponentNumericId = parentComponent.numericId;
+    } catch {
+      parentComponentNumericId = getAppStateID();
+    }
 
     /**
      * Builds a component ID from a numeric ID.
@@ -273,11 +279,6 @@ export const component = <P = void>(
         if (isSSR) {
           instance.untrackChild(childComponent);
         }
-      },
-      observe<T>(observable: Seidr<T>, callback: (val: T) => void): CleanupFunction {
-        const cleanup = observable.observe((val) => executeInContext(instance, () => callback(val)));
-        instance.onUnmount(cleanup);
-        return cleanup;
       },
       waitFor<T>(promise: Promise<T>): Promise<T> {
         if (process.env.CORE_DISABLE_SSR) {
