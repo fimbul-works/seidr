@@ -50,10 +50,15 @@
         "require": "./dist/seidr.cjs"
       }
     },
+    "./core": {
+      "types": "./dist/seidr.core.d.ts",
+      "import": "./dist/seidr.core.js",
+      "require": "./dist/seidr.core.cjs"
+    },
     "./testing": {
-      "types": "./dist/seidr.test.d.ts",
-      "import": "./dist/seidr.test.js",
-      "require": "./dist/seidr.test.cjs"
+      "types": "./dist/testing.d.ts",
+      "import": "./dist/testing.js",
+      "require": "./dist/testing.cjs"
     }
   },
   "files": [

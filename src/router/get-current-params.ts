@@ -1,5 +1,5 @@
 import { getAppState } from "../app-state/app-state";
-import { NO_HYDRATE } from "../seidr/constants";
+import { noHydrate } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { PARAMS_DATA_KEY, PARAMS_SEIDR_ID } from "./constants";
 
@@ -26,7 +26,7 @@ export const getCurrentParams = (): Seidr<Record<string, string>> => {
   let observable = state.getData<Seidr<Record<string, string>>>(PARAMS_DATA_KEY);
 
   if (!observable) {
-    observable = new Seidr<Record<string, string>>({}, { ...NO_HYDRATE, id: PARAMS_SEIDR_ID });
+    observable = new Seidr<Record<string, string>>({}, { ...noHydrate, id: PARAMS_SEIDR_ID });
     state.setData(PARAMS_DATA_KEY, observable);
   }
 

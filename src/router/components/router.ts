@@ -5,7 +5,7 @@ import type { Component, ComponentFactoryFunction } from "../../component/types"
 import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";
 import type { Seidr } from "../../seidr";
-import { NO_HYDRATE } from "../../seidr/constants";
+import { noHydrate } from "../../seidr/constants";
 import { wrapSeidr } from "../../seidr/wrap-seidr";
 import { isFn } from "../../util/type-guards/primitive-types";
 import { getCurrentParams } from "../get-current-params";
@@ -31,8 +31,8 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
   component(({ routes: routesProp, fallback: fallbackProp }: RouterProps<C>) => {
     const router = getCurrentComponent()!;
 
-    const routes = wrapSeidr(routesProp, NO_HYDRATE);
-    const fallback = wrapSeidr(fallbackProp, NO_HYDRATE);
+    const routes = wrapSeidr(routesProp, noHydrate);
+    const fallback = wrapSeidr(fallbackProp, noHydrate);
 
     const currentPath = getCurrentPath();
     const currentParams = getCurrentParams();

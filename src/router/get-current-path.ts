@@ -1,6 +1,6 @@
 import { getAppState } from "../app-state/app-state";
 import { getRootComponent } from "../component/component-stack/get-root-component";
-import { NO_HYDRATE } from "../seidr/constants";
+import { noHydrate } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { isServer } from "../util/environment/is-server";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "./constants";
@@ -31,7 +31,7 @@ export const getCurrentPath = (): Seidr<string> => {
         ? window.location.pathname + window.location.search + window.location.hash
         : "/";
 
-    observable = new Seidr<string>(initialPath, { ...NO_HYDRATE, id: PATH_SEIDR_ID });
+    observable = new Seidr<string>(initialPath, { ...noHydrate, id: PATH_SEIDR_ID });
     state.setData(PATH_DATA_KEY, observable);
 
     if (!isServer() && typeof window !== "undefined") {

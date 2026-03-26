@@ -1,6 +1,6 @@
 import { getAppState } from "../../app-state/app-state";
 import { getRootComponent } from "../../component/component-stack/get-root-component";
-import { NO_HYDRATE } from "../../seidr/constants";
+import { noHydrate } from "../../seidr/constants";
 import { Seidr } from "../../seidr/seidr";
 import { isServer } from "../../util/environment/is-server";
 import { HASH_SEIDR_ID } from "../constants";
@@ -21,7 +21,7 @@ export const useHash = (): Seidr<string> => {
   const hashSeidr: Seidr<string> = isInitialized
     ? appState.getData(USE_HASH_DATA_KEY)!
     : new Seidr<string>(isServer() ? "" : window.location.hash, {
-        ...NO_HYDRATE,
+        ...noHydrate,
         id: HASH_SEIDR_ID,
       });
 

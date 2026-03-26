@@ -7,7 +7,7 @@ import { getDocument } from "../dom/get-document";
 import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../router/constants";
 import { clearPathCache } from "../router/get-current-path";
 import { Seidr } from "../seidr";
-import { NO_HYDRATE } from "../seidr/constants";
+import { noHydrate } from "../seidr/constants";
 import { SeidrError } from "../types";
 import { isStr } from "../util/type-guards/index";
 import { SSRScope, setSSRScope } from "./ssr-scope";
@@ -49,7 +49,7 @@ export async function renderToString<C extends ComponentReturnValue>(
       }
 
       if (isStr(options.path)) {
-        state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...NO_HYDRATE, id: PATH_SEIDR_ID }));
+        state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...noHydrate, id: PATH_SEIDR_ID }));
       }
 
       const activeScope = options.scope || new SSRScope();
