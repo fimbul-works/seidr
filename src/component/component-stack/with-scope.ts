@@ -1,6 +1,6 @@
 import { getAppState } from "../../app-state/app-state";
+import { DATA_KEY_COMPONENT_STACK } from "../../constants";
 import type { Component } from "../types";
-import { COMPONENT_STACK_DATA_KEY } from "../../constants";
 
 /**
  * Executes a function within the scope of a specific component.
@@ -12,14 +12,14 @@ import { COMPONENT_STACK_DATA_KEY } from "../../constants";
  */
 export const withScope = <T>(component: Component, fn: () => T): T => {
   const state = getAppState();
-  const previous = state.getData<Component>(COMPONENT_STACK_DATA_KEY) || null;
+  const previous = state.getData<Component>(DATA_KEY_COMPONENT_STACK) || null;
   try {
-    state.setData(COMPONENT_STACK_DATA_KEY, component);
+    state.setData(DATA_KEY_COMPONENT_STACK, component);
     return fn();
   } catch (error) {
     console.warn(error);
     return null as T;
   } finally {
-    state.setData(COMPONENT_STACK_DATA_KEY, previous);
+    state.setData(DATA_KEY_COMPONENT_STACK, previous);
   }
 };

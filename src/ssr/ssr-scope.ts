@@ -1,7 +1,7 @@
 import { getAppState } from "../app-state/app-state";
 import type { AppState } from "../app-state/types";
 import type { Component } from "../component";
-import { SEIDR_COMPONENT_START_PREFIX, SSR_SCOPE_KEY } from "../constants";
+import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import type { Seidr } from "../seidr/seidr";
 import { encodeBase62 } from "../util/base62";
 import { isServer } from "../util/environment/is-server";
@@ -31,7 +31,7 @@ export interface SSRScopeCapture {
  *
  * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
  */
-export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSRScope>(SSR_SCOPE_KEY);
+export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSRScope>(DATA_KEY_SSR_SCOPE);
 
 /**
  * Sets the active SSR scope for the current application state.
@@ -47,9 +47,9 @@ export function setSSRScope(scope: SSRScope | undefined): void {
   try {
     const state: AppState = getAppState();
     if (scope === undefined) {
-      state.deleteData(SSR_SCOPE_KEY);
+      state.deleteData(DATA_KEY_SSR_SCOPE);
     } else {
-      state.setData(SSR_SCOPE_KEY, scope);
+      state.setData(DATA_KEY_SSR_SCOPE, scope);
     }
   } catch (_e) {}
 }

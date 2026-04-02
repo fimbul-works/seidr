@@ -1,6 +1,6 @@
 import { getAppState } from "../../app-state/app-state";
+import { DATA_KEY_COMPONENT_STACK } from "../../constants";
 import type { Component } from "../types";
-import { COMPONENT_STACK_DATA_KEY } from "../../constants";
 
 /**
  * Returns the root component of the current render context.
@@ -8,7 +8,7 @@ import { COMPONENT_STACK_DATA_KEY } from "../../constants";
  * @internal
  */
 export const getRootComponent = (): Component | null => {
-  let current = getAppState().getData<Component>(COMPONENT_STACK_DATA_KEY) || null;
+  let current = getAppState().getData<Component>(DATA_KEY_COMPONENT_STACK) || null;
   while (current?.parent) {
     current = current.parent;
   }

@@ -1,6 +1,6 @@
 import replace from "@rollup/plugin-replace";
 import { defineConfig } from "vite";
-import { clientReplace } from "./rollup.shared";
+import { clientNoSSRReplace, clientReplace } from "./build.shared.ts";
 
 export default defineConfig((_config) => {
   const example = process.env.EXAMPLE || "counter";
@@ -10,13 +10,9 @@ export default defineConfig((_config) => {
     plugins: [
       replace({
         ...clientReplace,
+        ...clientNoSSRReplace,
         window: "{}",
-        "isClient()": "true",
-        "isServer()": "false",
-        "isHydrating()": "false",
         "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.CORE_DISABLE_SSR": "true",
-        "import.meta.env.SSR": "false",
         preventAssignment: true,
       }),
     ],

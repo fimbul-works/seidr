@@ -1,5 +1,6 @@
 import { component } from "../component/component";
 import { useScope } from "../component/component-stack/use-scope";
+import { withScope } from "../component/component-stack/with-scope";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
@@ -79,7 +80,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
-    listComponent.onUnmount(observable.observe(update));
+    listComponent.onUnmount(observable.observe((items) => withScope(listComponent, () => update(items))));
     listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();

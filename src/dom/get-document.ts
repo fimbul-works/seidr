@@ -1,8 +1,8 @@
 import { getAppState } from "../app-state/app-state";
+import { DATA_KEY_SSR_DOCUMENT } from "../constants";
 import { SSRDocument } from "../ssr/dom";
 import { SeidrError } from "../types";
 import { isClient, isServer } from "../util/environment";
-import { SSR_DOCUMENT_DATA_KEY } from "../constants";
 
 /**
  * Cross-environment getDocument.
@@ -15,12 +15,12 @@ export const getDocument: () => Document = (): Document => {
   } else if (isServer()) {
     const appState = getAppState();
 
-    if (appState.hasData(SSR_DOCUMENT_DATA_KEY)) {
-      return appState.getData<Document>(SSR_DOCUMENT_DATA_KEY)!;
+    if (appState.hasData(DATA_KEY_SSR_DOCUMENT)) {
+      return appState.getData<Document>(DATA_KEY_SSR_DOCUMENT)!;
     }
 
     const doc = new SSRDocument() as unknown as Document;
-    appState.setData(SSR_DOCUMENT_DATA_KEY, doc);
+    appState.setData(DATA_KEY_SSR_DOCUMENT, doc);
     return doc;
   } else {
     throw new SeidrError("getDocument not initialized");

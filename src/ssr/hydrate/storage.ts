@@ -1,5 +1,5 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state";
-import { HYDRATION_DATA_ID } from "../../constants";
+import { DATA_KEY_HYDRATION_DATA } from "../../constants";
 import type { Seidr } from "../../seidr/seidr";
 import { SeidrError } from "../../types";
 import { isEmpty } from "../../util";
@@ -10,14 +10,14 @@ import type { HydrationData, HydrationDataStorage } from "./types";
  *
  * @returns {HydrationDataStorage | undefined}
  */
-export const getHydrationData = (): HydrationDataStorage | undefined => getAppState().getData(HYDRATION_DATA_ID);
+export const getHydrationData = (): HydrationDataStorage | undefined => getAppState().getData(DATA_KEY_HYDRATION_DATA);
 
 /**
  * Checks if hydration is currently active for the current render context.
  *
  * @returns {boolean} true if in hydration mode with data available
  */
-export const isHydrating = (): boolean => getAppState().hasData(HYDRATION_DATA_ID);
+export const isHydrating = (): boolean => getAppState().hasData(DATA_KEY_HYDRATION_DATA);
 
 /**
  * Sets the hydration context for client-side hydration.
@@ -34,7 +34,7 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
   setAppStateID(data.ctxID);
 
   const appState = getAppState();
-  appState.setData(HYDRATION_DATA_ID, {
+  appState.setData(DATA_KEY_HYDRATION_DATA, {
     data: {
       ...data,
       root,
@@ -49,5 +49,5 @@ export function setHydrationData(data: HydrationData, root: HTMLElement): void {
  */
 export const clearHydrationData = (): void => {
   const appState = getAppState();
-  appState.deleteData(HYDRATION_DATA_ID);
+  appState.deleteData(DATA_KEY_HYDRATION_DATA);
 };

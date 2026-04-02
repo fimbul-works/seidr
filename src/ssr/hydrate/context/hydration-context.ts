@@ -1,6 +1,6 @@
 import { getAppState } from "../../../app-state";
 import type { Component } from "../../../component";
-import { ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT, HYDRATION_CONTEXT_KEY } from "../../../constants";
+import { DATA_KEY_HYDRATION_CONTEXT, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../../constants";
 import { SeidrError } from "../../../types";
 import { isComment, isHTMLElement, isTextNode } from "../../../util/type-guards/dom-node-types";
 import { isEmpty } from "../../../util/type-guards/primitive-types";
@@ -9,7 +9,7 @@ import type { ComponentTreeNode, StructureMapTuple } from "../../structure/types
 import { getHydrationData, isHydrating } from "../storage";
 import type { HydrationContext, HydrationMismatchNode } from "./types";
 
-export const getHydrationContext = () => getAppState().getData<HydrationContext>(HYDRATION_CONTEXT_KEY);
+export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CONTEXT);
 
 export const initHydrationContext = () => {
   if (!isHydrating()) {
@@ -29,7 +29,7 @@ export const initHydrationContext = () => {
   }
 
   const ctx = createHydrationContext(data.root!, normalizedComponents);
-  getAppState().setData(HYDRATION_CONTEXT_KEY, ctx);
+  getAppState().setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
   return ctx;
 };
 

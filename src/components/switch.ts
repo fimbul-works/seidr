@@ -1,5 +1,6 @@
 import { component } from "../component/component";
 import { useScope } from "../component/component-stack/use-scope";
+import { withScope } from "../component/component-stack/with-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
@@ -83,8 +84,8 @@ export const Switch = <
       }
     };
 
-    // Use scope.observe to ensure updates happen in the component's context
-    switchComponent.onUnmount(observable.observe(update));
+    // Use scope.observe or withScope to ensure updates happen in the component's context
+    switchComponent.onUnmount(observable.observe(() => withScope(switchComponent, update)));
     switchComponent.onUnmount(() => currentBranchComponent?.unmount());
 
     switchComponent.element = currentBranchComponent;

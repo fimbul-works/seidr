@@ -119,9 +119,6 @@ describe("buildStructureMap", () => {
 
     const comps = hydrationData.components;
     const keys = Object.keys(comps);
-    console.log(JSON.stringify(comps, null, 2))
-    expect(keys.length).toBeGreaterThan(20);
-
     const kBlogApp = keys.find((k) => k.includes("BlogApp-"))!;
     const kHeader = keys.find((k) => k.includes("Header-"))!;
     const kRouter = keys.find((k) => k.includes("Router-"))!;

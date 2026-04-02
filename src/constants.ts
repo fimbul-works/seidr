@@ -29,15 +29,14 @@ export const SEIDR_COMPONENT_END_PREFIX = "/";
 export const STORAGE_SESSION = "session";
 export const STORAGE_LOCAL = "local";
 
-export const HYDRATION_ID_ATTRIBUTE = "data-seidr-id";
 export const ROOT_ATTRIBUTE = "data-seidr-root";
 
 export const TAG_COMMENT = "#comment";
 export const TAG_TEXT = "#text";
 export const TAG_COMPONENT_PREFIX = "$";
 
-export const COMPONENT_STACK_DATA_KEY = "seidr.component.stack";
-export const HYDRATION_CONTEXT_KEY = "seidr.hydration.context";
-export const SSR_DOCUMENT_DATA_KEY = "seidr.ssr.document";
-export const SSR_SCOPE_KEY = "seidr.ssr.scope";
-export const HYDRATION_DATA_ID = "seidr.ssr.hydrationdata";
+export const DATA_KEY_COMPONENT_STACK = "seidr.component.stack";
+export const DATA_KEY_HYDRATION_DATA = "seidr.ssr.hydrationdata";
+export const DATA_KEY_HYDRATION_CONTEXT = "seidr.hydration.context";
+export const DATA_KEY_SSR_DOCUMENT = "seidr.ssr.document";
+export const DATA_KEY_SSR_SCOPE = "seidr.ssr.scope";
