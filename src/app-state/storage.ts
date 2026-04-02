@@ -4,7 +4,7 @@ const strategies = new Map<string, [((value: any) => any) | undefined, ((value: 
 
 export const createAppState = (ctxId: number): AppState => ({
   ctxID: ctxId,
-  sID: 0,
+  cid: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
   hasData(key: string) {

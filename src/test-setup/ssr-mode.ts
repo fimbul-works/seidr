@@ -5,7 +5,7 @@ import type { CleanupFunction } from "../types";
 import { clearTestAppState, getAppState } from "./app-state";
 import type { TestEnvironmentState } from "./types";
 
-export { resetRequestIdCounter } from "../app-state/app-state.server";
+export { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.server";
 export { clearHydrationData } from "../ssr/hydrate/storage";
 
 /**

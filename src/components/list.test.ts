@@ -23,20 +23,15 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should render and update list items efficiently", () => {
-    const items = new Seidr([
+    type Item = { id: number; text: string };
+    const items = new Seidr<Item[]>([
       { id: 1, text: "A" },
       { id: 2, text: "B" },
     ]);
     const Item = component((props: { text: string }) => $("span", { textContent: props.text }));
 
     const Parent = component(() => {
-      return $("div", { className: "parent" }, [
-        List(
-          items,
-          (i) => i.id,
-          (i) => Item(i),
-        ),
-      ]);
+      return $("div", { className: "parent" }, [List(items, (i) => i.id, Item)]);
     });
 
     const parent = Parent();
@@ -106,14 +101,7 @@ describeDualMode("List Component", ({ getDocument }) => {
       return $("span", { textContent: `Item ${props.id}` });
     };
 
-    const Parent = () =>
-      $("div", {}, [
-        List(
-          items,
-          (i) => i.id,
-          (i) => Item(i),
-        ),
-      ]);
+    const Parent = () => $("div", {}, [List(items, (i) => i.id, Item)]);
 
     cleanup = mount(Parent, container);
 
@@ -132,11 +120,7 @@ describeDualMode("List Component", ({ getDocument }) => {
     const Item = (props: { text: string }) => $("span", { textContent: props.text });
 
     cleanup = mount(
-      List(
-        items,
-        (i) => i.id,
-        (i) => Item(i),
-      ),
+      List(items, (i) => i.id, Item),
       container,
     );
 
@@ -163,11 +147,7 @@ describeDualMode("List Component", ({ getDocument }) => {
   it("should update element reference when list changes", () => {
     const items = new Seidr([{ id: 1, text: "A" }]);
     const Item = component((props: { text: string }) => $("span", { textContent: props.text }), "Item");
-    const list = List(
-      items,
-      (i) => i.id,
-      (i) => Item(i),
-    );
+    const list = List(items, (i) => i.id, Item);
 
     cleanup = mount(() => list, container);
 

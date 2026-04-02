@@ -3,7 +3,6 @@ import type { Component } from "../../component/types";
 import { $, type SeidrChild, type SeidrElementProps } from "../../element";
 import type { Seidr } from "../../seidr/seidr";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
-import { isClient } from "../../util/environment";
 import { useNavigate } from "../hooks";
 
 /**

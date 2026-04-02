@@ -37,11 +37,12 @@ export const Suspense = <T>(
   name?: string,
 ): Component =>
   component(() => {
-    const parentComponent = useScope() as Component;
-    const componentId = parentComponent.id;
-    const status = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${componentId}.status` });
-    const value = new Seidr<T | null>(null, { id: `${componentId}.value` });
-    const error = new Seidr<Error | null>(null, { id: `${componentId}.error` });
+    const suspenseScope = useScope() as Component;
+    const suspenseId = suspenseScope.id;
+    const state = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${suspenseId}.state` });
+    const value = new Seidr<T | null>(null, { id: `${suspenseId}.value` });
+    const error = new Seidr<Error | null>(null, { id: `${suspenseId}.error` });
+    const shouldTrack = !process.env.CORE_DISABLE_SSR && isServer();
 
     let currentPromiseId = 0;
 
@@ -53,7 +54,7 @@ export const Suspense = <T>(
       const isHydratingNow = !process.env.CORE_DISABLE_SSR && !isServer() && isHydrating();
 
       if (!process.env.CORE_DISABLE_SSR && !getSSRScope()?.isStable && !isHydratingNow) {
-        status.value = PROMISE_PENDING;
+        state.value = PROMISE_PENDING;
       }
       const currentId = ++currentPromiseId;
 
@@ -61,12 +62,12 @@ export const Suspense = <T>(
         const resolved = await currentPromise;
         if (currentId === currentPromiseId) {
           value.value = resolved;
-          status.value = PROMISE_RESOLVED;
+          state.value = PROMISE_RESOLVED;
         }
       } catch (err) {
         if (currentId === currentPromiseId) {
           error.value = wrapError(err);
-          status.value = PROMISE_ERROR;
+          state.value = PROMISE_ERROR;
         }
       }
     };
@@ -76,18 +77,18 @@ export const Suspense = <T>(
     if (initialProm) {
       // Check if it's already resolved in the state (for hydration)
       if (initialProm instanceof Promise) {
-        parentComponent.waitFor(handlePromise(initialProm));
+        handlePromise(shouldTrack ? getSSRScope()?.addPromise(initialProm) ?? initialProm : initialProm);
       } else {
         // Already a value, resolve synchronously
         value.value = initialProm;
-        status.value = PROMISE_RESOLVED;
+        state.value = PROMISE_RESOLVED;
       }
     }
 
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      parentComponent.onUnmount(promiseOrSeidr.observe((prom) => parentComponent.waitFor(handlePromise(prom))));
+      suspenseScope.onUnmount(promiseOrSeidr.observe((prom) => handlePromise(shouldTrack ? getSSRScope()?.addPromise(prom) ?? prom : prom)));
     }
 
-    return parentComponent.addChild(wrapComponent(factory)({ value, state: status, error }));
+    return suspenseScope.addChild(wrapComponent(factory)({ state, value, error }));
   }, name || "Suspense")();

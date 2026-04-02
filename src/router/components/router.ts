@@ -1,8 +1,9 @@
+import { withScope } from "../../component/component-stack/with-scope";
 import { component } from "../../component/component";
 import { useScope } from "../../component/component-stack/use-scope";
-import { componentWithId } from "../../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
+import { wrapComponent } from "../../component/wrap-component";
 import type { Seidr } from "../../seidr";
 import { noHydrate } from "../../seidr/constants";
 import { wrapSeidr } from "../../seidr/wrap-seidr";
@@ -28,7 +29,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
   fallback?: C | Seidr<C | undefined>,
 ): Component =>
   component(({ routes: routesProp, fallback: fallbackProp }: RouterProps<C>) => {
-    const router = useScope()!;
+    const routerScope = useScope()!;
 
     const routes = wrapSeidr(routesProp, noHydrate);
     const fallback = wrapSeidr(fallbackProp, noHydrate);
@@ -40,8 +41,10 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     let currentComponent: Component | undefined;
     let currentFactory: ComponentFactoryFunction | undefined;
 
+    const path = () => currentPath.value ?? "/";
+
     const matchCurrentPath = (): { index: number; params: Record<string, string> | null } => {
-      const match = matchRoute(currentPath.value ?? "/", routes.value);
+      const match = matchRoute(path(), routes.value);
       return match
         ? {
             index: match.index,
@@ -66,7 +69,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     const updateComponent = (index: number) => {
       currentFactory = getMatchedFactory(index);
       if (currentFactory) {
-        currentComponent = componentWithId(currentPath.value ?? "/", currentFactory, "Route")();
+        currentComponent = wrapComponent(currentFactory, "Route")(undefined, path());
       } else {
         currentComponent = undefined;
       }
@@ -80,9 +83,9 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     updateComponent(currentRouteIndex);
 
     if (currentComponent) {
-      router.addChild(currentComponent);
-      if (router.parentNode) {
-        mountComponent(currentComponent, router.endMarker || null, router.parentNode);
+      routerScope.addChild(currentComponent);
+      if (routerScope.parentNode) {
+        mountComponent(currentComponent, routerScope.endMarker || null, routerScope.parentNode);
       }
     }
 
@@ -98,8 +101,8 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
 
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent) : null;
-      const anchor = lastNode?.nextSibling || router.endMarker || null;
-      const parent = lastNode?.parentNode || router.endMarker?.parentNode || router.parentNode;
+      const anchor = lastNode?.nextSibling || routerScope.endMarker || null;
+      const parent = lastNode?.parentNode || routerScope.endMarker?.parentNode || routerScope.parentNode;
 
       // 2. Full swap
       if (currentComponent) {
@@ -113,19 +116,19 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
       updateComponent(matchedIndex);
 
       if (currentComponent) {
-        router.addChild(currentComponent);
-        router.element = currentComponent; // Triggers robust sync
+        routerScope.addChild(currentComponent);
+        routerScope.element = currentComponent; // Triggers robust sync
         mountComponent(currentComponent, anchor, parent!);
       } else {
-        router.element = undefined;
+        routerScope.element = undefined;
       }
     };
 
-    router.onUnmount(currentPath.observe(updateRoutes));
-    router.onUnmount(routes.observe(updateRoutes));
-    router.onUnmount(fallback.observe(updateRoutes));
-    router.onUnmount(() => currentComponent?.unmount());
+    routerScope.onUnmount(currentPath.observe(() => withScope(routerScope, updateRoutes)));
+    routerScope.onUnmount(routes.observe(() => withScope(routerScope, updateRoutes)));
+    routerScope.onUnmount(fallback.observe(() => withScope(routerScope, updateRoutes)));
+    routerScope.onUnmount(() => currentComponent?.unmount());
 
-    router.element = currentComponent;
+    routerScope.element = currentComponent;
     return currentComponent;
   }, "Router")({ routes, fallback });

@@ -6,7 +6,7 @@ export interface AppState {
   ctxID: number;
 
   /** Counter for generating unique IDs */
-  sID: number;
+  cid: number;
 
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;

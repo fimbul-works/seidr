@@ -1,10 +1,9 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state";
+import { HYDRATION_DATA_ID } from "../../constants";
 import type { Seidr } from "../../seidr/seidr";
 import { SeidrError } from "../../types";
 import { isEmpty } from "../../util";
 import type { HydrationData, HydrationDataStorage } from "./types";
-
-const HYDRATION_DATA_ID = "seidr.ssr.hydrationdata";
 
 /**
  * Gets the current hydration data.
@@ -18,7 +17,7 @@ export const getHydrationData = (): HydrationDataStorage | undefined => getAppSt
  *
  * @returns {boolean} true if in hydration mode with data available
  */
-export const isHydrating = (): boolean => !isEmpty(getHydrationData()?.data);
+export const isHydrating = (): boolean => getAppState().hasData(HYDRATION_DATA_ID);
 
 /**
  * Sets the hydration context for client-side hydration.

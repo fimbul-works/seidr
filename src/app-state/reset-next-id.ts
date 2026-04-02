@@ -7,7 +7,7 @@ import { getAppState } from "./app-state";
 export const resetNextId = (): void => {
   try {
     const state = getAppState();
-    state.sID = 0;
+    state.cid = 0;
   } catch (_e) {
     // Ignore if no app state is available
   }

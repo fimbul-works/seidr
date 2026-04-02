@@ -1,14 +1,12 @@
 import { getAppState } from "../app-state/app-state";
 import type { AppState } from "../app-state/types";
 import type { Component } from "../component";
-import { SEIDR_COMPONENT_START_PREFIX } from "../constants";
+import { SEIDR_COMPONENT_START_PREFIX, SSR_SCOPE_KEY } from "../constants";
 import type { Seidr } from "../seidr/seidr";
 import { encodeBase62 } from "../util/base62";
 import { isServer } from "../util/environment/is-server";
 import { buildStructureMap } from "./structure/build-structure-map";
 import type { StructureMapTuple } from "./structure/types";
-
-export const SSR_SCOPE_KEY = "seidr.ssr.scope";
 
 /**
  * Internal hydration data captured by SSRScope.

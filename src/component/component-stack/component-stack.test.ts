@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Component } from "../types";
 import { useScope } from "./index";
-import { pop, push } from "./stack";
+import { popComponent, pushComponent as push } from "./stack";
 
 describe("Component Stack", () => {
   const createMockComponent = (id: string, parent: Component | null = null): Component => {
@@ -20,7 +20,7 @@ describe("Component Stack", () => {
     const root = createMockComponent("root");
     push(root);
     expect(useScope()).toBe(root);
-    pop();
+    popComponent();
     expect(() => useScope()).toThrow();
   });
 
@@ -34,10 +34,10 @@ describe("Component Stack", () => {
     push(child);
     expect(useScope()).toBe(child);
 
-    pop();
+    popComponent();
     expect(useScope()).toBe(root);
 
-    pop();
+    popComponent();
     expect(() => useScope()).toThrow();
   });
 });

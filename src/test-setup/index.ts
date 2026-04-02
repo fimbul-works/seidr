@@ -1,10 +1,11 @@
+export { resetNextId } from "../app-state/reset-next-id";
+export { clearPathCache } from "../router/get-current-path";
 export * from "./app-state";
 export * from "./client-mode";
-export * from "./ssr-mode";
+export * from "./dom";
 export * from "./dual-mode";
 export * from "./lifecycle";
-export * from "./dom";
 export * from "./mock";
-export * from "./types";
-export { clearPathCache } from "../router/get-current-path";
 export { performDefaultSetup } from "./setup";
+export * from "./ssr-mode";
+export * from "./types";

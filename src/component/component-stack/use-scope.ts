@@ -1,7 +1,7 @@
 import { getAppState } from "../../app-state/app-state";
 import { SeidrError } from "../../types";
 import type { Component } from "../types";
-import { COMPONENT_STACK_DATA_KEY } from "./constants";
+import { COMPONENT_STACK_DATA_KEY } from "../../constants";
 
 /**
  * Get the current component

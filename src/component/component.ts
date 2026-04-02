@@ -7,16 +7,15 @@ import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, SeidrError } from "../types";
 import { encodeBase62 } from "../util/base62";
-import { clampBits } from "../util/clamp-bits";
 import { isServer } from "../util/environment/is-server";
 import { fastMix } from "../util/fast-mix";
+import { fastMixHash } from "../util/fast-mix-hash";
 import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
 import { useScope } from "./component-stack";
-import { pop, push } from "./component-stack/stack";
-import { consumeComponentId } from "./consume-component-id";
+import { popComponent, pushComponent } from "./component-stack/stack";
 import { getMarkerComments } from "./get-marker-comments";
 import type {
   Component,
@@ -41,7 +40,7 @@ export const component = <P = void>(
   name: string = "Component",
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
-  const componentFactory = ((props: P) => {
+  const componentFactory = ((props: P, identifier?: unknown) => {
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     // Get parent component and its numeric ID
@@ -65,14 +64,16 @@ export const component = <P = void>(
       process.env.NODE_ENV === "production" ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
 
     // Determine numeric by either consuming a pre-defined component ID, or use the parent component's next child ID
-    let numericId = clampBits(
-      fastMix(consumeComponentId() || (parentComponent ? parentComponent.nextChildId() : 0), parentComponentNumericId),
+    let numericId = fastMixHash(
+      !isEmpty(identifier) ? identifier : parentComponent ? parentComponent.nextChildId() : 1,
+      parentComponentNumericId,
     );
+
     let componentId = buildComponentId(numericId);
 
     // Handle collision by incrementing numeric hash value until a free slot is found
     while (parentComponent?.children.has(componentId)) {
-      numericId = clampBits(fastMix(parentComponent.nextChildId(), parentComponentNumericId));
+      numericId = fastMix(parentComponent.nextChildId(), parentComponentNumericId);
       componentId = buildComponentId(numericId);
     }
 
@@ -129,14 +130,13 @@ export const component = <P = void>(
                 item.unmount();
               } else if (isDOMNode(item)) {
                 // Remove DOM node
-                const el: ChildNode = item;
-                if (el.parentNode) {
-                  el.remove();
+                if (item.parentNode) {
+                  item.remove();
                 }
 
                 if (isSSR) {
                   // Untrack in SSR
-                  this.untrackChild(el);
+                  instance.untrackChild(item);
                 }
               }
             }
@@ -216,11 +216,8 @@ export const component = <P = void>(
         }
 
         // Remove from DOM
-        const startMarker = startMarkerComment;
-        startMarker?.remove();
-
-        const endMarker = endMarkerComment;
-        endMarker?.remove();
+        startMarkerComment?.remove();
+        endMarkerComment?.remove();
         instance.element = null;
 
         // Always remove from parent component tracking
@@ -280,12 +277,6 @@ export const component = <P = void>(
           instance.untrackChild(childComponent);
         }
       },
-      waitFor<T>(promise: Promise<T>): Promise<T> {
-        if (process.env.CORE_DISABLE_SSR) {
-          return promise;
-        }
-        return getSSRScope()?.addPromise(promise) || promise;
-      },
       trackChild(child: ChildNode | Component) {
         if (isSSR && createdIndex.indexOf(child) === -1) {
           createdIndex.push(child);
@@ -303,7 +294,7 @@ export const component = <P = void>(
 
     try {
       // Set as current component (Push to tree)
-      push(instance);
+      pushComponent(instance);
 
       // Register component with SSR scope for hydration path mapping
       if (!process.env.CORE_DISABLE_SSR) {
@@ -353,7 +344,7 @@ export const component = <P = void>(
       }
       throw err;
     } finally {
-      pop();
+      popComponent();
       if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
         getHydrationContext()?.popComponent();
       }

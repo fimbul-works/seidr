@@ -1,6 +1,6 @@
 import { getAppState } from "../../../app-state";
 import type { Component } from "../../../component";
-import { ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../../constants";
+import { ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT, HYDRATION_CONTEXT_KEY } from "../../../constants";
 import { SeidrError } from "../../../types";
 import { isComment, isHTMLElement, isTextNode } from "../../../util/type-guards/dom-node-types";
 import { isEmpty } from "../../../util/type-guards/primitive-types";
@@ -8,8 +8,6 @@ import { reconstructComponentTree } from "../../structure/reconstruct-component-
 import type { ComponentTreeNode, StructureMapTuple } from "../../structure/types";
 import { getHydrationData, isHydrating } from "../storage";
 import type { HydrationContext, HydrationMismatchNode } from "./types";
-
-export const HYDRATION_CONTEXT_KEY = "seidr.hydration.context";
 
 export const getHydrationContext = () => getAppState().getData<HydrationContext>(HYDRATION_CONTEXT_KEY);
 

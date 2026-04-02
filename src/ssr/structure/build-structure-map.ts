@@ -1,9 +1,43 @@
-import type { Component } from "../../component/types";
-import { collectRootNodes } from "../../component/util/collect-root-nodes";
+import type { Component, ComponentChildren } from "../../component/types";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import { SeidrError } from "../../types";
 import { isComment, isComponent, isHTMLElement, isTextNode } from "../../util/type-guards";
 import type { StructureMapTuple } from "./types";
+
+/**
+ * Collects all root physical nodes of a component (handling fragments and pass-throughs).
+ * @param {Component} comp - Component to collect root nodes from
+ * @returns {Node[]} Array of root DOM nodes
+ */
+function collectRootNodes(comp: Component): Node[] {
+  if (comp.startMarker && comp.endMarker) {
+    const nodes: Node[] = [comp.startMarker];
+    let curr = comp.startMarker.nextSibling;
+    while (curr && curr !== comp.endMarker) {
+      nodes.push(curr);
+      curr = curr.nextSibling;
+    }
+    nodes.push(comp.endMarker);
+    return nodes;
+  }
+
+  const el = comp.element;
+  if (!el) return [];
+
+  const nodes: Node[] = [];
+  const walk = (item: ComponentChildren) => {
+    if (Array.isArray(item)) {
+      item.forEach(walk);
+    } else if (isComponent(item)) {
+      walk(item.element);
+    } else if (item) {
+      nodes.push(item);
+    }
+  };
+
+  walk(el);
+  return nodes;
+}
 
 /**
  * Builds a structure map for the given component.

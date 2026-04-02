@@ -1,9 +1,9 @@
 import { component } from "../component/component";
 import { useScope } from "../component/component-stack/use-scope";
-import { componentWithId } from "../component/component-with-id";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
+import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment";
@@ -63,7 +63,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
         let itemComponent = componentMap.get(key);
 
         if (!itemComponent) {
-          itemComponent = componentWithId(key, factory, LIST_CHILD_NAME)(item);
+          itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, key);
           componentMap.set(key, itemComponent);
         }
 
@@ -79,7 +79,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
-    listComponent.onUnmount(observable.observe(update))
+    listComponent.onUnmount(observable.observe(update));
     listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();
@@ -87,7 +87,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
 
     return observable.value.map((item) => {
       const key = getKey(item);
-      const itemComponent = componentWithId(key, factory, LIST_CHILD_NAME)(item);
+      const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, key);
       componentMap.set(key, itemComponent);
 
       if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating() && endMarker?.parentNode) {

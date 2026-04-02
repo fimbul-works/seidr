@@ -24,7 +24,9 @@ export type ComponentFactoryPureFunction<P = void> = P extends void
  *
  * @template P - Props object type (optional)
  */
-export type ComponentFactory<P = void> = (P extends void ? (props?: void) => Component : (props: P) => Component) &
+export type ComponentFactory<P = void> = (P extends void
+  ? (props?: void, identifier?: unknown) => Component
+  : (props: P, identifier?: unknown) => Component) &
   ComponentFactoryInterface;
 
 /**
@@ -195,14 +197,6 @@ export interface Component {
    * @internal
    */
   removeChild(child: Component): void;
-
-  /**
-   * Register a promise to wait for (SSR integration).
-   * @template T - Type of promise value
-   * @param {Promise<T>} promise - The promise to track
-   * @returns {Promise<T>} The same promise, for chaining
-   */
-  waitFor<T>(promise: Promise<T>): Promise<T>;
 
   /**
    * Tracks a created node in the component's execution sequence.

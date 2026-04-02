@@ -35,3 +35,9 @@ export const ROOT_ATTRIBUTE = "data-seidr-root";
 export const TAG_COMMENT = "#comment";
 export const TAG_TEXT = "#text";
 export const TAG_COMPONENT_PREFIX = "$";
+
+export const COMPONENT_STACK_DATA_KEY = "seidr.component.stack";
+export const HYDRATION_CONTEXT_KEY = "seidr.hydration.context";
+export const SSR_DOCUMENT_DATA_KEY = "seidr.ssr.document";
+export const SSR_SCOPE_KEY = "seidr.ssr.scope";
+export const HYDRATION_DATA_ID = "seidr.ssr.hydrationdata";

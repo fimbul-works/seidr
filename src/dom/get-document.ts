@@ -2,6 +2,7 @@ import { getAppState } from "../app-state/app-state";
 import { SSRDocument } from "../ssr/dom";
 import { SeidrError } from "../types";
 import { isClient, isServer } from "../util/environment";
+import { SSR_DOCUMENT_DATA_KEY } from "../constants";
 
 /**
  * Cross-environment getDocument.
@@ -14,7 +15,6 @@ export const getDocument: () => Document = (): Document => {
   } else if (isServer()) {
     const appState = getAppState();
 
-    const SSR_DOCUMENT_DATA_KEY = "seidr.ssr.document";
     if (appState.hasData(SSR_DOCUMENT_DATA_KEY)) {
       return appState.getData<Document>(SSR_DOCUMENT_DATA_KEY)!;
     }

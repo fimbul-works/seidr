@@ -1,6 +1,6 @@
 import "../style.css";
 import { $getById, hydrate } from "../../src/index.client.js";
-import { reconstructComponentTree } from "../../src/ssr/structure/reconstruct-component-tree.js";
+// import { reconstructComponentTree } from "../../src/ssr/structure/reconstruct-component-tree.js";
 import { BlogApp } from "./app.js";
 
 const container = $getById("app");

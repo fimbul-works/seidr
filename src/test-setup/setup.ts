@@ -1,6 +1,6 @@
 import { setupAppState } from "./app-state";
-import { setupTestLifecycle } from "./lifecycle";
 import { enableClientMode } from "./client-mode";
+import { setupTestLifecycle } from "./lifecycle";
 import { mockNavigator } from "./mock";
 
 /**

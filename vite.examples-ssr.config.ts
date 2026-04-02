@@ -26,11 +26,11 @@ export default defineConfig((config) => {
       minify: "terser",
       target: "esnext",
       rollupOptions: {
-        input: resolve("examples/ssr", "entry-client.ts"),
+        input: resolve("examples/ssr", "index.html"),
         output: {
           dir: "examples/ssr/dist",
           format: "es",
-          entryFileNames: `entry-client.js`,
+          entryFileNames: `index.html`,
           inlineDynamicImports: true,
           compact: true,
         },

@@ -1,8 +1,8 @@
 import { component } from "../component/component";
 import { useScope } from "../component/component-stack/use-scope";
-import { componentWithId } from "../component/component-with-id";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getLastNode, mountComponent } from "../component/util";
+import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
 
 /**
@@ -38,12 +38,12 @@ export const Switch = <
      */
     const getComponent = (): Component | undefined => {
       if (!factories) {
-        if (fallbackFactory)
-          return componentWithId(
+        if (fallbackFactory) {
+          return wrapComponent(fallbackFactory as ComponentFactoryFunction<K>, name)(
             observable.value,
-            fallbackFactory as ComponentFactoryFunction<K>,
-            name,
-          )(observable.value);
+            observable.value,
+          );
+        }
         return undefined;
       }
 
@@ -51,7 +51,7 @@ export const Switch = <
         (factories instanceof Map ? factories.get(observable.value) : factories[observable.value as keyof M]) ||
         fallbackFactory;
       return factory
-        ? componentWithId(observable.value, factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value)
+        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value, observable.value)
         : undefined;
     };
 

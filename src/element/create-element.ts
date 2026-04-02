@@ -25,9 +25,9 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   props?: SeidrElementProps<K> | null,
   children?: SeidrChild | SeidrChild[],
 ): HTMLElementTagNameMap[K] => {
-  let currentComponent: Component | null = null;
+  let scope: Component | null = null;
   try {
-    currentComponent = useScope();
+    scope = useScope();
   } catch (error) {
     if (!process.env.VITEST) {
       console.error(error);
@@ -42,7 +42,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
    */
   const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
     if (isServer()) {
-      currentComponent?.trackChild?.(el);
+      scope?.trackChild(el);
     }
 
     if (isObj(props)) {
