@@ -40,16 +40,22 @@ export const component = <P = void>(
   name: string = "Component",
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
-  const componentFactory = ((props: P, identifier?: unknown) => {
+  const componentFactory = ((props: P, parentComponent?: Component | null, identifier?: unknown) => {
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     // Get parent component and its numeric ID
-    let parentComponent: Component | null = null;
     let parentComponentNumericId: number;
-    try {
-      parentComponent = useScope();
+    if (!parentComponent) {
+      try {
+        parentComponent = useScope();
+      } catch {
+        parentComponent = null;
+      }
+    }
+
+    if (parentComponent) {
       parentComponentNumericId = parentComponent.numericId;
-    } catch {
+    } else {
       parentComponentNumericId = getAppStateID();
     }
 

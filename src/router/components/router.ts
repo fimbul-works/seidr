@@ -1,4 +1,3 @@
-import { withScope } from "../../component/component-stack/with-scope";
 import { component } from "../../component/component";
 import { useScope } from "../../component/component-stack/use-scope";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
@@ -29,11 +28,9 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
   fallback?: C | Seidr<C | undefined>,
 ): Component =>
   component(({ routes: routesProp, fallback: fallbackProp }: RouterProps<C>) => {
-    const routerScope = useScope()!;
-
+    const routerComponent = useScope()!;
     const routes = wrapSeidr(routesProp, noHydrate);
     const fallback = wrapSeidr(fallbackProp, noHydrate);
-
     const currentPath = getCurrentPath();
     const currentParams = getCurrentParams();
 
@@ -69,7 +66,7 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     const updateComponent = (index: number) => {
       currentFactory = getMatchedFactory(index);
       if (currentFactory) {
-        currentComponent = wrapComponent(currentFactory, "Route")(undefined, path());
+        currentComponent = wrapComponent(currentFactory, "Route")(undefined, routerComponent, path());
       } else {
         currentComponent = undefined;
       }
@@ -83,9 +80,9 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
     updateComponent(currentRouteIndex);
 
     if (currentComponent) {
-      routerScope.addChild(currentComponent);
-      if (routerScope.parentNode) {
-        mountComponent(currentComponent, routerScope.endMarker || null, routerScope.parentNode);
+      routerComponent.addChild(currentComponent);
+      if (routerComponent.parentNode) {
+        mountComponent(currentComponent, routerComponent.endMarker || null, routerComponent.parentNode);
       }
     }
 
@@ -101,8 +98,8 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
 
       // 1. Resolve anchor point before unmounting
       const lastNode = currentComponent ? getLastNode(currentComponent) : null;
-      const anchor = lastNode?.nextSibling || routerScope.endMarker || null;
-      const parent = lastNode?.parentNode || routerScope.endMarker?.parentNode || routerScope.parentNode;
+      const anchor = lastNode?.nextSibling || routerComponent.endMarker || null;
+      const parent = lastNode?.parentNode || routerComponent.endMarker?.parentNode || routerComponent.parentNode;
 
       // 2. Full swap
       if (currentComponent) {
@@ -116,19 +113,19 @@ export const Router = <C extends ComponentFactoryFunction = ComponentFactoryFunc
       updateComponent(matchedIndex);
 
       if (currentComponent) {
-        routerScope.addChild(currentComponent);
-        routerScope.element = currentComponent; // Triggers robust sync
+        routerComponent.addChild(currentComponent);
+        routerComponent.element = currentComponent; // Triggers robust sync
         mountComponent(currentComponent, anchor, parent!);
       } else {
-        routerScope.element = undefined;
+        routerComponent.element = undefined;
       }
     };
 
-    routerScope.onUnmount(currentPath.observe(() => withScope(routerScope, updateRoutes)));
-    routerScope.onUnmount(routes.observe(() => withScope(routerScope, updateRoutes)));
-    routerScope.onUnmount(fallback.observe(() => withScope(routerScope, updateRoutes)));
-    routerScope.onUnmount(() => currentComponent?.unmount());
+    routerComponent.onUnmount(currentPath.observe(updateRoutes));
+    routerComponent.onUnmount(routes.observe(updateRoutes));
+    routerComponent.onUnmount(fallback.observe(updateRoutes));
+    routerComponent.onUnmount(() => currentComponent?.unmount());
 
-    routerScope.element = currentComponent;
+    routerComponent.element = currentComponent;
     return currentComponent;
   }, "Router")({ routes, fallback });

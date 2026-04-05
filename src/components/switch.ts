@@ -1,6 +1,5 @@
 import { component } from "../component/component";
 import { useScope } from "../component/component-stack/use-scope";
-import { withScope } from "../component/component-stack/with-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
@@ -42,6 +41,7 @@ export const Switch = <
         if (fallbackFactory) {
           return wrapComponent(fallbackFactory as ComponentFactoryFunction<K>, name)(
             observable.value,
+            switchComponent,
             observable.value,
           );
         }
@@ -52,7 +52,7 @@ export const Switch = <
         (factories instanceof Map ? factories.get(observable.value) : factories[observable.value as keyof M]) ||
         fallbackFactory;
       return factory
-        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value, observable.value)
+        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value, switchComponent, observable.value)
         : undefined;
     };
 
@@ -84,8 +84,7 @@ export const Switch = <
       }
     };
 
-    // Use scope.observe or withScope to ensure updates happen in the component's context
-    switchComponent.onUnmount(observable.observe(() => withScope(switchComponent, update)));
+    switchComponent.onUnmount(observable.observe(update));
     switchComponent.onUnmount(() => currentBranchComponent?.unmount());
 
     switchComponent.element = currentBranchComponent;

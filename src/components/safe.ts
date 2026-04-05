@@ -26,15 +26,15 @@ export const Safe = <
   name?: string,
 ): Component =>
   component(() => {
-    const instance = useScope();
+    const safeComponent = useScope();
 
     try {
       // We wrap the factory call to ensure that if it throws,
       // we can still attempt to cleanup any partial registration
-      return wrapComponent(factory)();
+      return wrapComponent(factory)(undefined, safeComponent);
     } catch (err) {
       // Clean up any resources tracked during the failed factory call
-      instance?.cleanup();
-      return wrapComponent(errorBoundaryFactory)(wrapError(err));
+      safeComponent?.cleanup();
+      return wrapComponent(errorBoundaryFactory)(wrapError(err), safeComponent);
     }
   }, name || "Safe")();

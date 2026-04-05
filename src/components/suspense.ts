@@ -37,8 +37,8 @@ export const Suspense = <T>(
   name?: string,
 ): Component =>
   component(() => {
-    const suspenseScope = useScope() as Component;
-    const suspenseId = suspenseScope.id;
+    const suspenseComponent = useScope();
+    const suspenseId = suspenseComponent.id;
     const state = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${suspenseId}.state` });
     const value = new Seidr<T | null>(null, { id: `${suspenseId}.value` });
     const error = new Seidr<Error | null>(null, { id: `${suspenseId}.error` });
@@ -87,8 +87,8 @@ export const Suspense = <T>(
 
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      suspenseScope.onUnmount(promiseOrSeidr.observe((prom) => handlePromise(shouldTrack ? getSSRScope()?.addPromise(prom) ?? prom : prom)));
+      suspenseComponent.onUnmount(promiseOrSeidr.observe((prom) => handlePromise(shouldTrack ? getSSRScope()?.addPromise(prom) ?? prom : prom)));
     }
 
-    return suspenseScope.addChild(wrapComponent(factory)({ state, value, error }));
+    return suspenseComponent.addChild(wrapComponent(factory)({ state, value, error }, suspenseComponent));
   }, name || "Suspense")();

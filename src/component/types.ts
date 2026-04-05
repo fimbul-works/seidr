@@ -25,8 +25,8 @@ export type ComponentFactoryPureFunction<P = void> = P extends void
  * @template P - Props object type (optional)
  */
 export type ComponentFactory<P = void> = (P extends void
-  ? (props?: void, identifier?: unknown) => Component
-  : (props: P, identifier?: unknown) => Component) &
+  ? (props?: void, parentComponent?: Component | null, identifier?: unknown) => Component
+  : (props: P, parentComponent?: Component | null, identifier?: unknown) => Component) &
   ComponentFactoryInterface;
 
 /**
