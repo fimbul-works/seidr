@@ -92,6 +92,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.10",
+    "@fimbul-works/futhark": "link:../futhark",
     "@rollup/plugin-replace": "^6.0.3",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",

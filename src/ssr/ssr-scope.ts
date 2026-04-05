@@ -3,7 +3,7 @@ import type { AppState } from "../app-state/types";
 import type { Component } from "../component";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import type { Seidr } from "../seidr/seidr";
-import { encodeBase62 } from "../util/base62";
+import { encodeBase62 } from "@fimbul-works/futhark";
 import { isServer } from "../util/environment/is-server";
 import { buildStructureMap } from "./structure/build-structure-map";
 import type { StructureMapTuple } from "./structure/types";

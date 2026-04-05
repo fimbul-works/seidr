@@ -6,7 +6,7 @@ import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, SeidrError } from "../types";
-import { encodeBase62 } from "../util/base62";
+import { encodeBase62 } from "@fimbul-works/futhark";
 import { isServer } from "../util/environment/is-server";
 import { fastMix } from "../util/fast-mix";
 import { fastMixHash } from "../util/fast-mix-hash";
