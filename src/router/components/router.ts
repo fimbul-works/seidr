@@ -1,5 +1,5 @@
 import { component } from "../../component/component";
-import { useScope } from "../../component/component-stack/use-scope";
+import { useScope } from "../../component/use-scope";
 import type { Component, ComponentFactoryFunction } from "../../component/types";
 import { getLastNode, mountComponent } from "../../component/util";
 import { wrapComponent } from "../../component/wrap-component";

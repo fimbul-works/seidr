@@ -1,4 +1,4 @@
-import { popComponent, pushComponent } from "../component/component-stack/stack";
+import { setScope } from "../component/set-scope";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { SeidrChild } from "../element/types";
 import { isHydrating } from "../ssr/hydrate/storage";
@@ -64,9 +64,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     }
 
     if (!process.env.CORE_DISABLE_SSR && isServer()) {
-      pushComponent(child);
+      setScope(child);
       appendChild(parent, child.element);
-      popComponent();
+      setScope(child.parent);
     } else {
       appendChild(parent, child.element);
     }

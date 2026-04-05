@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { useScope } from "../component/component-stack/use-scope";
+import { useScope } from "../component/use-scope";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";

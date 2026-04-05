@@ -1,5 +1,5 @@
 import { SeidrError } from "../types";
-import { useScope } from "./component-stack/use-scope";
+import { useScope } from "./use-scope";
 
 /**
  * Register a function to be executed when component tree is attached to DOM.

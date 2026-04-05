@@ -14,8 +14,8 @@ import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { useScope } from "./component-stack";
-import { popComponent, pushComponent } from "./component-stack/stack";
+import { useScope } from "./use-scope";
+import { setScope } from "./set-scope";
 import { getMarkerComments } from "./get-marker-comments";
 import type {
   Component,
@@ -40,7 +40,7 @@ export const component = <P = void>(
   name: string = "Component",
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
-  const componentFactory = ((props: P, parentComponent?: Component | null, identifier?: unknown) => {
+  const componentFactory = ((props: P, parentComponent: Component | null = null, identifier?: unknown) => {
     const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
 
     // Get parent component and its numeric ID
@@ -300,7 +300,7 @@ export const component = <P = void>(
 
     try {
       // Set as current component (Push to tree)
-      pushComponent(instance);
+      setScope(instance);
 
       // Register component with SSR scope for hydration path mapping
       if (!process.env.CORE_DISABLE_SSR) {
@@ -350,7 +350,7 @@ export const component = <P = void>(
       }
       throw err;
     } finally {
-      popComponent();
+      setScope(parentComponent);
       if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
         getHydrationContext()?.popComponent();
       }

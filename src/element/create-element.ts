@@ -1,4 +1,4 @@
-import { useScope } from "../component/component-stack/use-scope";
+import { useScope } from "../component/use-scope";
 import type { Component } from "../component/types";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";

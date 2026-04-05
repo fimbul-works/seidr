@@ -1,5 +1,5 @@
 import { component } from "../component/component";
-import { useScope } from "../component/component-stack/use-scope";
+import { useScope } from "../component/use-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
 import { wrapComponent } from "../component/wrap-component";
 import { wrapError } from "../util/wrap-error";

@@ -1,5 +1,5 @@
 import { SeidrError } from "../types";
-import { useScope } from "./component-stack/use-scope";
+import { useScope } from "./use-scope";
 import type { OnMountFunction } from "./types";
 
 /**

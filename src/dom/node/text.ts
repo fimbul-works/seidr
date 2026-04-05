@@ -1,4 +1,4 @@
-import { useScope } from "../../component/component-stack/use-scope";
+import { useScope } from "../../component/use-scope";
 import { TAG_TEXT } from "../../constants";
 import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../../ssr/hydrate/storage";

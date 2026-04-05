@@ -35,8 +35,8 @@ export const TAG_COMMENT = "#comment";
 export const TAG_TEXT = "#text";
 export const TAG_COMPONENT_PREFIX = "$";
 
-export const DATA_KEY_COMPONENT_STACK = "seidr.component.stack";
-export const DATA_KEY_HYDRATION_DATA = "seidr.ssr.hydrationdata";
+export const DATA_KEY_ACTIVE_SCOPE = "seidr.active-scope";
+export const DATA_KEY_HYDRATION_DATA = "seidr.hyydration.data";
 export const DATA_KEY_HYDRATION_CONTEXT = "seidr.hydration.context";
 export const DATA_KEY_SSR_DOCUMENT = "seidr.ssr.document";
 export const DATA_KEY_SSR_SCOPE = "seidr.ssr.scope";
