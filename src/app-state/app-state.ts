@@ -1,10 +1,6 @@
 import { createAppState } from "./storage";
 import type { AppState } from "./types";
 
-declare global {
-  var __SEIDR_APP_STATE_PROVIDER__: (() => AppState) | undefined;
-}
-
 /** Key that is shared across build targets */
 const PROVIDER_KEY = "__SEIDR_APP_STATE_PROVIDER__";
 
