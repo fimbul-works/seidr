@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import { describeDualMode } from "../test-setup/dual-mode";
-import { setScope } from "./set-scope";
-import { getRootComponent } from "./get-root-component";
 import { component } from "./component";
+import { getRootComponent } from "./get-root-component";
+import { setScope } from "./set-scope";
 import type { Component } from "./types";
 
 describeDualMode("getRootComponent", () => {

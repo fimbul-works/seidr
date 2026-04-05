@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, onMount, onUnmount } from "../component";
+import { component, useScope } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -71,12 +71,12 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     const mode = new Seidr("A");
 
     const CompA = () => {
-      onMount((parent) => onMountFn("A", parent));
+      useScope().onMount((parent) => onMountFn("A", parent));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
-      onMount((parent) => onMountFn("B", parent));
+      useScope().onMount((parent) => onMountFn("B", parent));
       return $("span", { textContent: "View B" });
     };
 
@@ -103,12 +103,12 @@ describeDualMode("Switch Component", ({ getDocument }) => {
     let scopeBDestroyed = false;
 
     const CompA = () => {
-      onUnmount(() => (scopeADestroyed = true));
+      useScope().onUnmount(() => (scopeADestroyed = true));
       return $("span", { textContent: "View A" });
     };
 
     const CompB = () => {
-      onUnmount(() => (scopeBDestroyed = true));
+      useScope().onUnmount(() => (scopeBDestroyed = true));
       return $("span", { textContent: "View B" });
     };
 

@@ -1,5 +1,5 @@
-import { setScope } from "../component/set-scope";
 import { getMarkerComments } from "../component/get-marker-comments";
+import { setScope } from "../component/set-scope";
 import type { SeidrChild } from "../element/types";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
@@ -32,7 +32,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   }
 
   // Hydration guard: if the node/component is already in the target, do nothing
-  if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
+  if (!process.env.DISABLE_SSR && !isServer() && isHydrating()) {
     if (isComponent(child)) {
       // If component is already marked as mounted, we assume it's in the correct place
       // (either from initial reconstruction or previous hydration step)
@@ -63,7 +63,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    if (!process.env.CORE_DISABLE_SSR && isServer()) {
+    if (!process.env.DISABLE_SSR && isServer()) {
       setScope(child);
       appendChild(parent, child.element);
       setScope(child.parent);

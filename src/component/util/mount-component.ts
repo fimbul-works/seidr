@@ -24,7 +24,7 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
   }
 
   if (realParent) {
-    if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
+    if (!process.env.DISABLE_SSR && !isServer() && isHydrating()) {
       // If any part is already in DOM, assume it's hydrated
       const marker = component.startMarker || (isArray(component.element) ? component.element[0] : component.element);
       if (marker && isDOMNode(marker) && marker.parentNode === realParent) {

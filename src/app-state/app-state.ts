@@ -1,8 +1,11 @@
+import { encodeBase62 } from "@fimbul-works/futhark";
+import { useScope } from "../component";
+import { isServer } from "../util";
 import { createAppState } from "./storage";
 import type { AppState } from "./types";
 
 /** Key that is shared across build targets */
-const PROVIDER_KEY = "__SEIDR_APP_STATE_PROVIDER__";
+export const PROVIDER_KEY = "__SEIDR_APP_STATE_PROVIDER__";
 
 /** Default application state */
 const defaultAppState: AppState = createAppState(0);
@@ -37,9 +40,9 @@ export const setAppStateProvider = (fn: () => AppState) => {
 export const setAppStateID = (id: number) => {
   const state = getAppState();
   state.ctxID = id;
-  state.cid = 0;
-  // state.data.clear(); // Removed: Wipes out hydration data!
+  state.seidrIdCounter = 0;
   state.markers.clear();
+  state.data.clear();
 };
 
 /**
@@ -51,6 +54,20 @@ export const getAppStateID = () => getAppState().ctxID;
 
 /**
  * Gets the next available Seidr ID for the AppState.
- * @returns {number} The next available Seidr ID
+ * @returns {string} The next available Seidr ID
  */
-export const getNextSeidrId = (): number => getAppState().cid++ + 1;
+export const getNextSeidrId = (): string => {
+  try {
+    const scope = useScope();
+    if (scope) {
+      return `${scope.id}-${encodeBase62(scope.nextSeidrId())}`;
+    }
+  } catch {
+    if (isServer() && !process.env.VITEST) {
+      console.warn(
+        "[getNextSeidrId] Warning: Generating Seidr ID outside of component scope. This can lead to non-deterministic IDs and hydration mismatches. Please ensure all Seidr instances are created within a component.",
+      );
+    }
+  }
+  return encodeBase62(getAppState().seidrIdCounter++);
+};

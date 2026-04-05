@@ -11,7 +11,6 @@ export function performDefaultSetup() {
   setupAppState();
   setupTestLifecycle();
   mockNavigator();
-
   // Default to client mode for most tests
   enableClientMode();
 }

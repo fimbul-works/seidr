@@ -1,7 +1,12 @@
 import type { AppState, CaptureDataFn, RestoreDataFn } from "./types";
 
-/** Data storage strategies */
-const strategies = new Map<string, [CaptureDataFn | undefined, RestoreDataFn | undefined]>();
+/** Key that is shared across build targets */
+const DATA_STRATEGIES_KEY = "__SEIDR_APP_STATE_STRATEGIES__";
+
+/** AppState provider is shared across built bundles */
+if (!globalThis[DATA_STRATEGIES_KEY]) {
+  globalThis[DATA_STRATEGIES_KEY] = new Map<string, [CaptureDataFn, RestoreDataFn]>();
+}
 
 /**
  * Creates a new application state instance.
@@ -10,7 +15,7 @@ const strategies = new Map<string, [CaptureDataFn | undefined, RestoreDataFn | u
  */
 export const createAppState = (ctxId: number): AppState => ({
   ctxID: ctxId,
-  cid: 0,
+  seidrIdCounter: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
   hasData(key: string): boolean {
@@ -26,9 +31,9 @@ export const createAppState = (ctxId: number): AppState => ({
     return this.data.delete(key);
   },
   defineDataStrategy(key: string, captureFn: CaptureDataFn, restoreFn: RestoreDataFn): void {
-    strategies.set(key, [captureFn, restoreFn]);
+    globalThis[DATA_STRATEGIES_KEY]?.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy(key: string): [CaptureDataFn, RestoreDataFn] | undefined {
-    return strategies.get(key) as [CaptureDataFn, RestoreDataFn] | undefined;
+    return globalThis[DATA_STRATEGIES_KEY]?.get(key) as [CaptureDataFn, RestoreDataFn] | undefined;
   },
 });

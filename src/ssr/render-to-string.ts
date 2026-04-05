@@ -37,9 +37,11 @@ export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
-  const prevSSR = process.env.SEIDR_TEST_SSR;
-  process.env.SEIDR_TEST_SSR = "true";
-  (global as any).__SEIDR_SSR_ACTIVE__ = true;
+  let prevSSR: string | undefined;
+  if (process.env.VITEST) {
+    prevSSR = process.env.VITEST && process.env.SEIDR_TEST_SSR;
+    process.env.SEIDR_TEST_SSR = "true";
+  }
 
   try {
     return await runWithAppState(async () => {
@@ -61,8 +63,9 @@ export async function renderToString<C extends ComponentReturnValue>(
         const anchor = getDocument().createComment("ssr-anchor");
         doc.appendChild(anchor);
 
-        // First pass: trigger all promises
         mountComponent(comp, anchor);
+
+        // Trigger all promises
         await activeScope.waitForPromises();
 
         anchor.remove();
@@ -90,8 +93,9 @@ export async function renderToString<C extends ComponentReturnValue>(
       }
     });
   } finally {
-    (global as any).__SEIDR_SSR_ACTIVE__ = false;
-    if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
-    else process.env.SEIDR_TEST_SSR = prevSSR;
+    if (process.env.VITEST) {
+      if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
+      else process.env.SEIDR_TEST_SSR = prevSSR;
+    }
   }
 }

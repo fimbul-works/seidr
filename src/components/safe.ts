@@ -1,6 +1,6 @@
 import { component } from "../component/component";
-import { useScope } from "../component/use-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
+import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { wrapError } from "../util/wrap-error";
 
@@ -17,12 +17,9 @@ import { wrapError } from "../util/wrap-error";
  * @param {ComponentFactoryFunction<Error>} errorBoundaryFactory - Error handler that returns fallback UI
  * @returns {Component} A Component instance with error handling
  */
-export const Safe = <
-  C extends ComponentFactoryFunction = ComponentFactoryFunction,
-  E extends ComponentFactoryFunction<Error> = ComponentFactoryFunction<Error>,
->(
-  factory: C,
-  errorBoundaryFactory: E,
+export const Safe = (
+  factory: ComponentFactoryFunction,
+  errorBoundaryFactory: ComponentFactoryFunction<Error>,
   name?: string,
 ): Component =>
   component(() => {

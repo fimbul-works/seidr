@@ -1,7 +1,7 @@
 import { component } from "../component/component";
-import { useScope } from "../component/use-scope";
 import { getMarkerComments } from "../component/get-marker-comments";
 import type { Component, ComponentFactoryFunction } from "../component/types";
+import { useScope } from "../component/use-scope";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
@@ -90,7 +90,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, listComponent, key);
       componentMap.set(key, itemComponent);
 
-      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating() && endMarker?.parentNode) {
+      if (!process.env.DISABLE_SSR && !isServer() && isHydrating() && endMarker?.parentNode) {
         itemComponent.mount(endMarker.parentNode);
       }
 

@@ -1,8 +1,8 @@
 import { expect, it } from "vitest";
 import { Seidr } from "../seidr/seidr";
 import { describeDualMode } from "../test-setup/dual-mode";
-import { assignProp } from "./assign-prop";
 import { mockComponentScope } from "../test-setup/mock";
+import { assignProp } from "./assign-prop";
 
 describeDualMode("assignProp", ({ getDocument }) => {
   mockComponentScope();

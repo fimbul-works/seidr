@@ -1,9 +1,9 @@
-import { getNextSeidrId } from "../app-state/app-state";
+import { getAppState, getNextSeidrId } from "../app-state/app-state";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
-import { isServer } from "../util/environment/is-server";
-import { str } from "../util/string";
 import { scheduleUpdate } from "./scheduler";
 import type { Observable, ObservableOptions } from "./types";
+
+const DATA_KEY_STATE = "state";
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -15,19 +15,38 @@ import type { Observable, ObservableOptions } from "./types";
  * @template T - The type of value being stored and observed
  */
 export class Seidr<T = any> implements Observable<T> {
-  /** @type {string} Unique identifier for this observable */
+  /**
+   * Unique identifier for this observable.
+   * @private
+   * @property {string}
+   */
   private i: string;
 
-  /** @type {T} The current value being stored */
+  /**
+   * The current value being stored.
+   * @private
+   * @property {T}
+   */
   private v: T;
 
-  /** @type {Seidr[]} Parent dependencies (for derived observables) */
+  /** Parent dependencies (for derived observables).
+   * @private
+   * @property {Seidr[]}
+   */
   private p: Seidr[] = [];
 
-  /** @type {Set<EventHandler<T>>} Observers */
+  /**
+   * Set of event handlers subscribed to value changes.
+   * @private
+   * @property {Set<EventHandler<T>>}
+   */
   private f: Set<EventHandler<T>> = new Set<EventHandler<T>>();
 
-  /** @type {CleanupFunction[]} Cleanup functions */
+  /**
+   * Cleanup functions.
+   * @private
+   * @property {CleanupFunction[]}
+   */
   private c: CleanupFunction[] = [];
 
   /**
@@ -45,10 +64,24 @@ export class Seidr<T = any> implements Observable<T> {
     initial: T,
     public readonly options: ObservableOptions = {},
   ) {
-    this.i = str(options.id ?? getNextSeidrId());
+    this.i = options.id ?? getNextSeidrId();
     this.v = initial;
 
-    if (!process.env.CORE_DISABLE_SSR) {
+    // If an ID is provided in options, check if the Seidr instance is already registered in the current AppState
+    if (options.id) {
+      try {
+        const appState = getAppState();
+        const states = appState.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
+        if (states?.[options.id]) {
+          // biome-ignore lint/correctness/noConstructorReturn: Seidr ID are unique
+          return states[options.id] as Seidr<T>;
+        }
+      } catch {
+        // Ignore if no AppState (e.g. outside of runWithAppState), will register for SSR/hydration if scope is active
+      }
+    }
+
+    if (!process.env.DISABLE_SSR) {
       Seidr.register?.(this);
     }
   }
@@ -84,32 +117,6 @@ export class Seidr<T = any> implements Observable<T> {
   }
 
   /**
-   * Sets a new value and notifies all observers if the value changed.
-   *
-   * @param {T} v - The new value to store
-   */
-  private set(v: T) {
-    if (!Object.is(this.v, v)) {
-      this.v = v;
-
-      // Notify immediately in SSR
-      if (this.options.sync || isServer() || (process.env.VITEST && !process.env.USE_SCHEDULER)) {
-        this.notify();
-      } else {
-        scheduleUpdate(this);
-      }
-    }
-  }
-
-  /**
-   * Flushes pending notifications to observers.
-   * Internal method used by the scheduler.
-   */
-  notify(): void {
-    this.f.forEach((fn) => fn(this.v));
-  }
-
-  /**
    * Gets whether this observable is derived.
    *
    * @type {boolean} true if this is a derived observable, false otherwise
@@ -135,7 +142,7 @@ export class Seidr<T = any> implements Observable<T> {
    * @returns {CleanupFunction} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    if (!process.env.CORE_DISABLE_SSR) {
+    if (!process.env.DISABLE_SSR) {
       Seidr.register?.(this);
     }
     this.f.add(fn);
@@ -152,7 +159,7 @@ export class Seidr<T = any> implements Observable<T> {
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
   bind<O>(target: O, bindFn: (value: T, target: O) => void): CleanupFunction {
-    if (!process.env.CORE_DISABLE_SSR) {
+    if (!process.env.DISABLE_SSR) {
       Seidr.register?.(this);
     }
     bindFn(this.value, target);
@@ -206,6 +213,16 @@ export class Seidr<T = any> implements Observable<T> {
   }
 
   /**
+   * Flushes pending notifications to observers.
+   * Internal method used by the scheduler.
+   *
+   * @internal
+   */
+  notify(): void {
+    this.f.forEach((fn) => fn(this.v));
+  }
+
+  /**
    * Removes all observers and executes all registered cleanup functions.
    */
   destroy(): void {
@@ -224,15 +241,36 @@ export class Seidr<T = any> implements Observable<T> {
   }
 
   /**
+   * Sets a new value and notifies all observers if the value changed.
+   *
+   * @private
+   * @param {T} v - The new value to store
+   */
+  private set(v: T) {
+    if (!Object.is(this.v, v)) {
+      this.v = v;
+
+      if (!process.env.USE_SCHEDULER) {
+        this.notify();
+      } else if (this.options.sync) {
+        this.notify();
+      } else {
+        scheduleUpdate(this);
+      }
+    }
+  }
+
+  /**
    * Mark this observable as derived.
    * This is used by `.as()` and `Seidr.merge()`.
    * This will register the observable for SSR/hydration.
    *
+   * @private
    * @param {Seidr[]} parents - Array of parent Seidr instances this observable depends on
    */
   private setParents(parents: Seidr[]): void {
     this.p = parents;
-    if (!process.env.CORE_DISABLE_SSR) {
+    if (!process.env.DISABLE_SSR) {
       Seidr.register?.(this);
     }
   }

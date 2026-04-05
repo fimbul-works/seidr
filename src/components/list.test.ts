@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, onMount, onUnmount } from "../component";
+import { component, useScope } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -71,7 +71,7 @@ describeDualMode("List Component", ({ getDocument }) => {
     const items = new Seidr([{ id: 1, text: "A" }]);
 
     const Item = component((props: { id: number }) => {
-      onMount((parent) => onMountFn(props.id, parent));
+      useScope().onMount((parent) => onMountFn(props.id, parent));
       return $("span", { textContent: `Item ${props.id}` });
     }, "Item");
 
@@ -97,7 +97,7 @@ describeDualMode("List Component", ({ getDocument }) => {
     const destroyedIds: number[] = [];
 
     const Item = (props: { id: number }) => {
-      onUnmount(() => destroyedIds.push(props.id));
+      useScope().onUnmount(() => destroyedIds.push(props.id));
       return $("span", { textContent: `Item ${props.id}` });
     };
 

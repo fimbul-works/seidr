@@ -12,25 +12,25 @@ import { getDocument } from "../get-document";
  * @returns {Text} DOM Text node
  */
 export const $text = (text: unknown): Text => {
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return getDocument().createTextNode(str(text));
   }
 
   const doc = getDocument();
 
+  // If we are hydrating, we need to claim the node
   if (!isServer() && isHydrating()) {
     const ctx = getHydrationContext();
     if (ctx) {
       if (ctx.isMismatched()) {
-        const node = doc.createTextNode(str(text));
-        return node;
+        return doc.createTextNode(str(text));
       }
 
       const node = ctx.claim<Text>(TAG_TEXT);
       if (node) {
         // This is a new node created due to a mismatch in claim()
         if (node.textContent !== str(text)) {
-          console.warn(`[Hydration mismatch] Text mismatch: expected "${str(text)}" but found "${node.textContent}"`);
+          console.warn(`[Hydration] Text mismatch: expected "${str(text)}" but found "${node.textContent}."`);
           node.textContent = str(text);
         }
         return node;
@@ -40,6 +40,7 @@ export const $text = (text: unknown): Text => {
 
   const node = doc.createTextNode(str(text));
 
+  // If we are server-side, we need to track the node
   if (isServer()) {
     if (process.env.VITEST) {
       try {

@@ -1,6 +1,6 @@
 import { component } from "../component/component";
-import { useScope } from "../component/use-scope";
 import type { Component, ComponentFactoryFunction } from "../component/types";
+import { useScope } from "../component/use-scope";
 import { getLastNode, mountComponent } from "../component/util";
 import { wrapComponent } from "../component/wrap-component";
 import type { Seidr } from "../seidr";
@@ -52,7 +52,11 @@ export const Switch = <
         (factories instanceof Map ? factories.get(observable.value) : factories[observable.value as keyof M]) ||
         fallbackFactory;
       return factory
-        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(observable.value, switchComponent, observable.value)
+        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(
+            observable.value,
+            switchComponent,
+            observable.value,
+          )
         : undefined;
     };
 

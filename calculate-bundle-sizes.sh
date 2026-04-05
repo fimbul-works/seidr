@@ -14,6 +14,11 @@ gzip -f -k dist/seidr.core.min.js
 gzip -f -k examples/dist/*.*js
 gzip -f -k examples/ssr/dist/*.*js
 
+brotli -f dist/seidr.min.js
+brotli -f dist/seidr.core.min.js
+brotli -f examples/dist/*.*js
+brotli -f examples/ssr/dist/*.*js
+
 echo ""
 echo "=========================================="
 echo "Bundle sizes (bytes):"
@@ -29,8 +34,8 @@ echo "=========================================="
 echo ""
 
 # Remove temporary minified and gzipped files
-rm -f dist/*.gz dist/*.min.js
-rm -f examples/dist/*.gz
-rm -f examples/ssr/dist/*.gz
+rm -f dist/*.gz dist/*.min.js dist/*.br
+rm -f examples/dist/*.gz examples/dist/*.br
+rm -f examples/ssr/dist/*.gz examples/ssr/dist/*.br
 
 echo "Temporary minified files removed. Size report complete."

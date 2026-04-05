@@ -1,5 +1,5 @@
-import { useScope } from "../component/use-scope";
 import type { Component } from "../component/types";
+import { useScope } from "../component/use-scope";
 import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
@@ -66,7 +66,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   };
 
   // Non-SSR or server side
-  if (process.env.CORE_DISABLE_SSR || isServer()) {
+  if (process.env.DISABLE_SSR || isServer()) {
     return decorateElement(getDocument().createElement(tagName));
   }
 
@@ -76,8 +76,8 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   const hydrationContext = getHydrationContext();
   if (!isServer() && isHydrating() && hydrationContext) {
     if (hydrationContext.isMismatched()) {
+      console.warn(`[Hydration] Mismatched element found ${tagName}.`);
       element = getDocument().createElement(tagName);
-      console.warn("[HYDRATE] Mismatched element found", element.tagName);
     } else {
       element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
     }
@@ -86,7 +86,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
       const oldNode = element;
       element = getDocument().createElement(tagName);
       if (oldNode?.parentNode) {
-        console.warn("[HYDRATE] Replacing mismatched element", oldNode.tagName, "with", element.tagName);
+        console.warn(`[Hydration] Replacing mismatched element ${oldNode.tagName} with ${element.tagName}.`);
         oldNode.parentNode.replaceChild(element, oldNode);
       }
     }

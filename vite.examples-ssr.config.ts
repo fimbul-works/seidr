@@ -1,18 +1,20 @@
 import { resolve } from "node:path";
 import replace from "@rollup/plugin-replace";
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
+import { treeshake } from "./build.shared.ts";
 
 export default defineConfig((config) => {
   return {
     root: "examples/ssr",
     plugins: [
       replace({
-        "process.env.NODE_ENV": JSON.stringify("development"),
-        "process.env.CORE_DISABLE_SSR": "false",
+        "process.env.NODE_ENV": JSON.stringify("production"),
+        "process.env.DISABLE_SSR": "false",
         "process.env.VITEST": "false",
         "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
         "process.env.DEBUG": "true",
         "process.env.DEBUG_HYDRATION": "true",
+        __SEIDR_DEV__: "false",
         preventAssignment: true,
       }),
     ],
@@ -31,11 +33,10 @@ export default defineConfig((config) => {
           dir: "examples/ssr/dist",
           format: "es",
           entryFileNames: `index.html`,
-          inlineDynamicImports: true,
-          compact: true,
+          inlineDynamicImports: false,
         },
-        treeshake: "smallest",
+        treeshake,
       },
     },
-  };
+  } as UserConfig;
 });

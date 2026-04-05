@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { onMount, onUnmount } from "../component";
+import { useScope } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -47,7 +47,7 @@ describeDualMode("Show Component", ({ getDocument }) => {
     const isVisible = new Seidr(false);
 
     const View = () => {
-      onMount((parent) => mountFn(parent));
+      useScope().onMount((parent) => mountFn(parent));
       return $("span", { textContent: "Visible" });
     };
 
@@ -66,7 +66,7 @@ describeDualMode("Show Component", ({ getDocument }) => {
     const scopeDestroyed = vi.fn();
 
     const View = () => {
-      onUnmount(scopeDestroyed);
+      useScope().onUnmount(scopeDestroyed);
       return $("span", { textContent: "Visible" });
     };
 

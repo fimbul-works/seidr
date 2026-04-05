@@ -18,24 +18,10 @@ export const inServer = <T>(fn: () => T): T => {
 
   const scope = getSSRScope();
   if (scope) {
-    const index = scope.callIndex;
-    scope.callIndex = index + 1;
-
-    if (scope.hasCachedResult(index)) {
-      return scope.getCachedResult(index);
-    }
-
     const result = fn();
 
     if (result instanceof Promise) {
-      scope.addPromise(
-        result.then((val) => {
-          scope.setCachedResult(index, val);
-          return val;
-        }),
-      );
-    } else {
-      scope.setCachedResult(index, result);
+      scope.addPromise(result);
     }
 
     return result;

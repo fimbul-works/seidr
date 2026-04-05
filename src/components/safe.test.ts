@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type Component, onUnmount } from "../component";
+import { type Component, useScope } from "../component";
 import { ROOT_ATTRIBUTE } from "../constants";
 import { appendChild } from "../dom/append-child";
 import { mount } from "../dom/mount";
@@ -31,7 +31,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError(errorMessage);
         },
-        (err) => {
+        (err: Error) => {
           expect(err).toBeInstanceOf(Error);
           expect(err.message).toBe(errorMessage);
           return $("div", { textContent: `Error: ${err.message}` });
@@ -48,10 +48,10 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
       const comp = Safe(
         () => {
-          onUnmount(originalScopeDestroyed);
+          useScope().onUnmount(originalScopeDestroyed);
           throw new SeidrError("Error");
         },
-        (_err) => {
+        () => {
           return $("div");
         },
       );
@@ -70,14 +70,14 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError("Root error");
         },
-        (_err) => {
+        () => {
           return $("div", { textContent: "Recovered" });
         },
       );
 
       unmount = mount(comp, container);
 
-      expect(consoleSpy).not.toHaveBeenCalled();
+      expect(consoleSpy).toHaveBeenCalled();
       expect(container.textContent).toBe("Recovered");
 
       consoleSpy.mockRestore();
@@ -88,7 +88,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError("Error");
         },
-        (_err) => {
+        () => {
           return $("div");
         },
       );
@@ -106,7 +106,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError("Child error");
         },
-        (err) => {
+        (err: Error) => {
           caughtError = err;
           return $("div", { textContent: "Child error caught" });
         },
@@ -126,8 +126,8 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError("Error");
         },
-        (_err) => {
-          onUnmount(() => {
+        () => {
+          useScope().onUnmount(() => {
             errorBoundaryDestroyed = true;
           });
           return $("div");
@@ -146,13 +146,13 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
       const comp = Safe(
         () => {
-          onUnmount(() => {
+          useScope().onUnmount(() => {
             cleanupLog.push("factory cleanup");
           });
           throw new SeidrError("Error");
         },
-        (_err) => {
-          onUnmount(() => {
+        () => {
+          useScope().onUnmount(() => {
             cleanupLog.push("error boundary cleanup");
           });
           return $("div");
@@ -173,7 +173,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new SeidrError("Error");
         },
-        (_err) => {
+        () => {
           const button = $("button", { textContent: "Retry" });
           button.onclick = () => {
             eventListenerCalled = true;
@@ -198,7 +198,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         () => {
           throw new TypeError("Type error");
         },
-        (err) => {
+        (err: Error) => {
           return $("div", { textContent: err.name });
         },
       );
@@ -232,7 +232,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
           () => {
             throw new SeidrError("Parent error during child registration");
           },
-          (_err) => {
+          () => {
             errorCaught = true;
             return $("div", { textContent: "Parent error boundary" });
           },

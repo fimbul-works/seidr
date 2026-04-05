@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import { component } from "../component/component";
 import { $ } from "../element";
-import { renderToString } from "./render-to-string";
-import { hydrate } from "./hydrate";
 import { enableClientMode } from "../test-setup";
+import { hydrate } from "./hydrate";
+import { renderToString } from "./render-to-string";
 
 describe("Partial Hydration", () => {
   it("should recover from a mismatch by replacing only the affected subtree", async () => {
@@ -59,6 +59,6 @@ describe("Partial Hydration", () => {
     expect(child3?.tagName).toBe("DIV");
 
     // Verify warn was called for the mismatch
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Hydration mismatch"));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("[Hydration] Replacing mismatched element"));
   });
 });

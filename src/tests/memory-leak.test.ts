@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { $div, $span, mount, onUnmount, Seidr } from "../index.core";
+import { $div, $span, mount, useScope, Seidr } from "../index.core";
 
 describe("Memory Leak Benchmark", () => {
   it("should not leak observers when mounting/destroying 1000 times", () => {
@@ -40,7 +40,7 @@ describe("Memory Leak Benchmark", () => {
       const count = new Seidr(0);
 
       const interval = setInterval(() => count.value++, 1000);
-      onUnmount(() => {
+      useScope().onUnmount(() => {
         clearInterval(interval);
         cleanupCalled++;
       });

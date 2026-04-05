@@ -20,7 +20,7 @@ export const hydrate = <T extends ComponentType>(
   hydrationData: HydrationData,
 ): CleanupFunction => {
   // If SSR is disabled, just mount
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return mount(factory, container);
   }
 

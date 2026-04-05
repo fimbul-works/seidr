@@ -1,6 +1,14 @@
 import type { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "./constants";
 
 /**
+ * Global variable indicating if the current environment is development.
+ * This is set at build time and can be used for conditional logic that should only run in development mode.
+ */
+declare global {
+  var __SEIDR_DEV__: boolean;
+}
+
+/**
  * Error class for Seidr.
  */
 export class SeidrError extends Error {

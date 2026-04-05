@@ -88,7 +88,7 @@ export const createHydrationContext = (
   for (const componentId of Object.keys(map)) {
     const compNode = componentNodeMap.get(componentId);
     if (!compNode) {
-      console.warn(`[HYDRATE] WARNING: Component ${componentId} not found in tree!`);
+      console.warn(`[Hydration] Component ${componentId} not found in tree!`);
       continue;
     }
 
@@ -224,7 +224,7 @@ export const createHydrationContext = (
       }
 
       if (mismatch) {
-        console.warn(`[Hydration mismatch] at ${componentId}[${cursor}]: expected ${tag}, got ${actualTag}.`);
+        console.warn(`[Hydration] Mismatch at ${componentId}[${cursor}]: expected ${tag}, got ${actualTag}.`);
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }

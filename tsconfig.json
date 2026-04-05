@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM"],
+    "types": ["node"],
     "moduleResolution": "Bundler",
     "declaration": false,
     "allowJs": true,
@@ -11,8 +12,7 @@
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
-    "outDir": "./dist",
-    "baseUrl": "."
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts", "node_modules"]

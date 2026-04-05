@@ -1,3 +1,4 @@
+import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppStateID } from "../app-state/app-state";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
 import { $text } from "../dom/node/text";
@@ -6,7 +7,6 @@ import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import { isHydrating } from "../ssr/hydrate/storage";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { type CleanupFunction, SeidrError } from "../types";
-import { encodeBase62 } from "@fimbul-works/futhark";
 import { isServer } from "../util/environment/is-server";
 import { fastMix } from "../util/fast-mix";
 import { fastMixHash } from "../util/fast-mix-hash";
@@ -14,9 +14,8 @@ import { str } from "../util/string";
 import { isComponent } from "../util/type-guards/component-types";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { useScope } from "./use-scope";
-import { setScope } from "./set-scope";
 import { getMarkerComments } from "./get-marker-comments";
+import { setScope } from "./set-scope";
 import type {
   Component,
   ComponentChildren,
@@ -24,6 +23,7 @@ import type {
   ComponentFactoryPureFunction,
   OnMountFunction,
 } from "./types";
+import { useScope } from "./use-scope";
 import { getFirstNode } from "./util/get-first-node";
 
 /**
@@ -41,7 +41,7 @@ export const component = <P = void>(
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P, parentComponent: Component | null = null, identifier?: unknown) => {
-    const isSSR = !process.env.CORE_DISABLE_SSR && isServer();
+    const isSSR = !process.env.DISABLE_SSR && isServer();
 
     // Get parent component and its numeric ID
     let parentComponentNumericId: number;
@@ -49,7 +49,7 @@ export const component = <P = void>(
       try {
         parentComponent = useScope();
       } catch {
-        parentComponent = null;
+        // Ignore if no parent component (e.g. root component), will use app state ID as parent ID for hashing
       }
     }
 
@@ -67,7 +67,7 @@ export const component = <P = void>(
      * @returns The component ID string
      */
     const buildComponentId = (numericId: number): string =>
-      process.env.NODE_ENV === "production" ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
+      !__SEIDR_DEV__ ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
 
     // Determine numeric by either consuming a pre-defined component ID, or use the parent component's next child ID
     let numericId = fastMixHash(
@@ -92,6 +92,7 @@ export const component = <P = void>(
     const childComponentNodes = new Map<Node, string>();
 
     let childCounter = 0;
+    let seidrCounter = 0;
 
     let parentNode: ParentNode | null = null;
     let element: ComponentChildren;
@@ -109,9 +110,6 @@ export const component = <P = void>(
       },
       get numericId() {
         return numericId;
-      },
-      nextChildId() {
-        return ++childCounter;
       },
       get isMounted() {
         return !!parentNode;
@@ -217,7 +215,7 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
-        if (!process.env.CORE_DISABLE_SSR && !isSSR && isHydrating()) {
+        if (!process.env.DISABLE_SSR && !isSSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
 
@@ -246,7 +244,7 @@ export const component = <P = void>(
           try {
             fn();
           } catch (error) {
-            console.warn(error);
+            console.warn(`[${componentId}] Error in onAttached callback`, error);
           }
         });
         onAttachedFns.length = 0;
@@ -262,6 +260,12 @@ export const component = <P = void>(
         });
         onUnmountFns.length = 0;
         children.clear();
+      },
+      nextChildId() {
+        return ++childCounter;
+      },
+      nextSeidrId() {
+        return ++seidrCounter;
       },
       addChild(childComponent: Component): Component {
         children.set(childComponent.id, childComponent);
@@ -303,7 +307,7 @@ export const component = <P = void>(
       setScope(instance);
 
       // Register component with SSR scope for hydration path mapping
-      if (!process.env.CORE_DISABLE_SSR) {
+      if (!process.env.DISABLE_SSR) {
         if (isSSR) {
           getSSRScope()?.registerComponent(instance);
         } else if (isHydrating()) {
@@ -331,7 +335,7 @@ export const component = <P = void>(
       }
 
       // Track component boundary in parent immediately to match evaluation order
-      if (!process.env.CORE_DISABLE_SSR && isServer()) {
+      if (!process.env.DISABLE_SSR && isServer()) {
         if (parentComponent) {
           const start = startMarkerComment || getFirstNode(instance);
           if (start) {
@@ -344,14 +348,13 @@ export const component = <P = void>(
       }
     } catch (err) {
       instance.unmount();
-      // Restore previous component (Pop from tree)
-      if (process.env.NODE_ENV === "development") {
-        console.error(instance.id, err);
+      if (__SEIDR_DEV__) {
+        console.error(`[${instance.id}] Error occurred`, err);
       }
       throw err;
     } finally {
       setScope(parentComponent);
-      if (!process.env.CORE_DISABLE_SSR && !isServer() && isHydrating()) {
+      if (!process.env.DISABLE_SSR && !isServer() && isHydrating()) {
         getHydrationContext()?.popComponent();
       }
     }
@@ -375,7 +378,7 @@ export const component = <P = void>(
       }
     };
 
-    if (!process.env.CORE_DISABLE_SSR) {
+    if (!process.env.DISABLE_SSR) {
       applyRootAttributes(element);
     }
 

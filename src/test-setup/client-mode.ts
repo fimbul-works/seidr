@@ -15,7 +15,6 @@ import type { TestEnvironmentState } from "./types";
 export function enableClientMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
-    vitest: process.env.VITEST,
     window: global.window,
   };
 
@@ -35,8 +34,6 @@ export function enableClientMode(): CleanupFunction {
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
-    if (currentState.vitest !== undefined) process.env.VITEST = currentState.vitest;
-    else delete process.env.VITEST;
     if (currentState.window !== undefined) global.window = currentState.window;
   };
 }

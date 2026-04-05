@@ -12,19 +12,12 @@ import { getSSRScope } from "./ssr-scope";
  * @throws {SeidrError} If the Seidr ID is not unique
  */
 export const registerSeidrForSSR = (seidr: Seidr): void => {
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return;
   }
 
   // Registr parents first
   for (const parent of seidr.parents) {
-    if (parent.id === seidr.id) {
-      // In SSR we throw, but in the browser we just warn and return
-      if (isServer()) {
-        throw new SeidrError(`Seidr ID must be unique`, { cause: seidr });
-      }
-      console.warn(`Seidr ID must be unique`);
-    }
     registerSeidrForSSR(parent);
   }
 

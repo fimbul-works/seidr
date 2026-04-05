@@ -1,9 +1,9 @@
 import { expect, it } from "vitest";
-import { describeDualMode } from "../test-setup/dual-mode";
 import { getAppState } from "../app-state/app-state";
 import { DATA_KEY_COMPONENT_SCOPE } from "../constants";
-import { setScope } from "./set-scope";
+import { describeDualMode } from "../test-setup/dual-mode";
 import { component } from "./component";
+import { setScope } from "./set-scope";
 
 describeDualMode("setScope", () => {
   it("should set the active component scope in AppState", () => {

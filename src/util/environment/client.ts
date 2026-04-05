@@ -9,7 +9,7 @@ import { isEmpty } from "../type-guards/primitive-types";
  * @returns {boolean} `true` if in browser, `false` otherwise
  */
 export const isClient = (): boolean => {
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return true;
   }
 

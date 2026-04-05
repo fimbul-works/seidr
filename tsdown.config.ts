@@ -1,18 +1,11 @@
 import replace from "@rollup/plugin-replace";
-import type { ModuleFormat, TreeshakingOptions } from "rolldown";
+import type { ModuleFormat } from "rolldown";
 import { defineConfig } from "tsdown";
-import { clientNoSSRReplace, clientReplace, nodeReplace } from "./build.shared.ts";
+import { clientNoSSRReplace, clientReplace, nodeReplace, treeshake } from "./build.shared.ts";
 import { removeRegionComments } from "./scripts/remove-region-comments.ts";
 
 const format: ModuleFormat[] = ["esm"];
 const dts = true;
-const treeshake: TreeshakingOptions = {
-  annotations: false,
-  commonjs: false,
-  moduleSideEffects: false,
-  invalidImportSideEffects: false,
-  unknownGlobalSideEffects: true,
-};
 const sharedPlugins = [removeRegionComments()];
 const outDir = "dist";
 
@@ -30,7 +23,6 @@ export default defineConfig([
     plugins: [
       ...sharedPlugins,
       replace({
-        ...clientReplace,
         ...clientNoSSRReplace,
         preventAssignment: true,
       }),
@@ -51,7 +43,6 @@ export default defineConfig([
       replace({
         ...clientReplace,
         window: "{}",
-        "process.env.CORE_DISABLE_SSR": "false",
         preventAssignment: true,
       }),
     ],
@@ -70,7 +61,6 @@ export default defineConfig([
       ...sharedPlugins,
       replace({
         ...nodeReplace,
-        "process.env.CORE_DISABLE_SSR": "false",
         preventAssignment: true,
       }),
     ],
@@ -90,7 +80,7 @@ export default defineConfig([
       ...sharedPlugins,
       replace({
         "process.env.VITEST": "true",
-        "process.env.CORE_DISABLE_SSR": "false",
+        "process.env.DISABLE_SSR": "false",
         preventAssignment: true,
       }),
     ],

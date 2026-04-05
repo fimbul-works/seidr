@@ -83,11 +83,6 @@ export interface Component {
   readonly numericId: number;
 
   /**
-   * Requests a deterministic, sequential ID for a child component within this parent.
-   */
-  nextChildId(): number;
-
-  /**
    * Whether the component has been destroyed.
    */
   readonly isMounted: boolean;
@@ -182,6 +177,16 @@ export interface Component {
    * @internal
    */
   cleanup(): void;
+
+  /**
+   * Requests a deterministic, sequential ID for a child component within this parent.
+   */
+  nextChildId(): number;
+
+  /**
+   * Requests a deterministic, sequential ID for Seidr instance within this component.
+   */
+  nextSeidrId(): number;
 
   /**
    * Tracks a child component for automatic cleanup.

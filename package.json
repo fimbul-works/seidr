@@ -38,7 +38,7 @@
     ".": {
       "types": "./dist/seidr.d.ts",
       "node": {
-        "import": "./dist/seidr.server.js",
+        "import": "./dist/seidr.server.mjs",
         "require": "./dist/seidr.server.cjs"
       },
       "browser": {
@@ -46,8 +46,8 @@
         "require": "./dist/seidr.cjs"
       },
       "default": {
-        "import": "./dist/seidr.js",
-        "require": "./dist/seidr.cjs"
+        "import": "./dist/seidr.server.mjs",
+        "require": "./dist/seidr.server.cjs"
       }
     },
     "./core": {

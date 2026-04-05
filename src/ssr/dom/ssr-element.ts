@@ -1,4 +1,4 @@
-import { TYPE_ELEMENT } from "../../constants";
+import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
 import type { ReactiveCSSStyleDeclaration } from "../../element";
 import type { NodeTypeElement } from "../../types";
 import { escapeAttribute } from "../../util/escape";
@@ -11,36 +11,6 @@ import { SSRParentNode } from "./ssr-parent-node";
 import { SSRTextNode } from "./ssr-text-node";
 
 const INTERNAL_ATTRIBUTES = new Set(["innerHTML", "outerHTML", "textContent", "classList", "style", "dataset"]);
-
-const BOOL_ATTRIBUTES = [
-  "allowfullscreen",
-  "async",
-  "autofocus",
-  "autoplay",
-  "checked",
-  "compact",
-  "controls",
-  "default",
-  "defer",
-  "disabled",
-  "formnovalidate",
-  "hidden",
-  "ismap",
-  "loop",
-  "multiple",
-  "muted",
-  "nomodule",
-  "noresize",
-  "noshade",
-  "novalidate",
-  "open",
-  "playsinline",
-  "readonly",
-  "required",
-  "reversed",
-  "selected",
-  "truespeed",
-];
 
 export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string>
   extends SSRParentNode<NodeTypeElement, SSRDocument>
@@ -96,7 +66,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         }
 
         // Handle boolean attributes: return boolean instead of string
-        if (BOOL_ATTRIBUTES.includes(sProp.toLowerCase())) {
+        if (BOOL_ATTRIBUTES.has(sProp.toLowerCase())) {
           return target.hasAttribute(sProp);
         }
 
@@ -120,7 +90,7 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
         }
 
         // Handle boolean attributes
-        if (BOOL_ATTRIBUTES.includes(sProp.toLowerCase())) {
+        if (BOOL_ATTRIBUTES.has(sProp.toLowerCase())) {
           if (value === true || value === "true" || value === "") {
             target.setAttribute(sProp, true);
           } else {
@@ -270,11 +240,11 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
       .filter(([, value]) => !isFn(value))
       .filter(
         ([name]) =>
-          !BOOL_ATTRIBUTES.includes(name.toLowerCase()) ||
+          !BOOL_ATTRIBUTES.has(name.toLowerCase()) ||
           (this._attributes[name] !== false && this._attributes[name] !== undefined),
       )
       .map(([name, value]) => {
-        if (BOOL_ATTRIBUTES.includes(name.toLowerCase())) return name.toLowerCase();
+        if (BOOL_ATTRIBUTES.has(name.toLowerCase())) return name.toLowerCase();
         return `${name}="${escapeAttribute(str(value))}"`;
       })
       .sort(([a], [b]) => a.localeCompare(b))

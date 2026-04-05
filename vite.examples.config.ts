@@ -1,6 +1,6 @@
 import replace from "@rollup/plugin-replace";
 import { defineConfig, type UserConfig } from "vite";
-import { clientNoSSRReplace, clientReplace } from "./build.shared.ts";
+import { clientNoSSRReplace, clientReplace, treeshake } from "./build.shared.ts";
 
 export default defineConfig(() => {
   const example = process.env.EXAMPLE || "counter";
@@ -11,6 +11,7 @@ export default defineConfig(() => {
       replace({
         ...clientReplace,
         ...clientNoSSRReplace,
+        __SEIDR_DEV__: "false",
         window: "{}",
         "process.env.NODE_ENV": JSON.stringify("production"),
         preventAssignment: true,
@@ -28,10 +29,9 @@ export default defineConfig(() => {
           format: "es",
           entryFileNames: `${example}.js`,
           codeSplitting: false,
-          compact: true,
         },
         context: "window",
-        treeshake: "smallest",
+        treeshake,
       },
     },
     esbuild: {

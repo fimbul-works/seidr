@@ -9,7 +9,7 @@ import { isEmpty } from "../type-guards/primitive-types";
  * @returns {boolean} `true` if in server, `false` otherwise
  */
 export const isServer = (): boolean => {
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return false;
   }
 

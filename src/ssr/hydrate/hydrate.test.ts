@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";
-import { enableClientMode, mockComponentScope } from "../../test-setup";
+import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
@@ -11,8 +11,6 @@ describe("Hydration", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
   let unmount: CleanupFunction;
-
-  mockComponentScope();
 
   beforeEach(() => {
     container = document.createElement("div");
@@ -45,20 +43,20 @@ describe("Hydration", () => {
   it("should clear registry when setting new context", () => {
     const data1: HydrationData = {
       ctxID: 0,
-      state: { 0: "first" },
+      state: { a: "first" },
       components: {},
     };
 
     setHydrationData(data1, container);
 
     // Create Seidr instances
-    const _seidr1 = new Seidr(0);
-    const _seidr2 = new Seidr(0);
+    const _seidr1 = new Seidr(0, { id: "a" });
+    const _seidr2 = new Seidr(0, { id: "b" });
 
     // Clear and set new context
     const data2: HydrationData = {
       ctxID: 1,
-      state: { 1: "second" },
+      state: { c: "second" },
       data: {},
       components: {},
     };
@@ -66,7 +64,7 @@ describe("Hydration", () => {
     setHydrationData(data2, container);
 
     // New instances should get numeric ID 0 again
-    const seidr3 = new Seidr(0);
+    const seidr3 = new Seidr(0, { id: "c" });
 
     // seidr3 should be hydrated with "second"
     expect(seidr3.value).toBe("second");
@@ -75,7 +73,7 @@ describe("Hydration", () => {
   it("should register Seidr instances in creation order", () => {
     const data: HydrationData = {
       ctxID: 0,
-      state: { 1: 100, 2: 200 },
+      state: { 0: 100, 1: 200 },
       data: {},
       components: {},
     };
@@ -95,7 +93,7 @@ describe("Hydration", () => {
   it("should only hydrate root observables", () => {
     const data: HydrationData = {
       ctxID: 0,
-      state: { 1: "root" },
+      state: { 0: "root" },
       data: {},
       components: {},
     };
@@ -113,8 +111,8 @@ describe("Hydration", () => {
     const data: HydrationData = {
       ctxID: 0,
       state: {
-        1: "John",
-        2: "Doe",
+        0: "John",
+        1: "Doe",
       },
       data: {},
       components: {},
@@ -141,8 +139,8 @@ describe("Hydration", () => {
       {
         ctxID: 0,
         state: {
-          1: "hydrated-name",
-          3: true,
+          0: "hydrated-name",
+          2: true,
         },
         data: {},
         components: {},
@@ -172,7 +170,12 @@ describe("Hydration", () => {
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
-    unmount = hydrate(TestComponent, container, { ctxID: 0, state: { 1: 42 }, data: {}, components: {} });
+    unmount = hydrate(TestComponent, container, {
+      ctxID: 0,
+      state: { "Component-2O6Bue-1": 42 },
+      data: {},
+      components: {},
+    });
 
     expect(container.textContent).toContain("Count: 42");
   });

@@ -12,12 +12,13 @@ import { getDocument } from "../get-document";
  * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
-  if (process.env.CORE_DISABLE_SSR) {
+  if (process.env.DISABLE_SSR) {
     return getDocument().createComment(text);
   }
 
   const doc = getDocument();
 
+  // If we are hydrating, we need to claim the node
   if (!isServer() && isHydrating()) {
     const ctx = getHydrationContext();
     if (ctx) {
@@ -30,9 +31,7 @@ export const $comment = (text: string): Comment => {
       if (node) {
         // This is a new node created due to a mismatch in claim()
         if (node.textContent !== str(text)) {
-          console.warn(
-            `[Hydration mismatch] Comment mismatch: expected "${str(text)}" but found "${node.textContent}"`,
-          );
+          console.warn(`[Hydration] Comment mismatch: expected "${str(text)}" but found "${node.textContent}".`);
           node.textContent = str(text);
         }
         return node;
@@ -42,6 +41,7 @@ export const $comment = (text: string): Comment => {
 
   const node = doc.createComment(text);
 
+  // If we are server-side, we need to track the node
   if (isServer()) {
     if (process.env.VITEST) {
       try {

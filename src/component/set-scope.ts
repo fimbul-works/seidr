@@ -7,4 +7,5 @@ import type { Component } from "./types";
  * @param {Component} component - The component to set as current.
  * @internal
  */
-export const setScope = (component: Component | null): void => getAppState().setData(DATA_KEY_COMPONENT_SCOPE, component);
+export const setScope = (component: Component | null): void =>
+  getAppState().setData(DATA_KEY_COMPONENT_SCOPE, component);

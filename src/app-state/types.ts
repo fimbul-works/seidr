@@ -3,6 +3,7 @@
  */
 declare global {
   var __SEIDR_APP_STATE_PROVIDER__: (() => AppState) | undefined;
+  var __SEIDR_APP_STATE_STRATEGIES__: Map<string, [CaptureDataFn, RestoreDataFn]> | undefined;
 }
 
 /**
@@ -13,7 +14,7 @@ export interface AppState {
   ctxID: number;
 
   /** Counter for generating unique IDs */
-  cid: number;
+  seidrIdCounter: number;
 
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;

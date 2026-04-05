@@ -1,34 +1,57 @@
 import { afterEach, beforeEach, vi } from "vitest";
-import * as onAttachedModule from "../component/on-attached";
-import * as onMountModule from "../component/on-mount";
-import * as onUnmountModule from "../component/on-unmount";
+import { getAppState } from "../app-state/app-state";
+import type { Component } from "../component/types";
+import { DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants";
 
 /**
  * Mocks the component lifecycle hooks for tests that need to run in SSR mode
  * but don't actually need scope tracking.
  */
 export function mockComponentScope() {
-  let onMountSpy: ReturnType<typeof vi.spyOn>;
-  let onUnmountSpy: ReturnType<typeof vi.spyOn>;
-  let onAttachedSpy: ReturnType<typeof vi.spyOn>;
+  const cleanups: (() => void)[] = [];
+
+  const mockComponent = {
+    [TYPE_PROP]: TYPE_COMPONENT,
+    id: "mock-component",
+    numericId: 0,
+    nextChildId: vi.fn(() => 0),
+    isMounted: true,
+    parent: null,
+    parentNode: null,
+    element: null,
+    children: new Map(),
+    startMarker: null,
+    endMarker: null,
+    createdIndex: [],
+    childCreatedIndex: new Map(),
+    onMount: vi.fn((fn) => fn(document.body)),
+    onAttached: vi.fn((fn) => fn()),
+    onUnmount: vi.fn((fn) => cleanups.push(fn)),
+    mount: vi.fn(),
+    unmount: vi.fn(() => mockComponent.cleanup()),
+    attached: vi.fn(),
+    cleanup: vi.fn(() => {
+      cleanups.forEach((fn) => fn());
+      cleanups.length = 0;
+    }),
+    addChild: vi.fn((c) => c),
+    removeChild: vi.fn(),
+    trackChild: vi.fn(),
+    untrackChild: vi.fn(),
+  } as unknown as Component;
 
   beforeEach(() => {
-    onMountSpy = vi.spyOn(onMountModule, "onMount").mockReturnValue({
-      onMount: () => {},
-    } as any);
-    onUnmountSpy = vi.spyOn(onUnmountModule, "onUnmount").mockReturnValue({
-      onUnmount: () => {},
-    } as any);
-    onAttachedSpy = vi.spyOn(onAttachedModule, "onAttached").mockReturnValue({
-      onAttached: () => {},
-    } as any);
+    getAppState().setData(DATA_KEY_COMPONENT_SCOPE, mockComponent);
+    vi.clearAllMocks();
+    cleanups.length = 0;
   });
 
   afterEach(() => {
-    onMountSpy?.mockRestore();
-    onUnmountSpy?.mockRestore();
-    onAttachedSpy?.mockRestore();
+    mockComponent.cleanup();
+    getAppState().deleteData(DATA_KEY_COMPONENT_SCOPE);
   });
+
+  return mockComponent;
 }
 
 /**

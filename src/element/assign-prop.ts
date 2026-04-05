@@ -1,6 +1,6 @@
-import { onMount } from "../component/on-mount";
-import { onUnmount } from "../component/on-unmount";
-import type { Seidr } from "../seidr";
+import { type Component, useScope } from "../component";
+import { BOOL_ATTRIBUTES } from "../constants";
+import { type Seidr, unwrapSeidr } from "../seidr";
 import { SeidrError } from "../types";
 import { isServer } from "../util/environment/is-server";
 import { camelToKebab } from "../util/string";
@@ -19,13 +19,22 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
 
+  let scope: Component | undefined;
+  try {
+    scope = useScope();
+  } catch (_e) {
+    // If we are not in a component, we can't set the ref
+  }
+
   // Handle ref
   if (prop === "ref") {
     if (!isSeidr<HTMLElement | null>(value)) {
       throw new SeidrError("ref must be a Seidr");
     }
-    onMount(() => (value.value = el), false);
-    onUnmount(() => (value.value = null), false);
+
+    scope?.onMount(() => (value.value = el));
+    scope?.onUnmount(() => (value.value = null));
+
     return;
   }
 
@@ -55,10 +64,8 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   if (prop === "style") {
     const setCSSText = (cssText?: string | Seidr<string>) => {
       if (isSeidr<string>(cssText)) {
-        onUnmount(
-          cssText.bind(el, (val, element) => (currentElement(element).style = val)),
-          false,
-        );
+        const cleanup = cssText.bind(el, (val, element) => (currentElement(element).style = val));
+        scope?.onUnmount(cleanup);
       } else {
         el.style = cssText as string;
       }
@@ -72,10 +79,8 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
         styleProp = camelToKebab(styleProp as string) as K;
       }
       if (isSeidr<CSSStyleDeclaration[K]>(styleValue)) {
-        onUnmount(
-          styleValue.bind(el, (val, element) => (currentElement(element).style[styleProp] = val)),
-          false,
-        );
+        const cleanup = styleValue.bind(el, (val, element) => (currentElement(element).style[styleProp] = val));
+        scope?.onUnmount(cleanup);
       } else {
         el.style[styleProp] = styleValue;
       }
@@ -83,23 +88,14 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
 
     if (isSeidr(value)) {
       if (isStr(value.value)) {
-        onUnmount(
-          value.bind(el, (val, element) => {
-            const activeElement = currentElement(element);
-            if (isSeidr<string>(val)) {
-              // edgecase
-              activeElement.style = val.value;
-            } else {
-              activeElement.style = val;
-            }
-          }),
-          false,
-        );
+        const cleanup = value.bind(el, (val, element) => {
+          const activeElement = currentElement(element);
+          activeElement.style = unwrapSeidr(val);
+        });
+        scope?.onUnmount(cleanup);
       } else {
-        onUnmount(
-          value.bind(el, (val, element) => (currentElement(element).style = val)),
-          false,
-        );
+        const cleanup = value.bind(el, (val, element) => (currentElement(element).style = val));
+        scope?.onUnmount(cleanup);
       }
     } else if (isStr(value)) {
       setCSSText(value);
@@ -111,10 +107,7 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
     return;
   }
 
-  const isBoolProp =
-    /^(?:allowfullscreen|async|autofocus|autoplay|checked|compact|controls|default|defer|disabled|formnovalidate|hidden|ismap|loop|multiple|muted|nomodule|noresize|noshade|novalidate|open|playsinline|readonly|required|reversed|selected|truespeed)$/.test(
-      effectiveProp.toLowerCase(),
-    );
+  const isBoolProp = BOOL_ATTRIBUTES.has(prop.toLowerCase());
 
   const applyValue = (target: any, value: any) => {
     if (useAttribute || !(effectiveProp in target) || isBoolProp) {
@@ -130,10 +123,8 @@ export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   };
 
   if (isSeidr(value)) {
-    onUnmount(
-      value.bind(el, (val, element) => applyValue(currentElement(element), val)),
-      false,
-    );
+    const cleanup = value.bind(el, (val, element) => applyValue(currentElement(element), val));
+    scope?.onUnmount(cleanup);
   } else {
     applyValue(currentElement(el), value);
   }

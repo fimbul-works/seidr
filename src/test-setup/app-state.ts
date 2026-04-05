@@ -28,11 +28,11 @@ export const clearTestAppState = (): void => {
 
 /**
  * Robust getAppState for tests.
- * Prefers AsyncLocalStorage ONLY during renderToString (identified by __SEIDR_SSR_ACTIVE__),
- * falls back to testAppState.
+ * Prefers AsyncLocalStorage ONLY during renderToString (identified by SEIDR_TEST_SSR) to ensure correct state isolation.
+ * Falls back to testAppState.
  */
 export const getAppState = (): AppState => {
-  if ((global as any).__SEIDR_SSR_ACTIVE__) {
+  if (process.env.SEIDR_TEST_SSR) {
     return contextLocalStorage.getStore() ?? testAppState;
   }
   return testAppState;
