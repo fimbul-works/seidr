@@ -25,7 +25,7 @@ export const getAppState = (): AppState => globalThis[PROVIDER_KEY]!();
  * @param {(() => AppState)} fn
  * @internal
  */
-export const setInternalAppState = (fn: () => AppState) => {
+export const setAppStateProvider = (fn: () => AppState) => {
   globalThis[PROVIDER_KEY] = fn;
 };
 

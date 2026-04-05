@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setInternalAppState } from "../../../app-state/app-state";
+import { setAppStateProvider } from "../../../app-state/app-state";
 import { component } from "../../../component/component";
 import { List } from "../../../components/list";
 import { Suspense } from "../../../components/suspense";
@@ -25,7 +25,7 @@ describe("Hydration Context", () => {
   beforeEach(() => {
     container = document.createElement("div");
     cleanupSsrMode = enableSSRMode();
-    setInternalAppState(getAppState);
+    setAppStateProvider(getAppState);
   });
 
   afterEach(() => {

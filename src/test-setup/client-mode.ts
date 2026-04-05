@@ -1,4 +1,4 @@
-import { setInternalAppState } from "../app-state/app-state";
+import { setAppStateProvider } from "../app-state/app-state";
 import { Seidr } from "../seidr/seidr";
 import { registerSeidrForSSR } from "../ssr/register-seidr";
 import type { CleanupFunction } from "../types";
@@ -26,7 +26,7 @@ export function enableClientMode(): CleanupFunction {
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
-  setInternalAppState(getAppState);
+  setAppStateProvider(getAppState);
 
   if (!isClient()) {
     global.window = currentState.window || {};

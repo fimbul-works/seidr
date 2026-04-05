@@ -1,4 +1,4 @@
-import { setInternalAppState } from "../app-state/app-state";
+import { setAppStateProvider } from "../app-state/app-state";
 import { contextLocalStorage } from "../app-state/app-state.server";
 import { createAppState } from "../app-state/storage";
 import type { AppState } from "../app-state/types";
@@ -42,5 +42,5 @@ export const getAppState = (): AppState => {
  * Initializes the app state for testing.
  */
 export function setupAppState() {
-  setInternalAppState(getAppState);
+  setAppStateProvider(getAppState);
 }

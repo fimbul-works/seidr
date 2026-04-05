@@ -8,7 +8,7 @@ import { PATH_DATA_KEY, PATH_SEIDR_ID } from "./constants";
 /** Clear cached path from appState */
 export const clearPathCache = () => {
   const state = getAppState();
-  const observable = state.getData<Seidr<string>>(PATH_DATA_KEY);
+  const observable = state?.getData<Seidr<string>>(PATH_DATA_KEY);
   if (observable) {
     observable.destroy();
     state.deleteData(PATH_DATA_KEY);

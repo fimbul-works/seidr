@@ -32,6 +32,3 @@ export const createAppState = (ctxId: number): AppState => ({
     return strategies.get(key) as [CaptureDataFn, RestoreDataFn] | undefined;
   },
 });
-
-/** @type {AppState} Client-side application state */
-export const appState: AppState = createAppState(0);

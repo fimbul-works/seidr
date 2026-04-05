@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setInternalAppState } from "../../app-state/app-state";
+import { setAppStateProvider } from "../../app-state/app-state";
 import { component } from "../../component/component";
 import { Suspense, Switch } from "../../components";
 import { List } from "../../components/list";
@@ -16,7 +16,7 @@ describe("buildStructureMap", () => {
   let cleanup: CleanupFunction;
   beforeEach(() => {
     cleanup = enableSSRMode();
-    setInternalAppState(getAppState);
+    setAppStateProvider(getAppState);
   });
 
   afterEach(() => cleanup?.());
