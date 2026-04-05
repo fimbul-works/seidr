@@ -96,7 +96,7 @@
     "@rollup/plugin-replace": "^6.0.3",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.5.0",
+    "@types/node": "^25.5.2",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",
     "jsdom": "^29.0.1",
@@ -107,8 +107,8 @@
     "terser": "^5.46.1",
     "tsdown": "^0.21.7",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vite": "^7.3.1",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
     "vitest": "^4.1.2"
   }
 }

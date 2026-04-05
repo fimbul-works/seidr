@@ -1,8 +1,8 @@
 import replace from "@rollup/plugin-replace";
-import { defineConfig } from "vite";
+import { defineConfig, type UserConfig } from "vite";
 import { clientNoSSRReplace, clientReplace } from "./build.shared.ts";
 
-export default defineConfig((_config) => {
+export default defineConfig(() => {
   const example = process.env.EXAMPLE || "counter";
 
   return {
@@ -27,7 +27,7 @@ export default defineConfig((_config) => {
           dir: "examples/dist",
           format: "es",
           entryFileNames: `${example}.js`,
-          inlineDynamicImports: true,
+          codeSplitting: false,
           compact: true,
         },
         context: "window",
@@ -41,5 +41,5 @@ export default defineConfig((_config) => {
       port: 3000,
       open: "/examples/index.html",
     },
-  };
+  } as UserConfig;
 });
