@@ -1,5 +1,6 @@
 import { getAppState, getNextSeidrId } from "../app-state/app-state";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
+import { isServer } from "../util";
 import { scheduleUpdate } from "./scheduler";
 import type { Observable, ObservableOptions } from "./types";
 
@@ -250,9 +251,7 @@ export class Seidr<T = any> implements Observable<T> {
     if (!Object.is(this.v, v)) {
       this.v = v;
 
-      if (!process.env.USE_SCHEDULER) {
-        this.notify();
-      } else if (this.options.sync) {
+      if (this.options.sync || isServer()) {
         this.notify();
       } else {
         scheduleUpdate(this);

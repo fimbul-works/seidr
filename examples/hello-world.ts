@@ -1,4 +1,4 @@
-import { $, mount, Seidr } from "../src/index.core.js";
+import { $, mount, Seidr } from "../src/index";
 
 export const HelloWorld = () => {
   const textContent = new Seidr("Click me");

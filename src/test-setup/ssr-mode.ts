@@ -1,11 +1,13 @@
 import { setAppStateProvider } from "../app-state/app-state";
+import { setDocumentProvider } from "../dom/get-document";
+import { getSSRDocument } from "../dom/get-document.ssr";
 import { Seidr } from "../seidr/seidr";
 import { registerSeidrForSSR } from "../ssr/register-seidr";
 import type { CleanupFunction } from "../types";
 import { clearTestAppState, getAppState } from "./app-state";
 import type { TestEnvironmentState } from "./types";
 
-export { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.server";
+export { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.ssr";
 export { clearHydrationData } from "../ssr/hydrate/storage";
 
 /**
@@ -17,14 +19,17 @@ export { clearHydrationData } from "../ssr/hydrate/storage";
 export const enableSSRMode = (): CleanupFunction => {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
+    importMetaEnvSSR: import.meta.env.SSR,
     window: global.window,
   };
 
   process.env.SEIDR_TEST_SSR = "true";
+  import.meta.env.SSR = true;
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
   setAppStateProvider(getAppState);
+  setDocumentProvider(getSSRDocument);
 
   clearTestAppState();
   getAppState().isSSR = true;
@@ -32,6 +37,10 @@ export const enableSSRMode = (): CleanupFunction => {
   return () => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
+
+    if (currentState.importMetaEnvSSR !== undefined) import.meta.env.SSR = currentState.importMetaEnvSSR;
+    else import.meta.env.SSR = false;
+
     if (currentState.window !== undefined) global.window = currentState.window;
   };
 };

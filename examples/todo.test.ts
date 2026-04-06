@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { type CleanupFunction, component, mount } from "../src/index.core";
-import { TodoApp } from "./todo";
+import { type CleanupFunction, component, mount } from "../src/index";
+import { Todo, TodoApp } from "./todo";
 
 describe("TODO Example", () => {
   let dom: JSDOM;
@@ -54,7 +54,7 @@ describe("TODO Example", () => {
   });
 
   it("should cleanup properly when destroyed", async () => {
-    const todoComponent = component(TodoApp)([]);
+    const todoComponent = component<Todo[]>(TodoApp)([]);
 
     const unmount = mount(todoComponent, document.body);
     unmount();

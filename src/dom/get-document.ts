@@ -1,28 +1,46 @@
-import { getAppState } from "../app-state/app-state";
-import { DATA_KEY_SSR_DOCUMENT } from "../constants";
-import { SSRDocument } from "../ssr/dom";
 import { SeidrError } from "../types";
-import { isClient, isServer } from "../util/environment";
 
 /**
- * Cross-environment getDocument.
+ * Global type declaration for the document provider.
+ */
+declare global {
+  var __SEIDR_DOCUMENT_PROVIDER__: (() => Document) | undefined;
+}
+
+/** Key that is shared across build targets */
+const DOC_KEY = "__SEIDR_DOCUMENT_PROVIDER__";
+
+/**
+ * Default client-side getDocument implementation.
  *
  * @returns {Document} Document object.
  */
-export const getDocument: () => Document = (): Document => {
-  if (isClient()) {
-    return document;
-  } else if (isServer()) {
-    const appState = getAppState();
-
-    if (appState.hasData(DATA_KEY_SSR_DOCUMENT)) {
-      return appState.getData<Document>(DATA_KEY_SSR_DOCUMENT)!;
-    }
-
-    const doc = new SSRDocument() as unknown as Document;
-    appState.setData(DATA_KEY_SSR_DOCUMENT, doc);
-    return doc;
-  } else {
-    throw new SeidrError("getDocument not initialized");
+export const defaultClientDocument: () => Document = (): Document => {
+  if (typeof window !== "undefined") {
+    return window.document;
   }
+
+  throw new SeidrError("getDocument not initialized");
+};
+
+/** AppState provider is shared across built bundles */
+if (!globalThis[DOC_KEY]) {
+  globalThis[DOC_KEY] = defaultClientDocument;
+}
+
+/**
+ * Get the current document.
+ *
+ * @returns {Document} Document object.
+ */
+export const getDocument = (): Document => globalThis[DOC_KEY]!();
+
+/**
+ * Cross-environment getDocument contract dependency injector.
+ *
+ * @param {(() => Document)} fn
+ * @internal
+ */
+export const setDocumentProvider = (fn: () => Document) => {
+  globalThis[DOC_KEY] = fn;
 };

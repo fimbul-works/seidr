@@ -1,11 +1,11 @@
 export { resetNextId } from "../app-state/reset-next-id";
 export { clearPathCache } from "../router/get-current-path";
-export * from "./app-state";
-export * from "./client-mode";
-export * from "./dom";
-export * from "./dual-mode";
-export * from "./lifecycle";
-export * from "./mock";
+export { clearTestAppState, getAppState, setAppStateID, setupAppState, testAppState } from "./app-state";
+export { enableClientMode } from "./client-mode";
+export { expectHtmlToBe, normalizeHtml, renderToHtml } from "./dom";
+export { DualModeContext, describeDualMode, itHasParity } from "./dual-mode";
+export { setupTestLifecycle } from "./lifecycle";
+export { mockComponentScope, mockNavigator } from "./mock";
 export { performDefaultSetup } from "./setup";
-export * from "./ssr-mode";
+export { enableSSRMode, clearHydrationData, resetRequestIdCounter, runWithAppState } from "./ssr-mode";
 export * from "./types";

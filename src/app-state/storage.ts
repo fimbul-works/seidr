@@ -1,12 +1,5 @@
+import { isSeidr } from "../util/type-guards/obserbable-types";
 import type { AppState, CaptureDataFn, RestoreDataFn } from "./types";
-
-/** Key that is shared across build targets */
-const DATA_STRATEGIES_KEY = "__SEIDR_APP_STATE_STRATEGIES__";
-
-/** AppState provider is shared across built bundles */
-if (!globalThis[DATA_STRATEGIES_KEY]) {
-  globalThis[DATA_STRATEGIES_KEY] = new Map<string, [CaptureDataFn, RestoreDataFn]>();
-}
 
 /**
  * Creates a new application state instance.
@@ -14,10 +7,11 @@ if (!globalThis[DATA_STRATEGIES_KEY]) {
  * @returns {AppState} The application state instance
  */
 export const createAppState = (ctxId: number): AppState => ({
-  ctxID: ctxId,
+  ctxId,
   seidrIdCounter: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
+  strategies: new Map<string, [CaptureDataFn, RestoreDataFn]>(),
   hasData(key: string): boolean {
     return this.data.has(key);
   },
@@ -31,9 +25,19 @@ export const createAppState = (ctxId: number): AppState => ({
     return this.data.delete(key);
   },
   defineDataStrategy(key: string, captureFn: CaptureDataFn, restoreFn: RestoreDataFn): void {
-    globalThis[DATA_STRATEGIES_KEY]?.set(key, [captureFn, restoreFn]);
+    this.strategies.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy(key: string): [CaptureDataFn, RestoreDataFn] | undefined {
-    return globalThis[DATA_STRATEGIES_KEY]?.get(key) as [CaptureDataFn, RestoreDataFn] | undefined;
+    return this.strategies.get(key) as [CaptureDataFn, RestoreDataFn] | undefined;
+  },
+  destroy(): void {
+    for (const value of this.data.values()) {
+      if (isSeidr(value)) {
+        value.destroy();
+      }
+    }
+    this.data.clear();
+    this.markers.clear();
+    this.strategies.clear();
   },
 });

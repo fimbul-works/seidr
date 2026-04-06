@@ -3,7 +3,7 @@ import type { Component, ComponentFactoryFunction } from "../component/types";
 import { useScope } from "../component/use-scope";
 import { wrapComponent } from "../component/wrap-component";
 import { Seidr, unwrapSeidr } from "../seidr";
-import { isHydrating } from "../ssr/hydrate/storage";
+import { isHydrating } from "../ssr/hydrate";
 import { getSSRScope } from "../ssr/ssr-scope";
 import { isServer } from "../util/environment/is-server";
 import { isSeidr } from "../util/type-guards/obserbable-types";
@@ -42,21 +42,24 @@ export const Suspense = <T>(
     const state = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${suspenseId}.state` });
     const value = new Seidr<T | null>(null, { id: `${suspenseId}.value` });
     const error = new Seidr<Error | null>(null, { id: `${suspenseId}.error` });
-    const shouldTrack = !process.env.DISABLE_SSR && isServer();
+    const isSSR = !process.env.DISABLE_SSR && isServer();
 
     let currentPromiseId = 0;
 
+    /**
+     * Handles a promise by setting the state to pending and then resolving or rejecting based on the promise result.
+     * @param {Promise<T>} currentPromise The promise to handle
+     * @returns {Promise<void>} A promise that resolves when the promise is handled
+     */
     const handlePromise = async (currentPromise: Promise<T>): Promise<void> => {
       if (!currentPromise) {
         return;
       }
 
-      const isHydratingNow = !process.env.DISABLE_SSR && !isServer() && isHydrating();
-
-      if (!process.env.DISABLE_SSR && !getSSRScope()?.isStable && !isHydratingNow) {
+      const currentId = ++currentPromiseId;
+      if (!process.env.DISABLE_SSR && !isHydrating()) {
         state.value = PROMISE_PENDING;
       }
-      const currentId = ++currentPromiseId;
 
       try {
         const resolved = await currentPromise;
@@ -77,7 +80,7 @@ export const Suspense = <T>(
     if (initialProm) {
       // Check if it's already resolved in the state (for hydration)
       if (initialProm instanceof Promise) {
-        handlePromise(shouldTrack ? (getSSRScope()?.addPromise(initialProm) ?? initialProm) : initialProm);
+        handlePromise(isSSR ? (getSSRScope()?.addPromise(initialProm) ?? initialProm) : initialProm);
       } else {
         // Already a value, resolve synchronously
         value.value = initialProm;
@@ -88,7 +91,7 @@ export const Suspense = <T>(
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
       suspenseComponent.onUnmount(
-        promiseOrSeidr.observe((prom) => handlePromise(shouldTrack ? (getSSRScope()?.addPromise(prom) ?? prom) : prom)),
+        promiseOrSeidr.observe((prom) => handlePromise(isSSR ? (getSSRScope()?.addPromise(prom) ?? prom) : prom)),
       );
     }
 

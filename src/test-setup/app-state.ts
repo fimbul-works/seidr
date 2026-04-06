@@ -1,8 +1,7 @@
 import { setAppStateProvider } from "../app-state/app-state";
-import { contextLocalStorage } from "../app-state/app-state.server";
+import { contextLocalStorage } from "../app-state/app-state.ssr";
 import { createAppState } from "../app-state/storage";
 import type { AppState } from "../app-state/types";
-import { clearPathCache } from "../router/get-current-path";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);
@@ -12,7 +11,7 @@ testAppState.isSSR = false;
  * Set the app state ID for tests.
  */
 export const setAppStateID = (id: number): void => {
-  testAppState.ctxID = id;
+  testAppState.ctxId = id;
 };
 
 /**
@@ -20,7 +19,6 @@ export const setAppStateID = (id: number): void => {
  * Does NOT reset IDs to avoid collisions with top-level observables.
  */
 export const clearTestAppState = (): void => {
-  clearPathCache();
   testAppState.data.clear();
   testAppState.markers.clear();
   testAppState.isSSR = false;

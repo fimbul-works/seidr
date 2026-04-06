@@ -18,11 +18,7 @@ export const isServer = (): boolean => {
     if (!isEmpty(state?.isSSR)) return state.isSSR;
   }
 
-  if (typeof process !== "undefined" && (process.env.SSR || process.env.SEIDR_TEST_SSR)) return true;
-  if (typeof import.meta !== "undefined") {
-    const env = import.meta.env;
-    if (env?.SSR) return true;
-    if (env?.env?.SSR) return true;
-  }
+  if (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR) return true;
+  if (typeof import.meta !== "undefined") return !!import.meta.env?.SSR;
   return false;
 };

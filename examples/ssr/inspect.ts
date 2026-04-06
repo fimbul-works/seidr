@@ -1,4 +1,4 @@
-import { renderToString } from "../../src/ssr/render-to-string.js";
+import { renderToString } from "../../src/index.ssr.js";
 import { enableSSRMode } from "../../src/test-setup/ssr-mode.js";
 import { BlogApp } from "./app.js";
 

@@ -1,34 +1,24 @@
 import type { TreeshakingOptions } from "tsdown";
 
-export const clientReplace = {
-  "process.env.USE_SCHEDULER": "true",
-  "process.env.SSR": "false",
-  "process.env.DISABLE_SSR": "false",
+export const commonReplace = {
   "process.env.VITEST": "false",
   "process.env.SEIDR_TEST_SSR": "false",
   "process.env.DEBUG": "false",
-  "isClient()": "true",
-  "isServer()": "false",
-  "import.meta.env.SSR": "false",
 };
 
-export const nodeReplace = {
-  "process.env.USE_SCHEDULER": "false",
-  "process.env.SSR": "true",
+export const mainReplace = {
+  ...commonReplace,
   "process.env.DISABLE_SSR": "false",
-  "process.env.VITEST": "false",
-  "process.env.SEIDR_TEST_SSR": "false",
-  "process.env.DEBUG": "false",
-  "isClient()": "false",
-  "isServer()": "true",
-  window: "undefined",
-  "import.meta.env.SSR": "true",
 };
 
 export const clientNoSSRReplace = {
-  ...clientReplace,
+  ...mainReplace,
+  "process.env.USE_SCHEDULER": "true",
   "process.env.DISABLE_SSR": "true",
+  "import.meta.env.SSR": "false",
   "isHydrating()": "false",
+  "isClient()": "true",
+  "isServer()": "false",
 };
 
 export const treeshake: TreeshakingOptions = {

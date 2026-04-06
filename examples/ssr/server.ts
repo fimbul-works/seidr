@@ -1,6 +1,5 @@
 import fs from "node:fs/promises";
 import express, { type Request, type Response } from "express";
-import { marked } from "marked";
 import type { ViteDevServer } from "vite";
 import { str } from "../../src/util/string.js";
 import { getPost, getPosts } from "./blog-api.js";

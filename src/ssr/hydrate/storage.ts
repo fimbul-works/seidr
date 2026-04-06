@@ -2,7 +2,7 @@ import { getAppState, setAppStateID } from "../../app-state/app-state";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants";
 import type { Seidr } from "../../seidr/seidr";
 import { SeidrError } from "../../types";
-import { isEmpty } from "../../util";
+import { isEmpty } from "../../util/type-guards/primitive-types";
 import type { HydrationData, HydrationDataStorage } from "./types";
 
 /**

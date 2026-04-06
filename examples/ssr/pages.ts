@@ -13,8 +13,9 @@ import {
   List,
   Seidr,
   Suspense,
+  type SuspenseState,
   Switch,
-} from "../../src/index.core.js";
+} from "../../src/index.js";
 import { Link, useParams } from "../../src/router/index.js";
 import type { BlogPost } from "./types.js";
 
@@ -100,7 +101,7 @@ export const PostPage = component(() => {
     });
   }
 
-  return Suspense(postPromise, ({ state, value, error }) => {
+  return Suspense(postPromise, ({ state, value, error }: SuspenseState<BlogPost | null>) => {
     return Switch(state, {
       pending: () => $div({}, "Loading post..."),
       resolved: () => {

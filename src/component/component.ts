@@ -67,6 +67,7 @@ export const component = <P = void>(
      * @returns The component ID string
      */
     const buildComponentId = (numericId: number): string =>
+      // @ts-expect-error
       !__SEIDR_DEV__ ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
 
     // Determine numeric by either consuming a pre-defined component ID, or use the parent component's next child ID
@@ -215,7 +216,7 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
-        if (!process.env.DISABLE_SSR && !isSSR && isHydrating()) {
+        if (!process.env.DISABLE_SSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
 
@@ -348,37 +349,38 @@ export const component = <P = void>(
       }
     } catch (err) {
       instance.unmount();
+      // @ts-expect-error
       if (__SEIDR_DEV__) {
         console.error(`[${instance.id}] Error occurred`, err);
       }
       throw err;
     } finally {
       setScope(parentComponent);
-      if (!process.env.DISABLE_SSR && !isServer() && isHydrating()) {
+      if (!process.env.DISABLE_SSR && isHydrating()) {
         getHydrationContext()?.popComponent();
       }
     }
 
-    /**
-     * Recursively applies the data attributes to root HTMLElements.
-     * @param {ComponentChildren} item - The child to search
-     */
-    const applyRootAttributes = (item: ComponentChildren): void => {
-      if (isHTMLElement(item)) {
-        // Apply app root marker if top-level
-        if (!parentComponent) {
-          item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
-        }
-      } else if (isComponent(item)) {
-        applyRootAttributes(item.element);
-      } else if (isArray(item)) {
-        for (const child of item) {
-          applyRootAttributes(child);
-        }
-      }
-    };
-
     if (!process.env.DISABLE_SSR) {
+      /**
+       * Recursively applies the data attributes to root HTMLElements.
+       * @param {ComponentChildren} item - The child to search
+       */
+      const applyRootAttributes = (item: ComponentChildren): void => {
+        if (isHTMLElement(item)) {
+          // Apply app root marker if top-level
+          if (!parentComponent) {
+            item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
+          }
+        } else if (isComponent(item)) {
+          applyRootAttributes(item.element);
+        } else if (isArray(item)) {
+          for (const child of item) {
+            applyRootAttributes(child);
+          }
+        }
+      };
+
       applyRootAttributes(element);
     }
 

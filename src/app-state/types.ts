@@ -3,7 +3,6 @@
  */
 declare global {
   var __SEIDR_APP_STATE_PROVIDER__: (() => AppState) | undefined;
-  var __SEIDR_APP_STATE_STRATEGIES__: Map<string, [CaptureDataFn, RestoreDataFn]> | undefined;
 }
 
 /**
@@ -11,7 +10,7 @@ declare global {
  */
 export interface AppState {
   /** Application state ID is used to differentiate state between requests */
-  ctxID: number;
+  ctxId: number;
 
   /** Counter for generating unique IDs */
   seidrIdCounter: number;
@@ -22,39 +21,47 @@ export interface AppState {
   /** Application data store */
   data: Map<string, any>;
 
+  /** Data strategies for hydration */
+  strategies: Map<string, [CaptureDataFn, RestoreDataFn]>;
+
   /** Whether the current state is for SSR */
   isSSR?: boolean;
 
   /**
-   * Check if data exists
+   * Check if data exists.
+   *
    * @param {string} key - The key to check
    * @returns {boolean} True if data exists, false otherwise
    */
   hasData(key: string): boolean;
 
   /**
-   * Get data
+   * Get data.
+   *
    * @param {string} key - The key to get
    * @returns {T | undefined} The data, or undefined if not found
    */
   getData<T>(key: string): T | undefined;
 
   /**
-   * Set data
+   * Set data.
+   *
    * @param {string} key - The key to set
    * @param {T} value - The value to set
    */
   setData<T>(key: string, value: T): void;
 
   /**
-   * Delete data
+   * Delete data.
+   *
    * @param {string} key - The key to delete
    * @returns {boolean} True if data was deleted, false otherwise
    */
   deleteData(key: string): boolean;
 
   /**
-   * Define a data strategy for hydration
+   * Define a data strategy for hydration.
+   *
    * @param {string} key - The key to define a strategy for
    * @param {CaptureDataFn} captureFn - Function to capture data for hydration
    * @param {RestoreDataFn} restoreFn - Function to restore data for hydration
@@ -62,11 +69,17 @@ export interface AppState {
   defineDataStrategy(key: string, captureFn: CaptureDataFn, restoreFn: RestoreDataFn): void;
 
   /**
-   * Get data strategy for a key
+   * Get data strategy for a key.
+   *
    * @param {string} key - The key to get a strategy for
    * @returns {[CaptureDataFn, RestoreDataFn] | undefined} The data strategy, or undefined if not found
    */
   getDataStrategy(key: string): [CaptureDataFn, RestoreDataFn] | undefined;
+
+  /**
+   * Destroy the application state.
+   */
+  destroy(): void;
 }
 
 /** Function to capture data for hydration */

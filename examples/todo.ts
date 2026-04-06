@@ -1,19 +1,6 @@
-import {
-  $button,
-  $checkbox,
-  $div,
-  $form,
-  $input,
-  $li,
-  $span,
-  $ul,
-  bindInput,
-  List,
-  mount,
-  Seidr,
-} from "../src/index.core.js";
+import { $button, $checkbox, $div, $form, $input, $li, $span, $ul, bindInput, List, mount, Seidr } from "../src/index";
 
-type Todo = { id: number; text: string; completed: boolean };
+export type Todo = { id: number; text: string; completed: boolean };
 
 const TodoItem = ({ todo, onUpdate, onDelete }: { todo: Todo; onUpdate: () => void; onDelete: () => void }) => {
   const isCompleted = new Seidr(todo.completed);
@@ -76,7 +63,7 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
       List(
         todos,
         (item) => item.id,
-        (item) =>
+        (item: Todo) =>
           TodoItem({
             todo: item,
             onUpdate() {

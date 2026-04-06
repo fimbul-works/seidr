@@ -46,8 +46,8 @@ export const DATA_KEY_HYDRATION_DATA = "seidr.hydration.data";
 /** Hydration context key. */
 export const DATA_KEY_HYDRATION_CONTEXT = "seidr.hydration.context";
 
-/** SSR document data key. */
-export const DATA_KEY_SSR_DOCUMENT = "seidr.ssr.document";
+/** Document data key. */
+export const DATA_KEY_DOCUMENT = "seidr.document";
 
 /** SSR scope data key. */
 export const DATA_KEY_SSR_SCOPE = "seidr.ssr.scope";

@@ -4,7 +4,6 @@ import { appendChild } from "../dom/append-child";
 import { getDocument } from "../dom/get-document";
 import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
 import type { HydrationMismatchNode } from "../ssr/hydrate/context/types";
-import { isHydrating } from "../ssr/hydrate/storage";
 import { isServer } from "../util/environment/is-server";
 import { isArray, isEmpty, isObj, isStr } from "../util/type-guards";
 import { assignProps } from "./assign-props";
@@ -25,15 +24,6 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   props?: SeidrElementProps<K> | null,
   children?: SeidrChild | SeidrChild[],
 ): HTMLElementTagNameMap[K] => {
-  let scope: Component | null = null;
-  try {
-    scope = useScope();
-  } catch (error) {
-    if (!process.env.VITEST) {
-      console.error(error);
-    }
-  }
-
   /**
    * Apply properties and children to an element.
    *
@@ -42,7 +32,15 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
    */
   const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
     if (isServer()) {
-      scope?.trackChild(el);
+      let scope: Component | null = null;
+      try {
+        scope = useScope();
+        scope?.trackChild(el);
+      } catch (error) {
+        if (!process.env.VITEST) {
+          console.error(error);
+        }
+      }
     }
 
     if (isObj(props)) {
@@ -65,7 +63,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
     return el;
   };
 
-  // Non-SSR or server side
+  // Core bundle and SSR create elements directly
   if (process.env.DISABLE_SSR || isServer()) {
     return decorateElement(getDocument().createElement(tagName));
   }
@@ -74,7 +72,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   let element: HTMLElementTagNameMap[K];
 
   const hydrationContext = getHydrationContext();
-  if (!isServer() && isHydrating() && hydrationContext) {
+  if (hydrationContext) {
     if (hydrationContext.isMismatched()) {
       console.warn(`[Hydration] Mismatched element found ${tagName}.`);
       element = getDocument().createElement(tagName);

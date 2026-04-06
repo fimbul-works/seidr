@@ -1,10 +1,10 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
 import type { ReactiveCSSStyleDeclaration } from "../../element";
 import type { NodeTypeElement } from "../../types";
-import { escapeAttribute } from "../../util/escape";
 import { camelToKebab, str } from "../../util/string";
 import { isComment } from "../../util/type-guards/dom-node-types";
 import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types";
+import { escapeAttribute } from "../util/escape";
 import type { SSRDocument } from "./ssr-document";
 import type { SSRNodeList } from "./ssr-node-list";
 import { SSRParentNode } from "./ssr-parent-node";

@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $query, $queryAll, type CleanupFunction, component, mount } from "../src/index.core";
+import { $query, $queryAll, type CleanupFunction, component, mount } from "../src/index";
 import { Counter } from "./counter";
 
 describe("Counter Example", () => {

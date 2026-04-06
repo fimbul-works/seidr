@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../../app-state/app-state";
-import { resetRequestIdCounter } from "../../app-state/app-state.server";
+import { resetRequestIdCounter } from "../../app-state/app-state.ssr";
 import { component, useScope } from "../../component";
 import { $ } from "../../element";
 import { Seidr } from "../../seidr";

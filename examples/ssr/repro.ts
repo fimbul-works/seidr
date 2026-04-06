@@ -1,5 +1,5 @@
 import puppeteer from "puppeteer";
-import { buildStructureMap } from "../../src/ssr/structure/index";
+import { buildStructureMap } from "../../src/ssr/structure/index.js";
 
 async function runTest(url: string) {
   const browser = await puppeteer.launch({

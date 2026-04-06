@@ -5,14 +5,14 @@ import { createAppState } from "./storage";
 import type { AppState } from "./types";
 
 /** Key that is shared across build targets */
-export const PROVIDER_KEY = "__SEIDR_APP_STATE_PROVIDER__";
+const APP_STATE_KEY = "__SEIDR_APP_STATE_PROVIDER__";
 
 /** Default application state */
 const defaultAppState: AppState = createAppState(0);
 
 /** AppState provider is shared across built bundles */
-if (!globalThis[PROVIDER_KEY]) {
-  globalThis[PROVIDER_KEY] = () => defaultAppState;
+if (!globalThis[APP_STATE_KEY]) {
+  globalThis[APP_STATE_KEY] = () => defaultAppState;
 }
 
 /**
@@ -20,7 +20,7 @@ if (!globalThis[PROVIDER_KEY]) {
  *
  * @returns {AppState} AppState object.
  */
-export const getAppState = (): AppState => globalThis[PROVIDER_KEY]!();
+export const getAppState = (): AppState => globalThis[APP_STATE_KEY]!();
 
 /**
  * Cross-environment getAppState contract dependency injector.
@@ -29,7 +29,7 @@ export const getAppState = (): AppState => globalThis[PROVIDER_KEY]!();
  * @internal
  */
 export const setAppStateProvider = (fn: () => AppState) => {
-  globalThis[PROVIDER_KEY] = fn;
+  globalThis[APP_STATE_KEY] = fn;
 };
 
 /**
@@ -39,7 +39,7 @@ export const setAppStateProvider = (fn: () => AppState) => {
  */
 export const setAppStateID = (id: number) => {
   const state = getAppState();
-  state.ctxID = id;
+  state.ctxId = id;
   state.seidrIdCounter = 0;
   state.markers.clear();
   state.data.clear();
@@ -50,7 +50,7 @@ export const setAppStateID = (id: number) => {
  *
  * @returns {number} The state ID.
  */
-export const getAppStateID = () => getAppState().ctxID;
+export const getAppStateID = () => getAppState().ctxId;
 
 /**
  * Gets the next available Seidr ID for the AppState.

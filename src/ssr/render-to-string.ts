@@ -1,28 +1,18 @@
 import { getAppState } from "../app-state/app-state";
-import { runWithAppState } from "../app-state/app-state.server";
+import { runWithAppState } from "../app-state/app-state.ssr";
 import type { ComponentReturnValue } from "../component";
 import { mountComponent } from "../component/util/mount-component";
 import { wrapComponent } from "../component/wrap-component";
 import { getDocument } from "../dom/get-document";
-import { PATH_DATA_KEY, PATH_SEIDR_ID } from "../router/constants";
-import { clearPathCache } from "../router/get-current-path";
-import { Seidr } from "../seidr";
-import { noHydrate } from "../seidr/constants";
+import { initSSRDocument } from "../dom/get-document.ssr";
 import { SeidrError } from "../types";
-import { isStr } from "../util/type-guards/index";
 import { SSRScope, setSSRScope } from "./ssr-scope";
 import type { SSRRenderResult } from "./types";
 
 /**
  * Options for rendering a component to string during SSR.
  */
-export interface RenderToStringOptions {
-  /** Optional existing SSR scope (creates new one if not provided) */
-  scope?: SSRScope;
-
-  /** Initial URL path for routing (defaults to "/") */
-  path?: string;
-}
+export type RenderToStringOptions = Record<string, any>;
 
 /**
  * Renders a component to an HTML string with hydration data capture.
@@ -37,6 +27,7 @@ export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
   options: RenderToStringOptions = {},
 ): Promise<SSRRenderResult> {
+  // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
   if (process.env.VITEST) {
     prevSSR = process.env.VITEST && process.env.SEIDR_TEST_SSR;
@@ -50,11 +41,9 @@ export async function renderToString<C extends ComponentReturnValue>(
         throw new SeidrError("No AppState available.");
       }
 
-      if (isStr(options.path)) {
-        state.setData(PATH_DATA_KEY, new Seidr<string>(options.path, { ...noHydrate, id: PATH_SEIDR_ID }));
-      }
+      initSSRDocument();
 
-      const activeScope = options.scope || new SSRScope();
+      const activeScope = new SSRScope();
       setSSRScope(activeScope);
 
       try {
@@ -75,24 +64,22 @@ export async function renderToString<C extends ComponentReturnValue>(
 
         const hydrationData = {
           ...activeScope.captureHydrationData(),
-          ctxID: state.ctxID,
+          ctxID: state.ctxId,
         };
 
         comp.unmount();
-        clearPathCache();
 
         return { html, hydrationData };
       } finally {
         setSSRScope(undefined);
-        if (state.markers) {
-          state.markers.clear();
-        }
+        state.destroy();
         if (!options.scope) {
           activeScope.clear();
         }
       }
     });
   } finally {
+    // Restore previous SSR state for tests
     if (process.env.VITEST) {
       if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
       else process.env.SEIDR_TEST_SSR = prevSSR;

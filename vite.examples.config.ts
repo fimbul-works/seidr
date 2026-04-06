@@ -1,6 +1,7 @@
 import replace from "@rollup/plugin-replace";
 import { defineConfig, type UserConfig } from "vite";
-import { clientNoSSRReplace, clientReplace, treeshake } from "./build.shared.ts";
+import { clientNoSSRReplace, treeshake } from "./build.shared.ts";
+import { convertDevFlag } from "./scripts/convert-dev-flag.ts";
 
 export default defineConfig(() => {
   const example = process.env.EXAMPLE || "counter";
@@ -9,13 +10,13 @@ export default defineConfig(() => {
     root: "examples",
     plugins: [
       replace({
-        ...clientReplace,
         ...clientNoSSRReplace,
         __SEIDR_DEV__: "false",
         window: "{}",
         "process.env.NODE_ENV": JSON.stringify("production"),
         preventAssignment: true,
       }),
+      convertDevFlag(),
     ],
     build: {
       outDir: "examples/dist",

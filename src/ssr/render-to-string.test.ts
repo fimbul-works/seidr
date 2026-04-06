@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../examples/todo";
-import { resetRequestIdCounter } from "../app-state/app-state.server";
+import { resetRequestIdCounter } from "../app-state/app-state.ssr";
 import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";

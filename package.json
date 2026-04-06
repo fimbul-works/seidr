@@ -37,18 +37,13 @@
   "exports": {
     ".": {
       "types": "./dist/seidr.d.ts",
-      "node": {
-        "import": "./dist/seidr.server.mjs",
-        "require": "./dist/seidr.server.cjs"
-      },
-      "browser": {
-        "import": "./dist/seidr.js",
-        "require": "./dist/seidr.cjs"
-      },
-      "default": {
-        "import": "./dist/seidr.server.mjs",
-        "require": "./dist/seidr.server.cjs"
-      }
+      "import": "./dist/seidr.js",
+      "require": "./dist/seidr.cjs"
+    },
+    "./ssr": {
+      "types": "./dist/seidr.ssr.d.ts",
+      "import": "./dist/seidr.ssr.js",
+      "require": "./dist/seidr.ssr.cjs"
     },
     "./core": {
       "types": "./dist/seidr.core.d.ts",

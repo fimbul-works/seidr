@@ -1,4 +1,4 @@
-import { str } from "./string";
+import { str } from "../../util/string";
 
 /**
  * Escapes special characters for use in HTML text and attributes.

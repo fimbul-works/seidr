@@ -12,16 +12,19 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
   let container: HTMLElement;
   let document: Document;
   let unmount: CleanupFunction;
+  let consoleSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
     document = getDocument();
     container = document.createElement("div");
     document.body.appendChild(container);
+    consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
   });
 
   afterEach(() => {
     unmount?.();
     document.body.removeChild(container);
+    consoleSpy.mockRestore();
   });
 
   describe("Basic error boundary functionality", () => {
@@ -64,8 +67,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
   describe("Root component error handling", () => {
     it("should use error boundary when provided", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
       const comp = Safe(
         () => {
           throw new SeidrError("Root error");
@@ -79,8 +80,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
       expect(consoleSpy).toHaveBeenCalled();
       expect(container.textContent).toBe("Recovered");
-
-      consoleSpy.mockRestore();
     });
 
     it("should mark root component even when error occurs", () => {
@@ -208,8 +207,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
     });
 
     it("should handle error boundary that throws", () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-
       expect(() => {
         Safe(
           () => {
@@ -220,8 +217,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
           },
         );
       }).toThrow("Error boundary failed");
-
-      consoleSpy.mockRestore();
     });
 
     it("should handle errors during child component registration", () => {

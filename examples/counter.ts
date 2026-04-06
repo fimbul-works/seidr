@@ -1,4 +1,4 @@
-import { $button, $div, $span, mount, Seidr } from "../src/index.core.js";
+import { $button, $div, $span, mount, Seidr } from "../src/index.js";
 
 export const Counter = () => {
   const count = new Seidr(0);

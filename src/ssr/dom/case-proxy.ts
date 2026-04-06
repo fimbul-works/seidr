@@ -1,8 +1,9 @@
 import type { ReactiveValue } from "../../element";
 import { unwrapSeidr } from "../../seidr/unwrap-seidr";
 import { SeidrError } from "../../types";
-import { camelToKebab, kebabToCamel, str } from "../../util/string";
+import { camelToKebab, str } from "../../util/string";
 import { isEmpty, isStr } from "../../util/type-guards/primitive-types";
+import { kebabToCamel } from "../util/string";
 
 /**
  * The options for the case proxy.

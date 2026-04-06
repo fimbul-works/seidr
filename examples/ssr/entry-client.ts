@@ -1,5 +1,6 @@
 import "../style.css";
-import { $getById, hydrate } from "../../src/index.client.js";
+import { $getById } from "../../src/index.js";
+import { hydrate } from "../../src/index.ssr.js";
 // import { reconstructComponentTree } from "../../src/ssr/structure/reconstruct-component-tree.js";
 import { BlogApp } from "./app.js";
 
