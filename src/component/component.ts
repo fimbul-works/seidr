@@ -1,30 +1,30 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppStateID } from "../app-state/app-state";
-import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
-import { $text } from "../dom/node/text";
-import type { SeidrChild } from "../element";
-import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
-import { isHydrating } from "../ssr/hydrate/storage";
-import { getSSRScope } from "../ssr/ssr-scope";
-import { type CleanupFunction, SeidrError } from "../types";
-import { isServer } from "../util/environment/is-server";
-import { fastMix } from "../util/fast-mix";
-import { fastMixHash } from "../util/fast-mix-hash";
-import { str } from "../util/string";
-import { isComponent } from "../util/type-guards/component-types";
-import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
-import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types";
-import { getMarkerComments } from "./get-marker-comments";
-import { setScope } from "./set-scope";
+import { getAppStateID } from "../app-state/app-state.js";
+import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
+import { $text } from "../dom/node/text.js";
+import type { SeidrChild } from "../element/types.js";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
+import { isHydrating } from "../ssr/hydrate/storage.js";
+import { getSSRScope } from "../ssr/ssr-scope.js";
+import { type CleanupFunction, SeidrError } from "../types.js";
+import { isServer } from "../util/environment/is-server.js";
+import { fastMix } from "../util/fast-mix.js";
+import { fastMixHash } from "../util/fast-mix-hash.js";
+import { str } from "../util/string.js";
+import { isComponent } from "../util/type-guards/component-types.js";
+import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
+import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types.js";
+import { getMarkerComments } from "./get-marker-comments.js";
+import { setScope } from "./set-scope.js";
 import type {
   Component,
   ComponentChildren,
   ComponentFactory,
   ComponentFactoryPureFunction,
   OnMountFunction,
-} from "./types";
-import { useScope } from "./use-scope";
-import { getFirstNode } from "./util/get-first-node";
+} from "./types.js";
+import { useScope } from "./use-scope.js";
+import { getFirstNode } from "./util/get-first-node.js";
 
 /**
  * Creates a component with automatic lifecycle and resource management.

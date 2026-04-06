@@ -1,4 +1,4 @@
-import { str } from "./string";
+import { str } from "./string.js";
 
 /**
  * Wraps a value as an Error instance if it is not already an instance of the provided constructor.

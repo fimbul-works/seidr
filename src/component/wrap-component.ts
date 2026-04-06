@@ -1,6 +1,6 @@
-import { isComponentFactory } from "../util/type-guards/component-types";
-import { component } from "./component";
-import type { ComponentFactory, ComponentFactoryFunction } from "./types";
+import { isComponentFactory } from "../util/type-guards/component-types.js";
+import { component } from "./component.js";
+import type { ComponentFactory, ComponentFactoryFunction } from "./types.js";
 
 /**
  * Ensures a function is wrapped as a ComponentFactory.

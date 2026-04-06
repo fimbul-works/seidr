@@ -1,5 +1,5 @@
-import { getSSRScope } from "../../ssr/ssr-scope";
-import { isServer } from "./is-server";
+import { getSSRScope } from "../../ssr/ssr-scope.js";
+import { isServer } from "./is-server.js";
 
 /**
  * Executes a function only in the server environment (SSR).

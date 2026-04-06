@@ -1,10 +1,10 @@
-import { TYPE_DOCUMENT } from "../../constants";
-import type { NodeTypeDocument } from "../../types";
-import { SSRComment } from "./ssr-comment";
-import { SSRElement } from "./ssr-element";
-import type { SSRNodeList } from "./ssr-node-list";
-import { SSRParentNode } from "./ssr-parent-node";
-import { SSRTextNode } from "./ssr-text-node";
+import { TYPE_DOCUMENT } from "../../constants.js";
+import type { NodeTypeDocument } from "../../types.js";
+import { SSRComment } from "./ssr-comment.js";
+import { SSRElement } from "./ssr-element.js";
+import type { SSRNodeList } from "./ssr-node-list.js";
+import { SSRParentNode } from "./ssr-parent-node.js";
+import { SSRTextNode } from "./ssr-text-node.js";
 
 export class SSRDocument extends SSRParentNode<NodeTypeDocument, null> implements Partial<Document> {
   readonly nodeType = TYPE_DOCUMENT;

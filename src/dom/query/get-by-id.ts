@@ -1,4 +1,4 @@
-import { getDocument } from "../get-document";
+import { getDocument } from "../get-document.js";
 
 /**
  * Call Document.getElementId to find an element.

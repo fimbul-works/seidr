@@ -1,5 +1,5 @@
-import type { Component } from "../component/types";
-import type { Seidr } from "../seidr";
+import type { Component } from "../component/types.js";
+import type { Seidr } from "../seidr/seidr.js";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.

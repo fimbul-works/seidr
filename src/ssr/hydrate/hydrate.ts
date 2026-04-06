@@ -1,9 +1,9 @@
-import type { ComponentType } from "../../component/types";
-import { mount } from "../../dom/mount";
-import { type CleanupFunction, SeidrError } from "../../types";
-import { initHydrationContext } from "./context/hydration-context";
-import { clearHydrationData, isHydrating, setHydrationData } from "./storage";
-import type { HydrationData } from "./types";
+import type { ComponentType } from "../../component/types.js";
+import { mount } from "../../dom/mount.js";
+import { type CleanupFunction, SeidrError } from "../../types.js";
+import { initHydrationContext } from "./hydration-context.js";
+import { clearHydrationData, isHydrating, setHydrationData } from "./storage.js";
+import type { HydrationData } from "./types.js";
 
 /**
  * Hydrates a component with previously captured SSR hydration data.

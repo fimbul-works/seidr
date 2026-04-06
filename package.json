@@ -33,27 +33,27 @@
     "zero-dependencies",
     "virtual-dom-free"
   ],
-  "types": "./dist/seidr.d.ts",
+  "types": "./dist/esm/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/seidr.d.ts",
-      "import": "./dist/seidr.js",
-      "require": "./dist/seidr.cjs"
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
     },
     "./ssr": {
-      "types": "./dist/seidr.ssr.d.ts",
-      "import": "./dist/seidr.ssr.js",
-      "require": "./dist/seidr.ssr.cjs"
+      "types": "./dist/esm/index.ssr.d.ts",
+      "import": "./dist/esm/index.ssr.js",
+      "require": "./dist/cjs/index.ssr.js"
     },
     "./core": {
-      "types": "./dist/seidr.core.d.ts",
-      "import": "./dist/seidr.core.js",
-      "require": "./dist/seidr.core.cjs"
+      "types": "./bundles/seidr.core.d.ts",
+      "import": "./bundles/seidr.core.js",
+      "require": "./bundles/seidr.core.cjs"
     },
     "./testing": {
-      "types": "./dist/testing.d.ts",
-      "import": "./dist/testing.js",
-      "require": "./dist/testing.cjs"
+      "types": "./dist/esm/test-setup/index.d.ts",
+      "import": "./dist/esm/test-setup/index.js",
+      "require": "./dist/cjs/test-setup/index.js"
     }
   },
   "files": [
@@ -61,6 +61,9 @@
     "dist/**/*.cjs",
     "dist/**/*.d.ts",
     "dist/**/*.map",
+    "bundls/*.js",
+    "bundles/*.cjs",
+    "bundles/*.d.ts",
     "seidr-logo.svg",
     "README.md",
     "docs/*.md",
@@ -71,10 +74,14 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "clean:dist": "rm -rf dist && rm -rf build",
+    "clean:dist": "rm -rf dist && rm -rf bundles",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "tsdown",
+    "build": "pnpm build:bundles && pnpm build:lib",
+    "build:lib": "concurrently \"pnpm build:lib:esm\" \"pnpm build:lib:cjs\"",
+    "build:lib:esm": "tsc",
+    "build:lib:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "build:bundles": "tsdown",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
     "sizes": "./calculate-bundle-sizes.sh",
@@ -92,6 +99,7 @@
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25.5.2",
+    "concurrently": "^9.2.1",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",
     "jsdom": "^29.0.1",

@@ -1,6 +1,6 @@
-import type { Component, ComponentFactory } from "../../component/types";
-import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../../constants";
-import { isFn, isObj } from "./primitive-types";
+import type { Component, ComponentFactory } from "../../component/types.js";
+import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../../constants.js";
+import { isFn, isObj } from "./primitive-types.js";
 
 /**
  * Check if a value is a Seidr component.

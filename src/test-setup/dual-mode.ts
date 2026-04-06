@@ -1,8 +1,8 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { getDocument } from "../dom/get-document";
-import { enableClientMode } from "./client-mode";
-import { normalizeHtml, renderToHtml } from "./dom";
-import { enableSSRMode } from "./ssr-mode";
+import { getDocument } from "../dom/get-document.js";
+import { enableClientMode } from "./client-mode.js";
+import { normalizeHtml, renderToHtml } from "./dom.js";
+import { enableSSRMode } from "./ssr-mode.js";
 
 /**
  * Interface for the context provided to dual-mode tests.

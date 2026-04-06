@@ -1,4 +1,4 @@
-import type { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "./constants";
+import type { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "./constants.js";
 
 /**
  * Error class for Seidr.
@@ -8,6 +8,7 @@ export class SeidrError extends Error {
 }
 
 /**
+ * 
  * Type for event handlers that can be synchronous or asynchronous.
  *
  * @template T - The data type for the event

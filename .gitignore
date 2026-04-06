@@ -1,6 +1,8 @@
 node_modules/
 dist/
 build/
-bundle.*.js
+bundles/
 *.gz
+*.map
+*.br
 examples/ssr/data/

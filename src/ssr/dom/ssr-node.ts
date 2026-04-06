@@ -1,8 +1,8 @@
-import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants";
-import { isFn } from "../../util/type-guards/primitive-types";
-import type { SSRDocument } from "./ssr-document";
-import { SSRNodeList } from "./ssr-node-list";
-import type { SupportedNodeTypes } from "./types";
+import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants.js";
+import { isFn } from "../../util/type-guards/primitive-types.js";
+import type { SSRDocument } from "./ssr-document.js";
+import { SSRNodeList } from "./ssr-node-list.js";
+import type { SupportedNodeTypes } from "./types.js";
 
 export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocument | null = SSRDocument | null>
   implements Node

@@ -1,4 +1,4 @@
-import { Seidr } from "../../seidr/seidr";
+import { Seidr } from "../../seidr/seidr.js";
 
 /**
  * Check if a value is a Seidr class instance.

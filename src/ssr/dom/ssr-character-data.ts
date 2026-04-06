@@ -1,7 +1,7 @@
-import { TYPE_ELEMENT } from "../../constants";
-import type { NodeTypeComment, NodeTypeText } from "../../types";
-import { SSRChildNode } from "./ssr-child-node";
-import type { SSRDocument } from "./ssr-document";
+import { TYPE_ELEMENT } from "../../constants.js";
+import type { NodeTypeComment, NodeTypeText } from "../../types.js";
+import { SSRChildNode } from "./ssr-child-node.js";
+import type { SSRDocument } from "./ssr-document.js";
 
 export abstract class SSRCharacterData<T extends NodeTypeComment | NodeTypeText>
   extends SSRChildNode<T, SSRDocument>

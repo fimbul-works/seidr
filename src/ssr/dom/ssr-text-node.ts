@@ -1,7 +1,7 @@
-import { TAG_TEXT, TYPE_TEXT_NODE } from "../../constants";
-import type { NodeTypeText } from "../../types";
-import { escapeHTML } from "../util/escape";
-import { SSRCharacterData } from "./ssr-character-data";
+import { TAG_TEXT, TYPE_TEXT_NODE } from "../../constants.js";
+import type { NodeTypeText } from "../../types.js";
+import { escapeHTML } from "../util/escape.js";
+import { SSRCharacterData } from "./ssr-character-data.js";
 
 export class SSRTextNode extends SSRCharacterData<NodeTypeText> implements Text {
   readonly nodeType = TYPE_TEXT_NODE;

@@ -1,7 +1,7 @@
-import { getAppState } from "../app-state/app-state";
-import { DATA_KEY_DOCUMENT } from "../constants";
-import { SSRDocument } from "../ssr/dom";
-import { setDocumentProvider } from "./get-document";
+import { getAppState } from "../app-state/app-state.js";
+import { DATA_KEY_DOCUMENT } from "../constants.js";
+import { SSRDocument } from "../ssr/dom/ssr-document.js";
+import { setDocumentProvider } from "./get-document.js";
 
 /**
  * Returns the SSR Document object.

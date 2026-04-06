@@ -1,5 +1,5 @@
 import { afterEach } from "vitest";
-import { clearTestAppState } from "./app-state";
+import { clearTestAppState } from "./app-state.js";
 
 /**
  * Registers the global afterEach cleanup hook for Vitest.

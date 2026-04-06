@@ -1,4 +1,4 @@
-import { getDocument } from "../get-document";
+import { getDocument } from "../get-document.js";
 
 /**
  * Call HTMLElement.querySelector to find the first matching element.

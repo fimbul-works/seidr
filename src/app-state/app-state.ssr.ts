@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { SeidrError } from "../types";
-import { createAppState } from "./storage";
-import type { AppState } from "./types";
+import { SeidrError } from "../types.js";
+import { createAppState } from "./storage.js";
+import type { AppState } from "./types.js";
 
 /** Global fallback store for request ID generation */
 let requestIdCounter = 0;

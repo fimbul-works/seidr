@@ -1,8 +1,8 @@
-import { component } from "../component/component";
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { wrapComponent } from "../component/wrap-component";
-import { wrapError } from "../util/wrap-error";
+import { component } from "../component/component.js";
+import type { Component, ComponentFactoryFunction } from "../component/types.js";
+import { useScope } from "../component/use-scope.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import { wrapError } from "../util/wrap-error.js";
 
 /**
  * Creates a component with error boundary protection.

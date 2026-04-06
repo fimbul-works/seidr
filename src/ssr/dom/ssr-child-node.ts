@@ -1,7 +1,7 @@
-import { isStr } from "../../util/type-guards/primitive-types";
-import type { SSRDocument } from "./ssr-document";
-import { SSRNode } from "./ssr-node";
-import type { SupportedNodeTypes } from "./types";
+import { isStr } from "../../util/type-guards/primitive-types.js";
+import type { SSRDocument } from "./ssr-document.js";
+import { SSRNode } from "./ssr-node.js";
+import type { SupportedNodeTypes } from "./types.js";
 
 export abstract class SSRChildNode<
     T extends SupportedNodeTypes = SupportedNodeTypes,

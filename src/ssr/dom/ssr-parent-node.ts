@@ -1,18 +1,15 @@
-import { TYPE_ELEMENT } from "../../constants";
-import type { NodeTypeDocument, NodeTypeElement } from "../../types";
-import { isStr } from "../../util/type-guards/primitive-types";
-import { SSRChildNode } from "./ssr-child-node";
-import type { SSRDocument } from "./ssr-document";
-import { SSRNodeList } from "./ssr-node-list";
-import type { ServerNode } from "./types";
+import { TYPE_ELEMENT } from "../../constants.js";
+import type { NodeTypeDocument, NodeTypeElement } from "../../types.js";
+import { isStr } from "../../util/type-guards/primitive-types.js";
+import { SSRChildNode } from "./ssr-child-node.js";
+import type { SSRDocument } from "./ssr-document.js";
+import { SSRNodeList } from "./ssr-node-list.js";
+import type { ServerNode } from "./types.js";
 
 export abstract class SSRParentNode<
-    T extends NodeTypeDocument | NodeTypeElement,
-    D extends SSRDocument | null = SSRDocument | null,
-  >
-  extends SSRChildNode<T, D>
-  implements ParentNode
-{
+  T extends NodeTypeDocument | NodeTypeElement,
+  D extends SSRDocument | null = SSRDocument | null,
+> extends SSRChildNode<T, D> {
   get childElementCount(): number {
     return this.children.length;
   }

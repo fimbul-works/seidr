@@ -1,4 +1,4 @@
-import type { CleanupFunction } from "../types";
+import type { CleanupFunction } from "../types.js";
 
 /**§
  * Options for Seidr instances.

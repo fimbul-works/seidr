@@ -1,21 +1,20 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
-import type { ReactiveCSSStyleDeclaration } from "../../element";
-import type { NodeTypeElement } from "../../types";
-import { camelToKebab, str } from "../../util/string";
-import { isComment } from "../../util/type-guards/dom-node-types";
-import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types";
-import { escapeAttribute } from "../util/escape";
-import type { SSRDocument } from "./ssr-document";
-import type { SSRNodeList } from "./ssr-node-list";
-import { SSRParentNode } from "./ssr-parent-node";
-import { SSRTextNode } from "./ssr-text-node";
+import type { ReactiveCSSStyleDeclaration } from "../../element/types.js";
+import type { NodeTypeElement } from "../../types.js";
+import { camelToKebab, str } from "../../util/string.js";
+import { isComment } from "../../util/type-guards/dom-node-types.js";
+import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types.js";
+import { escapeAttribute } from "../util/escape.js";
+import type { SSRDocument } from "./ssr-document.js";
+import type { SSRNodeList } from "./ssr-node-list.js";
+import { SSRParentNode } from "./ssr-parent-node.js";
+import { SSRTextNode } from "./ssr-text-node.js";
 
 const INTERNAL_ATTRIBUTES = new Set(["innerHTML", "outerHTML", "textContent", "classList", "style", "dataset"]);
 
-export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string>
-  extends SSRParentNode<NodeTypeElement, SSRDocument>
-  implements Partial<Element>
-{
+export class SSRElement<
+  K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string,
+> extends SSRParentNode<NodeTypeElement, SSRDocument> {
   readonly nodeType = TYPE_ELEMENT;
   public readonly tagName: K;
   public readonly lowerTagName: K;
@@ -44,7 +43,6 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     this.classList = this._createClassList();
 
     // Return a Proxy of the element to allow arbitrary property assignment
-    // biome-ignore lint/correctness/noConstructorReturn: Proxy for attributes
     return new Proxy(this, {
       get(target, prop, receiver) {
         if (prop === "__isProxy") return true;

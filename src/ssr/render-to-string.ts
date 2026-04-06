@@ -1,13 +1,13 @@
-import { getAppState } from "../app-state/app-state";
-import { runWithAppState } from "../app-state/app-state.ssr";
-import type { ComponentReturnValue } from "../component";
-import { mountComponent } from "../component/util/mount-component";
-import { wrapComponent } from "../component/wrap-component";
-import { getDocument } from "../dom/get-document";
-import { initSSRDocument } from "../dom/get-document.ssr";
-import { SeidrError } from "../types";
-import { SSRScope, setSSRScope } from "./ssr-scope";
-import type { SSRRenderResult } from "./types";
+import { getAppState } from "../app-state/app-state.js";
+import { runWithAppState } from "../app-state/app-state.ssr.js";
+import type { ComponentReturnValue } from "../component/types.js";
+import { mountComponent } from "../component/util/mount-component.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import { getDocument } from "../dom/get-document.js";
+import { initSSRDocument } from "../dom/get-document.ssr.js";
+import { SeidrError } from "../types.js";
+import { SSRScope, setSSRScope } from "./ssr-scope.js";
+import type { SSRRenderResult } from "./types.js";
 
 /**
  * Options for rendering a component to string during SSR.

@@ -1,4 +1,4 @@
-import type { ComponentFactoryFunction } from "../component/types";
+import type { ComponentFactoryFunction } from "../component/types.js";
 
 /**
  * Route definition for Router.

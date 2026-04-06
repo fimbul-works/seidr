@@ -1,12 +1,12 @@
-import { getMarkerComments } from "../component/get-marker-comments";
-import { setScope } from "../component/set-scope";
-import type { SeidrChild } from "../element/types";
-import { isHydrating } from "../ssr/hydrate/storage";
-import { isServer } from "../util/environment/is-server";
-import { isComponent } from "../util/type-guards/component-types";
-import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types";
-import { isArray, isEmpty, isStr } from "../util/type-guards/primitive-types";
-import { $text } from "./node/text";
+import { getMarkerComments } from "../component/get-marker-comments.js";
+import { setScope } from "../component/set-scope.js";
+import type { SeidrChild } from "../element/types.js";
+import { isHydrating } from "../ssr/hydrate/storage.js";
+import { isServer } from "../util/environment/is-server.js";
+import { isComponent } from "../util/type-guards/component-types.js";
+import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
+import { isArray, isEmpty, isStr } from "../util/type-guards/primitive-types.js";
+import { $text } from "./node/text.js";
 
 /**
  * Appends a child node to a parent node.

@@ -1,12 +1,11 @@
-import { component } from "../component/component";
-import { getMarkerComments } from "../component/get-marker-comments";
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { getFirstNode, getLastNode, mountComponent } from "../component/util";
-import { wrapComponent } from "../component/wrap-component";
-import type { Seidr } from "../seidr";
-import { isHydrating } from "../ssr/hydrate/storage";
-import { isServer } from "../util/environment";
+import { component } from "../component/component.js";
+import { getMarkerComments } from "../component/get-marker-comments.js";
+import type { Component, ComponentFactoryFunction } from "../component/types.js";
+import { useScope } from "../component/use-scope.js";
+import { getFirstNode, getLastNode, mountComponent } from "../component/util/index.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import type { Seidr } from "../seidr/seidr.js";
+import { isHydrating } from "../ssr/hydrate/storage.js";
 
 /**
  * Renders an efficient list of components from an observable array.

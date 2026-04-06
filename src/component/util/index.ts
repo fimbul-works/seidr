@@ -1,3 +1,3 @@
-export * from "./get-first-node";
-export * from "./get-last-node";
-export * from "./mount-component";
+export * from "./get-first-node.js";
+export * from "./get-last-node.js";
+export * from "./mount-component.js";

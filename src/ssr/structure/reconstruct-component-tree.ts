@@ -1,7 +1,7 @@
-import { getAppState } from "../../app-state/app-state";
-import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
-import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards";
-import type { ComponentTreeNode, StructureMapTuple } from "./types";
+import { getAppState } from "../../app-state/app-state.js";
+import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
+import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards/index.js";
+import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**
  * Builds a complete virtual DOM tree from hydration component data while

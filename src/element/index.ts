@@ -1,3 +1,3 @@
-export * from "./create-element";
-export * from "./element-factory";
-export * from "./types";
+export * from "./create-element.js";
+export * from "./element-factory.js";
+export * from "./types.js";

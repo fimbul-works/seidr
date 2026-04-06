@@ -1,13 +1,13 @@
-import { getAppState } from "../../../app-state";
-import type { Component } from "../../../component";
-import { DATA_KEY_HYDRATION_CONTEXT, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../../constants";
-import { SeidrError } from "../../../types";
-import { isComment, isHTMLElement, isTextNode } from "../../../util/type-guards/dom-node-types";
-import { isEmpty } from "../../../util/type-guards/primitive-types";
-import { reconstructComponentTree } from "../../structure/reconstruct-component-tree";
-import type { ComponentTreeNode, StructureMapTuple } from "../../structure/types";
-import { getHydrationData, isHydrating } from "../storage";
-import type { HydrationContext, HydrationMismatchNode } from "./types";
+import { getAppState } from "../../app-state/app-state.js";
+import type { Component } from "../../component/types.js";
+import { DATA_KEY_HYDRATION_CONTEXT, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../constants.js";
+import { SeidrError } from "../../types.js";
+import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
+import { isEmpty } from "../../util/type-guards/primitive-types.js";
+import { reconstructComponentTree } from "../structure/reconstruct-component-tree.js";
+import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js";
+import { getHydrationData, isHydrating } from "./storage.js";
+import type { HydrationContext, HydrationMismatchNode } from "./types.js";
 
 export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CONTEXT);
 
@@ -181,7 +181,7 @@ export const createHydrationContext = (
     },
     claim<T extends ChildNode>(tag: string): T {
       if (!currentComponentNode) {
-        throw new SeidrError("No active component in hydration context");
+        throw new SeidrError(`No active component in hydration context, expected to claim: ${tag}`);
       }
 
       const componentId = currentComponentNode.id!;
@@ -193,7 +193,7 @@ export const createHydrationContext = (
       this.next();
 
       if (!node) {
-        console.error(`!!!! [Hydration mismatch] No node found at ${componentId}[${cursor}]`);
+        console.error(`[Hydration] No node found at ${componentId}[${cursor}], expected: ${tag}`);
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }
@@ -220,7 +220,7 @@ export const createHydrationContext = (
         }
       } else {
         mismatch = true;
-        actualTag = "UNKNOWN";
+        actualTag = node.nodeName;
       }
 
       if (mismatch) {

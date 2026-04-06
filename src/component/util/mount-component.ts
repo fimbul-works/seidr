@@ -1,9 +1,8 @@
-import type { Component, ComponentChildren } from "../../component/types";
-import { isHydrating } from "../../ssr/hydrate";
-import { SeidrError } from "../../types";
-import { isServer } from "../../util/environment";
-import { isComponent } from "../../util/type-guards/component-types";
-import { isDOMNode } from "../../util/type-guards/dom-node-types";
+import type { Component, ComponentChildren } from "../../component/types.js";
+import { isHydrating } from "../../ssr/hydrate/storage.js";
+import { SeidrError } from "../../types.js";
+import { isComponent } from "../../util/type-guards/component-types.js";
+import { isDOMNode } from "../../util/type-guards/dom-node-types.js";
 import { isArray } from "../../util/type-guards/primitive-types";
 
 /**

@@ -1,8 +1,8 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { useScope } from "../component";
-import { isServer } from "../util";
-import { createAppState } from "./storage";
-import type { AppState } from "./types";
+import { useScope } from "../component/use-scope.js";
+import { isServer } from "../util/environment/is-server.js";
+import { createAppState } from "./storage.js";
+import type { AppState } from "./types.js";
 
 /** Key that is shared across build targets */
 const APP_STATE_KEY = "__SEIDR_APP_STATE_PROVIDER__";

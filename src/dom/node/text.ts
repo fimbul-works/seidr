@@ -1,10 +1,10 @@
-import { useScope } from "../../component/use-scope";
-import { TAG_TEXT } from "../../constants";
-import { getHydrationContext } from "../../ssr/hydrate/context/hydration-context";
-import { isHydrating } from "../../ssr/hydrate/storage";
-import { isServer } from "../../util/environment/is-server";
-import { str } from "../../util/string";
-import { getDocument } from "../get-document";
+import { useScope } from "../../component/use-scope.js";
+import { TAG_TEXT } from "../../constants.js";
+import { getHydrationContext } from "../../ssr/hydrate/hydration-context.js";
+import { isHydrating } from "../../ssr/hydrate/storage.js";
+import { isServer } from "../../util/environment/is-server.js";
+import { str } from "../../util/string.js";
+import { getDocument } from "../get-document.js";
 
 /**
  * Creates a new DOM Text node.

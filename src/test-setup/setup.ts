@@ -1,7 +1,7 @@
-import { setupAppState } from "./app-state";
-import { enableClientMode } from "./client-mode";
-import { setupTestLifecycle } from "./lifecycle";
-import { mockNavigator } from "./mock";
+import { setupAppState } from "./app-state.js";
+import { enableClientMode } from "./client-mode.js";
+import { setupTestLifecycle } from "./lifecycle.js";
+import { mockNavigator } from "./mock.js";
 
 /**
  * Performs the default test setup for Seidr.

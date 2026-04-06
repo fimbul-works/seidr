@@ -1,7 +1,7 @@
 import { expect } from "vitest";
-import { escapeHTML } from "../ssr/util/escape";
-import { str } from "../util/string";
-import { isArray, isEmpty, isFn, isObj } from "../util/type-guards";
+import { escapeHTML } from "../ssr/util/escape.js";
+import { str } from "../util/string.js";
+import { isArray, isEmpty, isFn, isObj } from "../util/type-guards/primitive-types.js";
 
 /**
  * Renders a node or component to its HTML string representation.

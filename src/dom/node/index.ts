@@ -1,2 +1,2 @@
-export * from "./comment";
-export * from "./text";
+export * from "./comment.js";
+export * from "./text.js";

@@ -1,5 +1,5 @@
-import { isStr } from "../../util/type-guards/primitive-types";
-import type { ServerNode } from "./types";
+import { isStr } from "../../util/type-guards/primitive-types.js";
+import type { ServerNode } from "./types.js";
 
 /**
  * Live collection of nodes for SSR.
@@ -11,7 +11,6 @@ export class SSRNodeList implements NodeList {
   constructor(public serverNodes: ServerNode[] = []) {
     this.nodes = serverNodes as unknown as Node[];
 
-    // biome-ignore lint/correctness/noConstructorReturn: Proxy for index-based access]
     return new Proxy(this, {
       get(target, prop, receiver) {
         if (isStr(prop) && !Number.isNaN(Number(prop))) {

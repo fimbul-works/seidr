@@ -1,7 +1,7 @@
-import { setAppStateProvider } from "../app-state/app-state";
-import { contextLocalStorage } from "../app-state/app-state.ssr";
-import { createAppState } from "../app-state/storage";
-import type { AppState } from "../app-state/types";
+import { setAppStateProvider } from "../app-state/app-state.js";
+import { contextLocalStorage } from "../app-state/app-state.ssr.js";
+import { createAppState } from "../app-state/storage.js";
+import type { AppState } from "../app-state/types.js";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);

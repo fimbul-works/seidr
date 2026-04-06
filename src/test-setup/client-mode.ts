@@ -1,11 +1,11 @@
-import { setAppStateProvider } from "../app-state/app-state";
-import { defaultClientDocument, setDocumentProvider } from "../dom/get-document";
-import { Seidr } from "../seidr/seidr";
-import { registerSeidrForSSR } from "../ssr/register-seidr";
-import type { CleanupFunction } from "../types";
-import { isClient } from "../util/environment/client";
-import { clearTestAppState, getAppState } from "./app-state";
-import type { TestEnvironmentState } from "./types";
+import { setAppStateProvider } from "../app-state/app-state.js";
+import { defaultClientDocument, setDocumentProvider } from "../dom/get-document.js";
+import { Seidr } from "../seidr/seidr.js";
+import { registerSeidrForSSR } from "../ssr/register-seidr.js";
+import type { CleanupFunction } from "../types.js";
+import { isClient } from "../util/environment/client.js";
+import { clearTestAppState, getAppState } from "./app-state.js";
+import type { TestEnvironmentState } from "./types.js";
 
 /**
  * Enables client-side rendering mode for tests.
@@ -16,7 +16,7 @@ import type { TestEnvironmentState } from "./types";
 export function enableClientMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
-    importMetaEnvSSR: import.meta.env.SSR,
+    importMetaEnvSSR: process.env.SSR,
     window: global.window,
   };
 
@@ -24,7 +24,7 @@ export function enableClientMode(): CleanupFunction {
   getAppState().isSSR = false;
 
   delete process.env.SEIDR_TEST_SSR;
-  import.meta.env.SSR = false;
+  delete process.env.SSR;
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
@@ -39,8 +39,8 @@ export function enableClientMode(): CleanupFunction {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
 
-    if (currentState.importMetaEnvSSR !== undefined) import.meta.env.SSR = currentState.importMetaEnvSSR;
-    else import.meta.env.SSR = false;
+    if (currentState.importMetaEnvSSR !== undefined) process.env.SSR = currentState.importMetaEnvSSR;
+    else delete process.env.SSR;
 
     if (currentState.window !== undefined) global.window = currentState.window;
   };

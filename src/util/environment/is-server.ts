@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
-import { getAppState } from "../../app-state/app-state";
-import { isEmpty } from "../type-guards/primitive-types";
+import { getAppState } from "../../app-state/app-state.js";
+import { isEmpty } from "../type-guards/primitive-types.js";
 
 /**
  * Returns true if the current environment is the server (Node.js/SSR).
@@ -18,7 +18,5 @@ export const isServer = (): boolean => {
     if (!isEmpty(state?.isSSR)) return state.isSSR;
   }
 
-  if (typeof process !== "undefined" && process.env.SEIDR_TEST_SSR) return true;
-  if (typeof import.meta !== "undefined") return !!import.meta.env?.SSR;
-  return false;
+  return typeof process !== "undefined" && !!(process.env.SEIDR_TEST_SSR || process.env.SSR);
 };

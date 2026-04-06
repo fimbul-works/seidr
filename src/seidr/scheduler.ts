@@ -1,4 +1,4 @@
-import type { Seidr } from "./seidr";
+import type { Seidr } from "./seidr.js";
 
 const pending = new Set<Seidr>();
 let isScheduled = false;

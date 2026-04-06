@@ -1,6 +1,6 @@
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import type { Seidr } from "../seidr";
-import { Switch } from "./switch";
+import type { Component, ComponentFactoryFunction } from "../component/types.js";
+import type { Seidr } from "../seidr/seidr.js";
+import { Switch } from "./switch.js";
 
 /**
  * Conditionally renders a component based on a boolean observable state.

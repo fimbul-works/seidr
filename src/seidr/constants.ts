@@ -1,4 +1,4 @@
-import type { ObservableOptions } from "./types";
+import type { ObservableOptions } from "./types.js";
 
 /**
  * Options to opt-out of hydration for Seidr instances.

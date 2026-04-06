@@ -1,9 +1,9 @@
-import { getAppState } from "../app-state/app-state";
-import type { Component, ComponentType } from "../component/types";
-import { wrapComponent } from "../component/wrap-component";
-import { type CleanupFunction, SeidrError } from "../types";
-import { isComponent } from "../util/type-guards/component-types";
-import { appendChild } from "./append-child";
+import { getAppState } from "../app-state/app-state.js";
+import type { Component, ComponentType } from "../component/types.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import { type CleanupFunction, SeidrError } from "../types.js";
+import { isComponent } from "../util/type-guards/component-types.js";
+import { appendChild } from "./append-child.js";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.

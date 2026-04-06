@@ -1,5 +1,5 @@
-import { isSeidr } from "../util/type-guards";
-import type { Seidr } from "./seidr";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import type { Seidr } from "./seidr.js";
 
 /**
  * Convenience helper to extract the value from an observable, or base value.

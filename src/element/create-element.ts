@@ -1,13 +1,13 @@
-import type { Component } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { appendChild } from "../dom/append-child";
-import { getDocument } from "../dom/get-document";
-import { getHydrationContext } from "../ssr/hydrate/context/hydration-context";
-import type { HydrationMismatchNode } from "../ssr/hydrate/context/types";
-import { isServer } from "../util/environment/is-server";
-import { isArray, isEmpty, isObj, isStr } from "../util/type-guards";
-import { assignProps } from "./assign-props";
-import type { SeidrChild, SeidrElementProps } from "./types";
+import type { Component } from "../component/types.js";
+import { useScope } from "../component/use-scope.js";
+import { appendChild } from "../dom/append-child.js";
+import { getDocument } from "../dom/get-document.js";
+import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
+import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
+import { isServer } from "../util/environment/is-server.js";
+import { isArray, isEmpty, isObj, isStr } from "../util/type-guards/primitive-types.js";
+import { assignProps } from "./assign-props.js";
+import type { SeidrChild, SeidrElementProps } from "./types.js";
 
 /**
  * Creates an HTML element with automatic reactive binding capabilities.

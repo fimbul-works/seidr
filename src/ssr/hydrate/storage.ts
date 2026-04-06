@@ -1,9 +1,9 @@
-import { getAppState, setAppStateID } from "../../app-state/app-state";
-import { DATA_KEY_HYDRATION_DATA } from "../../constants";
-import type { Seidr } from "../../seidr/seidr";
-import { SeidrError } from "../../types";
-import { isEmpty } from "../../util/type-guards/primitive-types";
-import type { HydrationData, HydrationDataStorage } from "./types";
+import { getAppState, setAppStateID } from "../../app-state/app-state.js";
+import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
+import type { Seidr } from "../../seidr/seidr.js";
+import { SeidrError } from "../../types.js";
+import { isEmpty } from "../../util/type-guards/primitive-types.js";
+import type { HydrationData, HydrationDataStorage } from "./types.js";
 
 /**
  * Gets the current hydration data.

@@ -1,19 +1,16 @@
 import { resolve } from "node:path";
 import replace from "@rollup/plugin-replace";
 import { defineConfig, type UserConfig } from "vite";
-import { treeshake } from "./build.shared.ts";
+import { mainReplace, treeshake } from "./build.shared.ts";
 
 export default defineConfig((config) => {
   return {
     root: "examples/ssr",
     plugins: [
       replace({
+        ...mainReplace,
         "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.DISABLE_SSR": "false",
-        "process.env.VITEST": "false",
         "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
-        "process.env.DEBUG": "true",
-        "process.env.DEBUG_HYDRATION": "true",
         __SEIDR_DEV__: "false",
         preventAssignment: true,
       }),

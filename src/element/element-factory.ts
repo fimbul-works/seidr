@@ -1,5 +1,5 @@
-import { $ } from "./create-element";
-import type { SeidrChild, SeidrElementProps } from "./types";
+import { $ } from "./create-element.js";
+import type { SeidrChild, SeidrElementProps } from "./types.js";
 
 /**
  * Creates a specialized HTML element creator function for a specific tag type.

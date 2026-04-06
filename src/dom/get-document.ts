@@ -1,4 +1,4 @@
-import { SeidrError } from "../types";
+import { SeidrError } from "../types.js";
 
 /**
  * Global type declaration for the document provider.

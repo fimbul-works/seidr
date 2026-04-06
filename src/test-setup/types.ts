@@ -7,9 +7,9 @@ export interface TestEnvironmentState {
    */
   seidrSSR?: string;
   /**
-   * The import.meta.env.SSR value of the test environment.
+   * The process.env.SSR value of the test environment.
    */
-  importMetaEnvSSR?: boolean;
+  importMetaEnvSSR?: string;
   /**
    * The window object of the test environment.
    */

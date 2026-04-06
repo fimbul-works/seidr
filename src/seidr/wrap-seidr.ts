@@ -1,6 +1,6 @@
-import { isSeidr } from "../util/type-guards";
-import { Seidr } from "./seidr";
-import type { ObservableOptions } from "./types";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { Seidr } from "./seidr.js";
+import type { ObservableOptions } from "./types.js";
 
 /**
  * Convenience helper to wrap a value in a Seidr observable.

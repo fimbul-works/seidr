@@ -1,5 +1,5 @@
-import { assignProp } from "./assign-prop";
-import type { SeidrElementProps } from "./types";
+import { assignProp } from "./assign-prop.js";
+import type { SeidrElementProps } from "./types.js";
 
 /**
  * Assigns properties to an HTMLElement.

@@ -1,8 +1,8 @@
-import { getAppState, getNextSeidrId } from "../app-state/app-state";
-import { type CleanupFunction, type EventHandler, SeidrError } from "../types";
-import { isServer } from "../util";
-import { scheduleUpdate } from "./scheduler";
-import type { Observable, ObservableOptions } from "./types";
+import { getAppState, getNextSeidrId } from "../app-state/app-state.js";
+import { type CleanupFunction, type EventHandler, SeidrError } from "../types.js";
+import { isServer } from "../util/environment/is-server.js";
+import { scheduleUpdate } from "./scheduler.js";
+import type { Observable, ObservableOptions } from "./types.js";
 
 const DATA_KEY_STATE = "state";
 
@@ -74,7 +74,6 @@ export class Seidr<T = any> implements Observable<T> {
         const appState = getAppState();
         const states = appState.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
         if (states?.[options.id]) {
-          // biome-ignore lint/correctness/noConstructorReturn: Seidr ID are unique
           return states[options.id] as Seidr<T>;
         }
       } catch {

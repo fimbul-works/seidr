@@ -1,11 +1,11 @@
-import { type Component, useScope } from "../component";
-import { BOOL_ATTRIBUTES } from "../constants";
-import { type Seidr, unwrapSeidr } from "../seidr";
-import { SeidrError } from "../types";
-import { isServer } from "../util/environment/is-server";
-import { camelToKebab } from "../util/string";
-import { isSeidr } from "../util/type-guards/obserbable-types";
-import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types";
+import { type Component, useScope } from "../component/index.js";
+import { BOOL_ATTRIBUTES } from "../constants.js";
+import { type Seidr, unwrapSeidr } from "../seidr/index.js";
+import { SeidrError } from "../types.js";
+import { isServer } from "../util/environment/is-server.js";
+import { camelToKebab } from "../util/string.js";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types.js";
 
 /**
  * Assigns a property to an element, handling reactive Seidr bindings.

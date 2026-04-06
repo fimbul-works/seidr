@@ -1,5 +1,5 @@
-import { isSeidr } from "../util/type-guards/obserbable-types";
-import type { AppState, CaptureDataFn, RestoreDataFn } from "./types";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import type { AppState, CaptureDataFn, RestoreDataFn } from "./types.js";
 
 /**
  * Creates a new application state instance.

@@ -1,7 +1,7 @@
-import type { Seidr } from "../../seidr/seidr";
-import { isServer } from "../../util/environment";
-import { isEmpty } from "../../util/type-guards/primitive-types";
-import { getHydrationData, isHydrating } from "./storage";
+import type { Seidr } from "../../seidr/seidr.js";
+import { isServer } from "../../util/environment/is-server.js";
+import { isEmpty } from "../../util/type-guards/primitive-types.js";
+import { getHydrationData, isHydrating } from "./storage.js";
 
 /**
  * Registers a Seidr instance during hydration.

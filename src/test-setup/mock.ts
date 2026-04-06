@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, vi } from "vitest";
-import { getAppState } from "../app-state/app-state";
-import type { Component } from "../component/types";
-import { DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants";
+import { getAppState } from "../app-state/app-state.js";
+import type { Component } from "../component/types.js";
+import { DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants.js";
 
 /**
  * Mocks the component lifecycle hooks for tests that need to run in SSR mode

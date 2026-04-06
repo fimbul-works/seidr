@@ -1,6 +1,6 @@
-import { isComponent } from "../../util/type-guards/component-types";
-import { isArray } from "../../util/type-guards/primitive-types";
-import type { Component } from "../types";
+import { isComponent } from "../../util/type-guards/component-types.js";
+import { isArray } from "../../util/type-guards/primitive-types.js";
+import type { Component } from "../types.js";
 
 /**
  * Gets the first physical DOM node of a component.

@@ -1,9 +1,8 @@
-import type { Seidr } from "../seidr";
-import { SeidrError } from "../types";
-import { isClient } from "../util/environment/client";
-import { isServer } from "../util/environment/is-server";
-import { registerHydratingSeidr } from "./hydrate/register-hydrating-seidr";
-import { getSSRScope } from "./ssr-scope";
+import type { Seidr } from "../seidr/seidr.js";
+import { isClient } from "../util/environment/client.js";
+import { isServer } from "../util/environment/is-server.js";
+import { registerHydratingSeidr } from "./hydrate/register-hydrating-seidr.js";
+import { getSSRScope } from "./ssr-scope.js";
 
 /**
  * Registers a Seidr instance for SSR/hydration.
@@ -29,7 +28,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   if (isServer()) {
     // Server-side: register with active SSR scope
     getSSRScope()?.register(seidr);
-  } else if (isClient()) {
+  } else if (!process.env.DISABLE_SSR && isClient()) {
     // Client-side: register immediately for hydration
     registerHydratingSeidr(seidr);
   }

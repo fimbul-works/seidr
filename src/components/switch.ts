@@ -1,9 +1,9 @@
-import { component } from "../component/component";
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { getLastNode, mountComponent } from "../component/util";
-import { wrapComponent } from "../component/wrap-component";
-import type { Seidr } from "../seidr";
+import { component } from "../component/component.js";
+import type { Component, ComponentFactoryFunction } from "../component/types.js";
+import { useScope } from "../component/use-scope.js";
+import { getLastNode, mountComponent } from "../component/util/index.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import type { Seidr } from "../seidr/seidr.js";
 
 /**
  * Switches between different components based on an observable value.

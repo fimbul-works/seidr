@@ -1,3 +1,3 @@
-export * from "./build-structure-map";
-export * from "./reconstruct-component-tree";
-export * from "./types";
+export * from "./build-structure-map.js";
+export * from "./reconstruct-component-tree.js";
+export * from "./types.js";

@@ -1,8 +1,9 @@
-import type { Component, ComponentChildren } from "../../component/types";
-import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
-import { SeidrError } from "../../types";
-import { isComment, isComponent, isHTMLElement, isTextNode } from "../../util/type-guards";
-import type { StructureMapTuple } from "./types";
+import type { Component, ComponentChildren } from "../../component/types.js";
+import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
+import { SeidrError } from "../../types.js";
+import { isComponent } from "../../util/type-guards/component-types.js";
+import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
+import type { StructureMapTuple } from "./types.js";
 
 /**
  * Collects all root physical nodes of a component (handling fragments and pass-throughs).

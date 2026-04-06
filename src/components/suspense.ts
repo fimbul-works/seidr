@@ -1,13 +1,14 @@
-import { component } from "../component/component";
-import type { Component, ComponentFactoryFunction } from "../component/types";
-import { useScope } from "../component/use-scope";
-import { wrapComponent } from "../component/wrap-component";
-import { Seidr, unwrapSeidr } from "../seidr";
-import { isHydrating } from "../ssr/hydrate";
-import { getSSRScope } from "../ssr/ssr-scope";
-import { isServer } from "../util/environment/is-server";
-import { isSeidr } from "../util/type-guards/obserbable-types";
-import { wrapError } from "../util/wrap-error";
+import { component } from "../component/component.js";
+import type { Component, ComponentFactoryFunction } from "../component/types.js";
+import { useScope } from "../component/use-scope.js";
+import { wrapComponent } from "../component/wrap-component.js";
+import { Seidr } from "../seidr/seidr.js";
+import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
+import { isHydrating } from "../ssr/hydrate/storage.js";
+import { getSSRScope } from "../ssr/ssr-scope.js";
+import { isServer } from "../util/environment/is-server.js";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { wrapError } from "../util/wrap-error.js";
 
 const PROMISE_PENDING = "pending";
 const PROMISE_RESOLVED = "resolved";

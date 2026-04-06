@@ -4,8 +4,8 @@ import {
   TYPE_COMMENT_NODE,
   TYPE_ELEMENT,
   TYPE_TEXT_NODE,
-} from "../../constants";
-import { isObj } from "./primitive-types";
+} from "../../constants.js";
+import { isObj } from "./primitive-types.js";
 
 /**
  * Check if a value is a Comment node.

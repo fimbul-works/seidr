@@ -1,4 +1,4 @@
-import { getAppState } from "./app-state";
+import { getAppState } from "./app-state.js";
 
 /**
  * Resets the next available ID for the AppState.

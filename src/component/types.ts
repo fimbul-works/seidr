@@ -1,6 +1,6 @@
-import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants";
-import type { SeidrChild, SeidrNode } from "../element";
-import type { CleanupFunction } from "../types";
+import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
+import type { SeidrChild, SeidrNode } from "../element/types.js";
+import type { CleanupFunction } from "../types.js";
 
 /**
  * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.

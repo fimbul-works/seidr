@@ -1,5 +1,5 @@
-import type { NodeTypeComment, NodeTypeDocument, NodeTypeElement, NodeTypeText } from "../../types";
-import type { SSRComment, SSRDocument, SSRElement, SSRNode, SSRTextNode } from "./index";
+import type { NodeTypeComment, NodeTypeDocument, NodeTypeElement, NodeTypeText } from "../../types.js";
+import type { SSRComment, SSRDocument, SSRElement, SSRNode, SSRTextNode } from "./index.js";
 
 /** Suppoted DOM node types for SSR */
 export type SupportedNodeTypes = NodeTypeElement | NodeTypeText | NodeTypeComment | NodeTypeDocument;

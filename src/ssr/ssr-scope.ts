@@ -1,12 +1,12 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppState } from "../app-state/app-state";
-import type { AppState } from "../app-state/types";
-import type { Component } from "../component";
-import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants";
-import type { Seidr } from "../seidr/seidr";
-import { isServer } from "../util/environment/is-server";
-import { buildStructureMap } from "./structure/build-structure-map";
-import type { StructureMapTuple } from "./structure/types";
+import { getAppState } from "../app-state/app-state.js";
+import type { AppState } from "../app-state/types.js";
+import type { Component } from "../component/types.js";
+import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
+import type { Seidr } from "../seidr/seidr.js";
+import { isServer } from "../util/environment/is-server.js";
+import { buildStructureMap } from "./structure/build-structure-map.js";
+import type { StructureMapTuple } from "./structure/types.js";
 
 /**
  * Internal hydration data captured by SSRScope.

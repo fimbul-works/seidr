@@ -1,7 +1,7 @@
-import { getAppState } from "../app-state/app-state";
-import { DATA_KEY_COMPONENT_SCOPE } from "../constants";
-import { SeidrError } from "../types";
-import type { Component } from "./types";
+import { getAppState } from "../app-state/app-state.js";
+import { DATA_KEY_COMPONENT_SCOPE } from "../constants.js";
+import { SeidrError } from "../types.js";
+import type { Component } from "./types.js";
 
 /**
  * Get the current component
