@@ -82,8 +82,8 @@ export interface AppState {
   destroy(): void;
 }
 
-/** Function to capture data for hydration */
-export type CaptureDataFn = (value: any) => any;
+/** Function to capture data from AppState for hydration */
+export type CaptureDataFn = () => Record<string, any>;
 
-/** Function to restore data for hydration */
-export type RestoreDataFn = (value: any) => any;
+/** Function to restore data to AppState for hydration */
+export type RestoreDataFn = (data: Record<string, any>) => void;

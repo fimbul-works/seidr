@@ -3,7 +3,7 @@ import { TodoApp } from "../../examples/todo";
 import { resetRequestIdCounter } from "../app-state/app-state.ssr";
 import { component } from "../component";
 import { $ } from "../element";
-import { Seidr } from "../seidr";
+import { DATA_KEY_STATE, Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { renderToString } from "./render-to-string";
@@ -45,9 +45,9 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Count: 42");
-    expect(Object.keys(hydrationData.state!)).toHaveLength(1);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
 
-    const values = Object.values(hydrationData.state!);
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(42);
     expect(count!.observerCount()).toBe(0);
   });
@@ -68,8 +68,8 @@ describe("renderToString", () => {
 
     expect(html).toContain("Count: 10");
     expect(html).toContain("Doubled: 20");
-    expect(Object.keys(hydrationData.state!)).toHaveLength(1);
-    const values = Object.values(hydrationData.state!);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(10);
     expect(count!.observerCount()).toBe(0);
   });
@@ -89,9 +89,9 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("John Doe");
-    expect(Object.keys(hydrationData.state!)).toHaveLength(2);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
 
-    const values = Object.values(hydrationData.state!);
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe("John");
     expect(values[1]).toBe("Doe");
 
@@ -111,8 +111,8 @@ describe("renderToString", () => {
 
     expect(html).toContain("Sum: 5");
     // Both a and b should be in observables, not sum (merged)
-    expect(Object.keys(hydrationData.state!)).toHaveLength(2);
-    const values = Object.values(hydrationData.state!);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(2);
     expect(values[1]).toBe(3);
   });
@@ -125,7 +125,7 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Count: 5");
-    expect(Object.keys(hydrationData.state!)).toHaveLength(1);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
   });
 
   it("should render TODO application", async () => {
@@ -137,6 +137,6 @@ describe("renderToString", () => {
     expect(html).toContain('placeholder="What needs to be done?"');
 
     // Verify observables were captured
-    expect(Object.keys(hydrationData.state!).length).toBeGreaterThan(0);
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThan(0);
   });
 });

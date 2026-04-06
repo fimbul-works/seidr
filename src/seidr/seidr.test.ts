@@ -3,6 +3,8 @@ import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Seidr } from "./seidr";
+import { setAppStateProvider } from "../app-state/app-state";
+import { createAppState } from "../app-state/storage";
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -530,6 +532,66 @@ describe("Seidr", () => {
         expect(fullName.isDerived).toBe(true);
         expect(description.isDerived).toBe(true);
       });
+    });
+  });
+
+  describe("Seidr Singleton Patterns", () => {
+    let appState1 = createAppState(1);
+    let appState2 = createAppState(2);
+
+    beforeEach(() => {
+      appState1 = createAppState(1);
+      appState2 = createAppState(2);
+    });
+
+    it("should reuse the same instance if the ID is the same within the same AppState", () => {
+      setAppStateProvider(() => appState1);
+
+      const s1 = new Seidr("initial", { id: "my-id" });
+      const s2 = new Seidr("new-value", { id: "my-id" });
+
+      expect(s1).toBe(s2);
+      expect(s1.value).toBe("initial"); // Should keep the value of the first instance
+      expect(s2.value).toBe("initial");
+    });
+
+    it("should create different instances for the same ID in different AppStates", () => {
+      setAppStateProvider(() => appState1);
+      const s1 = new Seidr("state-1", { id: "my-id" });
+
+      setAppStateProvider(() => appState2);
+      const s2 = new Seidr("state-2", { id: "my-id" });
+
+      expect(s1).not.toBe(s2);
+      expect(s1.value).toBe("state-1");
+      expect(s2.value).toBe("state-2");
+    });
+
+    it("should generate unique IDs and return same instance when those IDs are used again", () => {
+      setAppStateProvider(() => appState1);
+
+      const s1 = new Seidr("val1"); // ID generated automatically
+      const generatedId = s1.id;
+
+      const s2 = new Seidr("val2", { id: generatedId });
+
+      expect(s1).toBe(s2);
+      expect(s1.value).toBe("val1");
+    });
+
+    it("should allow re-initializing with a different AppState provider", () => {
+      // This tests that getAppState() is dynamic
+      let currentAppState = appState1;
+      setAppStateProvider(() => currentAppState);
+
+      const s1 = new Seidr("v1", { id: "shared" });
+
+      currentAppState = appState2;
+      const s2 = new Seidr("v2", { id: "shared" });
+
+      expect(s1).not.toBe(s2);
+      expect(s1.value).toBe("v1");
+      expect(s2.value).toBe("v2");
     });
   });
 });

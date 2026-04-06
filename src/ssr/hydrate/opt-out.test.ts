@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { Seidr } from "../../seidr";
-import { noHydrate } from "../../seidr/constants";
+import { DATA_KEY_STATE, noHydrate } from "../../seidr/constants";
 import { enableSSRMode } from "../../test-setup";
 import { renderToString } from "../render-to-string";
 
@@ -22,7 +22,7 @@ describe("Seidr Hydration Opt-out", () => {
     };
 
     const { hydrationData } = await renderToString(TestComponent);
-    const values = Object.values(hydrationData.state!);
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values).toContain("keep me");
     expect(values).not.toContain("drop me");
   });

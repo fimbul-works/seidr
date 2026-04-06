@@ -1,10 +1,9 @@
 import { getAppState, getNextSeidrId } from "../app-state/app-state.js";
 import { type CleanupFunction, type EventHandler, SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
+import { DATA_KEY_STATE } from "./constants.js";
 import { scheduleUpdate } from "./scheduler.js";
 import type { Observable, ObservableOptions } from "./types.js";
-
-const DATA_KEY_STATE = "state";
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -18,6 +17,7 @@ const DATA_KEY_STATE = "state";
 export class Seidr<T = any> implements Observable<T> {
   /**
    * Unique identifier for this observable.
+   *
    * @private
    * @property {string}
    */
@@ -25,12 +25,15 @@ export class Seidr<T = any> implements Observable<T> {
 
   /**
    * The current value being stored.
+   *
    * @private
    * @property {T}
    */
   private v: T;
 
-  /** Parent dependencies (for derived observables).
+  /**
+   * Parent dependencies (for derived observables).
+   *
    * @private
    * @property {Seidr[]}
    */
@@ -38,6 +41,7 @@ export class Seidr<T = any> implements Observable<T> {
 
   /**
    * Set of event handlers subscribed to value changes.
+   *
    * @private
    * @property {Set<EventHandler<T>>}
    */
@@ -45,13 +49,16 @@ export class Seidr<T = any> implements Observable<T> {
 
   /**
    * Cleanup functions.
+   *
    * @private
    * @property {CleanupFunction[]}
    */
   private c: CleanupFunction[] = [];
 
   /**
-   * @type {(seidr: Seidr) => void} Register Seidr for SSR/hydration callback.
+   * Register Seidr for SSR/hydration callback.
+   *
+   * @type {(seidr: Seidr) => void}
    */
   static register: (seidr: Seidr) => void;
 
@@ -68,19 +75,28 @@ export class Seidr<T = any> implements Observable<T> {
     this.i = options.id ?? getNextSeidrId();
     this.v = initial;
 
-    // If an ID is provided in options, check if the Seidr instance is already registered in the current AppState
-    if (options.id) {
-      try {
-        const appState = getAppState();
-        const states = appState.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
-        if (states?.[options.id]) {
-          return states[options.id] as Seidr<T>;
-        }
-      } catch {
-        // Ignore if no AppState (e.g. outside of runWithAppState), will register for SSR/hydration if scope is active
+    // Check for an existing instance in AppState
+    try {
+      const appState = getAppState();
+      const states = (appState.getData(DATA_KEY_STATE) ?? {}) as Record<string, Seidr>;
+      if (states[this.id]) {
+        // Return existing instance if found
+        return states[this.id] as Seidr<T>;
+      } else {
+        // Register instance in AppState
+        states[this.id] = this;
+        appState.setData(DATA_KEY_STATE, states);
+      }
+    } catch {
+      // @ts-expect-error
+      if (__SEIDR_DEV__) {
+        console.warn(
+          `Seidr created with ID "${this.id}" but no AppState found. You should not create Seidr instances outside of the component tree in SSR, due to cross-request contamination.`,
+        );
       }
     }
 
+    // Restore from hydration data if applicable
     if (!process.env.DISABLE_SSR) {
       Seidr.register?.(this);
     }
@@ -178,7 +194,7 @@ export class Seidr<T = any> implements Observable<T> {
   as<D>(transformFn: (value: T) => D, options: ObservableOptions = {}) {
     const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
-    this.c.push(this.observe((updatedValue) => derived.set(transformFn(updatedValue))));
+    derived.c.push(this.observe((updatedValue) => derived.set(transformFn(updatedValue))));
     return derived;
   }
 

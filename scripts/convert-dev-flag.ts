@@ -8,7 +8,10 @@ export function convertDevFlag(): Plugin {
   return {
     name: "convert-dev-flag",
     renderChunk(code: string) {
-      return code.replace(/__SEIDR_DEV__/g, '(process.env.NODE_ENV === "development")');
+      return code.replaceAll(
+        /\b__SEIDR_DEV__\b/g,
+        '(typeof process !== "undefined" && process.env.NODE_ENV === "development")',
+      );
     },
   };
 }

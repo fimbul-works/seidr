@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { getAppState } from "../app-state/app-state";
 import { resetNextId } from "../app-state/reset-next-id";
-import { Seidr } from "../seidr";
+import { createAppState } from "../app-state/storage";
+import { DATA_KEY_STATE, Seidr } from "../seidr";
 import { enableSSRMode } from "../test-setup";
 import { clearHydrationData } from "./hydrate/storage";
 import { SSRScope, setSSRScope } from "./ssr-scope";
@@ -17,7 +19,7 @@ describe("SSRScope", () => {
     resetNextId();
     process.env.SEIDR_TEST_SSR = "true";
 
-    scope = new SSRScope();
+    scope = new SSRScope(getAppState());
   });
 
   afterEach(() => {
@@ -38,10 +40,8 @@ describe("SSRScope", () => {
   it("should register observables", () => {
     const observable = new Seidr(42);
 
-    scope.register(observable);
-
     expect(scope.size).toBe(1);
-    expect(scope.has(observable.id)).toBe(true);
+    expect(!!scope.get(observable.id)).toBe(true);
     expect(scope.get(observable.id)).toBe(observable);
   });
 
@@ -50,74 +50,56 @@ describe("SSRScope", () => {
     const obs2 = new Seidr("test");
     const obs3 = new Seidr(true);
 
-    scope.register(obs1);
-    scope.register(obs2);
-    scope.register(obs3);
-
     expect(scope.size).toBe(3);
-    expect(scope.has(obs1.id)).toBe(true);
-    expect(scope.has(obs2.id)).toBe(true);
-    expect(scope.has(obs3.id)).toBe(true);
+    expect(!!scope.get(obs1.id)).toBe(true);
+    expect(!!scope.get(obs2.id)).toBe(true);
+    expect(!!scope.get(obs3.id)).toBe(true);
   });
 
   it("should capture state with only root observables", () => {
-    const root1 = new Seidr(10);
-    const root2 = new Seidr("hello");
-    const derived = root1.as((x) => x * 2);
-
-    scope.register(root1);
-    scope.register(root2);
-    scope.register(derived);
+    const root1 = new Seidr(10, { id: "root1" });
+    const _root2 = new Seidr("hello", { id: "root2" });
+    const _derived = root1.as((x) => x * 2);
 
     const hydrationData = scope.captureHydrationData();
 
-    expect(Object.keys(hydrationData.state!)).toHaveLength(2);
-    // root1 is registered first (index 0), root2 is second (index 1)
-    expect(hydrationData.state![0]).toBe(10);
-    expect(hydrationData.state![1]).toBe("hello");
+    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
+    expect(hydrationData.data[DATA_KEY_STATE]!.root1).toBe(10);
+    expect(hydrationData.data[DATA_KEY_STATE]!.root2).toBe("hello");
   });
 
   it("should capture complex types", () => {
-    const objObs = new Seidr({ foo: "bar", nested: { value: 42 } });
-    const arrayObs = new Seidr([1, 2, 3]);
-
-    scope.register(objObs);
-    scope.register(arrayObs);
+    const _objObs = new Seidr({ foo: "bar", nested: { value: 42 } }, { id: "obj" });
+    const _arrayObs = new Seidr([1, 2, 3], { id: "arr" });
 
     const hydrationData = scope.captureHydrationData();
 
-    expect(hydrationData.state![0]).toEqual({ foo: "bar", nested: { value: 42 } });
-    expect(hydrationData.state![1]).toEqual([1, 2, 3]);
+    expect(hydrationData.data[DATA_KEY_STATE]!.obj).toEqual({ foo: "bar", nested: { value: 42 } });
+    expect(hydrationData.data[DATA_KEY_STATE]!.arr).toEqual([1, 2, 3]);
   });
 
   it("should clear all observables", () => {
     const obs1 = new Seidr(1);
     const obs2 = new Seidr(2);
 
-    scope.register(obs1);
-    scope.register(obs2);
-
     expect(scope.size).toBe(2);
 
     scope.clear();
 
     expect(scope.size).toBe(0);
-    expect(scope.has(obs1.id)).toBe(false);
-    expect(scope.has(obs2.id)).toBe(false);
+    expect(!!scope.get(obs1.id)).toBe(false);
+    expect(!!scope.get(obs2.id)).toBe(false);
   });
 
   it("should handle registering same observable twice", () => {
-    const observable = new Seidr(42);
-
-    scope.register(observable);
-    scope.register(observable);
+    const _observable = new Seidr(42);
 
     expect(scope.size).toBe(1);
   });
 
   describe("Auto-registration", () => {
     it("should auto-register Seidr instances when first observed/bound in scope", () => {
-      const scope = new SSRScope();
+      const scope = new SSRScope(getAppState());
       setSSRScope(scope);
 
       const obs1 = new Seidr(42);
@@ -125,16 +107,17 @@ describe("SSRScope", () => {
 
       // Registered immediately in constructor
       expect(scope.size).toBe(2);
-      expect(scope.has(obs1.id)).toBe(true);
-      expect(scope.has(obs2.id)).toBe(true);
+      expect(!!scope.get(obs1.id)).toBe(true);
+      expect(!!scope.get(obs2.id)).toBe(true);
 
       setSSRScope(undefined);
     });
 
     it("should not auto-register when no active scope", () => {
-      const scope = new SSRScope();
+      const isolatedState = createAppState(999);
+      const scope = new SSRScope(isolatedState);
 
-      // Don't push scope
+      // Create observable in the global state, not the isolated one
       const obs = new Seidr(42);
       obs.observe(() => {});
 
@@ -142,7 +125,7 @@ describe("SSRScope", () => {
     });
 
     it("should auto-register derived observables when first observed", () => {
-      const scope = new SSRScope();
+      const scope = new SSRScope(getAppState());
       setSSRScope(scope);
 
       const root = new Seidr(10);
@@ -151,14 +134,14 @@ describe("SSRScope", () => {
       const derived = root.as((x) => x * 2);
 
       expect(scope.size).toBe(2);
-      expect(scope.has(root.id)).toBe(true);
-      expect(scope.has(derived.id)).toBe(true);
+      expect(!!scope.get(root.id)).toBe(true);
+      expect(!!scope.get(derived.id)).toBe(true);
 
       setSSRScope(undefined);
     });
 
-    it("should auto-register mergeed observables", () => {
-      const scope = new SSRScope();
+    it("should auto-register merged observables", () => {
+      const scope = new SSRScope(getAppState());
       setSSRScope(scope);
 
       const a = new Seidr(2);
@@ -169,9 +152,9 @@ describe("SSRScope", () => {
       const merged = Seidr.merge(() => a.value + b.value, [a, b]);
 
       expect(scope.size).toBe(3);
-      expect(scope.has(a.id)).toBe(true);
-      expect(scope.has(b.id)).toBe(true);
-      expect(scope.has(merged.id)).toBe(true);
+      expect(!!scope.get(a.id)).toBe(true);
+      expect(!!scope.get(b.id)).toBe(true);
+      expect(!!scope.get(merged.id)).toBe(true);
 
       setSSRScope(undefined);
     });

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { List } from "../../components/list";
 import { $ } from "../../element";
-import { Seidr } from "../../seidr";
+import { DATA_KEY_STATE, Seidr } from "../../seidr";
 import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { str } from "../../util/string";
@@ -40,7 +40,7 @@ describe("Hydration Integration", () => {
         List(
           items,
           (item) => str(item),
-          (item) => $("li", { textContent: `Item ${item}` }),
+          (item: number) => $("li", { textContent: `Item ${item}` }),
         ),
       ]),
     ]);
@@ -137,8 +137,8 @@ describe("Hydration Integration", () => {
     container.innerHTML = html;
 
     // We deliberately alter the server state to something else before hydration
-    if (hydrationData.state?.title) {
-      hydrationData.state.title = "Modified App Title";
+    if (hydrationData.data[DATA_KEY_STATE]?.title) {
+      hydrationData.data[DATA_KEY_STATE].title = "Modified App Title";
     }
 
     // Since the client receives this modified hydration state, the component will render with this new state

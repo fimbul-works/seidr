@@ -10,9 +10,9 @@ import { SSRScope, setSSRScope } from "./ssr-scope.js";
 import type { SSRRenderResult } from "./types.js";
 
 /**
- * Options for rendering a component to string during SSR.
+ * Initial data for rendering a component to string during SSR.
  */
-export type RenderToStringOptions = Record<string, any>;
+export type RenderToStringData = Record<string, any>;
 
 /**
  * Renders a component to an HTML string with hydration data capture.
@@ -20,12 +20,12 @@ export type RenderToStringOptions = Record<string, any>;
  * @template {ComponentReturnValue} C - The return value of the component function
  *
  * @param {() => C} factory - Component function to render
- * @param {RenderToStringOptions} [options] - Optional options object
+ * @param {RenderToStringData} [data] - Optional options object
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
 export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
-  options: RenderToStringOptions = {},
+  data: RenderToStringData = {},
 ): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
@@ -43,7 +43,7 @@ export async function renderToString<C extends ComponentReturnValue>(
 
       initSSRDocument();
 
-      const activeScope = new SSRScope();
+      const activeScope = new SSRScope(state, data);
       setSSRScope(activeScope);
 
       try {
@@ -72,10 +72,8 @@ export async function renderToString<C extends ComponentReturnValue>(
         return { html, hydrationData };
       } finally {
         setSSRScope(undefined);
+        activeScope.clear();
         state.destroy();
-        if (!options.scope) {
-          activeScope.clear();
-        }
       }
     });
   } finally {

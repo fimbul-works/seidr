@@ -1,7 +1,7 @@
 import type { Component } from "../../component/types.js";
 import type { Seidr } from "../../seidr/seidr.js";
 import { SeidrError } from "../../types.js";
-import type { SSRScopeCapture } from "../ssr-scope.js";
+import type { SSRScopeCapture } from "../types.js";
 import type { ComponentTreeNode } from "../structure/types.js";
 
 /**
@@ -83,9 +83,6 @@ export interface HydrationData extends SSRScopeCapture {
    * instead of the default 0, enabling proper SSR/client marker matching.
    */
   ctxID: number;
-
-  /** Serialized app data */
-  data?: Record<string, any>;
 
   /**
    * Root container for path traversal relative lookup (client-side only).

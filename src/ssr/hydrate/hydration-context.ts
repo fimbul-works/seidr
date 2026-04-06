@@ -1,35 +1,47 @@
 import { getAppState } from "../../app-state/app-state.js";
 import type { Component } from "../../component/types.js";
 import { DATA_KEY_HYDRATION_CONTEXT, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../constants.js";
+import { registerStateStrategy } from "../../seidr/register-state-strategy.js";
 import { SeidrError } from "../../types.js";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
 import { isEmpty } from "../../util/type-guards/primitive-types.js";
 import { reconstructComponentTree } from "../structure/reconstruct-component-tree.js";
 import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js";
-import { getHydrationData, isHydrating } from "./storage.js";
+import { getHydrationData } from "./storage.js";
 import type { HydrationContext, HydrationMismatchNode } from "./types.js";
 
 export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CONTEXT);
 
 export const initHydrationContext = () => {
-  if (!isHydrating()) {
-    throw new SeidrError("Not hydrating");
-  }
-
-  const data = getHydrationData()?.data;
-  if (isEmpty(data?.components)) {
+  const appState = getAppState();
+  const hydrationData = getHydrationData()?.data;
+  if (!hydrationData || isEmpty(hydrationData.components)) {
     throw new SeidrError("Invalid hydration data");
   }
 
-  const normalizedComponents: Record<string, StructureMapTuple[]> = {};
-  for (const key in data.components) {
-    const parts = key.split(":");
-    const compId = parts.length > 1 ? parts.slice(1).join(":") : key;
-    normalizedComponents[compId] = data.components[key];
+  // Ensure state strategy is registered
+  registerStateStrategy(appState);
+
+  // Restore data from all strategies
+  if (hydrationData.data) {
+    Object.entries(hydrationData.data).forEach(([key, val]) => {
+      const strategy = appState.getDataStrategy(key);
+      if (strategy) {
+        const [, restore] = strategy;
+        restore(val);
+      }
+    });
   }
 
-  const ctx = createHydrationContext(data.root!, normalizedComponents);
-  getAppState().setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
+  const normalizedComponents: Record<string, StructureMapTuple[]> = {};
+  for (const key in hydrationData.components) {
+    const parts = key.split(":");
+    const compId = parts.length > 1 ? parts.slice(1).join(":") : key;
+    normalizedComponents[compId] = hydrationData.components[key];
+  }
+
+  const ctx = createHydrationContext(hydrationData.root!, normalizedComponents);
+  appState.setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
   return ctx;
 };
 

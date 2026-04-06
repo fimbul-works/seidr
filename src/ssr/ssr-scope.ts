@@ -3,27 +3,14 @@ import { getAppState } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
 import type { Component } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
+import { DATA_KEY_STATE } from "../seidr/constants.js";
+import { registerStateStrategy } from "../seidr/register-state-strategy.js";
 import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
+import type { RenderToStringData } from "./render-to-string.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";
 import type { StructureMapTuple } from "./structure/types.js";
-
-/**
- * Internal hydration data captured by SSRScope.
- * This is combined with ctxID to form the complete HydrationData.
- */
-export interface SSRScopeCapture {
-  /**
-   * Seidr ID -> value mapping for root observables.
-   * Only contains root observables (isDerived = false).
-   */
-  state?: Record<string, any>;
-
-  /**
-   * Component ID -> Structure Map mapping.
-   */
-  components: Record<string, StructureMapTuple[]>;
-}
+import type { SSRScopeCapture } from "./types.js";
 
 /**
  * Gets the SSR scope for the current render context.
@@ -62,12 +49,31 @@ export function setSSRScope(scope: SSRScope | undefined): void {
  * rendering and captures their state for hydration.
  */
 export class SSRScope {
-  // id -> instance
-  private state = new Map<string, Seidr>();
   // id -> Component
   private components = new Map<string, Component>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
+
+  /**
+   * Creates an instance of SSRScope.
+   *
+   * @param {AppState} state - AppState instance for this render scope
+   * @param {RenderToStringData} [data={}] - Data passed to renderToString
+   */
+  constructor(
+    private state: AppState,
+    data: RenderToStringData = {},
+  ) {
+    // Define hydration data strategy for root observables
+    registerStateStrategy(this.state);
+
+    // Apply restore functions for strategies if data for them is provided
+    this.state.strategies.forEach(([_, restore], key) => {
+      if (data[key]) {
+        restore(data[key]);
+      }
+    });
+  }
 
   /**
    * Registers a promise to be awaited before finishing the SSR render.
@@ -87,10 +93,6 @@ export class SSRScope {
    * Called by renderToString before finalizing the HTML output.
    */
   async waitForPromises(): Promise<void> {
-    // We loop in case resolving one promise kicks off more async work
-    if (this.promises.length > 0) {
-      this._hasAwaited = true;
-    }
     while (this.promises.length > 0) {
       const pending = [...this.promises];
       this.promises = [];
@@ -98,27 +100,21 @@ export class SSRScope {
     }
   }
 
-  private _hasAwaited = false;
-  get hasAwaited(): boolean {
-    return this._hasAwaited;
-  }
-
   /**
    * Returns the number of observables registered in this scope.
    * Useful for debugging and testing.
    */
   get size(): number {
-    return this.state.size;
+    return Object.keys(this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {}).length;
   }
 
   /**
    * Registers an observable with this scope.
-   * Called automatically by Seidr during SSR rendering when first observed/bound.
-   *
-   * @param {Seidr} seidr - The Seidr instance to register
    */
-  register(seidr: Seidr): void {
-    this.state.set(seidr.id, seidr);
+  register(_seidr: Seidr): void {
+    // No-op for now because Seidr constructor already registers in AppState.
+    // We could use this to track which Seidrs were explicitly registered in this scope
+    // if we ever need to isolate them further, but for now AppState is the source of truth.
   }
 
   /**
@@ -138,17 +134,10 @@ export class SSRScope {
   }
 
   /**
-   * Checks if an observable with the given ID is registered in this scope.
-   */
-  has(id: string): boolean {
-    return this.state.has(id);
-  }
-
-  /**
    * Gets an observable by ID from this scope.
    */
   get(id: string): Seidr | undefined {
-    return this.state.get(id);
+    return this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE)?.[id];
   }
 
   /**
@@ -156,8 +145,9 @@ export class SSRScope {
    * Called after rendering to prevent memory leaks.
    */
   clear(): void {
-    this.state.values().forEach((seidr) => seidr.destroy());
-    this.state.clear();
+    const states = this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
+    Object.values(states).forEach((seidr) => seidr.destroy());
+    this.state.deleteData(DATA_KEY_STATE);
     this.components.clear();
   }
 
@@ -173,15 +163,10 @@ export class SSRScope {
    * @returns {SSRScopeCapture} The complete hydration data
    */
   captureHydrationData(): SSRScopeCapture {
-    const state: Record<string, any> = {};
-    const values = Array.from(this.state.values());
-
-    for (const seidr of values) {
-      if (seidr.isDerived || seidr.options.hydrate === false) {
-        continue;
-      }
-      state[seidr.id] = seidr.value;
-    }
+    const strategyData: Record<string, any> = {};
+    this.state.strategies.forEach(([capture], key) => {
+      strategyData[key] = capture();
+    });
 
     const components: Record<string, StructureMapTuple[]> = {};
     const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted && c.element);
@@ -199,13 +184,11 @@ export class SSRScope {
       index++;
     }
 
-    // Clear observables map to prevent memory leaks
-    values.forEach((seidr) => seidr.destroy());
-    this.state.clear();
-    this.components.clear();
+    // Clear and execute cleanup
+    this.clear();
 
     return {
-      state,
+      data: strategyData,
       components,
     };
   }
