@@ -20,8 +20,7 @@ export const isClient = (): boolean => {
 
   return (
     typeof window !== "undefined" &&
-    !(typeof import.meta !== "undefined" && !!import.meta.env?.SSR) &&
-    !(typeof process !== "undefined" && process.env.SEIDR_TEST_SSR)
+    !(typeof process !== "undefined" && (process.env.SEIDR_TEST_SSR || process.env.SSR))
   );
 };
 

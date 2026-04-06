@@ -7,12 +7,9 @@ import { SSRNodeList } from "./ssr-node-list";
 import type { ServerNode } from "./types";
 
 export abstract class SSRParentNode<
-    T extends NodeTypeDocument | NodeTypeElement,
-    D extends SSRDocument | null = SSRDocument | null,
-  >
-  extends SSRChildNode<T, D>
-  implements ParentNode
-{
+  T extends NodeTypeDocument | NodeTypeElement,
+  D extends SSRDocument | null = SSRDocument | null,
+> extends SSRChildNode<T, D> {
   get childElementCount(): number {
     return this.children.length;
   }

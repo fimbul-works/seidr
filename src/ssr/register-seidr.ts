@@ -29,7 +29,7 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   if (isServer()) {
     // Server-side: register with active SSR scope
     getSSRScope()?.register(seidr);
-  } else if (isClient()) {
+  } else if (!process.env.DISABLE_SSR && isClient()) {
     // Client-side: register immediately for hydration
     registerHydratingSeidr(seidr);
   }

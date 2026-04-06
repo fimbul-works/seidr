@@ -5,14 +5,14 @@
     "lib": ["ESNext", "DOM"],
     "types": ["node"],
     "moduleResolution": "Bundler",
-    "declaration": false,
+    "declaration": true,
     "allowJs": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist/esm"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts", "node_modules"]

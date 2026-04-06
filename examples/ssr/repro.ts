@@ -15,10 +15,6 @@ async function runTest(url: string) {
     console.log("BROWSER CONSOLE:", text);
   });
 
-  await page.evaluateOnNewDocument(() => {
-    (window as any).process = { env: { DEBUG_HYDRATION: "true" } };
-  });
-
   await page.goto(url);
 
   // Wait a bit for hydration to settle
@@ -32,11 +28,11 @@ async function runTest(url: string) {
   const pageResults = await page.evaluate(() => {
     const navbars = document.querySelectorAll(".navbar");
     const appContainers = document.querySelectorAll(".app-container");
-    const appDiv = document.getElementById("app");
+    const _appDiv = document.getElementById("app");
 
     const containersInfo = Array.from(appContainers).map((c, i) => ({
       index: i,
-      html: c.innerHTML.substring(0, 100) + "...",
+      html: `${c.innerHTML.substring(0, 100)}...`,
       parent: c.parentElement ? c.parentElement.id || c.parentElement.tagName : "null",
       attributes: Array.from(c.attributes)
         .map((a) => `${a.name}="${a.value}"`)

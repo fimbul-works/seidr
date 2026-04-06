@@ -1,6 +1,6 @@
-import type { ComponentTreeNode } from "src/ssr/structure";
 import type { Component } from "../../../component";
 import { SeidrError } from "../../../types";
+import type { ComponentTreeNode } from "../../structure";
 
 /**
  * Error thrown when a hydration mismatch occurs.

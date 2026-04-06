@@ -12,10 +12,9 @@ import { SSRTextNode } from "./ssr-text-node";
 
 const INTERNAL_ATTRIBUTES = new Set(["innerHTML", "outerHTML", "textContent", "classList", "style", "dataset"]);
 
-export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string>
-  extends SSRParentNode<NodeTypeElement, SSRDocument>
-  implements Partial<Element>
-{
+export class SSRElement<
+  K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string,
+> extends SSRParentNode<NodeTypeElement, SSRDocument> {
   readonly nodeType = TYPE_ELEMENT;
   public readonly tagName: K;
   public readonly lowerTagName: K;
@@ -44,7 +43,6 @@ export class SSRElement<K extends keyof HTMLElementTagNameMap | string = keyof H
     this.classList = this._createClassList();
 
     // Return a Proxy of the element to allow arbitrary property assignment
-    // biome-ignore lint/correctness/noConstructorReturn: Proxy for attributes
     return new Proxy(this, {
       get(target, prop, receiver) {
         if (prop === "__isProxy") return true;

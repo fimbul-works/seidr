@@ -15,7 +15,7 @@ export const clientNoSSRReplace = {
   ...mainReplace,
   "process.env.USE_SCHEDULER": "true",
   "process.env.DISABLE_SSR": "true",
-  "import.meta.env.SSR": "false",
+  "process.env.SSR": "false",
   "isHydrating()": "false",
   "isClient()": "true",
   "isServer()": "false",

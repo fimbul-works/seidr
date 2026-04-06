@@ -1,19 +1,18 @@
 import { Seidr } from "./seidr/seidr";
 import { registerSeidrForSSR } from "./ssr/register-seidr";
 
-export * from "./app-state/index";
-export * from "./component/index";
-export * from "./components/index";
-export * from "./constants";
-export * from "./dom/index";
-export * from "./element/index";
-export * from "./elements/index";
-export * from "./form/index";
-export * from "./seidr/index";
+export * from "./app-state";
+export * from "./component";
+export * from "./components";
+export * from "./dom";
+export * from "./element";
+export * from "./elements";
+export * from "./form";
+export * from "./seidr";
 export * from "./types";
-export * from "./util/index";
+export * from "./util";
 
-// Register SSR state provider
-if (process.env.DISABLE_SSR) {
+// Add register method for SSR hydration
+if (!process.env.DISABLE_SSR) {
   Seidr.register = registerSeidrForSSR;
 }
