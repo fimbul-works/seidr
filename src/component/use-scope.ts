@@ -6,11 +6,12 @@ import type { Component } from "./types.js";
 /**
  * Get the current component
  * @returns {Component} Current Component.
+ * @throws {SeidrError} if called outside of component hierarchy
  */
-export const useScope = (): Component => {
+export function useScope(): Component {
   const component = getAppState().getData<Component>(DATA_KEY_COMPONENT_SCOPE);
   if (!component) {
     throw new SeidrError("useScope called outside of component hierarchy");
   }
   return component;
-};
+}

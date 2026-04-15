@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { escapeAttribute, escapeHTML } from "./escape";
+import { escapeAttribute, escapeHTML } from "./escape-string";
 
-describe("escape", () => {
+describe("String scaping", () => {
   describe("escapeHTML", () => {
     it("should escape special characters", () => {
       expect(escapeHTML("<div class='test'>&</div>")).toBe("&lt;div class=&#039;test&#039;&gt;&amp;&lt;/div&gt;");

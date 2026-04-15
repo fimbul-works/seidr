@@ -1,3 +1,5 @@
+import type { CleanupFunction } from "../types";
+
 /**
  * Global type declaration for the application state provider.
  */
@@ -5,12 +7,18 @@ declare global {
   var __SEIDR_APP_STATE_PROVIDER__: (() => AppState) | undefined;
 }
 
+/** Function to capture data from AppState for hydration */
+export type CaptureDataFn<T> = () => T;
+
+/** Function to restore data to AppState for hydration */
+export type RestoreDataFn<T> = (data: T) => void;
+
 /**
  * AppState is used for application state management, SSR and hydration.
  */
 export interface AppState {
   /** Application state ID is used to differentiate state between requests */
-  ctxId: number;
+  ctxID: number;
 
   /** Counter for generating unique IDs */
   seidrIdCounter: number;
@@ -22,9 +30,13 @@ export interface AppState {
   data: Map<string, any>;
 
   /** Data strategies for hydration */
-  strategies: Map<string, [CaptureDataFn, RestoreDataFn]>;
+  strategies: Map<string, [CaptureDataFn<any>, RestoreDataFn<any>, CleanupFunction | undefined]>;
 
-  /** Whether the current state is for SSR */
+  /**
+   * Whether the current state is for SSR.
+   * Used for testing.
+   * @internal
+   */
   isSSR?: boolean;
 
   /**
@@ -62,28 +74,30 @@ export interface AppState {
   /**
    * Define a data strategy for hydration.
    *
+   * @template T - The type of data for hydration
    * @param {string} key - The key to define a strategy for
-   * @param {CaptureDataFn} captureFn - Function to capture data for hydration
-   * @param {RestoreDataFn} restoreFn - Function to restore data for hydration
+   * @param {CaptureDataFn<T>} captureFn - Function to capture data for hydration
+   * @param {RestoreDataFn<T>} restoreFn - Function to restore data for hydration
+   * @param {CleanupFunction} [cleanupFn] - Function to clean up data for hydration
    */
-  defineDataStrategy(key: string, captureFn: CaptureDataFn, restoreFn: RestoreDataFn): void;
+  defineDataStrategy<T>(
+    key: string,
+    captureFn: CaptureDataFn<T>,
+    restoreFn: RestoreDataFn<T>,
+    cleanupFn?: CleanupFunction,
+  ): void;
 
   /**
    * Get data strategy for a key.
    *
+   * @template T - The type of data for hydration
    * @param {string} key - The key to get a strategy for
-   * @returns {[CaptureDataFn, RestoreDataFn] | undefined} The data strategy, or undefined if not found
+   * @returns {[CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined} The data strategy, or undefined if not found
    */
-  getDataStrategy(key: string): [CaptureDataFn, RestoreDataFn] | undefined;
+  getDataStrategy<T>(key: string): [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined;
 
   /**
    * Destroy the application state.
    */
   destroy(): void;
 }
-
-/** Function to capture data from AppState for hydration */
-export type CaptureDataFn = () => Record<string, any>;
-
-/** Function to restore data to AppState for hydration */
-export type RestoreDataFn = (data: Record<string, any>) => void;

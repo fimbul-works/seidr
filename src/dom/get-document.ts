@@ -1,4 +1,5 @@
 import { SeidrError } from "../types.js";
+import { isClient } from "../util/environment/is-client.js";
 
 /**
  * Global type declaration for the document provider.
@@ -13,15 +14,16 @@ const DOC_KEY = "__SEIDR_DOCUMENT_PROVIDER__";
 /**
  * Default client-side getDocument implementation.
  *
- * @returns {Document} Document object.
+ * @returns {Document} Document object
+ * @throws {SeidrError} if getDocument is not initialized
  */
-export const defaultClientDocument: () => Document = (): Document => {
-  if (typeof window !== "undefined") {
+export function defaultClientDocument(): Document {
+  if (isClient()) {
     return window.document;
   }
 
   throw new SeidrError("getDocument not initialized");
-};
+}
 
 /** AppState provider is shared across built bundles */
 if (!globalThis[DOC_KEY]) {

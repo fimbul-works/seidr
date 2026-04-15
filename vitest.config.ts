@@ -12,5 +12,6 @@ export default defineConfig({
   },
   define: {
     __SEIDR_DEV__: "true",
+    "process.env.SEIDR_ENABLE_SSR": true,
   },
 });

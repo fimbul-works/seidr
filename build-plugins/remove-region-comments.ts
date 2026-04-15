@@ -2,6 +2,7 @@ import type { Plugin } from "rolldown";
 
 /**
  * Removes region comments from the code.
+ *
  * @returns {Plugin}
  */
 export function removeRegionComments(): Plugin {

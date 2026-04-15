@@ -21,31 +21,44 @@ import { appendChild } from "./append-child.js";
  * @template {ComponentType} C - Type of the component or factory
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement} container - The DOM container element to mount into
+ * @param {Record<string, any>} [appData={}] - Optional AppState data
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
+ * @throws {SeidrError} when AppState already has a root component
  */
-export const mount = <C extends ComponentType = ComponentType>(
+export function mount<C extends ComponentType = ComponentType>(
   componentOrFactory: C,
   container: HTMLElement,
-): CleanupFunction => {
-  const rootComponentId = "rootComponent";
+  appData: Record<string, any> = {},
+): CleanupFunction {
+  const DATA_KEY_ROOT_COMPONENT = "seidr.root-component";
+
   // Bind the container to the application state if not already bound
-  const state = getAppState();
-  if (state.getData(rootComponentId)) {
-    throw new SeidrError("Container already bound to a different root node");
+  const appState = getAppState();
+  if (appState.getData(DATA_KEY_ROOT_COMPONENT)) {
+    throw new SeidrError("AppState already has a root component");
   }
 
+  // Restore data from all strategies
+  Object.entries(appData).forEach(([key, val]) => {
+    const strategy = appState.getDataStrategy(key);
+    if (strategy) {
+      const [, restoreFn] = strategy;
+      restoreFn(val);
+    }
+  });
+
   // Create the component
-  const component: Component = isComponent(componentOrFactory)
+  const rootComponent: Component = isComponent(componentOrFactory)
     ? componentOrFactory
-    : wrapComponent(componentOrFactory)();
+    : wrapComponent(componentOrFactory, "Root")();
 
-  state.setData(rootComponentId, component);
+  appState.setData(DATA_KEY_ROOT_COMPONENT, rootComponent);
 
-  appendChild(container, component);
+  appendChild(container, rootComponent);
 
   // Return cleanup function
   return () => {
-    component.unmount();
-    state.deleteData(rootComponentId);
+    rootComponent.unmount();
+    appState.deleteData(DATA_KEY_ROOT_COMPONENT);
   };
-};
+}

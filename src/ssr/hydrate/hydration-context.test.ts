@@ -100,9 +100,4 @@ describe("Hydration Context", () => {
 
     expect(container.innerHTML).toBe(html);
   });
-
-  // BlogApp hydration test disabled until Router is moved to an addon
-  // it("should handle complex application hydration", async () => {
-  //   ...
-  // });
 });

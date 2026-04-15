@@ -1,6 +1,6 @@
 import { TAG_TEXT, TYPE_TEXT_NODE } from "../../constants.js";
 import type { NodeTypeText } from "../../types.js";
-import { escapeHTML } from "../util/escape.js";
+import { escapeHTML } from "../util/escape-string.js";
 import { SSRCharacterData } from "./ssr-character-data.js";
 
 export class SSRTextNode extends SSRCharacterData<NodeTypeText> implements Text {

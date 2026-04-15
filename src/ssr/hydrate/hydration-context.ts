@@ -1,6 +1,12 @@
 import { getAppState } from "../../app-state/app-state.js";
 import type { Component } from "../../component/types.js";
-import { DATA_KEY_HYDRATION_CONTEXT, ROOT_ATTRIBUTE, TAG_COMMENT, TAG_TEXT } from "../../constants.js";
+import {
+  DATA_KEY_HYDRATION_CONTEXT,
+  ROOT_ATTRIBUTE,
+  TAG_COMMENT,
+  TAG_COMPONENT_PREFIX,
+  TAG_TEXT,
+} from "../../constants.js";
 import { registerStateStrategy } from "../../seidr/register-state-strategy.js";
 import { SeidrError } from "../../types.js";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
@@ -10,61 +16,52 @@ import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js
 import { getHydrationData } from "./storage.js";
 import type { HydrationContext, HydrationMismatchNode } from "./types.js";
 
+/**
+ * Get the active hydration context from AppState.
+ * @returns
+ */
 export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CONTEXT);
 
-export const initHydrationContext = () => {
+/**
+ * Initialize hydration context.
+ *
+ * @param {Element} container - Container DOM element
+ * @returns {HydrationContext} The initialized hydratin context object
+ * @throws {SeidrError} if hydration data is invalid
+ * @throws {SeidrError} if no root nodes can be found in DOM
+ */
+export function initHydrationContext(container: Element) {
   const appState = getAppState();
-  const hydrationData = getHydrationData()?.data;
-  if (!hydrationData || isEmpty(hydrationData.components)) {
+  const hydrationData = getHydrationData();
+  if (isEmpty(hydrationData?.components)) {
     throw new SeidrError("Invalid hydration data");
   }
 
   // Ensure state strategy is registered
   registerStateStrategy(appState);
 
-  // Restore data from all strategies
-  if (hydrationData.data) {
-    Object.entries(hydrationData.data).forEach(([key, val]) => {
-      const strategy = appState.getDataStrategy(key);
-      if (strategy) {
-        const [, restore] = strategy;
-        restore(val);
-      }
-    });
-  }
-
-  const normalizedComponents: Record<string, StructureMapTuple[]> = {};
+  // Construct normalized component
+  const components: Record<string, StructureMapTuple[]> = {};
   for (const key in hydrationData.components) {
     const parts = key.split(":");
-    const compId = parts.length > 1 ? parts.slice(1).join(":") : key;
-    normalizedComponents[compId] = hydrationData.components[key];
+    const componentId = parts.length > 1 ? parts.slice(1).join(":") : key;
+    components[componentId] = hydrationData.components[key];
   }
 
-  const ctx = createHydrationContext(hydrationData.root!, normalizedComponents);
-  appState.setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
-  return ctx;
-};
-
-export const createHydrationContext = (
-  container: Element,
-  map: Record<string, StructureMapTuple[]>,
-): HydrationContext => {
-  const data = getHydrationData()?.data;
-
   // Find the actual root nodes rendered by SSR (they have the ROOT_ATTRIBUTE)
-  const rootNodes = Array.from(container.querySelectorAll(`[${ROOT_ATTRIBUTE}="${data?.ctxID}"]`));
+  const rootNodes = Array.from(container.querySelectorAll(`[${ROOT_ATTRIBUTE}="${hydrationData.ctxID}"]`));
   if (!rootNodes) {
     throw new SeidrError("No root nodes found");
   }
 
   // Reconstruct virtual tree from tuples AND sync with DOM in one pass
-  const componentTree = reconstructComponentTree(rootNodes, map);
+  const componentTree = reconstructComponentTree(rootNodes, components);
 
   // Wrap in a root component node to satisfy the componentNodeMap lookup
-  const rootComponentId = Object.keys(map)[0];
+  const rootComponentId = Object.keys(components)[0];
   const fullComponentTree: ComponentTreeNode[] = [
     {
-      tag: `$${rootComponentId}`,
+      tag: `${TAG_COMPONENT_PREFIX}${rootComponentId}`,
       id: rootComponentId,
       creationIndex: -1,
       children: componentTree,
@@ -97,14 +94,14 @@ export const createHydrationContext = (
     return undefined;
   };
 
-  for (const componentId of Object.keys(map)) {
+  for (const componentId of Object.keys(components)) {
     const compNode = componentNodeMap.get(componentId);
     if (!compNode) {
       console.warn(`[Hydration] Component ${componentId} not found in tree!`);
       continue;
     }
 
-    const tuples = map[componentId];
+    const tuples = components[componentId];
     const claimNodes: ChildNode[] = new Array(tuples.length);
 
     const visit = (nodes: ComponentTreeNode[]) => {
@@ -119,16 +116,19 @@ export const createHydrationContext = (
         }
       });
     };
+
     if (compNode.children) {
       visit(compNode.children);
     }
+
     claimMap.set(componentId, claimNodes);
   }
 
   const treeStack: ComponentTreeNode[] = [];
-  let currentComponentNode: ComponentTreeNode | null = null;
   const cursors = new Map<string, number>();
+  let currentComponentNode: ComponentTreeNode | null = null;
 
+  // Construct the hydration context object
   const ctx: HydrationContext = {
     pushComponent(component: Component) {
       let node = componentNodeMap.get(component.id);
@@ -141,7 +141,7 @@ export const createHydrationContext = (
       // If component is not in SSR map, create a virtual mismatched node to keep stack balance
       if (!node) {
         node = {
-          tag: `$${component.id}`,
+          tag: `${TAG_COMPONENT_PREFIX}${component.id}`,
           id: component.id,
           creationIndex: -1,
           isMismatched: true,
@@ -156,6 +156,7 @@ export const createHydrationContext = (
 
       treeStack.push(node);
       currentComponentNode = node;
+
       if (!cursors.has(node.id!)) {
         cursors.set(node.id!, 0);
       }
@@ -180,6 +181,7 @@ export const createHydrationContext = (
           });
         }
       };
+
       walk(component.id);
     },
     next() {
@@ -240,6 +242,7 @@ export const createHydrationContext = (
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }
+
         // Return the original node but mark as mismatched
         (node as HydrationMismatchNode).isHydrationMismatch = true;
       }
@@ -248,5 +251,6 @@ export const createHydrationContext = (
     },
   };
 
+  appState.setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
   return ctx;
-};
+}

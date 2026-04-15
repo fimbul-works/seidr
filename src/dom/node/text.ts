@@ -12,14 +12,14 @@ import { getDocument } from "../get-document.js";
  * @returns {Text} DOM Text node
  */
 export const $text = (text: unknown): Text => {
-  if (process.env.DISABLE_SSR) {
+  if (!process.env.SEIDR_ENABLE_SSR) {
     return getDocument().createTextNode(str(text));
   }
 
   const doc = getDocument();
 
   // If we are hydrating, we need to claim the node
-  if (!process.env.DISABLE_SSR && isHydrating()) {
+  if (isHydrating()) {
     const ctx = getHydrationContext();
     if (ctx) {
       if (ctx.isMismatched()) {

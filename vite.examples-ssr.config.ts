@@ -10,7 +10,8 @@ export default defineConfig((config) => {
       replace({
         ...mainReplace,
         "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.USE_SCHEDULER": config.isSsrBuild ? "true" : "false",
+        "process.env.USE_SCHEDULER": config.isSsrBuild ? true : undefined,
+        "process.env.SSR": config.isSsrBuild ? true : undefined,
         __SEIDR_DEV__: "false",
         preventAssignment: true,
       }),

@@ -4,6 +4,7 @@ import { isServer } from "../util/environment/is-server.js";
 import { DATA_KEY_STATE } from "./constants.js";
 import { scheduleUpdate } from "./scheduler.js";
 import type { Observable, ObservableOptions } from "./types.js";
+import { unwrapSeidr } from "./unwrap-seidr.js";
 
 /**
  * Represents a reactive value that can be observed for changes.
@@ -78,13 +79,13 @@ export class Seidr<T = any> implements Observable<T> {
     // Check for an existing instance in AppState
     try {
       const appState = getAppState();
-      const states = (appState.getData(DATA_KEY_STATE) ?? {}) as Record<string, Seidr>;
-      if (states[this.id]) {
+      const states = appState.getData<Map<string, Seidr>>(DATA_KEY_STATE) ?? new Map<string, Seidr>();
+      if (states.has(this.id)) {
         // Return existing instance if found
-        return states[this.id] as Seidr<T>;
+        return states.get(this.id)! as Seidr<T>;
       } else {
         // Register instance in AppState
-        states[this.id] = this;
+        states.set(this.id, this);
         appState.setData(DATA_KEY_STATE, states);
       }
     } catch {
@@ -97,7 +98,7 @@ export class Seidr<T = any> implements Observable<T> {
     }
 
     // Restore from hydration data if applicable
-    if (!process.env.DISABLE_SSR) {
+    if (process.env.SEIDR_ENABLE_SSR) {
       Seidr.register?.(this);
     }
   }
@@ -158,7 +159,7 @@ export class Seidr<T = any> implements Observable<T> {
    * @returns {CleanupFunction} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    if (!process.env.DISABLE_SSR) {
+    if (process.env.SEIDR_ENABLE_SSR) {
       Seidr.register?.(this);
     }
     this.f.add(fn);
@@ -175,7 +176,7 @@ export class Seidr<T = any> implements Observable<T> {
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
   bind<O>(target: O, bindFn: (value: T, target: O) => void): CleanupFunction {
-    if (!process.env.DISABLE_SSR) {
+    if (process.env.SEIDR_ENABLE_SSR) {
       Seidr.register?.(this);
     }
     bindFn(this.value, target);
@@ -253,7 +254,7 @@ export class Seidr<T = any> implements Observable<T> {
    * @returns {T} The current state as a plain object
    */
   toJSON(): T {
-    return this.v;
+    return unwrapSeidr(this.v);
   }
 
   /**
@@ -284,7 +285,7 @@ export class Seidr<T = any> implements Observable<T> {
    */
   private setParents(parents: Seidr[]): void {
     this.p = parents;
-    if (!process.env.DISABLE_SSR) {
+    if (process.env.SEIDR_ENABLE_SSR) {
       Seidr.register?.(this);
     }
   }

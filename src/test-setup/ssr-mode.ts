@@ -19,12 +19,12 @@ export { clearHydrationData } from "../ssr/hydrate/storage.js";
 export const enableSSRMode = (): CleanupFunction => {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
-    importMetaEnvSSR: process.env.SSR,
+    importMetaEnvSSR: import.meta.env.SSR,
     window: global.window,
   };
 
   process.env.SEIDR_TEST_SSR = "true";
-  process.env.SSR = "true";
+  import.meta.env.SSR = true;
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
@@ -38,8 +38,8 @@ export const enableSSRMode = (): CleanupFunction => {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
 
-    if (currentState.importMetaEnvSSR !== undefined) process.env.SSR = currentState.importMetaEnvSSR;
-    else delete process.env.SSR;
+    if (currentState.importMetaEnvSSR !== undefined) import.meta.env.SSR = currentState.importMetaEnvSSR;
+    else import.meta.env.SSR = false;
 
     if (currentState.window !== undefined) global.window = currentState.window;
   };

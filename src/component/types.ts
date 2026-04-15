@@ -156,6 +156,7 @@ export interface Component {
   /**
    * Attach the component to a parent DOM node.
    * @param {Node} parent - The parent DOM node
+   * @throws {SeidrError} if attempting to mount to a nullish parent
    * @internal
    */
   mount(parent: Node): void;

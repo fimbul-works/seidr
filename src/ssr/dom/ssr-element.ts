@@ -4,7 +4,7 @@ import type { NodeTypeElement } from "../../types.js";
 import { camelToKebab, str } from "../../util/string.js";
 import { isComment } from "../../util/type-guards/dom-node-types.js";
 import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types.js";
-import { escapeAttribute } from "../util/escape.js";
+import { escapeAttribute } from "../util/escape-string.js";
 import type { SSRDocument } from "./ssr-document.js";
 import type { SSRNodeList } from "./ssr-node-list.js";
 import { SSRParentNode } from "./ssr-parent-node.js";

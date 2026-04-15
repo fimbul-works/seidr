@@ -7,10 +7,9 @@ import { DATA_KEY_STATE } from "../seidr/constants.js";
 import { registerStateStrategy } from "../seidr/register-state-strategy.js";
 import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
-import type { RenderToStringData } from "./render-to-string.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";
 import type { StructureMapTuple } from "./structure/types.js";
-import type { SSRScopeCapture } from "./types.js";
+import type { AppStateData, HydrationData } from "./types.js";
 
 /**
  * Gets the SSR scope for the current render context.
@@ -58,21 +57,29 @@ export class SSRScope {
    * Creates an instance of SSRScope.
    *
    * @param {AppState} state - AppState instance for this render scope
-   * @param {RenderToStringData} [data={}] - Data passed to renderToString
+   * @param {AppStateData} [data={}] - Data passed to renderToString
    */
   constructor(
     private state: AppState,
-    data: RenderToStringData = {},
+    data: AppStateData = {},
   ) {
     // Define hydration data strategy for root observables
     registerStateStrategy(this.state);
 
     // Apply restore functions for strategies if data for them is provided
-    this.state.strategies.forEach(([_, restore], key) => {
+    this.state.strategies.forEach(([_, restoreFn], key) => {
       if (data[key]) {
-        restore(data[key]);
+        restoreFn(data[key]);
       }
     });
+  }
+
+  /**
+   * Returns the number of observables registered in this scope.
+   * Useful for debugging and testing.
+   */
+  get size(): number {
+    return this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.size ?? 0;
   }
 
   /**
@@ -101,23 +108,6 @@ export class SSRScope {
   }
 
   /**
-   * Returns the number of observables registered in this scope.
-   * Useful for debugging and testing.
-   */
-  get size(): number {
-    return Object.keys(this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {}).length;
-  }
-
-  /**
-   * Registers an observable with this scope.
-   */
-  register(_seidr: Seidr): void {
-    // No-op for now because Seidr constructor already registers in AppState.
-    // We could use this to track which Seidrs were explicitly registered in this scope
-    // if we ever need to isolate them further, but for now AppState is the source of truth.
-  }
-
-  /**
    * Registers a component with this scope for hydration path mapping.
    * @param {Component} comp - The component instance
    */
@@ -137,7 +127,7 @@ export class SSRScope {
    * Gets an observable by ID from this scope.
    */
   get(id: string): Seidr | undefined {
-    return this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE)?.[id];
+    return this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.get(id);
   }
 
   /**
@@ -145,8 +135,10 @@ export class SSRScope {
    * Called after rendering to prevent memory leaks.
    */
   clear(): void {
-    const states = this.state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
-    Object.values(states).forEach((seidr) => seidr.destroy());
+    const states = this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE);
+    if (states) {
+      Object.values(states).forEach((seidr) => seidr.destroy());
+    }
     this.state.deleteData(DATA_KEY_STATE);
     this.components.clear();
   }
@@ -160,13 +152,12 @@ export class SSRScope {
    * memory leaks. This ensures that references to Seidr instances are released
    * after the render pass is complete.
    *
-   * @returns {SSRScopeCapture} The complete hydration data
+   * @returns {HydrtaionData} The complete hydration data
    */
-  captureHydrationData(): SSRScopeCapture {
-    const strategyData: Record<string, any> = {};
-    this.state.strategies.forEach(([capture], key) => {
-      strategyData[key] = capture();
-    });
+  captureHydrationData(): HydrationData {
+    const data = this.state.strategies
+      .entries()
+      .reduce((acc, [key, [captureFn]]) => ((acc[key] = captureFn()), acc), {} as Record<string, any>);
 
     const components: Record<string, StructureMapTuple[]> = {};
     const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted && c.element);
@@ -184,11 +175,11 @@ export class SSRScope {
       index++;
     }
 
-    // Clear and execute cleanup
     this.clear();
 
     return {
-      data: strategyData,
+      ctxID: this.state.ctxID,
+      data,
       components,
     };
   }

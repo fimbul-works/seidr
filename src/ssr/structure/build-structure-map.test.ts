@@ -5,8 +5,6 @@ import { Suspense, Switch } from "../../components";
 import { List } from "../../components/list";
 import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
 import { $a, $div, $footer, $h1, $h2, $li, $nav, $ul } from "../../elements";
-import { Link } from "../../router/components/link";
-import { Router } from "../../router/components/router";
 import type { Seidr } from "../../seidr/seidr";
 import { enableSSRMode, getAppState } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
@@ -46,9 +44,9 @@ describe("buildStructureMap", () => {
     const Header = component(
       () =>
         $nav({ className: "navbar" }, [
-          Link({ to: "/", className: "brand" }, "Seidr Blog"),
+          $a({ href: "/", className: "brand" }, "Seidr Blog"),
           $div({ className: "links" }, [
-            Link({ to: "/" }, "Home"),
+            $a({ href: "/", className: "home" }, "Home"),
             $a({ href: "https://github.com/fimbul-works/seidr", target: "_blank" }, "GitHub"),
           ]),
         ]),
@@ -58,10 +56,10 @@ describe("buildStructureMap", () => {
     const PostCard = component(
       (post: BlogPost) =>
         $li({ className: "post-card" }, [
-          $h2({}, [Link({ to: `/post/${post.slug}` }, post.title)]),
+          $h2({}, [$a({ href: `/post/${post.slug}` }, post.title)]),
           $div({ className: "meta" }, new Date(post.date).toLocaleDateString()),
           $div({ className: "excerpt", innerHTML: post.excerpt }),
-          Link({ to: `/post/${post.slug}`, className: "read-more" }, "Read more →"),
+          $a({ href: `/post/${post.slug}`, className: "read-more" }, "Read more →"),
         ]),
       "PostCard",
     );
@@ -110,7 +108,7 @@ describe("buildStructureMap", () => {
     const BlogApp = component(() => {
       return $div({ className: "app-container" }, [
         Header(),
-        $div({ className: "main-content" }, Router([["/", HomePage]])),
+        $div({ className: "main-content" }, HomePage()),
         $footer({}, `© ${new Date().getFullYear()} Seidr Blog Example`),
       ]);
     }, "BlogApp");
@@ -121,7 +119,6 @@ describe("buildStructureMap", () => {
     const keys = Object.keys(comps);
     const kBlogApp = keys.find((k) => k.includes("BlogApp-"))!;
     const kHeader = keys.find((k) => k.includes("Header-"))!;
-    const kRouter = keys.find((k) => k.includes("Router-"))!;
     const kHomePage = keys.find((k) => k.includes("HomePage-"))!;
     const kResolved = keys.find((k) => k.includes("Resolved-"))!;
     const kList = keys.find((k) => k.includes("List-"))!;
@@ -131,7 +128,7 @@ describe("buildStructureMap", () => {
     // BlogApp should have Header and Router as children
     expect(comps[kBlogApp]).toEqual([
       [`${TAG_COMPONENT_PREFIX}${kHeader.split(":")[1]}`],
-      [`${TAG_COMPONENT_PREFIX}${kRouter.split(":")[1]}`],
+      [`${TAG_COMPONENT_PREFIX}${kHomePage.split(":")[1]}`],
       ["div", 1],
       ["footer", 4],
       [TAG_TEXT],
@@ -140,16 +137,15 @@ describe("buildStructureMap", () => {
 
     // Header has Links
     expect(comps[kHeader]).toEqual([
-      expect.arrayContaining([expect.stringContaining(`${TAG_COMPONENT_PREFIX}Link-`)]),
-      expect.arrayContaining([expect.stringContaining(`${TAG_COMPONENT_PREFIX}Link-`)]),
+      ["a", 1],
+      [TAG_TEXT],
       ["a", 3],
       [TAG_TEXT],
-      ["div", 1, 2],
-      ["nav", 0, 4],
+      ["a", 5],
+      [TAG_TEXT],
+      ["div", 2, 4],
+      ["nav", 0, 6],
     ]);
-
-    // Router should map to HomePage
-    expect(comps[kRouter]).toEqual([[`${TAG_COMPONENT_PREFIX}${kHomePage.split(":")[1]}`]]);
 
     // Resolved state should map h1, List and ul
     expect(comps[kResolved]).toEqual([

@@ -1,8 +1,8 @@
 import type { Component } from "../../component/types.js";
 import type { Seidr } from "../../seidr/seidr.js";
 import { SeidrError } from "../../types.js";
-import type { SSRScopeCapture } from "../types.js";
 import type { ComponentTreeNode } from "../structure/types.js";
+import type { HydrationData } from "../types.js";
 
 /**
  * Error thrown when a hydration mismatch occurs.
@@ -67,38 +67,9 @@ export interface HydrationMismatchNode extends HTMLElement {
 }
 
 /**
- * Complete hydration data for client-side restoration.
- *
- * This structure contains everything needed to restore reactive state
- * on the client, essentially just the root observable values.
- */
-export interface HydrationData extends SSRScopeCapture {
-  /**
-   * Render context ID from the server.
-   *
-   * This ID is used to ensure deterministic marker IDs for components like Router,
-   * allowing the client-side hydration to match SSR-rendered markers.
-   *
-   * During hydration, the client-side render context is updated to use this ID
-   * instead of the default 0, enabling proper SSR/client marker matching.
-   */
-  ctxID: number;
-
-  /**
-   * Root container for path traversal relative lookup (client-side only).
-   */
-  root?: Element;
-}
-
-/**
  * Storage for hydration data and Seidr instances.
  */
-export interface HydrationDataStorage {
-  /**
-   * Hydration data containing serialized app state and component structure.
-   */
-  data: HydrationData | undefined;
-
+export interface HydrationDataRegistry extends HydrationData {
   /**
    * Set of Seidr instances that have been hydrated.
    */

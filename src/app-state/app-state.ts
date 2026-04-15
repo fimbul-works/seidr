@@ -1,26 +1,19 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { useScope } from "../component/use-scope.js";
 import { isServer } from "../util/environment/is-server.js";
-import { createAppState } from "./storage.js";
+import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";
-
-/** Key that is shared across build targets */
-const APP_STATE_KEY = "__SEIDR_APP_STATE_PROVIDER__";
 
 /** Default application state */
 const defaultAppState: AppState = createAppState(0);
-
-/** AppState provider is shared across built bundles */
-if (!globalThis[APP_STATE_KEY]) {
-  globalThis[APP_STATE_KEY] = () => defaultAppState;
-}
 
 /**
  * Get the current application state.
  *
  * @returns {AppState} AppState object.
  */
-export const getAppState = (): AppState => globalThis[APP_STATE_KEY]!();
+export let getAppState = (): AppState => defaultAppState;
 
 /**
  * Cross-environment getAppState contract dependency injector.
@@ -29,7 +22,7 @@ export const getAppState = (): AppState => globalThis[APP_STATE_KEY]!();
  * @internal
  */
 export const setAppStateProvider = (fn: () => AppState) => {
-  globalThis[APP_STATE_KEY] = fn;
+  getAppState = fn;
 };
 
 /**
@@ -39,18 +32,17 @@ export const setAppStateProvider = (fn: () => AppState) => {
  */
 export const setAppStateID = (id: number) => {
   const state = getAppState();
-  state.ctxId = id;
+  state.ctxID = id;
   state.seidrIdCounter = 0;
-  state.markers.clear();
-  state.data.clear();
-};
 
-/**
- * Get the current application state ID.
- *
- * @returns {number} The state ID.
- */
-export const getAppStateID = () => getAppState().ctxId;
+  // Clean up data
+  state.data.forEach((value) => isSeidr(value) && value.destroy());
+  state.data.clear();
+
+  // Remove markers
+  state.markers.forEach(([a, b]) => (a.remove(), b.remove()));
+  state.markers.clear();
+};
 
 /**
  * Gets the next available Seidr ID for the AppState.

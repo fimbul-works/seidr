@@ -43,7 +43,6 @@ export const Suspense = <T>(
     const state = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${suspenseId}.state` });
     const value = new Seidr<T | null>(null, { id: `${suspenseId}.value` });
     const error = new Seidr<Error | null>(null, { id: `${suspenseId}.error` });
-    const isSSR = !process.env.DISABLE_SSR && isServer();
 
     let currentPromiseId = 0;
 
@@ -58,7 +57,7 @@ export const Suspense = <T>(
       }
 
       const currentId = ++currentPromiseId;
-      if (!process.env.DISABLE_SSR && !isHydrating()) {
+      if (process.env.SEIDR_ENABLE_SSR && !isHydrating()) {
         state.value = PROMISE_PENDING;
       }
 
@@ -81,7 +80,7 @@ export const Suspense = <T>(
     if (initialProm) {
       // Check if it's already resolved in the state (for hydration)
       if (initialProm instanceof Promise) {
-        handlePromise(isSSR ? (getSSRScope()?.addPromise(initialProm) ?? initialProm) : initialProm);
+        handlePromise(isServer() ? (getSSRScope()?.addPromise(initialProm) ?? initialProm) : initialProm);
       } else {
         // Already a value, resolve synchronously
         value.value = initialProm;
@@ -92,7 +91,7 @@ export const Suspense = <T>(
     // Handle reactive promise changes
     if (isSeidr<Promise<T>>(promiseOrSeidr)) {
       suspenseComponent.onUnmount(
-        promiseOrSeidr.observe((prom) => handlePromise(isSSR ? (getSSRScope()?.addPromise(prom) ?? prom) : prom)),
+        promiseOrSeidr.observe((prom) => handlePromise(isServer() ? (getSSRScope()?.addPromise(prom) ?? prom) : prom)),
       );
     }
 

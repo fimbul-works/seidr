@@ -10,20 +10,21 @@ import { isArray } from "../../util/type-guards/primitive-types";
  * @param {Component} component The component to mount
  * @param {Node | null} [anchor] The node to insert the component before
  * @param {Node | null} [parent] Optional parent to mount into if anchor is null or not in DOM
+ * @throws {SeidrError} if the anchor is not a child of the provided parent
  */
-export const mountComponent = (component: Component, anchor?: Node | null, parent?: Node | null): void => {
+export function mountComponent(component: Component, anchor?: Node | null, parent?: Node | null): void {
   const realAnchor = anchor;
   let realParent = parent;
 
   if (realAnchor) {
     if (realParent && realAnchor.parentNode !== realParent) {
-      throw new SeidrError(`[mountComponent] Anchor node is not a child of the provided parent.`);
+      throw new SeidrError("Anchor node is not a child of the provided parent");
     }
     realParent = realAnchor.parentNode;
   }
 
   if (realParent) {
-    if (!process.env.DISABLE_SSR && isHydrating()) {
+    if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
       // If any part is already in DOM, assume it's hydrated
       const marker = component.startMarker || (isArray(component.element) ? component.element[0] : component.element);
       if (marker && isDOMNode(marker) && marker.parentNode === realParent) {
@@ -71,4 +72,4 @@ export const mountComponent = (component: Component, anchor?: Node | null, paren
       component.mount(realParent);
     }
   }
-};
+}

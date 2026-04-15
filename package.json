@@ -33,17 +33,15 @@
     "zero-dependencies",
     "virtual-dom-free"
   ],
-  "types": "./dist/esm/index.d.ts",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "types": "./dist/esm/index.d.ts",
-      "import": "./dist/esm/index.js",
-      "require": "./dist/cjs/index.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     },
     "./ssr": {
-      "types": "./dist/esm/index.ssr.d.ts",
-      "import": "./dist/esm/index.ssr.js",
-      "require": "./dist/cjs/index.ssr.js"
+      "types": "./dist/index.ssr.d.ts",
+      "import": "./dist/index.ssr.js"
     },
     "./core": {
       "types": "./bundles/seidr.core.d.ts",
@@ -51,9 +49,8 @@
       "require": "./bundles/seidr.core.cjs"
     },
     "./testing": {
-      "types": "./dist/esm/test-setup/index.d.ts",
-      "import": "./dist/esm/test-setup/index.js",
-      "require": "./dist/cjs/test-setup/index.js"
+      "types": "./dist/test-setup/index.d.ts",
+      "import": "./dist/test-setup/index.js"
     }
   },
   "files": [
@@ -77,10 +74,8 @@
     "clean:dist": "rm -rf dist && rm -rf bundles",
     "clean:examples": "rm -rf examples/dist",
     "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm build:bundles && pnpm build:lib",
-    "build:lib": "concurrently \"pnpm build:lib:esm\" \"pnpm build:lib:cjs\"",
-    "build:lib:esm": "tsc",
-    "build:lib:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > dist/cjs/package.json",
+    "build": "pnpm build:lib && pnpm build:bundles",
+    "build:lib": "tsc",
     "build:bundles": "tsdown",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
@@ -99,7 +94,6 @@
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25.5.2",
-    "concurrently": "^9.2.1",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",
     "jsdom": "^29.0.1",

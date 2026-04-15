@@ -1,8 +1,6 @@
 import type { Seidr } from "../seidr/seidr.js";
-import { isClient } from "../util/environment/client.js";
-import { isServer } from "../util/environment/is-server.js";
-import { registerHydratingSeidr } from "./hydrate/register-hydrating-seidr.js";
-import { getSSRScope } from "./ssr-scope.js";
+import { isClient } from "../util/environment/is-client.js";
+import { hydrateSeidrState } from "./hydrate/hydrate-seidr-state.js";
 
 /**
  * Registers a Seidr instance for SSR/hydration.
@@ -11,7 +9,7 @@ import { getSSRScope } from "./ssr-scope.js";
  * @throws {SeidrError} If the Seidr ID is not unique
  */
 export const registerSeidrForSSR = (seidr: Seidr): void => {
-  if (process.env.DISABLE_SSR) {
+  if (!process.env.SEIDR_ENABLE_SSR) {
     return;
   }
 
@@ -20,16 +18,13 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
     registerSeidrForSSR(parent);
   }
 
-  // Don't register if hydrate is false
+  // Don't register derived Seidr and those that are not set to hydrate
   if (seidr.isDerived || seidr.options.hydrate === false) {
     return;
   }
 
-  if (isServer()) {
-    // Server-side: register with active SSR scope
-    getSSRScope()?.register(seidr);
-  } else if (!process.env.DISABLE_SSR && isClient()) {
-    // Client-side: register immediately for hydration
-    registerHydratingSeidr(seidr);
+  // Client-side: hydrate state immediately
+  if (isClient()) {
+    hydrateSeidrState(seidr);
   }
 };

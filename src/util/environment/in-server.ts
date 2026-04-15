@@ -13,7 +13,7 @@ import { isServer } from "./is-server.js";
  */
 export const inServer = <T>(fn: () => T): T => {
   if (!isServer()) {
-    return false as T;
+    return null as T;
   }
 
   const scope = getSSRScope();

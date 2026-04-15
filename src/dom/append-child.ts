@@ -3,6 +3,7 @@ import { setScope } from "../component/set-scope.js";
 import type { SeidrChild } from "../element/types.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { isServer } from "../util/environment/is-server.js";
+import { some } from "../util/some.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
 import { isArray, isEmpty, isStr } from "../util/type-guards/primitive-types.js";
@@ -16,8 +17,10 @@ import { $text } from "./node/text.js";
  */
 export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | null | undefined) => {
   // Skip empty children
-  if (isEmpty(child) || child === "") {
+  if (isEmpty(child)) {
     return;
+  } else if (isStr(child) && !child.trim()) {
+    return; // Do not append pure whitespace nodes
   }
 
   // Append array of nodes
@@ -26,13 +29,10 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   }
 
   const target = parent as ParentNode;
-
-  if (isStr(child) && !child.trim()) {
-    return; // Do not append pure whitespace nodes
-  }
+  const childNodes = target.childNodes;
 
   // Hydration guard: if the node/component is already in the target, do nothing
-  if (!process.env.DISABLE_SSR && !isServer() && isHydrating()) {
+  if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
     if (isComponent(child)) {
       // If component is already marked as mounted, we assume it's in the correct place
       // (either from initial reconstruction or previous hydration step)
@@ -44,16 +44,14 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       const markers = getMarkerComments(child.id, false);
       if (markers) {
         const [startMarker, endMarker] = markers;
-        const hasStart = Array.from(target.childNodes).some((n) => n === startMarker);
-        const hasEnd = Array.from(target.childNodes).some((n) => n === endMarker);
+        const hasStart = some(childNodes, (n) => n === startMarker);
+        const hasEnd = some(childNodes, (n) => n === endMarker);
         if (hasStart && hasEnd) {
           return;
         }
       }
-    } else if (isDOMNode(child)) {
-      if (Array.from(target.childNodes).includes(child)) {
-        return;
-      }
+    } else if (isDOMNode(child) && some(childNodes, (n) => n === child)) {
+      return;
     }
   }
 
@@ -63,7 +61,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    if (!process.env.DISABLE_SSR && isServer()) {
+    if (process.env.SEIDR_ENABLE_SSR && isServer()) {
       setScope(child);
       appendChild(parent, child.element);
       setScope(child.parent);

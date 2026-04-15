@@ -3,7 +3,7 @@ import { defaultClientDocument, setDocumentProvider } from "../dom/get-document.
 import { Seidr } from "../seidr/seidr.js";
 import { registerSeidrForSSR } from "../ssr/register-seidr.js";
 import type { CleanupFunction } from "../types.js";
-import { isClient } from "../util/environment/client.js";
+import { isClient } from "../util/environment/is-client.js";
 import { clearTestAppState, getAppState } from "./app-state.js";
 import type { TestEnvironmentState } from "./types.js";
 
@@ -16,7 +16,7 @@ import type { TestEnvironmentState } from "./types.js";
 export function enableClientMode(): CleanupFunction {
   const currentState: TestEnvironmentState = {
     seidrSSR: process.env.SEIDR_TEST_SSR,
-    importMetaEnvSSR: process.env.SSR,
+    importMetaEnvSSR: import.meta.env.SSR,
     window: global.window,
   };
 
@@ -24,7 +24,7 @@ export function enableClientMode(): CleanupFunction {
   getAppState().isSSR = false;
 
   delete process.env.SEIDR_TEST_SSR;
-  delete process.env.SSR;
+  import.meta.env.SSR = false;
 
   // Perform necessary registrations
   Seidr.register = registerSeidrForSSR;
@@ -39,8 +39,8 @@ export function enableClientMode(): CleanupFunction {
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
 
-    if (currentState.importMetaEnvSSR !== undefined) process.env.SSR = currentState.importMetaEnvSSR;
-    else delete process.env.SSR;
+    if (currentState.importMetaEnvSSR !== undefined) import.meta.env.SSR = currentState.importMetaEnvSSR;
+    else import.meta.env.SSR = false;
 
     if (currentState.window !== undefined) global.window = currentState.window;
   };

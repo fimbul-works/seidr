@@ -9,14 +9,20 @@ import { isEmpty } from "../type-guards/primitive-types.js";
  * @returns {boolean} `true` if in server, `false` otherwise
  */
 export const isServer = (): boolean => {
-  if (process.env.DISABLE_SSR) {
+  if (!process.env.SEIDR_ENABLE_SSR) {
+    return false;
+  }
+
+  if (typeof process === "undefined") {
     return false;
   }
 
   if (process.env.VITEST) {
     const state = getAppState();
-    if (!isEmpty(state?.isSSR)) return state.isSSR;
+    if (!isEmpty(state.isSSR)) {
+      return state.isSSR;
+    }
   }
 
-  return typeof process !== "undefined" && !!(process.env.SEIDR_TEST_SSR || process.env.SSR);
+  return (import.meta.env.SSR ?? typeof window === "undefined") || !!process.env.SEIDR_TEST_SSR;
 };

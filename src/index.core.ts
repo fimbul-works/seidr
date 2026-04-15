@@ -4,7 +4,6 @@ export * from "./components/index.js";
 export * from "./dom/index.js";
 export * from "./element/index.js";
 export * from "./elements/index.js";
-export * from "./form/index.js";
 export * from "./seidr/index.js";
-export * from "./types";
+export * from "./types.js";
 export * from "./util/index.js";

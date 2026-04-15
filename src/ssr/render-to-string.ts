@@ -7,12 +7,7 @@ import { getDocument } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
 import { SeidrError } from "../types.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
-import type { SSRRenderResult } from "./types.js";
-
-/**
- * Initial data for rendering a component to string during SSR.
- */
-export type RenderToStringData = Record<string, any>;
+import type { AppStateData, SSRRenderResult } from "./types.js";
 
 /**
  * Renders a component to an HTML string with hydration data capture.
@@ -20,12 +15,12 @@ export type RenderToStringData = Record<string, any>;
  * @template {ComponentReturnValue} C - The return value of the component function
  *
  * @param {() => C} factory - Component function to render
- * @param {RenderToStringData} [data] - Optional options object
+ * @param {AppStateData} [data={}] - Optional options object
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
 export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
-  data: RenderToStringData = {},
+  data: AppStateData = {},
 ): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
@@ -36,14 +31,11 @@ export async function renderToString<C extends ComponentReturnValue>(
 
   try {
     return await runWithAppState(async () => {
-      const state = getAppState();
-      if (!state) {
-        throw new SeidrError("No AppState available.");
-      }
+      const appState = getAppState();
 
       initSSRDocument();
 
-      const activeScope = new SSRScope(state, data);
+      const activeScope = new SSRScope(appState, data);
       setSSRScope(activeScope);
 
       try {
@@ -53,19 +45,15 @@ export async function renderToString<C extends ComponentReturnValue>(
         doc.appendChild(anchor);
 
         mountComponent(comp, anchor);
+        anchor.remove();
 
         // Trigger all promises
         await activeScope.waitForPromises();
 
-        anchor.remove();
-
         // Use innerHTML to get the stringified content without the wrapping div
         const html = doc.innerHTML;
 
-        const hydrationData = {
-          ...activeScope.captureHydrationData(),
-          ctxID: state.ctxId,
-        };
+        const hydrationData = activeScope.captureHydrationData();
 
         comp.unmount();
 
@@ -73,14 +61,17 @@ export async function renderToString<C extends ComponentReturnValue>(
       } finally {
         setSSRScope(undefined);
         activeScope.clear();
-        state.destroy();
+        appState.destroy();
       }
     });
   } finally {
     // Restore previous SSR state for tests
     if (process.env.VITEST) {
-      if (prevSSR === undefined) delete process.env.SEIDR_TEST_SSR;
-      else process.env.SEIDR_TEST_SSR = prevSSR;
+      if (prevSSR === undefined) {
+        delete process.env.SEIDR_TEST_SSR;
+      } else {
+        process.env.SEIDR_TEST_SSR = prevSSR;
+      }
     }
   }
 }

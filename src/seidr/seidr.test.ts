@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { setAppStateProvider } from "../app-state/app-state";
+import { createAppState } from "../app-state/create-app-state";
 import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Seidr } from "./seidr";
-import { setAppStateProvider } from "../app-state/app-state";
-import { createAppState } from "../app-state/storage";
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;

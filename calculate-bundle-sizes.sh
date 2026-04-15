@@ -3,6 +3,7 @@
 set -e
 
 # Create temporary minified versions using terser
+npx terser bundles/seidr.js -o bundles/seidr.min.js --toplevel -c passes=2 -c ecma=2023 -m --module > /dev/null 2>&1 || true
 npx terser bundles/seidr.core.js -o bundles/seidr.core.min.js --toplevel -c passes=2 -c ecma=2023 -m --module > /dev/null 2>&1 || true
 
 # Compress the bundles

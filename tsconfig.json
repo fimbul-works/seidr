@@ -12,7 +12,7 @@
     "skipLibCheck": false,
     "forceConsistentCasingInFileNames": true,
     "rootDir": "./src",
-    "outDir": "./dist/esm"
+    "outDir": "./dist"
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts", "node_modules"]

@@ -89,7 +89,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, listComponent, key);
       componentMap.set(key, itemComponent);
 
-      if (!process.env.DISABLE_SSR && isHydrating() && endMarker?.parentNode) {
+      if (process.env.SEIDR_ENABLE_SSR && isHydrating() && endMarker?.parentNode) {
         itemComponent.mount(endMarker.parentNode);
       }
 

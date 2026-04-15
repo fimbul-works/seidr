@@ -5,7 +5,8 @@ import { enableClientMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
-import { clearHydrationData, type HydrationData, hydrate, isHydrating, setHydrationData } from "./index";
+import type { HydrationData } from "../types";
+import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index";
 
 describe("Hydration", () => {
   let container: HTMLElement;
@@ -33,7 +34,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data, container);
+    initHydrationData(data);
     expect(isHydrating()).toBe(true);
 
     clearHydrationData();
@@ -47,7 +48,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data1, container);
+    initHydrationData(data1);
 
     // Create Seidr instances
     const _seidr1 = new Seidr(0, { id: "a" });
@@ -60,7 +61,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data2, container);
+    initHydrationData(data2);
 
     // New instances should get numeric ID 0 again
     const seidr3 = new Seidr(0, { id: "c" });
@@ -76,7 +77,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data, container);
+    initHydrationData(data);
 
     const seidr1 = new Seidr(0);
     const seidr2 = new Seidr(0);
@@ -95,7 +96,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data, container);
+    initHydrationData(data);
 
     const root = new Seidr("");
     const derived = root.as((s) => s.toUpperCase());
@@ -116,7 +117,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(data, container);
+    initHydrationData(data);
 
     const firstName = new Seidr("");
     const lastName = new Seidr("");
@@ -133,19 +134,16 @@ describe("Hydration", () => {
   });
 
   it("should hydrate complete component with bindings", () => {
-    setHydrationData(
-      {
-        ctxID: 0,
-        data: {
-          [DATA_KEY_STATE]: {
-            0: "hydrated-name",
-            2: true,
-          },
+    initHydrationData({
+      ctxID: 0,
+      data: {
+        [DATA_KEY_STATE]: {
+          0: "hydrated-name",
+          2: true,
         },
-        components: {},
       },
-      container,
-    );
+      components: {},
+    });
 
     // Create component (normally would mount to DOM)
     const name = new Seidr("");
@@ -165,13 +163,13 @@ describe("Hydration", () => {
 
   it("should restore observable values during hydration", () => {
     const TestComponent = () => {
-      const count = new Seidr(0);
+      const count = new Seidr(0, { id: "test" });
       return $("div", { textContent: count.as((n) => `Count: ${n}`) });
     };
 
     unmount = hydrate(TestComponent, container, {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { "Component-2O6Bue-1": 42 } },
+      data: { [DATA_KEY_STATE]: { test: 42 } },
       components: {},
     });
 
@@ -191,7 +189,7 @@ describe("Hydration", () => {
       components: {},
     };
 
-    setHydrationData(originalData, container);
+    initHydrationData(originalData);
 
     const TestComponent = () => $("div", {}, ["test"]);
 

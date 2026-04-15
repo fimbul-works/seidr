@@ -1,13 +1,10 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { SeidrError } from "../types.js";
-import { createAppState } from "./storage.js";
+import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";
 
 /** Global fallback store for request ID generation */
 let requestIdCounter = 0;
-
-/** Reset the global ID counter (for testing) */
-export const resetRequestIdCounter = () => (requestIdCounter = 0);
 
 /** Storage for per-request AppState */
 export const contextLocalStorage = new AsyncLocalStorage<AppState>();
@@ -16,14 +13,15 @@ export const contextLocalStorage = new AsyncLocalStorage<AppState>();
  * Get the current application state.
  *
  * @return {AppState}
+ * @throws {SeidrError} when AppState is not initialized
  */
-export const getSSRAppState = (): AppState => {
+export function getSSRAppState(): AppState {
   const store = contextLocalStorage.getStore();
   if (!store) {
     throw new SeidrError("AppState not initialized");
   }
   return store;
-};
+}
 
 /**
  * Run a function within a new application state.
@@ -38,7 +36,15 @@ export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T>
   const ctxID = requestIdCounter++;
 
   const context: AppState = createAppState(ctxID);
-  context.isSSR = true;
+  if (process.env.VITEST) {
+    context.isSSR = true;
+  }
 
   return contextLocalStorage.run(context, callback);
 };
+
+/**
+ * Reset the global ID counter.
+ * Used in testing.
+ */
+export const resetRequestIdCounter = () => (requestIdCounter = 0);

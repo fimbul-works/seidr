@@ -1,5 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppStateID } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/app-state.js";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
 import { $text } from "../dom/node/text.js";
 import type { SeidrChild } from "../element/types.js";
@@ -41,8 +41,6 @@ export const component = <P = void>(
 ): ComponentFactory<P> => {
   // Return a function that accepts props and creates the component
   const componentFactory = ((props: P, parentComponent: Component | null = null, identifier?: unknown) => {
-    const isSSR = !process.env.DISABLE_SSR && isServer();
-
     // Get parent component and its numeric ID
     let parentComponentNumericId: number;
     if (!parentComponent) {
@@ -53,10 +51,11 @@ export const component = <P = void>(
       }
     }
 
+    const ctxID = getAppState().ctxID;
     if (parentComponent) {
       parentComponentNumericId = parentComponent.numericId;
     } else {
-      parentComponentNumericId = getAppStateID();
+      parentComponentNumericId = ctxID;
     }
 
     /**
@@ -139,7 +138,7 @@ export const component = <P = void>(
                   item.remove();
                 }
 
-                if (isSSR) {
+                if (isServer()) {
                   // Untrack in SSR
                   instance.untrackChild(item);
                 }
@@ -207,7 +206,7 @@ export const component = <P = void>(
         }
       },
       unmount(): void {
-        if (isSSR) {
+        if (isServer()) {
           // Unregister in SSR
           getSSRScope()?.unregisterComponent(instance);
           createdIndex.length = 0;
@@ -216,7 +215,7 @@ export const component = <P = void>(
         // Clean up resources and unmount children
         instance.cleanup();
 
-        if (!process.env.DISABLE_SSR && isHydrating()) {
+        if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
 
@@ -229,7 +228,7 @@ export const component = <P = void>(
         parentComponent?.removeChild(instance);
 
         if (!parentNode) {
-          if (process.env.DEBUG) {
+          if (process.env.SEIDR_DEBUG) {
             // console.trace(`[${componentId}] Unmounting already unmounted component`);
           } else {
             // console.warn(`[${componentId}] Unmounting already unmounted component`);
@@ -273,28 +272,28 @@ export const component = <P = void>(
         onUnmountFns.push(() => childComponent.unmount());
         childComponent.onUnmount(() => {
           children.delete(childComponent.id);
-          if (isSSR) {
+          if (isServer()) {
             instance.untrackChild(childComponent);
           }
         });
-        if (isSSR) {
+        if (isServer()) {
           instance.trackChild(childComponent);
         }
         return childComponent;
       },
       removeChild(childComponent: Component): void {
         children.delete(childComponent.id);
-        if (isSSR) {
+        if (isServer()) {
           instance.untrackChild(childComponent);
         }
       },
       trackChild(child: ChildNode | Component) {
-        if (isSSR && createdIndex.indexOf(child) === -1) {
+        if (isServer() && createdIndex.indexOf(child) === -1) {
           createdIndex.push(child);
         }
       },
       untrackChild(child: ChildNode | Component) {
-        if (isSSR) {
+        if (isServer()) {
           const index = createdIndex.indexOf(child);
           if (index !== -1) {
             createdIndex.splice(index, 1);
@@ -308,8 +307,8 @@ export const component = <P = void>(
       setScope(instance);
 
       // Register component with SSR scope for hydration path mapping
-      if (!process.env.DISABLE_SSR) {
-        if (isSSR) {
+      if (process.env.SEIDR_ENABLE_SSR) {
+        if (isServer()) {
           getSSRScope()?.registerComponent(instance);
         } else if (isHydrating()) {
           getHydrationContext()?.pushComponent(instance);
@@ -336,7 +335,7 @@ export const component = <P = void>(
       }
 
       // Track component boundary in parent immediately to match evaluation order
-      if (!process.env.DISABLE_SSR && isServer()) {
+      if (process.env.SEIDR_ENABLE_SSR && isServer()) {
         if (parentComponent) {
           const start = startMarkerComment || getFirstNode(instance);
           if (start) {
@@ -356,12 +355,12 @@ export const component = <P = void>(
       throw err;
     } finally {
       setScope(parentComponent);
-      if (!process.env.DISABLE_SSR && isHydrating()) {
+      if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
         getHydrationContext()?.popComponent();
       }
     }
 
-    if (!process.env.DISABLE_SSR) {
+    if (process.env.SEIDR_ENABLE_SSR) {
       /**
        * Recursively applies the data attributes to root HTMLElements.
        * @param {ComponentChildren} item - The child to search
@@ -370,7 +369,7 @@ export const component = <P = void>(
         if (isHTMLElement(item)) {
           // Apply app root marker if top-level
           if (!parentComponent) {
-            item.setAttribute(ROOT_ATTRIBUTE, str(getAppStateID()));
+            item.setAttribute(ROOT_ATTRIBUTE, str(ctxID));
           }
         } else if (isComponent(item)) {
           applyRootAttributes(item.element);

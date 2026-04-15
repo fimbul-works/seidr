@@ -64,7 +64,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   };
 
   // Core bundle and SSR create elements directly
-  if (process.env.DISABLE_SSR || isServer()) {
+  if (!process.env.SEIDR_ENABLE_SSR || isServer()) {
     return decorateElement(getDocument().createElement(tagName));
   }
 

@@ -1,46 +1,47 @@
 import type { AppState } from "../app-state/types.js";
-import { DATA_KEY_STATE, noHydrate } from "./constants.js";
+import { DATA_KEY_STATE } from "./constants.js";
 import { Seidr } from "./seidr.js";
 import { unwrapSeidr } from "./unwrap-seidr.js";
 
 /**
  * Registers the default Seidr state hydration strategy in the provided AppState.
  *
- * @param {AppState} state - The AppState instance to register the strategy in
+ * @param {AppState} appState - The AppState instance to register the strategy in
  */
-export function registerStateStrategy(state: AppState): void {
-  state.defineDataStrategy(
+export function registerStateStrategy(appState: AppState): void {
+  appState.defineDataStrategy(
     DATA_KEY_STATE,
     // Capture function: extracts serializable values from all root Seidr instances
     () => {
-      const states = state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
       const captured: Record<string, any> = {};
 
-      for (const [id, seidr] of Object.entries(states)) {
-        // Skip derived observables and those marked with hydrate: false
-        if (seidr.isDerived || seidr.options.hydrate === false) {
-          continue;
+      const observables = appState.getData<Map<string, Seidr>>(DATA_KEY_STATE);
+      if (observables) {
+        for (const [id, seidr] of observables.entries()) {
+          // Skip derived observables and those marked with hydrate: false
+          if (seidr.isDerived || seidr.options.hydrate === false) {
+            continue;
+          }
+          captured[id] = unwrapSeidr(seidr.value);
         }
-
-        captured[id] = unwrapSeidr(seidr.value);
       }
 
       return captured;
     },
     // Restore function: rehydrates Seidr instances from captured data
     (capturedState: Record<string, any>) => {
-      const states = state.getData<Record<string, Seidr>>(DATA_KEY_STATE) ?? {};
+      const observables = appState.getData<Map<string, Seidr>>(DATA_KEY_STATE) ?? new Map<string, Seidr>();
 
       for (const [id, value] of Object.entries(capturedState)) {
-        const existing = states[id];
+        const existing = observables.get(id);
         if (existing) {
           existing.value = value;
         } else {
-          // Creating a new Seidr with the ID will automatically register it in the AppState
-          // since the constructor is singleton-aware.
-          new Seidr(value, { id, ...noHydrate });
+          observables.set(id, new Seidr(value, { id }));
         }
       }
+
+      appState.setData(DATA_KEY_STATE, observables);
     },
   );
 }

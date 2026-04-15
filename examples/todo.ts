@@ -1,4 +1,4 @@
-import { $button, $checkbox, $div, $form, $input, $li, $span, $ul, bindInput, List, mount, Seidr } from "../src/index";
+import { $button, $checkbox, $div, $form, $input, $li, $span, $ul, List, mount, Seidr } from "../src/index";
 
 export type Todo = { id: number; text: string; completed: boolean };
 
@@ -50,7 +50,8 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
         type: "text",
         placeholder: "What needs to be done?",
         className: "todo-input",
-        ...bindInput(newTodoText),
+        value: newTodoText,
+        oninput: (e: Event) => (newTodoText.value = (e.target as HTMLInputElement).value),
       }),
       $button({
         type: "submit",

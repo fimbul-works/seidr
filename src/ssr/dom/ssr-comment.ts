@@ -1,6 +1,6 @@
 import { TAG_COMMENT, TYPE_COMMENT_NODE } from "../../constants.js";
 import type { NodeTypeComment } from "../../types.js";
-import { escapeHTML } from "../util/escape.js";
+import { escapeHTML } from "../util/escape-string.js";
 import { SSRCharacterData } from "./ssr-character-data.js";
 
 export class SSRComment extends SSRCharacterData<NodeTypeComment> implements Comment {
