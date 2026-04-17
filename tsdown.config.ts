@@ -1,8 +1,7 @@
 import replace from "@rollup/plugin-replace";
 import { defineConfig } from "tsdown";
 import { clientNoSSRReplace, clientReplace, treeshake } from "./build.shared.ts";
-import { convertDevFlag } from "./build-plugins/convert-dev-flag.ts";
-import { removeRegionComments } from "./build-plugins/remove-region-comments.ts";
+import { convertDevFlag, removeRegionComments } from "./src/build-plugins/index.ts";
 
 export default defineConfig([
   // Full client-side bundle with hydration

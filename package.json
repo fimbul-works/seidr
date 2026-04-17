@@ -51,15 +51,17 @@
     "./testing": {
       "types": "./dist/test-setup/index.d.ts",
       "import": "./dist/test-setup/index.js"
+    },
+    "./build": {
+      "types": "./dist/build-plugins/index.d.ts",
+      "import": "./dist/build-plugins/index.js"
     }
   },
   "files": [
     "dist/**/*.js",
-    "dist/**/*.cjs",
     "dist/**/*.d.ts",
     "dist/**/*.map",
-    "bundls/*.js",
-    "bundles/*.cjs",
+    "bundles/*.js",
     "bundles/*.d.ts",
     "seidr-logo.svg",
     "README.md",
@@ -68,7 +70,7 @@
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=20.0.0"
+    "node": ">=22.0.0"
   },
   "scripts": {
     "clean:dist": "rm -rf dist && rm -rf bundles",
@@ -76,7 +78,7 @@
     "clean": "pnpm clean:dist && pnpm clean:examples",
     "build": "pnpm build:lib && pnpm build:bundles",
     "build:lib": "tsc",
-    "build:bundles": "tsdown",
+    "build:bundles": "tsdown --config-loader unrun",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
     "sizes": "./calculate-bundle-sizes.sh",
@@ -87,25 +89,27 @@
     "test:ssr:inspect": "npx tsx examples/ssr/inspect.ts",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
+  "dependencies": {
+    "@fimbul-works/futhark": "link:../futhark"
+  },
   "devDependencies": {
-    "@biomejs/biome": "^2.4.10",
-    "@fimbul-works/futhark": "link:../futhark",
+    "@biomejs/biome": "^2.4.12",
     "@rollup/plugin-replace": "^6.0.3",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",
-    "@types/node": "^25.5.2",
+    "@types/node": "^25.6.0",
     "express": "^5.2.1",
     "front-matter": "^4.0.2",
-    "jsdom": "^29.0.1",
-    "marked": "^17.0.5",
-    "puppeteer": "^24.40.0",
-    "rolldown": "1.0.0-rc.13",
+    "jsdom": "^29.0.2",
+    "marked": "^17.0.6",
+    "puppeteer": "^24.41.0",
+    "rolldown": "1.0.0-rc.16",
     "sirv": "^3.0.2",
     "terser": "^5.46.1",
-    "tsdown": "^0.21.7",
+    "tsdown": "^0.21.9",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2",
-    "vite": "^8.0.3",
-    "vitest": "^4.1.2"
+    "typescript": "^6.0.3",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
   }
 }

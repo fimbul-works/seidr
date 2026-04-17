@@ -37,6 +37,7 @@ export interface HydrationData {
    * AppState data for hydration.
    */
   data: AppStateData;
+
   /**
    * Component ID -> Structure Map mapping.
    */

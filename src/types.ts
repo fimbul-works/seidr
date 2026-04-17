@@ -8,7 +8,6 @@ export class SeidrError extends Error {
 }
 
 /**
- * 
  * Type for event handlers that can be synchronous or asynchronous.
  *
  * @template T - The data type for the event
