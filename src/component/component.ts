@@ -212,20 +212,20 @@ export const component = <P = void>(
           createdIndex.length = 0;
         }
 
-        // Clean up resources and unmount children
-        instance.cleanup();
-
         if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
+
+        // Always remove from parent component tracking
+        parentComponent?.removeChild(instance);
+
+        // Clean up resources and unmount children
+        instance.cleanup();
 
         // Remove from DOM
         startMarkerComment?.remove();
         endMarkerComment?.remove();
         instance.element = null;
-
-        // Always remove from parent component tracking
-        parentComponent?.removeChild(instance);
 
         if (!parentNode) {
           if (process.env.SEIDR_DEBUG) {
