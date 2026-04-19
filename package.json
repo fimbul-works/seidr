@@ -48,6 +48,11 @@
       "import": "./bundles/seidr.core.js",
       "require": "./bundles/seidr.core.cjs"
     },
+    "./html": {
+      "types": "./dist/elements/index.d.ts",
+      "import": "./dist/elements/index.js",
+      "require": "./dist/elements/index.cjs"
+    },
     "./testing": {
       "types": "./dist/test-setup/index.d.ts",
       "import": "./dist/test-setup/index.js"

@@ -1,4 +1,5 @@
-import { $button, $div, $span, mount, Seidr } from "../src/index.js";
+import { mount, Seidr } from "../src/index.js";
+import { $button, $div, $span } from "../src/elements/index.js";
 
 export const Counter = () => {
   const count = new Seidr(0);

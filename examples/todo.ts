@@ -1,4 +1,5 @@
-import { $button, $checkbox, $div, $form, $input, $li, $span, $ul, List, mount, Seidr } from "../src/index";
+import { List, mount, Seidr } from "../src/index";
+import { $button, $checkbox, $div, $form, $input, $li, $span, $ul } from "../src/elements/index";
 
 export type Todo = { id: number; text: string; completed: boolean };
 
