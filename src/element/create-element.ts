@@ -33,13 +33,18 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
     if (isServer()) {
       let scope: Component | null = null;
-      try {
-        scope = useScope();
-        scope?.trackChild(el);
-      } catch (error) {
-        if (!process.env.VITEST) {
-          console.error(error);
+      if (process.env.VITEST) {
+        try {
+          scope = useScope();
+          scope.trackChild(el);
+        } catch (error) {
+          if (!process.env.VITEST) {
+            console.error(error);
+          }
         }
+      } else {
+        scope = useScope();
+        scope.trackChild(el);
       }
     }
 

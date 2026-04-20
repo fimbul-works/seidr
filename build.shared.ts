@@ -23,16 +23,16 @@ export const clientNoSSRReplace = {
   ...mainReplace,
   "process.env.USE_SCHEDULER": "true",
   "process.env.SEIDR_ENABLE_SSR": "false",
-  "process.env.SSR": "false",
+  "import.meta.env.SSR": "false",
   "isHydrating()": "false",
   "isClient()": "true",
   "isServer()": "false",
 };
 
 export const treeshake: TreeshakingOptions = {
-  annotations: true,
+  annotations: false,
   commonjs: true,
-  moduleSideEffects: "no-external",
+  moduleSideEffects: false,
   invalidImportSideEffects: false,
   unknownGlobalSideEffects: true,
 };

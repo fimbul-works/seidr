@@ -1,6 +1,7 @@
 import { getAppState } from "../../app-state/app-state.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
-import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards/index.js";
+import { isMarkerComment } from "../../util/type-guards/dom-node-types.js";
+import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/index.js";
 import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export const reconstructComponentTree = (
   const skipMarkers = () => {
     while (currentDomIndex < currentDomNodes.length) {
       const node = currentDomNodes[currentDomIndex];
-      if (isComment(node) && isMarkerComment(node)) {
+      if (isMarkerComment(node)) {
         const data = (node as Comment).data;
         const isStart = data.startsWith(TAG_COMPONENT_PREFIX);
         const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1); // /ID

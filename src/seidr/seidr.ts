@@ -89,8 +89,7 @@ export class Seidr<T = any> implements Observable<T> {
         appState.setData(DATA_KEY_STATE, states);
       }
     } catch {
-      // @ts-expect-error
-      if (__SEIDR_DEV__) {
+      if (isServer()) {
         console.warn(
           `Seidr created with ID "${this.id}" but no AppState found. You should not create Seidr instances outside of the component tree in SSR, due to cross-request contamination.`,
         );

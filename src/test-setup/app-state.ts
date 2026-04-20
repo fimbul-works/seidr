@@ -2,7 +2,7 @@ import { setAppStateProvider } from "../app-state/app-state.js";
 import { contextLocalStorage } from "../app-state/app-state.ssr.js";
 import { createAppState } from "../app-state/create-app-state.js";
 import type { AppState } from "../app-state/types.js";
-import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);

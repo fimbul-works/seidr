@@ -1,7 +1,7 @@
 import { getAppState } from "../app-state/app-state.js";
 import type { Component, ComponentType } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
-import { type CleanupFunction, SeidrError } from "../types.js";
+import type { CleanupFunction } from "../types.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { appendChild } from "./append-child.js";
 
@@ -30,15 +30,8 @@ export function mount<C extends ComponentType = ComponentType>(
   container: HTMLElement,
   appData: Record<string, any> = {},
 ): CleanupFunction {
-  const DATA_KEY_ROOT_COMPONENT = "seidr.root-component";
-
-  // Bind the container to the application state if not already bound
-  const appState = getAppState();
-  if (appState.getData(DATA_KEY_ROOT_COMPONENT)) {
-    throw new SeidrError("AppState already has a root component");
-  }
-
   // Restore data from all strategies
+  const appState = getAppState();
   Object.entries(appData).forEach(([key, val]) => {
     const strategy = appState.getDataStrategy(key);
     if (strategy) {
@@ -52,13 +45,8 @@ export function mount<C extends ComponentType = ComponentType>(
     ? componentOrFactory
     : wrapComponent(componentOrFactory, "Root")();
 
-  appState.setData(DATA_KEY_ROOT_COMPONENT, rootComponent);
-
   appendChild(container, rootComponent);
 
   // Return cleanup function
-  return () => {
-    rootComponent.unmount();
-    appState.deleteData(DATA_KEY_ROOT_COMPONENT);
-  };
+  return () => rootComponent.unmount();
 }

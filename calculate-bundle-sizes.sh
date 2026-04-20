@@ -9,11 +9,11 @@ npx terser bundles/seidr.core.js -o bundles/seidr.core.min.js --toplevel -c pass
 # Compress the bundles
 gzip -f -k bundles/*.min.js
 gzip -f -k examples/dist/*.*js
-gzip -f -k examples/ssr/dist/*.*js
+# gzip -f -k examples/ssr/dist/*.*js
 
 brotli -f bundles/*.min.js
 brotli -f examples/dist/*.*js
-brotli -f examples/ssr/dist/*.*js
+# brotli -f examples/ssr/dist/*.*js
 
 echo ""
 echo "=========================================="
@@ -24,7 +24,8 @@ echo "Browser bundle:"
 wc -c bundles/*js* | grep -v .cjs | grep -v total
 echo ""
 echo "Example bundles:"
-wc -c examples/dist/*.js* examples/ssr/dist/*.js* | grep -v \.map | grep -v total
+#wc -c examples/dist/*.js* examples/ssr/dist/*.js* | grep -v \.map | grep -v total
+wc -c examples/dist/*.js* | grep -v \.map | grep -v total
 echo ""
 echo "=========================================="
 echo ""

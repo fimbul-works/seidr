@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { $div, $span, mount, Seidr, useScope } from "../index";
+import { mount, Seidr, useScope } from "../index";
+import { $div, $span } from "../elements/index";
 
 describe("Memory Leak Benchmark", () => {
   it("should not leak observers when mounting/destroying 1000 times", () => {

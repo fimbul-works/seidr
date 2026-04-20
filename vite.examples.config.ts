@@ -22,7 +22,7 @@ export default defineConfig(() => {
       emptyOutDir: true,
       minify: "terser",
       target: "chrome107",
-      rollupOptions: {
+      rolldownOptions: {
         input: `examples/${example}.ts`,
         output: {
           dir: "examples/dist",
@@ -32,6 +32,9 @@ export default defineConfig(() => {
         },
         context: "window",
         treeshake,
+        optimization: {
+          inlineConst: false,
+        },
       },
     },
     esbuild: {

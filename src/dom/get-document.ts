@@ -2,16 +2,6 @@ import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 
 /**
- * Global type declaration for the document provider.
- */
-declare global {
-  var __SEIDR_DOCUMENT_PROVIDER__: (() => Document) | undefined;
-}
-
-/** Key that is shared across build targets */
-const DOC_KEY = "__SEIDR_DOCUMENT_PROVIDER__";
-
-/**
  * Default client-side getDocument implementation.
  *
  * @returns {Document} Document object
@@ -19,15 +9,10 @@ const DOC_KEY = "__SEIDR_DOCUMENT_PROVIDER__";
  */
 export function defaultClientDocument(): Document {
   if (isClient()) {
-    return window.document;
+    return document;
   }
 
   throw new SeidrError("getDocument not initialized");
-}
-
-/** AppState provider is shared across built bundles */
-if (!globalThis[DOC_KEY]) {
-  globalThis[DOC_KEY] = defaultClientDocument;
 }
 
 /**
@@ -35,7 +20,7 @@ if (!globalThis[DOC_KEY]) {
  *
  * @returns {Document} Document object.
  */
-export const getDocument = (): Document => globalThis[DOC_KEY]!();
+export let getDocument = defaultClientDocument;
 
 /**
  * Cross-environment getDocument contract dependency injector.
@@ -44,5 +29,5 @@ export const getDocument = (): Document => globalThis[DOC_KEY]!();
  * @internal
  */
 export const setDocumentProvider = (fn: () => Document) => {
-  globalThis[DOC_KEY] = fn;
+  getDocument = fn;
 };

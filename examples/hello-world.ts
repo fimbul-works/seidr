@@ -5,7 +5,7 @@ export const HelloWorld = () => {
 
   return $("button", {
     className: "btn",
-    textContent,
+    textContent, // Reactive value binding
     onclick: () => (textContent.value = "Seidr binds thee"),
   });
 };

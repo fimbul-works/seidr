@@ -3,7 +3,9 @@ import type { Component, ComponentFactoryFunction } from "../component/types.js"
 import { useScope } from "../component/use-scope.js";
 import { getLastNode, mountComponent } from "../component/util/index.js";
 import { wrapComponent } from "../component/wrap-component.js";
+import { isSeidr } from "../index.core.js";
 import type { Seidr } from "../seidr/seidr.js";
+import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
 
 /**
  * Switches between different components based on an observable value.
@@ -15,6 +17,7 @@ import type { Seidr } from "../seidr/seidr.js";
  * @param {Seidr<K>} observable - Observable value to switch on
  * @param {M} factories - Map or object of cases to component factories (raw or wrapped)
  * @param {C | null | undefined} [fallbackFactory] - Optional fallback component factory
+ * @param {string} [name="Switch"] - Optional name for the component
  * @returns {Component} Switch component
  */
 export const Switch = <
@@ -25,13 +28,11 @@ export const Switch = <
   M extends Map<K, C> | Record<K, C> = Map<K, C> | Record<K, C>,
 >(
   observable: Seidr<K>,
-  factories: M,
+  factories: M | Seidr<M>,
   fallbackFactory?: C | null,
-  name?: string,
+  name: string = "Switch",
 ): Component =>
   component(() => {
-    const SWITCH_CHILD_NAME = "SwitchBranch";
-
     /**
      * Gets the component for the current value of the observable.
      * @returns {Component | undefined} The component for the current value of the observable.
@@ -39,7 +40,7 @@ export const Switch = <
     const getComponent = (): Component | undefined => {
       if (!factories) {
         if (fallbackFactory) {
-          return wrapComponent(fallbackFactory as ComponentFactoryFunction<K>, name)(
+          return wrapComponent(fallbackFactory as ComponentFactoryFunction<K>, `${name}Fallback`)(
             observable.value,
             switchComponent,
             observable.value,
@@ -48,11 +49,17 @@ export const Switch = <
         return undefined;
       }
 
+      // If factories is an observable, we need to unwrap it to get the current value
+      const currentFactories = unwrapSeidr(factories);
+
+      // Look up the current factory
       const factory =
-        (factories instanceof Map ? factories.get(observable.value) : factories[observable.value as keyof M]) ||
-        fallbackFactory;
+        (currentFactories instanceof Map
+          ? currentFactories.get(observable.value)
+          : currentFactories[observable.value as keyof M]) || fallbackFactory;
+
       return factory
-        ? wrapComponent(factory as ComponentFactoryFunction<K>, SWITCH_CHILD_NAME)(
+        ? wrapComponent(factory as ComponentFactoryFunction<K>, `${name}Branch`)(
             observable.value,
             switchComponent,
             observable.value,
@@ -67,18 +74,19 @@ export const Switch = <
      * Updates the component based on the new value.
      */
     const update = () => {
-      // 1. Resolve anchor point before unmounting
+      // Resolve anchor point before unmounting
       const lastNode = currentBranchComponent ? getLastNode(currentBranchComponent!) : null;
       const anchor = lastNode?.nextSibling || switchComponent.endMarker || null;
       const parent = lastNode?.parentNode || switchComponent.parentNode;
 
-      // 2. Unmount previous component
+      // Unmount previous component
       if (currentBranchComponent) {
         currentBranchComponent.unmount();
       }
 
       currentBranchComponent = getComponent();
 
+      // Mount the current branch, or clear the element if no component is available
       if (currentBranchComponent) {
         switchComponent.addChild(currentBranchComponent);
         switchComponent.element = currentBranchComponent;
@@ -88,9 +96,14 @@ export const Switch = <
       }
     };
 
+    switchComponent.element = currentBranchComponent;
     switchComponent.onUnmount(observable.observe(update));
     switchComponent.onUnmount(() => currentBranchComponent?.unmount());
 
-    switchComponent.element = currentBranchComponent;
+    // If factories is an observable, we also need to update when it changes
+    if (isSeidr(factories)) {
+      switchComponent.onUnmount(factories.observe(update));
+    }
+
     return currentBranchComponent ? switchComponent.addChild(currentBranchComponent) : undefined;
-  }, name || "Switch")();
+  }, name)();

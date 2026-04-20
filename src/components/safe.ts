@@ -15,12 +15,13 @@ import { wrapError } from "../util/wrap-error.js";
  *
  * @param {ComponentFactoryFunction} factory - Function that creates the component element
  * @param {ComponentFactoryFunction<Error>} errorBoundaryFactory - Error handler that returns fallback UI
+ * @param {string} [name="Safe"] - Optional name for the component
  * @returns {Component} A Component instance with error handling
  */
 export const Safe = (
   factory: ComponentFactoryFunction,
   errorBoundaryFactory: ComponentFactoryFunction<Error>,
-  name?: string,
+  name: string = "Safe",
 ): Component =>
   component(() => {
     const safeComponent = useScope();
@@ -28,10 +29,10 @@ export const Safe = (
     try {
       // We wrap the factory call to ensure that if it throws,
       // we can still attempt to cleanup any partial registration
-      return wrapComponent(factory)(undefined, safeComponent);
+      return wrapComponent(factory, `${name}Child`)(undefined, safeComponent);
     } catch (err) {
       // Clean up any resources tracked during the failed factory call
       safeComponent?.cleanup();
-      return wrapComponent(errorBoundaryFactory)(wrapError(err), safeComponent);
+      return wrapComponent(errorBoundaryFactory, `${name}ErrorBoundary`)(wrapError(err), safeComponent);
     }
-  }, name || "Safe")();
+  }, name)();

@@ -1,7 +1,7 @@
 import { getAppState } from "../../app-state/app-state.js";
 import type { Component } from "../../component/types.js";
 import {
-  DATA_KEY_HYDRATION_CONTEXT,
+  DATA_KEY_HYDRATION_CTX,
   ROOT_ATTRIBUTE,
   TAG_COMMENT,
   TAG_COMPONENT_PREFIX,
@@ -20,7 +20,7 @@ import type { HydrationContext, HydrationMismatchNode } from "./types.js";
  * Get the active hydration context from AppState.
  * @returns
  */
-export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CONTEXT);
+export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CTX);
 
 /**
  * Initialize hydration context.
@@ -251,6 +251,6 @@ export function initHydrationContext(container: Element) {
     },
   };
 
-  appState.setData(DATA_KEY_HYDRATION_CONTEXT, ctx);
+  appState.setData(DATA_KEY_HYDRATION_CTX, ctx);
   return ctx;
 }

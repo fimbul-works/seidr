@@ -3,16 +3,19 @@ import { getAppState } from "../app-state/app-state.js";
 import { ROOT_ATTRIBUTE, TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
 import { $text } from "../dom/node/text.js";
 import type { SeidrChild } from "../element/types.js";
+import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
+import { defineProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastMix } from "../util/fast-mix.js";
 import { fastMixHash } from "../util/fast-mix-hash.js";
 import { str } from "../util/string.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { isArray, isEmpty, isNum, isStr } from "../util/type-guards/primitive-types.js";
 import { getMarkerComments } from "./get-marker-comments.js";
 import { setScope } from "./set-scope.js";
@@ -192,9 +195,9 @@ export const component = <P = void>(
         }
 
         parentNode = parent;
-        onMountFns.forEach((cb) => {
+        onMountFns.forEach((fn) => {
           try {
-            cb(parentNode!);
+            fn(parentNode!);
           } catch (error) {
             console.error(`[${componentId}] Error in onMount callback`, error);
           }
@@ -322,8 +325,12 @@ export const component = <P = void>(
       const toNode = (item: SeidrChild): ComponentChildren => {
         if (isStr(item) || isNum(item)) {
           return $text(item);
+        } else if (isSeidr(item)) {
+          const node = $text(unwrapSeidr(item));
+          instance.onUnmount(item.observe((text) => (node.textContent = text)));
+          return node;
         }
-        return item;
+        return item as ComponentChildren;
       };
 
       element = isArray(result) ? (result.filter(Boolean).map(toNode) as ComponentChildren) : toNode(result);
@@ -388,20 +395,8 @@ export const component = <P = void>(
     return instance;
   }) as ComponentFactory<P>;
 
-  Object.defineProperties(componentFactory, {
-    [TYPE_PROP]: {
-      value: TYPE_COMPONENT_FACTORY,
-      writable: false,
-      configurable: false,
-      enumerable: true,
-    },
-    name: {
-      value: name,
-      writable: false,
-      configurable: false,
-      enumerable: true,
-    },
-  });
+  defineProp(componentFactory, TYPE_PROP, TYPE_COMPONENT_FACTORY);
+  defineProp(componentFactory, "name", name);
 
   return componentFactory;
 };

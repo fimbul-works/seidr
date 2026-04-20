@@ -1,4 +1,5 @@
-import { $a, $div, $footer, $nav, component } from "../../src/index.js";
+import { component } from "../../src/index.js";
+import { $a, $div, $footer, $nav } from "../../src/elements/index.js";
 import { Link, Router } from "../../src/router/index.js";
 import { routes } from "./routes.js";
 

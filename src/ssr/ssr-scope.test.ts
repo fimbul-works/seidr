@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../app-state/app-state";
 import { createAppState } from "../app-state/create-app-state";
-import { DATA_KEY_STATE, Seidr } from "../seidr";
+import { DATA_KEY_STATE } from "../seidr/constants";
+import { Seidr } from "../seidr/seidr";
 import { enableSSRMode, resetNextId } from "../test-setup";
 import { clearHydrationData } from "./hydrate/storage";
 import { SSRScope, setSSRScope } from "./ssr-scope";

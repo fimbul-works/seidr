@@ -4,7 +4,7 @@ import { type Seidr, unwrapSeidr } from "../seidr/index.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
-import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types.js";
 
 /**
@@ -21,10 +21,14 @@ export function assignProp(el: HTMLElement, prop: string, value: any): void {
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
 
   let scope: Component | undefined;
-  try {
+  if (process.env.VITEST) {
+    try {
+      scope = useScope();
+    } catch (_e) {
+      // If we are not in a component, we can't set the ref
+    }
+  } else {
     scope = useScope();
-  } catch (_e) {
-    // If we are not in a component, we can't set the ref
   }
 
   // Handle ref

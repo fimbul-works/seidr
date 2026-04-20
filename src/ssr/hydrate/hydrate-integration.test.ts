@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { List } from "../../components/list";
 import { $ } from "../../element";
-import { DATA_KEY_STATE, Seidr } from "../../seidr";
+import { DATA_KEY_STATE } from "../../seidr/constants";
+import { Seidr } from "../../seidr/seidr";
 import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { str } from "../../util/string";

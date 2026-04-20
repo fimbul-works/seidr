@@ -10,18 +10,18 @@ import { Switch } from "./switch.js";
  * @param {Seidr} condition - Boolean observable that controls visibility
  * @param {C} factory - Function that creates the component or element when needed
  * @param {C} [fallbackFactory] - Optional fallback component factory
- * @param {string} name - Optional name for the component
+ * @param {string} [name="Show"] - Optional name for the component
  * @returns {Component} The component
  */
-export const Show = <C extends ComponentFactoryFunction = ComponentFactoryFunction>(
+export const Show = <C extends ComponentFactoryFunction<string> = ComponentFactoryFunction<string>>(
   condition: Seidr,
   factory: C,
   fallbackFactory?: C | null,
-  name?: string,
+  name: string = "Show",
 ): Component =>
   Switch(
-    condition.as<string>((v) => v && "true"),
-    { true: factory as ComponentFactoryFunction<string> },
-    fallbackFactory as ComponentFactoryFunction<string>,
-    name || "Show",
+    condition.as<string>((v) => v && "show"),
+    { show: factory },
+    fallbackFactory,
+    name,
   );

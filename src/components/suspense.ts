@@ -7,7 +7,7 @@ import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { wrapError } from "../util/wrap-error.js";
 
 const PROMISE_PENDING = "pending";
@@ -29,13 +29,13 @@ export interface SuspenseState<T> {
  *
  * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
  * @param {ComponentFactoryFunction<SuspenseState<T>>} factory - Function that creates the component
- * @param {string} [name] - Optional name for the component
+ * @param {string} [name="Suspense"] - Optional name for the component
  * @returns {Component} A component handling the promise state
  */
 export const Suspense = <T>(
   promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
   factory: ComponentFactoryFunction<SuspenseState<T>>,
-  name?: string,
+  name: string = "Suspense",
 ): Component =>
   component(() => {
     const suspenseComponent = useScope();
@@ -95,5 +95,7 @@ export const Suspense = <T>(
       );
     }
 
-    return suspenseComponent.addChild(wrapComponent(factory)({ state, value, error }, suspenseComponent));
-  }, name || "Suspense")();
+    return suspenseComponent.addChild(
+      wrapComponent(factory, `${name}Child`)({ state, value, error }, suspenseComponent),
+    );
+  }, name)();

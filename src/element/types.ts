@@ -150,4 +150,4 @@ export type SeidrNode = Component | Element | Text | Comment;
 /**
  * Union type representing allowed child nodes for Seidr elements.
  */
-export type SeidrChild = SeidrNode | string | null | undefined;
+export type SeidrChild = SeidrNode | Seidr<string> | string | null | undefined;

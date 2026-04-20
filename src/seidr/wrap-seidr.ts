@@ -1,4 +1,4 @@
-import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { Seidr } from "./seidr.js";
 import type { ObservableOptions } from "./types.js";
 

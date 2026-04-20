@@ -1,11 +1,15 @@
 import { getMarkerComments } from "../component/get-marker-comments.js";
 import { setScope } from "../component/set-scope.js";
+import { useScope } from "../component/use-scope.js";
 import type { SeidrChild } from "../element/types.js";
+import type { Seidr } from "../seidr/seidr.js";
+import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { isServer } from "../util/environment/is-server.js";
 import { some } from "../util/some.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { isArray, isEmpty, isStr } from "../util/type-guards/primitive-types.js";
 import { $text } from "./node/text.js";
 
@@ -31,6 +35,26 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   const target = parent as ParentNode;
   const childNodes = target.childNodes;
 
+  const appendReactiveTextNode = (c: Seidr<string>) => {
+    const childNode = $text(unwrapSeidr(c));
+    const cleanup = c.observe((text) => (childNode.textContent = text));
+    if (process.env.VITEST) {
+      try {
+        useScope().onUnmount(cleanup);
+      } catch (error) {
+        // @ts-expect-error
+        if (__SEIDR_DEV__) {
+          console.error(error);
+        }
+      } finally {
+        target.appendChild(childNode);
+      }
+    } else {
+      useScope().onUnmount(cleanup);
+      target.appendChild(childNode);
+    }
+  };
+
   // Hydration guard: if the node/component is already in the target, do nothing
   if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
     if (isComponent(child)) {
@@ -51,6 +75,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
         }
       }
     } else if (isDOMNode(child) && some(childNodes, (n) => n === child)) {
+      return;
+    } else if (isSeidr(child)) {
+      appendReactiveTextNode(child);
       return;
     }
   }
@@ -78,11 +105,14 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     }
 
     return;
+  } else if (isSeidr(child)) {
+    appendReactiveTextNode(child);
+    return;
   }
 
   const childNode = isDOMNode(child) ? child : $text(child);
 
-  // Final safety check to avoid HierarchyRequestError if childNode is already a parent of target.
+  // Final safety check to avoid hierarchy request error if childNode is already a parent of target
   if (childNode !== target && (!isHTMLElement(childNode) || !childNode.contains(target))) {
     target.appendChild(childNode);
   }

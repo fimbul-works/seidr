@@ -1,5 +1,5 @@
 export * from "./component.js";
-export * from "./get-root-component.js";
+// export * from "./get-root-component.js";
 export * from "./set-scope.js";
 export * from "./types.js";
 export * from "./use-scope.js";

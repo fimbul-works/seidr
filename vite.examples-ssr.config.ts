@@ -10,8 +10,7 @@ export default defineConfig((config) => {
       replace({
         ...mainReplace,
         "process.env.NODE_ENV": JSON.stringify("production"),
-        "process.env.USE_SCHEDULER": config.isSsrBuild ? true : undefined,
-        "process.env.SSR": config.isSsrBuild ? true : undefined,
+        "process.env.USE_SCHEDULER": config.isSsrBuild ? "false" : undefined,
         __SEIDR_DEV__: "false",
         preventAssignment: true,
       }),
@@ -25,7 +24,7 @@ export default defineConfig((config) => {
       sourcemap: true,
       minify: "terser",
       target: "esnext",
-      rollupOptions: {
+      rolldownOptions: {
         input: resolve("examples/ssr", "index.html"),
         output: {
           dir: "examples/ssr/dist",
@@ -34,6 +33,7 @@ export default defineConfig((config) => {
           inlineDynamicImports: false,
         },
         treeshake,
+        external: ["node:fs", "node:path", "node:async_hooks"],
       },
     },
   } as UserConfig;

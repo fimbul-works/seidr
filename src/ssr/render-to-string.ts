@@ -5,7 +5,6 @@ import { mountComponent } from "../component/util/mount-component.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { getDocument } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
-import { SeidrError } from "../types.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
 import type { AppStateData, SSRRenderResult } from "./types.js";
 
@@ -52,7 +51,6 @@ export async function renderToString<C extends ComponentReturnValue>(
 
         // Use innerHTML to get the stringified content without the wrapping div
         const html = doc.innerHTML;
-
         const hydrationData = activeScope.captureHydrationData();
 
         comp.unmount();

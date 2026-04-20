@@ -1,7 +1,7 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { useScope } from "../component/use-scope.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isSeidr } from "../util/type-guards/obserbable-types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";
 
@@ -51,9 +51,7 @@ export const setAppStateID = (id: number) => {
 export const getNextSeidrId = (): string => {
   try {
     const scope = useScope();
-    if (scope) {
-      return `${scope.id}-${encodeBase62(scope.nextSeidrId())}`;
-    }
+    return `${scope.id}-${encodeBase62(scope.nextSeidrId())}`;
   } catch {
     if (isServer() && !process.env.VITEST) {
       console.warn(

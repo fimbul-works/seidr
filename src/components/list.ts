@@ -18,16 +18,17 @@ import { isHydrating } from "../ssr/hydrate/storage.js";
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => K} getKey - Key extraction function
  * @param {C} factory - Component creation function (raw or wrapped)
+ * @param {string} [name="List"] - Optional name for the component
  * @returns {Component} List component
  */
 export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
   factory: C,
-  name?: string,
+  name: string = "List",
 ): Component =>
   component(() => {
-    const LIST_CHILD_NAME = "ListItem";
+    const LIST_CHILD_NAME = `${name}Item`;
     const listComponent = useScope()!;
     const componentMap = new Map<K, Component>();
 
@@ -95,4 +96,4 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
 
       return itemComponent;
     });
-  }, name || "List")();
+  }, name)();

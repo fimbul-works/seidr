@@ -1,7 +1,18 @@
 import replace from "@rollup/plugin-replace";
-import { defineConfig } from "tsdown";
+import type { InputOptions } from "rolldown";
+import { type DepsConfig, defineConfig } from "tsdown";
 import { clientNoSSRReplace, clientReplace, treeshake } from "./build.shared.ts";
-import { convertDevFlag, removeRegionComments } from "./src/build-plugins/index.ts";
+import { convertDevFlag, removeRegionComments, stringReplace } from "./src/build-plugins/index.ts";
+
+const deps: DepsConfig = {
+  alwaysBundle: ["@fimbul-works/futhark"],
+};
+
+const inputOptions: InputOptions = {
+  optimization: {
+    inlineConst: false,
+  },
+};
 
 export default defineConfig([
   // Full client-side bundle with hydration
@@ -19,12 +30,17 @@ export default defineConfig([
       removeRegionComments(),
       replace({
         ...clientReplace,
-        "import.meta.env?.SSR": false,
-        "import.meta.env.SSR": false,
+        "import.meta.env.SSR": "false",
         preventAssignment: true,
       }),
       convertDevFlag(),
+      stringReplace({
+        'typeof process === "undefined"': "true",
+        'typeof window !== "undefined"': "true",
+      }),
     ],
+    deps,
+    inputOptions,
   },
   // Core bundle (no SSR)
   {
@@ -44,6 +60,12 @@ export default defineConfig([
         preventAssignment: true,
       }),
       convertDevFlag(),
+      stringReplace({
+        'typeof process === "undefined"': "true",
+        'typeof window !== "undefined"': "true",
+      }),
     ],
+    deps,
+    inputOptions,
   },
 ]);
