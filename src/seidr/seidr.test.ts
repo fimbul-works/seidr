@@ -1,10 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { setAppStateProvider } from "../app-state/app-state";
+import { getAppState, setAppStateProvider } from "../app-state/app-state";
 import { createAppState } from "../app-state/create-app-state";
 import { $ } from "../element";
 import { enableClientMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Seidr } from "./seidr";
+
+vi.mock("../util/environment/is-server", () => ({
+  isServer: vi.fn(() => false),
+}));
 
 describe("Seidr", () => {
   let consoleErrorSpy: ReturnType<typeof vi.spyOn>;
@@ -592,6 +596,29 @@ describe("Seidr", () => {
       expect(s1).not.toBe(s2);
       expect(s1.value).toBe("v1");
       expect(s2.value).toBe("v2");
+    });
+    it("should warn on server if AppState is missing in SSR", () => {
+      const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+      const appState = getAppState();
+      appState.isSSR = true; // Use the built-in Vitest support in isServer()
+
+      // Force an error in the try/catch block by making getData throw
+      const originalGetData = appState.getData;
+      appState.getData = vi.fn(() => {
+        throw new Error("Simulated Error");
+      });
+
+      // This should trigger the catch block in Seidr constructor
+      new Seidr("test", { id: "ssr-no-state" });
+
+      expect(warnSpy).toHaveBeenCalled();
+      expect(warnSpy.mock.calls[0][0]).toContain('Seidr created with ID "ssr-no-state"');
+
+      // Restore
+      appState.getData = originalGetData;
+      appState.isSSR = false;
+      warnSpy.mockRestore();
     });
   });
 });

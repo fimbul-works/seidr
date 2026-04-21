@@ -7,7 +7,6 @@ import {
   TAG_COMPONENT_PREFIX,
   TAG_TEXT,
 } from "../../constants.js";
-import { registerStateStrategy } from "../../seidr/register-state-strategy.js";
 import { SeidrError } from "../../types.js";
 import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
 import { isEmpty } from "../../util/type-guards/primitive-types.js";
@@ -33,12 +32,10 @@ export const getHydrationContext = () => getAppState().getData<HydrationContext>
 export function initHydrationContext(container: Element) {
   const appState = getAppState();
   const hydrationData = getHydrationData();
+
   if (isEmpty(hydrationData?.components)) {
     throw new SeidrError("Invalid hydration data");
   }
-
-  // Ensure state strategy is registered
-  registerStateStrategy(appState);
 
   // Construct normalized component
   const components: Record<string, StructureMapTuple[]> = {};

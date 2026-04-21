@@ -79,6 +79,8 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
       listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
+    listComponent.onMount(() => update(observable.value));
+      
     listComponent.onUnmount(observable.observe(update));
     listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());

@@ -1,7 +1,9 @@
 import { getAppState } from "../app-state/app-state.js";
+import { restoreAppStateData } from "../app-state/restore-app-data.js";
 import type { Component, ComponentType } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
-import type { CleanupFunction } from "../types.js";
+import { registerStateStrategy } from "../seidr/register-state-strategy.js";
+import { type CleanupFunction, SeidrError } from "../types.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { appendChild } from "./append-child.js";
 
@@ -21,24 +23,23 @@ import { appendChild } from "./append-child.js";
  * @template {ComponentType} C - Type of the component or factory
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement} container - The DOM container element to mount into
- * @param {Record<string, any>} [appData={}] - Optional AppState data
+ * @param {Record<string, any>} [appStateData={}] - Optional AppState data
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} when AppState already has a root component
  */
 export function mount<C extends ComponentType = ComponentType>(
   componentOrFactory: C,
   container: HTMLElement,
-  appData: Record<string, any> = {},
+  appStateData: Record<string, any> = {},
 ): CleanupFunction {
-  // Restore data from all strategies
+  if (!container) {
+    throw new SeidrError("Cannot mount to null parent");
+  }
+
   const appState = getAppState();
-  Object.entries(appData).forEach(([key, val]) => {
-    const strategy = appState.getDataStrategy(key);
-    if (strategy) {
-      const [, restoreFn] = strategy;
-      restoreFn(val);
-    }
-  });
+
+  registerStateStrategy(appState);
+  restoreAppStateData(appStateData);
 
   // Create the component
   const rootComponent: Component = isComponent(componentOrFactory)

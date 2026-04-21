@@ -11,6 +11,7 @@ export type AppStateData = Record<string, any>;
 export interface SSRRenderResult {
   /** Rendered HTML output */
   html: string;
+
   /** Hydration data payload */
   hydrationData: HydrationData;
 }

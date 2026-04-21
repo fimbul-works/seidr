@@ -1,32 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../examples/todo";
-import { resetRequestIdCounter } from "../app-state/app-state.ssr";
 import { component } from "../component";
 import { $ } from "../element";
 import { DATA_KEY_STATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
-import { enableSSRMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
+import { enableSSRMode, resetRequestIdCounter } from "../test-setup";
 import { renderToString } from "./render-to-string";
-import { setSSRScope } from "./ssr-scope";
 
 describe("renderToString", () => {
   let observables: Seidr[] = [];
-  let cleanupEnv: CleanupFunction;
+  let cleanup: () => void;
 
   beforeEach(() => {
-    // Enable SSR mode for all tests
-    cleanupEnv = enableSSRMode();
+    cleanup = enableSSRMode();
     resetRequestIdCounter();
     observables = [];
   });
 
   afterEach(() => {
-    // Use active context for cleanup if possible
-    setSSRScope(undefined);
-
     // Restore original environment
-    cleanupEnv();
+    cleanup();
 
     // Verify all observables have zero observers after SSR
     observables.forEach((obs) => {
@@ -140,5 +133,13 @@ describe("renderToString", () => {
 
     // Verify observables were captured
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThan(0);
+  });
+
+  it("should handle a naked factory function returning a DOM node", async () => {
+    const NakedFactory = () => $("span", { textContent: "Naked" });
+    const { html } = await renderToString(NakedFactory);
+
+    expect(html).toMatch(/data-seidr-root="\d+"/);
+    expect(html).toContain("Naked");
   });
 });

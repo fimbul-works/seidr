@@ -53,7 +53,7 @@ export const getNextSeidrId = (): string => {
     const scope = useScope();
     return `${scope.id}-${encodeBase62(scope.nextSeidrId())}`;
   } catch {
-    if (isServer() && !process.env.VITEST) {
+    if (isServer()) {
       console.warn(
         "[getNextSeidrId] Warning: Generating Seidr ID outside of component scope. This can lead to non-deterministic IDs and hydration mismatches. Please ensure all Seidr instances are created within a component.",
       );

@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { $ } from "../../element";
 import { DATA_KEY_STATE } from "../../seidr/constants";
+import { registerStateStrategy } from "../../seidr/register-state-strategy";
 import { Seidr } from "../../seidr/seidr";
-import { enableClientMode } from "../../test-setup";
+import { enableClientMode, getAppState } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
@@ -17,6 +18,10 @@ describe("Hydration", () => {
   beforeEach(() => {
     container = document.createElement("div");
     cleanupClientMode = enableClientMode();
+
+    // Register data strategy
+    const appState = getAppState();
+    registerStateStrategy(appState);
   });
 
   afterEach(() => {
@@ -212,5 +217,47 @@ describe("Hydration", () => {
     expect(container.textContent).toBe("raw function");
 
     cleanupClientMode2();
+  });
+
+  describe("Resilience & Fallbacks", () => {
+    it("should fallback to mount when hydration is already active", () => {
+      const data: HydrationData = { ctxID: 0, data: {}, components: {} };
+      initHydrationData(data);
+
+      const TestComp = () => $("div", { textContent: "fallback" });
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      // Calling hydrate while isHydrating() is true triggers the error then fallback
+      unmount = hydrate(TestComp, container, data);
+
+      expect(consoleSpy).toHaveBeenCalledWith("Hydration failed", expect.any(Error));
+      expect(container.textContent).toBe("fallback");
+      consoleSpy.mockRestore();
+    });
+
+    it("should fallback to mount when ctxID is missing", () => {
+      const data = { data: {}, components: {} } as any;
+      const TestComp = () => $("div", { textContent: "missing-id" });
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      unmount = hydrate(TestComp, container, data);
+
+      expect(consoleSpy).toHaveBeenCalledWith("Hydration failed", expect.any(Error));
+      expect(container.textContent).toBe("missing-id");
+      consoleSpy.mockRestore();
+    });
+
+    it("should fallback to mount when SEIDR_ENABLE_SSR is disabled", () => {
+      const original = process.env.SEIDR_ENABLE_SSR;
+      delete process.env.SEIDR_ENABLE_SSR;
+
+      const data: HydrationData = { ctxID: 0, data: {}, components: {} };
+      const TestComp = () => $("div", { textContent: "no-ssr" });
+
+      unmount = hydrate(TestComp, container, data);
+
+      expect(container.textContent).toBe("no-ssr");
+      process.env.SEIDR_ENABLE_SSR = original;
+    });
   });
 });

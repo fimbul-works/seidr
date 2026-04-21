@@ -1,4 +1,5 @@
 import type { AppState } from "../app-state/types.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 import { DATA_KEY_STATE } from "./constants.js";
 import { Seidr } from "./seidr.js";
 import { unwrapSeidr } from "./unwrap-seidr.js";
@@ -42,6 +43,18 @@ export function registerStateStrategy(appState: AppState): void {
       }
 
       appState.setData(DATA_KEY_STATE, observables);
+    },
+    // Cleanup function: clears all Seidr instances from the AppState
+    () => {
+      const observables = appState.getData<Map<string, Seidr>>(DATA_KEY_STATE);
+      if (observables) {
+        for (const seidr of observables.values()) {
+          if (isSeidr(seidr)) {
+            seidr.destroy();
+          }
+        }
+        observables.clear();
+      }
     },
   );
 }

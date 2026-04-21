@@ -14,12 +14,12 @@ import type { AppStateData, SSRRenderResult } from "./types.js";
  * @template {ComponentReturnValue} C - The return value of the component function
  *
  * @param {() => C} factory - Component function to render
- * @param {AppStateData} [data={}] - Optional options object
+ * @param {AppStateData} [appStateData={}] - Optional options object
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
 export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
-  data: AppStateData = {},
+  appStateData: AppStateData = {},
 ): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
@@ -34,7 +34,7 @@ export async function renderToString<C extends ComponentReturnValue>(
 
       initSSRDocument();
 
-      const activeScope = new SSRScope(appState, data);
+      const activeScope = new SSRScope(appState, appStateData);
       setSSRScope(activeScope);
 
       try {

@@ -160,4 +160,63 @@ describeDualMode("List Component", ({ getDocument }) => {
     ];
     expect((list.element as any[]).length).toBe(2);
   });
+
+  describeDualMode("Deep-dive reordering and edge cases", () => {
+    it("should move DOM nodes instead of recreating them during reorder", () => {
+      const items = new Seidr([
+        { id: 1, text: "1" },
+        { id: 2, text: "2" },
+      ]);
+      const Item = component((props: { text: string }) => $("span", { textContent: props.text }));
+      const list = List(items, (i) => i.id, Item);
+
+      cleanup = mount(() => list, container);
+
+      const firstSpan = container.querySelector("span")!;
+      expect(firstSpan.textContent).toBe("1");
+
+      // Reorder
+      items.value = [
+        { id: 2, text: "2" },
+        { id: 1, text: "1" },
+      ];
+
+      const spansAfter = container.querySelectorAll("span");
+      expect(spansAfter[1]).toBe(firstSpan); // Same DOM node, but now at index 1
+      expect(spansAfter[1].textContent).toBe("1");
+    });
+
+    it("should handle updates when the list is not yet in the DOM", () => {
+      // This tests the if (!parent) return; branch in update
+      const items = new Seidr([{ id: 1, text: "A" }]);
+      const Item = component((props: { text: string }) => $("span", { textContent: props.text }));
+      const list = List(items, (i) => i.id, Item);
+
+      // List is initialized but not mounted
+      expect(items.observerCount()).toBe(1);
+
+      // Update items before mounting
+      expect(() => {
+        items.value = [{ id: 2, text: "B" }];
+      }).not.toThrow();
+
+      // Now mount and verify it gets the latest value (from initial render of the component factory)
+      cleanup = mount(() => list, container);
+      expect(container.textContent).toBe("B");
+    });
+
+    it("should support removal of multiple items", () => {
+      const items = new Seidr([{ id: 1 }, { id: 2 }, { id: 3 }]);
+      const list = List(
+        items,
+        (i) => i.id,
+        () => $("div"),
+      );
+      cleanup = mount(list, container);
+      expect(container.querySelectorAll("div").length).toBe(3);
+
+      items.value = [{ id: 2 }];
+      expect(container.querySelectorAll("div").length).toBe(1);
+    });
+  });
 });

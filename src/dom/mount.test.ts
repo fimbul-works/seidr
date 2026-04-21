@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { component } from "../component";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
@@ -57,5 +57,29 @@ describeDualMode("mount", () => {
 
     unmount();
     expect(text.observerCount()).toBe(0);
+  });
+
+  describe("Failure Modes & Factory Variants", () => {
+    it("should throw SeidrError when mounting to a null parent", () => {
+      const App = () => $("div");
+      // @ts-expect-error - Testing null parent
+      expect(() => mount(App, null)).toThrow(/Cannot mount to null parent/);
+    });
+
+    it("should handle a plain factory function that returns an element", () => {
+      const App = () => $("span", { textContent: "Plain Element" });
+      unmount = mount(App, container);
+
+      expect(container.innerHTML).toContain("Plain Element");
+      expect(container.querySelector("span")).not.toBeNull();
+    });
+
+    it("should handle a pre-initialized component", () => {
+      const Comp = component(() => $("p", { textContent: "Pre-init" }), "Comp");
+      const instance = Comp();
+
+      unmount = mount(instance, container);
+      expect(container.textContent).toBe("Pre-init");
+    });
   });
 });

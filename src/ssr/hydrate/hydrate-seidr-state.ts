@@ -1,5 +1,7 @@
+import { getAppState } from "../../app-state/app-state.js";
 import { DATA_KEY_STATE } from "../../seidr/constants.js";
 import type { Seidr } from "../../seidr/seidr.js";
+import { unwrapSeidr } from "../../seidr/unwrap-seidr.js";
 import { isEmpty } from "../../util/type-guards/primitive-types.js";
 import { getHydrationData, isHydrating } from "./storage.js";
 
@@ -19,9 +21,10 @@ export const hydrateSeidrState = (seidr: Seidr): void => {
     return;
   }
 
-  const value = hydrationData.data[DATA_KEY_STATE][seidr.id];
+  const appState = getAppState();
+  const value = appState.getData<Record<string, unknown>>(DATA_KEY_STATE)![seidr.id];
   if (!isEmpty(value)) {
     hydrationData.registry.add(seidr);
-    seidr.value = value;
+    seidr.value = unwrapSeidr(value);
   }
 };

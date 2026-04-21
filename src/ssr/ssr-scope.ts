@@ -1,5 +1,6 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../app-state/app-state.js";
+import { restoreAppStateData } from "../app-state/restore-app-data.js";
 import type { AppState } from "../app-state/types.js";
 import type { Component } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
@@ -57,21 +58,14 @@ export class SSRScope {
    * Creates an instance of SSRScope.
    *
    * @param {AppState} state - AppState instance for this render scope
-   * @param {AppStateData} [data={}] - Data passed to renderToString
+   * @param {AppStateData} [appData={}] - Data passed to renderToString
    */
   constructor(
     private state: AppState,
-    data: AppStateData = {},
+    appData: AppStateData = {},
   ) {
-    // Define hydration data strategy for root observables
     registerStateStrategy(this.state);
-
-    // Apply restore functions for strategies if data for them is provided
-    this.state.strategies.forEach(([_, restoreFn], key) => {
-      if (data[key]) {
-        restoreFn(data[key]);
-      }
-    });
+    restoreAppStateData(appData);
   }
 
   /**
@@ -155,9 +149,13 @@ export class SSRScope {
    * @returns {HydrtaionData} The complete hydration data
    */
   captureHydrationData(): HydrationData {
-    const data = this.state.strategies
-      .entries()
-      .reduce((acc, [key, [captureFn]]) => ((acc[key] = captureFn()), acc), {} as Record<string, any>);
+    const data: Record<string, any> = {};
+    for (const [key, strategy] of this.state.strategies.entries()) {
+      if (strategy) {
+        const [captureFn] = strategy;
+        data[key] = captureFn();
+      }
+    }
 
     const components: Record<string, StructureMapTuple[]> = {};
     const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted && c.element);
