@@ -11,7 +11,7 @@ export default defineConfig({
     exclude: ["**/node_modules/**", "**/dist/**", "**/*.parity.test.ts", "**/dual-mode-*.test.ts"],
   },
   define: {
-    __SEIDR_DEV__: "true",
+    __SEIDR_DEV__: true,
     "process.env.SEIDR_ENABLE_SSR": true,
   },
 });

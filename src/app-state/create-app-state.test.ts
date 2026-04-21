@@ -38,12 +38,11 @@ describe("createAppState", () => {
       const state = createAppState(1);
       const captureFn = () => ({});
       const restoreFn = () => {};
-      const cleanupFn = () => {};
 
-      state.defineDataStrategy("test", captureFn, restoreFn, cleanupFn);
+      state.defineDataStrategy("test", captureFn, restoreFn);
 
       const strategy = state.getDataStrategy("test");
-      expect(strategy).toEqual([captureFn, restoreFn, cleanupFn]);
+      expect(strategy).toEqual([captureFn, restoreFn]);
     });
   });
 
@@ -60,21 +59,6 @@ describe("createAppState", () => {
 
       expect(destroySpy).toHaveBeenCalled();
       expect(state.data.size).toBe(0);
-    });
-
-    it("should call cleanup functions for all strategies", () => {
-      const state = createAppState(1);
-      const cleanup1 = vi.fn();
-      const cleanup2 = vi.fn();
-
-      state.defineDataStrategy("s1", vi.fn(), vi.fn(), cleanup1);
-      state.defineDataStrategy("s2", vi.fn(), vi.fn(), cleanup2);
-
-      state.destroy();
-
-      expect(cleanup1).toHaveBeenCalled();
-      expect(cleanup2).toHaveBeenCalled();
-      expect(state.strategies.size).toBe(0);
     });
 
     it("should remove markers from DOM", () => {

@@ -3,9 +3,9 @@ import type { Component, ComponentFactoryFunction } from "../component/types.js"
 import { useScope } from "../component/use-scope.js";
 import { getLastNode, mountComponent } from "../component/util/index.js";
 import { wrapComponent } from "../component/wrap-component.js";
-import { isSeidr } from "../index.core.js";
 import type { Seidr } from "../seidr/seidr.js";
 import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
+import { isSeidr } from "../util/type-guards/observable-types.js";
 
 /**
  * Switches between different components based on an observable value.

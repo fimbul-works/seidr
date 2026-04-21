@@ -12,17 +12,19 @@ import { getHydrationData, isHydrating } from "./storage.js";
  * @param {Seidr} seidr - The Seidr instance to register
  */
 export const hydrateSeidrState = (seidr: Seidr): void => {
+  // Skip if not hydrating, or if this Seidr opts out of hydration, or if it's derived
   if (seidr.isDerived || seidr.options.hydrate === false || !isHydrating()) {
     return;
   }
 
+  // Avoid rehydrating the same Seidr multiple times (can happen with shared state)
   const hydrationData = getHydrationData()!;
   if (hydrationData.registry.has(seidr)) {
     return;
   }
 
-  const appState = getAppState();
-  const value = appState.getData<Record<string, unknown>>(DATA_KEY_STATE)![seidr.id];
+  // Look up the initial value for this Seidr from hydration data using its ID
+  const value = hydrationData.data[DATA_KEY_STATE]?.[seidr.id];
   if (!isEmpty(value)) {
     hydrationData.registry.add(seidr);
     seidr.value = unwrapSeidr(value);

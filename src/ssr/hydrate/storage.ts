@@ -1,6 +1,6 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state.js";
-import { restoreAppStateData } from "../../app-state/restore-app-data.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
+import { registerStateStrategy } from "../../seidr/register-state-strategy.js";
 import type { Seidr } from "../../seidr/seidr.js";
 import type { HydrationData } from "../types.js";
 import type { HydrationDataRegistry } from "./types.js";
@@ -28,13 +28,14 @@ export const getHydrationData = (): HydrationDataRegistry | undefined => getAppS
 export function initHydrationData(hydrationData: HydrationData): void {
   setAppStateID(hydrationData.ctxID);
 
+  // Register data strategy
+  registerStateStrategy();
+
   const appState = getAppState();
   appState.setData(DATA_KEY_HYDRATION_DATA, {
     ...hydrationData,
     registry: new Set<Seidr>(),
   });
-
-  restoreAppStateData(hydrationData.data);
 }
 
 /**

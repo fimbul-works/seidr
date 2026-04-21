@@ -265,14 +265,16 @@ export const component = <P = void>(
         children.clear();
       },
       nextChildId() {
-        return ++childCounter % 2 ** 53;
+        childCounter = ++childCounter % (2 ** 53);
+        return childCounter;
       },
       nextSeidrId() {
-        return ++seidrCounter % 2 ** 53;
+        seidrCounter = ++seidrCounter % (2 ** 53);
+        return seidrCounter;
       },
       addChild(childComponent: Component): Component {
         children.set(childComponent.id, childComponent);
-        onUnmountFns.push(() => childComponent.unmount());
+        onUnmountFns.push(childComponent.unmount);
         childComponent.onUnmount(() => {
           children.delete(childComponent.id);
           if (isServer()) {

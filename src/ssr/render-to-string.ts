@@ -1,25 +1,12 @@
 import { getAppState } from "../app-state/app-state.js";
 import { runWithAppState } from "../app-state/app-state.ssr.js";
-import type { AppState } from "../app-state/types.js";
 import type { ComponentReturnValue } from "../component/types.js";
 import { mountComponent } from "../component/util/mount-component.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { getDocument } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
-import { isFn } from "../util/type-guards/primitive-types.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
-import type { AppStateData, SSRRenderResult } from "./types.js";
-
-/**
- * Functional initialization for SSR.
- *
- * This function is called within the per-request AppState scope, allowing addons
- * to register strategies and set initial state.
- *
- * @param {AppState} appState - The application state for the current request
- * @returns {void | AppStateData | Promise<void | AppStateData>} Optional data to restore
- */
-export type SSRInitFn = (appState: AppState) => void | AppStateData | Promise<void | AppStateData>;
+import type { SSRRenderResult } from "./types.js";
 
 /**
  * Renders a component to an HTML string with hydration data capture.
@@ -32,7 +19,6 @@ export type SSRInitFn = (appState: AppState) => void | AppStateData | Promise<vo
  */
 export async function renderToString<C extends ComponentReturnValue>(
   factory: () => C,
-  dataOrInit: AppStateData | SSRInitFn = {},
 ): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
@@ -44,21 +30,9 @@ export async function renderToString<C extends ComponentReturnValue>(
   try {
     return await runWithAppState(async () => {
       const appState = getAppState();
-
-      // Resolve initialization data
-      let appStateData: AppStateData = {};
-      if (isFn(dataOrInit)) {
-        const result = await dataOrInit(appState);
-        if (result) {
-          appStateData = result;
-        }
-      } else {
-        appStateData = dataOrInit;
-      }
-
       initSSRDocument();
 
-      const activeScope = new SSRScope(appState, appStateData);
+      const activeScope = new SSRScope(appState);
       setSSRScope(activeScope);
 
       try {
@@ -78,12 +52,12 @@ export async function renderToString<C extends ComponentReturnValue>(
         const hydrationData = activeScope.captureHydrationData();
 
         comp.unmount();
+        appState.destroy();
+        activeScope.clear();
 
         return { html, hydrationData };
       } finally {
         setSSRScope(undefined);
-        activeScope.clear();
-        appState.destroy();
       }
     });
   } finally {

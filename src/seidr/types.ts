@@ -3,7 +3,7 @@ import type { CleanupFunction } from "../types.js";
 /**§
  * Options for Seidr instances.
  */
-export interface ObservableOptions {
+export interface SeidrOptions {
   /**
    * Unique identifier for this observable
    */

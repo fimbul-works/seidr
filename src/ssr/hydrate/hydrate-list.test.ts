@@ -3,7 +3,7 @@ import { List } from "../../components/list";
 import { $ } from "../../element";
 import { $article, $div, $h1, $h2, $main } from "../../elements";
 import { Seidr } from "../../seidr";
-import { enableClientMode } from "../../test-setup";
+import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
 import { inServer } from "../../util/environment";
 import { renderToString } from "../render-to-string";
@@ -57,9 +57,9 @@ describe("Hydration List", () => {
 
   it("should nicely hydrate a List component and handle deep mismatches gracefully", async () => {
     // 1. SSR Pass
-    process.env.SEIDR_TEST_SSR = "true";
+    const cleanupSSRMode = enableSSRMode();
     const { html, hydrationData } = await renderToString(BlogPage);
-    delete process.env.SEIDR_TEST_SSR;
+    cleanupSSRMode();
 
     // 2. Client Setup
     cleanupClientMode = enableClientMode();

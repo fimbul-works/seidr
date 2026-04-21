@@ -3,7 +3,7 @@ import { type CleanupFunction, type EventHandler, SeidrError } from "../types.js
 import { isServer } from "../util/environment/is-server.js";
 import { DATA_KEY_STATE } from "./constants.js";
 import { scheduleUpdate } from "./scheduler.js";
-import type { Observable, ObservableOptions } from "./types.js";
+import type { SeidrOptions } from "./types.js";
 import { unwrapSeidr } from "./unwrap-seidr.js";
 
 /**
@@ -15,7 +15,7 @@ import { unwrapSeidr } from "./unwrap-seidr.js";
  *
  * @template T - The type of value being stored and observed
  */
-export class Seidr<T = any> implements Observable<T> {
+export class Seidr<T = any> {
   /**
    * Unique identifier for this observable.
    *
@@ -67,11 +67,11 @@ export class Seidr<T = any> implements Observable<T> {
    * Creates an instance of Seidr observable.
    *
    * @param {T} initial - The initial value to store
-   * @param {ObservableOptions} [options={}] - Options for this Seidr instance
+   * @param {SeidrOptions} [options={}] - Options for this Seidr instance
    */
   constructor(
     initial: T,
-    public readonly options: ObservableOptions = {},
+    public readonly options: SeidrOptions = {},
   ) {
     this.i = options.id ?? getNextSeidrId();
     this.v = initial;
@@ -188,10 +188,10 @@ export class Seidr<T = any> implements Observable<T> {
    * @template D - The type of the transformed/derived value
    *
    * @param {(value: T) => D} transformFn - Function that transforms the source value to the derived value
-   * @param {ObservableOptions} [options] - Options for the new derived Seidr
+   * @param {SeidrOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<D>} A new Seidr instance containing the transformed value
    */
-  as<D>(transformFn: (value: T) => D, options: ObservableOptions = {}) {
+  as<D>(transformFn: (value: T) => D, options: SeidrOptions = {}) {
     const derived = new Seidr<D>(transformFn(this.v), options);
     derived.setParents([this]);
     derived.c.push(this.observe((updatedValue) => derived.set(transformFn(updatedValue))));
@@ -205,10 +205,10 @@ export class Seidr<T = any> implements Observable<T> {
    *
    * @param {() => D} mergeFn - Function that merges the parent values to a new value
    * @param {Seidr[]} parents - Array of Seidrs that trigger recomputation when changed
-   * @param {ObservableOptions} [options] - Options for the new derived Seidr
+   * @param {SeidrOptions} [options] - Options for the new derived Seidr
    * @returns {Seidr<D>} A new Seidr instance containing the derived result
    */
-  static merge<D>(mergeFn: () => D, parents: Seidr[], options: ObservableOptions = {}): Seidr<D> {
+  static merge<D>(mergeFn: () => D, parents: Seidr[], options: SeidrOptions = {}): Seidr<D> {
     if (parents.length === 0) {
       throw new SeidrError("Merged must have at least one parent");
     }

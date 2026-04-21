@@ -17,11 +17,12 @@ export interface DualModeContext {
  * Helper to run tests against both Browser (JSDOM) and SSR (Node) environments.
  */
 export function describeDualMode(name: string, fn: (context: DualModeContext) => void) {
-  if (process.env.SEIDR_SKIP_DUAL_MODE === "true") {
+  if (process.env.SEIDR_TEST_SKIP_DUAL_MODE === "true") {
     describe.skip(name, () => {});
     return;
   }
-  const envMode = process.env.SEIDR_RENDER_MODE?.toLowerCase();
+
+  const envMode = process.env.SEIDR_TEST_RENDER_MODE?.toLowerCase();
 
   const modes = [
     {

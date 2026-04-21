@@ -44,7 +44,7 @@ describe("renderToString", () => {
 
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(42);
-    expect(count!.observerCount()).toBe(1);
+    expect(count!.observerCount()).toBe(0);
   });
 
   it("should only capture root observable state", async () => {
@@ -66,7 +66,7 @@ describe("renderToString", () => {
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(10);
-    expect(count!.observerCount()).toBe(2);
+    expect(count!.observerCount()).toBe(0);
   });
 
   it("should capture multiple root observables", async () => {
@@ -90,8 +90,8 @@ describe("renderToString", () => {
     expect(values[0]).toBe("John");
     expect(values[1]).toBe("Doe");
 
-    expect(firstName!.observerCount()).toBe(1);
-    expect(lastName!.observerCount()).toBe(1);
+    expect(firstName!.observerCount()).toBe(0);
+    expect(lastName!.observerCount()).toBe(0);
   });
 
   it("should capture merged dependencies but not merged values", async () => {

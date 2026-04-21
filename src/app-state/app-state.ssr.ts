@@ -33,12 +33,8 @@ export function getSSRAppState(): AppState {
  * @return {Promise<T>}
  */
 export const runWithAppState = async <T>(callback: () => Promise<T>): Promise<T> => {
-  const ctxID = ++requestIdCounter;
-
-  if (requestIdCounter > 2**53) {
-    requestIdCounter = 0;
-  }
-
+  requestIdCounter = ++requestIdCounter % (2 ** 53);
+  const ctxID = requestIdCounter;
   const context: AppState = createAppState(ctxID);
   if (process.env.VITEST) {
     context.isSSR = true;

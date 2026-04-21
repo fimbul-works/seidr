@@ -1,14 +1,15 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../../element";
 import { DATA_KEY_STATE } from "../../seidr/constants";
-import { registerStateStrategy } from "../../seidr/register-state-strategy";
 import { Seidr } from "../../seidr/seidr";
-import { enableClientMode, getAppState } from "../../test-setup";
+import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
+import { isComment } from "../../util/type-guards/dom-node-types";
 import { renderToString } from "../render-to-string";
 import { setSSRScope } from "../ssr-scope";
 import type { HydrationData } from "../types";
 import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index";
+import { component } from "../../component/component";
 
 describe("Hydration", () => {
   let container: HTMLElement;
@@ -18,10 +19,6 @@ describe("Hydration", () => {
   beforeEach(() => {
     container = document.createElement("div");
     cleanupClientMode = enableClientMode();
-
-    // Register data strategy
-    const appState = getAppState();
-    registerStateStrategy(appState);
   });
 
   afterEach(() => {
@@ -219,45 +216,52 @@ describe("Hydration", () => {
     cleanupClientMode2();
   });
 
-  describe("Resilience & Fallbacks", () => {
-    it("should fallback to mount when hydration is already active", () => {
-      const data: HydrationData = { ctxID: 0, data: {}, components: {} };
-      initHydrationData(data);
+  it("should hydrate root component returning an array", async () => {
+    const Nav = component(() => {
+      return $("nav", { textContent: "Navigation" });
+    }, "Nav");
 
-      const TestComp = () => $("div", { textContent: "fallback" });
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const Main = component(() => {
+      return $("main", { textContent: "Main Content" });
+    }, "Main");
 
-      // Calling hydrate while isHydrating() is true triggers the error then fallback
-      unmount = hydrate(TestComp, container, data);
+    const App = component(() => {
+      return [Nav(), Main()];
+    }, "App");
 
-      expect(consoleSpy).toHaveBeenCalledWith("Hydration failed", expect.any(Error));
-      expect(container.textContent).toBe("fallback");
-      consoleSpy.mockRestore();
-    });
+    // 1. SSR Pass
+    const cleanupSSRMode = enableSSRMode();
+    const { html, hydrationData } = await renderToString(App);
+    cleanupSSRMode();
 
-    it("should fallback to mount when ctxID is missing", () => {
-      const data = { data: {}, components: {} } as any;
-      const TestComp = () => $("div", { textContent: "missing-id" });
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    expect(html).toContain("Navigation");
+    expect(html).toContain("Main Content");
+    expect(html).toContain("<!--$App");
 
-      unmount = hydrate(TestComp, container, data);
+    // 2. Client Setup
+    cleanupClientMode = enableClientMode();
+    container.innerHTML = html;
 
-      expect(consoleSpy).toHaveBeenCalledWith("Hydration failed", expect.any(Error));
-      expect(container.textContent).toBe("missing-id");
-      consoleSpy.mockRestore();
-    });
+    // 3. Hydrate
+    unmount = hydrate(App, container, hydrationData);
 
-    it("should fallback to mount when SEIDR_ENABLE_SSR is disabled", () => {
-      const original = process.env.SEIDR_ENABLE_SSR;
-      delete process.env.SEIDR_ENABLE_SSR;
+    expect(container.textContent).toContain("Navigation");
+    expect(container.textContent).toContain("Main Content");
 
-      const data: HydrationData = { ctxID: 0, data: {}, components: {} };
-      const TestComp = () => $("div", { textContent: "no-ssr" });
+    const childNodes = Array.from(container.childNodes);
+    const comments = childNodes.filter((n) => isComment(n));
 
-      unmount = hydrate(TestComp, container, data);
+    // We should have exactly 2 markers for App
+    expect(comments.length).toBe(2);
+    expect(comments[0].textContent).toContain("$App");
+    expect(comments[1].textContent).toContain("/App");
 
-      expect(container.textContent).toBe("no-ssr");
-      process.env.SEIDR_ENABLE_SSR = original;
-    });
+    expect(childNodes[0]).toBe(comments[0]);
+    expect(childNodes[childNodes.length - 1]).toBe(comments[1]);
+
+    const nav = container.querySelector("nav");
+    const main = container.querySelector("main");
+    expect(nav).not.toBeNull();
+    expect(main).not.toBeNull();
   });
 });

@@ -1,6 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../app-state/app-state.js";
-import { restoreAppStateData } from "../app-state/restore-app-data.js";
 import type { AppState } from "../app-state/types.js";
 import type { Component } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
@@ -10,7 +9,7 @@ import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";
 import type { StructureMapTuple } from "./structure/types.js";
-import type { AppStateData, HydrationData } from "./types.js";
+import type { HydrationData } from "./types.js";
 
 /**
  * Gets the SSR scope for the current render context.
@@ -58,14 +57,9 @@ export class SSRScope {
    * Creates an instance of SSRScope.
    *
    * @param {AppState} state - AppState instance for this render scope
-   * @param {AppStateData} [appData={}] - Data passed to renderToString
    */
-  constructor(
-    private state: AppState,
-    appData: AppStateData = {},
-  ) {
-    registerStateStrategy(this.state);
-    restoreAppStateData(appData);
+  constructor(private state: AppState) {
+    registerStateStrategy();
   }
 
   /**
@@ -129,24 +123,14 @@ export class SSRScope {
    * Called after rendering to prevent memory leaks.
    */
   clear(): void {
-    const states = this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE);
-    if (states) {
-      Object.values(states).forEach((seidr) => seidr.destroy());
-    }
-    this.state.deleteData(DATA_KEY_STATE);
     this.components.clear();
+    this.state.destroy();
   }
 
   /**
    * Captures the current state for hydration.
    *
-   * This method builds hydration data containing root observable values.
-   *
-   * After capturing state, this method clears the observables map to prevent
-   * memory leaks. This ensures that references to Seidr instances are released
-   * after the render pass is complete.
-   *
-   * @returns {HydrtaionData} The complete hydration data
+   * @returns {HydrationData} The complete hydration data
    */
   captureHydrationData(): HydrationData {
     const data: Record<string, any> = {};

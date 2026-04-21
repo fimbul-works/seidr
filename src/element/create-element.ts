@@ -2,6 +2,7 @@ import type { Component } from "../component/types.js";
 import { useScope } from "../component/use-scope.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument } from "../dom/get-document.js";
+import { isHydrating } from "../index.ssr.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isServer } from "../util/environment/is-server.js";
@@ -77,7 +78,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   let element: HTMLElementTagNameMap[K];
 
   const hydrationContext = getHydrationContext();
-  if (hydrationContext) {
+  if (isHydrating() && hydrationContext) {
     if (hydrationContext.isMismatched()) {
       console.warn(`[Hydration] Mismatched element found ${tagName}.`);
       element = getDocument().createElement(tagName);

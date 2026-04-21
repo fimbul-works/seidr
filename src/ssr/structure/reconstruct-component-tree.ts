@@ -1,7 +1,6 @@
 import { getAppState } from "../../app-state/app-state.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
-import { isMarkerComment } from "../../util/type-guards/dom-node-types.js";
-import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/index.js";
+import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards/dom-node-types.js";
 import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**
@@ -103,10 +102,13 @@ export const reconstructComponentTree = (
       return node;
     };
 
-    return tuples
+    const result = tuples
       .map((_, idx) => idx)
       .filter((idx) => !isInnerChild.has(idx))
       .map((idx) => buildNode(idx, isTreeMismatched));
+
+    skipMarkers();
+    return result;
   };
 
   return buildTree(rootComponentId);

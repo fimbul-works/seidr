@@ -1,7 +1,8 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { useScope } from "../component/use-scope.js";
+import { DATA_KEY_STATE } from "../seidr/constants.js";
+import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isSeidr } from "../util/type-guards/observable-types.js";
 import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";
 
@@ -34,14 +35,7 @@ export const setAppStateID = (id: number) => {
   const state = getAppState();
   state.ctxID = id;
   state.seidrIdCounter = 0;
-
-  // Clean up data
-  state.data.forEach((value) => isSeidr(value) && value.destroy());
-  state.data.clear();
-
-  // Remove markers
-  state.markers.forEach(([a, b]) => (a.remove(), b.remove()));
-  state.markers.clear();
+  state.destroy();
 };
 
 /**

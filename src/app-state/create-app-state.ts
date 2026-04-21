@@ -1,4 +1,5 @@
-import type { CleanupFunction } from "../types.js";
+import { DATA_KEY_STATE } from "../seidr/constants.js";
+import type { Seidr } from "../seidr/seidr.js";
 import { isSeidr } from "../util/type-guards/observable-types.js";
 import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
@@ -25,28 +26,23 @@ export const createAppState = (ctxId: number): AppState => ({
   deleteData(key: string): boolean {
     return this.data.delete(key);
   },
-  defineDataStrategy<T>(
-    key: string,
-    captureFn: CaptureDataFn<T>,
-    restoreFn: RestoreDataFn<T>,
-    cleanupFn?: CleanupFunction,
-  ): void {
-    this.strategies.set(key, [captureFn, restoreFn, cleanupFn]);
+  defineDataStrategy<T>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<T>): void {
+    this.strategies.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined {
     return this.strategies.get(key) as DataStrategy<T> | undefined;
   },
   destroy(): void {
     // Clean up data
+    this.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
     this.data.forEach((value) => isSeidr(value) && value.destroy());
     this.data.clear();
 
-    // Call cleanup functions for strategies
-    this.strategies.forEach(([, , cleanup]) => cleanup?.());
-    this.strategies.clear();
-
     // Remove markers
-    this.markers.forEach(([a, b]) => (a.remove(), b.remove()));
+    this.markers.forEach(([a, b]) => (a?.remove(), b?.remove()));
     this.markers.clear();
+
+    // Clear data strategies
+    this.strategies.clear();
   },
 });

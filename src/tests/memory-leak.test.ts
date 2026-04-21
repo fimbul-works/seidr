@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { mount, Seidr, useScope } from "../index";
 import { $div, $span } from "../elements/index";
+import { mount, Seidr, useScope } from "../index";
 
 describe("Memory Leak Benchmark", () => {
   it("should not leak observers when mounting/destroying 1000 times", () => {
@@ -26,7 +26,7 @@ describe("Memory Leak Benchmark", () => {
       unmount();
 
       // After unmount:
-      // state should return to 1 observer (the 'derived' instance itself)
+      // state should return to 1 observers (derived only)
       // derived should return to 0
       expect(state.observerCount()).toBe(1);
       expect(derived.observerCount()).toBe(0);

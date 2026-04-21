@@ -1,15 +1,13 @@
-import type { AppState } from "../app-state/types.js";
-import { isSeidr } from "../util/type-guards/observable-types.js";
+import { getAppState } from "../app-state/app-state.js";
 import { DATA_KEY_STATE } from "./constants.js";
 import { Seidr } from "./seidr.js";
 import { unwrapSeidr } from "./unwrap-seidr.js";
 
 /**
- * Registers the default Seidr state hydration strategy in the provided AppState.
- *
- * @param {AppState} appState - The AppState instance to register the strategy in
+ * Registers the default Seidr state hydration strategy.
  */
-export function registerStateStrategy(appState: AppState): void {
+export function registerStateStrategy(): void {
+  const appState = getAppState();
   appState.defineDataStrategy(
     DATA_KEY_STATE,
     // Capture function: extracts serializable values from all root Seidr instances
@@ -43,18 +41,6 @@ export function registerStateStrategy(appState: AppState): void {
       }
 
       appState.setData(DATA_KEY_STATE, observables);
-    },
-    // Cleanup function: clears all Seidr instances from the AppState
-    () => {
-      const observables = appState.getData<Map<string, Seidr>>(DATA_KEY_STATE);
-      if (observables) {
-        for (const seidr of observables.values()) {
-          if (isSeidr(seidr)) {
-            seidr.destroy();
-          }
-        }
-        observables.clear();
-      }
     },
   );
 }

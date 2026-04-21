@@ -2,46 +2,39 @@ import { setAppStateProvider } from "../app-state/app-state.js";
 import { contextLocalStorage } from "../app-state/app-state.ssr.js";
 import { createAppState } from "../app-state/create-app-state.js";
 import type { AppState } from "../app-state/types.js";
-import { isSeidr } from "../util/type-guards/observable-types.js";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);
-testAppState.isSSR = false;
 
 /**
  * Set the app state ID for tests.
  */
-export const setAppStateID = (id: number): void => {
+export function setAppStateID(id: number) {
   testAppState.ctxID = id;
-};
+  clearTestAppState();
+}
 
 /**
  * Clears the test app state data and markers.
  * Does NOT reset IDs to avoid collisions with top-level observables.
  */
-export const clearTestAppState = (): void => {
+export function clearTestAppState() {
   // Clean up data
-  testAppState.data.forEach((value) => isSeidr(value) && value.destroy());
-  testAppState.data.clear();
-
-  // Remove markers
-  testAppState.markers.forEach(([a, b]) => (a?.remove(), b?.remove()));
-  testAppState.markers.clear();
-
+  testAppState.destroy();
   testAppState.isSSR = false;
-};
+}
 
 /**
  * Robust getAppState for tests.
  * Prefers AsyncLocalStorage ONLY during renderToString (identified by SEIDR_TEST_SSR) to ensure correct state isolation.
  * Falls back to testAppState.
  */
-export const getAppState = (): AppState => {
+export function getAppState() {
   if (process.env.SEIDR_TEST_SSR) {
     return contextLocalStorage.getStore() ?? testAppState;
   }
   return testAppState;
-};
+}
 
 /**
  * Initializes the app state for testing.

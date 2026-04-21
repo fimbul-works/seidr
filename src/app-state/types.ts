@@ -1,12 +1,3 @@
-import type { CleanupFunction } from "../types";
-
-/**
- * Global type declaration for the application state provider.
- */
-declare global {
-  var __SEIDR_APP_STATE_PROVIDER__: (() => AppState) | undefined;
-}
-
 /** Function to capture data from AppState for hydration */
 export type CaptureDataFn<T> = () => T;
 
@@ -16,14 +7,14 @@ export type RestoreDataFn<T> = (data: T) => void;
 /**
  * Data strategy for features and addons, for SSR friendly initialization and hydration.
  *
- * A strategy consists of a capture function, a restore function, and an optional cleanup function.
+ * A strategy consists of a capture function, and a restore function.
  */
-export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction?];
+export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>];
 
 /**
- * An AddonTuple allows providing both data and a strategy for a specific key in AppStateData.
+ * AppState data to restore application state during renderToString and hydration.
  */
-export type AddonTuple<T = any> = [T, DataStrategy<T>];
+export type AppStateData = Record<string, any>;
 
 /**
  * AppState is used for application state management, SSR and hydration.
@@ -84,20 +75,14 @@ export interface AppState {
   deleteData(key: string): boolean;
 
   /**
-   * Define a data strategy for hydration.
+   * Define a data strategy for hydration, and cleanup after application unmount.
    *
    * @template T - The type of data for hydration
    * @param {string} key - The key to define a strategy for
    * @param {CaptureDataFn<T>} captureFn - Function to capture data for hydration
    * @param {RestoreDataFn<T>} restoreFn - Function to restore data for hydration
-   * @param {CleanupFunction} [cleanupFn] - Function to clean up data for hydration
    */
-  defineDataStrategy<T>(
-    key: string,
-    captureFn: CaptureDataFn<T>,
-    restoreFn: RestoreDataFn<T>,
-    cleanupFn?: CleanupFunction,
-  ): void;
+  defineDataStrategy<T>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<T>): void;
 
   /**
    * Get data strategy for a key.
