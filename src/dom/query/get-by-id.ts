@@ -10,6 +10,6 @@ import { getDocument } from "../get-document.js";
  * @template {HTMLElement} T - The expected HTMLElement type
  *
  * @param {string} id - The element ID
- * @returns {T | null} The element matching the ID, or null if not found
+ * @returns {T} The element matching the ID
  */
-export const $getById = <T extends HTMLElement>(id: string): T | null => getDocument().getElementById(id) as T;
+export const $getById = <T extends HTMLElement>(id: string): T => getDocument().getElementById(id) as T;

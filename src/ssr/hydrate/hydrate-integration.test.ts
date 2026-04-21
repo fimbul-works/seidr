@@ -41,7 +41,7 @@ describe("Hydration Integration", () => {
         List(
           items,
           (item) => str(item),
-          (item: number) => $("li", { textContent: `Item ${item}` }),
+          (item: Seidr<number>) => $("li", { textContent: `Item ${item.value}` }),
         ),
       ]),
     ]);

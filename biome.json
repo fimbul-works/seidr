@@ -22,7 +22,9 @@
       },
       "correctness": {
         "noVoidTypeReturn": "off",
-        "noConstructorReturn": "off"
+        "noConstructorReturn": "off",
+        "noUnknownMediaFeatureName": "off",
+        "noUnknownPseudoElement": "off"
       }
     }
   }

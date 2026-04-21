@@ -4,8 +4,7 @@ import type { Component, ComponentFactoryFunction } from "../component/types.js"
 import { useScope } from "../component/use-scope.js";
 import { getFirstNode, getLastNode, mountComponent } from "../component/util/index.js";
 import { wrapComponent } from "../component/wrap-component.js";
-import type { Seidr } from "../seidr/seidr.js";
-import { isHydrating } from "../ssr/hydrate/storage.js";
+import { Seidr } from "../seidr/seidr.js";
 
 /**
  * Renders an efficient list of components from an observable array.
@@ -13,7 +12,7 @@ import { isHydrating } from "../ssr/hydrate/storage.js";
  *
  * @template T - The type of list items
  * @template K - Unique key type
- * @template {ComponentFactoryFunction<T>} C - The type of component factory
+ * @template {ComponentFactoryFunction<Seidr<T>>} C - The type of component factory
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => K} getKey - Key extraction function
@@ -21,7 +20,7 @@ import { isHydrating } from "../ssr/hydrate/storage.js";
  * @param {string} [name="List"] - Optional name for the component
  * @returns {Component} List component
  */
-export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = ComponentFactoryFunction<T>>(
+export const List = <T, K, C extends ComponentFactoryFunction<Seidr<T>> = ComponentFactoryFunction<Seidr<T>>>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
   factory: C,
@@ -31,9 +30,12 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
     const LIST_CHILD_NAME = `${name}Item`;
     const listComponent = useScope()!;
     const componentMap = new Map<K, Component>();
+    const seidrMap = new Map<K, Seidr<T>>();
 
     // Force marker creation as List always needs them for diffing/hydration
     const [, endMarker] = getMarkerComments(listComponent.id)!;
+
+    const getSeidrId = (key: K) => `${listComponent.id}-${key}`;
 
     /**
      * Updates the list with the new items.
@@ -52,6 +54,7 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
         if (!newKeys.has(key)) {
           comp.unmount();
           componentMap.delete(key);
+          seidrMap.delete(key);
         }
       }
 
@@ -63,8 +66,13 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
         let itemComponent = componentMap.get(key);
 
         if (!itemComponent) {
-          itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, listComponent, key);
+          const itemSeidr = new Seidr(item, { id: getSeidrId(key) });
+          itemSeidr.value = item; // Ensure latest data if reused from cache
+          itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr, listComponent, key);
           componentMap.set(key, itemComponent);
+          seidrMap.set(key, itemSeidr);
+        } else {
+          seidrMap.get(key)!.value = item;
         }
 
         const lastNode = getLastNode(itemComponent);
@@ -80,22 +88,21 @@ export const List = <T extends {}, K, C extends ComponentFactoryFunction<T> = Co
     };
 
     listComponent.onMount(() => update(observable.value));
-      
+
     listComponent.onUnmount(observable.observe(update));
     listComponent.onUnmount(() => {
       componentMap.values().forEach((c) => c.unmount());
       componentMap.clear();
+      seidrMap.clear();
     });
 
     return observable.value.map((item) => {
       const key = getKey(item);
-      const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(item, listComponent, key);
+      const itemSeidr = new Seidr(item, { id: getSeidrId(key) });
+      itemSeidr.value = item;
+      const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr as any, listComponent, key);
       componentMap.set(key, itemComponent);
-
-      if (process.env.SEIDR_ENABLE_SSR && isHydrating() && endMarker?.parentNode) {
-        itemComponent.mount(endMarker.parentNode);
-      }
-
+      seidrMap.set(key, itemSeidr);
       return itemComponent;
     });
   }, name)();

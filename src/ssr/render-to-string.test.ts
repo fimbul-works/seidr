@@ -124,12 +124,15 @@ describe("renderToString", () => {
   });
 
   it("should render TODO application", async () => {
-    const { html, hydrationData } = await renderToString(TodoApp);
+    const { html, hydrationData } = await renderToString(() =>
+      TodoApp([{ id: 1, title: "Test Todo", completed: false }]),
+    );
 
     // Verify HTML structure (data-seidr-id is added automatically)
-    expect(html).toContain('class="todo-app card"');
+    expect(html).toContain('class="todoapp"');
     expect(html).toContain('<ul class="todo-list">');
     expect(html).toContain('placeholder="What needs to be done?"');
+    expect(html).toContain("Test Todo");
 
     // Verify observables were captured
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThan(0);
