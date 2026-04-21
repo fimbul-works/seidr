@@ -1,6 +1,6 @@
 import type { CleanupFunction } from "../types.js";
 import { isSeidr } from "../util/type-guards/observable-types.js";
-import type { AppState, CaptureDataFn, RestoreDataFn } from "./types.js";
+import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
  * Creates a new application state instance.
@@ -12,7 +12,7 @@ export const createAppState = (ctxId: number): AppState => ({
   seidrIdCounter: 0,
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
-  strategies: new Map<string, [CaptureDataFn<any>, RestoreDataFn<any>, CleanupFunction | undefined]>(),
+  strategies: new Map<string, DataStrategy>(),
   hasData(key: string): boolean {
     return this.data.has(key);
   },
@@ -33,8 +33,8 @@ export const createAppState = (ctxId: number): AppState => ({
   ): void {
     this.strategies.set(key, [captureFn, restoreFn, cleanupFn]);
   },
-  getDataStrategy<T>(key: string): [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined {
-    return this.strategies.get(key) as [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined;
+  getDataStrategy<T>(key: string): DataStrategy<T> | undefined {
+    return this.strategies.get(key) as DataStrategy<T> | undefined;
   },
   destroy(): void {
     // Clean up data

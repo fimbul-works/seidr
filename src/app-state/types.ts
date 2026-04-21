@@ -14,6 +14,18 @@ export type CaptureDataFn<T> = () => T;
 export type RestoreDataFn<T> = (data: T) => void;
 
 /**
+ * Data strategy for features and addons, for SSR friendly initialization and hydration.
+ *
+ * A strategy consists of a capture function, a restore function, and an optional cleanup function.
+ */
+export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction?];
+
+/**
+ * An AddonTuple allows providing both data and a strategy for a specific key in AppStateData.
+ */
+export type AddonTuple<T = any> = [T, DataStrategy<T>];
+
+/**
  * AppState is used for application state management, SSR and hydration.
  */
 export interface AppState {
@@ -30,7 +42,7 @@ export interface AppState {
   data: Map<string, any>;
 
   /** Data strategies for hydration */
-  strategies: Map<string, [CaptureDataFn<any>, RestoreDataFn<any>, CleanupFunction | undefined]>;
+  strategies: Map<string, DataStrategy>;
 
   /**
    * Whether the current state is for SSR.
@@ -92,9 +104,9 @@ export interface AppState {
    *
    * @template T - The type of data for hydration
    * @param {string} key - The key to get a strategy for
-   * @returns {[CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined} The data strategy, or undefined if not found
+   * @returns {DataStrategy<T> | undefined} The data strategy, or undefined if not found
    */
-  getDataStrategy<T>(key: string): [CaptureDataFn<T>, RestoreDataFn<T>, CleanupFunction | undefined] | undefined;
+  getDataStrategy<T>(key: string): DataStrategy<T> | undefined;
 
   /**
    * Destroy the application state.

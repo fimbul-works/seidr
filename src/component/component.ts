@@ -265,10 +265,10 @@ export const component = <P = void>(
         children.clear();
       },
       nextChildId() {
-        return ++childCounter;
+        return ++childCounter % 2 ** 53;
       },
       nextSeidrId() {
-        return ++seidrCounter;
+        return ++seidrCounter % 2 ** 53;
       },
       addChild(childComponent: Component): Component {
         children.set(childComponent.id, childComponent);

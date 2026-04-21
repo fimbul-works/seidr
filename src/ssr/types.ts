@@ -1,9 +1,10 @@
+import type { AddonTuple } from "../app-state/types.js";
 import type { StructureMapTuple } from "./structure/types.js";
 
 /**
  * AppState data that can be passed to `renderToString`, and is included in HydrationData payload.
  */
-export type AppStateData = Record<string, any>;
+export type AppStateData = Record<string, any | AddonTuple>;
 
 /**
  * Result of SSR rendering containing HTML and hydration data.
