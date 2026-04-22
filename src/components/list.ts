@@ -20,7 +20,11 @@ import { Seidr } from "../seidr/seidr.js";
  * @param {string} [name="List"] - Optional name for the component
  * @returns {Component} List component
  */
-export const List = <T, K, C extends ComponentFactoryFunction<Seidr<T>> = ComponentFactoryFunction<Seidr<T>>>(
+export const List = <
+  T,
+  K extends string | number,
+  C extends ComponentFactoryFunction<Seidr<T>> = ComponentFactoryFunction<Seidr<T>>,
+>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
   factory: C,
@@ -66,7 +70,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<Seidr<T>> = Compon
         let itemComponent = componentMap.get(key);
 
         if (!itemComponent) {
-          const itemSeidr = new Seidr(item, { id: getSeidrId(key) });
+          const itemSeidr = new Seidr(item, { id: getSeidrId(key), hydrate: false });
           itemSeidr.value = item; // Ensure latest data if reused from cache
           itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr, listComponent, key);
           componentMap.set(key, itemComponent);
@@ -98,7 +102,7 @@ export const List = <T, K, C extends ComponentFactoryFunction<Seidr<T>> = Compon
 
     return observable.value.map((item) => {
       const key = getKey(item);
-      const itemSeidr = new Seidr(item, { id: getSeidrId(key) });
+      const itemSeidr = new Seidr(item, { id: getSeidrId(key), hydrate: false });
       itemSeidr.value = item;
       const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr as any, listComponent, key);
       componentMap.set(key, itemComponent);

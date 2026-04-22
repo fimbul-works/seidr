@@ -4,13 +4,14 @@ Conditionally renders a component based on a boolean observable.
 
 **Parameters:**
 - `condition` - [`Seidr<boolean>`](Seidr.md#seidr-class) observable
-- `factory` - Function that returns a [`SeidrComponent`](components.md#seidrcomponent-type) or DOM Node
+- `factory` - Function that returns a [`Component`](components.md#component-type) or DOM Node
 
-**Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
+**Returns:** A [`Component`](components.md#component-type) rooted in a Comment node.
 
 **Example:**
 ```typescript
-import { Show, Seidr, $div, mount } from '@fimbul-works/seidr';
+import { Show, Seidr, mount } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const isVisible = new Seidr(false);
 const MyComp = () => $div({ textContent: 'I am here' });

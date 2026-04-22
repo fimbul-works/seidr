@@ -181,11 +181,13 @@ export interface Component {
 
   /**
    * Requests a deterministic, sequential ID for a child component within this parent.
+   * @internal
    */
   nextChildId(): number;
 
   /**
    * Requests a deterministic, sequential ID for Seidr instance within this component.
+   * @internal
    */
   nextSeidrId(): number;
 
@@ -199,7 +201,7 @@ export interface Component {
 
   /**
    * Removes a child component.
-   * @param child - The child component to remove
+   * @param {Component} child - The child component to remove
    * @internal
    */
   removeChild(child: Component): void;

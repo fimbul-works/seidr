@@ -28,7 +28,9 @@ describeDualMode("List Component", ({ getDocument }) => {
       { id: 1, text: "A" },
       { id: 2, text: "B" },
     ]);
-    const Item = component((props: Seidr<{ id: number; text: string }>) => $("span", { textContent: props.as((p) => p.text) }));
+    const Item = component((props: Seidr<{ id: number; text: string }>) =>
+      $("span", { textContent: props.as((p) => p.text) }),
+    );
 
     const Parent = component(() => {
       return $("div", { className: "parent" }, [List(items, (i) => i.id, Item)]);
@@ -146,7 +148,10 @@ describeDualMode("List Component", ({ getDocument }) => {
 
   it("should update element reference when list changes", () => {
     const items = new Seidr([{ id: 1, text: "A" }]);
-    const Item = component((props: Seidr<{ id: number; text: string }>) => $("span", { textContent: props.as((p) => p.text) }), "Item");
+    const Item = component(
+      (props: Seidr<{ id: number; text: string }>) => $("span", { textContent: props.as((p) => p.text) }),
+      "Item",
+    );
     const list = List(items, (i) => i.id, Item);
 
     cleanup = mount(() => list, container);
@@ -167,7 +172,9 @@ describeDualMode("List Component", ({ getDocument }) => {
         { id: 1, text: "1" },
         { id: 2, text: "2" },
       ]);
-      const Item = component((props: Seidr<{ id: number; text: string }>) => $("span", { textContent: props.as((p) => p.text) }));
+      const Item = component((props: Seidr<{ id: number; text: string }>) =>
+        $("span", { textContent: props.as((p) => p.text) }),
+      );
       const list = List(items, (i) => i.id, Item);
 
       cleanup = mount(() => list, container);
@@ -189,7 +196,9 @@ describeDualMode("List Component", ({ getDocument }) => {
     it("should handle updates when the list is not yet in the DOM", () => {
       // This tests the if (!parent) return; branch in update
       const items = new Seidr([{ id: 1, text: "A" }]);
-      const Item = component((props: Seidr<{ id: number; text: string }>) => $("span", { textContent: props.as((p) => p.text) }));
+      const Item = component((props: Seidr<{ id: number; text: string }>) =>
+        $("span", { textContent: props.as((p) => p.text) }),
+      );
       const list = List(items, (i) => i.id, Item);
 
       // List is initialized but not mounted

@@ -18,7 +18,7 @@ describe("defineProp", () => {
     expect(() => {
       Object.defineProperty(obj, "test", { value: 100 });
     }).toThrow();
-    
+
     // Should be enumerable (per implementation)
     const keys = Object.keys(obj);
     expect(keys).toContain("test");

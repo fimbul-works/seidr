@@ -107,7 +107,7 @@ console.log(isObj(null));         // false (null)
 console.log(isObj(() => {}));     // false (functions)
 ```
 
-### isUndefined()
+### isEmpty()
 
 Check if a value is `undefined`.
 
@@ -117,17 +117,17 @@ Check if a value is `undefined`.
 **Type Narrowing:** Narrows `unknown` to `undefined`
 
 ```typescript
-import { isUndefined } from '@fimbul-works/seidr';
+import { isEmpty } from '@fimbul-works/seidr';
 
 let maybeUndefined: string | undefined;
 
 maybeUndefined = undefined;
-if (isUndefined(maybeUndefined)) {
+if (isEmpty(maybeUndefined)) {
   // TypeScript knows: maybeUndefined is undefined
 }
 
 maybeUndefined = 'defined';
-console.log(isUndefined(maybeUndefined)); // false
+console.log(isEmpty(maybeUndefined)); // false
 ```
 
 ## isStr()
@@ -208,7 +208,8 @@ Check if a value is a `HTMLElement` or [`ServerHTMLElement`](SSR.md) instance.
 **Type Narrowing:** Narrows `unknown` to `HTMLElement`
 
 ```typescript
-import { isHTMLElement, $div } from '@fimbul-works/seidr';
+import { isHTMLElement } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const el = document.createElement('div');
 const seidrEl = $div();
@@ -220,7 +221,7 @@ console.log(isHTMLElement(plainObj)); // false
 console.log(isHTMLElement(42));       // false
 ```
 
-### isSeidrComponent()
+### isComponent()
 
 Check if a value is a [`SeidrComponent`](components.md#seidrcomponent-type) object.
 
@@ -230,15 +231,16 @@ Check if a value is a [`SeidrComponent`](components.md#seidrcomponent-type) obje
 **Type Narrowing:** Narrows `unknown` to `SeidrComponent`
 
 ```typescript
-import { isSeidrComponent, component, $div } from '@fimbul-works/seidr';
+import { isComponent, component } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const factory = component(() => $div());
 const comp = factory();
 const plainObj = { value: 0 };
 
-console.log(isSeidrComponent(comp));     // true
-console.log(isSeidrComponent(plainObj)); // false
-console.log(isSeidrComponent(42));       // false
+console.log(isComponent(comp));     // true
+console.log(isComponent(plainObj)); // false
+console.log(isComponent(42));       // false
 ```
 
 ---

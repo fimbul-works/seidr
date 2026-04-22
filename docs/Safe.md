@@ -9,7 +9,8 @@ Create a component with error boundary protection. `Safe` wraps a component fact
 **Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
 
 ```typescript
-import { Safe, $div, $h2, $p } from '@fimbul-works/seidr';
+import { Safe } from '@fimbul-works/seidr';
+import { $div, $h2, $p } from '@fimbul-works/seidr/html';
 
 const UserProfile = Safe(
   () => {
@@ -34,7 +35,8 @@ const UserProfile = Safe(
 - **Resource Tracking**: Error boundary can track its own cleanup functions via [`scope.onUnmount`](../component/README.md#componentscope-type)
 
 ```typescript
-import { Safe, onUnmount, mount, $div } from '@fimbul-works/seidr';
+import { Safe, onUnmount, mount } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const SafeComponent = Safe(
   () => {

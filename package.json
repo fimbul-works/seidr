@@ -43,11 +43,6 @@
       "types": "./dist/index.ssr.d.ts",
       "import": "./dist/index.ssr.js"
     },
-    "./core": {
-      "types": "./bundles/seidr.core.d.ts",
-      "import": "./bundles/seidr.core.js",
-      "require": "./bundles/seidr.core.cjs"
-    },
     "./html": {
       "types": "./dist/elements/index.d.ts",
       "import": "./dist/elements/index.js",

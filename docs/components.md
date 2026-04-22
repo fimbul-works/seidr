@@ -1,23 +1,16 @@
 # Component API
 
-Seidr components are functions that return UI elements. They can receive data via arguments (*"props"*) and use the [`onMount()`](#onmount) and [`onUnmount()`](#onunmount) for lifecycle management.
+Seidr components are functions that return UI elements. They can receive data via arguments (*"props"*) and use the [`useScope().onMount()`](#onmount), [`useScope().onAttached()`](#onattached) and [`useScope().onUnmount()`](#onunmount) for lifecycle management.
 
 ## component()
 
-While most components can be plain functions, the `component()` wrapper is used to create a formal [`SeidrComponent`](#seidrcomponent-type). This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the [`SeidrComponent`](#seidrcomponent-type) instance.
+While most components can be plain functions, the `component()` wrapper is used to create a formal [`Component`](#component-type). This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the [`Component`](#component-type) instance.
 
 **Parameters:**
 - `factory` - Factory function (signature `(props) => SeidrNode`)
 - `name` - Optional name for the component (for debugging)
 
-**Returns:** [`SeidrComponent`](#seidrcomponent-type)
-
-```typescript
-{
-  element: HTMLElement | Array<HTMLElement>; // The element or an array of elements
-  unmount: () => void;                       // Cleanup function
-}
-```
+**Returns:** [`Component`](#component-type)
 
 **Automatic Lifecycle**: All components automatically track child components and reactive bindings created during their execution.
 
@@ -26,7 +19,8 @@ While most components can be plain functions, the `component()` wrapper is used 
 Components accept parameters for configuration and initial state. Using plain function arguments is the recommended way to handle "props":
 
 ```typescript
-import { Seidr, $div, $button, $span, mount } from '@fimbul-works/seidr';
+import { Seidr, mount } from '@fimbul-works/seidr';
+import { $div, $button, $span } from '@fimbul-works/seidr/html';
 
 const Counter = ({ initialCount = 0, step = 1, label = 'Counter' } = {}) => {
   const count = new Seidr(initialCount);
@@ -41,9 +35,11 @@ const Counter = ({ initialCount = 0, step = 1, label = 'Counter' } = {}) => {
   ]);
 };
 
-// Using the component in different contexts
-mount(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), container1);
-mount(() => Counter({ initialCount: 0 }), container2);
+// Mounting multiple instances with explicit names for isolation.
+// This is recommended when mounting multiple independent roots in the same document
+// to ensure unique IDs and prevent state collisions.
+mount(component(() => Counter({ initialCount: 5, step: 2, label: 'Steps' }), 'StepsCounter'), container1);
+mount(component(() => Counter({ initialCount: 0 }), 'DefaultCounter'), container2);
 ```
 
 **Props Best Practices:**
@@ -54,7 +50,8 @@ mount(() => Counter({ initialCount: 0 }), container2);
 **Component Hierarchy with Automatic Tracking**:
 
 ```typescript
-import { $div, $header, $img, mount } from '@fimbul-works/seidr';
+import { mount } from '@fimbul-works/seidr';
+import { $div, $header, $img } from '@fimbul-works/seidr/html';
 
 const Header = () => $header({ textContent: 'User Profile' });
 const Avatar = () => $img({ src: '/avatar.png', alt: 'User Avatar' });
@@ -76,13 +73,14 @@ mount(UserProfile, document.body);
 Mount a component to a DOM container.
 
 **Parameters:**
-- `component` - [`SeidrComponent`](#seidrcomponent-type) to mount.
+- `component` - [`Component`](#component-type) to mount.
 - `container` - DOM element.
 
 **Returns:** Function that unmounts and removes the component when called.
 
 ```typescript
-import { mount, $div } from '@fimbul-works/seidr';
+import { mount } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const App = () => $div({ textContent: 'Hello Seidr' });
 
@@ -94,15 +92,36 @@ unmount();
 
 ---
 
-## onMount()
+## useScope()
 
-Call `onMount()` inside the [component factory](#component) to register a callback that is triggered when the component is mounted.
+Get the current component scope.
+
+**Returns:** [`Component`](#component-type)
 
 ```typescript
-import { onMount, $div } from '@fimbul-works/seidr';
+import { useScope } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const Example = () => {
-  onMount((parent) => console.log("Mounted to element", parent));
+  const scope = useScope();
+
+  return $div({ textContent: scope.id });
+};
+
+// Scope is available
+mount(Example, document.body);
+```
+
+### onMount()
+
+Call `useScope().onMount()` inside the [component factory](#component) to register a callback that is triggered when the component is mounted.
+
+```typescript
+import { useScope } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
+
+const Example = () => {
+  useScope().onMount((parent) => console.log("Mounted to element", parent));
 
   return $div({ textContent: count });
 };
@@ -111,14 +130,31 @@ const Example = () => {
 mount(Example, document.body);
 ```
 
----
+### onAttached()
 
-## onUnmount()
-
-Call `onUnmount()` inside the [component factory](#component) to register a callback that is triggered when the component is unmounted.
+Call `useScope().onAttached()` inside the [component factory](#component) to register a callback that is triggered when the component is attached to a document.
 
 ```typescript
-import { onUnmount, Seidr, $div } from '@fimbul-works/seidr';
+import { useScope } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
+
+const Example = () => {
+  useScope().onAttached(() => console.log("Attached to document"));
+
+  return $div({ textContent: count });
+};
+
+// Callback is triggered
+mount(Example, document.body);
+```
+
+### onUnmount()
+
+Call `useScope().onUnmount()` inside the [component factory](#component) to register a callback that is triggered when the component is unmounted.
+
+```typescript
+import { useScope, Seidr } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const Timer = () => {
   const count = new Seidr(0);
@@ -126,7 +162,7 @@ const Timer = () => {
   const interval = setInterval(() => count.value++, 1000);
 
   // Cleanup function
-  onUnmount(() => clearInterval(interval));
+  useScope().onUnmount(() => clearInterval(interval));
 
   return $div({ textContent: count });
 };
@@ -141,15 +177,16 @@ unmount(); // Cleans up the interval
 
 ## wrapComponent()
 
-Wraps a component factory to ensure it creates a proper [`SeidrComponent`](#seidrcomponent-type). This utility normalizes both function components and raw DOM nodes into a consistent component interface.
+Wraps a component factory to ensure it creates a proper [`Component`](#component-type). This utility normalizes both function components and raw DOM nodes into a consistent component interface.
 
 **Parameters:**
 - `factory` - A component factory function, a SeidrComponent factory, or a raw DOM node.
 
-**Returns**: A function that returns a [`SeidrComponent`](#seidrcomponent-type)
+**Returns**: A function that returns a [`Component`](#component-type)
 
 ```typescript
-import { wrapComponent, $div } from '@fimbul-works/seidr';
+import { wrapComponent } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 // Wraps a simple function component
 const SimpleComp = () => $div({ textContent: 'Hello' });
@@ -170,60 +207,27 @@ For built in components, see:
 
 ---
 
-## SeidrComponent type
+## Component type
 
-```typescript
-/**
- * Represents a Seidr component with automatic lifecycle management.
- *
- * Components are the primary building blocks of Seidr applications, encapsulating
- * both the visual element and the cleanup logic needed for proper resource
- * management. Each component tracks its own reactive bindings, event listeners,
- * and child components.
- */
-export interface SeidrComponent {
-  /**
-   * Read-only identifier for Seidr components.
-   * @type {typeof TYPE.COMPONENT}
-   */
-  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
+Represents a Seidr component with automatic lifecycle management.
 
-  /**
-   * The unique identifier of the component.
-   */
-  readonly id: string;
+Components are the primary building blocks of Seidr applications, encapsulating both the visual element and the cleanup logic needed for proper resource management.
 
-  /**
-   * The root element of the component.
-   *
-   * @type {SeidrComponentChildren}
-   */
-  element: SeidrComponentChildren;
+**Properties:**
+- `id` - The unique identifier of the component.
+- `numericId` - The numeric representation of the identifier, used for generating children's IDs.
+- `isMounted` - Whether the component has been destroyed.
+- `parent` - The parent component.
+- `parentNode` - The parent DOM node, if mounted.
+- `element` - The root element of the component.
+- `children` - The child components.
+- `startMarker` - The start marker of the component.
+- `endMarker` - The end marker of the component.
 
-  /**
-   * The start marker of the component.
-   * @type {Comment}
-   */
-  startMarker: Comment;
-
-  /**
-   * The end marker of the component.
-   * @type {Comment}
-   */
-  endMarker: Comment;
-
-  /**
-   * The ComponentScope of this element.
-   * @type {ComponentScope}
-   */
-  scope: ComponentScope;
-
-  /**
-   * Unmounts the component, destroying its scope and removing its elements from the DOM.
-   */
-  unmount(): void;
-}
-```
+**Methods:**
+- `onMount(callback: OnMountFunction): void` - Callback triggered when the component is mounted to a parent.
+- `onAttached(callback: () => void): void` - Callback triggered when the component tree is attached to a document.
+- `onUnmount(cleanup: CleanupFunction): void` - Tracks a cleanup function to be executed when the component is destroyed.
 
 ---
 

@@ -11,7 +11,8 @@ Switches between different components based on an observable value.
 
 **Example:**
 ```typescript
-import { Switch, Seidr, $div, mount } from '@fimbul-works/seidr';
+import { Switch, Seidr, mount } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const mode = new Seidr('A');
 

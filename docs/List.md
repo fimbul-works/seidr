@@ -5,20 +5,21 @@ Renders a dynamic list of components from an observable array with optimized key
 **Parameters:**
 - `observable` - [`Seidr<T[]>`](Seidr.md#seidr-class) array observable
 - `getKey` - Function to extract unique key: `(item: T) => string | number`
-- `factory` - Function to create components: `(item: T) => SeidrComponent`
+- `factory` - Function to create components: `(item: Seidr<T>) => SeidrNode`
 
 **Returns:** A [`SeidrComponent`](components.md#seidrcomponent-type) rooted in a Comment node.
 
 **Example:**
 ```typescript
-import { List, Seidr, $li, $ul, uid, mount } from '@fimbul-works/seidr';
+import { List, Seidr, mount } from '@fimbul-works/seidr';
+import { $li, $ul } from '@fimbul-works/seidr/html';
 
-const items = new Seidr([{ id: uid(), text: 'Item 1' }]);
-const Item = ({ text }) => $li({ textContent: text });
+const items = new Seidr([{ id: 1, text: 'Item 1' }]);
+const Item = (text: string | Seidr<string>) => $li({ textContent: text });
 
 const ListPage = () => {
   return $ul({}, [
-    List(items, i => i.id, i => Item(i))
+    List(items, i => i.id, i => Item(i.as(v => v.text)))
   ]);
 };
 

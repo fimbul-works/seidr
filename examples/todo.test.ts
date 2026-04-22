@@ -1,9 +1,9 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { type CleanupFunction, component, mount } from "../src/index";
-import { Todo, TodoApp } from "./todo";
+import { type Todo, TodoApp } from "./todo";
 
-describe("TODO Example", () => {
+describe("TodoMVC", () => {
   let dom: JSDOM;
   let document: Document;
   let unmount: CleanupFunction;
@@ -21,30 +21,24 @@ describe("TODO Example", () => {
     unmount?.();
   });
 
-  it("should render form with input and button", async () => {
+  it("should render  input", async () => {
     unmount = mount(TodoApp, document.body);
 
-    const form = document.querySelector(".todo-form");
-    const input = document.querySelector(".todo-input") as HTMLInputElement;
-    const button = document.querySelector(".btn-primary") as HTMLButtonElement;
+    const input = document.querySelector(".new-todo") as HTMLInputElement;
 
-    expect(form).not.toBeNull();
     expect(input?.placeholder).toBe("What needs to be done?");
-    expect(button?.textContent).toBe("Add");
   });
 
-  it("should render with empty todo list", async () => {
+  it("should not render list without items", async () => {
     unmount = mount(TodoApp, document.body);
 
-    const todoList = document.querySelector(".todo-list");
-    const listItems = todoList?.querySelectorAll("li");
-    expect(listItems?.length).toBe(0);
+    expect(document.querySelector(".todo-list")).toBeNull();
   });
 
   it("should render with initial todos", async () => {
-    const initialTodos = [
-      { id: 1, text: "Learn Seidr", completed: false },
-      { id: 2, text: "Build apps", completed: false },
+    const initialTodos: Todo[] = [
+      { id: 1, title: "Learn Seidr", completed: false },
+      { id: 2, title: "Build apps", completed: false },
     ];
     unmount = mount(() => TodoApp(initialTodos), document.body);
 

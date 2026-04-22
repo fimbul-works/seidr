@@ -1,40 +1,43 @@
 # Seidr SSR Documentation
 
-Seidr provides Server-Side Rendering with automatic state capture and client-side hydration. It is designed to be "Dual-Mode," allowing your components to run on the server to generate HTML and on the client to become interactive without code duplication.
-
-> ⚠️ **Experimental** — SSR support is a work-in-progress and may change in future versions.
+Seidr provides Server-Side Rendering with automatic state capture and client-side hydration. It is designed to be *"Dual-Mode"*, allowing your components to run on the server to generate HTML and on the client to become interactive without code duplication.
 
 ## Key Features
 
 - 🖥️ Server-side HTML rendering with `renderToString()`
-- 💾 Automatic state capture and dependency graph traversal
 - 🔄 Client-side hydration with `hydrate()`
-- 📦 Compact numeric ID-based hydration data
-- 🔒 Render context isolation using AsyncLocalStorage (Node.js)
+- 💾 Automatic state capture and dependency graph traversal
+- 🏗️ Component Tree Serialization for deterministic hydration
+- 📦 Compact hydration payload with numeric IDs and structure maps
+- 🔒 Render context isolation using AsyncLocalStorage for AppState
 
 ## 🚀 Quick Start
 
 ### Server-Side (Node.js)
 
 ```typescript
-import { renderToString, Seidr } from '@fimbul-works/seidr';
-import { component, $div, $ul, $li, List, setState, getState, createStateKey, isUndefined } from '@fimbul-works/seidr';
+import { Seidr, List } from '@fimbul-works/seidr';
+import { $div, $ul, $li } from '@fimbul-works/seidr/html';
+import { renderToString } from '@fimbul-works/seidr/ssr';
 
-// Create state key
-const todosKey = createStateKey<Seidr<Todo[]>>('todos');
+export type Todo = {
+  id: string;
+  text: string;
+  completed: boolean;
+};
 
 // Component works on both server and client - can be a plain function!
-export const TodoApp = (todos?: Seidr<Todo[]>) => {
-  // Dual-mode: server sets, client retrieves from hydration
-  if (!isUndefined(todos)) {
-    setState(todosKey, todos);
-  } else {
-    todos = getState(todosKey);
-  }
+export const TodoApp = (initialTodos: Todo[] = []) => {
+  /**
+   * Use a stable ID to share state.
+   * Seidr instances are singletons within their AppState; creating
+   * a Seidr with the same ID will return the existing instance.
+   */
+  const todos = new Seidr(initialTodos, { id: 'todos' });
 
   return $div({ className: 'todo-app' }, [
     $ul({}, [
-      List(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
+      List<Todo>(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
     ])
   ]);
 };
@@ -44,9 +47,8 @@ app.get('/', async (req, res) => {
   // Fetch data from database
   const todos = await db.query('SELECT * FROM todos');
 
-  // Create Seidr with server data and render
-  const todosState = new Seidr(todos);
-  const { html, hydrationData } = await renderToString(TodoApp, todosState);
+  // Render component with server data
+  const { html, hydrationData } = await renderToString(() => TodoApp(todos));
 
   res.send(`
     <!DOCTYPE html>
@@ -67,49 +69,73 @@ app.get('/', async (req, res) => {
 ### Client-Side
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr';
+import { hydrate } from '@fimbul-works/seidr/ssr';
 import { TodoApp } from './TodoApp.js';
 
-// Hydrate WITHOUT props - component retrieves from hydration data
+// Hydrate - component retrieves from hydration data
 const container = document.getElementById('app');
 const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
-hydrate(TodoApp, container, hydrationData);
+const unmount = hydrate(TodoApp, container, hydrationData);
 // App is now interactive!
 ```
 
 ---
 
-## 🗂️ Architecture: Runtime Graph Reconstruction
+## 🗂️ Architecture: Runtime Tree Reconstruction
 
-Seidr uses a unique **Runtime Graph Reconstruction** strategy (also known as "State-First Hydration") that fundamentally differs from how React, Vue, or Svelte handle server-side rendering.
-
-Instead of serializing and re-hydrating the **Component Tree**, Seidr hydrates the **Dependency Graph**.
+Seidr uses a **Runtime Tree Reconstruction** strategy (also known as "Lock-step Hydration"). Unlike traditional frameworks that hydrate the entire component tree at once, Seidr reconstructs the UI by re-executing components and having them "claim" pre-rendered DOM nodes in the exact order they were created on the server.
 
 ### How It Works
 
-**1. During SSR** - Seidr tracks the creation order of observables ("sources of truth"):
+**1. During SSR** - Seidr tracks the creation of both observables and component/element structures. The component hierarchy is encoded into a minimal array structure called a *Structure Map*.
 
-```typescript
-const count = new Seidr(0);           // ID: 0 (Source)
-const doubled = count.as(n => n * 2); // ID: 1 (Derived)
-```
-
-**2. Minimal Payload** - The server sends **only the root source values**. Derived values, component props, and binding logic are **not** sent.
+**2. Minimal Payload** - The server sends the initial state values and the structure map for each mounted component.
 
 ```json
 {
-  "observables": {
-    "0": 0  // Only this single number is sent!
+  "ctxID": 1,
+  "data": {
+    "state": {
+      "todos": [
+        {
+          "id": "1",
+          "text": "Learn Seidr",
+          "completed": false
+        },
+        {
+          "id": "2",
+          "text": "Build an app",
+          "completed": false
+        }
+      ]
+    }
+  },
+  "components": {
+    "$:Root-Ixz91": [
+      ["$List-1sm4Jn"],
+      ["ul", 0],
+      ["div", 1]
+    ],
+    "0:List-1sm4Jn": [
+      ["$ListItem-2WcrRo"],
+      ["$ListItem-3WN2eW"]
+    ],
+    "1:ListItem-2WcrRo": [
+      ["li"]
+    ],
+    "1:ListItem-3WN2eW": [
+      ["li"]
+    ]
   }
 }
 ```
 
-**3. Implicit Reconstruction** - As the client executes your component functions, the dependency graph **rebuilds itself**:
-- `new Seidr(0)` is called -> Seidr checks the hydration payload for ID `0`, finds the value `0`.
-- `.as(...)` is called -> Seidr re-establishes the derivation logic.
-- The derived value `doubled` automatically re-computes itself from the hydrated source.
-- DOM bindings automatically re-attach to these new instances.
+**3. Lock-step Hydration** - When `hydrate()` is called on the client:
+- The root component is re-executed.
+- As the component creates elements (e.g., via `$div()`), Seidr uses the **Structure Map** to find and "claim" the corresponding physical DOM node from the server-rendered HTML.
+- **Deterministic IDs**: Seidr instances created within components automatically receive IDs based on their component's ID and creation order (e.g., `App-0`), ensuring they perfectly match the server's state.
+- **Incremental Restoration**: Reactive bindings are re-attached to the newly claimed DOM nodes immediately, making the UI interactive as it is being reconstructed.
 
 ## SSR API Reference
 
@@ -119,10 +145,6 @@ Render a component to HTML with hydration data capture.
 
 **Parameters:**
 - `factory` - Function that returns a Seidr component
-- `props?` - Optional props to pass to the component
-- `options?` - Options object or legacy SSRScope parameter:
-  - `initialPath?` - Initial URL path for routing (defaults to "/")
-  - `scope?` - Optional existing SSR scope (creates new one if not provided)
 
 **Returns:**
 - `html` - Rendered HTML string
@@ -132,14 +154,8 @@ Render a component to HTML with hydration data capture.
 // Basic usage
 const { html, hydrationData } = await renderToString(App);
 
-// With props
-const state = new Seidr(todos);
-const { html, hydrationData } = await renderToString(App, state);
-
-// With initial path for routing
-const { html, hydrationData } = await renderToString(App, null, {
-  initialPath: req.path
-});
+// With factory arguments
+const { html, hydrationData } = await renderToString(() => App(props));
 ```
 
 ---

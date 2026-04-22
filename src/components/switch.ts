@@ -22,9 +22,9 @@ import { isSeidr } from "../util/type-guards/observable-types.js";
  */
 export const Switch = <
   K extends string,
-  C extends ComponentFactoryFunction<K> | ComponentFactoryFunction =
+  C extends ComponentFactoryFunction<K> | ComponentFactoryFunction<void> =
     | ComponentFactoryFunction<K>
-    | ComponentFactoryFunction,
+    | ComponentFactoryFunction<void>,
   M extends Map<K, C> | Record<K, C> = Map<K, C> | Record<K, C>,
 >(
   observable: Seidr<K>,

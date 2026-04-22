@@ -7,21 +7,47 @@ Seidr consists of a single class for reactive state, the [`Seidr`](#seidr-class)
 The core reactive state class.
 
 ```typescript
-import { Seidr } from '@fimbul-works/seidr';
+import { Seidr, noHydrate } from '@fimbul-works/seidr';
 
 const count = new Seidr<number>(0);
 const name = new Seidr<string>('Alice');
 const isActive = new Seidr<boolean>(false);
+
+// Using options
+const transient = new Seidr(0, { hydrate: false });
+const fastUpdate = new Seidr(0, { sync: true });
+const simpleNoHydrate = new Seidr(0, noHydrate);
 ```
 
 **Generic Type:** `T` - The type of value being stored.
 
+### SeidrOptions
+
+When creating a `Seidr` instance, you can provide an options object:
+
+- `id`: `string` - A stable identifier for the observable. Crucial for SSR state matching and singleton behavior.
+- `hydrate`: `boolean` (default: `true`) - Whether this observable should capture its value during SSR and restore it on the client.
+- `sync`: `boolean` (default: `false`) - If `true`, notifications are triggered immediately. If `false`, they are batched in a microtask for better performance.
+
+**Shorthand:**
+- `noHydrate` is a pre-defined options object `{ hydrate: false }` provided for convenience and better bundle size when opting out of hydration for transient state.
+
 ### Properties
+
 - `id` - Readonly unique identifier.
+
   ```typescript
   const count = new Seidr(0, { id: 'count' });
   console.log(count.id); // 'count'
   ```
+  > [!NOTE]
+  > Seidr instances are **singletons** within their `AppState`. If you create a new `Seidr` with an ID that already exists in the current application state, the constructor will return the existing instance instead of creating a new one. This is the primary mechanism for sharing reactive state across components in both Client and SSR modes.
+
+  **Deterministic IDs in SSR:**
+
+  To ensure reliable hydration, Seidr uses a deterministic ID generation strategy:
+  - **Inside Components**: Seidr instances created within a component automatically receive an ID derived from the component's ID and its creation order (e.g., `Main-2coPcU-1`). This ensures that the client-side reconstruction perfectly matches the server-side state.
+  - **Outside Components**: Seidr instances created globally (outside of any component scope) receive sequential IDs based on a global counter in the `AppState`.
 
 - `value` - Get or set the current value. Setting triggers all bindings.
 
@@ -177,6 +203,27 @@ console.log(fullName.value);  // "Jane Smith"
 ---
 
 ## Seidr utilities
+
+### withStorage()
+
+Decorate a [`Seidr`](#seidr-class) instance with storage support.
+
+**Generic Type:** `T` - The type of value being stored
+
+**Parameters:**
+- `key`: `string` - The key to use for storage
+- `seidr`: [`Seidr`](#seidr-class) instance to decorate
+- `storage`: `Storage`, default: `localStorage`
+
+**Returns:** `Seidr<T>`
+
+```typescript
+import { withStorage, Seidr } from '@fimbul-works/seidr';
+
+const count = withStorage("count", new Seidr(0), sessionStorage);
+```
+
+---
 
 ### wrapSeidr()
 

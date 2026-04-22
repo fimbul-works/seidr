@@ -1,6 +1,6 @@
 import { getAppState } from "../app-state/app-state.js";
 import { runWithAppState } from "../app-state/app-state.ssr.js";
-import type { ComponentReturnValue } from "../component/types.js";
+import type { ComponentFactoryFunction } from "../component/types.js";
 import { mountComponent } from "../component/util/mount-component.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { getDocument } from "../dom/get-document.js";
@@ -17,9 +17,7 @@ import type { SSRRenderResult } from "./types.js";
  * @param {AppStateData | SSRInitFn} [dataOrInit={}] - Optional data object or initialization callback
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
-export async function renderToString<C extends ComponentReturnValue>(
-  factory: () => C,
-): Promise<SSRRenderResult> {
+export async function renderToString(factory: ComponentFactoryFunction): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
   if (process.env.VITEST) {

@@ -32,10 +32,9 @@ Create reusable element creator functions with optional default props.
 
 **Parameters:**
 - `tag` - HTML tag name
-- `props` - Object with element properties (can include Seidr observables)
-- `initialProps` - Default properties to apply to all created elements (can include [`Seidr`](Seidr.md#seidr-class) observables)
+- `defaultProps` - Default properties to apply to all created elements
 
-**Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
+**Returns:** [`(props, children) => HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
 import { $factory } from '@fimbul-works/seidr';
@@ -60,7 +59,10 @@ const submitButton = $primaryButton({ textContent: 'Submit' });
 
 ## Predefined Element Creators
 
-All HTML elements available with [`$()`](#create-dom-elements) prefix:
+For convenience, Seidr provides predefined element creators for all standard HTML elements. To keep the core library small, these are provided as a separate sub-export.
+
+> [!NOTE]
+> Importing from `@fimbul-works/seidr/html` provides access to over 100+ tag-specific creators. If you only need a few, consider using [`$()`](#--create-dom-elements) or [`$factory()`](#factory) to save bundle size.
 
 **Parameters:**
 - `props` - Object with element properties (can include [`Seidr`](Seidr.md#seidr-class) observables)
@@ -69,37 +71,33 @@ All HTML elements available with [`$()`](#create-dom-elements) prefix:
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
-// Structure
-$div, $span, $p, $section, $article, $header, $footer, $main, $aside, $nav
-
-// Headings
-$h1, $h2, $h3, $h4, $h5, $h6
-
-// Text
-$a, $strong, $em, $small, $mark, $abbr, $code, $pre
-
-// Forms
-$form, $input, $textarea, $button, $select, $option, $label, $fieldset
-
-// Lists
-$ul, $ol, $li, $dl, $dt, $dd
-
-// Tables
-$table, $thead, $tbody, $tfoot, $tr, $td, $th, $caption
-
-// Media
-$img, $video, $audio, $canvas, $svg
-
-// And many more...
+// All creators are prefixed with $
+import { $div, $span, $button, $h1 } from '@fimbul-works/seidr/html';
 ```
+
+### Typical Elements
+
+- **Structure:** `$div`, `$span`, `$p`, `$section`, `$article`, `$header`, `$footer`, `$main`, `$aside`, `$nav`
+- **Headings:** `$h1`, `$h2`, `$h3`, `$h4`, `$h5`, `$h6`
+- **Text:** `$a`, `$strong`, `$em`, `$small`, `$mark`, `$abbr`, `$code`, `$pre`
+- **Forms:** `$form`, `$input`, `$textarea`, `$button`, `$select`, `$option`, `$label`, `$fieldset`
+- **Lists:** `$ul`, `$ol`, `$li`, `$dl`, `$dt`, `$dd`
+- **Tables:** `$table`, `$thead`, `$tbody`, `$tfoot`, `$tr`, `$td`, `$th`, `$caption`
+- **Media:** `$img`, `$video`, `$audio`, `$canvas`, `$svg`
 
 **Usage:**
 ```typescript
-import { $div, $button, $span } from '@fimbul-works/seidr';
+import { Seidr } from '@fimbul-works/seidr';
+import { $div, $button, $span } from '@fimbul-works/seidr/html';
+
+const count = new Seidr(0);
 
 const app = $div({ className: 'app' }, [
-  $button({ textContent: 'Click me' }),
-  $span({ textContent: 'Hello' })
+  $button({
+    textContent: 'Increment',
+    onclick: () => count.value++
+  }),
+  $span({ textContent: count })
 ]);
 ```
 
@@ -133,7 +131,7 @@ const element = $getById('my-id');
 
 ### $query()
 
-Shorthand for [`el.querySelctor()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector).
+Shorthand for [`el.querySelector()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector).
 
 **Generic Type:** `T` extends `HTMLElement`
 
@@ -157,7 +155,7 @@ const button = $query('button', customContainer);
 
 ### $queryAll()
 
-Shorthand for [`el.querySelctorAll()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelectorAll).
+Shorthand for [`el.querySelectorAll()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelectorAll).
 
 **Generic Type:** `T` extends `HTMLElement`
 

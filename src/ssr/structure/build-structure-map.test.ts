@@ -162,30 +162,27 @@ describe("buildStructureMap", () => {
     it("should throw SeidrError for unknown child types", () => {
       const Comp = component(() => $div())();
       const fakeNode = { nodeType: 999 } as any;
-      
+
       // Manually push an unknown type into createdIndex (which is an Array)
       (Comp.createdIndex as any).push(fakeNode);
-      
+
       expect(() => buildStructureMap(Comp)).toThrow("Unknown component child");
     });
 
     it("should correctly index multiple children in a nested element", async () => {
       const TestComponent = component(() => {
-        return $div({}, [
-          $span({ textContent: "1" }),
-          $span({ textContent: "2" }),
-        ]);
+        return $div({}, [$span({ textContent: "1" }), $span({ textContent: "2" })]);
       }, "Nested");
 
       const { hydrationData } = await renderToString(TestComponent);
-      const compId = Object.keys(hydrationData.components).find(k => k.includes("Nested-"))!;
+      const compId = Object.keys(hydrationData.components).find((k) => k.includes("Nested-"))!;
       const structure = hydrationData.components[compId];
 
       // Structure generation logic for nested elements (Bottom-up creation):
       // index 0: span 1
       // index 1: span 2
       // index 2: div (root)
-      const divTuple = structure.find(t => t[0] === "div");
+      const divTuple = structure.find((t) => t[0] === "div");
       expect(divTuple).toContain(0); // Index of span 1
       expect(divTuple).toContain(1); // Index of span 2
     });

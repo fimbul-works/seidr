@@ -105,7 +105,9 @@ describe("AppState Infrastructure", () => {
         setScope(null);
         getNextSeidrId();
 
-        expect(consoleSpy).toHaveBeenCalledWith(expect.stringContaining("Generating Seidr ID outside of component scope"));
+        expect(consoleSpy).toHaveBeenCalledWith(
+          expect.stringContaining("Generating Seidr ID outside of component scope"),
+        );
       } finally {
         cleanup();
         consoleSpy.mockRestore();

@@ -1,4 +1,4 @@
-import { $factory } from "../element";
+import { $factory } from "../element/element-factory.js";
 
 /**
  * Creates a Side Comment HTML element.

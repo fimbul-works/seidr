@@ -15,7 +15,8 @@ Handles asynchronous loading states for Promises with reactive states.
 
 **Example:**
 ```typescript
-import { Suspense, Switch, $div, mount } from '@fimbul-works/seidr';
+import { Suspense, Switch, mount } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
 const fetchUser = async (id: string) => {
   const res = await fetch(`/api/user/${id}`);
