@@ -6,7 +6,7 @@ import { unwrapSeidr } from "./unwrap-seidr.js";
 /**
  * Registers the default Seidr state hydration strategy.
  */
-export function registerStateStrategy(): void {
+export const registerStateStrategy = (): void => {
   const appState = getAppState();
   appState.defineDataStrategy(
     DATA_KEY_STATE,
@@ -43,4 +43,4 @@ export function registerStateStrategy(): void {
       appState.setData(DATA_KEY_STATE, observables);
     },
   );
-}
+};

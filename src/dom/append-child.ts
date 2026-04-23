@@ -56,7 +56,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   };
 
   // Hydration guard: if the node/component is already in the target, do nothing
-  if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
+  if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
     if (isComponent(child)) {
       // If component is already marked as mounted, we assume it's in the correct place
       // (either from initial reconstruction or previous hydration step)
@@ -88,7 +88,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, child.startMarker);
     }
 
-    if (process.env.SEIDR_ENABLE_SSR && isServer()) {
+    if (!process.env.SEIDR_DISABLE_SSR && isServer()) {
       setScope(child);
       appendChild(parent, child.element);
       setScope(child.parent);

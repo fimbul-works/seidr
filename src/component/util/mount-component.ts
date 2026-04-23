@@ -12,7 +12,7 @@ import { isArray } from "../../util/type-guards/primitive-types";
  * @param {Node | null} [parent] Optional parent to mount into if anchor is null or not in DOM
  * @throws {SeidrError} if the anchor is not a child of the provided parent
  */
-export function mountComponent(component: Component, anchor?: Node | null, parent?: Node | null): void {
+export const mountComponent = (component: Component, anchor?: Node | null, parent?: Node | null): void => {
   const realAnchor = anchor;
   let realParent = parent;
 
@@ -24,7 +24,7 @@ export function mountComponent(component: Component, anchor?: Node | null, paren
   }
 
   if (realParent) {
-    if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
+    if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
       // If any part is already in DOM, assume it's hydrated
       const marker = component.startMarker || (isArray(component.element) ? component.element[0] : component.element);
       if (marker && isDOMNode(marker) && marker.parentNode === realParent) {
@@ -38,11 +38,10 @@ export function mountComponent(component: Component, anchor?: Node | null, paren
     const { startMarker: startNode, endMarker: endNode, element: el } = component;
 
     const mountChildNode = (node: Node) => {
-      const target = realParent!;
       if (realAnchor) {
-        target.insertBefore(node, realAnchor);
+        realParent.insertBefore(node, realAnchor);
       } else {
-        target.appendChild(node);
+        realParent.appendChild(node);
       }
     };
 
@@ -72,4 +71,4 @@ export function mountComponent(component: Component, anchor?: Node | null, paren
       component.mount(realParent);
     }
   }
-}
+};

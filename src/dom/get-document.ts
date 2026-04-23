@@ -7,13 +7,13 @@ import { isClient } from "../util/environment/is-client.js";
  * @returns {Document} Document object
  * @throws {SeidrError} if getDocument is not initialized
  */
-export function defaultClientDocument(): Document {
+export const defaultClientDocument = (): Document => {
   if (isClient()) {
     return document;
   }
 
   throw new SeidrError("getDocument not initialized");
-}
+};
 
 /**
  * Get the current document.

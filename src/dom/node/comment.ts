@@ -12,7 +12,7 @@ import { getDocument } from "../get-document.js";
  * @returns {Comment} DOM Comment node
  */
 export const $comment = (text: string): Comment => {
-  if (!process.env.SEIDR_ENABLE_SSR) {
+  if (process.env.SEIDR_DISABLE_SSR) {
     return getDocument().createComment(text);
   }
 

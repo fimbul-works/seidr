@@ -97,7 +97,7 @@ export class Seidr<T = any> {
     }
 
     // Restore from hydration data if applicable
-    if (process.env.SEIDR_ENABLE_SSR) {
+    if (!process.env.SEIDR_DISABLE_SSR) {
       Seidr.register?.(this);
     }
   }
@@ -158,7 +158,7 @@ export class Seidr<T = any> {
    * @returns {CleanupFunction} A cleanup function that removes the event handler
    */
   observe(fn: (value: T) => void): CleanupFunction {
-    if (process.env.SEIDR_ENABLE_SSR) {
+    if (!process.env.SEIDR_DISABLE_SSR) {
       Seidr.register?.(this);
     }
     this.f.add(fn);
@@ -175,7 +175,7 @@ export class Seidr<T = any> {
    * @returns {CleanupFunction} A cleanup function that removes the binding when called
    */
   bind<O>(target: O, bindFn: (value: T, target: O) => void): CleanupFunction {
-    if (process.env.SEIDR_ENABLE_SSR) {
+    if (!process.env.SEIDR_DISABLE_SSR) {
       Seidr.register?.(this);
     }
     bindFn(this.value, target);
@@ -284,7 +284,7 @@ export class Seidr<T = any> {
    */
   private setParents(parents: Seidr[]): void {
     this.p = parents;
-    if (process.env.SEIDR_ENABLE_SSR) {
+    if (!process.env.SEIDR_DISABLE_SSR) {
       Seidr.register?.(this);
     }
   }

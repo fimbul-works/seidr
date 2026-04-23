@@ -15,13 +15,13 @@ export const contextLocalStorage = new AsyncLocalStorage<AppState>();
  * @return {AppState}
  * @throws {SeidrError} when AppState is not initialized
  */
-export function getSSRAppState(): AppState {
+export const getSSRAppState = (): AppState => {
   const store = contextLocalStorage.getStore();
   if (!store) {
     throw new SeidrError("AppState not initialized");
   }
   return store;
-}
+};
 
 /**
  * Run a function within a new application state.

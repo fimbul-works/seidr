@@ -8,13 +8,13 @@ export const commonReplace = {
 
 export const mainReplace = {
   ...commonReplace,
-  "process.env.SEIDR_ENABLE_SSR": "true",
+  "process.env.SEIDR_DISABLE_SSR": "false",
 };
 
 export const clientReplace = {
   ...commonReplace,
   "process.env.USE_SCHEDULER": "true",
-  "process.env.SEIDR_ENABLE_SSR": "true",
+  "process.env.SEIDR_DISABLE_SSR": "false",
   "isClient()": "true",
   "isServer()": "false",
 };
@@ -22,7 +22,7 @@ export const clientReplace = {
 export const clientNoSSRReplace = {
   ...mainReplace,
   "process.env.USE_SCHEDULER": "true",
-  "process.env.SEIDR_ENABLE_SSR": "false",
+  "process.env.SEIDR_DISABLE_SSR": "true",
   "import.meta.env.SSR": "false",
   "isHydrating()": "false",
   "isClient()": "true",

@@ -212,7 +212,7 @@ describeDualMode("component", ({ getDocument }) => {
       const instance = Comp();
       const el = instance.element as HTMLElement;
 
-      // This logic is wrapped in process.env.SEIDR_ENABLE_SSR
+      // This logic is wrapped in process.env.SEIDR_DISABLE_SSR
       // If enabled, it should have the data-seidr-root attribute
       if (el.hasAttribute("data-seidr-root")) {
         expect(el.getAttribute("data-seidr-root")).toBeDefined();

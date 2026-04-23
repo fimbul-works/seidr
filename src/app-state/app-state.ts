@@ -1,7 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { useScope } from "../component/use-scope.js";
-import { DATA_KEY_STATE } from "../seidr/constants.js";
-import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
 import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";

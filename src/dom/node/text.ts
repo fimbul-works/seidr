@@ -12,7 +12,7 @@ import { getDocument } from "../get-document.js";
  * @returns {Text} DOM Text node
  */
 export const $text = (text: unknown): Text => {
-  if (!process.env.SEIDR_ENABLE_SSR) {
+  if (process.env.SEIDR_DISABLE_SSR) {
     return getDocument().createTextNode(str(text));
   }
 

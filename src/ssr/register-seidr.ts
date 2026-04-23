@@ -9,7 +9,7 @@ import { hydrateSeidrState } from "./hydrate/hydrate-seidr-state.js";
  * @throws {SeidrError} If the Seidr ID is not unique
  */
 export const registerSeidrForSSR = (seidr: Seidr): void => {
-  if (!process.env.SEIDR_ENABLE_SSR) {
+  if (process.env.SEIDR_DISABLE_SSR) {
     return;
   }
 

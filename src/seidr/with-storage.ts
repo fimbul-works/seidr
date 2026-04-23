@@ -41,12 +41,12 @@ export type StorageErrorHandler = (error: Error, operation: "read" | "write") =>
  * @returns {T} The same Seidr instance, now with storage synchronization enabled
  * @throws {Error} If storage read/write fails and no onError handler is provided
  */
-export function withStorage<T extends Seidr<any>>(
+export const withStorage = <T extends Seidr<any>>(
   key: string,
   seidr: T,
   storage: Storage = isClient() ? localStorage : ({} as Storage),
   onError?: StorageErrorHandler,
-): T {
+): T => {
   // Server-side rendering: storage APIs don't exist, so return Seidr unchanged
   if (!isClient()) {
     return seidr;
@@ -82,4 +82,4 @@ export function withStorage<T extends Seidr<any>>(
   });
 
   return seidr;
-}
+};

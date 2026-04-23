@@ -55,11 +55,7 @@ export const component = <P = void>(
     }
 
     const ctxID = getAppState().ctxID;
-    if (parentComponent) {
-      parentComponentNumericId = parentComponent.numericId;
-    } else {
-      parentComponentNumericId = ctxID;
-    }
+    parentComponentNumericId = parentComponent ? parentComponent.numericId : ctxID;
 
     /**
      * Builds a component ID from a numeric ID.
@@ -215,7 +211,7 @@ export const component = <P = void>(
           createdIndex.length = 0;
         }
 
-        if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
+        if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
           getHydrationContext()?.removeComponent(instance);
         }
 
@@ -312,7 +308,7 @@ export const component = <P = void>(
       setScope(instance);
 
       // Register component with SSR scope for hydration path mapping
-      if (process.env.SEIDR_ENABLE_SSR) {
+      if (!process.env.SEIDR_DISABLE_SSR) {
         if (isServer()) {
           getSSRScope()?.registerComponent(instance);
         } else if (isHydrating()) {
@@ -344,7 +340,7 @@ export const component = <P = void>(
       }
 
       // Track component boundary in parent immediately to match evaluation order
-      if (process.env.SEIDR_ENABLE_SSR && isServer()) {
+      if (!process.env.SEIDR_DISABLE_SSR && isServer()) {
         if (parentComponent) {
           const start = startMarkerComment || getFirstNode(instance);
           if (start) {
@@ -364,12 +360,12 @@ export const component = <P = void>(
       throw err;
     } finally {
       setScope(parentComponent);
-      if (process.env.SEIDR_ENABLE_SSR && isHydrating()) {
+      if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
         getHydrationContext()?.popComponent();
       }
     }
 
-    if (process.env.SEIDR_ENABLE_SSR) {
+    if (!process.env.SEIDR_DISABLE_SSR) {
       /**
        * Recursively applies the data attributes to root HTMLElements.
        * @param {ComponentChildren} item - The child to search

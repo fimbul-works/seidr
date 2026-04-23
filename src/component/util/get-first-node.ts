@@ -15,20 +15,14 @@ export const getFirstNode = (comp: Component): ChildNode => {
   }
 
   const el = comp.element;
-  if (isArray(el)) {
-    const first = el[0];
-    if (isComponent(first)) {
-      return getFirstNode(first);
-    }
-    return first as ChildNode;
-  }
 
   if (isComponent(el)) {
-    const res = getFirstNode(el);
-    if (!res) {
-      console.error(`[getFirstNode] Warning: component ${el.id} returned no first node`);
-    }
-    return res;
+    return getFirstNode(el);
+  }
+
+  if (isArray(el)) {
+    const first = el[0];
+    return isComponent(first) ? getFirstNode(first) : (first as ChildNode);
   }
 
   return el as ChildNode;

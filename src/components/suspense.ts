@@ -57,7 +57,7 @@ export const Suspense = <T>(
       }
 
       const currentId = ++currentPromiseId;
-      if (process.env.SEIDR_ENABLE_SSR && !isHydrating()) {
+      if (!process.env.SEIDR_DISABLE_SSR && !isHydrating()) {
         state.value = PROMISE_PENDING;
       }
 

@@ -24,10 +24,10 @@ import { appendChild } from "./append-child.js";
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} when AppState already has a root component
  */
-export function mount<C extends ComponentType = ComponentType>(
+export const mount = <C extends ComponentType = ComponentType>(
   componentOrFactory: C,
   container: HTMLElement,
-): CleanupFunction {
+): CleanupFunction => {
   if (!container) {
     throw new SeidrError("Cannot mount to null parent");
   }
@@ -41,4 +41,4 @@ export function mount<C extends ComponentType = ComponentType>(
 
   // Return cleanup function
   return () => rootComponent.unmount();
-}
+};

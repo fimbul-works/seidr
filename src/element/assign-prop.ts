@@ -15,7 +15,7 @@ import { isEmpty, isObj, isStr } from "../util/type-guards/primitive-types.js";
  * @param {any} value - Property value (scalar or Seidr)
  * @throws {SeidrError} if `prop` is a `ref´ but the `value` is not a Seidr instance
  */
-export function assignProp(el: HTMLElement, prop: string, value: any): void {
+export const assignProp = (el: HTMLElement, prop: string, value: any): void => {
   // Helper functions
   const propStartsWith = (prefix: string) => prop.startsWith(prefix) && prop.length > prefix.length;
   const matchUpperCasePosition = (position: number) => prop[position] === prop[position].toUpperCase();
@@ -133,4 +133,4 @@ export function assignProp(el: HTMLElement, prop: string, value: any): void {
   } else {
     applyValue(currentElement(el), value);
   }
-}
+};

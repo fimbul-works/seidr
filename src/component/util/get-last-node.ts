@@ -15,16 +15,14 @@ export const getLastNode = (comp: Component): ChildNode => {
   }
 
   const el = comp.element;
-  if (isArray(el)) {
-    const last = el[el.length - 1];
-    if (isComponent(last)) {
-      return getLastNode(last);
-    }
-    return last as ChildNode;
-  }
 
   if (isComponent(el)) {
     return getLastNode(el);
+  }
+
+  if (isArray(el)) {
+    const last = el[el.length - 1];
+    return isComponent(last) ? getLastNode(last) : (last as ChildNode);
   }
 
   return el as ChildNode;
