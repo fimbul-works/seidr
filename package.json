@@ -82,7 +82,7 @@
     "sizes": "./calculate-bundle-sizes.sh",
     "dev:examples": "vite --config vite.examples.config.ts",
     "dev:ssr": "tsx watch examples/ssr/server.ts",
-    "format": "npx biome format --write",
+    "format": "npx biome format --write src *.json *.ts",
     "test": "vitest run",
     "test:ssr:inspect": "npx tsx examples/ssr/inspect.ts",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
