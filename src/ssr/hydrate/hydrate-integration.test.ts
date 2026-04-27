@@ -5,7 +5,6 @@ import { DATA_KEY_STATE } from "../../seidr/constants";
 import { Seidr } from "../../seidr/seidr";
 import { enableClientMode, enableSSRMode } from "../../test-setup";
 import type { CleanupFunction } from "../../types";
-import { str } from "../../util/string";
 import { renderToString } from "../render-to-string";
 import { hydrate } from "./hydrate";
 
@@ -40,7 +39,7 @@ describe("Hydration Integration", () => {
       $("ul", null, [
         List(
           items,
-          (item) => str(item),
+          (item) => String(item),
           (item: Seidr<number>) => $("li", { textContent: `Item ${item.value}` }),
         ),
       ]),

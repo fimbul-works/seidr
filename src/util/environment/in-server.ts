@@ -16,16 +16,10 @@ export const inServer = <T>(fn: () => T): T => {
     return null as T;
   }
 
-  const scope = getSSRScope();
-  if (scope) {
-    const result = fn();
-
-    if (result instanceof Promise) {
-      scope.addPromise(result);
-    }
-
-    return result;
+  const result = fn();
+  if (result instanceof Promise) {
+    getSSRScope()?.addPromise(result);
   }
 
-  return fn();
+  return result;
 };

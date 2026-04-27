@@ -24,5 +24,5 @@ export const isServer = (): boolean => {
     }
   }
 
-  return (import.meta.env.SSR ?? typeof window === "undefined") || !!process.env.SEIDR_TEST_SSR;
+  return (import.meta.env?.SSR ?? typeof window === "undefined") || !!process.env.SEIDR_TEST_SSR;
 };

@@ -12,7 +12,6 @@ import { defineProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastMix } from "../util/fast-mix.js";
 import { fastMixHash } from "../util/fast-mix-hash.js";
-import { str } from "../util/string.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { isDOMNode, isHTMLElement } from "../util/type-guards/dom-node-types.js";
 import { isSeidr } from "../util/type-guards/observable-types.js";
@@ -65,8 +64,7 @@ export const component = <P = void>(
      * @returns The component ID string
      */
     const buildComponentId = (numericId: number): string =>
-      // @ts-expect-error
-      !__SEIDR_DEV__ ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
+      process.env.NODE_ENV === "production" ? encodeBase62(numericId) : `${name}-${encodeBase62(numericId)}`;
 
     // Determine numeric by either consuming a pre-defined component ID, or use the parent component's next child ID
     let numericId = fastMixHash(
@@ -227,10 +225,8 @@ export const component = <P = void>(
         instance.element = null;
 
         if (!parentNode) {
-          if (process.env.SEIDR_DEBUG) {
+          if (process.env.NODE_ENV === "development") {
             // console.trace(`[${componentId}] Unmounting already unmounted component`);
-          } else {
-            // console.warn(`[${componentId}] Unmounting already unmounted component`);
           }
           return;
         }
@@ -353,8 +349,7 @@ export const component = <P = void>(
       }
     } catch (err) {
       instance.unmount();
-      // @ts-expect-error
-      if (__SEIDR_DEV__) {
+      if (process.env.NODE_ENV === "development") {
         console.error(`[${instance.id}] Error occurred`, err);
       }
       throw err;
@@ -374,7 +369,7 @@ export const component = <P = void>(
         if (isHTMLElement(item)) {
           // Apply app root marker if top-level
           if (!parentComponent) {
-            item.setAttribute(ROOT_ATTRIBUTE, str(ctxID));
+            item.setAttribute(ROOT_ATTRIBUTE, String(ctxID));
           }
         } else if (isComponent(item)) {
           applyRootAttributes(item.element);

@@ -71,10 +71,11 @@ export class Seidr<T = any> {
    */
   constructor(
     initial: T,
-    public readonly options: SeidrOptions = {},
+    public options: SeidrOptions = {},
   ) {
     this.i = options.id ?? getNextSeidrId();
     this.v = initial;
+    options.hydrate = !(options.hydrate === false);
 
     // Check for an existing instance in AppState
     try {

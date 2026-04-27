@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../app-state/app-state";
+import { DATA_KEY_STATE } from "../seidr/constants";
+import { Seidr } from "../seidr/seidr";
 import { enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { DATA_KEY_STATE } from "./constants";
 import { registerStateStrategy } from "./register-state-strategy";
-import { Seidr } from "./seidr";
 
 describe("registerStateStrategy", () => {
   let restore: CleanupFunction;

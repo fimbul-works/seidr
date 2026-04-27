@@ -7,7 +7,7 @@ Seidr consists of a single class for reactive state, the [`Seidr`](#seidr-class)
 The core reactive state class.
 
 ```typescript
-import { Seidr, noHydrate } from '@fimbul-works/seidr';
+import { Seidr } from '@fimbul-works/seidr';
 
 const count = new Seidr<number>(0);
 const name = new Seidr<string>('Alice');
@@ -16,7 +16,6 @@ const isActive = new Seidr<boolean>(false);
 // Using options
 const transient = new Seidr(0, { hydrate: false });
 const fastUpdate = new Seidr(0, { sync: true });
-const simpleNoHydrate = new Seidr(0, noHydrate);
 ```
 
 **Generic Type:** `T` - The type of value being stored.
@@ -26,11 +25,8 @@ const simpleNoHydrate = new Seidr(0, noHydrate);
 When creating a `Seidr` instance, you can provide an options object:
 
 - `id`: `string` - A stable identifier for the observable. Crucial for SSR state matching and singleton behavior.
-- `hydrate`: `boolean` (default: `true`) - Whether this observable should capture its value during SSR and restore it on the client.
 - `sync`: `boolean` (default: `false`) - If `true`, notifications are triggered immediately. If `false`, they are batched in a microtask for better performance.
-
-**Shorthand:**
-- `noHydrate` is a pre-defined options object `{ hydrate: false }` provided for convenience and better bundle size when opting out of hydration for transient state.
+- `hydrate`: `boolean` (default: `true`) - Whether this observable should capture its value during SSR and restore it on the client.
 
 ### Properties
 

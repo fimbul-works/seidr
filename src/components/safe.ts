@@ -31,6 +31,9 @@ export const Safe = (
       // we can still attempt to cleanup any partial registration
       return wrapComponent(factory, `${name}Child`)(undefined, safeComponent);
     } catch (err) {
+      if (process.env.NODE_ENV === "development" || process.env.VITEST) {
+        console.error(`Error in component ${name}`, err);
+      }
       // Clean up any resources tracked during the failed factory call
       safeComponent?.cleanup();
       return wrapComponent(errorBoundaryFactory, `${name}ErrorBoundary`)(wrapError(err), safeComponent);

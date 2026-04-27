@@ -1,7 +1,7 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
 import type { ReactiveCSSStyleDeclaration } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";
-import { camelToKebab, str } from "../../util/string.js";
+import { camelToKebab } from "../../util/string.js";
 import { isComment } from "../../util/type-guards/dom-node-types.js";
 import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types.js";
 import { escapeAttribute } from "../util/escape-string.js";
@@ -163,7 +163,7 @@ export class SSRElement<
     const children = this.childNodes as unknown as SSRNodeList;
     children.nodes.length = 0;
     if (value !== null && value !== undefined) {
-      this.appendChild(new SSRTextNode(str(value), this._ownerDocument!));
+      this.appendChild(new SSRTextNode(String(value), this._ownerDocument!));
     }
   }
 
@@ -177,8 +177,8 @@ export class SSRElement<
     children.nodes.length = 0;
     if (val) {
       // In SSR, we often just want raw HTML. We can use a text node that doesn't escape.
-      const raw = new SSRTextNode(str(val), this._ownerDocument!);
-      raw.toString = () => str(val);
+      const raw = new SSRTextNode(String(val), this._ownerDocument!);
+      raw.toString = () => String(val);
       this.appendChild(raw);
     }
   }
@@ -221,7 +221,7 @@ export class SSRElement<
       if (content.includes("=")) {
         const [n, v] = content.split("=");
         const unquoted = v.replace(/^["']|["']$/g, "");
-        return str(this.getAttribute(n)) === unquoted;
+        return String(this.getAttribute(n)) === unquoted;
       }
       return this.hasAttribute(content);
     }
@@ -243,7 +243,7 @@ export class SSRElement<
       )
       .map(([name, value]) => {
         if (BOOL_ATTRIBUTES.has(name.toLowerCase())) return name.toLowerCase();
-        return `${name}="${escapeAttribute(str(value))}"`;
+        return `${name}="${escapeAttribute(String(value))}"`;
       })
       .sort(([a], [b]) => a.localeCompare(b))
       .join(" ");
@@ -309,7 +309,7 @@ export class SSRElement<
         if (typeof prop !== "string") return Reflect.set(storage, prop, value);
         if (prop === "cssText") {
           Object.keys(storage).forEach((k) => delete storage[k]);
-          str(value)
+          String(value)
             .split(";")
             .forEach((s: string) => {
               const parts = s.split(":");
@@ -322,7 +322,7 @@ export class SSRElement<
           return true;
         }
 
-        storage[camelToKebab(prop)] = str(value);
+        storage[camelToKebab(prop)] = String(value);
         return true;
       },
     }) as CSSStyleDeclaration;

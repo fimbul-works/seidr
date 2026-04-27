@@ -1,5 +1,5 @@
-import { $button, $div, $h1 } from "../src/elements/index";
-import { isClient, mount, Seidr, useScope } from "../src/index";
+import { isClient, mount, Seidr, useScope } from "@fimbul-works/seidr";
+import { $button, $div, $h1 } from "@fimbul-works/seidr/html";
 
 const PomodoroTimer = () => {
   const WORK_TIME = 25 * 60;

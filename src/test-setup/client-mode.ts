@@ -1,7 +1,7 @@
 import { setAppStateProvider } from "../app-state/app-state.js";
 import { defaultClientDocument, setDocumentProvider } from "../dom/get-document.js";
 import { Seidr } from "../seidr/seidr.js";
-import { registerSeidrForSSR } from "../ssr/register-seidr.js";
+import { registerSeidrForSSR } from "../ssr/register-seidr-for-ssr.js";
 import type { CleanupFunction } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { clearTestAppState, getAppState } from "./app-state.js";

@@ -1,5 +1,4 @@
 import { fastMix } from "./fast-mix.js";
-import { str } from "./string.js";
 
 /** TextEncoder instance for encoding strings to bytes */
 const textEncoder = new TextEncoder();
@@ -12,7 +11,7 @@ const textEncoder = new TextEncoder();
  * @returns {number} A 32-bit unsigned hash
  */
 export const fastMixHash = (data: unknown, seed = 0): number => {
-  const bytes = textEncoder.encode(str(data));
+  const bytes = textEncoder.encode(String(data));
   const len = bytes.length;
   let state = seed >>> 0;
   let i = 0;

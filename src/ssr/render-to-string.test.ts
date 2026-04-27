@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { TodoApp } from "../../examples/todo";
+import { TodoApp } from "../../examples/todo-mvc";
 import { component } from "../component";
 import { $ } from "../element";
 import { DATA_KEY_STATE } from "../seidr/constants";

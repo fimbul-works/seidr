@@ -1,5 +1,5 @@
 import type { Seidr } from "../seidr/seidr.js";
-import { isClient } from "../util/environment/is-client.js";
+import { isServer } from "../util/environment/is-server.js";
 import { hydrateSeidrState } from "./hydrate/hydrate-seidr-state.js";
 
 /**
@@ -9,7 +9,7 @@ import { hydrateSeidrState } from "./hydrate/hydrate-seidr-state.js";
  * @throws {SeidrError} If the Seidr ID is not unique
  */
 export const registerSeidrForSSR = (seidr: Seidr): void => {
-  if (process.env.SEIDR_DISABLE_SSR) {
+  if (process.env.SEIDR_DISABLE_SSR || isServer()) {
     return;
   }
 
@@ -24,7 +24,5 @@ export const registerSeidrForSSR = (seidr: Seidr): void => {
   }
 
   // Client-side: hydrate state immediately
-  if (isClient()) {
-    hydrateSeidrState(seidr);
-  }
+  hydrateSeidrState(seidr);
 };

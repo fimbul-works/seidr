@@ -1,7 +1,7 @@
 import { getAppState } from "../app-state/app-state.js";
-import { DATA_KEY_STATE } from "./constants.js";
-import { Seidr } from "./seidr.js";
-import { unwrapSeidr } from "./unwrap-seidr.js";
+import { DATA_KEY_STATE } from "../seidr/constants.js";
+import { Seidr } from "../seidr/seidr.js";
+import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
 
 /**
  * Registers the default Seidr state hydration strategy.
@@ -18,7 +18,7 @@ export const registerStateStrategy = (): void => {
       if (observables) {
         for (const [id, seidr] of observables.entries()) {
           // Skip derived observables and those marked with hydrate: false
-          if (seidr.isDerived || seidr.options.hydrate === false) {
+          if (seidr.isDerived || !seidr.options.hydrate) {
             continue;
           }
           captured[id] = unwrapSeidr(seidr.value);

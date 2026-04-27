@@ -5,7 +5,6 @@ import { DATA_KEY_STATE } from "../seidr/constants";
 import { Seidr } from "../seidr/seidr";
 import { enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { str } from "../util/string";
 import { renderToString } from "./render-to-string";
 
 describe("Concurrent SSR Request Isolation", () => {
@@ -56,8 +55,8 @@ describe("Concurrent SSR Request Isolation", () => {
         const tripled = base.as((n) => n * 3);
 
         return $("div", {}, [
-          $("span", { textContent: doubled.as((n) => str(n)) }),
-          $("span", { textContent: tripled.as((n) => str(n)) }),
+          $("span", { textContent: doubled.as((n) => String(n)) }),
+          $("span", { textContent: tripled.as((n) => String(n)) }),
         ]);
       })();
 
@@ -111,7 +110,7 @@ describe("Concurrent SSR Request Isolation", () => {
     const simpleComponent = () =>
       component(() => {
         const count = new Seidr(1);
-        return $("div", {}, [$("span", { textContent: count.as((n) => str(n)) })]);
+        return $("div", {}, [$("span", { textContent: count.as((n) => String(n)) })]);
       })();
 
     const complexComponent = () =>
@@ -124,9 +123,9 @@ describe("Concurrent SSR Request Isolation", () => {
         const sum = ab.as((n) => n + c.value);
 
         return $("div", {}, [
-          $("span", { textContent: ab.as((n) => str(n)) }),
-          $("span", { textContent: bc.as((n) => str(n)) }),
-          $("span", { textContent: sum.as((n) => str(n)) }),
+          $("span", { textContent: ab.as((n) => String(n)) }),
+          $("span", { textContent: bc.as((n) => String(n)) }),
+          $("span", { textContent: sum.as((n) => String(n)) }),
         ]);
       })();
 

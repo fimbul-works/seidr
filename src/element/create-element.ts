@@ -80,7 +80,7 @@ export const $ = <K extends keyof HTMLElementTagNameMap>(
   const hydrationContext = getHydrationContext();
   if (isHydrating() && hydrationContext) {
     if (hydrationContext.isMismatched()) {
-      console.warn(`[Hydration] Mismatched element found ${tagName}.`);
+      console.warn(`[Hydration] Mismatched element found: ${tagName}`);
       element = getDocument().createElement(tagName);
     } else {
       element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];

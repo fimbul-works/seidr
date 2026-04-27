@@ -3,7 +3,6 @@ import { TAG_COMMENT } from "../../constants.js";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../../ssr/hydrate/storage.js";
 import { isServer } from "../../util/environment/is-server.js";
-import { str } from "../../util/string.js";
 import { getDocument } from "../get-document.js";
 
 /**
@@ -30,9 +29,9 @@ export const $comment = (text: string): Comment => {
       const node = ctx.claim<Comment>(TAG_COMMENT);
       if (node) {
         // This is a new node created due to a mismatch in claim()
-        if (node.textContent !== str(text)) {
-          console.warn(`[Hydration] Comment mismatch: expected "${str(text)}" but found "${node.textContent}".`);
-          node.textContent = str(text);
+        if (node.textContent !== String(text)) {
+          console.warn(`[Hydration] Comment mismatch: expected "${String(text)}" but found "${node.textContent}".`);
+          node.textContent = String(text);
         }
         return node;
       }

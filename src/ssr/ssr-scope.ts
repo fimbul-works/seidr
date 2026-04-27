@@ -4,9 +4,9 @@ import type { AppState } from "../app-state/types.js";
 import type { Component } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
 import { DATA_KEY_STATE } from "../seidr/constants.js";
-import { registerStateStrategy } from "../seidr/register-state-strategy.js";
 import type { Seidr } from "../seidr/seidr.js";
 import { isServer } from "../util/environment/is-server.js";
+import { registerStateStrategy } from "./register-state-strategy.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";
 import type { StructureMapTuple } from "./structure/types.js";
 import type { HydrationData } from "./types.js";
@@ -142,7 +142,8 @@ export class SSRScope {
     }
 
     const components: Record<string, StructureMapTuple[]> = {};
-    const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted && c.element);
+    const mountedComps = Array.from(this.components.values()).filter((c) => c.isMounted);
+
     const compIndices = new Map<string, number>();
 
     let index = 0;

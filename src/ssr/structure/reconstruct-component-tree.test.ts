@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
-import type { HydrationData } from "../hydrate/types";
+import type { HydrationData } from "../types";
 import { reconstructComponentTree } from "./reconstruct-component-tree";
 
 describe("recontructComponentTree", () => {
   it("builds the correct virtual DOM tree from component hydration data", () => {
     const hydrationData: HydrationData = {
-      state: {},
+      data: {},
       components: {
         "BlogApp-1": [
           [`${TAG_COMPONENT_PREFIX}Header-2`],

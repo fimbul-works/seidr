@@ -12,22 +12,17 @@ import { Seidr } from "../seidr/seidr.js";
  *
  * @template T - The type of list items
  * @template K - Unique key type
- * @template {ComponentFactoryFunction<Seidr<T>>} C - The type of component factory
  *
  * @param {Seidr<T[]>} observable - Array observable
  * @param {(item: T) => K} getKey - Key extraction function
- * @param {C} factory - Component creation function (raw or wrapped)
+ * @param {ComponentFactoryFunction<Seidr<T>>} factory - Component creation function (raw or wrapped)
  * @param {string} [name="List"] - Optional name for the component
  * @returns {Component} List component
  */
-export const List = <
-  T,
-  K extends string | number,
-  C extends ComponentFactoryFunction<Seidr<T>> = ComponentFactoryFunction<Seidr<T>>,
->(
+export const List = <T, K extends string | number>(
   observable: Seidr<T[]>,
   getKey: (item: T) => K,
-  factory: C,
+  factory: ComponentFactoryFunction<Seidr<T>>,
   name: string = "List",
 ): Component =>
   component(() => {

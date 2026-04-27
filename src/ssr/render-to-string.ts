@@ -1,5 +1,5 @@
-import { getAppState } from "../app-state/app-state.js";
-import { runWithAppState } from "../app-state/app-state.ssr.js";
+import { getAppState, setAppStateProvider } from "../app-state/app-state.js";
+import { getSSRAppState, runWithAppState } from "../app-state/app-state.ssr.js";
 import type { ComponentFactoryFunction } from "../component/types.js";
 import { mountComponent } from "../component/util/mount-component.js";
 import { wrapComponent } from "../component/wrap-component.js";
@@ -11,9 +11,7 @@ import type { SSRRenderResult } from "./types.js";
 /**
  * Renders a component to an HTML string with hydration data capture.
  *
- * @template {ComponentReturnValue} C - The return value of the component function
- *
- * @param {() => C} factory - Component function to render
+ * @param {ComponentFactoryFunction} factory - Component to render
  * @param {AppStateData | SSRInitFn} [dataOrInit={}] - Optional data object or initialization callback
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
@@ -24,6 +22,9 @@ export async function renderToString(factory: ComponentFactoryFunction): Promise
     prevSSR = process.env.VITEST && process.env.SEIDR_TEST_SSR;
     process.env.SEIDR_TEST_SSR = "true";
   }
+
+  // Register SSR state provider
+  setAppStateProvider(getSSRAppState);
 
   try {
     return await runWithAppState(async () => {

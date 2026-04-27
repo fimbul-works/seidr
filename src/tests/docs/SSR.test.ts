@@ -1,7 +1,8 @@
-import { describe, test, expect, beforeEach } from "vitest";
-import { Seidr, List, isClient, isServer, inClient, inServer } from "@fimbul-works/seidr";
-import { $div, $ul, $li } from "@fimbul-works/seidr/html";
-import { renderToString, hydrate } from "@fimbul-works/seidr/ssr";
+import { hydrate, inClient, inServer, isClient, isServer, List, Seidr } from "@fimbul-works/seidr";
+import { $div, $li, $ul } from "@fimbul-works/seidr/html";
+import { renderToString } from "@fimbul-works/seidr/ssr";
+import { beforeEach, describe, expect, test } from "vitest";
+import { enableClientMode, enableSSRMode } from "../../test-setup";
 
 describe("docs/SSR.md Examples", () => {
   beforeEach(() => {
@@ -15,10 +16,10 @@ describe("docs/SSR.md Examples", () => {
       const todos = new Seidr(initialTodos, { id: "todos" });
       return $div({ className: "todo-app" }, [
         $ul({}, [
-          List<Todo>(
+          List<Todo, string>(
             todos,
             (item) => item.id,
-            (item) => $li({ textContent: item.as((v) => v.text) }),
+            (item: Seidr<Todo>) => $li({ textContent: item.as((v) => v.text) }),
           ),
         ]),
       ]);
@@ -30,16 +31,19 @@ describe("docs/SSR.md Examples", () => {
     ];
 
     // 1. Server-side rendering
+    const cleanupSsrMode = enableSSRMode();
     const { html, hydrationData } = await renderToString(() => TodoApp(todos));
     expect(html).toContain("Learn Seidr");
     expect(html).toContain("Build an app");
     expect(hydrationData.data.state.todos).toEqual(todos);
+    cleanupSsrMode();
 
     // 2. Client-side hydration
     const container = document.createElement("div");
     container.innerHTML = html;
     document.body.appendChild(container);
 
+    const cleanupClientMode = enableClientMode();
     const unmount = hydrate(TodoApp, container, hydrationData);
     expect(container.textContent).toContain("Learn Seidr");
 
@@ -48,6 +52,7 @@ describe("docs/SSR.md Examples", () => {
     expect(todosObservable.value).toEqual(todos);
 
     unmount();
+    cleanupClientMode();
   });
 
   test("Environment Utilities: isClient, isServer, inClient, inServer", async () => {

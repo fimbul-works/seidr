@@ -23,7 +23,7 @@ export const reconstructComponentTree = (
       if (isMarkerComment(node)) {
         const data = (node as Comment).data;
         const isStart = data.startsWith(TAG_COMPONENT_PREFIX);
-        const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1); // /ID
+        const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1); // ID
 
         const state = getAppState();
         const markers = state.markers.get(id) || ([null, null] as unknown as [Comment, Comment]);
@@ -45,7 +45,9 @@ export const reconstructComponentTree = (
    */
   const buildTree = (componentId: string, isTreeMismatched: boolean = false): ComponentTreeNode[] => {
     const tuples = componentStructures[componentId];
-    if (!tuples) return [];
+    if (!tuples) {
+      return [];
+    }
 
     // Identify roots of THIS component
     const isInnerChild = new Set<number>();
@@ -74,14 +76,19 @@ export const reconstructComponentTree = (
           // Check for mismatch
           if (isHTMLElement(domNode)) {
             if (tag !== domNode.tagName.toLowerCase()) {
+              console.warn(
+                `[Hydration] Tag mismatch at index ${creationIndex}: expected ${tag}, got ${domNode.tagName.toLowerCase()}`,
+              );
               node.isMismatched = true;
             }
           } else if (isTextNode(domNode)) {
             if (tag !== TAG_TEXT) {
+              console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #text`);
               node.isMismatched = true;
             }
           } else if (isComment(domNode)) {
             if (tag !== TAG_COMMENT) {
+              console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #comment`);
               node.isMismatched = true;
             }
           }

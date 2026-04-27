@@ -1,4 +1,4 @@
-import { $, mount, Seidr } from "../src/index";
+import { $, mount, Seidr } from "@fimbul-works/seidr";
 
 export const HelloWorld = () => {
   const textContent = new Seidr("Click me");

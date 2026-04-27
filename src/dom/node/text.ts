@@ -3,7 +3,6 @@ import { TAG_TEXT } from "../../constants.js";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../../ssr/hydrate/storage.js";
 import { isServer } from "../../util/environment/is-server.js";
-import { str } from "../../util/string.js";
 import { getDocument } from "../get-document.js";
 
 /**
@@ -13,7 +12,7 @@ import { getDocument } from "../get-document.js";
  */
 export const $text = (text: unknown): Text => {
   if (process.env.SEIDR_DISABLE_SSR) {
-    return getDocument().createTextNode(str(text));
+    return getDocument().createTextNode(String(text));
   }
 
   const doc = getDocument();
@@ -23,22 +22,22 @@ export const $text = (text: unknown): Text => {
     const ctx = getHydrationContext();
     if (ctx) {
       if (ctx.isMismatched()) {
-        return doc.createTextNode(str(text));
+        return doc.createTextNode(String(text));
       }
 
       const node = ctx.claim<Text>(TAG_TEXT);
       if (node) {
         // This is a new node created due to a mismatch in claim()
-        if (node.textContent !== str(text)) {
-          console.warn(`[Hydration] Text mismatch: expected "${str(text)}" but found "${node.textContent}."`);
-          node.textContent = str(text);
+        if (node.textContent !== String(text)) {
+          console.warn(`[Hydration] Text mismatch: expected "${String(text)}" but found "${node.textContent}."`);
+          node.textContent = String(text);
         }
         return node;
       }
     }
   }
 
-  const node = doc.createTextNode(str(text));
+  const node = doc.createTextNode(String(text));
 
   // If we are server-side, we need to track the node
   if (isServer()) {

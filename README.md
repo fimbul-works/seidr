@@ -31,7 +31,7 @@
 - 📦 **Tiny Footprint**
   - Hello World: **3.0KB** (brotli)
   - TodoMVC: **4.7KB** (brotli)
-  - SSR Enabled: **5.1KB** (brotli) - This includes reactivity, DOM bindings, and SSR capability; no compiler or runtime layering required.
+  - SSR Enabled: **6.4KB** (brotli) - This includes reactivity, DOM bindings, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - ⚡ **Zero Dependencies** - Pure TypeScript, build step optional
 - 🏗️ **Ready for SSR** - Automatic state capture and hydration
@@ -533,9 +533,9 @@ Unlike React/Vue, Seidr doesn't need to diff component trees. Updates go straigh
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.3KB (Seidr core)
+- **Seidr TodoMVC**: ~5.3KB (Seidr core runtime)
 
-> **Note on Tree-Shaking:** The client-side bundle size is ~5.7KB including the core library and SSR engine. If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
+> **Note on Tree-Shaking:** The client-side bundle size is ~7.0KB including the core library and SSR hydration engine. If your project only uses core reactivity and elements, your baseline bundle will be significantly smaller.
 
 ## 🌐 Browser Support
 

@@ -1,7 +1,7 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
-import { registerStateStrategy } from "../../seidr/register-state-strategy.js";
 import type { Seidr } from "../../seidr/seidr.js";
+import { registerStateStrategy } from "../register-state-strategy.js";
 import type { HydrationData } from "../types.js";
 import type { HydrationDataRegistry } from "./types.js";
 

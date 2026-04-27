@@ -20,5 +20,5 @@ export const isClient = (): boolean => {
     }
   }
 
-  return typeof window !== "undefined" && !(import.meta.env.SSR || process.env.SEIDR_TEST_SSR);
+  return typeof window !== "undefined" && !(import.meta.env?.SSR || process.env.SEIDR_TEST_SSR);
 };

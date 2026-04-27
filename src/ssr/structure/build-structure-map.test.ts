@@ -55,12 +55,12 @@ describe("buildStructureMap", () => {
     );
 
     const PostCard = component(
-      (post: BlogPost) =>
+      (post: Seidr<BlogPost>) =>
         $li({ className: "post-card" }, [
-          $h2({}, [$a({ href: `/post/${post.slug}` }, post.title)]),
-          $div({ className: "meta" }, new Date(post.date).toLocaleDateString()),
-          $div({ className: "excerpt", innerHTML: post.excerpt }),
-          $a({ href: `/post/${post.slug}`, className: "read-more" }, "Read more →"),
+          $h2({}, [$a({ href: `/post/${post.value.slug}` }, post.value.title)]),
+          $div({ className: "meta" }, new Date(post.value.date).toLocaleDateString()),
+          $div({ className: "excerpt", innerHTML: post.value.excerpt }),
+          $a({ href: `/post/${post.value.slug}`, className: "read-more" }, "Read more →"),
         ]),
       "PostCard",
     );

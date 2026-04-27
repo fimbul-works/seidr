@@ -7,28 +7,25 @@ mkdir -p examples/temp
 
 echo "Building Hello World example..."
 EXAMPLE=hello-world npx vite build --config vite.examples.config.ts
-mv examples/dist/hello-world.js examples/temp/hello-world.js
+mv examples/build/hello-world.js examples/temp/hello-world.js
 
 echo "Building counter example..."
 EXAMPLE=counter npx vite build --config vite.examples.config.ts
-mv examples/dist/counter.js examples/temp/counter.js
+mv examples/build/counter.js examples/temp/counter.js
 
-echo "Building Todo app example..."
+echo "Building TodoMVC example..."
 EXAMPLE=todo npx vite build --config vite.examples.config.ts
-mv examples/dist/todo.js examples/temp/todo.js
+mv examples/build/todo.js examples/temp/todo.js
 
 echo "Building Pomodoro-timer example..."
 EXAMPLE=pomodoro npx vite build --config vite.examples.config.ts
-mv examples/dist/pomodoro.js examples/temp/pomodoro.js
-
-echo "Building SSR example..."
-npx vite build --config vite.examples-ssr.config.ts
+mv examples/build/pomodoro.js examples/temp/pomodoro.js
 
 # Copy both files to final location
-cp examples/temp/hello-world.js examples/dist/hello-world.js
-cp examples/temp/counter.js examples/dist/counter.js
-cp examples/temp/todo.js examples/dist/todo.js
-cp examples/temp/pomodoro.js examples/dist/pomodoro.js
+cp examples/temp/hello-world.js examples/build/hello-world.js
+cp examples/temp/counter.js examples/build/counter.js
+cp examples/temp/todo.js examples/build/todo.js
+cp examples/temp/pomodoro.js examples/build/pomodoro.js
 
 # Cleanup temp directory
 rm -rf examples/temp

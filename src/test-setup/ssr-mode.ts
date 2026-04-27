@@ -2,7 +2,7 @@ import { setAppStateProvider } from "../app-state/app-state.js";
 import { setDocumentProvider } from "../dom/get-document.js";
 import { getSSRDocument } from "../dom/get-document.ssr.js";
 import { Seidr } from "../seidr/seidr.js";
-import { registerSeidrForSSR } from "../ssr/register-seidr.js";
+import { registerSeidrForSSR } from "../ssr/register-seidr-for-ssr.js";
 import type { CleanupFunction } from "../types.js";
 import { clearTestAppState, getAppState } from "./app-state.js";
 import type { TestEnvironmentState } from "./types.js";

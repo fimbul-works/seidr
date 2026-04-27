@@ -1,4 +1,4 @@
-import { $, noHydrate, Seidr, unwrapSeidr, withStorage, wrapSeidr } from "@fimbul-works/seidr";
+import { $, Seidr, unwrapSeidr, withStorage, wrapSeidr } from "@fimbul-works/seidr";
 import { describe, expect, test, vi } from "vitest";
 
 describe("docs/Seidr.md Examples", () => {
@@ -14,11 +14,9 @@ describe("docs/Seidr.md Examples", () => {
     // Using options
     const transient = new Seidr(0, { hydrate: false });
     const fastUpdate = new Seidr(0, { sync: true });
-    const simpleNoHydrate = new Seidr(0, noHydrate);
 
     expect(transient.value).toBe(0);
     expect(fastUpdate.value).toBe(0);
-    expect(simpleNoHydrate.value).toBe(0);
   });
 
   test("Properties: id, value, isDerived, parents", () => {

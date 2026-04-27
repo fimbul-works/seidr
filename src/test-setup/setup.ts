@@ -1,5 +1,5 @@
 import { Seidr } from "../seidr/seidr.js";
-import { registerSeidrForSSR } from "../ssr/register-seidr.js";
+import { registerSeidrForSSR } from "../ssr/register-seidr-for-ssr.js";
 import { setupAppState } from "./app-state.js";
 import { enableClientMode } from "./client-mode.js";
 import { setupTestLifecycle } from "./lifecycle.js";

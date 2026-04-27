@@ -1,6 +1,5 @@
 import { expect } from "vitest";
 import { escapeHTML } from "../ssr/util/escape-string.js";
-import { str } from "../util/string.js";
 import { isArray, isEmpty, isFn, isObj } from "../util/type-guards/primitive-types.js";
 
 /**
@@ -50,7 +49,7 @@ export function renderToHtml(node: any, depth = 0): string {
     return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 
-  return str(node);
+  return String(node);
 }
 
 /**

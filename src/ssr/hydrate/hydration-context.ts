@@ -61,7 +61,7 @@ export function initHydrationContext(container: Element) {
     }
   }
 
-  const rootNodes = firstIdx === -1 ? [] : allNodes.slice(firstIdx, lastIdx + 1);
+  const rootNodes: ChildNode[] = firstIdx === -1 ? [] : allNodes.slice(firstIdx, lastIdx + 1);
 
   // Reconstruct virtual tree from tuples AND sync with DOM in one pass
   const componentTree = reconstructComponentTree(rootNodes, components);
@@ -248,7 +248,7 @@ export function initHydrationContext(container: Element) {
       }
 
       if (mismatch) {
-        console.warn(`[Hydration] Mismatch at ${componentId}[${cursor}]: expected ${tag}, got ${actualTag}.`);
+        console.warn(`[Hydration] Mismatch at ${componentId}[${cursor}]: expected ${tag}, got: ${actualTag}.`);
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }

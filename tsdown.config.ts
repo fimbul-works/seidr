@@ -1,8 +1,6 @@
-import replace from "@rollup/plugin-replace";
 import type { InputOptions } from "rolldown";
 import { type DepsConfig, defineConfig } from "tsdown";
-import { clientNoSSRReplace, clientReplace, treeshake } from "./build.shared.ts";
-import { convertDevFlag, removeRegionComments, stringReplace } from "./src/build-plugins/index.ts";
+import { seidrBundlePlugin } from "./src/build-plugins/bundle-plugin.ts";
 
 const deps: DepsConfig = {
   alwaysBundle: ["@fimbul-works/futhark"],
@@ -11,6 +9,9 @@ const deps: DepsConfig = {
 const inputOptions: InputOptions = {
   optimization: {
     inlineConst: false,
+  },
+  experimental: {
+    attachDebugInfo: "none",
   },
 };
 
@@ -24,21 +25,9 @@ export default defineConfig([
     format: ["esm", "cjs"],
     target: "es2022",
     dts: true,
-    treeshake,
+    treeshake: true,
     outDir: "bundles",
-    plugins: [
-      removeRegionComments(),
-      replace({
-        ...clientReplace,
-        "import.meta.env.SSR": "false",
-        preventAssignment: true,
-      }),
-      convertDevFlag(),
-      stringReplace({
-        'typeof process === "undefined"': "true",
-        'typeof window !== "undefined"': "true",
-      }),
-    ],
+    plugins: [seidrBundlePlugin({ disableSSR: false })],
     deps,
     inputOptions,
   },
@@ -51,20 +40,9 @@ export default defineConfig([
     format: ["esm", "cjs"],
     target: "es2022",
     dts: true,
-    treeshake,
+    treeshake: true,
     outDir: "bundles",
-    plugins: [
-      removeRegionComments(),
-      replace({
-        ...clientNoSSRReplace,
-        preventAssignment: true,
-      }),
-      convertDevFlag(),
-      stringReplace({
-        'typeof process === "undefined"': "true",
-        'typeof window !== "undefined"': "true",
-      }),
-    ],
+    plugins: [seidrBundlePlugin({ disableSSR: true })],
     deps,
     inputOptions,
   },

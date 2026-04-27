@@ -42,8 +42,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       try {
         useScope().onUnmount(cleanup);
       } catch (error) {
-        // @ts-expect-error
-        if (__SEIDR_DEV__) {
+        if (process.env.NODE_ENV === "development") {
           console.error(error);
         }
       } finally {

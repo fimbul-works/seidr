@@ -3,7 +3,6 @@ import { List } from "../components/list";
 import { SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { $ } from "../element";
 import { Seidr } from "../seidr";
-import { str } from "../util/string";
 import { renderToString } from "./render-to-string";
 
 describe("ssr limits", () => {
@@ -13,8 +12,8 @@ describe("ssr limits", () => {
       return $("div", null, [
         List(
           items,
-          (item) => str(item),
-          (item) => $("div", { textContent: `Item ${item}` }),
+          (item) => item,
+          (item: Seidr<number>) => $("div", { textContent: `Item ${item.value}` }),
         ),
       ]);
     });

@@ -19,7 +19,4 @@ export default defineConfig({
     setupFiles: ["./src/test-setup/setup.ts"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/*.parity.test.ts", "**/dual-mode-*.test.ts"],
   },
-  define: {
-    __SEIDR_DEV__: true,
-  },
 });

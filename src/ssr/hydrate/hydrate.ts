@@ -1,4 +1,4 @@
-import type { ComponentType } from "../../component/types.js";
+import type { ComponentFactoryFunction } from "../../component/types.js";
 import { mount } from "../../dom/mount.js";
 import { type CleanupFunction, SeidrError } from "../../types.js";
 import { isEmpty } from "../../util/type-guards/primitive-types.js";
@@ -9,16 +9,15 @@ import { clearHydrationData, initHydrationData, isHydrating } from "./storage.js
 /**
  * Hydrates a component with previously captured SSR hydration data.
  *
- * @template {ComponentType} T - The type of the component, which can be a factory or a component instance
- * @param {T} factory - The component or factory to hydrate
+ * @param {ComponentFactoryFunction} factory - Component to hydrate
  * @param {HTMLElement} container - The HTMLElement to mount the hydrated component into
  * @param {HydrationData} hydrationData - The previously captured hydration data
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} when called during an active hydration pass
  * @throws {SeidrError} if hydration payload is missing required fields
  */
-export function hydrate<T extends ComponentType>(
-  factory: T,
+export function hydrate(
+  factory: ComponentFactoryFunction,
   container: HTMLElement,
   hydrationData: HydrationData,
 ): CleanupFunction {

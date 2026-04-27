@@ -1,5 +1,3 @@
-import { str } from "./string.js";
-
 /**
  * Wraps a value as an Error instance if it is not already an instance of the provided constructor.
  *
@@ -11,4 +9,4 @@ export const wrapError = <E extends Error = Error>(
   err: any,
   Constructor: new (message: string, options?: { cause?: unknown }) => E = Error as any,
 ): E =>
-  err instanceof Constructor ? err : new Constructor(err instanceof Error ? err.message : str(err), { cause: err });
+  err instanceof Constructor ? err : new Constructor(err instanceof Error ? err.message : String(err), { cause: err });

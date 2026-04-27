@@ -43,7 +43,7 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
   const activeModes = modes.filter((m) => !envMode || envMode === m.value || envMode === "both");
 
   if (activeModes.length === 0) {
-    console.warn(`SEIDR_RENDER_MODE="${envMode}" matched no modes. Running none.`);
+    console.warn(`SEIDR_TEST_RENDER_MODE="${envMode}" matched no modes. Running none.`);
   }
 
   describe.each(activeModes)(`${name} ($name)`, (mode) => {
