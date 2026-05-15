@@ -15,6 +15,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.4.13
         version: 2.4.13
+      '@fimbul-works/bundle-size':
+        specifier: link:../bundle-size
+        version: link:../bundle-size
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6

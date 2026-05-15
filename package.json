@@ -86,7 +86,7 @@
     "dev:ssr": "tsx watch examples/ssr/server.ts",
     "test": "vitest run",
     "format": "npx biome format --write src *.json *.ts",
-    "sizes": "./calculate-bundle-sizes.sh",
+    "sizes": "npx bundle-size",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "peerDependenciesMeta": {
@@ -99,6 +99,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.13",
+    "@fimbul-works/bundle-size": "link:../bundle-size",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^28.0.1",
     "@types/node": "^25.6.0",

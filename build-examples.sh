@@ -21,6 +21,9 @@ echo "Building Pomodoro-timer example..."
 EXAMPLE=pomodoro npx vite build --config vite.examples.config.ts
 mv examples/build/pomodoro.js examples/temp/pomodoro.js
 
+echo "Building SSR example..."
+npx vite build --config vite.ssr.config.ts
+
 # Copy both files to final location
 cp examples/temp/hello-world.js examples/build/hello-world.js
 cp examples/temp/counter.js examples/build/counter.js
