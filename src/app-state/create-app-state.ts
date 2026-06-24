@@ -1,3 +1,4 @@
+import type { ComponentMeta } from "../component-new/types.js";
 import { DATA_KEY_STATE } from "../seidr/constants.js";
 import type { Seidr } from "../seidr/seidr.js";
 import { isSeidr } from "../util/type-guards/observable-types.js";
@@ -11,6 +12,8 @@ import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./typ
 export const createAppState = (ctxId: number): AppState => ({
   ctxID: ctxId,
   seidrIdCounter: 0,
+  components: new Set<ComponentMeta>(),
+  nodeIndex: new WeakMap<ChildNode, ComponentMeta>(),
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
   strategies: new Map<string, DataStrategy>(),

@@ -7,9 +7,12 @@ import { SSRNodeList } from "./ssr-node-list.js";
 import type { ServerNode } from "./types.js";
 
 export abstract class SSRParentNode<
-  T extends NodeTypeDocument | NodeTypeElement,
-  D extends SSRDocument | null = SSRDocument | null,
-> extends SSRChildNode<T, D> {
+    T extends NodeTypeDocument | NodeTypeElement,
+    D extends SSRDocument | null = SSRDocument | null,
+  >
+  extends SSRChildNode<T, D>
+  implements ParentNode
+{
   get childElementCount(): number {
     return this.children.length;
   }
@@ -46,6 +49,10 @@ export abstract class SSRParentNode<
       this.removeChild(this.firstChild);
     }
     this.append(...nodes);
+  }
+
+  moveBefore(node: Node, child: Node | null): void {
+    throw new Error("Not implemented");
   }
 
   querySelector(selectors: string): Element | null {

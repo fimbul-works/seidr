@@ -78,17 +78,19 @@ export const reconstructComponentTree = (
             if (tag !== domNode.tagName.toLowerCase()) {
               console.warn(
                 `[Hydration] Tag mismatch at index ${creationIndex}: expected ${tag}, got ${domNode.tagName.toLowerCase()}`,
+                node,
+                domNode,
               );
               node.isMismatched = true;
             }
           } else if (isTextNode(domNode)) {
             if (tag !== TAG_TEXT) {
-              console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #text`);
+              // console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #text`);
               node.isMismatched = true;
             }
           } else if (isComment(domNode)) {
             if (tag !== TAG_COMMENT) {
-              console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #comment`);
+              // console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #comment`);
               node.isMismatched = true;
             }
           }

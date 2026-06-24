@@ -78,6 +78,8 @@ export function initHydrationContext(container: Element) {
     },
   ];
 
+  console.log(fullComponentTree, null, 2);
+
   // Map all component nodes by ID for quick access
   const componentNodeMap = new Map<string, ComponentTreeNode>();
   const flatten = (nodes: ComponentTreeNode[]) => {

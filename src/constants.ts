@@ -22,6 +22,9 @@ export const TYPE_PROP = "$type";
 /** Prefix used for marker comments. */
 export const SEIDR_COMPONENT_START_PREFIX = "$";
 
+/** Prefix used for marker comments. */
+export const SEIDR_ASYNC_COMPONENT_PREFIX = "?";
+
 /** Suffix used for marker comments. */
 export const SEIDR_COMPONENT_END_PREFIX = "/";
 
@@ -39,6 +42,9 @@ export const TAG_COMPONENT_PREFIX = "$";
 
 /** Component scope data key. */
 export const DATA_KEY_COMPONENT_SCOPE = "seidr.component.scope";
+
+/** Current component cursor data key. */
+export const DATA_KEY_COMPONENT_CURSOR = "seidr.component.cursor";
 
 /** Hydration data key. */
 export const DATA_KEY_HYDRATION_DATA = "seidr.hydration.data";

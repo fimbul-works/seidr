@@ -1,3 +1,5 @@
+import type { ComponentMeta } from "../component-new/types";
+
 /** Function to capture data from AppState for hydration */
 export type CaptureDataFn<T> = () => T;
 
@@ -25,6 +27,12 @@ export interface AppState {
 
   /** Counter for generating unique IDs */
   seidrIdCounter: number;
+
+  /** Main component registry */
+  components: Set<ComponentMeta>;
+
+  /** ChildNode to Component index mapping */
+  nodeIndex: WeakMap<ChildNode, ComponentMeta>;
 
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;
