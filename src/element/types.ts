@@ -151,3 +151,8 @@ export type SeidrNode = Component | Element | Text | Comment;
  * Union type representing allowed child nodes for Seidr elements.
  */
 export type SeidrChild = SeidrNode | Seidr<string> | string | null | undefined;
+
+/**
+ * Namee of a property
+ */
+export type PropName = keyof HTMLElement | "class" | "for" | "ref" | "htmlFor";

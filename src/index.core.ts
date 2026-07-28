@@ -1,5 +1,6 @@
 export * from "./app-state/index.js";
 export * from "./component/index.js";
+export * from "./component-new/index.js";
 export * from "./components/index.js";
 export * from "./dom/index.js";
 export * from "./element/index.js";

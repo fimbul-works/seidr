@@ -1,6 +1,8 @@
 import type { Component, ComponentType } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
+import { watchMutations } from "../index.core.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
+import { isClient } from "../util/environment/is-client.js";
 import { isComponent } from "../util/type-guards/component-types.js";
 import { appendChild } from "./append-child.js";
 
@@ -32,6 +34,11 @@ export const mount = <C extends ComponentType = ComponentType>(
     throw new SeidrError("Cannot mount to null parent");
   }
 
+  let cleanup: CleanupFunction;
+  if (isClient()) {
+    cleanup = watchMutations(container);
+  }
+
   // Create the component
   const rootComponent: Component = isComponent(componentOrFactory)
     ? componentOrFactory
@@ -40,5 +47,5 @@ export const mount = <C extends ComponentType = ComponentType>(
   appendChild(container, rootComponent);
 
   // Return cleanup function
-  return () => rootComponent.unmount();
+  return () => (cleanup?.(), rootComponent.unmount());
 };

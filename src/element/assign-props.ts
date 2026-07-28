@@ -1,5 +1,5 @@
 import { assignProp } from "./assign-prop.js";
-import type { SeidrElementProps } from "./types.js";
+import type { PropName, SeidrElementProps } from "./types.js";
 
 /**
  * Assigns properties to an HTMLElement.
@@ -9,5 +9,5 @@ import type { SeidrElementProps } from "./types.js";
  * @param {SeidrElementProps<K>} props - The properties to assign
  */
 export const assignProps = <K extends keyof HTMLElementTagNameMap>(el: HTMLElement, props: SeidrElementProps<K>) => {
-  Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));
+  Object.entries(props).forEach(([prop, value]) => assignProp(el, prop as PropName, value));
 };
