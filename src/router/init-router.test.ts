@@ -1,5 +1,5 @@
-import { getAppState } from "../app-state/app-state.js";
 import { beforeEach, describe, expect, it } from "vitest";
+import { getAppState } from "../app-state/app-state.js";
 import { DATA_KEY_ROUTER } from "./constants.js";
 import { initRouter } from "./init-router.js";
 import type { RouterState } from "./types.js";

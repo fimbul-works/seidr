@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component.js";
 import { onAttached } from "../component/lifecycle/on-attached.js";
 import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
@@ -15,13 +16,10 @@ import { createValue, type Value } from "../observable/value.js";
 import { Link } from "../router/components/link.js";
 import { Router } from "../router/components/router.js";
 import type { Route } from "../router/types.js";
-import { clearHydrationData } from "../ssr/hydrate/storage.js";
 import { hydrate } from "../ssr/hydrate/hydrate.js";
 import { renderToString } from "../ssr/render-to-string.js";
-import { clearTestAppState, enableClientMode, enableSSRMode, resetRequestIdCounter } from "../test-setup/index.js";
-import type { CleanupFunction } from "../types.js";
+import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
 import { inClient } from "../util/environment/in-client.js";
-import { describe, expect, it } from "vitest";
 
 describe("Multi-section SSR and Hydration with Router", () => {
   type NavItem = { href: string; textContent: string };

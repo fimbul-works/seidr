@@ -6,10 +6,10 @@ import { TYPE_TEXT_NODE } from "../constants.js";
 import { isDOMNode, isHTMLElement } from "../dom/type-guards.js";
 import type { SeidrChild } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
-import type { Value } from "../observable/value.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
-import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
+import type { Value } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
+import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { $text } from "./node/text.js";
 
 /**

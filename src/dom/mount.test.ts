@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component";
 import { $ } from "../element";
+import { createValue } from "../observable";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { mount } from "./mount";
-import { createValue } from "../observable";
 
 describeDualMode("mount", () => {
   let container: HTMLElement;

@@ -1,4 +1,4 @@
-import { ReactiveValue } from "../../element/types.js";
+import type { ReactiveValue } from "../../element/types.js";
 import { unwrapValue } from "../../observable/unwrap-value.js";
 import { SeidrError } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";

@@ -1,6 +1,6 @@
+import { expect, it } from "vitest";
 import { $div } from "../elements/div.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
-import { expect, it } from "vitest";
 import { useRouteParams } from "./hooks/use-route-params.js";
 import { matchRoute } from "./match-route.js";
 import type { Route } from "./types.js";

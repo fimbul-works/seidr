@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { enableSSRMode } from "../test-setup/index.js";
-import { createValue, Value } from "./value.js";
+import { createValue } from "./value.js";
 import { withStorage } from "./with-storage.js";
 
 /**

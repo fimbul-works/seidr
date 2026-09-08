@@ -1,11 +1,11 @@
-import { describe, expect, it, vi } from "vitest";
 import { encodeBase62 } from "@fimbul-works/futhark";
+import { describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { $ } from "../element";
+import { createValue } from "../observable";
 import { describeDualMode } from "../test-setup";
 import { appendChild } from "./append-child";
-import { createValue } from "../observable";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
 describeDualMode("appendChild", ({ getDocument }) => {
   it("should append a simple element", () => {

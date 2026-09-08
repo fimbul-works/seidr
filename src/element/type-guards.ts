@@ -1,8 +1,8 @@
-import { isArray, isObj } from "../util/type-guards.js";
 import { isComponent } from "../component/type-guards.js";
-import { isValue } from "../observable/type-guards.js";
-import type { SeidrChild } from "../element/types.js";
 import { isDOMNode } from "../dom/type-guards.js";
+import type { SeidrChild } from "../element/types.js";
+import { isValue } from "../observable/type-guards.js";
+import { isArray, isObj } from "../util/type-guards.js";
 
 /**
  * Check if a value is a valid Seidr child.

@@ -6,7 +6,7 @@ import { SeidrError } from "../../types";
 import { onUnmounted, onUnmountedFns } from "./on-unmounted";
 
 describe("onUnmounted", () => {
-  describe.skip("with element target", () => {
+  describe("with element target", () => {
     it("should register cleanup callback in onUnmounts map for the target element", () => {
       const el = document.createElement("div");
       const cleanup = vi.fn();

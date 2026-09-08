@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isArray, isBool, isNullish, isFn, isNum, isObj, isStr } from "./type-guards";
+import { isArray, isBool, isFn, isNullish, isNum, isObj, isStr } from "./type-guards";
 
 describe("Primitive types", () => {
   describe("isArray", () => {

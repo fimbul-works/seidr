@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { createComponent } from "../../component/create-component.js";
 import type { SeidrComponentFactoryPureFunction } from "../../component/types.js";
 import { mount } from "../../dom/mount.js";
@@ -5,7 +6,6 @@ import { $div } from "../../elements/div.js";
 import { createValue } from "../../observable/value.js";
 import { describeDualMode } from "../../test-setup/dual-mode.js";
 import type { CleanupFunction } from "../../types.js";
-import { afterEach, beforeEach, expect, it } from "vitest";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
 import { initRouter } from "../init-router.js";

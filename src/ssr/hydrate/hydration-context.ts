@@ -1,5 +1,6 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../../app-state/app-state.js";
+import { isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
 import {
   DATA_KEY_HYDRATION_CTX,
@@ -8,9 +9,8 @@ import {
   TAG_COMPONENT_PREFIX,
   TAG_TEXT,
 } from "../../constants.js";
-import { SeidrError } from "../../types.js";
 import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
-import { isMarkerComment } from "../../component/type-guards.js";
+import { SeidrError } from "../../types.js";
 import { reconstructComponentTree } from "../structure/reconstruct-component-tree.js";
 import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js";
 import { getHydrationData } from "./storage.js";

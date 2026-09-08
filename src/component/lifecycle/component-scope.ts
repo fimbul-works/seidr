@@ -1,9 +1,6 @@
 import { getAppState } from "../../app-state/app-state.js";
 import { DATA_KEY_COMPONENT_CURSOR } from "../../constants.js";
 import type { SeidrComponent } from "../types.js";
-import { isClient } from "../../util/environment/is-client.js";
-import type { OnAttachedFunction, OnMountedFunction } from "../types.js";
-import { CleanupFunction } from "../../types.js";
 
 /**
  * Sets the active component.

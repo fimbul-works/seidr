@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { createValue } from "../observable";

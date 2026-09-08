@@ -75,7 +75,7 @@ export const Router = (
     const currentParams = createValue<Record<string, string>>({}, { hydrate: false });
     let currentRouteIndex = -1;
     let currentMatchedPath = "";
-    let currentRoute: Route | undefined;
+    //let currentRoute: Route | undefined;
     let currentComponent: SeidrComponent | null = null;
     let currentFactory: SeidrComponentFactoryOrFunction<any> | null = null;
 
@@ -127,7 +127,7 @@ export const Router = (
       currentRouteIndex = initialIndex;
       currentParams(initialParams);
       currentMatchedPath = initialMatched;
-      currentRoute = initialRoute;
+      //currentRoute = initialRoute;
     }
 
     // Register in the router tree BEFORE creating child components

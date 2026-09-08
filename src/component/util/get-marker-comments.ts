@@ -26,7 +26,7 @@ export const getMarkerComments = (
 
   const state = getAppState();
   const cached = state.markers.get(commentText);
-  if (cached && cached[0] && cached[1]) {
+  if (cached?.[0] && cached[1]) {
     return cached;
   }
 

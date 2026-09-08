@@ -1,12 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
-import { getAppState } from "../../app-state/app-state";
-import { DATA_KEY_COMPONENT_CURSOR } from "../../constants";
-import { createComponent } from "../create-component";
 import { mount } from "../../dom/mount";
 import { assignProp } from "../../element/assign-prop";
 import { createValue } from "../../observable/value";
 import { mockComponentScope } from "../../test-setup/mock";
-import { SeidrError } from "../../types";
+import { createComponent } from "../create-component";
 import { onAttached, onAttachedFns } from "./on-attached";
 
 describe("onAttached", () => {

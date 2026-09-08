@@ -1,4 +1,3 @@
-//import { registerSeidrForSSR } from "../ssr/register-seidr-for-ssr.js";
 import { setupAppState } from "./app-state.js";
 import { enableClientMode } from "./client-mode.js";
 import { setupTestLifecycle } from "./lifecycle.js";
@@ -9,8 +8,6 @@ import { mockNavigator } from "./mock.js";
  * This is used by the vitest.config.ts to ensure a sane default environment.
  */
 export function performDefaultSetup() {
-  //Seidr.register = registerSeidrForSSR;
-
   setupAppState();
   setupTestLifecycle();
   mockNavigator();

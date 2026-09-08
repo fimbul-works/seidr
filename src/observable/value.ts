@@ -1,10 +1,10 @@
 import { getAppState, getNextValueId } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
 import { TYPE_PROP } from "../constants.js";
-import { isNullish, isFn } from "../util/type-guards.js";
-import { SeidrError, type CleanupFunction } from "../types.js";
+import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
+import { isFn, isNullish } from "../util/type-guards.js";
 import { DATA_KEY_STATE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
 

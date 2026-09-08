@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createAppState } from "./create-app-state";
 import { createValue } from "../observable";
+import { createAppState } from "./create-app-state";
 
 describe("createAppState", () => {
   it("should initialize with default values", () => {

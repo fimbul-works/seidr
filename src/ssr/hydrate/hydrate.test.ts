@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/app-state.js";
 import { createComponent } from "../../component/index.js";
+import { isComment } from "../../dom/type-guards.js";
 import { $ } from "../../element/index.js";
 import { $div, $main, $nav } from "../../elements/index.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
 import { createValue, mergeValues } from "../../observable/value.js";
 import { enableClientMode, enableSSRMode, getAppState } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
-import { isComment } from "../../dom/type-guards.js";
 import { renderToString } from "../render-to-string.js";
 import { setSSRScope } from "../ssr-scope.js";
 import type { HydrationData } from "../types.js";

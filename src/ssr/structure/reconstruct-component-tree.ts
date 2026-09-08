@@ -1,7 +1,7 @@
 import { getAppState } from "../../app-state/app-state.js";
+import { isMarkerComment } from "../../component/type-guards.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
 import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
-import { isMarkerComment } from "../../component/type-guards.js";
 import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**

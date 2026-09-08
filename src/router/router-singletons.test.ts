@@ -1,3 +1,4 @@
+import { afterEach, beforeEach, expect, it } from "vitest";
 import { getAppState } from "../app-state/app-state.js";
 import { createComponent } from "../component/create-component.js";
 import { mount } from "../dom/mount.js";
@@ -5,7 +6,6 @@ import { $div } from "../elements/div.js";
 import { isValue } from "../observable/type-guards.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
 import type { CleanupFunction } from "../types.js";
-import { afterEach, beforeEach, expect, it } from "vitest";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_BROWSER_ROUTER, DATA_KEY_HASH_ROUTER } from "./constants.js";
 import { hashRouter } from "./hash-router.js";

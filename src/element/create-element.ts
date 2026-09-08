@@ -1,3 +1,4 @@
+import { getComponentScope } from "../component/lifecycle/component-scope.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument } from "../dom/get-document.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
@@ -5,9 +6,8 @@ import { isHydrating } from "../ssr/hydrate/storage.js";
 import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { isArray, isNullish, isObj, isStr } from "../util/type-guards.js";
-import { isValidSeidrChild } from "./type-guards.js";
-import { getComponentScope } from "../component/lifecycle/component-scope.js";
 import { assignProps } from "./assign-props.js";
+import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps } from "./types.js";
 
 /**

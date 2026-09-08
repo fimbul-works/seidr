@@ -1,9 +1,9 @@
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createComponent } from "../../component/create-component.js";
 import { $div } from "../../elements/div.js";
 import { renderToString } from "../../ssr/render-to-string.js";
 import { clearTestAppState, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
 import { clearRouterState } from "../test/index.js";

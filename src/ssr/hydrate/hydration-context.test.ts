@@ -6,8 +6,8 @@ import { $button, $div, $form, $input, $label, $span } from "../../elements/inde
 import { enableClientMode, enableSSRMode, getAppState } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { renderToString } from "../render-to-string.js";
-import { clearHydrationData } from "./storage.js";
 import { hydrate } from "./hydrate.js";
+import { clearHydrationData } from "./storage.js";
 
 describe("Hydration Context", () => {
   let cleanupClientMode: CleanupFunction;

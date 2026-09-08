@@ -1,7 +1,7 @@
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
-import { Value } from "../observable/value.js";
+import type { Value } from "../observable/value.js";
 import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**

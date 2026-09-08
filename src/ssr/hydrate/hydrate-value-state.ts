@@ -1,9 +1,8 @@
-import { isHydrating } from "./storage.js";
-import type { Value } from "../../observable/value.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
 import { unwrapValue } from "../../observable/unwrap-value.js";
+import type { Value } from "../../observable/value.js";
 import { isNullish } from "../../util/type-guards.js";
-import { getHydrationData } from "./storage.js";
+import { getHydrationData, isHydrating } from "./storage.js";
 
 /**
  * Hydrate Value state value during hydration.

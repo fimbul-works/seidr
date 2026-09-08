@@ -1,14 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { setAppStateProvider } from "../app-state/app-state.js";
-import { createAppState } from "../app-state/create-app-state.js";
+import { describe, expect, it, vi } from "vitest";
 import { TYPE_PROP } from "../constants.js";
+import { describeDualMode } from "../test-setup/dual-mode.js";
 import { createValue, mergeValues, TYPE_VALUE } from "./value";
 
-// Test app state setup
-const testAppState1 = createAppState(1);
-const testAppState2 = createAppState(2);
-
-describe("Value", () => {
+describeDualMode("Value", () => {
   describe("createValue", () => {
     describe("basic functionality", () => {
       it("should initialize with the provided value", () => {

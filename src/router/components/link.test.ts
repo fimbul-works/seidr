@@ -1,9 +1,9 @@
+import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { createComponent } from "../../component/create-component.js";
 import { mount } from "../../dom/mount.js";
 import { $span } from "../../elements/span.js";
 import { createValue } from "../../observable/value.js";
 import { describeDualMode } from "../../test-setup/dual-mode.js";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Link } from "./link.js";
 
 // Mock useNavigate

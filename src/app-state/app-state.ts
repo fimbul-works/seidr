@@ -1,10 +1,8 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-// import { useScope } from "../component/use-scope.js";
-// import { isServer } from "../util/environment/is-server.js";
-import { createAppState } from "./create-app-state.js";
-import type { AppState } from "./types.js";
 import { getComponentScope } from "../component/lifecycle/component-scope.js";
 import { isServer } from "../util/environment/is-server.js";
+import { createAppState } from "./create-app-state.js";
+import type { AppState } from "./types.js";
 
 /** Default application state */
 const defaultAppState: AppState = createAppState(0);

@@ -1,8 +1,8 @@
+import { beforeEach, expect, it } from "vitest";
 import { createComponent } from "../../component/create-component.js";
 import { mount } from "../../dom/mount.js";
 import { $div } from "../../elements/div.js";
 import { describeDualMode } from "../../test-setup/dual-mode.js";
-import { beforeEach, expect, it } from "vitest";
 import { Router } from "../components/router.js";
 import { initRouter } from "../init-router.js";
 import { useNavigate } from "./use-navigate.js";

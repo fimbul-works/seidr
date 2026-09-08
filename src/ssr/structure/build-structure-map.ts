@@ -1,8 +1,8 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
+import { isComponent, isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
 import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
-import { isComponent, isMarkerComment } from "../../component/type-guards.js";
 import { SeidrError } from "../../types.js";
 import type { StructureMapTuple } from "./types.js";
 

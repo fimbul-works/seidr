@@ -1,3 +1,4 @@
+import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { createComponent } from "../../component/create-component.js";
 import { List } from "../../components/list.js";
 import { Suspense } from "../../components/suspense.js";
@@ -24,7 +25,6 @@ import {
   resetRequestIdCounter,
 } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
-import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { usePathname } from "../hooks/use-pathname.js";
 import { clearRouterState } from "../test/index.js";

@@ -1,6 +1,6 @@
+import { beforeEach, expect, it, vi } from "vitest";
 import { getAppState } from "../app-state/app-state.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
-import { beforeEach, expect, it, vi } from "vitest";
 import { DATA_KEY_ROUTER } from "./constants.js";
 import { history } from "./history.js";
 import { initRouter } from "./init-router.js";

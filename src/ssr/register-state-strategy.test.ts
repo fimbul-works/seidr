@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { getAppState } from "../app-state/app-state.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
-import { createValue, Value } from "../observable/value.js";
+import { createValue, type Value } from "../observable/value.js";
 import { enableClientMode } from "../test-setup/index.js";
 import type { CleanupFunction } from "../types.js";
 import { registerStateStrategy } from "./register-state-strategy.js";

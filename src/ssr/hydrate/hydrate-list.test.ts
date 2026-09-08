@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { List } from "../../components/list.js";
 import { $ } from "../../element/index.js";
 import { $article, $div, $h1, $h2, $main } from "../../elements/index.js";
-import { createValue, Value } from "../../observable/value.js";
+import { createValue, type Value } from "../../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { inServer } from "../../util/environment/in-server.js";

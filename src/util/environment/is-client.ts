@@ -2,7 +2,7 @@
 
 import { getAppState } from "../../app-state/app-state.js";
 import { DATA_KEY_IS_SSR } from "../../constants.js";
-import { isNullish, isFn } from "../type-guards.js";
+import { isFn, isNullish } from "../type-guards.js";
 
 /**
  * Returns true if the current environment is the browser.

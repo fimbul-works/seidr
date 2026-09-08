@@ -1,5 +1,5 @@
-import { $ } from "./create-element.js";
 import { isNullish } from "../util/type-guards.js";
+import { $ } from "./create-element.js";
 import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps } from "./types.js";
 

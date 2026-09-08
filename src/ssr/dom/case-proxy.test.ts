@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
-import { createCaseProxy } from "./case-proxy";
 import { createValue } from "../../observable/value";
+import { createCaseProxy } from "./case-proxy";
 
 describe("CaseProxy", () => {
   describe("Basic CamelCase to KebabCase mapping", () => {

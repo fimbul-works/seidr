@@ -1,13 +1,10 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { assignProp } from "../../element/assign-prop";
 import { createValue } from "../../observable/value";
-import { onAttached } from "./on-attached";
-import { onMounted } from "./on-mounted";
-import { onUnmounted } from "./on-unmounted";
+import { onAttached, onAttachedFns } from "./on-attached";
+import { onMounted, onMountedFns } from "./on-mounted";
+import { onUnmounted, onUnmountedFns } from "./on-unmounted";
 import { watchMutations } from "./watch-mutations";
-import { onAttachedFns } from "./on-attached";
-import { onMountedFns } from "./on-mounted";
-import { onUnmountedFns } from "./on-unmounted";
 
 // Helper to wait for MutationObserver records and microtasks to flush
 const flushMutationQueue = async () => {

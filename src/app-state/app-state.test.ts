@@ -1,12 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { encodeBase62 } from "@fimbul-works/futhark";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component/create-component";
 import { setComponentScope } from "../component/lifecycle/component-scope";
 import { $ } from "../element";
+import { createValue } from "../observable";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { getAppState, getNextValueId, setAppStateID } from "./app-state";
-import { createValue } from "../observable";
 
 describe("AppState Infrastructure", () => {
   let restore: CleanupFunction;

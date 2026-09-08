@@ -5,8 +5,8 @@ import type { SeidrChild } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/value.js";
 import { createValue } from "../observable/value.js";
-import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
+import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
 import { wrapError } from "../util/wrap-error.js";
 

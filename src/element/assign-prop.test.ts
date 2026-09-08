@@ -1,12 +1,11 @@
 import { describe, expect, it } from "vitest";
+import { onAttachedFns } from "../component/lifecycle/on-attached";
+import { onUnmountedFns } from "../component/lifecycle/on-unmounted";
 import { createValue } from "../observable/value";
 import { describeDualMode } from "../test-setup/dual-mode";
 import { mockComponentScope } from "../test-setup/mock";
 import { SeidrError } from "../types";
 import { assignProp } from "./assign-prop";
-import { onAttachedFns } from "../component/lifecycle/on-attached";
-import { onMountedFns } from "../component/lifecycle/on-mounted";
-import { onUnmountedFns } from "../component/lifecycle/on-unmounted";
 
 describeDualMode("assignProp", ({ getDocument }) => {
   mockComponentScope();
@@ -14,10 +13,6 @@ describeDualMode("assignProp", ({ getDocument }) => {
   // Helper to trigger lifecycle on elements in tests
   const triggerAttach = (el: HTMLElement) => {
     onAttachedFns?.get(el)?.forEach((fn) => fn());
-  };
-
-  const triggerMount = (el: HTMLElement) => {
-    onMountedFns?.get(el)?.forEach((fn) => fn(el.parentElement!));
   };
 
   const triggerUnmount = (el: HTMLElement) => {

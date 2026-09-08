@@ -3,7 +3,7 @@ import { getAppState } from "../app-state/app-state.js";
 import type { OnAttachedFunction, OnMountedFunction, SeidrComponent } from "../component/types.js";
 import { DATA_KEY_COMPONENT_CURSOR, DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
-import { CleanupFunction } from "../types.js";
+import type { CleanupFunction } from "../types.js";
 
 /**
  * Mocks the component lifecycle hooks for tests that need to run in SSR mode

@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/app-state.js";
 import { createComponent } from "../../component/index.js";
+import type { SeidrComponent, SeidrComponentFactory } from "../../component/types.js";
 import { Suspense, Switch } from "../../components/index.js";
 import { List } from "../../components/list.js";
 import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
@@ -10,7 +11,6 @@ import { enableSSRMode, getAppState } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { renderToString } from "../render-to-string.js";
 import { buildStructureMap } from "./build-structure-map.js";
-import { SeidrComponent, SeidrComponentFactory } from "../../component/types.js";
 
 describe("buildStructureMap", () => {
   let cleanup: CleanupFunction;

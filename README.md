@@ -30,7 +30,7 @@
 - 🔧 **Functional API** — Simple, composable functions for DOM creation and state
 - 📦 **Tiny Footprint**
   - Hello World: **3.9KB** (brotli)
-  - TodoMVC: **5.2KB** (brotli)
+  - TodoMVC: **5.3KB** (brotli)
   - SSR Enabled: **8.9KB** (brotli) — Includes reactivity, DOM bindings, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Ready for SSR** — Automatic state capture and deterministic lock-step hydration

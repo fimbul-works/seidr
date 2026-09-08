@@ -1,20 +1,23 @@
+import { fastMix } from "@fimbul-works/hash";
 import { getAppState } from "../app-state/app-state.js";
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
 import { createReactiveValueNodes } from "../dom/append-child.js";
 import { $text } from "../dom/node/text.js";
 import type { SeidrChild } from "../element/types.js";
-import { isComponent } from "./type-guards.js";
 import { isValue } from "../observable/type-guards.js";
-import { defineValueProp } from "../util/define-prop.js";
-import { fastMix } from "@fimbul-works/hash";
-import { fastHash } from "../util/fast-hash.js";
-import { isArray, isBool, isFn, isNullish, isNum, isStr } from "../util/type-guards.js";
-import { isServer } from "../util/environment/is-server.js";
-import { getSSRScope } from "../ssr/ssr-scope.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
+import { getSSRScope } from "../ssr/ssr-scope.js";
+import type { CleanupFunction } from "../types.js";
+import { defineValueProp } from "../util/define-prop.js";
+import { isServer } from "../util/environment/is-server.js";
+import { fastHash } from "../util/fast-hash.js";
+import { isArray, isBool, isFn, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { getComponentScope, setComponentScope } from "./lifecycle/component-scope.js";
+import { onAttached } from "./lifecycle/on-attached.js";
+import { onMounted } from "./lifecycle/on-mounted.js";
 import { onUnmountedFns } from "./lifecycle/on-unmounted.js";
+import { isComponent } from "./type-guards.js";
 import type {
   OnAttachedFunction,
   OnMountedFunction,
@@ -23,7 +26,6 @@ import type {
   SeidrComponentFactoryPureFunction,
 } from "./types.js";
 import { setComponentNodes } from "./util/set-component-nodes.js";
-import type { CleanupFunction } from "../types.js";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -101,8 +103,20 @@ export function createComponent<P = void>(
           }
         }
       },
-      onMount: (fn: OnMountedFunction) => componentMountedFns.push(fn),
-      onAttach: (fn: OnAttachedFunction) => componentAttachedFns.push(fn),
+      onMount: (fn: OnMountedFunction) => {
+        if (currentComponent.nodes.length > 0) {
+          onMounted(fn, currentComponent.nodes[0]);
+        } else {
+          componentMountedFns.push(fn);
+        }
+      },
+      onAttach: (fn: OnAttachedFunction) => {
+        if (currentComponent.nodes.length > 0) {
+          onAttached(fn, currentComponent.nodes[0]);
+        } else {
+          componentAttachedFns.push(fn);
+        }
+      },
       onUnmount: (fn: CleanupFunction) => componentUnmountedFns.push(fn),
       owner: parentComponent,
       unmount(): void {
@@ -200,6 +214,17 @@ export function createComponent<P = void>(
       const result = factory(props);
       const nodes = (isArray(result) ? result : [result]).filter(Boolean).flatMap(childToNodes);
       setComponentNodes(currentComponent, nodes);
+
+      if (componentAttachedFns.length > 0 && currentComponent.nodes.length > 0) {
+        const target = currentComponent.nodes[0];
+        componentAttachedFns.forEach((fn) => onAttached(fn, target));
+        componentAttachedFns.length = 0;
+      }
+      if (componentMountedFns.length > 0 && currentComponent.nodes.length > 0) {
+        const target = currentComponent.nodes[0];
+        componentMountedFns.forEach((fn) => onMounted(fn, target));
+        componentMountedFns.length = 0;
+      }
     } catch (error) {
       console.error(error);
       throw error;
