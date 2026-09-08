@@ -1,9 +1,9 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { useScope } from "../component";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createComponent } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { Seidr } from "../seidr";
+import { createValue } from "../observable";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Show } from "./show";
@@ -20,10 +20,11 @@ describeDualMode("Show Component", ({ getDocument }) => {
 
   afterEach(() => {
     unmount?.();
+    container?.remove();
   });
 
-  it("should render and toggle component based on condition", () => {
-    const isVisible = new Seidr(false);
+  it("should render and toggle component based on boolean condition", () => {
+    const isVisible = createValue(false);
     const View = () => $("span", { textContent: "Visible" });
 
     const Parent = () => $("div", { className: "parent" }, [Show(isVisible, View)]);
@@ -31,49 +32,51 @@ describeDualMode("Show Component", ({ getDocument }) => {
     unmount = mount(Parent, container);
 
     const parentEl = container.querySelector(".parent")!;
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Show-`);
-    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Show-`);
-    expect(parentEl.innerHTML).not.toContain("Visible");
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}`);
+    expect(parentEl.innerHTML).toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}`);
+    expect(parentEl.textContent).not.toContain("Visible");
 
-    isVisible.value = true;
-    expect(parentEl.innerHTML).toContain("Visible");
+    isVisible(true);
+    expect(parentEl.textContent).toContain("Visible");
 
-    isVisible.value = false;
-    expect(parentEl.innerHTML).not.toContain("Visible");
+    isVisible(false);
+    expect(parentEl.textContent).not.toContain("Visible");
   });
 
-  it("should call onMount when component is shown", () => {
-    const mountFn = vi.fn();
-    const isVisible = new Seidr(false);
+  it("should render fallback factory when condition is false", () => {
+    const isVisible = createValue(false);
+    const View = () => $("span", { textContent: "Main Content" });
+    const Fallback = () => $("span", { textContent: "Fallback Content" });
 
-    const View = () => {
-      useScope().onMount((parent) => mountFn(parent));
-      return $("span", { textContent: "Visible" });
-    };
+    unmount = mount(() => Show(isVisible, View, Fallback), container);
 
-    const Parent = () => {
-      return $("div", { className: "parent" }, [Show(isVisible, View)]);
-    };
+    expect(container.textContent).toBe("Fallback Content");
 
-    unmount = mount(Parent, container);
+    isVisible(true);
+    expect(container.textContent).toBe("Main Content");
 
-    isVisible.value = true;
-    expect(mountFn).toHaveBeenCalledWith(expect.anything());
+    isVisible(false);
+    expect(container.textContent).toBe("Fallback Content");
   });
 
-  it("should destroy scope when condition becomes false", () => {
-    const isVisible = new Seidr(true);
-    const scopeDestroyed = vi.fn();
+  it("should properly unmount child component when condition becomes false", () => {
+    const isVisible = createValue(true);
+    const unmountedSpy = vi.fn();
 
-    const View = () => {
-      useScope().onUnmount(scopeDestroyed);
-      return $("span", { textContent: "Visible" });
-    };
+    const View = createComponent(() => {
+      const el = $("span", { textContent: "Visible" });
+      const comp = createComponent(() => el)();
+      comp.onUnmount(unmountedSpy);
+      return comp;
+    });
 
     unmount = mount(() => Show(isVisible, View), container);
 
-    isVisible.value = false;
+    expect(container.textContent).toBe("Visible");
+    expect(unmountedSpy).not.toHaveBeenCalled();
 
-    expect(scopeDestroyed).toBeCalled();
+    isVisible(false);
+    expect(container.textContent).toBe("");
+    expect(unmountedSpy).toHaveBeenCalled();
   });
 });

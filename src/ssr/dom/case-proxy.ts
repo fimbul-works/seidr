@@ -1,8 +1,8 @@
-import type { ReactiveValue } from "../../element/types.js";
-import { unwrapSeidr } from "../../seidr/unwrap-seidr.js";
+import { ReactiveValue } from "../../element/types.js";
+import { unwrapValue } from "../../observable/unwrap-value.js";
 import { SeidrError } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
-import { isEmpty, isStr } from "../../util/type-guards/primitive-types.js";
+import { isNullish, isStr } from "../../util/type-guards.js";
 import { kebabToCamel } from "../util/string.js";
 
 /**
@@ -168,8 +168,8 @@ export function createCaseProxy<
         }
 
         // Handle reactive values
-        const value = unwrapSeidr(storage[key]);
-        if (isEmpty(value) || value === false) {
+        const value = unwrapValue(storage[key]);
+        if (isNullish(value) || value === false) {
           continue;
         }
 

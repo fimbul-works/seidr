@@ -1,4 +1,7 @@
 {
+  "files": {
+    "includes": ["**", "!**/node_modules", "!**/dist", "!**/bundles"]
+  },
   "formatter": {
     "indentStyle": "space",
     "indentWidth": 2,
@@ -12,7 +15,8 @@
       },
       "complexity": {
         "noForEach": "off",
-        "noCommaOperator": "off"
+        "noCommaOperator": "off",
+        "noArguments": "off"
       },
       "suspicious": {
         "noAssignInExpressions": "off",

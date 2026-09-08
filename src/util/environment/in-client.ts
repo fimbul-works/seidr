@@ -9,4 +9,4 @@ import { isClient } from "./is-client.js";
  * @param {() => T} fn - The function to execute purely on the client
  * @returns {T} The result of the function
  */
-export const inClient = <T>(fn: () => T): T => (isClient() && fn()) as T;
+export const inClient = <T>(fn: () => T): T => (isClient() ? fn() : (undefined as T));

@@ -1,9 +1,9 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
+import { isComment } from "../../dom/type-guards.js";
 import type { ReactiveCSSStyleDeclaration } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
-import { isComment } from "../../util/type-guards/dom-node-types.js";
-import { isFn, isObj, isStr } from "../../util/type-guards/primitive-types.js";
+import { isFn, isObj, isStr } from "../../util/type-guards.js";
 import { escapeAttribute } from "../util/escape-string.js";
 import type { SSRDocument } from "./ssr-document.js";
 import type { SSRNodeList } from "./ssr-node-list.js";

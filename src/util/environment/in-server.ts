@@ -13,7 +13,7 @@ import { isServer } from "./is-server.js";
  */
 export const inServer = <T>(fn: () => T): T => {
   if (!isServer()) {
-    return null as T;
+    return undefined as T;
   }
 
   const result = fn();

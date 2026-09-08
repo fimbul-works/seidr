@@ -1,12 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $ } from "../element/create-element";
-import { Seidr } from "../seidr/seidr";
-import { enableSSRMode, mockComponentScope } from "../test-setup";
+import { $ } from "../element/create-element.js";
+import { createValue, mergeValues } from "../observable/value.js";
+import { enableSSRMode } from "../test-setup/index.js";
 
 describe("SSR Integration Tests", () => {
   let cleanup: () => void;
-
-  mockComponentScope();
 
   beforeEach(() => {
     cleanup = enableSSRMode();
@@ -49,8 +47,8 @@ describe("SSR Integration Tests", () => {
   });
 
   describe("Reactive Bindings in SSR", () => {
-    it("should handle initial value from Seidr observable", () => {
-      const count = new Seidr(42);
+    it("should handle initial value from Value observable", () => {
+      const count = createValue(42);
       const display = $("span", { textContent: count.as((n) => `Count: ${n}`) });
 
       // SSR should capture the initial value
@@ -58,28 +56,28 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle derived values", () => {
-      const firstName = new Seidr("John");
-      const lastName = new Seidr("Doe");
-      const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+      const firstName = createValue("John");
+      const lastName = createValue("Doe");
+      const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
 
       const element = $("div", { textContent: fullName });
       expect(element.toString()).toContain("John Doe");
     });
 
     it("should handle boolean attributes", () => {
-      const isLoading = new Seidr(false);
+      const isLoading = createValue(false);
       const button = $("button", { disabled: isLoading });
 
       // Initially disabled is false, so attribute shouldn't be present
       expect(button.toString()).not.toContain("disabled");
 
-      isLoading.value = true;
+      isLoading(true);
       // In SSR, the binding updates the ServerHTMLElement
       expect(button.toString()).toContain("disabled");
     });
 
     it("should handle class binding", () => {
-      const isActive = new Seidr(true);
+      const isActive = createValue(true);
       // @ts-expect-error
       const button = $("button", { className: isActive.as((a) => (a ? "active" : "")) });
 
@@ -87,8 +85,8 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle multiple reactive props", () => {
-      const theme = new Seidr("dark");
-      const count = new Seidr(5);
+      const theme = createValue("dark");
+      const count = createValue(5);
 
       const card = $("div", {
         className: theme.as((t) => `card theme-${t}`),
@@ -113,7 +111,7 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle checkbox with checked state", () => {
-      const isChecked = new Seidr(true);
+      const isChecked = createValue(true);
       const checkbox = $("input", { type: "checkbox", checked: isChecked });
 
       const html = checkbox.toString();
@@ -122,7 +120,7 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle disabled button", () => {
-      const isDisabled = new Seidr(true);
+      const isDisabled = createValue(true);
       const button = $("button", { disabled: isDisabled, textContent: "Click me" });
 
       const html = button.toString();
@@ -133,7 +131,7 @@ describe("SSR Integration Tests", () => {
 
   describe("Complex SSR Scenarios", () => {
     it("should render a complete user profile", () => {
-      const user = new Seidr({ name: "Alice", email: "alice@example.com", age: 30 });
+      const user = createValue({ name: "Alice", email: "alice@example.com", age: 30 });
 
       const profile = $("div", { className: "user-profile" }, [
         $("h2", { textContent: user.as((u) => u.name) }),
@@ -148,13 +146,13 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should render a todo list", () => {
-      const todos = new Seidr([
+      const todos = createValue([
         { id: 1, text: "Learn Seidr", completed: false },
         { id: 2, text: "Build SSR app", completed: true },
       ]);
 
       const list = $("ul", { className: "todo-list" }, [
-        ...todos.value.map((todo) =>
+        ...todos().map((todo) =>
           $("li", {
             className: todo.completed ? "completed" : "",
             textContent: todo.text,
@@ -169,22 +167,22 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should render a navigation menu", () => {
-      const isActive = new Seidr("home");
+      const isActive = createValue("home");
 
       const nav = $("nav", { className: "main-nav" }, [
         $("a", {
           href: "/home",
-          className: isActive.as<string>((a) => (a === "home" ? "active" : "")),
+          className: isActive.as((a) => (a === "home" ? "active" : "")),
           textContent: "Home",
         }),
         $("a", {
           href: "/about",
-          className: isActive.as<string>((a) => (a === "about" ? "active" : "")),
+          className: isActive.as((a) => (a === "about" ? "active" : "")),
           textContent: "About",
         }),
         $("a", {
           href: "/contact",
-          className: isActive.as<string>((a) => (a === "contact" ? "active" : "")),
+          className: isActive.as((a) => (a === "contact" ? "active" : "")),
           textContent: "Contact",
         }),
       ]);
@@ -196,17 +194,13 @@ describe("SSR Integration Tests", () => {
     });
 
     it("should handle show class binding based on multiple states", () => {
-      const isLoading = new Seidr(false);
-      const hasError = new Seidr(false);
-      const isSuccess = new Seidr(true);
+      const isLoading = createValue(false);
+      const hasError = createValue(false);
+      const isSuccess = createValue(true);
 
       // Create a merge observable for the className
-      const alertClass = Seidr.merge(
-        () =>
-          ["alert", isLoading.value && "loading", hasError.value && "error", isSuccess.value && "success"]
-            .filter(Boolean)
-            .join(" "),
-        [isLoading, hasError, isSuccess],
+      const alertClass = mergeValues(() =>
+        ["alert", isLoading() && "loading", hasError() && "error", isSuccess() && "success"].filter(Boolean).join(" "),
       );
 
       const alert = $("div", {

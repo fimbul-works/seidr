@@ -1,22 +1,4 @@
-import type { ComponentMeta } from "../component-new/types";
-
-/** Function to capture data from AppState for hydration */
-export type CaptureDataFn<T> = () => T;
-
-/** Function to restore data to AppState for hydration */
-export type RestoreDataFn<T> = (data: T) => void;
-
-/**
- * Data strategy for features and addons, for SSR friendly initialization and hydration.
- *
- * A strategy consists of a capture function, and a restore function.
- */
-export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>];
-
-/**
- * AppState data to restore application state during renderToString and hydration.
- */
-export type AppStateData = Record<string, any>;
+import type { SeidrComponent } from "../component/types.js";
 
 /**
  * AppState is used for application state management, SSR and hydration.
@@ -26,13 +8,13 @@ export interface AppState {
   ctxID: number;
 
   /** Counter for generating unique IDs */
-  seidrIdCounter: number;
+  uniqID: number;
 
   /** Main component registry */
-  components: Set<ComponentMeta>;
+  components: Set<SeidrComponent>;
 
   /** ChildNode to Component index mapping */
-  nodeIndex: WeakMap<ChildNode, ComponentMeta>;
+  nodeIndex: WeakMap<ChildNode, SeidrComponent>;
 
   /** Cache for marker comments indexed by component ID */
   markers: Map<string, [Comment, Comment]>;
@@ -42,13 +24,6 @@ export interface AppState {
 
   /** Data strategies for hydration */
   strategies: Map<string, DataStrategy>;
-
-  /**
-   * Whether the current state is for SSR.
-   * Used for testing.
-   * @internal
-   */
-  isSSR?: boolean;
 
   /**
    * Check if data exists.
@@ -106,3 +81,21 @@ export interface AppState {
    */
   destroy(): void;
 }
+
+/** Function to capture data from AppState for hydration */
+export type CaptureDataFn<T> = () => T;
+
+/** Function to restore data to AppState for hydration */
+export type RestoreDataFn<T> = (data: T) => void;
+
+/**
+ * Data strategy for features and addons, for SSR friendly initialization and hydration.
+ *
+ * A strategy consists of a capture function, and a restore function.
+ */
+export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>];
+
+/**
+ * AppState data to restore application state during renderToString and hydration.
+ */
+export type AppStateData = Record<string, any>;

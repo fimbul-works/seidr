@@ -1,3 +1,2 @@
-export * from "./get-first-node.js";
-export * from "./get-last-node.js";
-export * from "./mount-component.js";
+export * from "./get-marker-comments.js";
+export * from "./set-component-nodes.js";

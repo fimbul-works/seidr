@@ -1,6 +1,6 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
-import type { Seidr } from "../../seidr/seidr.js";
+import type { Value } from "../../observable/value.js";
 import { registerStateStrategy } from "../register-state-strategy.js";
 import type { HydrationData } from "../types.js";
 import type { HydrationDataRegistry } from "./types.js";
@@ -34,7 +34,7 @@ export function initHydrationData(hydrationData: HydrationData): void {
   const appState = getAppState();
   appState.setData(DATA_KEY_HYDRATION_DATA, {
     ...hydrationData,
-    registry: new Set<Seidr>(),
+    registry: new Set<Value>(),
   });
 }
 
@@ -42,4 +42,4 @@ export function initHydrationData(hydrationData: HydrationData): void {
  * Clears the hydration context.
  * This is called after hydration is complete.
  */
-export const clearHydrationData = (): void => getAppState().deleteData(DATA_KEY_HYDRATION_DATA) as any;
+export const clearHydrationData = () => getAppState().deleteData(DATA_KEY_HYDRATION_DATA);

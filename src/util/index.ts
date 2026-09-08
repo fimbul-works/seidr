@@ -1,2 +1,2 @@
-export * from "./type-guards/index.js";
+export * from "./type-guards.js";
 export * from "./wrap-error.js";

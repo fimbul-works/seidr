@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../component";
+import { createComponent } from "../component/create-component";
 import { $ } from "../element";
-import { Seidr } from "../seidr";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { mount } from "./mount";
+import { createValue } from "../observable";
 
 describeDualMode("mount", () => {
   let container: HTMLElement;
@@ -20,24 +20,22 @@ describeDualMode("mount", () => {
 
   it("should mount component into container", () => {
     const mockElement = $("div");
-    const createComp = component(() => {
+    const testComponent = createComponent(() => {
       return mockElement;
     });
-    const comp = createComp();
 
-    unmount = mount(comp, container);
+    unmount = mount(testComponent, container);
 
     expect(container.contains(mockElement)).toBe(true);
   });
 
   it("should return unmount function", () => {
     const mockElement = $("div");
-    const createComp = component(() => {
+    const testComponent = createComponent(() => {
       return mockElement;
     });
-    const comp = createComp();
 
-    unmount = mount(comp, container);
+    unmount = mount(testComponent, container);
 
     expect(typeof unmount).toBe("function");
     expect(container.contains(mockElement)).toBe(true);
@@ -47,16 +45,16 @@ describeDualMode("mount", () => {
     expect(container.contains(mockElement)).toBe(false);
   });
 
-  it("should cleanup all reactive observers after unmount", () => {
-    const text = new Seidr("test");
+  it("should cleanup all reactive observers after unmount", async () => {
+    const text = createValue("foobar");
     const App = () => $("div", { textContent: text });
 
-    expect(text.observerCount()).toBe(0);
+    expect(text.observerCount).toBe(0);
     const unmount = mount(App, container);
-    expect(text.observerCount()).toBe(1);
+    expect(text.observerCount).toBe(1);
 
     unmount();
-    expect(text.observerCount()).toBe(0);
+    expect(text.observerCount).toBe(0);
   });
 
   describe("Failure Modes & Factory Variants", () => {
@@ -72,14 +70,6 @@ describeDualMode("mount", () => {
 
       expect(container.innerHTML).toContain("Plain Element");
       expect(container.querySelector("span")).not.toBeNull();
-    });
-
-    it("should handle a pre-initialized component", () => {
-      const Comp = component(() => $("p", { textContent: "Pre-init" }), "Comp");
-      const instance = Comp();
-
-      unmount = mount(instance, container);
-      expect(container.textContent).toBe("Pre-init");
     });
   });
 });

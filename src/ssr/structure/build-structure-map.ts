@@ -1,81 +1,60 @@
-import type { Component, ComponentChildren } from "../../component/types.js";
+import { encodeBase62 } from "@fimbul-works/futhark";
+import type { SeidrComponent } from "../../component/types.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
+import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isComponent, isMarkerComment } from "../../component/type-guards.js";
 import { SeidrError } from "../../types.js";
-import { isComponent } from "../../util/type-guards/component-types.js";
-import { isComment, isHTMLElement, isTextNode } from "../../util/type-guards/dom-node-types.js";
 import type { StructureMapTuple } from "./types.js";
 
 /**
- * Collects all root physical nodes of a component (handling fragments and pass-throughs).
- * @param {Component} comp - Component to collect root nodes from
+ * Collects all root physical nodes of a component.
+ * @param {SeidrComponent} comp - Component to collect root nodes from
  * @returns {Node[]} Array of root DOM nodes
  */
-function collectRootNodes(comp: Component): Node[] {
-  if (comp.startMarker && comp.endMarker) {
-    const nodes: Node[] = [comp.startMarker];
-    let curr = comp.startMarker.nextSibling;
-    while (curr && curr !== comp.endMarker) {
-      nodes.push(curr);
-      curr = curr.nextSibling;
-    }
-    nodes.push(comp.endMarker);
-    return nodes;
+function collectRootNodes(comp: SeidrComponent): Node[] {
+  if (comp.nodes && comp.nodes.length > 0) {
+    return comp.nodes;
   }
-
-  const el = comp.element;
-  if (!el) return [];
-
-  const nodes: Node[] = [];
-  const walk = (item: ComponentChildren) => {
-    if (Array.isArray(item)) {
-      item.forEach(walk);
-    } else if (isComponent(item)) {
-      walk(item.element);
-    } else if (item) {
-      nodes.push(item);
-    }
-  };
-
-  walk(el);
-  return nodes;
+  return [];
 }
 
 /**
  * Builds a structure map for the given component.
  *
- * @param {Component} component - The component to build the structure map for
+ * @param {SeidrComponent} component - The component to build the structure map for
  * @returns {StructureMapTuple[]} An array of tuples representing the structure of the component
  */
-export function buildStructureMap(component: Component): StructureMapTuple[] {
+export function buildStructureMap(component: SeidrComponent): StructureMapTuple[] {
+  const createdIndex = (component as any).createdIndex as (ChildNode | SeidrComponent)[] | undefined;
+  if (!createdIndex || createdIndex.length === 0) {
+    return [];
+  }
+
+  const childCreatedIndex = ((component as any).childCreatedIndex as Map<Node | SeidrComponent, string>) || new Map();
+
   // Collect child component root nodes
-  const rootNodeSets = new Map<Component, Set<Node>>();
+  const rootNodeSets = new Map<SeidrComponent, Set<Node>>();
   for (const childComponent of component.children.values()) {
     rootNodeSets.set(childComponent, new Set(collectRootNodes(childComponent)));
   }
 
   // Build root nodes to component map
-  const rootNodeToComponent = new Map<Node, Component>();
+  const rootNodeToComponent = new Map<Node, SeidrComponent>();
   for (const [childComponent, roots] of rootNodeSets) {
     for (const root of roots) {
       rootNodeToComponent.set(root, childComponent);
     }
   }
 
-  // First pass: record parent nodes and component boundaries
-  const indexMap = new Map<Node | Component, number>();
-  const childParents = new Map<Node | Component, ParentNode>();
+  // First pass: map each created item to its index
+  const indexMap = new Map<Node | SeidrComponent, number>();
 
   let index = 0;
-  component.createdIndex.forEach((child) => {
+  createdIndex.forEach((child) => {
     // If boundary found, we skip the index
-    const boundaryId = component.childCreatedIndex.get(child);
+    const boundaryId = childCreatedIndex.get(child);
     if (boundaryId) {
       return;
-    }
-
-    // Track parent node
-    if (child.parentNode) {
-      childParents.set(child, child.parentNode!);
     }
 
     // Increment index
@@ -86,50 +65,62 @@ export function buildStructureMap(component: Component): StructureMapTuple[] {
       const childComponent = rootNodeToComponent.get(child);
       if (childComponent) {
         // Record component boundary
-        component.childCreatedIndex.set(child, childComponent.id);
-        return;
+        childCreatedIndex.set(child, String(childComponent.id));
       }
     }
   });
 
-  // Inverse parent node map for faster lookup
-  const parentChildren = childParents.entries().reduce((acc, [child, parent]) => {
-    if (!acc.has(parent)) {
-      acc.set(parent, new Set());
-    }
-    acc.get(parent)!.add(child);
-    return acc;
-  }, new Map<ParentNode, Set<Node | Component>>());
-
   // Second pass: construct structure tuples
   const tuples: StructureMapTuple[] = [];
-  component.createdIndex.forEach((child) => {
+  createdIndex.forEach((child) => {
     // Skip child components by boundary
-    if (component.childCreatedIndex.has(child)) {
+    if (childCreatedIndex.has(child)) {
       return;
     }
 
     // Construct tuples
     if (isComponent(child)) {
-      tuples.push([`${TAG_COMPONENT_PREFIX}${child.id}`]);
+      const compIdStr =
+        process.env.NODE_ENV === "production" ? encodeBase62(child.id) : `${child.name}-${encodeBase62(child.id)}`;
+      tuples.push([`${TAG_COMPONENT_PREFIX}${compIdStr}`]);
     } else if (isHTMLElement(child)) {
       const tuple: StructureMapTuple = [child.tagName.toLowerCase()];
-      // Check if child is a parent node
-      if (parentChildren.has(child)) {
-        for (const childOfParent of parentChildren.get(child)!) {
-          const index = indexMap.get(childOfParent)!;
-          if (index === undefined) {
+      if (child.childNodes && child.childNodes.length > 0) {
+        const seenChildComponents = new Set<SeidrComponent>();
+        for (let i = 0; i < child.childNodes.length; i++) {
+          const domChild = child.childNodes[i];
+
+          const childComp = rootNodeToComponent.get(domChild);
+          if (childComp) {
+            if (!seenChildComponents.has(childComp)) {
+              seenChildComponents.add(childComp);
+              const idx = indexMap.get(childComp);
+              if (idx !== undefined) {
+                tuple.push(idx);
+              }
+            }
             continue;
           }
-          // Add child indices to the element tuple
-          tuple.push(index);
+
+          if (isMarkerComment(domChild)) {
+            continue;
+          }
+
+          const idx = indexMap.get(domChild as ChildNode);
+          if (idx !== undefined) {
+            tuple.push(idx);
+          }
         }
       }
       tuples.push(tuple);
     } else if (isTextNode(child)) {
       tuples.push([TAG_TEXT]);
     } else if (isComment(child)) {
-      tuples.push([child.nodeValue!.startsWith(TAG_COMMENT) ? `${TAG_COMMENT}:${child.nodeValue}` : TAG_COMMENT]);
+      if (isMarkerComment(child)) {
+        return;
+      }
+      const val = child.nodeValue || child.textContent || "";
+      tuples.push([val.startsWith(TAG_COMMENT) ? `${TAG_COMMENT}:${val}` : TAG_COMMENT]);
     } else {
       throw new SeidrError("Unknown component child", { cause: child });
     }

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
-import { Seidr } from "../../seidr/seidr";
 import { createCaseProxy } from "./case-proxy";
+import { createValue } from "../../observable/value";
 
 describe("CaseProxy", () => {
   describe("Basic CamelCase to KebabCase mapping", () => {
@@ -86,11 +86,11 @@ describe("CaseProxy", () => {
     });
 
     test("handles reactive values", () => {
-      const s = new Seidr("initial");
+      const s = createValue("initial");
       const { proxy } = createCaseProxy<any, any>();
       proxy.foo = s;
       expect(proxy.toString()).toBe('foo="initial"');
-      s.value = "updated";
+      s("updated");
       expect(proxy.toString()).toBe('foo="updated"');
     });
 

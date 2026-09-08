@@ -21,7 +21,6 @@ export function setAppStateID(id: number) {
 export function clearTestAppState() {
   // Clean up data
   testAppState.destroy();
-  testAppState.isSSR = false;
 }
 
 /**

@@ -1,8 +1,8 @@
-import { mount, Seidr } from "@fimbul-works/seidr";
-import { $button, $div, $span } from "@fimbul-works/seidr/html";
+import { mount, createValue } from "../src/index";
+import { $button, $div, $span } from "../src/elements";
 
 export const Counter = () => {
-  const count = new Seidr(0);
+  const count = createValue(0);
   const disabled = count.as((value) => value >= 10);
 
   return $div(
@@ -16,12 +16,12 @@ export const Counter = () => {
           className: "btn btn-primary",
           textContent: "Increment",
           disabled, // Reactive boolean binding!
-          onclick: () => count.value++,
+          onclick: () => count((c) => c + 1),
         }),
         $button({
           className: "btn btn-secondary",
           textContent: "Reset",
-          onclick: () => (count.value = 0),
+          onclick: () => (count(0)),
         }),
       ]),
     ],

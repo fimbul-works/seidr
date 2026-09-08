@@ -1,6 +1,6 @@
 import { beforeEach, expect, it } from "vitest";
+import { isHTMLElement } from "../dom/type-guards";
 import { describeDualMode, mockComponentScope } from "../test-setup";
-import { isHTMLElement } from "../util/type-guards/dom-node-types";
 import { $ } from "./create-element";
 
 describeDualMode("$ (createElement)", ({ getDocument }) => {
@@ -58,5 +58,18 @@ describeDualMode("$ (createElement)", ({ getDocument }) => {
     expect(anchor.tagName).toBe("A");
     expect(anchor.href).toContain("#");
     expect(anchor.textContent).toBe("Link");
+  });
+
+  it("should support defining children directly as 2nd parameter without props", () => {
+    const div1 = $("div", "Hello Direct Child");
+    expect(div1.textContent).toBe("Hello Direct Child");
+
+    const span = document.createElement("span");
+    span.textContent = "Inner";
+    const div2 = $("div", span);
+    expect(div2.children[0]).toBe(span);
+
+    const div3 = $("div", [document.createElement("span"), "text"]);
+    expect(div3.childNodes.length).toBe(2);
   });
 });

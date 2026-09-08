@@ -1,6 +1,7 @@
 import { getAppState } from "../../app-state/app-state.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
-import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards/dom-node-types.js";
+import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isMarkerComment } from "../../component/type-guards.js";
 import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**
@@ -13,7 +14,7 @@ export const reconstructComponentTree = (
 ): ComponentTreeNode[] => {
   const rootComponentId = Object.keys(componentStructures)[0];
 
-  // 2. State for synchronization
+  // State for synchronization
   let currentDomNodes = rootNodes;
   let currentDomIndex = 0;
 
@@ -21,9 +22,9 @@ export const reconstructComponentTree = (
     while (currentDomIndex < currentDomNodes.length) {
       const node = currentDomNodes[currentDomIndex];
       if (isMarkerComment(node)) {
-        const data = (node as Comment).data;
+        const data = (node as Comment).data || (node as Comment).textContent || "";
         const isStart = data.startsWith(TAG_COMPONENT_PREFIX);
-        const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1); // ID
+        const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1);
 
         const state = getAppState();
         const markers = state.markers.get(id) || ([null, null] as unknown as [Comment, Comment]);
@@ -85,24 +86,25 @@ export const reconstructComponentTree = (
             }
           } else if (isTextNode(domNode)) {
             if (tag !== TAG_TEXT) {
-              // console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #text`);
               node.isMismatched = true;
             }
           } else if (isComment(domNode)) {
             if (tag !== TAG_COMMENT) {
-              // console.warn(`[Hydration] Node type mismatch at index ${creationIndex}: expected ${tag}, got #comment`);
               node.isMismatched = true;
             }
           }
         }
         currentDomIndex++;
 
-        if (indices.length > 0) {
+        if (indices.length > 0 || (domNode && domNode.childNodes.length > 0)) {
           const savedNodes = currentDomNodes;
           const savedIndex = currentDomIndex;
           currentDomNodes = domNode ? Array.from(domNode.childNodes) : [];
           currentDomIndex = 0;
-          node.children = indices.map((idx) => buildNode(idx, node.isMismatched));
+          if (indices.length > 0) {
+            node.children = indices.map((idx) => buildNode(idx, node.isMismatched));
+          }
+          skipMarkers();
           currentDomNodes = savedNodes;
           currentDomIndex = savedIndex;
         }

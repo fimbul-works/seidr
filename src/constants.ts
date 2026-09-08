@@ -22,9 +22,6 @@ export const TYPE_PROP = "$type";
 /** Prefix used for marker comments. */
 export const SEIDR_COMPONENT_START_PREFIX = "$";
 
-/** Prefix used for marker comments. */
-export const SEIDR_ASYNC_COMPONENT_PREFIX = "?";
-
 /** Suffix used for marker comments. */
 export const SEIDR_COMPONENT_END_PREFIX = "/";
 
@@ -43,6 +40,9 @@ export const TAG_COMPONENT_PREFIX = "$";
 /** Component scope data key. */
 export const DATA_KEY_COMPONENT_SCOPE = "seidr.component.scope";
 
+/** Mutation observer data key. */
+export const DATA_KEY_MUTATION_OBSERVERS = "seidr.mutation.observers";
+
 /** Current component cursor data key. */
 export const DATA_KEY_COMPONENT_CURSOR = "seidr.component.cursor";
 
@@ -54,6 +54,12 @@ export const DATA_KEY_HYDRATION_CTX = "seidr.hydration.context";
 
 /** Document data key. */
 export const DATA_KEY_DOCUMENT = "seidr.document";
+
+/**
+ * Data key for whether the current state is for SSR.
+ * @internal Used for testing.
+ */
+export const DATA_KEY_IS_SSR = "seidr.isSSR";
 
 /** SSR scope data key. */
 export const DATA_KEY_SSR_SCOPE = "seidr.ssr.scope";

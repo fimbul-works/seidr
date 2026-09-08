@@ -1,3 +1,3 @@
 export * from "./create-element.js";
 export * from "./element-factory.js";
-export * from "./types.js";
+export type { SeidrChild, SeidrNode } from "./types.js";

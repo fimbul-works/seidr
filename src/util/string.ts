@@ -4,4 +4,5 @@
  * @param {string} str The string to convert
  * @returns {string} The kebab-case string
  */
-export const camelToKebab = (str: string): string => str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+export const camelToKebab = <S extends string>(str: string): S =>
+  str.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`) as S;

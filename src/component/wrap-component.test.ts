@@ -3,8 +3,8 @@ import { $div } from "../elements";
 import { enableClientMode } from "../test-setup";
 import { describeDualMode } from "../test-setup/dual-mode";
 import type { CleanupFunction } from "../types";
-import { isComponentFactory } from "../util/type-guards/component-types";
-import { component } from "./component";
+import { createComponent } from "./create-component";
+import { isComponentFactory } from "./type-guards";
 import { wrapComponent } from "./wrap-component";
 
 describeDualMode("wrapComponent", () => {
@@ -19,7 +19,7 @@ describeDualMode("wrapComponent", () => {
   });
 
   it("should return existing factory if already wrapped", () => {
-    const factory = component(() => $div({ textContent: "test" }));
+    const factory = createComponent(() => $div({ textContent: "test" }));
     const wrapped = wrapComponent(factory);
     expect(wrapped).toBe(factory);
     expect(isComponentFactory(wrapped)).toBe(true);
@@ -33,13 +33,13 @@ describeDualMode("wrapComponent", () => {
 
     // Check execution
     const comp = wrapped();
-    expect((comp.element as HTMLElement).textContent).toBe("test");
+    expect((comp.nodes[0] as HTMLElement).textContent).toBe("test");
   });
 
   it("should handle props", () => {
     const fn = (props: { text: string }) => $div({ textContent: props.text });
     const wrapped = wrapComponent(fn);
     const comp = wrapped({ text: "hello" });
-    expect((comp.element as HTMLElement).textContent).toBe("hello");
+    expect((comp.nodes[0] as HTMLElement).textContent).toBe("hello");
   });
 });

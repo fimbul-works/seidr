@@ -1,8 +1,8 @@
 /// <reference types="vite/client" />
-import "../todo.css";
+import "./style.css";
 
 import { $getById, hydrate } from "@fimbul-works/seidr";
-import { TodoApp } from "../todo-mvc.js";
+import { BlogApp } from "./app.js";
 
 declare global {
   interface Window {
@@ -12,4 +12,7 @@ declare global {
 
 const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
-hydrate(TodoApp, $getById("app"), hydrationData);
+const appEl = $getById("app");
+if (appEl && hydrationData) {
+  hydrate(() => BlogApp(window.location.pathname), appEl, hydrationData);
+}

@@ -1,27 +1,30 @@
 import { getAppState, setAppStateProvider } from "../app-state/app-state.js";
 import { getSSRAppState, runWithAppState } from "../app-state/app-state.ssr.js";
-import type { ComponentFactoryFunction } from "../component/types.js";
-import { mountComponent } from "../component/util/mount-component.js";
+import { isComponent } from "../component/type-guards.js";
+import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
-import { getDocument } from "../dom/get-document.js";
+import { appendChild } from "../dom/append-child.js";
+import { getDocument, setDocumentProvider } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
 import type { SSRRenderResult } from "./types.js";
 
 /**
- * Renders a component to an HTML string with hydration data capture.
+ * Renders a component or factory function to an HTML string with hydration data capture.
  *
- * @param {ComponentFactoryFunction} factory - Component to render
- * @param {AppStateData | SSRInitFn} [dataOrInit={}] - Optional data object or initialization callback
+ * @param {SeidrComponentFactoryOrFunction} factory - Component or factory function to render
  * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
  */
-export async function renderToString(factory: ComponentFactoryFunction): Promise<SSRRenderResult> {
+export async function renderToString(factory: SeidrComponentFactoryOrFunction): Promise<SSRRenderResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
   if (process.env.VITEST) {
     prevSSR = process.env.VITEST && process.env.SEIDR_TEST_SSR;
     process.env.SEIDR_TEST_SSR = "true";
   }
+
+  const prevAppStateProvider = getAppState;
+  const prevDocumentProvider = getDocument;
 
   // Register SSR state provider
   setAppStateProvider(getSSRAppState);
@@ -35,19 +38,16 @@ export async function renderToString(factory: ComponentFactoryFunction): Promise
       setSSRScope(activeScope);
 
       try {
-        const comp = wrapComponent(factory, "Root")();
-        const doc = getDocument().createElement("div");
-        const anchor = getDocument().createComment("ssr-anchor");
-        doc.appendChild(anchor);
+        const comp: SeidrComponent = isComponent(factory) ? factory : wrapComponent(factory, "Root")();
 
-        mountComponent(comp, anchor);
-        anchor.remove();
+        const container = getDocument().createElement("div");
+        appendChild(container, comp);
 
-        // Trigger all promises
+        // Await all promises registered during SSR
         await activeScope.waitForPromises();
 
         // Use innerHTML to get the stringified content without the wrapping div
-        const html = doc.innerHTML;
+        const html = container.innerHTML;
         const hydrationData = activeScope.captureHydrationData();
 
         comp.unmount();
@@ -60,6 +60,9 @@ export async function renderToString(factory: ComponentFactoryFunction): Promise
       }
     });
   } finally {
+    setAppStateProvider(prevAppStateProvider);
+    setDocumentProvider(prevDocumentProvider);
+
     // Restore previous SSR state for tests
     if (process.env.VITEST) {
       if (prevSSR === undefined) {

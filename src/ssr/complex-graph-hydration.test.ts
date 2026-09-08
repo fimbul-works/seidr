@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $ } from "../element";
-import { DATA_KEY_STATE } from "../seidr/constants";
-import { Seidr } from "../seidr/seidr";
-import { enableClientMode, enableSSRMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { hydrate } from "./hydrate";
-import { clearHydrationData } from "./hydrate/storage";
-import { renderToString } from "./render-to-string";
+import { $ } from "../element/index.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import { createValue, mergeValues } from "../observable/value.js";
+import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
+import type { CleanupFunction } from "../types.js";
+import { hydrate } from "./hydrate/index.js";
+import { clearHydrationData } from "./hydrate/storage.js";
+import { renderToString } from "./render-to-string.js";
 
 describe("Complex Graph Hydration (4+ levels)", () => {
   let cleanupMode: CleanupFunction;
@@ -25,19 +25,19 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   it("should capture and hydrate a 4-level derivation chain", async () => {
     const App = () => {
       // Layer 0: Root observables
-      const a = new Seidr(1);
-      const b = new Seidr(2);
-      const c = new Seidr(3);
+      const a = createValue(1);
+      const b = createValue(2);
+      const c = createValue(3);
 
       // Layer 1: First level derivations
-      const ab = a.as((n) => n + b.value); // 1 + 2 = 3
-      const bc = b.as((n) => n + c.value); // 2 + 3 = 5
+      const ab = a.as((n) => n + b()); // 1 + 2 = 3
+      const bc = b.as((n) => n + c()); // 2 + 3 = 5
 
       // Layer 2: Second level derivations
-      const abc = a.as((n) => n + b.value + c.value); // 1 + 2 + 3 = 6
+      const abc = a.as((n) => n + b() + c()); // 1 + 2 + 3 = 6
 
       // Layer 3: Third level derivations
-      const sumOfSums = Seidr.merge(() => ab.value + bc.value, [ab, bc]); // 3 + 5 = 8
+      const sumOfSums = mergeValues(() => ab() + bc()); // 3 + 5 = 8
 
       // Layer 4: Fourth level derivation
       const final = sumOfSums.as((n) => n * 2); // 8 * 2 = 16
@@ -103,13 +103,13 @@ describe("Complex Graph Hydration (4+ levels)", () => {
       //    \ /
       //    abc
 
-      const a = new Seidr(10);
-      const b = new Seidr(5);
-      const c = new Seidr(3);
+      const a = createValue(10);
+      const b = createValue(5);
+      const c = createValue(3);
 
-      const ab = a.as((n) => n + b.value); // 10 + 5 = 15
-      const ac = a.as((n) => n + c.value); // 10 + 3 = 13
-      const abc = Seidr.merge(() => ab.value + ac.value, [ab, ac]); // 15 + 13 = 28
+      const ab = a.as((n) => n + b()); // 10 + 5 = 15
+      const ac = a.as((n) => n + c()); // 10 + 3 = 13
+      const abc = mergeValues(() => ab() + ac()); // 15 + 13 = 28
 
       return $("div", {}, [
         $("span", { textContent: ab }),
@@ -124,7 +124,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">13<"); // ac
     expect(html).toContain(">28<"); // abc
 
-    // Only a should be captured (it's the root that dependencies lead to)
+    // Only a, b, c should be captured
     const observableValues = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(observableValues).toContain(10);
 
@@ -142,15 +142,15 @@ describe("Complex Graph Hydration (4+ levels)", () => {
   it("should handle 5-level deep derivation chain", async () => {
     const App = () => {
       // Level 0: Roots
-      const a = new Seidr(1);
-      const b = new Seidr(1);
+      const a = createValue(1);
+      const b = createValue(1);
 
       // Level 1
       const l1_a = a.as((n) => n + 1); // 2
       const l1_b = b.as((n) => n + 1); // 2
 
       // Level 2
-      const l2 = Seidr.merge(() => l1_a.value + l1_b.value, [l1_a, l1_b]); // 4
+      const l2 = mergeValues(() => l1_a() + l1_b()); // 4
 
       // Level 3
       const l3 = l2.as((n) => n * 2); // 8

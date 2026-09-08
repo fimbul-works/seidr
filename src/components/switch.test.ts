@@ -1,138 +1,145 @@
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { component, useScope } from "../component";
-import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createComponent } from "../component";
 import { mount } from "../dom";
 import { $ } from "../element";
-import { Seidr } from "../seidr";
+import { createValue } from "../observable";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { Switch } from "./switch";
 
 describeDualMode("Switch Component", ({ getDocument }) => {
   let container: HTMLDivElement;
-  let document: Document;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    document = getDocument();
-    container = document.createElement("div");
-    document.body.appendChild(container);
+    const doc = getDocument();
+    container = doc.createElement("div");
+    doc.body.appendChild(container);
   });
 
   afterEach(() => {
     unmount?.();
+    container?.remove();
   });
 
-  it("should render nested components without markers when returning single HTMLElement", () => {
-    const Child = component(() => $("span", { textContent: "Child" }), "Child");
-    const Parent = component(() => $("div", {}, [Child()]), "Parent");
+  it("should switch between branches based on value", () => {
+    const state = createValue<"a" | "b" | "c">("a");
 
-    unmount = mount(Parent, container);
-
-    // Child should NOT have markers
-    expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_START_PREFIX}Child-`);
-    expect(container.innerHTML).not.toContain(`<!--${SEIDR_COMPONENT_END_PREFIX}Child-`);
-
-    expect(container.children[0]?.tagName).toBe("DIV");
-    expect(container.children[0]?.textContent).toBe("Child");
-    expect(container.children[0]?.children[0]?.tagName).toBe("SPAN");
-    expect(container.children[0]?.children[0]?.textContent).toBe("Child");
-  });
-
-  it("should switch between components", () => {
-    const mode = new Seidr("A");
-    const CompA = component(() => $("span", { textContent: "View A" }), "CompA");
-    const CompB = component(() => $("span", { textContent: "View B" }), "CompB");
-
-    const Parent = () => {
-      return $("div", { className: "parent" }, [
-        Switch(mode, {
-          A: CompA,
-          B: CompB,
+    const app = () =>
+      $("div", { className: "container" }, [
+        Switch(state, {
+          a: () => $("span", { textContent: "Branch A" }),
+          b: () => $("span", { textContent: "Branch B" }),
+          c: () => $("span", { textContent: "Branch C" }),
         }),
       ]);
-    };
 
-    unmount = mount(Parent, container);
+    unmount = mount(app, container);
 
-    const parentEl = container.querySelector(".parent")!;
-    expect(parentEl.innerHTML).toContain("View A");
+    expect(container.textContent).toBe("Branch A");
 
-    mode.value = "B";
-    expect(parentEl.innerHTML).toContain("View B");
-    expect(parentEl.innerHTML).not.toContain("View A");
+    state("b");
+    expect(container.textContent).toBe("Branch B");
 
-    mode.value = "C"; // No match
-    expect(parentEl.innerHTML).not.toContain("View B");
+    state("c");
+    expect(container.textContent).toBe("Branch C");
+
+    state("a");
+    expect(container.textContent).toBe("Branch A");
   });
 
-  it("should call onMount when switching components", () => {
-    const onMountFn = vi.fn();
-    const mode = new Seidr("A");
+  it("should render fallback when no branch matches", () => {
+    const state = createValue<string>("unknown");
 
-    const CompA = () => {
-      useScope().onMount((parent) => onMountFn("A", parent));
-      return $("span", { textContent: "View A" });
-    };
+    const app = () =>
+      Switch(
+        state,
+        {
+          home: () => $("h1", { textContent: "Home" }),
+          about: () => $("h1", { textContent: "About" }),
+        },
+        () => $("h1", { textContent: "404 Not Found" }),
+      );
 
-    const CompB = () => {
-      useScope().onMount((parent) => onMountFn("B", parent));
-      return $("span", { textContent: "View B" });
-    };
+    unmount = mount(app, container);
 
-    const Parent = () => {
-      return $("div", { className: "parent" }, [
-        Switch(mode, {
-          A: CompA,
-          B: CompB,
+    expect(container.textContent).toBe("404 Not Found");
+
+    state("home");
+    expect(container.textContent).toBe("Home");
+
+    state("missing");
+    expect(container.textContent).toBe("404 Not Found");
+  });
+
+  it("should support Map branches", () => {
+    const state = createValue<number>(1);
+    const branches = new Map([
+      [1, () => $("div", { textContent: "First" })],
+      [2, () => $("div", { textContent: "Second" })],
+    ]);
+
+    unmount = mount(() => Switch(state, branches), container);
+
+    expect(container.textContent).toBe("First");
+
+    state(2);
+    expect(container.textContent).toBe("Second");
+  });
+
+  it("should support reactive branches Map/Record", () => {
+    const state = createValue("tab1");
+    const branches = createValue<Record<string, () => Element>>({
+      tab1: () => $("div", { textContent: "Tab 1 Initial" }),
+    });
+
+    unmount = mount(() => Switch(state, branches), container);
+    expect(container.textContent).toBe("Tab 1 Initial");
+
+    // Dynamically update branches
+    branches({
+      tab1: () => $("div", { textContent: "Tab 1 Updated" }),
+      tab2: () => $("div", { textContent: "Tab 2 Dynamic" }),
+    });
+
+    expect(container.textContent).toBe("Tab 1 Updated");
+
+    state("tab2");
+    expect(container.textContent).toBe("Tab 2 Dynamic");
+  });
+
+  it("should unmount previous branch components when switching", () => {
+    const state = createValue("compA");
+    const unmountedA = vi.fn();
+    const unmountedB = vi.fn();
+
+    const CompA = createComponent(() => {
+      const comp = createComponent(() => $("div", { textContent: "Component A" }))();
+      comp.onUnmount(unmountedA);
+      return comp;
+    });
+
+    const CompB = createComponent(() => {
+      const comp = createComponent(() => $("div", { textContent: "Component B" }))();
+      comp.onUnmount(unmountedB);
+      return comp;
+    });
+
+    unmount = mount(
+      () =>
+        Switch(state, {
+          compA: CompA,
+          compB: CompB,
         }),
-      ]);
-    };
+      container,
+    );
 
-    unmount = mount(Parent, container);
-    expect(onMountFn).toHaveBeenCalledWith("A", expect.anything());
+    expect(container.textContent).toBe("Component A");
+    expect(unmountedA).not.toHaveBeenCalled();
 
-    onMountFn.mockClear();
-    mode.value = "B";
-    expect(onMountFn).toHaveBeenCalledWith("B", expect.anything());
-  });
-
-  it("should destroy scope of previous component when switching", () => {
-    const mode = new Seidr("A");
-    let scopeADestroyed = false;
-    let scopeBDestroyed = false;
-
-    const CompA = () => {
-      useScope().onUnmount(() => (scopeADestroyed = true));
-      return $("span", { textContent: "View A" });
-    };
-
-    const CompB = () => {
-      useScope().onUnmount(() => (scopeBDestroyed = true));
-      return $("span", { textContent: "View B" });
-    };
-
-    unmount = mount(() => Switch(mode, { A: CompA, B: CompB }), container);
-
-    mode.value = "B";
-    expect(scopeADestroyed).toBe(true);
-    expect(scopeBDestroyed).toBe(false);
-
-    mode.value = "A";
-    expect(scopeBDestroyed).toBe(true);
-  });
-
-  it("should update element reference when switching", () => {
-    const mode = new Seidr("A");
-    const CompA = component(() => $("span", { textContent: "View A" }), "CompA");
-    const CompB = component(() => $("span", { textContent: "View B" }), "CompB");
-
-    const sw = Switch(mode, { A: CompA, B: CompB });
-    unmount = mount(() => sw, container);
-
-    expect((sw.element as any).id).toContain("CompA");
-
-    mode.value = "B";
-    expect((sw.element as any).id).toContain("CompB");
+    state("compB");
+    expect(container.textContent).toBe("Component B");
+    expect(unmountedA).toHaveBeenCalled();
+    expect(unmountedB).not.toHaveBeenCalled();
   });
 });

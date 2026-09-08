@@ -1,5 +1,5 @@
-import type { Component } from "../../component/types.js";
-import type { Seidr } from "../../seidr/seidr.js";
+import type { SeidrComponent } from "../../component/types.js";
+import type { Value } from "../../observable/value.js";
 import { SeidrError } from "../../types.js";
 import type { ComponentTreeNode } from "../structure/types.js";
 import type { HydrationData } from "../types.js";
@@ -37,7 +37,7 @@ export interface HydrationContext {
   /**
    * Pushes a component onto the stack.
    */
-  pushComponent(component: Component): void;
+  pushComponent(component: SeidrComponent): void;
   /**
    * Pops a component from the stack.
    */
@@ -46,7 +46,7 @@ export interface HydrationContext {
   /**
    * Removes a component from the hydration mapping.
    */
-  removeComponent(component: Component): void;
+  removeComponent(component: SeidrComponent): void;
 
   /**
    * Returns true if the current component or any parent is mismatched.
@@ -67,11 +67,11 @@ export interface HydrationMismatchNode extends HTMLElement {
 }
 
 /**
- * Storage for hydration data and Seidr instances.
+ * Storage for hydration data and Value instances.
  */
 export interface HydrationDataRegistry extends HydrationData {
   /**
-   * Set of Seidr instances that have been hydrated.
+   * Set of Value instances that have been hydrated.
    */
-  registry: Set<Seidr>;
+  registry: Set<Value>;
 }

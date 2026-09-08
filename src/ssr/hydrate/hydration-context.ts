@@ -1,5 +1,6 @@
+import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../../app-state/app-state.js";
-import type { Component } from "../../component/types.js";
+import type { SeidrComponent } from "../../component/types.js";
 import {
   DATA_KEY_HYDRATION_CTX,
   ROOT_ATTRIBUTE,
@@ -8,7 +9,8 @@ import {
   TAG_TEXT,
 } from "../../constants.js";
 import { SeidrError } from "../../types.js";
-import { isComment, isHTMLElement, isMarkerComment, isTextNode } from "../../util/type-guards/dom-node-types.js";
+import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isMarkerComment } from "../../component/type-guards.js";
 import { reconstructComponentTree } from "../structure/reconstruct-component-tree.js";
 import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js";
 import { getHydrationData } from "./storage.js";
@@ -16,28 +18,32 @@ import type { HydrationContext, HydrationMismatchNode } from "./types.js";
 
 /**
  * Get the active hydration context from AppState.
- * @returns {HydrationContext} The active hydration context object
+ * @returns {HydrationContext | undefined} The active hydration context object
  */
-export const getHydrationContext = () => getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CTX);
+export const getHydrationContext = (): HydrationContext | undefined =>
+  getAppState().getData<HydrationContext>(DATA_KEY_HYDRATION_CTX);
 
 /**
  * Clear the active hydration context from AppState.
  */
-export const clearHydrationContext = () => getAppState().deleteData(DATA_KEY_HYDRATION_CTX) as any;
+export const clearHydrationContext = (): boolean => getAppState().deleteData(DATA_KEY_HYDRATION_CTX);
 
 /**
  * Initialize hydration context.
  *
  * @param {Element} container - Container DOM element
- * @returns {HydrationContext} The initialized hydratin context object
+ * @returns {HydrationContext} The initialized hydration context object
  * @throws {SeidrError} if hydration data is invalid
- * @throws {SeidrError} if no root nodes can be found in DOM
  */
-export function initHydrationContext(container: Element) {
+export function initHydrationContext(container: Element): HydrationContext {
   const appState = getAppState();
-  const hydrationData = getHydrationData()!;
+  const hydrationData = getHydrationData();
 
-  // Construct normalized component
+  if (!hydrationData?.components) {
+    throw new SeidrError("Hydration data missing or invalid components mapping");
+  }
+
+  // Construct normalized component map
   const components: Record<string, StructureMapTuple[]> = {};
   for (const key in hydrationData.components) {
     const parts = key.split(":");
@@ -45,7 +51,7 @@ export function initHydrationContext(container: Element) {
     components[componentId] = hydrationData.components[key];
   }
 
-  // Find the actual root nodes rendered by SSR (they have the ROOT_ATTRIBUTE, or are Seidr markers)
+  // Find the actual root nodes rendered by SSR
   const allNodes = Array.from(container.childNodes);
   let firstIdx = -1;
   let lastIdx = -1;
@@ -61,13 +67,13 @@ export function initHydrationContext(container: Element) {
     }
   }
 
-  const rootNodes: ChildNode[] = firstIdx === -1 ? [] : allNodes.slice(firstIdx, lastIdx + 1);
+  const rootNodes: ChildNode[] = firstIdx === -1 ? allNodes : allNodes.slice(firstIdx, lastIdx + 1);
 
   // Reconstruct virtual tree from tuples AND sync with DOM in one pass
   const componentTree = reconstructComponentTree(rootNodes, components);
 
-  // Wrap in a root component node to satisfy the componentNodeMap lookup
-  const rootComponentId = Object.keys(components)[0];
+  // Wrap in a root component node
+  const rootComponentId = Object.keys(components)[0] || "Root";
   const fullComponentTree: ComponentTreeNode[] = [
     {
       tag: `${TAG_COMPONENT_PREFIX}${rootComponentId}`,
@@ -77,8 +83,6 @@ export function initHydrationContext(container: Element) {
       isMismatched: false,
     },
   ];
-
-  console.log(fullComponentTree, null, 2);
 
   // Map all component nodes by ID for quick access
   const componentNodeMap = new Map<string, ComponentTreeNode>();
@@ -140,10 +144,16 @@ export function initHydrationContext(container: Element) {
   const cursors = new Map<string, number>();
   let currentComponentNode: ComponentTreeNode | null = null;
 
+  const getCompIdStr = (component: SeidrComponent) =>
+    process.env.NODE_ENV === "production"
+      ? encodeBase62(component.id)
+      : `${component.name}-${encodeBase62(component.id)}`;
+
   // Construct the hydration context object
   const ctx: HydrationContext = {
-    pushComponent(component: Component) {
-      let node = componentNodeMap.get(component.id);
+    pushComponent(component: SeidrComponent) {
+      const compIdStr = getCompIdStr(component);
+      let node = componentNodeMap.get(compIdStr);
 
       if (!node && treeStack.length === 0) {
         // Positional match for the root component
@@ -153,8 +163,8 @@ export function initHydrationContext(container: Element) {
       // If component is not in SSR map, create a virtual mismatched node to keep stack balance
       if (!node) {
         node = {
-          tag: `${TAG_COMPONENT_PREFIX}${component.id}`,
-          id: component.id,
+          tag: `${TAG_COMPONENT_PREFIX}${compIdStr}`,
+          id: compIdStr,
           creationIndex: -1,
           isMismatched: true,
           children: [],
@@ -177,11 +187,10 @@ export function initHydrationContext(container: Element) {
       treeStack.pop();
       currentComponentNode = treeStack[treeStack.length - 1] ?? null;
     },
-    removeComponent(component: Component) {
-      // Remove the component from the map so it's no longer hydrated
-      componentNodeMap.delete(component.id);
+    removeComponent(component: SeidrComponent) {
+      const compIdStr = getCompIdStr(component);
+      componentNodeMap.delete(compIdStr);
 
-      // Recursively remove children maps if they exist
       const walk = (nodeId: string) => {
         const node = componentNodeMap.get(nodeId);
         if (node?.children) {
@@ -194,7 +203,7 @@ export function initHydrationContext(container: Element) {
         }
       };
 
-      walk(component.id);
+      walk(compIdStr);
     },
     next() {
       if (currentComponentNode?.id) {
@@ -215,7 +224,7 @@ export function initHydrationContext(container: Element) {
       const nodes = claimMap.get(componentId) || [];
       const node = nodes[cursor];
 
-      // ALWAYS advance cursor if we tried to claim
+      // Always advance cursor
       this.next();
 
       if (!node) {
@@ -240,7 +249,7 @@ export function initHydrationContext(container: Element) {
           actualTag = node.nodeName;
         }
       } else if (isHTMLElement(node)) {
-        if (node.tagName.toLowerCase() !== tag) {
+        if (node.tagName.toLowerCase() !== tag.toLowerCase()) {
           mismatch = true;
           actualTag = node.tagName;
         }
@@ -255,7 +264,6 @@ export function initHydrationContext(container: Element) {
           currentComponentNode.isMismatched = true;
         }
 
-        // Return the original node but mark as mismatched
         (node as HydrationMismatchNode).isHydrationMismatch = true;
       }
 

@@ -1,7 +1,3 @@
-export * from "./component.js";
-export * from "./set-scope.js";
-export * from "./types.js";
-export * from "./use-scope.js";
-export * from "./util/index.js";
-export * from "./wrap-component.js";
-export * from "./get-root-component.js";
+export * from "./create-component.js";
+export * from "./lifecycle/index.js";
+export { isComponent, isComponentFactory } from "./type-guards.js";

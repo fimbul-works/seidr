@@ -3,7 +3,7 @@ import { type DepsConfig, defineConfig } from "tsdown";
 import { seidrBundlePlugin } from "./src/build-plugins/bundle-plugin.ts";
 
 const deps: DepsConfig = {
-  alwaysBundle: ["@fimbul-works/futhark"],
+  alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash"],
 };
 
 const inputOptions: InputOptions = {
@@ -35,6 +35,21 @@ export default defineConfig([
   {
     entry: {
       "seidr.core": "src/index.core.ts",
+    },
+    platform: "browser",
+    format: ["esm", "cjs"],
+    target: "es2022",
+    dts: true,
+    treeshake: true,
+    outDir: "bundles",
+    plugins: [seidrBundlePlugin({ disableSSR: true })],
+    deps,
+    inputOptions,
+  },
+  // Core bundle (no SSR)
+  {
+    entry: {
+      "seidr.full": "src/index.full.ts",
     },
     platform: "browser",
     format: ["esm", "cjs"],

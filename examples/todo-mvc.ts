@@ -1,4 +1,14 @@
-import { inClient, isClient, List, Seidr, Show, useScope, withStorage } from "@fimbul-works/seidr";
+import {
+  inClient,
+  isClient,
+  List,
+  createValue,
+  Show,
+  withStorage,
+  mergeValues,
+  onUnmounted,
+  Value,
+} from "@fimbul-works/seidr";
 import {
   $a,
   $button,
@@ -24,99 +34,99 @@ const ENTER_KEY = "Enter";
 
 export const TodoApp = (initialTodos: Todo[] = []) => {
   // Store state in Seidr observables
-  const todos = withStorage("todos", new Seidr<Todo[]>(initialTodos));
-  const showMode = new Seidr<Filter>(isClient() ? (window.location.hash.slice(2) as Filter) || "all" : "all");
-  const editingTodoId = new Seidr<number | null>(null);
+  const todos = withStorage("todos", createValue<Todo[]>(initialTodos));
+  const showMode = createValue<Filter>(isClient() ? (window.location.hash.slice(2) as Filter) || "all" : "all");
+  const editingTodoId = createValue<number | null>(null);
 
   // Derived state
-  const remainingCount = todos.as((list) => list.filter((t) => !t.completed).length);
-  const allCompleted = todos.as((list) => list.length > 0 && list.every((t) => t.completed));
+  const remainingCount = todos.as((list) => (Array.isArray(list) ? list.filter((t) => !t.completed).length : 0));
+  const allCompleted = todos.as((list) => Array.isArray(list) && list.length > 0 && list.every((t) => t.completed));
 
-  const filteredTodos = Seidr.merge(() => {
-    const mode = showMode.value;
-    const list = todos.value;
+  const filteredTodos = mergeValues(() => {
+    const mode = showMode();
+    const list = todos();
+    if (!Array.isArray(list)) return [];
     if (mode === "active") return list.filter((t) => !t.completed);
     if (mode === "completed") return list.filter((t) => t.completed);
     return list;
-  }, [todos, showMode]);
+  });
 
   // Actions
   const addTodo = (e: KeyboardEvent) => {
     const input = e.target as HTMLInputElement;
-    const title = input.value.trim();
+    const title = input?.value?.trim() ?? "";
     if (e.key === ENTER_KEY && title) {
-      todos.value = [{ id: Date.now(), title, completed: false }, ...todos.value];
+      todos((prev) => [{ id: Date.now(), title, completed: false }, ...(Array.isArray(prev) ? prev : [])]);
       input.value = "";
     }
   };
 
   const toggleTodo = (id: number) => {
-    todos.value = todos.value.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
+    todos((prev) =>
+      Array.isArray(prev) ? prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)) : [],
+    );
   };
 
   const removeTodo = (id: number) => {
-    todos.value = todos.value.filter((t) => t.id !== id);
+    todos((prev) => (Array.isArray(prev) ? prev.filter((t) => t.id !== id) : []));
   };
 
   const editTodo = (id: number, title: string) => {
-    todos.value = todos.value.map((t) => (t.id === id ? { ...t, title } : t));
-    editingTodoId.value = null;
+    todos((prev) => (Array.isArray(prev) ? prev.map((t) => (t.id === id ? { ...t, title } : t)) : []));
+    editingTodoId(null);
   };
 
   const clearCompleted = () => {
-    todos.value = todos.value.filter((t) => !t.completed);
+    todos((prev) => (Array.isArray(prev) ? prev.filter((t) => !t.completed) : []));
   };
 
   const toggleAll = (completed: boolean) => {
-    todos.value = todos.value.map((t) => ({ ...t, completed }));
+    todos((prev) => (Array.isArray(prev) ? prev.map((t) => ({ ...t, completed })) : []));
   };
 
   // Routing
   inClient(() => {
     const handleHashChange = () => {
-      showMode.value = (window.location.hash.slice(2) as Filter) || "all";
+      showMode((window.location.hash.slice(2) as Filter) || "all");
     };
     window.addEventListener("hashchange", handleHashChange);
 
-    const scope = useScope();
-    scope.onUnmount(() => window.removeEventListener("hashchange", handleHashChange));
+    onUnmounted(() => window.removeEventListener("hashchange", handleHashChange));
   });
 
   // Todo Item Component (inner function to share actions)
-  const TodoItem = (todo: Seidr<Todo>) => {
-    const isEditing = editingTodoId.as((id) => id === todo.value.id);
-    const inputRef = new Seidr<HTMLInputElement | null>(null);
+  const TodoItem = (todo: Value<Todo>) => {
+    const isEditing = editingTodoId.as((id) => id === todo()?.id);
+    const isCompleted = todo.as((t) => t?.completed ?? false);
+    const inputRef = createValue<HTMLInputElement | null>(null);
 
-    isEditing.observe((editing) => {
+    isEditing.watch((editing) => {
       if (editing) {
         // Auto-focus when entering edit mode
-        setTimeout(() => (inputRef.value as HTMLInputElement)?.focus());
+        setTimeout(() => (inputRef() as HTMLInputElement)?.focus());
       }
     });
 
     return $li(
       {
-        className: Seidr.merge(
-          () => `todo${todo.as((t) => (t.completed ? " completed" : "")).value}${isEditing.value ? " editing" : ""}`,
-          [todo, isEditing],
-        ),
+        className: mergeValues(() => `todo${isCompleted() ? " completed" : ""}${isEditing() ? " editing" : ""}`),
       },
       [
         $div({ className: "view" }, [
           $checkbox({
             className: "toggle",
             checked: todo.as((t) => t.completed),
-            oninput: () => toggleTodo(todo.value.id),
+            oninput: () => toggleTodo(todo().id),
           }),
           $label({
             textContent: todo.as((t) => t.title),
             ondblclick: () => {
-              editingTodoId.value = todo.value.id;
+              editingTodoId(todo().id);
             },
           }),
           $button({
             className: "destroy",
-            onclick: () => removeTodo(todo.value.id),
+            onclick: () => removeTodo(todo().id),
           }),
         ]),
         Show(isEditing, () =>
@@ -125,15 +135,15 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
             className: "edit",
             value: todo.as((t) => t.title),
             onblur: (e: Event) => {
-              if (editingTodoId.value === todo.value.id) {
-                editTodo(todo.value.id, (e.target as HTMLInputElement).value.trim());
+              if (editingTodoId() === todo().id) {
+                editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
               }
             },
             onkeydown: (e: KeyboardEvent) => {
               if (e.key === ENTER_KEY) {
-                editTodo(todo.value.id, (e.target as HTMLInputElement).value.trim());
+                editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
               } else if (e.key === ESCAPE_KEY) {
-                editingTodoId.value = null;
+                editingTodoId(null);
               }
             },
           }),

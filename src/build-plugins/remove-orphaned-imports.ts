@@ -73,24 +73,24 @@ function removeSpecifierWithComma(
   const idx = allSpecifiers.indexOf(specifier);
   const isLast = idx === allSpecifiers.length - 1;
 
+  let start = specifier.start;
+  let end = specifier.end;
+
   if (!isLast) {
     // Eat the trailing comma and any whitespace up to the next specifier
-    let end = specifier.end;
-    while (code[end] === "," || code[end] === " ") {
+    while ([",", " ", "\t", "\n"].includes(code[end])) {
       end++;
     }
-    ms.remove(specifier.start, end);
   } else {
     // Last specifier — eat the preceding comma and whitespace
-    let start = specifier.start;
-    while (code[start - 1] === " ") {
+    while ([" ", "\t", "\n"].includes(code[start - 1])) {
       start--;
     }
     if (code[start - 1] === ",") {
       start--;
     }
-    ms.remove(start, specifier.end);
   }
+  ms.remove(start, end);
 }
 
 /**
@@ -111,7 +111,7 @@ export function removeOrphanedImports(ms: MagicString, id: string): void {
   // Collect all import specifier local names, grouped by their declaration
   const imports: ImportInfo[] = [];
 
-  // First pass: process import declarations
+  // 1st pass: process import declarations
   for (const node of program.body) {
     // Skip non-import declaration Nodes
     if (node.type !== "ImportDeclaration") {
@@ -120,10 +120,7 @@ export function removeOrphanedImports(ms: MagicString, id: string): void {
 
     // Find specifiers
     const specifiers = node.specifiers
-      .filter(
-        (s) =>
-          s.type === "ImportSpecifier" || s.type === "ImportDefaultSpecifier" || s.type === "ImportNamespaceSpecifier",
-      )
+      .filter((s) => ["ImportSpecifier", "ImportDefaultSpecifier", "ImportNamespaceSpecifier"].includes(s.type))
       .map((s) => ({
         // `local` is the local binding name in all three specifier types
         name: s.local.name,
@@ -182,7 +179,6 @@ export function removeOrphanedImports(ms: MagicString, id: string): void {
       ms.remove(decl.declarationStart, end);
     } else {
       // Partial — remove individual specifiers
-      // This needs care around commas — see note below
       for (const s of orphaned) {
         removeSpecifierWithComma(ms, code, s, decl.specifiers);
       }

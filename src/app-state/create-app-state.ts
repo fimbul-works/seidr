@@ -1,7 +1,7 @@
-import type { ComponentMeta } from "../component-new/types.js";
-import { DATA_KEY_STATE } from "../seidr/constants.js";
-import type { Seidr } from "../seidr/seidr.js";
-import { isSeidr } from "../util/type-guards/observable-types.js";
+import type { SeidrComponent } from "../component/types.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import { isValue } from "../observable/type-guards.js";
+import { Value } from "../observable/value.js";
 import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
@@ -11,9 +11,9 @@ import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./typ
  */
 export const createAppState = (ctxId: number): AppState => ({
   ctxID: ctxId,
-  seidrIdCounter: 0,
-  components: new Set<ComponentMeta>(),
-  nodeIndex: new WeakMap<ChildNode, ComponentMeta>(),
+  uniqID: 0,
+  components: new Set<SeidrComponent>(),
+  nodeIndex: new WeakMap<ChildNode, SeidrComponent>(),
   markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
   strategies: new Map<string, DataStrategy>(),
@@ -36,9 +36,13 @@ export const createAppState = (ctxId: number): AppState => ({
     return this.strategies.get(key) as DataStrategy<T> | undefined;
   },
   destroy(): void {
+    // Clean up components
+    this.components.clear();
+    this.uniqID = 0;
+
     // Clean up data
-    this.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
-    this.data.forEach((value) => isSeidr(value) && value.destroy());
+    this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
+    this.data.forEach((value) => isValue(value) && value.destroy());
     this.data.clear();
 
     // Remove markers

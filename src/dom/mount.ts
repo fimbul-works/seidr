@@ -1,7 +1,9 @@
-import type { Component, ComponentType } from "../component/types.js";
+import { watchMutations } from "../component/lifecycle/watch-mutations.js";
+import { isComponent } from "../component/type-guards.js";
+import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
-import { isComponent } from "../util/type-guards/component-types.js";
+import { isClient } from "../util/environment/is-client.js";
 import { appendChild } from "./append-child.js";
 
 /**
@@ -17,14 +19,15 @@ import { appendChild } from "./append-child.js";
  * If called within a parent component's render function, the cleanup is automatically
  * tracked and will be executed when the parent component is destroyed.
  *
- * @template {ComponentType} C - Type of the component or factory
+ * @template {SeidrComponentFactoryOrFunction} C - Type of the component factory
+ *
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement} container - The DOM container element to mount into
  * @param {AppStateData} [appStateData={}] - Optional AppState data
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} when AppState already has a root component
  */
-export const mount = <C extends ComponentType = ComponentType>(
+export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponentFactoryOrFunction>(
   componentOrFactory: C,
   container: HTMLElement,
 ): CleanupFunction => {
@@ -32,13 +35,18 @@ export const mount = <C extends ComponentType = ComponentType>(
     throw new SeidrError("Cannot mount to null parent");
   }
 
+  let cleanup: CleanupFunction;
+  if (isClient()) {
+    cleanup = watchMutations(container);
+  }
+
   // Create the component
-  const rootComponent: Component = isComponent(componentOrFactory)
+  const rootComponent: SeidrComponent = isComponent(componentOrFactory)
     ? componentOrFactory
     : wrapComponent(componentOrFactory, "Root")();
 
   appendChild(container, rootComponent);
 
   // Return cleanup function
-  return () => rootComponent.unmount();
+  return () => (cleanup?.(), rootComponent.unmount());
 };

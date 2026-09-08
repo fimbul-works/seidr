@@ -1,6 +1,6 @@
 import { TYPE_ELEMENT } from "../../constants.js";
 import type { NodeTypeDocument, NodeTypeElement } from "../../types.js";
-import { isStr } from "../../util/type-guards/primitive-types.js";
+import { isStr } from "../../util/type-guards.js";
 import { SSRChildNode } from "./ssr-child-node.js";
 import type { SSRDocument } from "./ssr-document.js";
 import { SSRNodeList } from "./ssr-node-list.js";

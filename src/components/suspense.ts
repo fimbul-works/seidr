@@ -1,101 +1,92 @@
-import { component } from "../component/component.js";
-import type { Component, ComponentFactoryFunction } from "../component/types.js";
-import { useScope } from "../component/use-scope.js";
-import { wrapComponent } from "../component/wrap-component.js";
-import { Seidr } from "../seidr/seidr.js";
-import { unwrapSeidr } from "../seidr/unwrap-seidr.js";
-import { isHydrating } from "../ssr/hydrate/storage.js";
+import { createComponent } from "../component/create-component.js";
+import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
+import type { SeidrComponent } from "../component/types.js";
+import type { SeidrChild } from "../element/types.js";
+import { isValue } from "../observable/type-guards.js";
+import type { Value } from "../observable/value.js";
+import { createValue } from "../observable/value.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
+import { isHydrating } from "../ssr/hydrate/storage.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isSeidr } from "../util/type-guards/observable-types.js";
 import { wrapError } from "../util/wrap-error.js";
 
-const PROMISE_PENDING = "pending";
-const PROMISE_RESOLVED = "resolved";
-const PROMISE_ERROR = "error";
+export const PROMISE_PENDING = "pending";
+export const PROMISE_RESOLVED = "resolved";
+export const PROMISE_ERROR = "error";
 
 export type SuspenseStatus = typeof PROMISE_PENDING | typeof PROMISE_RESOLVED | typeof PROMISE_ERROR;
 
 export interface SuspenseState<T> {
-  value: Seidr<T | null>;
-  state: Seidr<SuspenseStatus>;
-  error: Seidr<Error | null>;
+  state: Value<SuspenseStatus>;
+  value: Value<T | null>;
+  error: Value<Error | null>;
 }
 
 /**
  * Creates a component that handles Promise resolution with reactive states.
  *
- * @template T - The type of resolved value
- *
- * @param {Promise<T> | Seidr<Promise<T>>} promiseOrSeidr - The promise to wait for, or a Seidr emitting promises
- * @param {ComponentFactoryFunction<SuspenseState<T>>} factory - Function that creates the component
- * @param {string} [name="Suspense"] - Optional name for the component
- * @returns {Component} A component handling the promise state
+ * @template T - The resolved value type
+ * @param {Promise<T> | Value<Promise<T>>} promiseOrValue - A promise or a Value emitting promises
+ * @param {(state: SuspenseState<T>) => SeidrChild} factory - Render function receiving the suspense state
+ * @param {string} [name="Suspense"] - Optional component name
+ * @returns {SeidrComponent} A component managing the promise resolution
  */
 export const Suspense = <T>(
-  promiseOrSeidr: Promise<T> | Seidr<Promise<T>>,
-  factory: ComponentFactoryFunction<SuspenseState<T>>,
+  promiseOrValue: Promise<T> | Value<Promise<T>>,
+  factory: (state: SuspenseState<T>) => SeidrChild,
   name: string = "Suspense",
-): Component =>
-  component(() => {
-    const suspenseComponent = useScope();
-    const suspenseId = suspenseComponent.id;
-    const state = new Seidr<SuspenseStatus>(PROMISE_PENDING, { id: `${suspenseId}.state` });
-    const value = new Seidr<T | null>(null, { id: `${suspenseId}.value` });
-    const error = new Seidr<Error | null>(null, { id: `${suspenseId}.error` });
+): SeidrComponent =>
+  createComponent(() => {
+    const state = createValue<SuspenseStatus>(PROMISE_PENDING);
+    const value = createValue<T | null>(null);
+    const error = createValue<Error | null>(null);
 
     let currentPromiseId = 0;
 
-    /**
-     * Handles a promise by setting the state to pending and then resolving or rejecting based on the promise result.
-     * @param {Promise<T>} currentPromise The promise to handle
-     * @returns {Promise<void>} A promise that resolves when the promise is handled
-     */
-    const handlePromise = async (currentPromise: Promise<T>): Promise<void> => {
-      if (!currentPromise) {
-        return;
-      }
+    const handlePromise = async (prom: Promise<T>): Promise<void> => {
+      if (!prom) return;
 
-      const currentId = ++currentPromiseId;
-      if (!process.env.SEIDR_DISABLE_SSR && !isHydrating()) {
-        state.value = PROMISE_PENDING;
-      }
+      const id = ++currentPromiseId;
+      state(PROMISE_PENDING);
 
       try {
-        const resolved = await currentPromise;
-        if (currentId === currentPromiseId) {
-          value.value = resolved;
-          state.value = PROMISE_RESOLVED;
+        const resolved = await prom;
+        if (id === currentPromiseId) {
+          value(resolved);
+          state(PROMISE_RESOLVED);
         }
       } catch (err) {
-        if (currentId === currentPromiseId) {
-          error.value = wrapError(err);
-          state.value = PROMISE_ERROR;
+        if (id === currentPromiseId) {
+          error(wrapError(err));
+          state(PROMISE_ERROR);
         }
       }
     };
 
-    // Track initial promise
-    const initialProm = unwrapSeidr(promiseOrSeidr);
-    if (initialProm) {
-      // Check if it's already resolved in the state (for hydration)
-      if (initialProm instanceof Promise) {
-        handlePromise(isServer() ? (getSSRScope()?.addPromise(initialProm) ?? initialProm) : initialProm);
-      } else {
-        // Already a value, resolve synchronously
-        value.value = initialProm;
-        state.value = PROMISE_RESOLVED;
+    const initial = isValue<Promise<T>>(promiseOrValue) ? promiseOrValue() : promiseOrValue;
+    if (initial instanceof Promise) {
+      if (isServer()) {
+        getSSRScope()?.addPromise(initial);
       }
+      if (!isHydrating() || state() !== PROMISE_RESOLVED) {
+        handlePromise(initial);
+      }
+    } else if (initial !== undefined && initial !== null) {
+      value(initial as T);
+      state(PROMISE_RESOLVED);
     }
 
-    // Handle reactive promise changes
-    if (isSeidr<Promise<T>>(promiseOrSeidr)) {
-      suspenseComponent.onUnmount(
-        promiseOrSeidr.observe((prom) => handlePromise(isServer() ? (getSSRScope()?.addPromise(prom) ?? prom) : prom)),
-      );
+    if (isValue<Promise<T>>(promiseOrValue)) {
+      const cleanup = promiseOrValue.watch((prom) => {
+        if (prom instanceof Promise) {
+          if (isServer()) {
+            getSSRScope()?.addPromise(prom);
+          }
+          handlePromise(prom);
+        }
+      });
+      onUnmounted(cleanup);
     }
 
-    return suspenseComponent.addChild(
-      wrapComponent(factory, `${name}Child`)({ state, value, error }, suspenseComponent),
-    );
+    return factory({ state, value, error });
   }, name)();

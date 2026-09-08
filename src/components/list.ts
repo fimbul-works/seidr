@@ -1,107 +1,128 @@
-import { component } from "../component/component.js";
-import { getMarkerComments } from "../component/get-marker-comments.js";
-import type { Component, ComponentFactoryFunction } from "../component/types.js";
-import { useScope } from "../component/use-scope.js";
-import { getFirstNode, getLastNode, mountComponent } from "../component/util/index.js";
-import { wrapComponent } from "../component/wrap-component.js";
-import { Seidr } from "../seidr/seidr.js";
+import { getAppState } from "../app-state/app-state.js";
+import { createComponent } from "../component/create-component.js";
+import { getComponentScope } from "../component/lifecycle/component-scope.js";
+import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
+import type { SeidrComponent } from "../component/types.js";
+import { normalizeChildNodes } from "../dom/append-child.js";
+import { getMarkerComments } from "../component/util/get-marker-comments.js";
+import type { SeidrChild } from "../element/types.js";
+import type { Value } from "../observable/value.js";
+import { createValue } from "../observable/value.js";
 
 /**
- * Renders an efficient list of components from an observable array.
- * Uses marker nodes to position the list and key-based diffing for minimal DOM updates.
+ * Keyed list rendering component.
+ * Efficiently reconciles and reorders DOM nodes from a reactive array Value.
  *
- * @template T - The type of list items
- * @template K - Unique key type
+ * @template T - List item type
+ * @template {string | number} K - Unique key type
  *
- * @param {Seidr<T[]>} observable - Array observable
- * @param {(item: T) => K} getKey - Key extraction function
- * @param {ComponentFactoryFunction<Seidr<T>>} factory - Component creation function (raw or wrapped)
- * @param {string} [name="List"] - Optional name for the component
- * @returns {Component} List component
+ * @param {Value<T[]>} observable - Array observable Value
+ * @param {(item: T) => K} getKey - Unique key extractor
+ * @param {(itemValue: Value<T>, key: K) => SeidrChild} factory - Item render factory receiving a reactive item Value
+ * @param {string} [name="List"] - Component name
+ * @returns {SeidrComponent} The List component
  */
 export const List = <T, K extends string | number>(
-  observable: Seidr<T[]>,
+  observable: Value<T[]>,
   getKey: (item: T) => K,
-  factory: ComponentFactoryFunction<Seidr<T>>,
+  factory: (itemValue: Value<T>, key: K) => SeidrChild,
   name: string = "List",
-): Component =>
-  component(() => {
-    const LIST_CHILD_NAME = `${name}Item`;
-    const listComponent = useScope()!;
-    const componentMap = new Map<K, Component>();
-    const seidrMap = new Map<K, Seidr<T>>();
+): SeidrComponent =>
+  createComponent(() => {
+    const listComponent = getComponentScope()!;
+    const itemMap = new Map<K, { itemValue: Value<T>; nodes: ChildNode[] }>();
 
-    // Force marker creation as List always needs them for diffing/hydration
-    const [, endMarker] = getMarkerComments(listComponent.id)!;
+    const renderItem = (item: T, key: K) => {
+      const itemValue = createValue(item);
+      const result = factory(itemValue, key);
+      const nodes = normalizeChildNodes(result);
+      return { itemValue, nodes };
+    };
 
-    const getSeidrId = (key: K) => `${listComponent.id}-${key}`;
+    const items = observable() ?? [];
+    const initialNodes: ChildNode[] = [];
+    for (const item of items) {
+      const key = getKey(item);
+      const entry = renderItem(item, key);
+      itemMap.set(key, entry);
+      initialNodes.push(...entry.nodes);
+    }
 
-    /**
-     * Updates the list with the new items.
-     * @param {T[]} items - The new items to render
-     */
-    const update = (items: T[]) => {
-      const parent = endMarker?.parentNode;
+    const [startMarker, endMarker] = getMarkerComments(listComponent)!;
+
+    const update = (newItems?: T[]) => {
+      if (!Array.isArray(newItems)) {
+        return;
+      }
+      const items = newItems;
+      const parent = endMarker.parentNode;
       if (!parent) {
+        // Not attached to DOM yet: update itemMap and initialNodes directly
+        for (const [key, entry] of Array.from(itemMap.entries())) {
+          entry.itemValue.destroy();
+          itemMap.delete(key);
+        }
+        initialNodes.length = 0;
+        for (const item of items) {
+          const key = getKey(item);
+          const entry = renderItem(item, key);
+          itemMap.set(key, entry);
+          initialNodes.push(...entry.nodes);
+        }
         return;
       }
 
       const newKeys = new Set(items.map(getKey));
+      const appState = getAppState();
 
-      // Remove components no longer in list
-      for (const [key, comp] of componentMap.entries()) {
+      // 1. Remove deleted items
+      for (const [key, entry] of Array.from(itemMap.entries())) {
         if (!newKeys.has(key)) {
-          comp.unmount();
-          componentMap.delete(key);
-          seidrMap.delete(key);
+          entry.nodes.forEach((n) => {
+            const comp = appState.nodeIndex.get(n);
+            if (comp && comp !== listComponent && !comp.nodes.includes(endMarker)) {
+              comp.unmount();
+            }
+            n.remove();
+          });
+          entry.itemValue.destroy();
+          itemMap.delete(key);
         }
       }
 
-      // Add or reorder components by iterating backwards from end marker
+      // 2. Insert or reorder items in reverse order before endMarker
       let currentAnchor: Node = endMarker;
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         const key = getKey(item);
-        let itemComponent = componentMap.get(key);
+        let entry = itemMap.get(key);
 
-        if (!itemComponent) {
-          const itemSeidr = new Seidr(item, { id: getSeidrId(key), hydrate: false });
-          itemSeidr.value = item; // Ensure latest data if reused from cache
-          itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr, listComponent, key);
-          componentMap.set(key, itemComponent);
-          seidrMap.set(key, itemSeidr);
+        if (!entry) {
+          entry = renderItem(item, key);
+          itemMap.set(key, entry);
         } else {
-          seidrMap.get(key)!.value = item;
+          entry.itemValue(item);
         }
 
-        const lastNode = getLastNode(itemComponent);
-
-        if (lastNode !== currentAnchor.previousSibling) {
-          mountComponent(itemComponent, currentAnchor);
+        const lastNode = entry.nodes[entry.nodes.length - 1];
+        if (lastNode && lastNode !== currentAnchor.previousSibling) {
+          for (const node of entry.nodes) {
+            parent.insertBefore(node, currentAnchor);
+          }
         }
 
-        currentAnchor = getFirstNode(itemComponent);
+        if (entry.nodes.length > 0) {
+          currentAnchor = entry.nodes[0];
+        }
       }
-
-      listComponent.element = items.map((item) => componentMap.get(getKey(item))!);
     };
 
-    listComponent.onMount(() => update(observable.value));
-
-    listComponent.onUnmount(observable.observe(update));
-    listComponent.onUnmount(() => {
-      componentMap.values().forEach((c) => c.unmount());
-      componentMap.clear();
-      seidrMap.clear();
+    const cleanup = observable.watch(update);
+    onUnmounted(() => {
+      cleanup();
+      itemMap.forEach((entry) => entry.itemValue.destroy());
+      itemMap.clear();
     });
 
-    return observable.value.map((item) => {
-      const key = getKey(item);
-      const itemSeidr = new Seidr(item, { id: getSeidrId(key), hydrate: false });
-      itemSeidr.value = item;
-      const itemComponent = wrapComponent(factory, LIST_CHILD_NAME)(itemSeidr as any, listComponent, key);
-      componentMap.set(key, itemComponent);
-      seidrMap.set(key, itemSeidr);
-      return itemComponent;
-    });
+    return [startMarker, ...initialNodes, endMarker];
   }, name)();

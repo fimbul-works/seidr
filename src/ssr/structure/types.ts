@@ -1,5 +1,5 @@
 /**
- * Tuple of a component child tag and it's children in the parent component
+ * Tuple of a component child tag and its children in the parent component
  */
 export type StructureMapTuple = [string, ...number[]];
 

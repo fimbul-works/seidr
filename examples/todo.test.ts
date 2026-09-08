@@ -1,6 +1,7 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { type CleanupFunction, component, mount } from "../src/index";
+import { type CleanupFunction, createComponent, mount } from "../src/index";
+import { clearTestAppState } from "../src/test-setup/index.js";
 import { type Todo, TodoApp } from "./todo-mvc";
 
 describe("TodoMVC", () => {
@@ -9,12 +10,16 @@ describe("TodoMVC", () => {
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
+    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", { url: "http://localhost" });
     document = dom.window.document;
     global.document = document;
+    global.window = dom.window as unknown as Window & typeof globalThis;
+    global.localStorage = dom.window.localStorage;
     global.HTMLInputElement = dom.window.HTMLInputElement;
     global.HTMLButtonElement = dom.window.HTMLButtonElement;
     global.HTMLFormElement = dom.window.HTMLFormElement;
+    dom.window.localStorage.clear();
+    clearTestAppState();
   });
 
   afterEach(() => {
@@ -47,12 +52,24 @@ describe("TodoMVC", () => {
     expect(listItems?.length).toBe(2);
   });
 
-  it("should cleanup properly when destroyed", async () => {
-    const todoComponent = component<Todo[]>(TodoApp)([]);
+  it("should add and toggle todos dynamically", async () => {
+    unmount = mount(TodoApp, document.body);
 
-    const unmount = mount(todoComponent, document.body);
-    unmount();
+    const input = document.querySelector(".new-todo") as HTMLInputElement;
+    input.value = "New Item";
+    (input as any).onkeydown?.({ target: input, key: "Enter" });
 
-    expect(document.body.children.length).toBe(0);
+    const todoList = document.querySelector(".todo-list");
+    expect(todoList).not.toBeNull();
+    const items = todoList?.querySelectorAll("li");
+    expect(items?.length).toBe(1);
+    expect(items?.[0].textContent).toContain("New Item");
+
+    const checkbox = items?.[0].querySelector(".toggle") as HTMLInputElement;
+    checkbox.checked = true;
+    checkbox.dispatchEvent(new dom.window.Event("input"));
+
+    expect(items?.[0].className).toContain("completed");
   });
 });
+

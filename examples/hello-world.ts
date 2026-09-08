@@ -1,12 +1,12 @@
-import { $, mount, Seidr } from "@fimbul-works/seidr";
+import { $, mount, createValue } from "../src/index";
 
 export const HelloWorld = () => {
-  const textContent = new Seidr("Click me");
+  const textContent = createValue("Click me");
 
   return $("button", {
     className: "btn",
     textContent, // Reactive value binding
-    onclick: () => (textContent.value = "Seidr binds thee"),
+    onclick: () => textContent("Seidr binds thee"),
   });
 };
 

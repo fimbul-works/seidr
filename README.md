@@ -385,15 +385,15 @@ const UserProfile = ({ name, initialAge = 30 }) => {
 
 > **The Magic:** When you mount a function using `mount()`, `List()`, `Show()`, `Switch()`, `Safe()`, and `Suspense()`, Seidr automatically provides a reactive scope. This means `useScope().onUnmount()` and automatic cleanup work perfectly in plain functions!
 
-#### Creating Reusable Factories with component()
+#### Creating Reusable Factories with createComponent()
 
-If you need to create a reusable component factory that can be passed around as a single unit, or if you need to manually instantiate a component instance, you can use the `component()` wrapper:
+If you need to create a reusable component factory that can be passed around as a single unit, or if you need to manually instantiate a component instance, you can use the `createComponent()` wrapper:
 
 ```typescript
 import { component } from '@fimbul-works/seidr';
 
 // Returns a factory function
-const CounterFactory = component(({ start = 0 }) => {
+const CounterFactory = createComponent(({ start = 0 }) => {
   const count = new Seidr(start);
   return $button({
     textContent: count,
@@ -435,7 +435,7 @@ mount(Counter, document.body);
 - Props can include initial values, configuration, or callbacks
 - Destructuring with defaults (`= {}`) makes props optional
 
-**Learn more:** [component()](docs/components.md#component) | [Manual bindings](docs/Seidr.md#bind)
+**Learn more:** [createComponent()](docs/components.md#component) | [Manual bindings](docs/Seidr.md#bind)
 
 ### Memory Management
 

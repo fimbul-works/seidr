@@ -1,13 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { List } from "../../components/list";
-import { $ } from "../../element";
-import { $article, $div, $h1, $h2, $main } from "../../elements";
-import { Seidr } from "../../seidr";
-import { enableClientMode, enableSSRMode } from "../../test-setup";
-import type { CleanupFunction } from "../../types";
-import { inServer } from "../../util/environment";
-import { renderToString } from "../render-to-string";
-import { hydrate } from "./hydrate";
+import { List } from "../../components/list.js";
+import { $ } from "../../element/index.js";
+import { $article, $div, $h1, $h2, $main } from "../../elements/index.js";
+import { createValue, Value } from "../../observable/value.js";
+import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
+import type { CleanupFunction } from "../../types.js";
+import { inServer } from "../../util/environment/in-server.js";
+import { renderToString } from "../render-to-string.js";
+import { hydrate } from "./hydrate.js";
 
 describe("Hydration List", () => {
   let container: HTMLElement;
@@ -29,7 +29,7 @@ describe("Hydration List", () => {
   const getExcerpt = (blog: any) => `${blog.content.split(". ").at(0)}...`;
 
   const BlogPage = () => {
-    const blogs = new Seidr<any[]>([], { id: "blogs" });
+    const blogs = createValue<any[]>([], { id: "blogs" });
 
     inServer(() => {
       const posts = [
@@ -40,12 +40,13 @@ describe("Hydration List", () => {
           content: "Welcome to FimbulWorks! This is my homepage, and creative outlet...",
         },
       ];
-      blogs.value = posts.map((post) => ({ ...post, content: getExcerpt(post) }));
+      blogs(posts.map((post) => ({ ...post, content: getExcerpt(post) })));
     });
 
-    const BlogPreview = (blog: any) => {
+    const BlogPreview = (blogVal: Value<any>) => {
+      const blog = blogVal();
       const to = `/blog/${blog.slug}`;
-      return $article({}, [
+      return $article(null, [
         $h2({ textContent: blog.title }),
         $div({ innerHTML: `<p>${blog.content}</p>` }),
         Link({ to, textContent: "Read more..." }),
@@ -66,13 +67,9 @@ describe("Hydration List", () => {
     container.innerHTML = html;
 
     // SIMULATED MISMATCH:
-    // Let's modify the DOM directly before hydration, simulating that the client-side
-    // rendering generated a DIFFERENT div structure (e.g. differently rendered markdown).
     const articles = container.querySelectorAll("article");
     const div = articles[0].querySelector("div");
     if (div) {
-      // Wait! The user said: middle post without a body (link points to `/seidr-release`)
-      // If the first post (seidr-release) had a mismatch...
       div.innerHTML = `<span>MISMATCH</span>`;
     }
 

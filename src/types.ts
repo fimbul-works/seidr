@@ -11,14 +11,14 @@ export class SeidrError extends Error {
  * Type for event handlers that can be synchronous or asynchronous.
  *
  * @template T - The data type for the event
- * @param {T} data - Data to handle
+ * @param {T} value - Data to handle
  */
-export type EventHandler<T> = (data: T) => void | Promise<void>;
+export type EventHandler<T> = (value: T) => void | Promise<void>;
 
 /**
  * Type for cleanup functions.
  */
-export type CleanupFunction = () => void;
+export type CleanupFunction = () => any;
 
 /** node is an element. */
 export type NodeTypeElement = typeof TYPE_ELEMENT;

@@ -1,4 +1,4 @@
-import { $getById, mount } from "@fimbul-works/seidr";
+import { $getById, mount } from "../src/index";
 import { TodoApp } from "./todo-mvc";
 
 // Mount component only in browser environment

@@ -9,6 +9,7 @@ export {
 export { enableClientMode } from "./client-mode.js";
 export { expectHtmlToBe, normalizeHtml, renderToHtml } from "./dom.js";
 export { describeDualMode, itHasParity } from "./dual-mode.js";
+export * from "../router/test/index.js";
 export { setupTestLifecycle } from "./lifecycle.js";
 export { mockComponentScope, mockNavigator } from "./mock.js";
 export { performDefaultSetup } from "./setup.js";

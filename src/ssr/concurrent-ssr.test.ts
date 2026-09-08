@@ -1,11 +1,11 @@
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
-import { component } from "../component";
-import { $ } from "../element";
-import { DATA_KEY_STATE } from "../seidr/constants";
-import { Seidr } from "../seidr/seidr";
-import { enableSSRMode } from "../test-setup";
-import type { CleanupFunction } from "../types";
-import { renderToString } from "./render-to-string";
+import { createComponent } from "../component/index.js";
+import { $ } from "../element/index.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import { createValue } from "../observable/value.js";
+import { enableSSRMode } from "../test-setup/index.js";
+import type { CleanupFunction } from "../types.js";
+import { renderToString } from "./render-to-string.js";
 
 describe("Concurrent SSR Request Isolation", () => {
   let cleanupMode: CleanupFunction;
@@ -19,9 +19,9 @@ describe("Concurrent SSR Request Isolation", () => {
   });
 
   it("should isolate SSR scopes between concurrent render contexts", async () => {
-    // Create a component that uses different Seidr instances
+    // Create a component that uses different Value instances
     const makeComponent = (initialCount: number) => {
-      const count = new Seidr(initialCount);
+      const count = createValue(initialCount);
       return $("div", {}, [$("span", { textContent: count.as((n) => `Count: ${n}`) })]);
     };
 
@@ -49,8 +49,8 @@ describe("Concurrent SSR Request Isolation", () => {
 
   it("should handle multiple derived observables in concurrent requests", async () => {
     const makeComponent = (baseValue: number) =>
-      component(() => {
-        const base = new Seidr(baseValue);
+      createComponent(() => {
+        const base = createValue(baseValue);
         const doubled = base.as((n) => n * 2);
         const tripled = base.as((n) => n * 3);
 
@@ -90,8 +90,8 @@ describe("Concurrent SSR Request Isolation", () => {
   it("should properly clean up scopes after concurrent renders", async () => {
     // Track scope creation/destroy
     const makeComponent = () =>
-      component(() => {
-        const state = new Seidr("test");
+      createComponent(() => {
+        const state = createValue("test");
         return $("div", {}, [$("span", { textContent: state })]);
       })();
 
@@ -108,19 +108,19 @@ describe("Concurrent SSR Request Isolation", () => {
 
   it("should handle mixed simple and complex graphs concurrently", async () => {
     const simpleComponent = () =>
-      component(() => {
-        const count = new Seidr(1);
+      createComponent(() => {
+        const count = createValue(1);
         return $("div", {}, [$("span", { textContent: count.as((n) => String(n)) })]);
       })();
 
     const complexComponent = () =>
-      component(() => {
-        const a = new Seidr(1);
-        const b = new Seidr(2);
-        const c = new Seidr(3);
-        const ab = a.as((n) => n + b.value);
-        const bc = b.as((n) => n + c.value);
-        const sum = ab.as((n) => n + c.value);
+      createComponent(() => {
+        const a = createValue(1);
+        const b = createValue(2);
+        const c = createValue(3);
+        const ab = a.as((n) => n + b());
+        const bc = b.as((n) => n + c());
+        const sum = ab.as((n) => n + c());
 
         return $("div", {}, [
           $("span", { textContent: ab.as((n) => String(n)) }),

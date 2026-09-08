@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { escapeHTML } from "../ssr/util/escape-string.js";
-import { isArray, isEmpty, isFn, isObj } from "../util/type-guards/primitive-types.js";
+import { isArray, isNullish, isFn, isObj } from "../util/type-guards.js";
 
 /**
  * Renders a node or component to its HTML string representation.
@@ -15,7 +15,7 @@ export function renderToHtml(node: any, depth = 0): string {
     console.error("renderToHtml: possible circular reference detected");
     return "[Circular]";
   }
-  if (isEmpty(node)) return "";
+  if (isNullish(node)) return "";
 
   // Handle Component
   if (isObj(node) && "element" in node) {

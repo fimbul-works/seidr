@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { List } from "../../components/list";
-import { $ } from "../../element";
-import { DATA_KEY_STATE } from "../../seidr/constants";
-import { Seidr } from "../../seidr/seidr";
-import { enableClientMode, enableSSRMode } from "../../test-setup";
-import type { CleanupFunction } from "../../types";
-import { renderToString } from "../render-to-string";
-import { hydrate } from "./hydrate";
+import { List } from "../../components/list.js";
+import { $ } from "../../element/index.js";
+import { DATA_KEY_STATE } from "../../observable/constants.js";
+import { createValue, Value } from "../../observable/value.js";
+import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
+import type { CleanupFunction } from "../../types.js";
+import { renderToString } from "../render-to-string.js";
+import { hydrate } from "./hydrate.js";
 
 describe("Hydration Integration", () => {
   let container: HTMLElement;
@@ -15,7 +15,6 @@ describe("Hydration Integration", () => {
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();
-    // We start in a clean state, not in client mode yet for SSR.
     container = document.createElement("div");
   });
 
@@ -25,22 +24,22 @@ describe("Hydration Integration", () => {
   });
 
   function TestApp() {
-    const count = new Seidr(0);
-    const title = new Seidr("My App", { id: "title" });
-    const items = new Seidr([1, 2, 3]);
+    const count = createValue(0);
+    const title = createValue("My App", { id: "title" });
+    const items = createValue([1, 2, 3]);
 
     return $("div", { id: "app" }, [
       $("h1", { id: "title", textContent: title }),
       $("p", { id: "desc", textContent: count.as((c) => `Count: ${c}`) }),
       $("button", {
         id: "increment",
-        onclick: () => (count.value = count.value + 1),
+        onclick: () => count(count() + 1),
       }),
       $("ul", null, [
         List(
           items,
           (item) => String(item),
-          (item: Seidr<number>) => $("li", { textContent: `Item ${item.value}` }),
+          (item: Value<number>) => $("li", { textContent: `Item ${item()}` }),
         ),
       ]),
     ]);

@@ -1,7 +1,8 @@
 import { setAppStateProvider } from "../app-state/app-state.js";
+import { DATA_KEY_IS_SSR } from "../constants.js";
 import { defaultClientDocument, setDocumentProvider } from "../dom/get-document.js";
-import { Seidr } from "../seidr/seidr.js";
-import { registerSeidrForSSR } from "../ssr/register-seidr-for-ssr.js";
+import { setRegisterValueForSSR } from "../observable/register-value-for-ssr.js";
+import { registerValueForSSR } from "../ssr/register-value-for-ssr.js";
 import type { CleanupFunction } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { clearTestAppState, getAppState } from "./app-state.js";
@@ -19,15 +20,17 @@ export function enableClientMode(): CleanupFunction {
     importMetaEnvSSR: import.meta.env.SSR,
     window: global.window,
   };
+  const prevDisableSSR = process.env.SEIDR_DISABLE_SSR;
 
   clearTestAppState();
-  getAppState().isSSR = false;
+  getAppState().deleteData(DATA_KEY_IS_SSR);
 
   delete process.env.SEIDR_TEST_SSR;
+  delete process.env.SEIDR_DISABLE_SSR;
   import.meta.env.SSR = false;
 
   // Perform necessary registrations
-  Seidr.register = registerSeidrForSSR;
+  setRegisterValueForSSR(registerValueForSSR);
   setAppStateProvider(getAppState);
   setDocumentProvider(defaultClientDocument);
 
@@ -36,6 +39,9 @@ export function enableClientMode(): CleanupFunction {
   }
 
   return () => {
+    if (prevDisableSSR !== undefined) process.env.SEIDR_DISABLE_SSR = prevDisableSSR;
+    else delete process.env.SEIDR_DISABLE_SSR;
+
     if (currentState.seidrSSR !== undefined) process.env.SEIDR_TEST_SSR = currentState.seidrSSR;
     else delete process.env.SEIDR_TEST_SSR;
 

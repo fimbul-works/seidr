@@ -26,7 +26,7 @@ Seidr is organized into a core library and several specialized sub-exports to ke
     - `$div`, `$span`, `$p`, `$h1`, `$button`, and more...
 
 ## [Components](components.md) (`@fimbul-works/seidr`)
-  - [`component()`](components.md#component) - Create a component.
+  - [`createComponent()`](components.md#component) - Create a component.
   - [`mount()`](components.md#mount) - Mount a component to the DOM.
   - [`onMount()`](components.md#onmount) - Register a callback to be executed when component is mounted.
   - [`onUnmount()`](components.md#onunmount) - Register a callback to be executed when component is unmounted.

@@ -1,2 +1,2 @@
-export * from "./escape-string";
-export * from "./string";
+export * from "./escape-string.js";
+export * from "./string.js";

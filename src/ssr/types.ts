@@ -13,20 +13,12 @@ export interface SSRRenderResult {
 }
 
 /**
- * Complete hydration data for client-side restoration.
- *
- * This structure contains everything needed to restore reactive state
- * on the client, essentially just the root observable values.
+ * Hydration data for client-side restoration.
+ * Contains serializable state captured during the SSR render pass.
  */
 export interface HydrationData {
   /**
    * Render context ID from the server.
-   *
-   * This ID is used to ensure deterministic marker IDs for components like Router,
-   * allowing the client-side hydration to match SSR-rendered markers.
-   *
-   * During hydration, the client-side render context is updated to use this ID
-   * instead of the default 0, enabling proper SSR/client marker matching.
    */
   ctxID: number;
 
@@ -36,7 +28,7 @@ export interface HydrationData {
   data: AppStateData;
 
   /**
-   * Component ID -> Structure Map mapping.
+   * Component ID mapping for hydration.
    */
-  components: Record<string, StructureMapTuple[]>;
+  components?: Record<string, StructureMapTuple[]>;
 }

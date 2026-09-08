@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { Seidr } from "../seidr/seidr";
 import { createAppState } from "./create-app-state";
+import { createValue } from "../observable";
 
 describe("createAppState", () => {
   it("should initialize with default values", () => {
     const state = createAppState(1);
     expect(state.ctxID).toBe(1);
-    expect(state.seidrIdCounter).toBe(0);
+    expect(state.uniqID).toBe(0);
     expect(state.data).toBeInstanceOf(Map);
     expect(state.strategies).toBeInstanceOf(Map);
     expect(state.markers).toBeInstanceOf(Map);
@@ -49,7 +49,7 @@ describe("createAppState", () => {
   describe("destroy()", () => {
     it("should clear data and destroy Seidr instances", () => {
       const state = createAppState(1);
-      const s1 = new Seidr(1);
+      const s1 = createValue(1);
       const destroySpy = vi.spyOn(s1, "destroy");
 
       state.setData("s1", s1);

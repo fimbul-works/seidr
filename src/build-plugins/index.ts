@@ -1,15 +1,24 @@
 import MagicString from "magic-string";
 import type { Plugin, PluginOption } from "vite";
-import { clientOnlyReplacements, clientReplace, serverReplace } from "./config.js";
 import { removeOrphanedImports } from "./remove-orphaned-imports.js";
+import { clientOnlyReplacements, clientReplace, serverReplace } from "./replacements.js";
 import { transformInEnvironment } from "./transform-in-environment.js";
-import type { SeidrPluginOptions } from "./types.js";
 import { replace } from "./util.js";
 
-export { seidrBundlePlugin } from "./bundle-plugin.js";
+/**
+ * Options for Seidr build plugin.
+ */
+export interface SeidrPluginOptions {
+  /**
+   * Disable server-side rendering support.
+   * @default false
+   */
+  disableSSR?: boolean;
+}
 
 /**
  * Seidr Vite app plugin.
+ *
  * @param {SeidrBuildPluginOptions} options - An object containing options for the plugin
  * @returns {Plugin} The created plugin
  */

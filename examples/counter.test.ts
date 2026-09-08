@@ -1,6 +1,6 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $query, $queryAll, type CleanupFunction, component, mount } from "../src/index";
+import { $query, $queryAll, type CleanupFunction, createComponent, mount } from "../src/index";
 import { Counter } from "./counter";
 
 describe("Counter Example", () => {
@@ -73,7 +73,7 @@ describe("Counter Example", () => {
   });
 
   it("should cleanup properly when destroyed", async () => {
-    const counterComponent = component(Counter)();
+    const counterComponent = createComponent(Counter)();
     const unmount = mount(counterComponent, document.body);
 
     unmount();

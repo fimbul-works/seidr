@@ -1,8 +1,7 @@
-import { component } from "../component/component.js";
-import type { Component, ComponentFactoryFunction } from "../component/types.js";
-import { useScope } from "../component/use-scope.js";
-import { wrapComponent } from "../component/wrap-component.js";
-import { wrapError } from "../util/wrap-error.js";
+import { createComponent } from "../component/create-component.js";
+import type { SeidrComponent } from "../component/types.js";
+import type { SeidrChild } from "../element/types.js";
+import { wrapError } from "../index.core.js";
 
 /**
  * Creates a component with error boundary protection.
@@ -11,31 +10,23 @@ import { wrapError } from "../util/wrap-error.js";
  * an error during initialization, the error boundary factory is called to create
  * a fallback UI instead of crashing.
  *
- * @template T -
- *
- * @param {ComponentFactoryFunction} factory - Function that creates the component element
- * @param {ComponentFactoryFunction<Error>} errorBoundaryFactory - Error handler that returns fallback UI
+ * @param {() => SeidrChild} factory - Function that creates the component or element
+ * @param {(error: Error) => SeidrChild} errorBoundary - Error handler that returns fallback UI
  * @param {string} [name="Safe"] - Optional name for the component
- * @returns {Component} A Component instance with error handling
+ * @returns {SeidrComponent} A Component instance with error handling
  */
 export const Safe = (
-  factory: ComponentFactoryFunction,
-  errorBoundaryFactory: ComponentFactoryFunction<Error>,
+  factory: () => SeidrChild,
+  errorBoundary: (error: Error) => SeidrChild,
   name: string = "Safe",
-): Component =>
-  component(() => {
-    const safeComponent = useScope();
-
+): SeidrComponent =>
+  createComponent(() => {
     try {
-      // We wrap the factory call to ensure that if it throws,
-      // we can still attempt to cleanup any partial registration
-      return wrapComponent(factory, `${name}Child`)(undefined, safeComponent);
+      return factory();
     } catch (err) {
       if (process.env.NODE_ENV === "development" || process.env.VITEST) {
         console.error(`Error in component ${name}`, err);
       }
-      // Clean up any resources tracked during the failed factory call
-      safeComponent?.cleanup();
-      return wrapComponent(errorBoundaryFactory, `${name}ErrorBoundary`)(wrapError(err), safeComponent);
+      return errorBoundary(wrapError(err));
     }
   }, name)();

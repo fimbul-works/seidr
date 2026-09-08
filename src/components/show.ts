@@ -1,27 +1,16 @@
-import type { Component, ComponentFactoryFunction } from "../component/types.js";
-import type { Seidr } from "../seidr/seidr.js";
-import { Switch } from "./switch.js";
+import type { SeidrChild } from "../element/types.js";
+import type { Value } from "../observable/value.js";
 
 /**
- * Conditionally renders a component based on a boolean observable state.
+ * Conditionally renders content based on a reactive condition Value.
  *
- * @template {ComponentFactoryFunction} C - The type of component factory
- *
- * @param {Seidr} condition - Boolean observable that controls visibility
- * @param {C} factory - Function that creates the component or element when needed
- * @param {C} [fallbackFactory] - Optional fallback component factory
- * @param {string} [name="Show"] - Optional name for the component
- * @returns {Component} The component
+ * @param {Value<any>} condition - Reactive condition observable
+ * @param {() => SeidrChild} whenTrue - Factory called when condition is truthy
+ * @param {() => SeidrChild} [whenFalse] - Optional fallback factory called when condition is falsy
+ * @returns {Value<SeidrChild>} A derived reactive Value returning the active branch
  */
-export const Show = <C extends ComponentFactoryFunction<string> = ComponentFactoryFunction<string>>(
-  condition: Seidr,
-  factory: C,
-  fallbackFactory?: C | null,
-  name: string = "Show",
-): Component =>
-  Switch(
-    condition.as<string>((v) => v && "show"),
-    { show: factory },
-    fallbackFactory,
-    name,
-  );
+export const Show = (
+  condition: Value<any>,
+  whenTrue: () => SeidrChild,
+  whenFalse?: () => SeidrChild,
+): Value<SeidrChild> => condition.as((val) => (val ? whenTrue() : whenFalse ? whenFalse() : null));

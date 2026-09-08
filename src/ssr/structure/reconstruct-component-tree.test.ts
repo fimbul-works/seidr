@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants";
-import type { HydrationData } from "../types";
-import { reconstructComponentTree } from "./reconstruct-component-tree";
+import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
+import type { HydrationData } from "../types.js";
+import { reconstructComponentTree } from "./reconstruct-component-tree.js";
 
-describe("recontructComponentTree", () => {
+describe("reconstructComponentTree", () => {
   it("builds the correct virtual DOM tree from component hydration data", () => {
     const hydrationData: HydrationData = {
       data: {},
@@ -132,5 +132,5 @@ describe("recontructComponentTree", () => {
     expect(footer.tag).toBe("footer");
     expect(footer.children).toHaveLength(1);
     expect(footer.children![0].tag).toBe(TAG_TEXT);
-  }); // it
+  });
 });

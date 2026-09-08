@@ -1,7 +1,8 @@
 /// <reference types="vite/client" />
 
 import { getAppState } from "../../app-state/app-state.js";
-import { isEmpty } from "../type-guards/primitive-types.js";
+import { DATA_KEY_IS_SSR } from "../../constants.js";
+import { isNullish } from "../type-guards.js";
 
 /**
  * Returns true if the current environment is the server (Node.js/SSR).
@@ -9,19 +10,20 @@ import { isEmpty } from "../type-guards/primitive-types.js";
  * @returns {boolean} `true` if in server, `false` otherwise
  */
 export const isServer = (): boolean => {
-  if (process.env.SEIDR_DISABLE_SSR) {
-    return false;
-  }
-
   if (typeof process === "undefined") {
     return false;
   }
 
-  if (process.env.VITEST) {
+  if (process.env.VITEST && typeof getAppState === "function") {
     const state = getAppState();
-    if (!isEmpty(state.isSSR)) {
-      return state.isSSR;
+    const isSSR = state?.getData<boolean>(DATA_KEY_IS_SSR);
+    if (!isNullish(isSSR)) {
+      return isSSR;
     }
+  }
+
+  if (process.env.SEIDR_DISABLE_SSR) {
+    return false;
   }
 
   return (import.meta.env?.SSR ?? typeof window === "undefined") || !!process.env.SEIDR_TEST_SSR;

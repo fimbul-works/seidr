@@ -1,7 +1,8 @@
 /// <reference types="vite/client" />
 
 import { getAppState } from "../../app-state/app-state.js";
-import { isEmpty } from "../type-guards/primitive-types.js";
+import { DATA_KEY_IS_SSR } from "../../constants.js";
+import { isNullish, isFn } from "../type-guards.js";
 
 /**
  * Returns true if the current environment is the browser.
@@ -9,16 +10,17 @@ import { isEmpty } from "../type-guards/primitive-types.js";
  * @returns {boolean} `true` if in browser, `false` otherwise
  */
 export const isClient = (): boolean => {
+  if (process.env.VITEST && isFn(getAppState)) {
+    const state = getAppState();
+    const isSSR = state?.getData<boolean>(DATA_KEY_IS_SSR);
+    if (!isNullish(isSSR)) {
+      return !isSSR;
+    }
+  }
+
   if (process.env.SEIDR_DISABLE_SSR) {
     return true;
   }
 
-  if (process.env.VITEST) {
-    const state = getAppState();
-    if (!isEmpty(state.isSSR)) {
-      return !state.isSSR;
-    }
-  }
-
-  return typeof window !== "undefined" && !(import.meta.env?.SSR || process.env.SEIDR_TEST_SSR);
+  return typeof window !== "undefined" && !(import.meta.env.SSR || process.env.SEIDR_TEST_SSR);
 };

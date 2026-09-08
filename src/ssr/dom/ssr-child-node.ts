@@ -1,4 +1,4 @@
-import { isStr } from "../../util/type-guards/primitive-types.js";
+import { isStr } from "../../util/type-guards.js";
 import type { SSRDocument } from "./ssr-document.js";
 import { SSRNode } from "./ssr-node.js";
 import type { SupportedNodeTypes } from "./types.js";

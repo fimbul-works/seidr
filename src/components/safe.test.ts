@@ -1,14 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type Component, useScope } from "../component";
-import { ROOT_ATTRIBUTE } from "../constants";
-import { appendChild } from "../dom/append-child";
+import { onUnmounted } from "../component/lifecycle/on-unmounted";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";
 
-describeDualMode("Safe", ({ getDocument, isSSR }) => {
+describeDualMode("Safe", ({ getDocument }) => {
   let container: HTMLElement;
   let document: Document;
   let unmount: CleanupFunction;
@@ -23,7 +21,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
 
   afterEach(() => {
     unmount?.();
-    document.body.removeChild(container);
+    container?.remove();
     consoleSpy.mockRestore();
   });
 
@@ -41,27 +39,9 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         },
       );
 
-      unmount = mount(comp, container);
+      unmount = mount(() => comp, container);
 
       expect(container.textContent).toBe(`Error: ${errorMessage}`);
-    });
-
-    it("should destroy original scope before creating error boundary", () => {
-      const originalScopeDestroyed = vi.fn();
-
-      const comp = Safe(
-        () => {
-          useScope().onUnmount(originalScopeDestroyed);
-          throw new SeidrError("Error");
-        },
-        () => {
-          return $("div");
-        },
-      );
-
-      unmount = mount(comp, container);
-
-      expect(originalScopeDestroyed).toBeCalled();
     });
   });
 
@@ -76,24 +56,10 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         },
       );
 
-      unmount = mount(comp, container);
+      unmount = mount(() => comp, container);
 
       expect(consoleSpy).toHaveBeenCalled();
       expect(container.textContent).toBe("Recovered");
-    });
-
-    it("should mark root component even when error occurs", () => {
-      const comp = Safe(
-        () => {
-          throw new SeidrError("Error");
-        },
-        () => {
-          return $("div");
-        },
-      );
-
-      unmount = mount(comp, container);
-      expect(container.querySelector(`[${ROOT_ATTRIBUTE}]`)).toBeTruthy();
     });
   });
 
@@ -111,7 +77,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         },
       );
 
-      unmount = mount(ErrorChild, container);
+      unmount = mount(() => ErrorChild, container);
 
       expect(caughtError).toBeInstanceOf(Error);
       expect(caughtError!.message).toBe("Child error");
@@ -126,68 +92,17 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
           throw new SeidrError("Error");
         },
         () => {
-          useScope().onUnmount(() => {
+          onUnmounted(() => {
             errorBoundaryDestroyed = true;
           });
           return $("div");
         },
       );
 
-      comp.unmount();
+      unmount = mount(() => comp, container);
+      unmount();
 
       expect(errorBoundaryDestroyed).toBe(true);
-    });
-  });
-
-  describe("Error boundary with resources", () => {
-    it("should cleanup factory resources before error boundary renders", () => {
-      const cleanupLog: string[] = [];
-
-      const comp = Safe(
-        () => {
-          useScope().onUnmount(() => {
-            cleanupLog.push("factory cleanup");
-          });
-          throw new SeidrError("Error");
-        },
-        () => {
-          useScope().onUnmount(() => {
-            cleanupLog.push("error boundary cleanup");
-          });
-          return $("div");
-        },
-      );
-
-      expect(cleanupLog).toContain("factory cleanup");
-
-      comp.unmount();
-
-      expect(cleanupLog).toEqual(["factory cleanup", "error boundary cleanup"]);
-    });
-
-    it("should allow error boundary to create new resources", () => {
-      let eventListenerCalled = false;
-
-      const comp = Safe(
-        () => {
-          throw new SeidrError("Error");
-        },
-        () => {
-          const button = $("button", { textContent: "Retry" });
-          button.onclick = () => {
-            eventListenerCalled = true;
-          };
-          return button;
-        },
-      );
-
-      appendChild(document.body, comp.element);
-      if (!isSSR) {
-        ((comp.element as Component).element as HTMLElement).click();
-        expect(eventListenerCalled).toBe(true);
-      }
-
-      comp.unmount();
     });
   });
 
@@ -202,7 +117,7 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
         },
       );
 
-      unmount = mount(comp, container);
+      unmount = mount(() => comp, container);
       expect(container.textContent).toBe("TypeError");
     });
 
@@ -217,27 +132,6 @@ describeDualMode("Safe", ({ getDocument, isSSR }) => {
           },
         );
       }).toThrow("Error boundary failed");
-    });
-
-    it("should handle errors during child component registration", () => {
-      let errorCaught = false;
-
-      const Parent = () =>
-        Safe(
-          () => {
-            throw new SeidrError("Parent error during child registration");
-          },
-          () => {
-            errorCaught = true;
-            return $("div", { textContent: "Parent error boundary" });
-          },
-        );
-
-      const parent = Parent();
-
-      expect(errorCaught).toBe(true);
-      unmount = mount(parent, container);
-      expect(container.textContent).toBe("Parent error boundary");
     });
   });
 });

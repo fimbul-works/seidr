@@ -1,5 +1,5 @@
-import type { Component } from "../component/types.js";
-import type { Seidr } from "../seidr/seidr.js";
+import type { SeidrComponent } from "../component/types.js";
+import type { Value } from "../observable/value.js";
 
 /**
  * Accepted types for reactive binding to HTML element attributes.
@@ -57,25 +57,25 @@ type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
 type NoStyle<T> = Omit<T, "style">;
 
 /**
- * Union type representing either a scalar value or a reactive Seidr observable.
+ * Union type representing either a scalar value or a reactive Value observable.
  *
- * This type enables automatic reactive binding - if a property receives a Seidr
- * instance, it will be reactively bound; if it receives a plain value, it will
+ * This type enables automatic reactive binding - if a property receives a Value
+ * observable instance, it will be reactively bound; if it receives a plain value, it will
  * be assigned once.
  *
  * @template T - The underlying scalar type
  */
 export type ReactiveValue<T> = [T] extends [Scalar]
-  ? T | Seidr<string> | Seidr<string | null> | Seidr<number> | Seidr<number | null> | Seidr<boolean> | true
+  ? T | Value<string> | Value<string | null> | Value<number> | Value<number | null> | Value<boolean> | true
   : [T] extends [infer A]
-    ? T | Seidr<A> | null
+    ? T | Value<A> | null
     : T;
 
 /**
  * Type definition for reactive HTML element properties.
  *
  * Maps all writable scalar properties of an HTML element to accept either
- * the original type or a Seidr observable of that type. This enables automatic
+ * the original type or a Value observable of that type. This enables automatic
  * reactive binding without additional API calls.
  *
  * @template K - The HTML tag name from HTMLElementTagNameMap
@@ -92,7 +92,7 @@ export type ReactiveProps<
  * Type definition for reactive ARIA attributes.
  *
  * Maps all writable scalar properties of an HTML element to accept either
- * the original type or a Seidr observable of that type. This enables automatic
+ * the original type or a Value observable of that type. This enables automatic
  * reactive binding without additional API calls.
  */
 export type ReactiveARIAMixin = {
@@ -140,14 +140,36 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
     ReactiveARIAKebabCase &
     ReactiveDataKebabCase &
     ReactiveDataCamelCase
-> & { style?: ReactiveCSSStyleDeclaration | string | Seidr<string>; ref?: Seidr<HTMLElementTagNameMap[K] | null> };
+> & { style?: ReactiveCSSStyleDeclaration | string | Value<string>; ref?: Value<HTMLElementTagNameMap[K] | null> };
 
 /**
  * Union type representing allowed nodes for Seidr elements.
  */
-export type SeidrNode = Component | Element | Text | Comment;
+export type SeidrNode = SeidrComponent | Element | Text | Comment;
+
+export type SeidrChild =
+  | SeidrNode
+  | Value<any>
+  | ChildNode
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | SeidrChild[];
 
 /**
- * Union type representing allowed child nodes for Seidr elements.
+ * Namee of a property
  */
-export type SeidrChild = SeidrNode | Seidr<string> | string | null | undefined;
+export type PropName<K extends keyof HTMLElementTagNameMap = any> =
+  | keyof HTMLElement
+  | keyof HTMLElementTagNameMap[K]
+  | `data${string}`
+  | `data-${string}`
+  | `aria${string}`
+  | `aria-${string}`
+  | keyof ARIAMixin
+  | "class"
+  | "for"
+  | "ref"
+  | "htmlFor";

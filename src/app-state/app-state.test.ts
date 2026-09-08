@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { component } from "../component/component";
-import { setScope } from "../component/set-scope";
+import { encodeBase62 } from "@fimbul-works/futhark";
+import { createComponent } from "../component/create-component";
+import { setComponentScope } from "../component/lifecycle/component-scope";
 import { $ } from "../element";
-import { Seidr } from "../seidr/seidr";
 import { enableClientMode, enableSSRMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { getAppState, getNextSeidrId, setAppStateID } from "./app-state";
+import { getAppState, getNextValueId, setAppStateID } from "./app-state";
+import { createValue } from "../observable";
 
 describe("AppState Infrastructure", () => {
   let restore: CleanupFunction;
@@ -21,17 +22,17 @@ describe("AppState Infrastructure", () => {
   describe("setAppStateID", () => {
     it("should update ctxID and reset counter", () => {
       const state = getAppState();
-      state.seidrIdCounter = 42;
+      state.uniqID = 42;
 
       setAppStateID(100);
 
       expect(state.ctxID).toBe(100);
-      expect(state.seidrIdCounter).toBe(0);
+      expect(state.uniqID).toBe(0);
     });
 
-    it("should clear all data including Seidr instances", () => {
+    it("should clear all data including observable instances", () => {
       const state = getAppState();
-      const s1 = new Seidr(1);
+      const s1 = createValue(1);
       const destroySpy = vi.spyOn(s1, "destroy");
 
       state.setData("custom", "value");
@@ -68,33 +69,33 @@ describe("AppState Infrastructure", () => {
 
   describe("getNextSeidrId", () => {
     it("should generate deterministic IDs within component scope", () => {
-      const TestComp = component(() => {
-        const id1 = getNextSeidrId();
-        const id2 = getNextSeidrId();
+      const TestComp = createComponent(() => {
+        const id1 = getNextValueId();
+        const id2 = getNextValueId();
         return $("div", { id: id1, className: id2 });
       }, "Test");
 
       const comp1 = TestComp();
-      const el1 = comp1.element as HTMLElement;
+      const el1 = comp1.nodes[0] as HTMLElement;
 
-      // ID format is: [ComponentID]-[CounterBase62]
-      expect(el1.id).toBe(`${comp1.id}-1`);
-      expect(el1.className).toBe(`${comp1.id}-2`);
+      // ID format is: [ComponentIDBase62]-[CounterBase62]
+      expect(el1.id).toBe(`${encodeBase62(comp1.id)}-1`);
+      expect(el1.className).toBe(`${encodeBase62(comp1.id)}-2`);
 
       const comp2 = TestComp();
-      const el2 = comp2.element as HTMLElement;
-      expect(el2.id).toBe(`${comp2.id}-1`);
+      const el2 = comp2.nodes[0] as HTMLElement;
+      expect(el2.id).toBe(`${encodeBase62(comp2.id)}-1`);
     });
 
     it("should fallback to AppState counter when outside of scope", () => {
-      setScope(null);
+      setComponentScope(null);
       const state = getAppState();
-      state.seidrIdCounter = 10;
+      state.uniqID = 10;
 
-      const id = getNextSeidrId();
+      const id = getNextValueId();
       // 10 in base62 is 'a'
       expect(id).toBe("a");
-      expect(state.seidrIdCounter).toBe(11);
+      expect(state.uniqID).toBe(11);
     });
 
     it("should warn on server when outside of scope", () => {
@@ -102,11 +103,11 @@ describe("AppState Infrastructure", () => {
       const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
       try {
-        setScope(null);
-        getNextSeidrId();
+        setComponentScope(null);
+        getNextValueId();
 
         expect(consoleSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Generating Seidr ID outside of component scope"),
+          expect.stringContaining("Generating Value ID outside of component scope"),
         );
       } finally {
         cleanup();

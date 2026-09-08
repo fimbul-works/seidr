@@ -22,6 +22,11 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
     return;
   }
 
+  const isSSRDisabled =
+    process.env.SEIDR_DISABLE_SSR === "true" ||
+    process.env.SEIDR_DISABLE_SSR === "1" ||
+    process.env.SEIDR_DISABLE_SSR === "";
+
   const envMode = process.env.SEIDR_TEST_RENDER_MODE?.toLowerCase();
 
   const modes = [
@@ -31,12 +36,16 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
       setup: enableClientMode,
       isSSR: false,
     },
-    {
-      name: "SSR" as const,
-      value: "ssr",
-      setup: enableSSRMode,
-      isSSR: true,
-    },
+    ...(!isSSRDisabled
+      ? [
+          {
+            name: "SSR" as const,
+            value: "ssr",
+            setup: enableSSRMode,
+            isSSR: true,
+          },
+        ]
+      : []),
   ];
 
   // Filter modes if env var is set
@@ -74,6 +83,16 @@ export function describeDualMode(name: string, fn: (context: DualModeContext) =>
  * @param factory - Function that returns a SeidrNode or Component
  */
 export function itHasParity(name: string, factory: () => any) {
+  const isSSRDisabled =
+    process.env.SEIDR_DISABLE_SSR === "true" ||
+    process.env.SEIDR_DISABLE_SSR === "1" ||
+    process.env.SEIDR_DISABLE_SSR === "";
+
+  if (isSSRDisabled) {
+    it.skip(name, () => {});
+    return;
+  }
+
   it(name, () => {
     // 1. Run in Browser mode
     const cleanupClient = enableClientMode();

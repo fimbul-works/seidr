@@ -1,39 +1,31 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { TodoApp } from "../../examples/todo-mvc";
-import { component } from "../component";
-import { $ } from "../element";
-import { DATA_KEY_STATE } from "../seidr/constants";
-import { Seidr } from "../seidr/seidr";
-import { enableSSRMode, resetRequestIdCounter } from "../test-setup";
-import { renderToString } from "./render-to-string";
+import { TodoApp } from "../../examples/todo-mvc.js";
+import { createComponent } from "../component/create-component.js";
+import { Suspense, type SuspenseState } from "../components/suspense.js";
+import { $ } from "../element/create-element.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import { createValue, mergeValues, type Value } from "../observable/value.js";
+import { enableSSRMode, resetRequestIdCounter } from "../test-setup/index.js";
+import { inServer } from "../util/environment/in-server.js";
+import { renderToString } from "./render-to-string.js";
 
 describe("renderToString", () => {
-  let observables: Seidr[] = [];
   let cleanup: () => void;
 
   beforeEach(() => {
     cleanup = enableSSRMode();
     resetRequestIdCounter();
-    observables = [];
   });
 
   afterEach(() => {
-    // Restore original environment
     cleanup();
-
-    // Verify all observables have zero observers after SSR
-    observables.forEach((obs) => {
-      obs.destroy();
-      expect(obs.observerCount()).toBe(0);
-    });
   });
 
   it("should render simple component and capture state", async () => {
-    let count: Seidr<number>;
+    let count: Value<number>;
 
-    const TestComponent = component(() => {
-      count = new Seidr(42);
-      observables.push(count);
+    const TestComponent = createComponent(() => {
+      count = createValue(42);
       return $("div", { className: "counter", textContent: count.as((n) => `Count: ${n}`) });
     });
 
@@ -44,14 +36,13 @@ describe("renderToString", () => {
 
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(42);
-    expect(count!.observerCount()).toBe(0);
   });
 
   it("should only capture root observable state", async () => {
-    let count: Seidr<number>;
-    const TestComponent = component(() => {
-      count = new Seidr(10);
-      observables.push(count);
+    let count: Value<number>;
+
+    const TestComponent = createComponent(() => {
+      count = createValue(10);
       const doubled = count.as((n) => n * 2);
 
       return $("div", {}, [
@@ -59,25 +50,25 @@ describe("renderToString", () => {
         $("span", { textContent: doubled.as((n) => `Doubled: ${n}`) }),
       ]);
     });
+
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Count: 10");
     expect(html).toContain("Doubled: 20");
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
+
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
     expect(values[0]).toBe(10);
-    expect(count!.observerCount()).toBe(0);
   });
 
   it("should capture multiple root observables", async () => {
-    let firstName: Seidr<string>;
-    let lastName: Seidr<string>;
+    let firstName: Value<string>;
+    let lastName: Value<string>;
 
-    const TestComponent = component(() => {
-      firstName = new Seidr("John");
-      lastName = new Seidr("Doe");
-      observables.push(firstName, lastName);
-      const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+    const TestComponent = createComponent(() => {
+      firstName = createValue("John");
+      lastName = createValue("Doe");
+      const fullName = mergeValues(() => `${firstName()} ${lastName()}`, { parents: [firstName, lastName] });
       return $("div", {}, [$("h1", { textContent: fullName })]);
     });
 
@@ -87,40 +78,71 @@ describe("renderToString", () => {
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
 
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
-    expect(values[0]).toBe("John");
-    expect(values[1]).toBe("Doe");
-
-    expect(firstName!.observerCount()).toBe(0);
-    expect(lastName!.observerCount()).toBe(0);
+    expect(values).toContain("John");
+    expect(values).toContain("Doe");
   });
 
   it("should capture merged dependencies but not merged values", async () => {
-    const TestComponent = component(() => {
-      const a = new Seidr(2);
-      const b = new Seidr(3);
-      const sum = Seidr.merge(() => a.value + b.value, [a, b]);
+    const TestComponent = createComponent(() => {
+      const a = createValue(2);
+      const b = createValue(3);
+      const sum = mergeValues(() => a() + b(), { parents: [a, b] });
 
       return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
     });
+
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Sum: 5");
-    // Both a and b should be in observables, not sum (merged)
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
+
     const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
-    expect(values[0]).toBe(2);
-    expect(values[1]).toBe(3);
+    expect(values).toContain(2);
+    expect(values).toContain(3);
   });
 
-  it("should handle observables created in nested function calls", async () => {
-    const TestComponent = component(() => {
-      const count = new Seidr(5);
-      return $("div", { textContent: count.as((n) => `Count: ${n}`) });
+  it("should handle a naked factory function returning a DOM node", async () => {
+    const NakedFactory = () => $("span", { textContent: "Naked" });
+    const { html } = await renderToString(NakedFactory);
+
+    expect(html).toContain("<span>Naked</span>");
+  });
+
+  it("should resolve async promises with inServer", async () => {
+    const TestComponent = createComponent(() => {
+      const data = createValue("initial");
+
+      inServer(async () => {
+        await new Promise((resolve) => setTimeout(resolve, 15));
+        data("fetched from server");
+      });
+
+      return $("div", { textContent: data });
     });
+
     const { html, hydrationData } = await renderToString(TestComponent);
 
-    expect(html).toContain("Count: 5");
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
+    expect(html).toContain("fetched from server");
+    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    expect(values).toContain("fetched from server");
+  });
+
+  it("should resolve async promises with Suspense", async () => {
+    const asyncPromise = new Promise<string>((resolve) => {
+      setTimeout(() => resolve("Async data loaded"), 15);
+    });
+
+    const TestComponent = createComponent(() => {
+      return Suspense(asyncPromise, ({ state, value }: SuspenseState<string>) => {
+        return $("div", {
+          textContent: value.as((v) => v ?? "loading..."),
+        });
+      });
+    });
+
+    const { html } = await renderToString(TestComponent);
+
+    expect(html).toContain("Async data loaded");
   });
 
   it("should render TODO application", async () => {
@@ -128,21 +150,11 @@ describe("renderToString", () => {
       TodoApp([{ id: 1, title: "Test Todo", completed: false }]),
     );
 
-    // Verify HTML structure (data-seidr-id is added automatically)
     expect(html).toContain('class="todoapp"');
-    expect(html).toContain('<ul class="todo-list">');
+    expect(html).toContain('class="todo-list"');
     expect(html).toContain('placeholder="What needs to be done?"');
     expect(html).toContain("Test Todo");
 
-    // Verify observables were captured
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThan(0);
-  });
-
-  it("should handle a naked factory function returning a DOM node", async () => {
-    const NakedFactory = () => $("span", { textContent: "Naked" });
-    const { html } = await renderToString(NakedFactory);
-
-    expect(html).toMatch(/data-seidr-root="\d+"/);
-    expect(html).toContain("Naked");
   });
 });

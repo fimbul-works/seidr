@@ -1,5 +1,5 @@
 import { TYPE_COMMENT_NODE, TYPE_DOCUMENT, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../../constants.js";
-import { isFn } from "../../util/type-guards/primitive-types.js";
+import { isFn } from "../../util/type-guards.js";
 import type { SSRDocument } from "./ssr-document.js";
 import { SSRNodeList } from "./ssr-node-list.js";
 import type { SupportedNodeTypes } from "./types.js";

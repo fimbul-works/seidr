@@ -1,223 +1,104 @@
 import { type TYPE_COMPONENT, type TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
-import type { SeidrChild, SeidrNode } from "../element/types.js";
+import type { SeidrChild } from "../element/types.js";
 import type { CleanupFunction } from "../types.js";
 
 /**
- * Seidr component factories has a boolean flag to identify it has been wrapped with `component()`.
+ * Component metadata.
  */
-interface ComponentFactoryInterface {
+export interface SeidrComponent {
+  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
+  /** Component ID */
+  id: number;
+  /** Component name */
+  name: string;
+  /** Flag to indicate if component is mounted */
+  isMounted: boolean;
+  /** DOM nodes */
+  nodes: ChildNode[];
+  /** Parent component for cleanup propagation */
+  owner: SeidrComponent | null;
+  /** Child components */
+  children: Set<SeidrComponent>;
+  /** Lifecycle: called when component is mounted */
+  onMount(fn: OnMountedFunction): void;
+  /** Lifecycle: called when component is attached to Document */
+  onAttach(fn: OnAttachedFunction): void;
+  /** Lifecycle: called when component is removed from DOM */
+  onUnmount(fn: CleanupFunction): void;
+  /**
+   * Destroys the component, cleaning up resources and removing its elements from the DOM.
+   * @internal
+   */
+  unmount(): void;
+  /**
+   * The next available Value ID for this component.
+   * @internal
+   */
+  readonly nextValueId: number;
+  /**
+   * Execution sequence array populated during Server-Side Rendering.
+   * @internal
+   */
+  readonly createdIndex?: (ChildNode | SeidrComponent)[];
+  /**
+   * Map of child component root nodes to their component ID.
+   * @internal
+   */
+  readonly childCreatedIndex?: Map<Node | SeidrComponent, string>;
+  /**
+   * Tracks a created node in the component's execution sequence.
+   * @internal
+   */
+  trackChild?(child: ChildNode | SeidrComponent): void;
+  /**
+   * Removes a created node from the component's execution sequence.
+   * @internal
+   */
+  untrackChild?(child: ChildNode | SeidrComponent): void;
+}
+
+/**
+ * Seidr component factories has a boolean flag to identify it has been wrapped with `createComponent()`.
+ */
+interface SeidrComponentFactoryInterface {
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
   readonly name: string;
 }
+
+/**
+ * Type representing the return values of a component factory.
+ */
+export type SeidrComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
 
 /**
  * Seidr component pure function type.
  *
  * @template P - Props object type (optional)
  */
-export type ComponentFactoryPureFunction<P = void> = P extends void
-  ? () => ComponentReturnValue
-  : (props: P) => ComponentReturnValue;
+export type SeidrComponentFactoryPureFunction<P = void> = P extends void
+  ? () => SeidrComponentReturnValue
+  : (props: P) => SeidrComponentReturnValue;
 
 /**
  * Seidr component factory function type.
  *
  * @template P - Props object type (optional)
  */
-export type ComponentFactory<P = void> = (P extends void
-  ? (props?: void, parentComponent?: Component | null, identifier?: unknown) => Component
-  : (props: P, parentComponent?: Component | null, identifier?: unknown) => Component) &
-  ComponentFactoryInterface;
+export type SeidrComponentFactory<P = void> = ((props: P) => SeidrComponent) & SeidrComponentFactoryInterface;
 
 /**
- * Type representing a Seidr component factory, which can be either a pure function or a wrapped factory function.
+ * Type representing a Seidr component, which can be either a factory or a pure function.
  *
  * @template P - Props object type (optional)
  */
-export type ComponentFactoryFunction<P = void> = ComponentFactoryPureFunction<P> | ComponentFactory<P>;
+export type SeidrComponentFactoryOrFunction<P = void> = SeidrComponentFactory<P> | SeidrComponentFactoryPureFunction<P>;
 
 /**
- * Type representing a Seidr component, which can be either a factory or an instantiated component.
- *
- * @template P - Props object type (optional)
+ * Function to execute when a component is mounted.
  */
-export type ComponentType<P = void> = ComponentFactoryFunction<P> | Component;
+export type OnMountedFunction = (container: HTMLElement) => void;
 
 /**
- * Type representing the children of a component.
+ * Function to execute when a component or DOM node is attached to the document.
  */
-export type ComponentChildren = SeidrNode | SeidrNode[] | null | undefined;
-
-/**
- * Type representing the return values of a component factory.
- */
-export type ComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
-
-/**
- * Function to execute when a componnent is mounted.
- */
-export type OnMountFunction = (parent: Node) => void;
-
-/**
- * Represents a Seidr component with automatic lifecycle management.
- *
- * Components are the primary building blocks of Seidr applications, encapsulating
- * both the visual element and the cleanup logic needed for proper resource
- * management.
- */
-export interface Component {
-  /**
-   * Read-only identifier for Seidr components.
-   * @type {typeof TYPE.COMPONENT}
-   */
-  readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
-
-  /**
-   * The unique identifier of the component.
-   */
-  readonly id: string;
-
-  /**
-   * The numeric representation of the identifier, used for generating children's IDs.
-   */
-  readonly numericId: number;
-
-  /**
-   * Whether the component has been destroyed.
-   */
-  readonly isMounted: boolean;
-
-  /**
-   * The parent component.
-   */
-  readonly parent: Component | null;
-
-  /**
-   * The parent DOM node, if mounted.
-   */
-  readonly parentNode: ParentNode | null;
-
-  /**
-   * The root element of the component.
-   * @type {ComponentChildren}
-   */
-  element: ComponentChildren;
-
-  /**
-   * The child components.
-   * @internal
-   */
-  readonly children: Map<string, Component>;
-
-  /**
-   * The start marker of the component.
-   * @type {Comment | null}
-   */
-  readonly startMarker: Comment | null;
-
-  /**
-   * The end marker of the component.
-   * @type {Comment | null}
-   */
-  readonly endMarker: Comment | null;
-
-  /**
-   * Execution sequence array populated during Server-Side Rendering.
-   * Only present during SSR builds.
-   * @internal
-   */
-  readonly createdIndex: (ChildNode | Component)[];
-
-  /**
-   * Map of child component root nodes to their component ID.
-   * Used during SSR to build the structure map without relying on dataset IDs.
-   * @internal
-   */
-  readonly childCreatedIndex: Map<Node | Component, string>;
-
-  /**
-   * Callback triggered when the component is mounted to a parent.
-   * @param {OnMountFunction} callback - The callback to execute when mounted
-   */
-  onMount(callback: OnMountFunction): void;
-
-  /**
-   * Callback triggered when the component tree is attached to a document.
-   * @param {() => void} callback - The callback to execute when attached
-   */
-  onAttached(callback: () => void): void;
-
-  /**
-   * Tracks a cleanup function to be executed when the component is destroyed.
-   * @param {CleanupFunction} cleanup - The cleanup function to execute
-   */
-  onUnmount(cleanup: CleanupFunction): void;
-
-  /**
-   * Attach the component to a parent DOM node.
-   * @param {Node} parent - The parent DOM node
-   * @throws {SeidrError} if attempting to mount to a nullish parent
-   * @internal
-   */
-  mount(parent: Node): void;
-
-  /**
-   * Destroys the component, cleaning up resources and removing its elements from the DOM.
-   * @internal
-   */
-  unmount(): void;
-
-  /**
-   * Call onAttached callbacks when attached to the documment.
-   * @internal
-   */
-  attached(): void;
-
-  /**
-   * Call onUnmount callbacks and clean up resources.
-   * @internal
-   */
-  cleanup(): void;
-
-  /**
-   * Requests a deterministic, sequential ID for a child component within this parent.
-   * @internal
-   */
-  nextChildId(): number;
-
-  /**
-   * Requests a deterministic, sequential ID for Seidr instance within this component.
-   * @internal
-   */
-  nextSeidrId(): number;
-
-  /**
-   * Tracks a child component for automatic cleanup.
-   * @param {Component} component - The child component to track
-   * @returns {Component} The same child Component
-   * @internal
-   */
-  addChild(component: Component): Component;
-
-  /**
-   * Removes a child component.
-   * @param {Component} child - The child component to remove
-   * @internal
-   */
-  removeChild(child: Component): void;
-
-  /**
-   * Tracks a created node in the component's execution sequence.
-   * Only used during SSR to build the hydration data payload.
-   * @param {ChildNode | Component} child - Node or child component to track
-   * @internal
-   */
-  trackChild(child: ChildNode | Component): void;
-
-  /**
-   * Remove node from tracked index.
-   * @param {ChildNode | Component} child - Node or child component to remove
-   * @internal
-   */
-  untrackChild(child: ChildNode | Component): void;
-}
+export type OnAttachedFunction = () => void;

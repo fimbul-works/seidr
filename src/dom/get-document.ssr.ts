@@ -5,7 +5,8 @@ import { setDocumentProvider } from "./get-document.js";
 
 /**
  * Returns the SSR Document object.
- * @returns {Document} SSR Document object.
+ *
+ * @returns {Document} SSR Document object
  */
 export const getSSRDocument = (): Document => {
   const appState = getAppState();

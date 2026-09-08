@@ -46,5 +46,13 @@ describe("elementFactory", () => {
     const div3 = createDiv({ id: "parent" }, [child]);
     expect(div3.id).toBe("parent");
     expect(div3.contains(child)).toBe(true);
+
+    // Direct children without props
+    const div4 = createDiv("Direct String Child");
+    expect(div4.textContent).toBe("Direct String Child");
+
+    const div5 = createDiv([$("span", { textContent: "1" }), $("span", { textContent: "2" })]);
+    expect(div5.children.length).toBe(2);
+    expect(div5.textContent).toBe("12");
   });
 });

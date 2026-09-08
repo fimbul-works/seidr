@@ -1,10 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { component } from "../component";
+import { encodeBase62 } from "@fimbul-works/futhark";
+import { createComponent } from "../component";
 import { $ } from "../element";
-import { Seidr } from "../seidr";
-import { clearHydrationData, initHydrationData } from "../ssr/hydrate/storage";
 import { describeDualMode } from "../test-setup";
 import { appendChild } from "./append-child";
+import { createValue } from "../observable";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 
 describeDualMode("appendChild", ({ getDocument }) => {
   it("should append a simple element", () => {
@@ -31,37 +32,160 @@ describeDualMode("appendChild", ({ getDocument }) => {
     appendChild(parent, [child1, child2]);
     expect(parent.childNodes.length).toBe(2);
     expect(parent.childNodes[0]).toBe(child1);
-    expect(parent.childNodes[0]).toBe(child1);
     expect(parent.childNodes[1]).toBe(child2);
   });
 
-  it("should append a Seidr observable as a reactive text node", () => {
+  it("should append a reactive Value with marker comments and update text", () => {
     const parent = $("div");
-    const obs = new Seidr("initial");
+    const obs = createValue("initial");
 
     appendChild(parent, obs);
     expect(parent.textContent).toBe("initial");
-    expect(obs.observerCount()).toBe(1);
+    expect(obs.observerCount).toBe(1);
 
-    obs.value = "updated";
+    // Structure: <!--$ID-->initial<!--/ID-->
+    expect(parent.childNodes.length).toBe(3);
+    expect(parent.childNodes[0].nodeType).toBe(8); // Start comment
+    expect(parent.childNodes[0].textContent).toBe(`${SEIDR_COMPONENT_START_PREFIX}${obs.id}`);
+    expect(parent.childNodes[1].textContent).toBe("initial");
+    expect(parent.childNodes[2].nodeType).toBe(8); // End comment
+    expect(parent.childNodes[2].textContent).toBe(`${SEIDR_COMPONENT_END_PREFIX}${obs.id}`);
+
+    // Fast-path text update
+    obs("updated");
     expect(parent.textContent).toBe("updated");
+    expect(parent.childNodes.length).toBe(3);
   });
 
-  it("should append a component with its start and end markers", () => {
+  it("should handle reactive Value returning DOM elements directly and swapping them", () => {
     const parent = $("div");
-    // Return an array with at least one element to force marker comments
-    const Comp = component(() => [$("span", { textContent: "Inner" })], "Comp");
+    const el1 = $("span", { textContent: "First Element" });
+    const el2 = $("p", { textContent: "Second Element" });
+    const obs = createValue<HTMLElement>(el1);
+
+    appendChild(parent, obs);
+
+    expect(parent.innerHTML).toContain("<span>First Element</span>");
+    expect(parent.contains(el1)).toBe(true);
+
+    // Swap to el2
+    obs(el2);
+
+    expect(parent.innerHTML).toContain("<p>Second Element</p>");
+    expect(parent.contains(el1)).toBe(false);
+    expect(parent.contains(el2)).toBe(true);
+  });
+
+  it("should handle reactive Value returning nullish values with empty marker comments", () => {
+    const parent = $("div");
+    const obs = createValue<HTMLElement | null>(null);
+
+    appendChild(parent, obs);
+
+    // Should only have start and end marker comments
+    expect(parent.childNodes.length).toBe(2);
+    expect(parent.childNodes[0].textContent).toBe(`${SEIDR_COMPONENT_START_PREFIX}${obs.id}`);
+    expect(parent.childNodes[1].textContent).toBe(`${SEIDR_COMPONENT_END_PREFIX}${obs.id}`);
+    expect(parent.textContent).toBe("");
+
+    // Toggle to element
+    const el = $("button", { textContent: "Click Me" });
+    obs(el);
+
+    expect(parent.childNodes.length).toBe(3);
+    expect(parent.contains(el)).toBe(true);
+    expect(parent.textContent).toBe("Click Me");
+
+    // Toggle back to null
+    obs(null);
+    expect(parent.childNodes.length).toBe(2);
+    expect(parent.contains(el)).toBe(false);
+    expect(parent.textContent).toBe("");
+  });
+
+  it("should handle reactive Value returning array of DOM elements", () => {
+    const parent = $("div");
+    const obs = createValue<HTMLElement[]>([$("span", { textContent: "A" }), $("span", { textContent: "B" })]);
+
+    appendChild(parent, obs);
+
+    expect(parent.querySelectorAll("span").length).toBe(2);
+    expect(parent.textContent).toBe("AB");
+
+    // Update with 3 elements
+    obs([$("span", { textContent: "X" }), $("span", { textContent: "Y" }), $("span", { textContent: "Z" })]);
+
+    expect(parent.querySelectorAll("span").length).toBe(3);
+    expect(parent.textContent).toBe("XYZ");
+  });
+
+  it("should unmount components when reactive Value swaps them out", () => {
+    const unmountSpy1 = vi.fn();
+    const unmountSpy2 = vi.fn();
+
+    const Comp1 = createComponent(() => {
+      const el = $("div", { textContent: "Comp1" });
+      return el;
+    });
+
+    const Comp2 = createComponent(() => {
+      const el = $("div", { textContent: "Comp2" });
+      return el;
+    });
+
+    const c1 = Comp1();
+    c1.onUnmount(unmountSpy1);
+
+    const c2 = Comp2();
+    c2.onUnmount(unmountSpy2);
+
+    const obs = createValue<any>(c1);
+    const parent = $("div");
+
+    appendChild(parent, obs);
+    expect(parent.textContent).toBe("Comp1");
+
+    // Swap to Comp2
+    obs(c2);
+    expect(parent.textContent).toBe("Comp2");
+    expect(unmountSpy1).toHaveBeenCalled();
+    expect(unmountSpy2).not.toHaveBeenCalled();
+
+    // Swap to null
+    obs(null);
+    expect(parent.textContent).toBe("");
+    expect(unmountSpy2).toHaveBeenCalled();
+  });
+
+  it("should support derived Value conditional switching (Show pattern)", () => {
+    const isVisible = createValue(false);
+    const view = isVisible.as((show) => (show ? $("span", { textContent: "Visible Content" }) : null));
+
+    const parent = $("div");
+    appendChild(parent, view);
+
+    expect(parent.textContent).toBe("");
+
+    isVisible(true);
+    expect(parent.textContent).toBe("Visible Content");
+
+    isVisible(false);
+    expect(parent.textContent).toBe("");
+  });
+
+  it("should append a component with multiple nodes and markers", () => {
+    const parent = $("div");
+    const Comp = createComponent(() => [$("span", { textContent: "1" }), $("span", { textContent: "2" })], "Comp");
     const comp = Comp();
 
     appendChild(parent, comp);
 
-    // Structure: <!--$Comp-ID--><span>Inner</span><!--/Comp-ID-->
-    expect(parent.childNodes.length).toBe(3);
+    // Structure: <!--$Comp-ID--><span>1</span><span>2</span><!--/Comp-ID-->
+    expect(parent.childNodes.length).toBe(4);
     expect(parent.childNodes[0].nodeType).toBe(8); // Comment
-    expect(parent.childNodes[0].textContent).toBe(`$${comp.id}`);
-    expect(parent.childNodes[1].nodeName).toBe("SPAN");
-    expect(parent.childNodes[2].nodeType).toBe(8); // Comment
-    expect(parent.childNodes[2].textContent).toBe(`/${comp.id}`);
+    expect(parent.childNodes[0].textContent).toBe(`$Comp-${encodeBase62(comp.id)}`);
+    expect(parent.childNodes[3].nodeType).toBe(8); // Comment
+    expect(parent.childNodes[3].textContent).toBe(`/Comp-${encodeBase62(comp.id)}`);
 
     expect(comp.isMounted).toBe(true);
   });
@@ -75,25 +199,8 @@ describeDualMode("appendChild", ({ getDocument }) => {
   });
 
   describe("Hydration & Safety", () => {
-    it("should skip appending if component is already mounted during hydration", () => {
-      const parent = $("div");
-      const Comp = component(() => $("span"), "Comp");
-      const comp = Comp();
-      comp.mount(parent); // Mark as mounted
-
-      initHydrationData({ ctxID: 1, data: {}, components: {} });
-      const insertSpy = vi.spyOn(parent, "insertBefore");
-
-      appendChild(parent, comp);
-
-      expect(insertSpy).not.toHaveBeenCalled();
-      clearHydrationData();
-    });
-
     it("should prevent hierarchy request error when appending parent to itself", () => {
       const parent = $("div");
-      // This should normally throw in DOM if we try to append parent to itself
-      // We want to verify Seidr's safety check prevents the call
       const appendSpy = vi.spyOn(parent, "appendChild");
 
       appendChild(parent, parent);

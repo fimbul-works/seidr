@@ -1,6 +1,9 @@
-import { resolve } from "node:path";
-import seidr from "@fimbul-works/seidr/build";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { defineConfig, type UserConfig } from "vite";
+import seidr from "./src/build-plugins/index.ts";
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig(() => {
   return {
@@ -8,6 +11,7 @@ export default defineConfig(() => {
     plugins: [seidr()],
     resolve: {
       alias: {
+        "@fimbul-works/seidr/router": resolve(__dirname, "./src/router/index.ts"),
         "@fimbul-works/seidr/html": resolve(__dirname, "./src/elements/index.ts"),
         "@fimbul-works/seidr/ssr": resolve(__dirname, "./src/index.ssr.ts"),
         "@fimbul-works/seidr": resolve(__dirname, "./src/index.ts"),

@@ -2,9 +2,9 @@
 
 Seidr components are functions that return UI elements. They can receive data via arguments (*"props"*) and use the [`useScope().onMount()`](#onmount), [`useScope().onAttached()`](#onattached) and [`useScope().onUnmount()`](#onunmount) for lifecycle management.
 
-## component()
+## createComponent()
 
-While most components can be plain functions, the `component()` wrapper is used to create a formal [`Component`](#component-type). This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the [`Component`](#component-type) instance.
+While most components can be plain functions, the `createComponent()` wrapper is used to create a formal [`Component`](#component-type). This is useful when you need to pass a "pre-packaged" component factory between modules, or when you need to manually manage the [`Component`](#component-type) instance.
 
 **Parameters:**
 - `factory` - Factory function (signature `(props) => SeidrNode`)

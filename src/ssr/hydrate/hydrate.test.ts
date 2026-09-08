@@ -1,39 +1,42 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { $ } from "../../element";
-import { DATA_KEY_STATE } from "../../seidr/constants";
-import { Seidr } from "../../seidr/seidr";
-import { enableClientMode, enableSSRMode } from "../../test-setup";
-import type { CleanupFunction } from "../../types";
-import { isComment } from "../../util/type-guards/dom-node-types";
-import { renderToString } from "../render-to-string";
-import { setSSRScope } from "../ssr-scope";
-import type { HydrationData } from "../types";
-import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index";
-import { component } from "../../component/component";
+import { setAppStateProvider } from "../../app-state/app-state.js";
+import { createComponent } from "../../component/index.js";
+import { $ } from "../../element/index.js";
+import { $div, $main, $nav } from "../../elements/index.js";
+import { DATA_KEY_STATE } from "../../observable/constants.js";
+import { createValue, mergeValues } from "../../observable/value.js";
+import { enableClientMode, enableSSRMode, getAppState } from "../../test-setup/index.js";
+import type { CleanupFunction } from "../../types.js";
+import { isComment } from "../../dom/type-guards.js";
+import { renderToString } from "../render-to-string.js";
+import { setSSRScope } from "../ssr-scope.js";
+import type { HydrationData } from "../types.js";
+import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index.js";
 
 describe("Hydration", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
-  let unmount: CleanupFunction;
+  let unmount: CleanupFunction | undefined;
 
   beforeEach(() => {
     container = document.createElement("div");
     cleanupClientMode = enableClientMode();
+    setAppStateProvider(getAppState);
   });
 
   afterEach(() => {
     unmount?.();
     clearHydrationData();
-    cleanupClientMode();
+    cleanupClientMode?.();
     setSSRScope(undefined);
   });
 
   it("should track hydration state", () => {
     expect(isHydrating()).toBe(false);
 
-    const data = {
+    const data: HydrationData = {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { 0: 42 } },
+      data: { [DATA_KEY_STATE]: { "0-0": 42 } },
       components: {},
     };
 
@@ -53,11 +56,9 @@ describe("Hydration", () => {
 
     initHydrationData(data1);
 
-    // Create Seidr instances
-    const _seidr1 = new Seidr(0, { id: "a" });
-    const _seidr2 = new Seidr(0, { id: "b" });
+    const _v1 = createValue(0, { id: "a" });
+    const _v2 = createValue(0, { id: "b" });
 
-    // Clear and set new context
     const data2: HydrationData = {
       ctxID: 1,
       data: { [DATA_KEY_STATE]: { c: "second" } },
@@ -66,46 +67,42 @@ describe("Hydration", () => {
 
     initHydrationData(data2);
 
-    // New instances should get numeric ID 0 again
-    const seidr3 = new Seidr(0, { id: "c" });
-
-    // seidr3 should be hydrated with "second"
-    expect(seidr3.value).toBe("second");
+    const v3 = createValue(0, { id: "c" });
+    expect(v3()).toBe("second");
   });
 
-  it("should register Seidr instances in creation order", () => {
+  it("should register Value instances in creation order", () => {
     const data: HydrationData = {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { 0: 100, 1: 200 } },
+      data: { [DATA_KEY_STATE]: { "0": 100, "1": 200 } },
       components: {},
     };
 
     initHydrationData(data);
 
-    const seidr1 = new Seidr(0);
-    const seidr2 = new Seidr(0);
-    const seidr3 = new Seidr(0);
+    const v1 = createValue(0);
+    const v2 = createValue(0);
+    const v3 = createValue(0);
 
-    // Values should be set based on creation order
-    expect(seidr1.value).toBe(100);
-    expect(seidr2.value).toBe(200);
-    expect(seidr3.value).toBe(0); // No hydrated value for ID 2
+    expect(v1()).toBe(100);
+    expect(v2()).toBe(200);
+    expect(v3()).toBe(0);
   });
 
   it("should only hydrate root observables", () => {
     const data: HydrationData = {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { 0: "root" } },
+      data: { [DATA_KEY_STATE]: { "0": "root" } },
       components: {},
     };
 
     initHydrationData(data);
 
-    const root = new Seidr("");
+    const root = createValue("");
     const derived = root.as((s) => s.toUpperCase());
 
-    expect(root.value).toBe("root");
-    expect(derived.value).toBe("ROOT"); // Derived from hydrated root
+    expect(root()).toBe("root");
+    expect(derived()).toBe("ROOT");
   });
 
   it("should work with merged observables", () => {
@@ -113,8 +110,8 @@ describe("Hydration", () => {
       ctxID: 0,
       data: {
         [DATA_KEY_STATE]: {
-          0: "John",
-          1: "Doe",
+          "0": "John",
+          "1": "Doe",
         },
       },
       components: {},
@@ -122,18 +119,18 @@ describe("Hydration", () => {
 
     initHydrationData(data);
 
-    const firstName = new Seidr("");
-    const lastName = new Seidr("");
-    const fullName = Seidr.merge(() => `${firstName.value} ${lastName.value}`, [firstName, lastName]);
+    const firstName = createValue("");
+    const lastName = createValue("");
+    const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
 
-    expect(firstName.value).toBe("John");
-    expect(lastName.value).toBe("Doe");
-    expect(fullName.value).toBe("John Doe");
+    expect(firstName()).toBe("John");
+    expect(lastName()).toBe("Doe");
+    expect(fullName()).toBe("John Doe");
   });
 
   it("should not register when not hydrating", () => {
-    const seidr = new Seidr(42);
-    expect(seidr.value).toBe(42);
+    const v = createValue(42);
+    expect(v()).toBe(42);
   });
 
   it("should hydrate complete component with bindings", () => {
@@ -141,91 +138,77 @@ describe("Hydration", () => {
       ctxID: 0,
       data: {
         [DATA_KEY_STATE]: {
-          0: "hydrated-name",
-          2: true,
+          "0": "hydrated-name",
+          "2": true,
         },
       },
       components: {},
     });
 
-    // Create component (normally would mount to DOM)
-    const name = new Seidr("");
+    const name = createValue("");
     const derived = name.as((s) => s.toUpperCase());
-    const disabled = new Seidr(false);
+    const disabled = createValue(false);
 
     const button = $("button", {
       textContent: derived,
       disabled,
     }) as HTMLButtonElement;
 
-    expect(name.value).toBe("hydrated-name");
-    expect(disabled.value).toBe(true);
+    expect(name()).toBe("hydrated-name");
+    expect(disabled()).toBe(true);
     expect(button.textContent).toBe("HYDRATED-NAME");
     expect(button.disabled).toBe(true);
   });
 
-  it("should restore observable values during hydration", () => {
-    const TestComponent = () => {
-      const count = new Seidr(0, { id: "test" });
-      return $("div", { textContent: count.as((n) => `Count: ${n}`) });
-    };
+  it("should restore observable values during hydration", async () => {
+    const TestComponent = createComponent(() => {
+      const count = createValue(0, { id: "test-count" });
+      return $div(
+        null,
+        count.as((n) => `Count: ${n}`),
+      );
+    }, "TestComponent");
 
-    unmount = hydrate(TestComponent, container, {
-      ctxID: 0,
-      data: { [DATA_KEY_STATE]: { test: 42 } },
-      components: {},
-    });
+    const cleanupSSR = enableSSRMode();
+    const { html, hydrationData } = await renderToString(TestComponent);
+    cleanupSSR();
+
+    // Modify server captured state
+    hydrationData.data[DATA_KEY_STATE]!["test-count"] = 42;
+
+    cleanupClientMode = enableClientMode();
+    container.innerHTML = html;
+
+    unmount = hydrate(TestComponent, container, hydrationData);
 
     expect(container.textContent).toContain("Count: 42");
   });
 
-  it("should restore nested context after hydration", () => {
-    const originalData: HydrationData = {
-      ctxID: 0,
-      data: { [DATA_KEY_STATE]: { 1: 1 } },
-      components: {},
-    };
-
-    const hydrateData: HydrationData = {
-      ctxID: 0,
-      data: { [DATA_KEY_STATE]: { 1: 2 } },
-      components: {},
-    };
-
-    initHydrationData(originalData);
-
-    const TestComponent = () => $("div", {}, ["test"]);
-
-    const cleanupClientMode2 = enableClientMode();
-
-    unmount = hydrate(TestComponent, container, hydrateData);
-    cleanupClientMode2();
-  });
-
   it("should support hydrating raw function components", async () => {
-    const RawComponent = () => $("div", { textContent: "raw function" });
+    const RawComponent = () => $div({ textContent: "raw function" });
 
-    const { hydrationData } = await renderToString(RawComponent);
+    const cleanupSSR = enableSSRMode();
+    const { html, hydrationData } = await renderToString(RawComponent);
+    cleanupSSR();
 
-    const cleanupClientMode2 = enableClientMode();
+    cleanupClientMode = enableClientMode();
+    container.innerHTML = html;
 
     unmount = hydrate(RawComponent, container, hydrationData);
 
     expect(container.textContent).toBe("raw function");
-
-    cleanupClientMode2();
   });
 
   it("should hydrate root component returning an array", async () => {
-    const Nav = component(() => {
-      return $("nav", { textContent: "Navigation" });
+    const Nav = createComponent(() => {
+      return $nav({ textContent: "Navigation" });
     }, "Nav");
 
-    const Main = component(() => {
-      return $("main", { textContent: "Main Content" });
+    const Main = createComponent(() => {
+      return $main({ textContent: "Main Content" });
     }, "Main");
 
-    const App = component(() => {
+    const App = createComponent(() => {
       return [Nav(), Main()];
     }, "App");
 
@@ -263,5 +246,36 @@ describe("Hydration", () => {
     const main = container.querySelector("main");
     expect(nav).not.toBeNull();
     expect(main).not.toBeNull();
+  });
+
+  it("should throw error if hydration is already active", () => {
+    const data: HydrationData = {
+      ctxID: 0,
+      data: { [DATA_KEY_STATE]: {} },
+      components: {},
+    };
+
+    initHydrationData(data);
+    expect(() => hydrate(() => $div("test"), container, data)).toThrow(/Hydration is already active/);
+  });
+
+  it("should throw error if hydration data is invalid", () => {
+    expect(() => hydrate(() => $div("test"), container, null as any)).toThrow(/Invalid hydration data/);
+    expect(() => hydrate(() => $div("test"), container, {} as any)).toThrow(/Invalid hydration data/);
+  });
+
+  it("should clear hydration state even if rendering throws", () => {
+    const FailingComponent = () => {
+      throw new Error("Render error");
+    };
+
+    const data: HydrationData = {
+      ctxID: 0,
+      data: { [DATA_KEY_STATE]: {} },
+      components: {},
+    };
+
+    expect(() => hydrate(FailingComponent, container, data)).toThrow("Render error");
+    expect(isHydrating()).toBe(false);
   });
 });

@@ -1,5 +1,3 @@
-import { minify } from "vite";
-
 export default {
   groups: [
     {

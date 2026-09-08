@@ -1,4 +1,4 @@
-import { isStr } from "../../util/type-guards/primitive-types.js";
+import { isStr } from "../../util/type-guards.js";
 import type { ServerNode } from "./types.js";
 
 /**

@@ -1,7 +1,7 @@
 import MagicString from "magic-string";
 import type { Plugin } from "rolldown";
-import { clientOnlyReplacements, clientReplace } from "./config.js";
-import type { SeidrPluginOptions } from "./types.js";
+import type { SeidrPluginOptions } from "./index.js";
+import { clientOnlyReplacements, clientReplace } from "./replacements.js";
 import { replace } from "./util.js";
 
 export const seidrBundlePlugin = ({ disableSSR = false }: SeidrPluginOptions): Plugin => ({

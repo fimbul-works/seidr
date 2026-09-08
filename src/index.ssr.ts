@@ -1,2 +1,2 @@
 export { renderToString } from "./ssr/render-to-string.js";
-export { SSRRenderResult } from "./ssr/types";
+export type { HydrationData, SSRRenderResult } from "./ssr/types.js";

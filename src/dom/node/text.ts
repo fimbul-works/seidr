@@ -1,4 +1,4 @@
-import { useScope } from "../../component/use-scope.js";
+import { getComponentScope } from "../../component/lifecycle/component-scope.js";
 import { TAG_TEXT } from "../../constants.js";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../../ssr/hydrate/storage.js";
@@ -27,9 +27,8 @@ export const $text = (text: unknown): Text => {
 
       const node = ctx.claim<Text>(TAG_TEXT);
       if (node) {
-        // This is a new node created due to a mismatch in claim()
         if (node.textContent !== String(text)) {
-          console.warn(`[Hydration] Text mismatch: expected "${String(text)}" but found "${node.textContent}."`);
+          console.warn(`[Hydration] Text mismatch: expected "${String(text)}" but found "${node.textContent}".`);
           node.textContent = String(text);
         }
         return node;
@@ -39,17 +38,10 @@ export const $text = (text: unknown): Text => {
 
   const node = doc.createTextNode(String(text));
 
-  // If we are server-side, we need to track the node
+  // If we are server-side, track the node
   if (isServer()) {
-    if (process.env.VITEST) {
-      try {
-        useScope().trackChild(node);
-      } catch (_) {
-        // Ignore
-      }
-    } else {
-      useScope().trackChild(node);
-    }
+    const scope = getComponentScope();
+    scope?.trackChild?.(node);
   }
 
   return node;

@@ -1,10 +1,10 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
-import type { Component } from "../component/types.js";
+import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
-import { DATA_KEY_STATE } from "../seidr/constants.js";
-import type { Seidr } from "../seidr/seidr.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import type { Value } from "../observable/value.js";
 import { isServer } from "../util/environment/is-server.js";
 import { registerStateStrategy } from "./register-state-strategy.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";
@@ -15,15 +15,20 @@ import type { HydrationData } from "./types.js";
  * Gets the SSR scope for the current render context.
  * Returns undefined if not in SSR mode or no scope is active for this context.
  *
- * @returns {(SSRScope | undefined)} The SSR scope for the current render context, or undefined
+ * @returns {SSRScope | undefined} The SSR scope for the current render context, or undefined
  */
-export const getSSRScope = (): SSRScope | undefined => getAppState().getData<SSRScope>(DATA_KEY_SSR_SCOPE);
+export const getSSRScope = (): SSRScope | undefined => {
+  try {
+    return getAppState().getData<SSRScope>(DATA_KEY_SSR_SCOPE);
+  } catch {
+    return undefined;
+  }
+};
 
 /**
  * Sets the active SSR scope for the current application state.
- * Call this before starting a render pass.
  *
- * @param {(SSRScope | undefined)} scope - The scope to activate for the current application state
+ * @param {SSRScope | undefined} scope - The scope to activate for the current application state
  */
 export function setSSRScope(scope: SSRScope | undefined): void {
   if (!isServer()) {
@@ -37,19 +42,19 @@ export function setSSRScope(scope: SSRScope | undefined): void {
     } else {
       state.setData(DATA_KEY_SSR_SCOPE, scope);
     }
-  } catch (_e) {}
+  } catch {
+    // Ignore when outside app-state context
+  }
 }
 
 /**
- * SSRScope manages observables created during a single server-side render pass.
+ * SSRScope manages observables and asynchronous tasks created during a single server-side render pass.
  *
- * Each render pass has its own scope to prevent cross-contamination between
- * concurrent renders. The scope tracks all Seidr instances created during
- * rendering and captures their state for hydration.
+ * Each render pass has its own scope to prevent cross-contamination between concurrent renders.
  */
 export class SSRScope {
-  // id -> Component
-  private components = new Map<string, Component>();
+  // id -> SeidrComponent
+  private components = new Map<string, SeidrComponent>();
   // Async tasks to await during SSR
   private promises: Promise<any>[] = [];
 
@@ -64,15 +69,13 @@ export class SSRScope {
 
   /**
    * Returns the number of observables registered in this scope.
-   * Useful for debugging and testing.
    */
   get size(): number {
-    return this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.size ?? 0;
+    return this.state.getData<Map<string, Value>>(DATA_KEY_STATE)?.size ?? 0;
   }
 
   /**
    * Registers a promise to be awaited before finishing the SSR render.
-   * Useful for inServer() async tasks.
    *
    * @template T - Type the promise resolves to
    * @param {Promise<T>} promise - The promise to track
@@ -92,38 +95,39 @@ export class SSRScope {
       const pending = [...this.promises];
       this.promises = [];
       await Promise.all(pending);
+      await Promise.resolve();
     }
   }
 
   /**
    * Registers a component with this scope for hydration path mapping.
-   * @param {Component} comp - The component instance
+   * @param {SeidrComponent} comp - The component instance
    */
-  registerComponent(comp: Component): void {
-    this.components.set(comp.id, comp);
+  registerComponent(comp: SeidrComponent): void {
+    this.components.set(String(comp.id), comp);
   }
 
   /**
    * Unregisters a component from this scope.
-   * @param {Component} comp - The component instance
+   * @param {SeidrComponent} comp - The component instance
    */
-  unregisterComponent(comp: Component): void {
-    this.components.delete(comp.id);
+  unregisterComponent(comp: SeidrComponent): void {
+    this.components.delete(String(comp.id));
   }
 
   /**
-   * Gets an observable by ID from this scope.
+   * Gets an observable Value by ID from this scope.
    */
-  get(id: string): Seidr | undefined {
-    return this.state.getData<Map<string, Seidr>>(DATA_KEY_STATE)?.get(id);
+  get(id: string): Value | undefined {
+    return this.state.getData<Map<string, Value>>(DATA_KEY_STATE)?.get(id);
   }
 
   /**
-   * Clears all observables from this scope.
-   * Called after rendering to prevent memory leaks.
+   * Clears this scope and its underlying AppState.
    */
   clear(): void {
     this.components.clear();
+    this.promises = [];
     this.state.destroy();
   }
 
@@ -148,10 +152,20 @@ export class SSRScope {
 
     let index = 0;
     for (const comp of mountedComps) {
-      compIndices.set(comp.id, index);
+      const compIdStr =
+        process.env.NODE_ENV === "production" ? encodeBase62(comp.id) : `${comp.name}-${encodeBase62(comp.id)}`;
+      compIndices.set(compIdStr, index);
 
-      const prefix = !comp.parent ? SEIDR_COMPONENT_START_PREFIX : encodeBase62(compIndices.get(comp.parent!.id)!);
-      const key = `${prefix}:${comp.id}`;
+      const parentIdStr = comp.owner
+        ? process.env.NODE_ENV === "production"
+          ? encodeBase62(comp.owner.id)
+          : `${comp.owner.name}-${encodeBase62(comp.owner.id)}`
+        : null;
+      const prefix =
+        !parentIdStr || !compIndices.has(parentIdStr)
+          ? SEIDR_COMPONENT_START_PREFIX
+          : encodeBase62(compIndices.get(parentIdStr)!);
+      const key = `${prefix}:${compIdStr}`;
 
       const map = buildStructureMap(comp);
       components[key] = map;

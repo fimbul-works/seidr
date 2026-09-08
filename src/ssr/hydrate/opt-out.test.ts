@@ -1,24 +1,24 @@
 import { beforeEach, describe, expect, it } from "vitest";
-import { Seidr } from "../../seidr";
-import { DATA_KEY_STATE } from "../../seidr/constants";
-import { enableSSRMode } from "../../test-setup";
-import { renderToString } from "../render-to-string";
+import { DATA_KEY_STATE } from "../../observable/constants.js";
+import { createValue } from "../../observable/value.js";
+import { enableSSRMode } from "../../test-setup/index.js";
+import { renderToString } from "../render-to-string.js";
 
-describe("Seidr Hydration Opt-out", () => {
+describe("Value Hydration Opt-out", () => {
   beforeEach(() => {
     enableSSRMode();
   });
 
-  it("should not include opt-out Seidr instances in hydration data", async () => {
-    // Component with one hydrated and one non-hydrated Seidr
+  it("should not include opt-out Value instances in hydration data", async () => {
+    // Component with one hydrated and one non-hydrated Value
     const TestComponent = () => {
-      const hydrated = new Seidr("keep me");
-      hydrated.observe(() => {}); // Force registration
+      const hydrated = createValue("keep me");
+      hydrated.watch(() => {}); // Force registration
 
-      const transient = new Seidr("drop me", { hydrate: false });
-      transient.observe(() => {}); // Attempt registration (should be ignored)
+      const transient = createValue("drop me", { hydrate: false });
+      transient.watch(() => {}); // Attempt registration (should be ignored)
 
-      return `<div>${hydrated.value} ${transient.value}</div>`;
+      return `<div>${hydrated()} ${transient()}</div>`;
     };
 
     const { hydrationData } = await renderToString(TestComponent);

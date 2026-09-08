@@ -1,15 +1,15 @@
-import { isClient, mount, Seidr, useScope } from "@fimbul-works/seidr";
-import { $button, $div, $h1 } from "@fimbul-works/seidr/html";
+import { isClient, mount, createValue, getComponentScope, onUnmounted } from "../src/index";
+import { $button, $div, $h1 } from "../src/elements";
 
 const PomodoroTimer = () => {
   const WORK_TIME = 25 * 60;
   const SHORT_BREAK = 5 * 60;
   const LONG_BREAK = 15 * 60;
 
-  const timeLeft = new Seidr(WORK_TIME);
-  const isRunning = new Seidr(false);
-  const mode = new Seidr<"work" | "break">("work"); // 'work' or 'break'
-  const sessionCount = new Seidr(0);
+  const timeLeft = createValue(WORK_TIME);
+  const isRunning = createValue(false);
+  const mode = createValue<"work" | "break">("work"); // 'work' or 'break'
+  const sessionCount = createValue(0);
 
   let interval: ReturnType<typeof setInterval> | null = null;
 
@@ -22,26 +22,26 @@ const PomodoroTimer = () => {
   const formattedTime = timeLeft.as(formatTime);
 
   const tick = () => {
-    if (timeLeft.value > 0) {
-      timeLeft.value--;
+    if (timeLeft() > 0) {
+      timeLeft(val => val - 1);
     } else {
       handleSessionComplete();
     }
   };
 
   const handleSessionComplete = () => {
-    isRunning.value = false;
+    isRunning(false);
     playSound();
 
-    if (mode.value === "work") {
-      const newCount = sessionCount.value + 1;
-      sessionCount.value = newCount;
+    if (mode() === "work") {
+      const newCount = sessionCount() + 1;
+      sessionCount(newCount);
 
-      mode.value = "break";
-      timeLeft.value = newCount % 4 === 0 ? LONG_BREAK : SHORT_BREAK;
+      mode("break");
+      timeLeft(newCount % 4 === 0 ? LONG_BREAK : SHORT_BREAK);
     } else {
-      mode.value = "work";
-      timeLeft.value = WORK_TIME;
+      mode("work");
+      timeLeft(WORK_TIME);
     }
   };
 
@@ -49,11 +49,11 @@ const PomodoroTimer = () => {
     const audio = new Audio(
       "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwPUKng8LRiGwU2kdry0nwoBS13xu/dkUAKFFyx6O2pVRQKRp/h8r9sIQUsgs/y2Yk1CBtpvPDknE4MD1Cn4O+zYhwGN5HY8tJ8KAUudsbw3JE/ChRdsejuqlUUCkaf4PO/bCAGK4HP8tmJNQgcabzv5ZxPDAxQqN/us2McBjiP1/PMeywFMHXG8N2RQAoUXa/o7qpWFApHn+D0wGwgBiuBzvLZiDUIHGi98OacTwwMUKff77NiHAY4jtjyz3ssBTB1xvDdkUAKFF2v6O6qVhQKR5/g9MBsIAYrgc7y2Yg1",
     );
-    audio.play().catch(() => {});
+    audio.play().catch(() => { });
   };
 
-  useScope().onUnmount(
-    isRunning.observe((running) => {
+  onUnmounted(
+    isRunning.watch((running) => {
       if (running) {
         interval = setInterval(tick, 1000);
       } else {
@@ -63,23 +63,23 @@ const PomodoroTimer = () => {
   );
 
   const toggleTimer = () => {
-    isRunning.value = !isRunning.value;
+    isRunning(v => !v);
   };
 
   const resetTimer = () => {
-    isRunning.value = false;
-    mode.value = "work";
-    timeLeft.value = WORK_TIME;
+    isRunning(false);
+    mode("work");
+    timeLeft(WORK_TIME);
   };
 
   const skipSession = () => {
-    isRunning.value = false;
-    if (mode.value === "work") {
-      mode.value = "break";
-      timeLeft.value = SHORT_BREAK;
+    isRunning(false);
+    if (mode() === "work") {
+      mode("break");
+      timeLeft(SHORT_BREAK);
     } else {
-      mode.value = "work";
-      timeLeft.value = WORK_TIME;
+      mode("work");
+      timeLeft(WORK_TIME);
     }
   };
 
