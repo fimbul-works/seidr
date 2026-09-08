@@ -1,24 +1,30 @@
 # DOM Elements API
 
-## $() - Create DOM elements
+Seidr provides a functional, lightweight DOM element creation and query API with reactive binding support for [`Value`](Value.md) observables.
 
-Create DOM elements with reactive props support.
+---
+
+## `$()` — Create DOM Elements
+
+Creates a DOM element with reactive props, attributes, event handlers, and child nodes.
 
 **Parameters:**
-- `tag` - HTML tag name
-- `props` - Object with element properties (can include [`Seidr`](Seidr.md#seidr-class) observables)
-- `children` - Array of child elements, strings, functions, or [`SeidrComponents`](components.md#seidrcomponent-type)
+- `tag: string` — HTML tag name (e.g. `'div'`, `'button'`, `'input'`).
+- `props?: ElementProps` — Object with element properties, attributes, and event handlers (can include [`Value`](Value.md) observables).
+- `children?: SeidrChild | SeidrChild[]` — Array of child elements, strings, numbers, reactive [`Value`](Value.md) observables, or [`SeidrComponents`](components.md).
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
-import { $, Seidr } from '@fimbul-works/seidr';
+import { $, createValue } from '@fimbul-works/seidr';
 
-const disabled = new Seidr(false);
+const isDisabled = createValue(false);
 
 const button = $('button', {
-  disabled,
-  textContent: 'Click me'
+  className: 'btn btn-primary',
+  disabled: isDisabled, // Reactive boolean attribute binding
+  textContent: 'Click me',
+  onclick: () => console.log('Button clicked!')
 }, []);
 
 document.body.appendChild(button);
@@ -26,27 +32,26 @@ document.body.appendChild(button);
 
 ---
 
-## $factory()
+## `$factory()`
 
-Create reusable element creator functions with optional default props.
+Creates a reusable element factory function with optional predefined default properties.
 
 **Parameters:**
-- `tag` - HTML tag name
-- `defaultProps` - Default properties to apply to all created elements
+- `tag: string` — HTML tag name.
+- `defaultProps?: ElementProps` — Default properties to apply to all created elements.
 
-**Returns:** [`(props, children) => HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
+**Returns:** `(props?: ElementProps, children?: SeidrChild | SeidrChild[]) => HTMLElement`
 
 ```typescript
 import { $factory } from '@fimbul-works/seidr';
 
-// Without default props
+// Factory without default props
 const $card = $factory('article');
-
 const card = $card({ className: 'card' }, [
   'Content goes here'
 ]);
 
-// With default props
+// Factory with default props
 const $checkbox = $factory('input', { type: 'checkbox' });
 const $primaryButton = $factory('button', { className: 'btn btn-primary' });
 
@@ -57,122 +62,107 @@ const submitButton = $primaryButton({ textContent: 'Submit' });
 
 ---
 
-## Predefined Element Creators
+## Predefined Element Creators (`@fimbul-works/seidr/html`)
 
-For convenience, Seidr provides predefined element creators for all standard HTML elements. To keep the core library small, these are provided as a separate sub-export.
+For convenience, Seidr provides ready-to-use element creator functions for all standard HTML elements via `@fimbul-works/seidr/html`.
 
 > [!NOTE]
-> Importing from `@fimbul-works/seidr/html` provides access to over 100+ tag-specific creators. If you only need a few, consider using [`$()`](#--create-dom-elements) or [`$factory()`](#factory) to save bundle size.
+> Importing from `@fimbul-works/seidr/html` provides access to 100+ tag-specific creators prefixed with `$`. If you only need a few, you can also use [`$()`](#--create-dom-elements) or [`$factory()`](#factory) directly.
 
 **Parameters:**
-- `props` - Object with element properties (can include [`Seidr`](Seidr.md#seidr-class) observables)
-- `children` - Array of child elements or functions that return elements
+- `props?: ElementProps` — Element properties, attributes, event handlers, and [`Value`](Value.md) observables.
+- `children?: SeidrChild | SeidrChild[]` — Child elements, strings, numbers, or reactive Values.
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
-// All creators are prefixed with $
-import { $div, $span, $button, $h1 } from '@fimbul-works/seidr/html';
-```
-
-### Typical Elements
-
-- **Structure:** `$div`, `$span`, `$p`, `$section`, `$article`, `$header`, `$footer`, `$main`, `$aside`, `$nav`
-- **Headings:** `$h1`, `$h2`, `$h3`, `$h4`, `$h5`, `$h6`
-- **Text:** `$a`, `$strong`, `$em`, `$small`, `$mark`, `$abbr`, `$code`, `$pre`
-- **Forms:** `$form`, `$input`, `$textarea`, `$button`, `$select`, `$option`, `$label`, `$fieldset`
-- **Lists:** `$ul`, `$ol`, `$li`, `$dl`, `$dt`, `$dd`
-- **Tables:** `$table`, `$thead`, `$tbody`, `$tfoot`, `$tr`, `$td`, `$th`, `$caption`
-- **Media:** `$img`, `$video`, `$audio`, `$canvas`, `$svg`
-
-**Usage:**
-```typescript
-import { Seidr } from '@fimbul-works/seidr';
+import { createValue } from '@fimbul-works/seidr';
 import { $div, $button, $span } from '@fimbul-works/seidr/html';
 
-const count = new Seidr(0);
+const count = createValue(0);
 
-const app = $div({ className: 'app' }, [
+const counter = $div({ className: 'counter-container' }, [
+  $span({ textContent: count.as((c) => `Count: ${c}`) }),
   $button({
-    textContent: 'Increment',
-    onclick: () => count.value++
-  }),
-  $span({ textContent: count })
+    textContent: '+1',
+    onclick: () => count((c) => c + 1)
+  })
 ]);
 ```
+
+### Standard Element Categories
+
+- **Structure & Layout:** `$div`, `$span`, `$p`, `$section`, `$article`, `$header`, `$footer`, `$main`, `$aside`, `$nav`
+- **Headings:** `$h1`, `$h2`, `$h3`, `$h4`, `$h5`, `$h6`
+- **Typography:** `$a`, `$strong`, `$em`, `$small`, `$mark`, `$abbr`, `$code`, `$pre`
+- **Forms & Inputs:** `$form`, `$input`, `$textarea`, `$button`, `$select`, `$option`, `$label`, `$fieldset`
+- **Lists:** `$ul`, `$ol`, `$li`, `$dl`, `$dt`, `$dd`
+- **Tables:** `$table`, `$thead`, `$tbody`, `$tfoot`, `$tr`, `$td`, `$th`, `$caption`
+- **Media & Canvas:** `$img`, `$video`, `$audio`, `$canvas`, `$svg`
 
 ---
 
 ## DOM Query Utilities
 
-Type-safe DOM query utilities.
+Type-safe utility wrappers around standard browser query methods.
 
----
-
-### $getById()
+### `$getById()`
 
 Shorthand for [`document.getElementById()`](https://developer.mozilla.org/en-US/docs/Web/API/Document/getElementById).
 
-**Generic Type:** `T` extends `HTMLElement`
+**Generic Type:** `T extends HTMLElement`
 
 **Parameters:**
-- `id` - The ID of the element to locate
+- `id: string` — Element ID to locate.
 
-**Returns:** `<T>` or `null`
+**Returns:** `T | null`
 
 ```typescript
 import { $getById } from '@fimbul-works/seidr';
 
-// Get by ID
-const element = $getById('my-id');
+const app = $getById<HTMLDivElement>('app');
 ```
 
 ---
 
-### $query()
+### `$query()`
 
-Shorthand for [`el.querySelector()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector).
+Shorthand for [`querySelector()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelector).
 
-**Generic Type:** `T` extends `HTMLElement`
+**Generic Type:** `T extends HTMLElement`
 
 **Parameters:**
-- `query` - The CSS selector string to query for
-- `el` - The element to query within (defaults to `document.body`)
+- `selector: string` — CSS selector string.
+- `root?: Element` (default: `document.body`) — Root element to search within.
 
-**Returns:** `T` or `null`
+**Returns:** `T | null`
 
 ```typescript
 import { $query } from '@fimbul-works/seidr';
 
-// Query first match
-const button = $query('button.submit');
-
-// With custom root
-const button = $query('button', customContainer);
+const submitBtn = $query<HTMLButtonElement>('button.btn-primary');
+const headerTitle = $query<HTMLHeadingElement>('h1', headerContainer);
 ```
 
 ---
 
-### $queryAll()
+### `$queryAll()`
 
-Shorthand for [`el.querySelectorAll()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelectorAll).
+Shorthand for [`querySelectorAll()`](https://developer.mozilla.org/en-US/docs/Web/API/Element/querySelectorAll).
 
-**Generic Type:** `T` extends `HTMLElement`
+**Generic Type:** `T extends HTMLElement`
 
 **Parameters:**
-- `query` - The CSS selector string to query for
-- `el` - The element to query within (defaults to `document.body`)
+- `selector: string` — CSS selector string.
+- `root?: Element` (default: `document.body`) — Root element to search within.
 
-**Returns:** `T[]` Array of matching DOM elements
+**Returns:** `T[]` — Array of matching DOM elements.
 
 ```typescript
 import { $queryAll } from '@fimbul-works/seidr';
 
-// Query all matches
-const items = $queryAll('.item');
-
-// With custom root
-const items = $queryAll('.item', customContainer);
+const allItems = $queryAll<HTMLLIElement>('li.todo-item');
+const formInputs = $queryAll<HTMLInputElement>('input', formElement);
 ```
 
 ---

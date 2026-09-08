@@ -1,67 +1,48 @@
-## Safe()
+# Safe Component
 
-Create a component with error boundary protection. `Safe` wraps a component factory with error handling. If the factory throws an error during initialization, the error boundary factory is called to create fallback UI.
+The `Safe` component acts as an error boundary, catching synchronous initialization errors thrown within a component subtree and displaying a fallback UI instead of crashing the application.
+
+---
+
+## `Safe()`
 
 **Parameters:**
-- `factory` - Function that creates the component element: `() => Node`
-- `errorBoundaryFactory` - Error handler that returns fallback UI: `(err: Error) => Node`
+- `factory: () => SeidrChild` — Function that creates and returns the protected component or element tree.
+- `errorBoundary: (error: Error) => SeidrChild` — Error handler function that receives the caught error and returns fallback UI.
+- `name?: string` (default: `"Safe"`) — Optional name for the component boundary.
 
 **Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
 
 ```typescript
-import { Safe } from '@fimbul-works/seidr';
+import { Safe, onUnmounted, mount, SeidrError } from '@fimbul-works/seidr';
 import { $div, $h2, $p } from '@fimbul-works/seidr/html';
 
-const UserProfile = Safe(
-  () => {
-    // Initialization that might fail
-    const data = JSON.parse('invalid json');
-    return $div({ textContent: data.name });
-  },
-  (err) => {
-    // Error boundary: return fallback UI
-    return $div({ className: 'error' }, [
-      $h2({ textContent: 'Error Occurred' }),
-      $p({ textContent: err.message })
-    ]);
-  }
-);
-```
+const DangerousWidget = () => {
+  onUnmounted(() => console.log('Cleaning up dangerous widget'));
 
-**Error Boundary Behavior**:
+  // Code that might fail (e.g., malformed JSON or corrupted storage)
+  const rawData = '{ invalid json }';
+  const parsed = JSON.parse(rawData);
 
-- **Scope Cleanup**: Original component scope is destroyed before error boundary is called
-- **Root Components**: Errors in root components without `Safe` wrapper are logged to console
-- **Resource Tracking**: Error boundary can track its own cleanup functions via [`scope.onUnmount`](../component/README.md#componentscope-type)
+  return $div({ textContent: parsed.title });
+};
 
-```typescript
-import { Safe, onUnmount, mount } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
-
-const SafeComponent = Safe(
-  () => {
-    // Track resources
-    onUnmount(() => console.log('Component cleanup'));
-
-    throw new SeidrError('Failed');
-    return $div();
-  },
-  (err) => {
-    // Error boundary gets its own scope for resource tracking
-    onUnmount(() => console.log('Error boundary cleanup'));
-
-    return $div({ textContent: 'Fallback UI' });
-  }
+const SafeWidget = Safe(
+  DangerousWidget,
+  (err) => $div({ className: 'error-card' }, [
+    $h2({ textContent: 'Failed to load widget' }),
+    $p({ textContent: err.message })
+  ]),
+  'SafeWidget'
 );
 
-// Mount it
-const unmount = mount(SafeComponent, document.body);
-
-unmount();
-// Logs:
-// - "Component cleanup" (from failed component)
-// - "Error boundary cleanup" (from error boundary)
+mount(SafeWidget, document.body);
 ```
+
+### Behavior & Features
+- **Error Interception:** Catches errors thrown during the synchronous creation pass of `factory()`.
+- **Automatic Normalization:** Normalizes thrown values into standard `Error` instances via `wrapError()`.
+- **Isolated Fallback:** Renders the fallback elements safely inside the component boundary.
 
 ---
 

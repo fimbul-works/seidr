@@ -92,9 +92,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
     return [Navigation(), HeroSection(), ContactSection()];
   };
 
-  const routes: Route[] = [
-    { path: "/", component: HomePage, exact: true },
-  ];
+  const routes: Route[] = [{ path: "/", component: HomePage, exact: true }];
 
   const App = (url?: string) => {
     return Router(routes, { url });

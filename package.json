@@ -43,15 +43,11 @@
     }
   },
   "files": [
-    "dist/**/*.js",
-    "dist/**/*.d.ts",
-    "bundles/*.js",
-    "bundles/*.cjs",
-    "bundles/*.d.ts",
-    "bundles/*.d.cts",
+    "dist",
+    "bundles",
+    "docs",
     "README.md",
     "LICENSE",
-    "docs",
     "seidr-logo.svg"
   ],
   "sideEffects": false,

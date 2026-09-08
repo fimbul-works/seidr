@@ -1,74 +1,85 @@
 # Seidr API Reference
 
-Seidr is organized into a core library and several specialized sub-exports to keep bundle sizes minimal.
+Seidr is organized into a lightweight core library and specialized sub-exports to keep bundle sizes minimal.
 
-- **Core API** (`@fimbul-works/seidr`): Reactive state, components, and core DOM utilities.
-- **HTML Elements** (`@fimbul-works/seidr/html`): Predefined element creators for all standard HTML tags.
+- **Core API** (`@fimbul-works/seidr`): Reactive state, components, lifecycle hooks, routing, and core DOM utilities.
+- **HTML Elements** (`@fimbul-works/seidr/html`): Predefined element creators for standard HTML tags.
 - **SSR API** (`@fimbul-works/seidr/ssr`): Server-side rendering and hydration utilities.
 
 ---
 
-## [Reactive State](Seidr.md) (`@fimbul-works/seidr`)
-  - [`Seidr`](Seidr.md#seidr-class) - The core reactive state class.
-  - [`withStorage()`](Seidr.md#withstorage) - Decorate a Seidr instance with storage support.
-  - [`wrapSeidr()`](Seidr.md#wrapseidr) - Wrap a value in a Seidr observable.
-  - [`unwrapSeidr()`](Seidr.md#unwrapseidr) - Unwrap a Seidr observable to its value.
+## [Reactive State](Value.md) (`@fimbul-works/seidr`)
+- [`createValue()`](Value.md#createvalue) — Factory function to create reactive getter-setter Values.
+- [`mergeValues()`](Value.md#mergevalues) — Create a derived Value combining multiple parent observables.
+- [`withStorage()`](Value.md#withstorage) — Synchronize a Value with localStorage/sessionStorage.
+- [`wrapValue()`](Value.md#wrapvalue) — Wrap a raw value in a Value observable if not already reactive.
+- [`unwrapValue()`](Value.md#unwrapvalue) — Safely extract the raw value from a Value observable.
+- [`isValue()`](Value.md#isvalue) — Check if a value is a Seidr Value observable.
 
 ## [DOM Elements](DOM.md)
-  - **Core Utilities** (`@fimbul-works/seidr`)
-    - [`$()`](DOM.md#--create-dom-elements) - Create a DOM element.
-    - [`$factory()`](DOM.md#factory) - Create a custom element creator.
-    - [DOM Query Utilities](DOM.md#dom-query-utilities)
-      - [`$getById()`](DOM.md#getbyid) - Get a DOM element by ID.
-      - [`$query()`](DOM.md#query) - Query a single DOM element.
-      - [`$queryAll()`](DOM.md#queryall) - Query multiple DOM elements.
-  - **[Predefined Element Creators](DOM.md#predefined-element-creators)** (`@fimbul-works/seidr/html`)
-    - `$div`, `$span`, `$p`, `$h1`, `$button`, and more...
+- **Core Utilities** (`@fimbul-works/seidr`)
+  - [`$()`](DOM.md#--create-dom-elements) — Create a DOM element with reactive attributes and child bindings.
+  - [`$factory()`](DOM.md#factory) — Create a reusable custom element creator.
+  - [DOM Query Utilities](DOM.md#dom-query-utilities)
+    - [`$getById()`](DOM.md#getbyid) — Get a DOM element by ID.
+    - [`$query()`](DOM.md#query) — Query a single DOM element.
+    - [`$queryAll()`](DOM.md#queryall) — Query multiple DOM elements.
+- **[Predefined Element Creators](DOM.md#predefined-element-creators)** (`@fimbul-works/seidr/html`)
+  - `$div`, `$span`, `$p`, `$h1`, `$button`, `$input`, `$ul`, `$li`, `$table`, and more.
 
-## [Components](components.md) (`@fimbul-works/seidr`)
-  - [`createComponent()`](components.md#component) - Create a component.
-  - [`mount()`](components.md#mount) - Mount a component to the DOM.
-  - [`onMount()`](components.md#onmount) - Register a callback to be executed when component is mounted.
-  - [`onUnmount()`](components.md#onunmount) - Register a callback to be executed when component is unmounted.
-  - [`wrapComponent()`](components.md#wrapcomponent) - Convert a function into a component.
-  - [`SeidrComponent`](components.md#seidrcomponent-type) - The type of a Seidr component.
-  - [Built-In Components](components.md#built-in-components)
-    - [`Show()`](Show.md#show) - A component that conditionally renders its children.
-    - [`List()`](List.md#list) - A component that renders a list of items.
-    - [`Switch()`](Switch.md#switch) - A component that renders a single child based on a condition.
-    - [`Safe()`](Safe.md#safe) - A component that safely renders its children.
-    - [`Suspense()`](Suspense.md#suspense) - A component that suspends rendering until a promise resolves.
+## [Components & Lifecycle](components.md) (`@fimbul-works/seidr`)
+- [`createComponent()`](components.md#createcomponent) — Define a component with automatic lifecycle tracking.
+- [`mount()`](components.md#mount) — Mount a component to a DOM container.
+- Lifecycle Hooks:
+  - [`onMounted()`](components.md#onmounted) — Register a callback executed when a component or DOM node is mounted.
+  - [`onAttached()`](components.md#onattached) — Register a callback executed when a component or DOM node is attached to the document.
+  - [`onUnmounted()`](components.md#onunmounted) — Register a cleanup callback executed when a component or DOM node is removed from the DOM.
+  - [`getComponentScope()`](components.md#getcomponentscope) — Retrieve the active component instance.
+  - [`watchMutations()`](components.md#watchmutations) — Enable DOM mutation tracking for node lifecycle hooks.
+- [`wrapComponent()`](components.md#wrapcomponent) — Normalize a function or component factory.
+- [`SeidrComponent`](components.md#seidrcomponent-type) — Component instance interface.
+- [Built-In Components](components.md#built-in-components)
+  - [`Show()`](Show.md#show) — Conditionally render children based on a reactive condition.
+  - [`List()`](List.md#list) — Efficiently render and reconcile a keyed list from a reactive array.
+  - [`Switch()`](Switch.md#switch) — Switch between components based on a reactive discriminant value.
+  - [`Safe()`](Safe.md#safe) — Error boundary component providing fallback UI on initialization failure.
+  - [`Suspense()`](Suspense.md#suspense) — Asynchronous boundary managing Promise resolution and loading states.
 
-## [Utilities](utils.md) (`@fimbul-works/seidr`)
-- [`wrapError()`](utils.md#wrap-error) - Wrap a value in an Error instance.
-- [Type Guards](TypeGuards.md)
-  - [`isArray`](TypeGuards.md#isarray) - Check if a value is an array.
-  - [`isBool`](TypeGuards.md#isbool) - Check if a value is a boolean.
-  - [`isFn`](TypeGuards.md#isfn) - Check if a value is a function.
-  - [`isNum`](TypeGuards.md#isnum) - Check if a value is a number.
-  - [`isObj`](TypeGuards.md#isobj) - Check if a value is an object.
-  - [`isStr`](TypeGuards.md#isstr) - Check if a value is a string.
-  - [`isEmpty`](TypeGuards.md#isundefined) - Check if a value is undefined.
-  - [`isSeidr`](TypeGuards.md#isseidr) - Check if a value is a [`Seidr`](Seidr.md#seidr-class) observable.
-  - [`isDOMNode`](TypeGuards.md#isdomnode) - Check if a value is a DOM node.
-  - [`isHTMLElement`](TypeGuards.md#ishtmlelement) - Check if a value is an HTMLElement.
-  - [`isComponent`](TypeGuards.md#isseidrcomponent) - Check if a value is a [`SeidrComponent`](components.md#seidrcomponent-type).
+## [Router API](components.md#router-api) (`@fimbul-works/seidr`)
+- `Router` — Declarative router component.
+- `Link` — Declarative navigation link component.
+- `useNavigate()` — Programmatic navigation hook.
+- `usePathname()` — Reactive current pathname hook.
+- `useRouteParams()` — Reactive route parameters hook.
+- `useSearchParams()` — Reactive URL search query parameters hook.
+- `browserRouter()`, `hashRouter()`, `initRouter()` — Router initialization utilities.
 
-## [SSR API](SSR.md) (`@fimbul-works/seidr/ssr`)
-- [`renderToString()`](SSR.md#rendertostring) - Render a Seidr component to a string.
-- [`hydrate()`](SSR.md#hydrate) - Hydrate a Seidr component.
-- SSR Environment Utilities (`@fimbul-works/seidr`)
-  - [`isClient()`](SSR.md#isclient) - Check if the code is running on the client.
-  - [`inClient()`](SSR.md#inclient) - Run code only on the client.
-  - [`isServer()`](SSR.md#isserver) - Check if the code is running on the server.
-  - [`inServer()`](SSR.md#inserver) - Run code only on the server.
+## [Utilities & Type Guards](TypeGuards.md) (`@fimbul-works/seidr`)
+- [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
+- [Type Guards](TypeGuards.md):
+  - [`isArray`](TypeGuards.md#isarray) — Check if a value is an array.
+  - [`isBool`](TypeGuards.md#isbool) — Check if a value is a boolean primitive.
+  - [`isFn`](TypeGuards.md#isfn) — Check if a value is a function.
+  - [`isNum`](TypeGuards.md#isnum) — Check if a value is a number.
+  - [`isObj`](TypeGuards.md#isobj) — Check if a value is a plain object.
+  - [`isStr`](TypeGuards.md#isstr) — Check if a value is a string.
+  - [`isNullish`](TypeGuards.md#isnullish) — Check if a value is `null` or `undefined`.
+  - [`isValue`](TypeGuards.md#isvalue) — Check if a value is a reactive `Value`.
+  - [`isComponent`](TypeGuards.md#iscomponent) — Check if a value is a `SeidrComponent`.
+  - [`isComponentFactory`](TypeGuards.md#iscomponentfactory) — Check if a value is a wrapped `SeidrComponentFactory`.
+  - [`isDOMNode`](TypeGuards.md#isdomnode) — Check if a value is a DOM `Node` / `ServerNode`.
+  - [`isHTMLElement`](TypeGuards.md#ishtmlelement) — Check if a value is an `HTMLElement` / `ServerHTMLElement`.
+  - [`isComment`](TypeGuards.md#iscomment) — Check if a value is a Comment node.
+  - [`isTextNode`](TypeGuards.md#istextnode) — Check if a value is a Text node.
 
-## [Testing API](testing.md) (`@fimbul-works/seidr/testing`)
-- Utilities for testing Seidr components in both client and SSR modes.
-- `describeDualMode`, `renderToHtml`, `expectHtmlToBe`, and more.
-
-## [Build Plugins](build.md) (`@fimbul-works/seidr/build`)
-- Specialized build-time transforms for optimizing Seidr applications.
+## [SSR API](SSR.md) (`@fimbul-works/seidr/ssr` & `@fimbul-works/seidr`)
+- [`renderToString()`](SSR.md#rendertostring) — Render a component tree to HTML string and hydration payload.
+- [`hydrate()`](SSR.md#hydrate) — Hydrate server-rendered HTML markup on the client.
+- SSR Environment Utilities (`@fimbul-works/seidr`):
+  - [`isClient()`](SSR.md#isclient) — Check if running in the browser environment.
+  - [`inClient()`](SSR.md#inclient) — Run code only on the client.
+  - [`isServer()`](SSR.md#isserver) — Check if running in the server (SSR) environment.
+  - [`inServer()`](SSR.md#inserver) — Run code only on the server (awaits async Promises during SSR).
 
 ---
 

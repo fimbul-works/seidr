@@ -1,33 +1,43 @@
-## Show()
+# Show Component
 
-Conditionally renders a component based on a boolean observable.
+The `Show` component conditionally mounts and unmounts child elements or components based on a reactive boolean [`Value`](Value.md).
+
+---
+
+## `Show()`
 
 **Parameters:**
-- `condition` - [`Seidr<boolean>`](Seidr.md#seidr-class) observable
-- `factory` - Function that returns a [`Component`](components.md#component-type) or DOM Node
+- `condition: Value<boolean>` — Boolean `Value` observable controlling visibility.
+- `factory: () => SeidrChild` — Factory function returning the elements or component to display when `condition` is `true`.
+- `name?: string` (default: `"Show"`) — Optional component name.
 
-**Returns:** A [`Component`](components.md#component-type) rooted in a Comment node.
+**Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
 
-**Example:**
 ```typescript
-import { Show, Seidr, mount } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { Show, createValue, mount } from '@fimbul-works/seidr';
+import { $button, $div, $p } from '@fimbul-works/seidr/html';
 
-const isVisible = new Seidr(false);
-const MyComp = () => $div({ textContent: 'I am here' });
+const isVisible = createValue(false);
 
-const View = () => {
+const SecretMessage = () => $p({ textContent: '🎉 This is a conditionally rendered message!' });
+
+const App = () => {
   return $div({ className: 'container' }, [
-    Show(isVisible, MyComp)
+    $button({
+      textContent: isVisible.as((v) => (v ? 'Hide Details' : 'Show Details')),
+      onclick: () => isVisible((v) => !v)
+    }),
+    Show(isVisible, SecretMessage)
   ]);
 };
 
-mount(View, document.body);
-
-// Behavior:
-isVisible.value = true;
-// container contains: <div>I am here</div><!--seidr-show:...-->
+mount(App, document.body);
 ```
+
+### Behavior
+- When `condition()` evaluates to `true`, the `factory` function is invoked, and the resulting nodes are inserted into the DOM.
+- When `condition()` evaluates to `false`, the rendered nodes and child components are unmounted and removed from the DOM, triggering any registered `onUnmounted` cleanup hooks.
+- Node positions are anchored using lightweight marker comments.
 
 ---
 

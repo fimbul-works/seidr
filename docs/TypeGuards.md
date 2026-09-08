@@ -1,17 +1,14 @@
 # Type Guards
 
-Utility functions to check types at runtime with proper TypeScript type narrowing.
+Type guard utilities provide runtime validation and TypeScript type narrowing for primitives, DOM nodes, reactive Values, and Seidr components.
 
-## Primitive Types
+---
 
-### isArray()
+## Primitive Type Guards
 
-Check if a value is an array.
+### `isArray()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `Array`
+Checks if a value is an Array.
 
 ```typescript
 import { isArray } from '@fimbul-works/seidr';
@@ -19,19 +16,13 @@ import { isArray } from '@fimbul-works/seidr';
 console.log(isArray([]));       // true
 console.log(isArray([1, 2, 3])); // true
 console.log(isArray({}));       // false
-console.log(isArray(123));      // false
 ```
 
-### isBool()
+---
 
-Check if a value is a boolean primitive.
+### `isBool()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `boolean`
-
-**Note:** Returns `false` for `Boolean` objects (use primitive booleans)
+Checks if a value is a boolean primitive.
 
 ```typescript
 import { isBool } from '@fimbul-works/seidr';
@@ -39,208 +30,203 @@ import { isBool } from '@fimbul-works/seidr';
 console.log(isBool(true));  // true
 console.log(isBool(false)); // true
 console.log(isBool(1));     // false
-console.log(isBool('true')); // false
 ```
 
-### isFn()
+---
 
-Check if a value is a function.
+### `isFn()`
 
-**Generic Type:** `T` extends `Function` - The type of value being checked
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `Function`
+Checks if a value is a callable function or constructor.
 
 ```typescript
 import { isFn } from '@fimbul-works/seidr';
 
-const fn = () => {};
-const asyncFn = async () => {};
-
-console.log(isFn(fn));       // true
-console.log(isFn(asyncFn));  // true
-console.log(isFn(class {})); // true (class constructors)
-console.log(isFn({}));       // false
+console.log(isFn(() => {}));     // true
+console.log(isFn(async () => {})); // true
+console.log(isFn(class {}));     // true
+console.log(isFn({}));           // false
 ```
 
-### isNum()
+---
 
-Check if a value is a number.
+### `isNum()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `number`
-
-**Note:** Returns `false` for `Number` objects (use primitive numbers)
+Checks if a value is a number primitive.
 
 ```typescript
 import { isNum } from '@fimbul-works/seidr';
 
 console.log(isNum(42));       // true
 console.log(isNum(-3.14));    // true
-console.log(isNum(Infinity)); // true
-console.log(isNum(NaN));      // true (NaN is number type)
+console.log(isNum(NaN));      // true
 console.log(isNum('42'));     // false
 ```
 
-### isObj()
+---
 
-Check if a value is a plain object (not array, not null, not function).
+### `isObj()`
 
-**Generic Type:** `T` extends `object` - The type of value being checked
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `T`
+Checks if a value is a non-null, non-array object.
 
 ```typescript
 import { isObj } from '@fimbul-works/seidr';
 
-console.log(isObj({}));           // true
-console.log(isObj({ a: 1 }));     // true
-console.log(isObj([]));           // false (arrays)
-console.log(isObj(null));         // false (null)
-console.log(isObj(() => {}));     // false (functions)
+console.log(isObj({}));       // true
+console.log(isObj({ a: 1 })); // true
+console.log(isObj([]));       // false
+console.log(isObj(null));     // false
+console.log(isObj(() => {})); // false
 ```
 
-### isEmpty()
+---
 
-Check if a value is `undefined`.
+### `isStr()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `undefined`
-
-```typescript
-import { isEmpty } from '@fimbul-works/seidr';
-
-let maybeUndefined: string | undefined;
-
-maybeUndefined = undefined;
-if (isEmpty(maybeUndefined)) {
-  // TypeScript knows: maybeUndefined is undefined
-}
-
-maybeUndefined = 'defined';
-console.log(isEmpty(maybeUndefined)); // false
-```
-
-## isStr()
-
-Check if a value is a string.
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `string`
-
-**Note:** Returns `false` for `String` objects (use primitive strings)
+Checks if a value is a string primitive.
 
 ```typescript
 import { isStr } from '@fimbul-works/seidr';
 
-console.log(isStr('hello'));  // true
-console.log(isStr(''));       // true
-console.log(isStr('123'));    // true
-console.log(isStr(123));      // false
+console.log(isStr('hello')); // true
+console.log(isStr(''));      // true
+console.log(isStr(123));     // false
 ```
 
-## Seidr Types
+---
 
-### isSeidr()
+### `isNullish()`
 
-Check if a value is a [Seidr](Seidr.md#seidr-class) instance.
-
-**Generic Type:** `T` - The type of value being stored
-
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `Seidr<T>`
+Checks if a value is `null` or `undefined`.
 
 ```typescript
-import { isSeidr, Seidr } from '@fimbul-works/seidr';
+import { isNullish } from '@fimbul-works/seidr';
 
-const count = new Seidr(0);
-const derived = count.as(n => n * 2);
-const plainObj = { value: 0 };
-
-console.log(isSeidr(count));    // true
-console.log(isSeidr(derived));  // true
-console.log(isSeidr(plainObj)); // false
-console.log(isSeidr(42));       // false
+console.log(isNullish(null));      // true
+console.log(isNullish(undefined)); // true
+console.log(isNullish(0));         // false
+console.log(isNullish(''));        // false
+console.log(isNullish(false));     // false
 ```
 
-## DOM Types
+---
 
-### isDOMNode()
+## Reactive State Type Guards
 
-Check if a value is a `Node` or [`ServerNode`](SSR.md) instance.
+### `isValue()`
 
-**Parameters:**
-- `value` - Value to test
+Checks if a value is a Seidr reactive [`Value`](Value.md) observable.
 
-**Type Narrowing:** Narrows `unknown` to `Node`
+```typescript
+import { createValue, isValue } from '@fimbul-works/seidr';
+
+const count = createValue(0);
+const derived = count.as((n) => n * 2);
+
+console.log(isValue(count));   // true
+console.log(isValue(derived)); // true
+console.log(isValue(42));      // false
+console.log(isValue(() => {})); // false
+```
+
+---
+
+## Component Type Guards
+
+### `isComponent()`
+
+Checks if an object is an instantiated [`SeidrComponent`](components.md#seidrcomponent-type).
+
+```typescript
+import { createComponent, isComponent } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
+
+const CardFactory = createComponent(() => $div(), 'Card');
+const cardInstance = CardFactory();
+
+console.log(isComponent(cardInstance)); // true
+console.log(isComponent(CardFactory));  // false
+console.log(isComponent($div()));       // false
+```
+
+---
+
+### `isComponentFactory()`
+
+Checks if a function is a wrapped `SeidrComponentFactory` created via `createComponent()`.
+
+```typescript
+import { createComponent, isComponentFactory } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
+
+const MyComp = createComponent(() => $div(), 'MyComp');
+const PlainFn = () => $div();
+
+console.log(isComponentFactory(MyComp));  // true
+console.log(isComponentFactory(PlainFn)); // false
+```
+
+---
+
+## DOM Type Guards
+
+### `isDOMNode()`
+
+Checks if a value is a DOM `Node` or server-side SSR `ServerNode`.
 
 ```typescript
 import { isDOMNode } from '@fimbul-works/seidr';
 
-const el = document.createElement('div');
-const plainObj = { value: 0 };
+const element = document.createElement('div');
+const text = document.createTextNode('Hello');
 
-console.log(isDOMNode(el));       // true
-console.log(isDOMNode(plainObj)); // false
-console.log(isDOMNode(42));       // false
+console.log(isDOMNode(element)); // true
+console.log(isDOMNode(text));    // true
+console.log(isDOMNode({}));      // false
 ```
 
-### isHTMLElement()
+---
 
-Check if a value is a `HTMLElement` or [`ServerHTMLElement`](SSR.md) instance.
+### `isHTMLElement()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `HTMLElement`
+Checks if a value is an `HTMLElement` or server-side SSR `ServerHTMLElement`.
 
 ```typescript
 import { isHTMLElement } from '@fimbul-works/seidr';
 import { $div } from '@fimbul-works/seidr/html';
 
 const el = document.createElement('div');
-const seidrEl = $div();
-const plainObj = { value: 0 };
+const customEl = $div();
+const text = document.createTextNode('Hello');
 
 console.log(isHTMLElement(el));       // true
-console.log(isHTMLElement(seidrEl));  // true
-console.log(isHTMLElement(plainObj)); // false
-console.log(isHTMLElement(42));       // false
+console.log(isHTMLElement(customEl)); // true
+console.log(isHTMLElement(text));     // false
 ```
 
-### isComponent()
+---
 
-Check if a value is a [`SeidrComponent`](components.md#seidrcomponent-type) object.
+### `isComment()`
 
-**Parameters:**
-- `value` - Value to test
-
-**Type Narrowing:** Narrows `unknown` to `SeidrComponent`
+Checks if a value is a DOM `Comment` node.
 
 ```typescript
-import { isComponent, component } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { isComment } from '@fimbul-works/seidr';
 
-const factory = component(() => $div());
-const comp = factory();
-const plainObj = { value: 0 };
+const comment = document.createComment('marker');
+console.log(isComment(comment)); // true
+```
 
-console.log(isComponent(comp));     // true
-console.log(isComponent(plainObj)); // false
-console.log(isComponent(42));       // false
+---
+
+### `isTextNode()`
+
+Checks if a value is a DOM `Text` node.
+
+```typescript
+import { isTextNode } from '@fimbul-works/seidr';
+
+const text = document.createTextNode('Hello');
+console.log(isTextNode(text)); // true
 ```
 
 ---

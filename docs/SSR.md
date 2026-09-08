@@ -1,59 +1,63 @@
-# Seidr SSR Documentation
+# Server-Side Rendering (SSR) & Hydration
 
-Seidr provides Server-Side Rendering with automatic state capture and client-side hydration. It is designed to be *"Dual-Mode"*, allowing your components to run on the server to generate HTML and on the client to become interactive without code duplication.
+Seidr provides Server-Side Rendering with automatic state capture and deterministic client-side hydration. Components run in a *"Dual-Mode"* fashion, generating accessible static HTML on the server and seamless interactive functionality on the client without code duplication.
+
+---
 
 ## Key Features
 
-- 🖥️ Server-side HTML rendering with `renderToString()`
-- 🔄 Client-side hydration with `hydrate()`
-- 💾 Automatic state capture and dependency graph traversal
-- 🏗️ Component Tree Serialization for deterministic hydration
-- 📦 Compact hydration payload with numeric IDs and structure maps
-- 🔒 Render context isolation using AsyncLocalStorage for AppState
+- 🖥️ **HTML String Rendering:** Fast server-side HTML rendering with `renderToString()`.
+- 🔄 **Deterministic Lock-Step Hydration:** Client-side hydration with `hydrate()` matching server-rendered DOM nodes via Structure Maps.
+- 💾 **Automatic State Capture:** Reactive `Value` states are automatically tracked and serialized during SSR.
+- 🔒 **Context Isolation:** State isolation per request using `AsyncLocalStorage` in Node.js environments.
+- ⚡ **Asynchronous Data Fetching:** `inServer()` automatically pauses rendering until async data promises resolve.
+
+---
 
 ## 🚀 Quick Start
 
 ### Server-Side (Node.js)
 
 ```typescript
-import { Seidr, List } from '@fimbul-works/seidr';
+import { createValue, List } from '@fimbul-works/seidr';
 import { $div, $ul, $li } from '@fimbul-works/seidr/html';
 import { renderToString } from '@fimbul-works/seidr/ssr';
 
-export type Todo = {
+export interface Todo {
   id: string;
   text: string;
   completed: boolean;
-};
+}
 
-// Component works on both server and client - can be a plain function!
+// Dual-mode component working seamlessly on both server and client
 export const TodoApp = (initialTodos: Todo[] = []) => {
-  /**
-   * Use a stable ID to share state.
-   * Seidr instances are singletons within their AppState; creating
-   * a Seidr with the same ID will return the existing instance.
-   */
-  const todos = new Seidr(initialTodos, { id: 'todos' });
+  const todos = createValue(initialTodos, { id: 'todos' });
 
   return $div({ className: 'todo-app' }, [
     $ul({}, [
-      List<Todo>(todos, (item) => item.id, (item) => $li({ textContent: item.text }))
+      List<Todo, string>(
+        todos,
+        (item) => item.id,
+        (itemValue) => $li({ textContent: itemValue.as((t) => t.text) })
+      )
     ])
   ]);
 };
 
-// Server route handler
+// Server route handler (e.g. Express, Fastify, Hono, Node http)
 app.get('/', async (req, res) => {
-  // Fetch data from database
   const todos = await db.query('SELECT * FROM todos');
 
-  // Render component with server data
+  // Render component to HTML and capture hydration payload
   const { html, hydrationData } = await renderToString(() => TodoApp(todos));
 
   res.send(`
     <!DOCTYPE html>
-    <html>
-      <head><title>My App</title></head>
+    <html lang="en">
+      <head>
+        <meta charset="utf-8" />
+        <title>Seidr SSR App</title>
+      </head>
       <body>
         <div id="app">${html}</div>
         <script>
@@ -66,186 +70,145 @@ app.get('/', async (req, res) => {
 });
 ```
 
-### Client-Side
+### Client-Side Hydration
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr/ssr';
+import { hydrate } from '@fimbul-works/seidr';
 import { TodoApp } from './TodoApp.js';
 
-// Hydrate - component retrieves from hydration data
-const container = document.getElementById('app');
+const container = document.getElementById('app')!;
 const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
+// Hydrate server markup and bind reactive event handlers
 const unmount = hydrate(TodoApp, container, hydrationData);
-// App is now interactive!
 ```
 
 ---
 
-## 🗂️ Architecture: Runtime Tree Reconstruction
+## 🗂️ Architecture: Lock-step Hydration
 
-Seidr uses a **Runtime Tree Reconstruction** strategy (also known as "Lock-step Hydration"). Unlike traditional frameworks that hydrate the entire component tree at once, Seidr reconstructs the UI by re-executing components and having them "claim" pre-rendered DOM nodes in the exact order they were created on the server.
+Seidr uses a **Runtime Tree Reconstruction** strategy:
 
-### How It Works
+1. **During SSR:** Seidr tracks component and DOM node execution sequences, serializing them into a compact Structure Map and capturing all registered `Value` states.
+2. **On the Client:** During `hydrate()`, components re-execute in lock-step. Instead of recreating DOM nodes, Seidr claims the corresponding existing physical DOM nodes from the server-rendered container and attaches reactive event handlers and observers.
+3. **Deterministic Value IDs:** Values created within components receive deterministic IDs based on component hierarchy and creation order, guaranteeing state alignment between server and client.
 
-**1. During SSR** - Seidr tracks the creation of both observables and component/element structures. The component hierarchy is encoded into a minimal array structure called a *Structure Map*.
-
-**2. Minimal Payload** - The server sends the initial state values and the structure map for each mounted component.
-
-```json
-{
-  "ctxID": 1,
-  "data": {
-    "state": {
-      "todos": [
-        {
-          "id": "1",
-          "text": "Learn Seidr",
-          "completed": false
-        },
-        {
-          "id": "2",
-          "text": "Build an app",
-          "completed": false
-        }
-      ]
-    }
-  },
-  "components": {
-    "$:Root-Ixz91": [
-      ["$List-1sm4Jn"],
-      ["ul", 0],
-      ["div", 1]
-    ],
-    "0:List-1sm4Jn": [
-      ["$ListItem-2WcrRo"],
-      ["$ListItem-3WN2eW"]
-    ],
-    "1:ListItem-2WcrRo": [
-      ["li"]
-    ],
-    "1:ListItem-3WN2eW": [
-      ["li"]
-    ]
-  }
-}
-```
-
-**3. Lock-step Hydration** - When `hydrate()` is called on the client:
-- The root component is re-executed.
-- As the component creates elements (e.g., via `$div()`), Seidr uses the **Structure Map** to find and "claim" the corresponding physical DOM node from the server-rendered HTML.
-- **Deterministic IDs**: Seidr instances created within components automatically receive IDs based on their component's ID and creation order (e.g., `App-0`), ensuring they perfectly match the server's state.
-- **Incremental Restoration**: Reactive bindings are re-attached to the newly claimed DOM nodes immediately, making the UI interactive as it is being reconstructed.
+---
 
 ## SSR API Reference
 
-### renderToString()
+### `renderToString()`
 
-Render a component to HTML with hydration data capture.
+Renders a component tree to an HTML string and captures the hydration payload.
 
 **Parameters:**
-- `factory` - Function that returns a Seidr component
+- `factory: SeidrComponent | Function` — Root component or factory function.
 
-**Returns:**
-- `html` - Rendered HTML string
-- `hydrationData` - Data for client-side restoration
+**Returns:** `Promise<SSRRenderResult>`
+- `html: string` — Rendered HTML string.
+- `hydrationData: HydrationData` — Captured state and structure map payload.
 
 ```typescript
-// Basic usage
-const { html, hydrationData } = await renderToString(App);
+import { renderToString } from '@fimbul-works/seidr/ssr';
 
-// With factory arguments
-const { html, hydrationData } = await renderToString(() => App(props));
+const { html, hydrationData } = await renderToString(() => App(initialProps));
 ```
 
 ---
 
-### hydrate()
+### `hydrate()`
 
-Hydrate server-rendered HTML on the client.
+Hydrates server-rendered markup in the browser using the captured SSR hydration payload.
 
 **Parameters:**
-- `factory` - Function that returns a Seidr component
-- `container` - DOM element to mount into
-- `hydrationData` - Hydration data from server
+- `factory: SeidrComponent | Function` — Root component or factory function.
+- `container: HTMLElement` — Target DOM container containing server HTML.
+- `hydrationData: HydrationData` — Hydration data payload from the server.
 
-**Returns:** The hydrated component
+**Returns:** `CleanupFunction` (`() => void`) to unmount and destroy the hydrated tree.
 
 ```typescript
-hydrate(App, document.getElementById('app'), window.__SEIDR_HYDRATION_DATA__);
+import { hydrate } from '@fimbul-works/seidr';
+
+const unmount = hydrate(App, document.getElementById('app')!, window.__SEIDR_HYDRATION_DATA__);
 ```
 
 ---
 
-### isClient()
+### `isClient()`
 
-Returns `true` if the code is running in the browser environment.
+Returns `true` if executing in the browser environment.
 
 ```typescript
 import { isClient } from '@fimbul-works/seidr';
 
 if (isClient()) {
-  console.log('Running in the browser');
+  console.log('Running in browser');
 }
 ```
 
 ---
 
-### isServer()
+### `isServer()`
 
-Returns `true` if the code is running in the server (SSR) environment.
+Returns `true` if executing on the server (SSR / Node.js).
 
 ```typescript
 import { isServer } from '@fimbul-works/seidr';
 
 if (isServer()) {
-  console.log('Running on Node.js');
+  console.log('Running in SSR server');
 }
 ```
 
 ---
 
-### inClient()
+### `inClient()`
 
-Executes a function only in the browser environment. Useful for client-side side effects like DOM APIs, `localStorage`, or third-party libraries. Return value is `undefined` on the server.
+Executes a callback only when running in the browser. Useful for accessing browser-only APIs like `window`, `document`, or `localStorage`.
 
 **Parameters:**
-- `fn` - Function to execute: `() => T`
+- `fn: () => T` — Callback function.
 
-**Returns:** The result of `fn()`, or `undefined` on the server.
+**Returns:** `T | undefined`
 
 ```typescript
 import { inClient } from '@fimbul-works/seidr';
 
 inClient(() => {
   const width = window.innerWidth;
-  console.log('Window width:', width);
+  console.log('Viewport width:', width);
 });
 ```
 
 ---
 
-### inServer()
+### `inServer()`
 
-Executes a function only in the server (SSR) environment.
-
-**Async Support:** If the function returns a `Promise`, [`renderToString`](#rendertostring) will automatically await it before generating the final HTML. This is the recommended way to perform data fetching during SSR.
+Executes a callback only when running on the server. If the callback returns a `Promise`, `renderToString()` automatically waits for the promise to resolve before finalizing the rendered HTML.
 
 **Parameters:**
-- `fn` - Function to execute: `() => T`
+- `fn: () => T | Promise<T>` — Server callback or async data-fetching function.
 
-**Returns:** The result of `fn()`, or `undefined` in the browser.
+**Returns:** `T | Promise<T> | undefined`
 
 ```typescript
-import { inServer, Seidr } from '@fimbul-works/seidr';
+import { createValue, inServer } from '@fimbul-works/seidr';
+import { $div, $p } from '@fimbul-works/seidr/html';
 
-const data = new Seidr(null);
+const AsyncProfile = () => {
+  const profileData = createValue<any>(null);
 
-inServer(async () => {
-  const response = await fetch('https://api.example.com/data');
-  data.value = await response.json();
-  // renderToString waits for this to complete!
-});
+  inServer(async () => {
+    const res = await fetch('https://api.example.com/profile');
+    profileData(await res.json());
+    // renderToString awaits this async function before rendering HTML!
+  });
+
+  return $div({}, [
+    $p({ textContent: profileData.as((p) => p ? `Welcome, ${p.name}` : 'Loading...') })
+  ]);
+};
 ```
 
 ---
