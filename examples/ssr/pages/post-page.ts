@@ -7,9 +7,9 @@ import {
   Suspense,
   type SuspenseState,
   Switch,
+  useRouteParams,
 } from "@fimbul-works/seidr";
 import { $article, $div, $h1 } from "@fimbul-works/seidr/html";
-import { useRouteParams } from "@fimbul-works/seidr/router";
 import { getPost } from "../blog-api.js";
 import type { BlogPost } from "../types.js";
 

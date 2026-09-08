@@ -1,6 +1,5 @@
-import { createComponent } from "@fimbul-works/seidr";
+import { createComponent, type Route, Router } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
-import { type Route, Router } from "@fimbul-works/seidr/router";
 import { Footer, Header } from "./components/index.js";
 import { HomePage, NotFoundPage, PostPage } from "./pages/index.js";
 

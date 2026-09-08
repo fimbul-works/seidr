@@ -1,16 +1,16 @@
 import {
   createComponent,
+  createValue,
+  inClient,
+  inServer,
   isServer,
+  Link,
   List,
   Suspense,
   Switch,
   type Value,
-  createValue,
-  inServer,
-  inClient,
 } from "@fimbul-works/seidr";
 import { $div, $h1, $h2, $li, $ul } from "@fimbul-works/seidr/html";
-import { Link } from "@fimbul-works/seidr/router";
 import { getPosts } from "../blog-api.js";
 import type { BlogPost } from "../types.js";
 
