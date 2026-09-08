@@ -14,6 +14,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - [`withStorage()`](Value.md#withstorage) — Synchronize a Value with localStorage/sessionStorage.
 - [`wrapValue()`](Value.md#wrapvalue) — Wrap a raw value in a Value observable if not already reactive.
 - [`unwrapValue()`](Value.md#unwrapvalue) — Safely extract the raw value from a Value observable.
+- [`wrapValueObject()`](Value.md#wrapvalueobject) — Wrap a Value in an OOP object accessor with getter/setter properties.
 - [`isValue()`](Value.md#isvalue) — Check if a value is a Seidr Value observable.
 
 ## [DOM Elements](DOM.md)

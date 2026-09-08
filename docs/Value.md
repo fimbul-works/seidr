@@ -324,6 +324,72 @@ console.log(unwrapValue(10));    // 10
 
 ---
 
+### `wrapValueObject()`
+
+Wraps a `Value<T>` observable in a plain JavaScript object with getter and setter accessors.
+
+This provides an OOP accessor bridge for reactive `Value` observables, allowing libraries that operate on object property mutations - such as [Flaedi](https://github.com/fimbul-works/flaedi) and other tweening or property-based animation tools—to read and update reactive state transparently.
+
+**Generic Types:**
+
+* `T` — The type of value stored in the observable.
+* `K extends string = "value"` — The property key name on the returned object (defaults to `"value"`).
+
+**Parameters:**
+
+* `value: Value<T>` — The reactive `Value<T>` observable to wrap.
+* `key?: K` (default: `"value"`) — The property key to use on the returned object.
+
+**Returns:** `Record<K, T>` — An object with getter and setter accessors bound to the `Value`.
+
+```typescript
+import { createValue, wrapValueObject } from "@fimbul-works/seidr";
+
+// Default key: "value"
+
+const count = createValue(0);
+const target = wrapValueObject(count);
+
+console.log(target.value); // 0 (calls count())
+
+target.value = 10;         // Calls count(10), triggering watchers and bindings
+
+console.log(count());      // 10
+
+// Custom key
+const opacity = createValue(0);
+const animTarget = wrapValueObject(opacity, "opacity");
+
+console.log(animTarget.opacity); // 0
+
+animTarget.opacity = 1;          // Calls opacity(1)
+```
+
+#### OOP Animation Integration (e.g. [Flaedi](https://github.com/fimbul-works/flaedi))
+
+When animating reactive values with OOP tweening engines like [Flaedi](https://github.com/fimbul-works/flaedi), `wrapValueObject` bridges the gap between property-mutating animators and functional reactive observables.
+
+```typescript
+import { createValue, wrapValueObject } from "@fimbul-works/seidr";
+import { tween } from "@fimbul-works/flaedi";
+
+const x = createValue(0);
+
+const animTarget = wrapValueObject(x, "x");
+
+// Flaedi mutates the property directly
+// Each assignment is forwarded to the reactive Value
+const animation = tween(animTarget, "x", 100, 1000);
+
+await animation;
+```
+
+Because `animTarget.x` is a getter/setter backed directly by `x`, every assignment made by Flaedi updates the original `Value`. Existing Seidr watchers and DOM bindings therefore react normally.
+
+The same adapter can be used with other libraries that expect mutable object properties, without requiring those libraries to depend on Seidr.
+
+---
+
 ### `isValue()`
 
 Type guard checking if a value is a Seidr `Value` observable.
