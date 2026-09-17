@@ -1,3 +1,4 @@
+import { MemoryStorage } from "../test-setup/memory-storage.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { isStr } from "../util/type-guards.js";
@@ -42,7 +43,7 @@ export type StorageErrorHandler = (error: SeidrError, operation: "read" | "write
 export const withStorage = <T extends Value<any>>(
   key: string,
   value: T,
-  storage: Storage = isClient() ? localStorage : ({} as Storage),
+  storage: Storage = isClient() ? localStorage : new MemoryStorage(),
   onError?: StorageErrorHandler,
 ): T => {
   // Server-side rendering: storage APIs don't exist, so return Value unchanged

@@ -9,7 +9,7 @@ import type { CleanupFunction } from "../types.js";
  * Mocks the component lifecycle hooks for tests that need to run in SSR mode
  * but don't actually need scope tracking.
  */
-export function mockComponentScope() {
+export function mockComponentScope(node?: HTMLElement) {
   const cleanups: (() => void)[] = [];
 
   const onMountedFns: OnMountedFunction[] = [];
@@ -22,7 +22,7 @@ export function mockComponentScope() {
     [TYPE_PROP]: TYPE_COMPONENT,
     id: 1,
     name: "mock-component",
-    nodes: [],
+    nodes: node ? [node] : [],
     owner: null,
     children: new Set(),
     onMount: vi.fn((fn) => {

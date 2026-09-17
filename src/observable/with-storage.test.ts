@@ -1,38 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { enableSSRMode } from "../test-setup/index.js";
+import { MemoryStorage } from "../test-setup/memory-storage.js";
 import { createValue } from "./value.js";
 import { withStorage } from "./with-storage.js";
-
-/**
- * Simple in-memory Storage mock
- */
-class MemoryStorage implements Storage {
-  private data: Record<string, string> = {};
-
-  get length() {
-    return Object.keys(this.data).length;
-  }
-
-  clear() {
-    this.data = {};
-  }
-
-  getItem(key: string) {
-    return this.data[key] || null;
-  }
-
-  key(index: number) {
-    return Object.keys(this.data)[index] || null;
-  }
-
-  removeItem(key: string) {
-    delete this.data[key];
-  }
-
-  setItem(key: string, value: string) {
-    this.data[key] = value;
-  }
-}
 
 describe("withStorage", () => {
   let storage: MemoryStorage;

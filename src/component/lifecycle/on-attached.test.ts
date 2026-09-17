@@ -48,14 +48,15 @@ describe("onAttached", () => {
   });
 
   describe("inside component scope", () => {
-    const scope = mockComponentScope();
+    const node = document.createElement("div");
+    const scope = mockComponentScope(node);
 
-    it("should register callback on active component", () => {
+    it("should register callback on child nodes", () => {
       const callback = vi.fn();
 
       onAttached(callback);
 
-      expect(scope.onAttach).toHaveBeenCalledWith(callback);
+      expect(scope.nodes.some((n) => onAttachedFns.has(n))).toBeTruthy();
     });
   });
 
@@ -68,13 +69,13 @@ describe("onAttached", () => {
       let canvasIsConnected = false;
 
       const TestCanvasComponent = createComponent(() => {
-        let canvasEl: HTMLCanvasElement;
+        const canvasEl = document.createElement("canvas");
+
         onAttached(() => {
           attachedCalled = true;
           canvasIsConnected = canvasEl.isConnected;
-        });
+        }, canvasEl);
 
-        canvasEl = document.createElement("canvas");
         return canvasEl;
       });
 

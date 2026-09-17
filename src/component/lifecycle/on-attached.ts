@@ -39,5 +39,16 @@ export function onAttached(callback: OnAttachedFunction, el?: Node) {
     throw new SeidrError("onAttached called outside of component");
   }
 
-  onMounted(() => component.onAttach(callback));
+  if (component.nodes.some((n) => n.isConnected)) {
+    component.onAttach(callback);
+  } else {
+    let nodeAttached = false;
+    component.nodes.forEach((n) =>
+      onAttached(() => {
+        if (nodeAttached) return;
+        nodeAttached = true;
+        component.onAttach(callback);
+      }, n),
+    );
+  }
 }
