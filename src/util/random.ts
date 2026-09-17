@@ -24,8 +24,9 @@ export const random = (): number => {
   if (!appState.getDataStrategy(DATA_KEY_RANDOM)) {
     appState.defineDataStrategy(
       DATA_KEY_RANDOM,
-      () => appState.getData(DATA_KEY_RANDOM),
-      (data) => appState.setData(DATA_KEY_RANDOM, data),
+      () => Array.from(appState.getData<Map<number, number>>(DATA_KEY_RANDOM)?.entries() ?? []),
+      (data: [number, number][]) =>
+        appState.setData(DATA_KEY_RANDOM, new Map(data.map(([k, v]) => [Number(k), Number(v)]))),
     );
   }
 

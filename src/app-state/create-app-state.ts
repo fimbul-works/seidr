@@ -29,7 +29,7 @@ export const createAppState = (ctxId: number): AppState => ({
   deleteData(key: string): boolean {
     return this.data.delete(key);
   },
-  defineDataStrategy<T>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<T>): void {
+  defineDataStrategy<T, I>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<I>): void {
     this.strategies.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined {

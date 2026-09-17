@@ -61,11 +61,12 @@ export interface AppState {
    * Define a data strategy for hydration, and cleanup after application unmount.
    *
    * @template T - The type of data for hydration
+   * @template I - The type of data from hydration
    * @param {string} key - The key to define a strategy for
    * @param {CaptureDataFn<T>} captureFn - Function to capture data for hydration
-   * @param {RestoreDataFn<T>} restoreFn - Function to restore data for hydration
+   * @param {RestoreDataFn<I>} restoreFn - Function to restore data from hydration
    */
-  defineDataStrategy<T>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<T>): void;
+  defineDataStrategy<T, I>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<I>): void;
 
   /**
    * Get data strategy for a key.

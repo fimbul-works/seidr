@@ -84,7 +84,7 @@ export const initRouter = (
   // Eagerly initialize the browser router singleton
   browserRouter();
 
-  appState.defineDataStrategy<string>(
+  appState.defineDataStrategy<string, string>(
     DATA_KEY_ROUTER,
     // Capture function: store current URL and other serializable state
     () => url().href,
