@@ -1,6 +1,7 @@
 import { SeidrError } from "../../types.js";
 import type { OnAttachedFunction } from "../types.js";
 import { getComponentScope } from "./component-scope.js";
+import { onMounted } from "./on-mounted.js";
 
 /**
  * Map of nodes to their onAttached callbacks.
@@ -38,5 +39,5 @@ export function onAttached(callback: OnAttachedFunction, el?: Node) {
     throw new SeidrError("onAttached called outside of component");
   }
 
-  component.onAttach(callback);
+  onMounted(() => component.onAttach(callback));
 }

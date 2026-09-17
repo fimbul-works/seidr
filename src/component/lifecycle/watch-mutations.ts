@@ -113,7 +113,7 @@ const createRootObserver = (root: Element): MutationObserver => {
  * @param {Element} [_node] - Optional target node (root element preferred)
  * @returns {CleanupFunction} Function that stops observing when all watchers unregister
  */
-export const watchMutations = (_node?: Element): CleanupFunction => {
+export const watchMutations = (node?: Element): CleanupFunction => {
   if (isServer()) {
     // Do nothing in SSR
     return () => {};
@@ -132,7 +132,7 @@ export const watchMutations = (_node?: Element): CleanupFunction => {
   state.watchCount++;
 
   if (!state.activeObserver) {
-    const root = (typeof document !== "undefined" && (document.documentElement || document.body)) || _node;
+    const root = (typeof document !== "undefined" && (document.documentElement || document.body)) || node;
     if (root) {
       state.activeObserver = createRootObserver(root);
     }

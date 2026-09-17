@@ -14,6 +14,7 @@ export * from "./body";
 export * from "./br";
 export * from "./button";
 export * from "./canvas";
+export * from "./code";
 export * from "./col";
 export * from "./data";
 export * from "./datalist";
