@@ -21,15 +21,17 @@ export const commonReplace = {
  */
 export const serverReplace = {
   ...commonReplace,
-  [SEIDR_USE_SCHEDULER]: "false",
   [SEIDR_DISABLE_SSR]: "false",
+  [SEIDR_USE_SCHEDULER]: "false",
   [IS_CLIENT]: "false",
   [IS_SERVER]: "true",
   [IS_HYDRATING]: "false",
   "import.meta.env.SSR": "true",
   "import.meta.env?.SSR": "true",
   'typeof window !== "undefined"': "false",
+  'typeof window === "undefined"': "true",
   'typeof process === "undefined"': "false",
+  'typeof process !== "undefined"': "true",
 };
 
 /**
@@ -37,14 +39,15 @@ export const serverReplace = {
  */
 export const clientReplace = {
   ...commonReplace,
-  [SEIDR_USE_SCHEDULER]: "true",
   [SEIDR_DISABLE_SSR]: "false",
+  [SEIDR_USE_SCHEDULER]: "true",
   [IS_CLIENT]: "true",
   [IS_SERVER]: "false",
   "import.meta.env.SSR": "false",
   "import.meta.env?.SSR": "false",
   'typeof window !== "undefined"': "true",
-  'typeof process === "undefined"': "true",
+  'typeof window === "undefined"': "false",
+  process: "undefined",
 };
 
 /**

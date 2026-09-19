@@ -5,6 +5,8 @@ import { clientOnlyReplacements, clientReplace, serverReplace } from "./replacem
 import { transformInEnvironment } from "./transform-in-environment.js";
 import { replace } from "./util.js";
 
+export * from "./bundle-plugin.js";
+
 /**
  * Options for Seidr build plugin.
  */
@@ -22,7 +24,7 @@ export interface SeidrPluginOptions {
  * @param {SeidrBuildPluginOptions} options - An object containing options for the plugin
  * @returns {Plugin} The created plugin
  */
-export function seidr({ disableSSR = false }: SeidrPluginOptions = {}): Plugin {
+export function seidrVitePlugin({ disableSSR = false }: SeidrPluginOptions = {}): Plugin {
   return {
     name: "vite:seidr",
     applyToEnvironment(env) {
@@ -55,4 +57,4 @@ export function seidr({ disableSSR = false }: SeidrPluginOptions = {}): Plugin {
   };
 }
 
-export default seidr;
+export default seidrVitePlugin;
