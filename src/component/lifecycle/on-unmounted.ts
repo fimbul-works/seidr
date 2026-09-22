@@ -1,4 +1,5 @@
 import { type CleanupFunction, SeidrError } from "../../types.js";
+import { isFn } from "../../util/type-guards.js";
 import { getComponentScope } from "./component-scope.js";
 
 /**
@@ -14,6 +15,8 @@ export const onUnmountedFns = new Map<Node, Array<CleanupFunction>>();
  * @throws {SeidrError} if called outside of component hierarchy
  */
 export function onUnmounted(callback: CleanupFunction, el?: Node) {
+  if (!isFn(callback)) return;
+
   if (el) {
     let callbacks: CleanupFunction[] = [];
     if (onUnmountedFns.has(el)) {

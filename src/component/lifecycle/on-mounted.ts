@@ -1,4 +1,5 @@
 import { SeidrError } from "../../types.js";
+import { isFn } from "../../util/type-guards.js";
 import type { OnMountedFunction } from "../types.js";
 import { getComponentScope } from "./component-scope.js";
 
@@ -15,6 +16,8 @@ export const onMountedFns = new Map<Node, Array<OnMountedFunction>>();
  * @throws {SeidrError} if called outside of component hierarchy
  */
 export function onMounted(callback: OnMountedFunction, el?: Node) {
+  if (!isFn(callback)) return;
+
   if (el) {
     let callbacks: OnMountedFunction[] = [];
     if (onMountedFns.has(el)) {

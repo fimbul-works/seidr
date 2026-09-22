@@ -1,7 +1,7 @@
 import { SeidrError } from "../../types.js";
+import { isFn } from "../../util/type-guards.js";
 import type { OnAttachedFunction } from "../types.js";
 import { getComponentScope } from "./component-scope.js";
-import { onMounted } from "./on-mounted.js";
 
 /**
  * Map of nodes to their onAttached callbacks.
@@ -17,6 +17,8 @@ export const onAttachedFns = new Map<Node, Array<OnAttachedFunction>>();
  * @throws {SeidrError} if called outside of component hierarchy without a target node
  */
 export function onAttached(callback: OnAttachedFunction, el?: Node) {
+  if (!isFn(callback)) return;
+
   if (el) {
     if (el.isConnected) {
       callback();
