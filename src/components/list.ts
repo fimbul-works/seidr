@@ -23,7 +23,7 @@ import { createValue } from "../observable/value.js";
  * @returns {SeidrComponent} The List component
  */
 export const List = <T, K extends string | number>(
-  observable: Value<T[]>,
+  observable: Value<T[]> | Value<readonly T[]>,
   getKey: (item: T) => K,
   factory: (itemValue: Value<T>, key: K) => SeidrChild,
   name: string = "List",
@@ -50,7 +50,7 @@ export const List = <T, K extends string | number>(
 
     const [startMarker, endMarker] = getMarkerComments(listComponent)!;
 
-    const update = (newItems?: T[]) => {
+    const update = (newItems?: T[] | readonly T[]) => {
       if (!Array.isArray(newItems)) {
         return;
       }
