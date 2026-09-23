@@ -1,6 +1,14 @@
 import type { Value } from "./value.js";
 
 /**
+ * Generic getter-setter interface.
+ */
+interface GetterSetter<T> {
+  (): T;
+  (v: T): T;
+}
+
+/**
  * Wraps a Seidr `Value<T>` in an object with a getter and setter property.
  *
  * This provides an OOP (Object-Oriented Programming) accessor bridge for reactive
@@ -34,7 +42,7 @@ import type { Value } from "./value.js";
  * ```
  */
 export const wrapValueObject = <T, K extends string = "value">(
-  value: Value<T>,
+  value: Value<T> | GetterSetter<T>,
   key: K = "value" as K,
 ): Record<K, T> =>
   ({
