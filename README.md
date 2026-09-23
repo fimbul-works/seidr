@@ -320,7 +320,7 @@ For complete API documentation with all methods, parameters, and examples, see *
 - [DOM Elements & Queries (`DOM.md`)](docs/DOM.md)
 - [Components & Lifecycle (`components.md`)](docs/components.md)
 - [Control Flow (`Show.md`, `List.md`, `Switch.md`, `Safe.md`, `Suspense.md`)](docs/components.md#built-in-components)
-- [Type Guards (`TypeGuards.md`)](docs/TypeGuards.md)
+- [Type Guards (`type-guards.md`)](docs/type-guards.md)
 - [Server-Side Rendering (`SSR.md`)](docs/SSR.md)
 - [Utilities (`utils.md`)](docs/utils.md)
 

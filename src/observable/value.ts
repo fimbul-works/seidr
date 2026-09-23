@@ -12,11 +12,12 @@ import { registerValueForSSR } from "./register-value-for-ssr.js";
 export const TYPE_VALUE = "value";
 
 // Registry to track values that are invoked
-const parentValues: Set<Value>[] = [];
+const parentsStack: Set<Value>[] = [];
 
 /**
- * Value interface, notifies listeners when that value changes.
- * Allows immediate binding to a target, unlike a signal which only notifies on changes.
+ * Value interface, implementing a getter-setter pattern.
+ * Notifies listeners when that value changes.
+ * Allows immediate binding to a target.
  *
  * @template T - The type of the value emitted by the value
  */
@@ -205,17 +206,15 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   const handlers = new Set<ValueChangeHandler<T>>();
   const cleanups = new Set<CleanupFunction>();
   const isDerived = p.length > 0;
+  const parents = p.slice();
 
   let currentValue = initialValue as T;
-
-  // Store parents for getParents() access in tests
-  const parentsArray = p;
 
   // Access to arguments requires a standard function
   function valueGetSetter(newValue?: T | ((prevValue: T) => T)): T {
     if (!arguments.length) {
-      if (parentValues.length) {
-        parentValues.at(-1)!.add(valueGetSetter as Value);
+      if (parentsStack.length) {
+        parentsStack.at(-1)!.add(valueGetSetter as Value);
       }
 
       return currentValue;
@@ -244,7 +243,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   defineValueProp(fn, "isDerived", isDerived, false);
 
   if (!process.env.SEIDR_DISABLE_SSR) {
-    defineValueProp(fn, "hydrate", hydrate, false);
+    defineValueProp(fn, "hydrate", !isDerived && hydrate, false);
   }
 
   defineValueProp(
@@ -273,7 +272,8 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     mergeValues(() => transformFn(fn()), options),
   );
 
-  defineGetProp(fn, "parents", () => parentsArray.slice());
+  defineGetProp(fn, "parents", () => parents.slice());
+
   defineGetProp(fn, "observerCount", () => handlers.size);
 
   // Register instance in AppState
@@ -299,19 +299,17 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
 export function mergeValues<T>(mergeFn: () => T, options: ValueOptions = {}): Value<T> {
-  parentValues.push(new Set(options.parents ?? []));
+  parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();
-    const parents = Array.from(parentValues.at(-1)!);
-
-    if (parentValues.length === 0) {
+    const parents = Array.from(parentsStack.at(-1)!);
+    if (parentsStack.length === 0) {
       throw new SeidrError("Merged Value must have at least one parent");
     }
-
     const derived = createValue<T>(initialValue, { ...options, parents: parents });
     parents.forEach((parent) => derived.cleanup(parent.watch(() => derived(mergeFn()) as void)));
     return derived;
   } finally {
-    parentValues.pop();
+    parentsStack.pop();
   }
 }

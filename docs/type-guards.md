@@ -122,9 +122,9 @@ import { createValue, isValue } from '@fimbul-works/seidr';
 const count = createValue(0);
 const derived = count.as((n) => n * 2);
 
-console.log(isValue(count));   // true
-console.log(isValue(derived)); // true
-console.log(isValue(42));      // false
+console.log(isValue(count));    // true
+console.log(isValue(derived));  // true
+console.log(isValue(42));       // false
 console.log(isValue(() => {})); // false
 ```
 

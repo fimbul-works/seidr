@@ -55,23 +55,23 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - `useSearchParams()` — Reactive URL search query parameters hook.
 - `browserRouter()`, `hashRouter()`, `initRouter()` — Router initialization utilities.
 
-## [Utilities & Type Guards](TypeGuards.md) (`@fimbul-works/seidr`)
+## [Utilities & Type Guards](type-guards.md) (`@fimbul-works/seidr`)
 - [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
-- [Type Guards](TypeGuards.md):
-  - [`isArray`](TypeGuards.md#isarray) — Check if a value is an array.
-  - [`isBool`](TypeGuards.md#isbool) — Check if a value is a boolean primitive.
-  - [`isFn`](TypeGuards.md#isfn) — Check if a value is a function.
-  - [`isNum`](TypeGuards.md#isnum) — Check if a value is a number.
-  - [`isObj`](TypeGuards.md#isobj) — Check if a value is a plain object.
-  - [`isStr`](TypeGuards.md#isstr) — Check if a value is a string.
-  - [`isNullish`](TypeGuards.md#isnullish) — Check if a value is `null` or `undefined`.
-  - [`isValue`](TypeGuards.md#isvalue) — Check if a value is a reactive `Value`.
-  - [`isComponent`](TypeGuards.md#iscomponent) — Check if a value is a `SeidrComponent`.
-  - [`isComponentFactory`](TypeGuards.md#iscomponentfactory) — Check if a value is a wrapped `SeidrComponentFactory`.
-  - [`isDOMNode`](TypeGuards.md#isdomnode) — Check if a value is a DOM `Node` / `ServerNode`.
-  - [`isHTMLElement`](TypeGuards.md#ishtmlelement) — Check if a value is an `HTMLElement` / `ServerHTMLElement`.
-  - [`isComment`](TypeGuards.md#iscomment) — Check if a value is a Comment node.
-  - [`isTextNode`](TypeGuards.md#istextnode) — Check if a value is a Text node.
+- [Type Guards](type-guards.md):
+  - [`isArray`](type-guards.md#isarray) — Check if a value is an array.
+  - [`isBool`](type-guards.md#isbool) — Check if a value is a boolean primitive.
+  - [`isFn`](type-guards.md#isfn) — Check if a value is a function.
+  - [`isNum`](type-guards.md#isnum) — Check if a value is a number.
+  - [`isObj`](type-guards.md#isobj) — Check if a value is a plain object.
+  - [`isStr`](type-guards.md#isstr) — Check if a value is a string.
+  - [`isNullish`](type-guards.md#isnullish) — Check if a value is `null` or `undefined`.
+  - [`isValue`](type-guards.md#isvalue) — Check if a value is a reactive `Value`.
+  - [`isComponent`](type-guards.md#iscomponent) — Check if a value is a `SeidrComponent`.
+  - [`isComponentFactory`](type-guards.md#iscomponentfactory) — Check if a value is a wrapped `SeidrComponentFactory`.
+  - [`isDOMNode`](type-guards.md#isdomnode) — Check if a value is a DOM `Node` / `ServerNode`.
+  - [`isHTMLElement`](type-guards.md#ishtmlelement) — Check if a value is an `HTMLElement`.
+  - [`isComment`](type-guards.md#iscomment) — Check if a value is a Comment DOM node.
+  - [`isTextNode`](type-guards.md#istextnode) — Check if a value is a Text DOM node.
 
 ## [SSR API](SSR.md) (`@fimbul-works/seidr/ssr` & `@fimbul-works/seidr`)
 - [`renderToString()`](SSR.md#rendertostring) — Render a component tree to HTML string and hydration payload.
