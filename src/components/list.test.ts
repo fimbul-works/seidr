@@ -8,6 +8,8 @@ import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { List } from "./list";
 
+type Item = { id: number; text: string };
+
 describeDualMode("List Component", ({ getDocument }) => {
   let container: HTMLDivElement;
   let cleanup: CleanupFunction;
@@ -24,7 +26,6 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should render and update list items efficiently", () => {
-    type Item = { id: number; text: string };
     const items = createValue<Item[]>([
       { id: 1, text: "A" },
       { id: 2, text: "B" },
@@ -66,13 +67,13 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should destroy scopes of removed items", () => {
-    const items = createValue([
+    const items = createValue<Item[]>([
       { id: 1, text: "A" },
       { id: 2, text: "B" },
     ]);
     const destroyedIds: number[] = [];
 
-    const ItemView = (props: Value<{ id: number; text: string }>) =>
+    const ItemView = (props: Value<Item>) =>
       createComponent(() => {
         onUnmounted(() => destroyedIds.push(props().id));
         return $("span", { textContent: props.as((p) => `Item ${p.id}`) });
@@ -93,13 +94,12 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should move DOM nodes instead of recreating them during reorder", () => {
-    const items = createValue([
+    const items = createValue<Item[]>([
       { id: 1, text: "1" },
       { id: 2, text: "2" },
     ]);
 
-    const ItemView = (props: Value<{ id: number; text: string }>) =>
-      $("span", { textContent: props.as((p) => p.text) });
+    const ItemView = (props: Value<Item>) => $("span", { textContent: props.as((p) => p.text) });
 
     cleanup = mount(() => List(items, (i) => i.id, ItemView), container);
 
@@ -119,10 +119,9 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should support item property updates through itemValue without full rebuild", () => {
-    const items = createValue([{ id: 1, text: "Original" }]);
+    const items = createValue<Item[]>([{ id: 1, text: "Original" }]);
 
-    const ItemView = (props: Value<{ id: number; text: string }>) =>
-      $("span", { textContent: props.as((p) => p.text) });
+    const ItemView = (props: Value<Item>) => $("span", { textContent: props.as((p) => p.text) });
 
     cleanup = mount(() => List(items, (i) => i.id, ItemView), container);
 
@@ -137,10 +136,9 @@ describeDualMode("List Component", ({ getDocument }) => {
   });
 
   it("should handle nullish or empty updates gracefully", () => {
-    const items = createValue<Array<{ id: number; text: string }>>([{ id: 1, text: "Item 1" }]);
+    const items = createValue<Item[]>([{ id: 1, text: "Item 1" }]);
 
-    const ItemView = (props: Value<{ id: number; text: string }>) =>
-      $("span", { textContent: props.as((p) => p?.text ?? "") });
+    const ItemView = (props: Value<Item>) => $("span", { textContent: props.as((p) => p?.text ?? "") });
 
     cleanup = mount(() => List(items, (i) => i.id, ItemView), container);
     expect(container.querySelectorAll("span").length).toBe(1);

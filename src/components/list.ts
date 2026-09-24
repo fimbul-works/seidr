@@ -29,10 +29,12 @@ export const List = <T, K extends string | number>(
   name: string = "List",
 ): SeidrComponent =>
   createComponent(() => {
-    const listComponent = getComponentScope()!;
-    const itemMap = new Map<K, { itemValue: Value<T>; nodes: ChildNode[] }>();
+    type ItemEntry = { itemValue: Value<T>; nodes: ChildNode[] };
 
-    const renderItem = (item: T, key: K) => {
+    const listComponent = getComponentScope()!;
+    const itemMap = new Map<K, ItemEntry>();
+
+    const renderItem = (item: T, key: K): ItemEntry => {
       const itemValue = createValue(item);
       const result = factory(itemValue, key);
       const nodes = normalizeChildNodes(result);

@@ -1,7 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/app-state.js";
 import { createComponent } from "../../component/index.js";
-import type { SeidrComponent, SeidrComponentFactory } from "../../component/types.js";
 import { Suspense, Switch } from "../../components/index.js";
 import { List } from "../../components/list.js";
 import { TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
@@ -44,13 +43,7 @@ describe("buildStructureMap", () => {
       date: string;
     };
 
-    let headerComp: SeidrComponentFactory;
-    let homePageComp: SeidrComponentFactory;
-    let resolvedComp: SeidrComponentFactory;
-    let listComp: SeidrComponent;
-
     const Header = createComponent(() => {
-      headerComp = Header;
       return $nav({ className: "navbar" }, [
         $a({ href: "/", className: "brand" }, "Seidr Blog"),
         $div({ className: "links" }, [
@@ -72,7 +65,6 @@ describe("buildStructureMap", () => {
     );
 
     const HomePage = createComponent(() => {
-      homePageComp = HomePage as any;
       const postsPromise: Promise<BlogPost[]> = Promise.resolve([
         {
           slug: "one",
@@ -100,9 +92,7 @@ describe("buildStructureMap", () => {
           return Switch(state, {
             pending: createComponent(() => $div(null, "Loading posts..."), "Pending"),
             resolved: createComponent(() => {
-              resolvedComp = createComponent as any;
               const list = List(value as Value<BlogPost[]>, (p) => p.slug, PostCard);
-              listComp = list;
               return $div({ className: "home-page" }, [
                 $h1(null, "Latest Posts"),
                 $ul({ className: "post-list" }, [list]),
