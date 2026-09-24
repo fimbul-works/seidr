@@ -5,13 +5,13 @@ echo "Building examples with strict tree-shaking..."
 # Create temp directory for individual builds
 mkdir -p examples/temp
 
-echo "Building New example..."
-EXAMPLE=new npx vite build --config vite.examples.config.ts
-mv examples/build/new.js examples/temp/new.js
-
 echo "Building Hello World example..."
 EXAMPLE=hello-world npx vite build --config vite.examples.config.ts
 mv examples/build/hello-world.js examples/temp/hello-world.js
+
+echo "Building DOM only example..."
+EXAMPLE=dom-only npx vite build --config vite.examples.config.ts
+mv examples/build/dom-only.js examples/temp/dom-only.js
 
 echo "Building counter example..."
 EXAMPLE=counter npx vite build --config vite.examples.config.ts
@@ -29,7 +29,7 @@ echo "Building SSR example..."
 npx vite build --config vite.ssr.config.ts
 
 # Copy both files to final location
-cp examples/temp/new.js examples/build/new.js
+cp examples/temp/dom-only.js examples/build/dom-only.js
 cp examples/temp/hello-world.js examples/build/hello-world.js
 cp examples/temp/counter.js examples/build/counter.js
 cp examples/temp/todo.js examples/build/todo.js

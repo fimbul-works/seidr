@@ -1,5 +1,5 @@
-import { mount, createValue } from "../src/index";
-import { $button, $div, $span } from "../src/elements";
+import { $button, $div } from "../src/elements";
+import { createValue, mount } from "../src/index";
 
 export const Counter = () => {
   const count = createValue(0);
@@ -10,7 +10,7 @@ export const Counter = () => {
       className: "card card-centered counter",
     },
     [
-      $span({ className: "counter-display", textContent: count.as((c) => c.toString()) }),
+      $div({ className: "number-display center", textContent: count.as((c) => c.toString()) }),
       $div({ className: "counter-controls" }, [
         $button({
           className: "btn btn-primary",
@@ -19,9 +19,9 @@ export const Counter = () => {
           onclick: () => count((c) => c + 1),
         }),
         $button({
-          className: "btn btn-secondary",
+          className: "btn",
           textContent: "Reset",
-          onclick: () => (count(0)),
+          onclick: () => count(0),
         }),
       ]),
     ],

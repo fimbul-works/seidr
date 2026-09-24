@@ -4,58 +4,100 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Seidr - Examples</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Metamorphous&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./style.css">
   <link rel="stylesheet" href="./index.css">
 </head>
 <body>
   <div class="container">
-    <h1>Seidr Examples</h1>
-    <p class="subtitle">Build reactive user interfaces with zero build step and kilobyte scale footprint</p>
+    <img src="seidr-logo.svg" class="seidr-logo" alt="Seidr logo" />
+    <h1 class="index"><span class="sr-only">Seidr </span>Examples</h1>
+    <p class="subtitle">Zero-build reactive UI engineering at kilobyte scale.</p>
 
     <div class="examples-grid">
-      <a href="/counter.html" class="example-card">
-        <div class="example-icon">🔢</div>
-        <div class="example-title">Counter</div>
+      <a href="/hello-world.html" class="example-card">
+        <div class="card-header">
+          <div class="example-icon">🌍</div>
+          <span class="size-badge">⚡ 4.0 kB br</span>
+        </div>
+        <div class="example-title">Hello, World!</div>
         <div class="example-description">
-          A simple counter demonstrating reactive state management, derived values, and automatic DOM updates.
+          Pure function components and automatic two-way reactivity with zero ceremony.
         </div>
         <div class="example-features">
-          <span class="feature-tag">Reactive State</span>
-          <span class="feature-tag">Derived Values</span>
+          <span class="feature-tag">Pure Functions</span>
           <span class="feature-tag">Auto-binding</span>
         </div>
       </a>
 
-      <a href="/todo.html" class="example-card">
-        <div class="example-icon">✅</div>
-        <div class="example-title">Todo App</div>
+      <a href="/dom-only.html" class="example-card">
+        <div class="card-header">
+          <div class="example-icon">📄</div>
+          <span class="size-badge">⚡ 2.8 kB gz</span>
+        </div>
+        <div class="example-title">DOM Only</div>
         <div class="example-description">
-          A complete todo application showcasing form handling, lists, and interactive components.
+          Bypass components entirely. Bind observables straight to native DOM elements.
         </div>
         <div class="example-features">
-          <span class="feature-tag">Forms</span>
-          <span class="feature-tag">Lists</span>
-          <span class="feature-tag">Two-way Binding</span>
-          <span class="feature-tag">Seidr With Storage</span>
+          <span class="feature-tag">Direct to DOM</span>
+          <span class="feature-tag">Observables</span>
+        </div>
+      </a>
+
+      <a href="/counter.html" class="example-card">
+        <div class="card-header">
+          <div class="example-icon">🔢</div>
+          <span class="size-badge">⚡ 4.1 kB br</span>
+        </div>
+        <div class="example-title">Counter</div>
+        <div class="example-description">
+          Fine-grained observables, derived threshold state, and surgical in-place DOM updates.
+        </div>
+        <div class="example-features">
+          <span class="feature-tag">Reactive State</span>
+          <span class="feature-tag">Derived Values</span>
+          <span class="feature-tag">Micro-updates</span>
         </div>
       </a>
 
       <a href="/pomodoro.html" class="example-card">
-        <div class="example-icon">⏲️</div>
+        <div class="card-header">
+          <div class="example-icon">⏲️</div>
+          <span class="size-badge">⚡ 4.8 kB br</span>
+        </div>
         <div class="example-title">Pomodoro Timer</div>
         <div class="example-description">
-          A complete Pomodoro timer with work/break sessions, interval tracking with setInterval, and automatic session management.
+          Stateful session cycles, reactive countdown intervals, and automated lifecycle teardown.
         </div>
         <div class="example-features">
-          <span class="feature-tag">Intervals</span>
-          <span class="feature-tag">State Management</span>
-          <span class="feature-tag">Lifecycle</span>
+          <span class="feature-tag">Interval Tracking</span>
+          <span class="feature-tag">Lifecycle Hooks</span>
+          <span class="feature-tag">Audio Cues</span>
+        </div>
+      </a>
+
+      <a href="/todo.html" class="example-card">
+        <div class="card-header">
+          <div class="example-icon">✅</div>
+          <span class="size-badge">⚡ 5.3 kB br</span>
+        </div>
+        <div class="example-title">TodoMVC</div>
+        <div class="example-description">
+          The classic benchmark reimagined: keyed observable reconciliation, localStorage persistence, and diamond chain toggles.
+        </div>
+        <div class="example-features">
+          <span class="feature-tag">Keyed Lists</span>
+          <span class="feature-tag">Persistent Storage</span>
+          <span class="feature-tag">Full Spec</span>
         </div>
       </a>
     </div>
 
     <div class="footer">
-      Built with ⚡ by <a href="https://github.com/fimbul-works">FimbulWorks</a> •
+      Built with ⚡ by <a href="https://github.com/fimbul-works">FimbulWorks</a><br/>
       <a href="https://github.com/fimbul-works/seidr">GitHub</a> •
       <a href="https://github.com/fimbul-works/seidr/API.md">API Documentation</a>
     </div>

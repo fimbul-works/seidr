@@ -1,13 +1,13 @@
 import {
+  createValue,
   inClient,
   isClient,
   List,
-  createValue,
-  Show,
-  withStorage,
   mergeValues,
   onUnmounted,
-  Value,
+  Show,
+  type Value,
+  withStorage,
 } from "@fimbul-works/seidr";
 import {
   $a,
@@ -15,7 +15,6 @@ import {
   $checkbox,
   $div,
   $footer,
-  $h1,
   $header,
   $input,
   $label,
@@ -98,13 +97,22 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
   const TodoItem = (todo: Value<Todo>) => {
     const isEditing = editingTodoId.as((id) => id === todo()?.id);
     const isCompleted = todo.as((t) => t?.completed ?? false);
-    const inputRef = createValue<HTMLInputElement | null>(null);
 
-    isEditing.watch((editing) => {
-      if (editing) {
-        // Auto-focus when entering edit mode
-        setTimeout(() => (inputRef() as HTMLInputElement)?.focus());
-      }
+    const input = $input({
+      className: "edit",
+      value: todo.as((t) => t.title),
+      onblur: (e: Event) => {
+        if (editingTodoId() === todo().id) {
+          editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
+        }
+      },
+      onkeydown: (e: KeyboardEvent) => {
+        if (e.key === ENTER_KEY) {
+          editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
+        } else if (e.key === ESCAPE_KEY) {
+          editingTodoId(null);
+        }
+      },
     });
 
     return $li(
@@ -129,32 +137,19 @@ export const TodoApp = (initialTodos: Todo[] = []) => {
             onclick: () => removeTodo(todo().id),
           }),
         ]),
-        Show(isEditing, () =>
-          $input({
-            ref: inputRef,
-            className: "edit",
-            value: todo.as((t) => t.title),
-            onblur: (e: Event) => {
-              if (editingTodoId() === todo().id) {
-                editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
-              }
-            },
-            onkeydown: (e: KeyboardEvent) => {
-              if (e.key === ENTER_KEY) {
-                editTodo(todo().id, (e.target as HTMLInputElement).value.trim());
-              } else if (e.key === ESCAPE_KEY) {
-                editingTodoId(null);
-              }
-            },
-          }),
-        ),
+        Show(isEditing, () => {
+          setTimeout(() => {
+            input.focus();
+            input.setSelectionRange(input.value.length, input.value.length);
+          });
+          return input;
+        }),
       ],
     );
   };
 
   return $section({ className: "todoapp" }, [
     $header({ className: "header" }, [
-      $h1({ textContent: "todos" }),
       $input({
         className: "new-todo",
         placeholder: "What needs to be done?",

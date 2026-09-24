@@ -1,16 +1,19 @@
-import { $, mount, createValue } from "../src/index";
+import { $, createValue, mount } from "../src/index";
 
+// Seidr components are just pure functions.
 export const HelloWorld = () => {
-  const textContent = createValue("Click me");
+  // Create a reactive value.
+  const textContent = createValue("Click Me");
 
+  // $() returns pure DOM elements.
   return $("button", {
-    className: "btn",
-    textContent, // Reactive value binding
-    onclick: () => textContent("Seidr binds thee"),
+    className: "btn btn-primary",
+    textContent, // Reactive binding is handled automatically.
+    onclick: () => textContent("Seidr flows through the DOM"), // Update the reactive value.
   });
 };
 
-// Mount component only in browser environment (not in tests)
+// In non-test environment, mount the component to the DOM.
 if (!process.env.VITEST) {
   mount(HelloWorld, document.body);
 }

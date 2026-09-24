@@ -1,20 +1,9 @@
-import { JSDOM } from "jsdom";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { $query, $queryAll, type CleanupFunction, createComponent, mount } from "../src/index";
 import { Counter } from "./counter";
 
 describe("Counter Example", () => {
-  let dom: JSDOM;
-  let document: Document;
   let unmount: CleanupFunction;
-
-  beforeEach(() => {
-    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
-    document = dom.window.document;
-    global.document = document;
-    global.HTMLInputElement = dom.window.HTMLInputElement;
-    global.HTMLButtonElement = dom.window.HTMLButtonElement;
-  });
 
   afterEach(() => {
     unmount?.();
@@ -23,8 +12,8 @@ describe("Counter Example", () => {
   it("should render counter with initial value of 0", async () => {
     unmount = mount(Counter, document.body);
 
-    const span = document.querySelector(".counter span");
-    expect(span?.textContent).toBe("0");
+    const display = document.querySelector(".counter .number-display");
+    expect(display?.textContent).toBe("0");
   });
 
   it("should increment counter when increment button is clicked", async () => {
@@ -32,12 +21,12 @@ describe("Counter Example", () => {
 
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
-    const span = $query<HTMLSpanElement>(".counter span");
+    const display = $query<HTMLElement>(".counter .number-display");
 
     incrementButton.click();
     await new Promise((resolve) => setTimeout(resolve, 0));
 
-    expect(span?.textContent).toBe("1");
+    expect(display?.textContent).toBe("1");
   });
 
   it("should disable increment button when count reaches 10", async () => {
@@ -61,19 +50,19 @@ describe("Counter Example", () => {
     const buttons = $queryAll<HTMLButtonElement>(".counter button");
     const incrementButton = buttons[0];
     const resetButton = buttons[1];
-    const span = $query<HTMLSpanElement>(".counter span");
+    const display = $query<HTMLElement>(".counter .number-display");
 
     incrementButton.click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(span?.textContent).toBe("1");
+    expect(display?.textContent).toBe("1");
 
     resetButton.click();
     await new Promise((resolve) => setTimeout(resolve, 0));
-    expect(span?.textContent).toBe("0");
+    expect(display?.textContent).toBe("0");
   });
 
   it("should cleanup properly when destroyed", async () => {
-    const counterComponent = createComponent(Counter)();
+    const counterComponent = createComponent(Counter);
     const unmount = mount(counterComponent, document.body);
 
     unmount();
