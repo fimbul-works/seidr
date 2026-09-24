@@ -1,5 +1,10 @@
+export {
+  type LazyComponentFactory,
+  type LazyComponentLoader,
+  type LazyOptions,
+  lazy,
+} from "../component/lazy.js";
 export * from "./create-component.js";
 export * from "./lifecycle/index.js";
-export { isComponent, isComponentFactory } from "./type-guards.js";
+export { isComponent, isComponentFactory, isLazyComponent } from "./type-guards.js";
 export * from "./types.js";
-

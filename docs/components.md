@@ -241,6 +241,7 @@ Seidr provides specialized built-in components for reactive UI control flow:
 - [`Switch()`](Switch.md) — Matches and renders UI branches based on a discriminant `Value`.
 - [`Safe()`](Safe.md) — Error boundary component with isolated cleanup and fallback UI.
 - [`Suspense()`](Suspense.md) — Asynchronous boundary managing Promise resolution and loading/error states.
+- [`lazy()`](Lazy.md) — Asynchronous code-splitting utility for dynamically imported component modules.
 
 ---
 

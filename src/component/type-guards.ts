@@ -7,6 +7,7 @@ import {
 } from "../constants.js";
 import { isComment } from "../dom/type-guards.js";
 import { isFn, isObj } from "../util/type-guards.js";
+import type { LazyComponentFactory } from "./lazy.js";
 import type { SeidrComponent, SeidrComponentFactory } from "./types.js";
 
 /**
@@ -23,6 +24,15 @@ export const isComponent = (v: any): v is SeidrComponent => isObj<SeidrComponent
  */
 export const isComponentFactory = <P>(v: any): v is SeidrComponentFactory<P> =>
   isFn<SeidrComponentFactory<P>>(v) && TYPE_PROP in v && v[TYPE_PROP] === TYPE_COMPONENT_FACTORY;
+
+/**
+ * Type guard to check if a value is a lazy component factory.
+ *
+ * @param {any} v - Value to check
+ * @returns {boolean} `true` if the value is a lazy component factory
+ */
+export const isLazyComponent = (v: any): v is LazyComponentFactory<any> =>
+  isComponentFactory(v) && "preload" in v && isFn((v as any).preload);
 
 /**
  * Check if a CharacterData node contains alphanumeric characters.

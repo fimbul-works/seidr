@@ -133,6 +133,11 @@ export function createComponent<P = void>(
         appState.components.delete(currentComponent);
         currentComponent.owner?.children.delete(currentComponent);
 
+        componentUnmountedFns.forEach((fn) => fn());
+        componentUnmountedFns.length = 0;
+        currentComponent.children.forEach((c) => c.unmount());
+        currentComponent.children.clear();
+
         currentComponent.nodes.forEach((n) => {
           if (n && isFn(n.remove)) {
             if (onUnmountedFns?.has(n)) {
@@ -160,10 +165,6 @@ export function createComponent<P = void>(
             appState.nodeIndex.delete(n);
           }
         });
-        componentUnmountedFns.forEach((fn) => fn());
-        componentUnmountedFns.length = 0;
-        currentComponent.children.forEach((c) => c.unmount());
-        currentComponent.children.clear();
         currentComponent.isMounted = false;
       },
       get nextValueId() {

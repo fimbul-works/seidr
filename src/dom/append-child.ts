@@ -103,7 +103,23 @@ export const createReactiveValueNodes = (
     }
   });
 
-  onCleanupRegister(cleanup, startMarker);
+  const fullCleanup = () => {
+    cleanup();
+    const appState = getAppState();
+    let current = startMarker.nextSibling;
+    while (current && current !== endMarker) {
+      const next = current.nextSibling;
+      const comp = appState.nodeIndex.get(current);
+      if (comp && !comp.nodes.includes(startMarker) && !comp.nodes.includes(endMarker)) {
+        comp.unmount();
+      } else {
+        current.remove();
+      }
+      current = next;
+    }
+  };
+
+  onCleanupRegister(fullCleanup, startMarker);
 
   return [startMarker, ...initialNodes, endMarker];
 };

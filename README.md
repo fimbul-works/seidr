@@ -319,7 +319,7 @@ For complete API documentation with all methods, parameters, and examples, see *
 - [Reactive State (`Value.md`)](docs/Value.md)
 - [DOM Elements & Queries (`DOM.md`)](docs/DOM.md)
 - [Components & Lifecycle (`components.md`)](docs/components.md)
-- [Control Flow (`Show.md`, `List.md`, `Switch.md`, `Safe.md`, `Suspense.md`)](docs/components.md#built-in-components)
+- [Control Flow (`Show.md`, `List.md`, `Switch.md`, `Safe.md`, `Suspense.md`, `Lazy.md`)](docs/components.md#built-in-components)
 - [Type Guards (`type-guards.md`)](docs/type-guards.md)
 - [Server-Side Rendering (`SSR.md`)](docs/SSR.md)
 - [Utilities (`utils.md`)](docs/utils.md)

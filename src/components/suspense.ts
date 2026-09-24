@@ -8,6 +8,7 @@ import { createValue } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
+import { isFn, isObj } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
 
 export const PROMISE_PENDING = "pending";
@@ -22,17 +23,19 @@ export interface SuspenseState<T> {
   error: Value<Error | null>;
 }
 
+export type SuspenseSource<T> = Promise<T> | Value<Promise<T>> | { preload: () => Promise<T> };
+
 /**
  * Creates a component that handles Promise resolution with reactive states.
  *
  * @template T - The resolved value type
- * @param {Promise<T> | Value<Promise<T>>} promiseOrValue - A promise or a Value emitting promises
+ * @param {SuspenseSource<T>} promiseOrValue - A promise, a Value emitting promises, or a lazy component
  * @param {(state: SuspenseState<T>) => SeidrChild} factory - Render function receiving the suspense state
  * @param {string} [name="Suspense"] - Optional component name
  * @returns {SeidrComponent} A component managing the promise resolution
  */
 export const Suspense = <T>(
-  promiseOrValue: Promise<T> | Value<Promise<T>>,
+  promiseOrValue: SuspenseSource<T>,
   factory: (state: SuspenseState<T>) => SeidrChild,
   name: string = "Suspense",
 ): SeidrComponent =>
@@ -63,11 +66,17 @@ export const Suspense = <T>(
       }
     };
 
-    const initial = isValue<Promise<T>>(promiseOrValue) ? promiseOrValue() : promiseOrValue;
+    const initial =
+      isObj(promiseOrValue) && "preload" in promiseOrValue && isFn((promiseOrValue as any).preload)
+        ? (promiseOrValue as any).preload()
+        : isValue<Promise<T>>(promiseOrValue)
+          ? promiseOrValue()
+          : promiseOrValue;
     if (initial instanceof Promise) {
       if (isServer()) {
         getSSRScope()?.addPromise(initial);
       }
+
       if (!isHydrating() || state() !== PROMISE_RESOLVED) {
         handlePromise(initial);
       }

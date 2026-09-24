@@ -45,6 +45,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`Switch()`](Switch.md#switch) — Switch between components based on a reactive discriminant value.
   - [`Safe()`](Safe.md#safe) — Error boundary component providing fallback UI on initialization failure.
   - [`Suspense()`](Suspense.md#suspense) — Asynchronous boundary managing Promise resolution and loading states.
+  - [`lazy()`](Lazy.md#lazy) — Asynchronous code-splitting utility for dynamically imported component modules.
 
 ## [Router API](components.md#router-api) (`@fimbul-works/seidr`)
 - `Router` — Declarative router component.
