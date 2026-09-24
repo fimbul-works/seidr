@@ -27,6 +27,9 @@ importers:
       '@fimbul-works/bundle-size':
         specifier: ^1.0.0
         version: 1.0.0
+      '@fimbul-works/noise':
+        specifier: link:../noise
+        version: link:../noise
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6

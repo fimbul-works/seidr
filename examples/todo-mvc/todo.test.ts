@@ -1,7 +1,7 @@
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { type CleanupFunction, mount } from "../src/index";
-import { clearTestAppState } from "../src/test-setup/index.js";
+import { type CleanupFunction, mount } from "../../src/index";
+import { clearTestAppState } from "../../src/test-setup/index.js";
 import { type Todo, TodoApp } from "./todo-mvc";
 
 describe("TodoMVC", () => {

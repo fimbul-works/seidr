@@ -1,4 +1,4 @@
-import { $, createValue } from "../src/index";
+import { $, createValue } from "@fimbul-works/seidr";
 
 // Create a reactive value.
 const textContent = createValue("Click Me");

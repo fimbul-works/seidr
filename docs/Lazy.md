@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Lazy Component
 
 The `lazy()` function creates an asynchronous, code-split component from a dynamic `import()`. It delays loading the component module until it is first rendered or explicitly preloaded with `.preload()`.

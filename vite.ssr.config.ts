@@ -8,6 +8,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export default defineConfig(() => {
   return {
     root: "examples/ssr",
+    publicDir: resolve(import.meta.dirname, "public"),
     plugins: [seidr()],
     resolve: {
       alias: {

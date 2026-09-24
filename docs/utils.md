@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Utilities API
 
 Seidr includes several built-in utilities for error wrapping, deterministic random number generation, and type validation.

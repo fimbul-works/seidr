@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { Suspense, type SuspenseState } from "../components/suspense.js";
-import { Switch } from "../components/switch.js";
+import { createComponent } from "../component/create-component.js";
+import { onMounted } from "../component/lifecycle/on-mounted.js";
+import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
+import { isComponentFactory, isLazyComponent } from "../component/type-guards.js";
 import { mount } from "../dom/mount.js";
 import { $ } from "../element/create-element.js";
 import { createValue } from "../observable/value.js";
@@ -10,11 +12,9 @@ import { renderToString } from "../ssr/render-to-string.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
 import type { CleanupFunction } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
-import { createComponent } from "./create-component.js";
 import { lazy } from "./lazy.js";
-import { onMounted } from "./lifecycle/on-mounted.js";
-import { onUnmounted } from "./lifecycle/on-unmounted.js";
-import { isComponentFactory, isLazyComponent } from "./type-guards.js";
+import { Suspense } from "./suspense.js";
+import { Switch } from "./switch.js";
 
 describeDualMode("lazy() Component", ({ getDocument }) => {
   let container: HTMLElement;

@@ -1,18 +1,18 @@
+import { createComponent } from "../component/create-component.js";
+import { getComponentScope, setComponentScope } from "../component/lifecycle/component-scope.js";
+import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
+import type {
+  SeidrComponentFactory,
+  SeidrComponentFactoryOrFunction,
+  SeidrComponentFactoryPureFunction,
+} from "../component/types.js";
+import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
 import { createValue } from "../observable/value.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
 import { isFn, isObj } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
-import { createComponent } from "./create-component.js";
-import { getComponentScope, setComponentScope } from "./lifecycle/component-scope.js";
-import { onUnmounted } from "./lifecycle/on-unmounted.js";
-import type {
-  SeidrComponentFactory,
-  SeidrComponentFactoryOrFunction,
-  SeidrComponentFactoryPureFunction,
-} from "./types.js";
-import { wrapComponent } from "./wrap-component.js";
 
 /**
  * Function or Promise that loads a component module for code-splitting.

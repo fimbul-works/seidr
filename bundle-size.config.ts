@@ -1,4 +1,6 @@
-export default {
+import type { BundleSizeOptions } from "@fimbul-works/bundle-size";
+
+const config: BundleSizeOptions = {
   groups: [
     {
       name: "Bundles",
@@ -8,7 +10,7 @@ export default {
     {
       name: "Examples",
       include: "examples/build/**/*.js",
-      minify: false,
+      minify: true,
     },
     {
       name: "SSR Example",
@@ -17,3 +19,5 @@ export default {
     },
   ],
 };
+
+export default config;

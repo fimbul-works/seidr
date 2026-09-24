@@ -4,13 +4,15 @@ import {
   inClient,
   inServer,
   isServer,
+  Link,
   Suspense,
   type SuspenseState,
   Switch,
   useRouteParams,
 } from "@fimbul-works/seidr";
-import { $article, $div, $h1 } from "@fimbul-works/seidr/html";
+import { $article, $div, $h1, $span } from "@fimbul-works/seidr/html";
 import { getPost } from "../blog-api.js";
+import { DateView } from "../components/date.js";
 import type { BlogPost } from "../types.js";
 
 /**
@@ -46,18 +48,24 @@ export const PostPage = createComponent(() => {
     createComponent(({ state, value, error }: SuspenseState<BlogPost | null>) => {
       return Switch(state, {
         resolved: createComponent(() => {
-          const p = value();
-          if (!p) {
-            return $div({ className: "error" }, "Post not found");
+          const post = value();
+          if (!post) {
+            return $div({ className: "error not-found-card" }, [
+              $h1({ className: "error-title" }, "Post Not Found"),
+              $div({ className: "error-message" }, "The requested dispatch does not exist or has been relocated."),
+              Link({ to: "/", className: "back-link" }, "← Back to Articles"),
+            ]);
           }
 
           return $article({ className: "post-page" }, [
-            $h1({}, p.title),
-            $div({ className: "meta" }, new Date(p.date).toLocaleDateString()),
-            $div({ className: "markdown-body", innerHTML: p.content }),
+            $div({ className: "meta" }, [$span({ className: "meta-badge", textContent: "Article" })]),
+            Link({ to: "/", className: "back-link" }, "← Back to Articles"),
+            $h1({ className: "article-title" }, post.title),
+            $div({ className: "markdown-body", innerHTML: post.content }),
+            DateView(post.date),
           ]);
         }, "ResolvedPost"),
-        pending: createComponent(() => $div({}, "Loading post..."), "PendingPost"),
+        pending: createComponent(() => $div({ className: "loading-state" }, "Loading..."), "PendingPost"),
         error: createComponent(
           () => $div({ className: "error" }, error()?.message || "Something went wrong."),
           "ErrorPost",

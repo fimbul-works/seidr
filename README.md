@@ -1,4 +1,4 @@
-<img src="public/seidr-logo.svg" alt="Seidr" style="height:200px;margin-bottom:1em;"/>
+<img src="public/seidr-logo.svg" alt="Seidr logo" style="height:200px;margin-bottom:1em;"/>
 
 **Batteries-included** reactivity in a **kilobyte-sized** package. Seidr brings type-safe components, routing, and SSR to vanilla JavaScript/TypeScript with **build step optional**.
 

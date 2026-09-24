@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Type Guards
 
 Type guard utilities provide runtime validation and TypeScript type narrowing for primitives, DOM nodes, reactive Values, and Seidr components.

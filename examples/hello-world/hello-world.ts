@@ -1,4 +1,4 @@
-import { $, createValue, mount } from "../src/index";
+import { $, createValue, mount } from "@fimbul-works/seidr";
 
 // Seidr components are just pure functions.
 export const HelloWorld = () => {

@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Component & Lifecycle API
 
 Seidr components are functions that create and return UI elements. They receive configuration via arguments (*"props"*), create reactive state with [`createValue()`](Value.md#createvalue), and manage resource lifecycles using dedicated lifecycle hooks like [`onMounted()`](#onmounted), [`onAttached()`](#onattached), and [`onUnmounted()`](#onunmounted).

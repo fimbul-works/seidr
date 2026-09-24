@@ -1,3 +1,9 @@
+export {
+  type LazyComponentFactory,
+  type LazyComponentLoader,
+  type LazyOptions,
+  lazy,
+} from "./lazy.js";
 export { List } from "./list.js";
 export { Safe } from "./safe.js";
 export { Show } from "./show.js";

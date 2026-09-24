@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Suspense Component
 
 The `Suspense` component handles asynchronous operations and Promise resolution, providing reactive state observables for loading, error, and resolved states.

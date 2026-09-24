@@ -25,7 +25,7 @@ export async function getPosts(): Promise<BlogPost[]> {
         const slug = file.replace(".md", "");
         const firstSentence = content.split(". ").shift() ?? content;
         const excerpt = await marked.parse(`${firstSentence}...`);
-        
+
         return {
           slug,
           title: data.title,

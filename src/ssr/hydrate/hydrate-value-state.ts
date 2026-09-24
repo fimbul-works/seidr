@@ -27,7 +27,7 @@ export const hydrateValueState = (value: Value): void => {
   if (!isNullish(hydrValue)) {
     hydrationData.registry.add(value);
     const restored = unwrapValue(hydrValue);
-    // console.log(`[Hydration] Restoring Value "${value.id}" state:`, restored);
+    //console.log(`[Hydration] Restoring "${value.id}" state:`, JSON.stringify(restored, null, 2));
     value(restored);
   }
 };

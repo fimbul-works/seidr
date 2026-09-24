@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Show Component
 
 The `Show` component conditionally mounts and unmounts child elements or components based on a reactive boolean [`Value`](Value.md).

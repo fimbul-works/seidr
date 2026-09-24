@@ -35,7 +35,7 @@ export const List = <T, K extends string | number>(
     const itemMap = new Map<K, ItemEntry>();
 
     const renderItem = (item: T, key: K): ItemEntry => {
-      const itemValue = createValue(item);
+      const itemValue = createValue(item, { hydrate: false });
       const result = factory(itemValue, key);
       const nodes = normalizeChildNodes(result);
       return { itemValue, nodes };
@@ -56,6 +56,7 @@ export const List = <T, K extends string | number>(
       if (!Array.isArray(newItems)) {
         return;
       }
+
       const items = newItems;
       const parent = endMarker.parentNode;
       if (!parent) {

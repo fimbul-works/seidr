@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Switch Component
 
 The `Switch` function selects and renders different element or component branches based on the current state of a reactive [`Value`](Value.md).

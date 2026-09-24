@@ -1,5 +1,5 @@
-import { $button, $div, $h2 } from "../src/elements";
-import { createValue, isClient, mount, onUnmounted } from "../src/index";
+import { createValue, isClient, mount, onUnmounted } from "@fimbul-works/seidr";
+import { $button, $div, $h2 } from "@fimbul-works/seidr/html";
 
 const BEEP_SOUND =
   "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwPUKng8LRiGwU2kdry0nwoBS13xu/dkUAKFFyx6O2pVRQKRp/h8r9sIQUsgs/y2Yk1CBtpvPDknE4MD1Cn4O+zYhwGN5HY8tJ8KAUudsbw3JE/ChRdsejuqlUUCkaf4PO/bCAGK4HP8tmJNQgcabzv5ZxPDAxQqN/us2McBjiP1/PMeywFMHXG8N2RQAoUXa/o7qpWFApHn+D0wGwgBiuBzvLZiDUIHGi98OacTwwMUKff77NiHAY4jtjyz3ssBTB1xvDdkUAKFF2v6O6qVhQKR5/g9MBsIAYrgc7y2Yg1";

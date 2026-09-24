@@ -41,8 +41,8 @@ export const Suspense = <T>(
 ): SeidrComponent =>
   createComponent(() => {
     const state = createValue<SuspenseStatus>(PROMISE_PENDING);
-    const value = createValue<T | null>(null);
-    const error = createValue<Error | null>(null);
+    const value = createValue<T | null>(null /*, { hydrate: false }*/);
+    const error = createValue<Error | null>(null /*, { hydrate: false }*/);
 
     let currentPromiseId = 0;
 

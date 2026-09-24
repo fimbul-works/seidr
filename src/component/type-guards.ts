@@ -1,3 +1,4 @@
+import type { LazyComponentFactory } from "../components/lazy.js";
 import {
   SEIDR_COMPONENT_END_PREFIX,
   SEIDR_COMPONENT_START_PREFIX,
@@ -7,7 +8,6 @@ import {
 } from "../constants.js";
 import { isComment } from "../dom/type-guards.js";
 import { isFn, isObj } from "../util/type-guards.js";
-import type { LazyComponentFactory } from "./lazy.js";
 import type { SeidrComponent, SeidrComponentFactory } from "./types.js";
 
 /**

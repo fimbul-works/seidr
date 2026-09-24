@@ -63,7 +63,7 @@
     "build:bundles": "tsdown --config-loader unrun",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
-    "dev": "vite --config vite.examples.config.ts",
+    "dev": "vite",
     "dev:ssr": "tsx watch examples/ssr/server.ts",
     "test": "vitest run",
     "format": "npx biome format --write src *.json *.ts",
@@ -84,6 +84,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@fimbul-works/bundle-size": "^1.0.0",
+    "@fimbul-works/noise": "link:../noise",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^25.6.2",

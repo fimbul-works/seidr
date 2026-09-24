@@ -1,4 +1,6 @@
-# Seidr API Reference
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
+# API Reference
 
 Seidr is organized into a lightweight core library and specialized sub-exports to keep bundle sizes minimal.
 

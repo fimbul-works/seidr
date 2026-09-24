@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Safe Component
 
 The `Safe` component acts as an error boundary, catching synchronous initialization errors thrown within a component subtree and displaying a fallback UI instead of crashing the application.

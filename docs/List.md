@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # List Component
 
 The `List` component efficiently renders and reconciles a dynamic collection of items from an array [`Value`](Value.md). It uses key-based diffing to minimize DOM operations, reordering and updating only the elements that change.

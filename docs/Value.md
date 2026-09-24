@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Reactive State: Values
 
 Seidr uses callable getter-setter functions called **Values** (`Value<T>`) for reactive state management. A `Value` acts as both a getter (when called with no arguments) and a setter (when called with a new value or updater function), while providing automatic fine-grained change tracking, derivation, and DOM data-binding.

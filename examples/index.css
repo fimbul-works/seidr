@@ -66,7 +66,7 @@ h1.index {
 }
 
 .example-icon {
-  font-size: 2.5rem;
+  font-size: 3rem;
   line-height: 1;
   filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
@@ -84,15 +84,17 @@ h1.index {
 }
 
 .example-title {
+  font-family: "Metamorphous", serif;
   font-size: 1.4rem;
   color: #ffffff;
-  margin-bottom: 10px;
+  margin: 0.5rem 0;
   font-weight: 700;
   letter-spacing: -0.01em;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: baseline;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 }
 
 .example-description {

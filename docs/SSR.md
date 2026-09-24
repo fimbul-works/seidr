@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # Server-Side Rendering (SSR) & Hydration
 
 Seidr provides Server-Side Rendering with automatic state capture and deterministic client-side hydration. Components run in a *"Dual-Mode"* fashion, generating accessible static HTML on the server and seamless interactive functionality on the client without code duplication.

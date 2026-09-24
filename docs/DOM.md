@@ -1,3 +1,5 @@
+<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+
 # DOM Elements API
 
 Seidr provides a functional, lightweight DOM element creation and query API with reactive binding support for [`Value`](Value.md) observables.

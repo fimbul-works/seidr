@@ -83,7 +83,5 @@ app.get(/.*/, async (req, res) => {
 
 // Start http server
 app.listen(port, () =>
-  console.log(
-    `Seidr Blog SSR Example started at http://127.0.0.1:${port} (${process.env.NODE_ENV ?? "development"})`,
-  ),
+  console.log(`Seidr Blog SSR Example started at http://127.0.0.1:${port} (${process.env.NODE_ENV ?? "development"})`),
 );

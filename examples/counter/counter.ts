@@ -1,5 +1,5 @@
-import { $button, $div } from "../src/elements";
-import { createValue, mount } from "../src/index";
+import { createValue, mount } from "@fimbul-works/seidr";
+import { $button, $div } from "@fimbul-works/seidr/html";
 
 export const Counter = () => {
   const count = createValue(0);
