@@ -16,7 +16,8 @@
       "complexity": {
         "noForEach": "off",
         "noCommaOperator": "off",
-        "noArguments": "off"
+        "noArguments": "off",
+        "noImportantStyles": "off"
       },
       "suspicious": {
         "noAssignInExpressions": "off",
