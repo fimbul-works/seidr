@@ -21,17 +21,19 @@ export async function getPosts(): Promise<BlogPost[]> {
       .filter((file) => file.endsWith(".md"))
       .map(async (file) => {
         const md = await fs.readFile(path.join(contentDir, file), "utf-8");
-        const { data, content } = matter(md);
+        const {
+          data: { title, date },
+          content,
+        } = matter(md);
         const slug = file.replace(".md", "");
         const firstSentence = content.split(". ").shift() ?? content;
         const excerpt = await marked.parse(`${firstSentence}...`);
 
         return {
           slug,
-          title: data.title,
-          date: String(data.date),
-          excerpt: String(excerpt),
-          content: "",
+          title,
+          date,
+          excerpt: excerpt,
         };
       }),
   );
@@ -44,14 +46,17 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
     const contentDir = getContentDir(path);
     const filePath = path.join(contentDir, `${slug}.md`);
     const md = await fs.readFile(filePath, "utf-8");
-    const { data, content } = matter(md);
+    const {
+      data: { title, date },
+      content,
+    } = matter(md);
     const parsedContent = await marked.parse(content);
 
     return {
       slug,
-      title: data.title,
-      date: String(data.date),
-      content: String(parsedContent),
+      title,
+      date,
+      content: parsedContent,
     };
   } catch {
     return null;

@@ -7,7 +7,7 @@ const textContent = createValue("Click Me");
 export const HelloWorld = $("button", {
   className: "btn btn-primary",
   textContent, // Reactive binding is handled automatically.
-  onclick: () => textContent("Components? We don't need no components."), // Update the reactive value.
+  onclick: () => textContent("Components? Optional"), // Update the reactive value.
 });
 
 // Mount directly to the DOM

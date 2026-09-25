@@ -22,7 +22,7 @@ export default defineConfig(() => {
       noExternal: ["@fimbul-works/seidr"],
     },
     build: {
-      outDir: "examples/ssr/dist",
+      outDir: "dist",
       emptyOutDir: true,
       sourcemap: true,
       minify: "terser",
@@ -30,7 +30,6 @@ export default defineConfig(() => {
       rolldownOptions: {
         input: resolve("examples", "ssr", "index.html"),
         output: {
-          dir: "examples/ssr/dist",
           format: "es",
           entryFileNames: () => "[name].js",
         },

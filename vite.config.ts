@@ -2,16 +2,9 @@ import { resolve } from "path";
 import { defineConfig, type UserConfig } from "vite";
 import seidr from "./src/build-plugins/index.ts";
 
-export default defineConfig(({ command }) => {
+export default defineConfig(() => {
   const example = process.env.EXAMPLE;
   const input = example ? `examples/${example}/index.html` : "examples/index.html";
-  //const entryFileNames = example ? `${example}.html` : undefined;
-  const emptyOutDir = !example;
-
-  if (command === "build" && !example) {
-    console.error("Seidr examples must be built with an example specified, e.g. EXAMPLE=todo-mvc vite build");
-    process.exit(1);
-  }
 
   return {
     root: "examples",
@@ -26,8 +19,8 @@ export default defineConfig(({ command }) => {
       },
     },
     build: {
-      outDir: "examples/build",
-      emptyOutDir,
+      outDir: "build",
+      emptyOutDir: false,
       minify: false,
       sourcemap: false,
       modulePreload: { polyfill: false },
@@ -35,7 +28,6 @@ export default defineConfig(({ command }) => {
       rolldownOptions: {
         input,
         output: {
-          dir: "examples/build",
           format: "es",
           entryFileNames: `${example}.js`,
           codeSplitting: false,
