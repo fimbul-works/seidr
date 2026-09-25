@@ -35,7 +35,6 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - [`mount()`](components.md#mount) — Mount a component to a DOM container.
 - Lifecycle Hooks:
   - [`onMounted()`](components.md#onmounted) — Register a callback executed when a component or DOM node is mounted.
-  - [`onAttached()`](components.md#onattached) — Register a callback executed when a component or DOM node is attached to the document.
   - [`onUnmounted()`](components.md#onunmounted) — Register a cleanup callback executed when a component or DOM node is removed from the DOM.
   - [`getComponentScope()`](components.md#getcomponentscope) — Retrieve the active component instance.
   - [`watchMutations()`](components.md#watchmutations) — Enable DOM mutation tracking for node lifecycle hooks.

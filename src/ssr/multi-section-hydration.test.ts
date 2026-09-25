@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component.js";
-import { onAttached } from "../component/lifecycle/on-attached.js";
+import { onMounted } from "../component/lifecycle/on-mounted.js";
 import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 import { List } from "../components/list.js";
 import { $a } from "../elements/a.js";
@@ -54,12 +54,15 @@ describe("Multi-section SSR and Hydration with Router", () => {
     ]);
   }, "Navigation");
 
+  let canvas: HTMLCanvasElement| null = null
+
   const HeroLoiske = () => {
     const canvasRef = createValue<HTMLCanvasElement | null>(null, { hydrate: false });
 
     inClient(() => {
-      onAttached(() => {
+      onMounted(() => {
         // Canvas initialized
+        canvas = canvasRef()
       });
       onUnmounted(() => {});
     });
@@ -116,6 +119,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
     expect(container.querySelector("#hero-loiske")).toBeTruthy();
     expect(container.querySelector(".home-navigation")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
+    expect(canvas).toBeTruthy()
 
     unmount();
     cleanupClient();

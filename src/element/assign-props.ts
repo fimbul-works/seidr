@@ -15,4 +15,4 @@ export const assignProps = <
 >(
   el: E,
   props: SeidrElementProps<K>,
-) => Object.entries(props).forEach(([prop, value]) => assignProp(el, prop as any, value));
+) => Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));

@@ -22,7 +22,7 @@ export const registerRouter = (component: SeidrComponent, node: RouterTreeNode):
   }
 
   // Unregister the router when the component is unmounted
-  component.onUnmount(() => unregisterRouter(component.id));
+  component.onUnmounted(() => unregisterRouter(component.id));
 
   // Set parent-child relationship if there is a parent router
   const parent = getNearestRouter(component);

@@ -134,10 +134,10 @@ describeDualMode("appendChild", ({ getDocument }) => {
     });
 
     const c1 = Comp1();
-    c1.onUnmount(unmountSpy1);
+    c1.onUnmounted(unmountSpy1);
 
     const c2 = Comp2();
-    c2.onUnmount(unmountSpy2);
+    c2.onUnmounted(unmountSpy2);
 
     const obs = createValue<any>(c1);
     const parent = $("div");

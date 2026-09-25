@@ -70,7 +70,7 @@ export const initRouter = (
   // Cleanup on unmount if in component scope
   const currentScope = getComponentScope();
   if (currentScope) {
-    currentScope.onUnmount(cleanup);
+    currentScope.onUnmounted(cleanup);
   }
 
   // Store state in AppState

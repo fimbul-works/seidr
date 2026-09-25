@@ -14,12 +14,10 @@ import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
 import { isArray, isBool, isFn, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { getComponentScope, setComponentScope } from "./lifecycle/component-scope.js";
-import { onAttached } from "./lifecycle/on-attached.js";
 import { onMounted } from "./lifecycle/on-mounted.js";
 import { onUnmountedFns } from "./lifecycle/on-unmounted.js";
 import { isComponent } from "./type-guards.js";
 import type {
-  OnAttachedFunction,
   OnMountedFunction,
   SeidrComponent,
   SeidrComponentFactory,
@@ -58,7 +56,7 @@ export function createComponent<P = void>(
       // Root component
       const roots = new Set(
         Array.from(appState.components)
-          .filter((c) => !c.owner)
+          .filter((c) => !c.parent)
           .map((c) => c.id),
       );
       let idCounter = roots.size + 1;
@@ -72,58 +70,30 @@ export function createComponent<P = void>(
     let valueIdCounter = 1;
 
     const componentMountedFns: OnMountedFunction[] = [];
-    const componentAttachedFns: OnAttachedFunction[] = [];
     const componentUnmountedFns: CleanupFunction[] = [];
 
-    const createdIndex: (ChildNode | SeidrComponent)[] = [];
-    const childCreatedIndex = new Map<Node | SeidrComponent, string>();
-
     // Create component instance
-    const currentComponent: SeidrComponent = {
+    const currentComponent = {
       get [TYPE_PROP]() {
         return TYPE_COMPONENT as typeof TYPE_COMPONENT;
       },
-      id,
-      name,
+      get id() {
+        return id;
+      },
+      get name() {
+        return name;
+      },
       isMounted: false,
       nodes: [],
       children: new Set(),
-      createdIndex,
-      childCreatedIndex,
-      trackChild(child: ChildNode | SeidrComponent) {
-        if (isServer() && createdIndex.indexOf(child) === -1) {
-          createdIndex.push(child);
-        }
-      },
-      untrackChild(child: ChildNode | SeidrComponent) {
-        if (isServer()) {
-          const index = createdIndex.indexOf(child);
-          if (index !== -1) {
-            createdIndex.splice(index, 1);
-          }
-        }
-      },
-      onMount: (fn: OnMountedFunction) => {
-        if (currentComponent.nodes.length > 0) {
-          onMounted(fn, currentComponent.nodes[0]);
-        } else {
-          componentMountedFns.push(fn);
-        }
-      },
-      onAttach: (fn: OnAttachedFunction) => {
-        if (currentComponent.nodes.length > 0) {
-          onAttached(fn, currentComponent.nodes[0]);
-        } else {
-          componentAttachedFns.push(fn);
-        }
-      },
-      onUnmount: (fn: CleanupFunction) => componentUnmountedFns.push(fn),
-      owner: parentComponent,
+      parent: parentComponent,
+      onMounted: (fn: OnMountedFunction) => componentMountedFns.push(fn),
+      onUnmounted: (fn: CleanupFunction) => componentUnmountedFns.push(fn),
       unmount(): void {
         if (isServer()) {
           getSSRScope()?.unregisterComponent(currentComponent);
-          createdIndex.length = 0;
-          currentComponent.owner?.untrackChild?.(currentComponent);
+          currentComponent.createdIndex.length = 0;
+          currentComponent.parent?.untrackChild?.(currentComponent);
         }
 
         if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
@@ -131,10 +101,11 @@ export function createComponent<P = void>(
         }
 
         appState.components.delete(currentComponent);
-        currentComponent.owner?.children.delete(currentComponent);
+        currentComponent.parent?.children.delete(currentComponent);
 
         componentUnmountedFns.forEach((fn) => fn());
         componentUnmountedFns.length = 0;
+
         currentComponent.children.forEach((c) => c.unmount());
         currentComponent.children.clear();
 
@@ -145,12 +116,12 @@ export function createComponent<P = void>(
               onUnmountedFns.delete(n);
               fns?.forEach((fn) => fn());
             }
-            if (isFn((n as any).contains) && onUnmountedFns && onUnmountedFns.size > 0) {
+            if (isFn(n.contains) && onUnmountedFns && onUnmountedFns.size > 0) {
               for (const [targetNode, fns] of Array.from(onUnmountedFns.entries())) {
                 if (targetNode !== n) {
                   let isContained = false;
                   try {
-                    isContained = Boolean((n as any).contains?.(targetNode));
+                    isContained = Boolean(n.contains?.(targetNode));
                   } catch {
                     isContained = false;
                   }
@@ -170,7 +141,27 @@ export function createComponent<P = void>(
       get nextValueId() {
         return valueIdCounter++;
       },
-    };
+    } as unknown as SeidrComponent;
+
+    // Add SSR child tracking functionality
+    if (isServer()) {
+      currentComponent.createdIndex = [];
+      currentComponent.childCreatedIndex = new Map<Node | SeidrComponent, string>();
+
+      currentComponent.trackChild = (child: ChildNode | SeidrComponent) =>
+        isServer() && currentComponent.createdIndex.indexOf(child) === -1 && currentComponent.createdIndex.push(child);
+
+      currentComponent.untrackChild = (child: ChildNode | SeidrComponent) => {
+        if (isServer()) {
+          const index = currentComponent.createdIndex.indexOf(child);
+          if (index !== -1) {
+            currentComponent.createdIndex.splice(index, 1);
+          }
+        }
+      };
+    }
+
+    // Register with AppState and parent component
     appState.components.add(currentComponent);
     if (parentComponent) {
       parentComponent.children.add(currentComponent);
@@ -201,7 +192,7 @@ export function createComponent<P = void>(
           return createReactiveValueNodes(item, (cleanup) => componentUnmountedFns.push(cleanup));
         } else if (isComponent(item)) {
           item.isMounted = true;
-          item.owner = currentComponent;
+          item.parent = currentComponent;
           currentComponent.children.add(item);
           if (isServer()) {
             currentComponent.trackChild?.(item);
@@ -216,11 +207,7 @@ export function createComponent<P = void>(
       const nodes = (isArray(result) ? result : [result]).filter(Boolean).flatMap(childToNodes);
       setComponentNodes(currentComponent, nodes);
 
-      if (componentAttachedFns.length > 0 && currentComponent.nodes.length > 0) {
-        const target = currentComponent.nodes[0];
-        componentAttachedFns.forEach((fn) => onAttached(fn, target));
-        componentAttachedFns.length = 0;
-      }
+      // Trigger onMounted callbacks
       if (componentMountedFns.length > 0 && currentComponent.nodes.length > 0) {
         const target = currentComponent.nodes[0];
         componentMountedFns.forEach((fn) => onMounted(fn, target));

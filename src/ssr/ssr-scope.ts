@@ -156,10 +156,10 @@ export class SSRScope {
         process.env.NODE_ENV === "production" ? encodeBase62(comp.id) : `${comp.name}-${encodeBase62(comp.id)}`;
       compIndices.set(compIdStr, index);
 
-      const parentIdStr = comp.owner
+      const parentIdStr = comp.parent
         ? process.env.NODE_ENV === "production"
-          ? encodeBase62(comp.owner.id)
-          : `${comp.owner.name}-${encodeBase62(comp.owner.id)}`
+          ? encodeBase62(comp.parent.id)
+          : `${comp.parent.name}-${encodeBase62(comp.parent.id)}`
         : null;
       const prefix =
         !parentIdStr || !compIndices.has(parentIdStr)

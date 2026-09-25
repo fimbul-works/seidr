@@ -115,13 +115,13 @@ describeDualMode("Switch Component", ({ getDocument }) => {
 
     const CompA = createComponent(() => {
       const comp = createComponent(() => $("div", { textContent: "Component A" }))();
-      comp.onUnmount(unmountedA);
+      comp.onUnmounted(unmountedA);
       return comp;
     });
 
     const CompB = createComponent(() => {
       const comp = createComponent(() => $("div", { textContent: "Component B" }))();
-      comp.onUnmount(unmountedB);
+      comp.onUnmounted(unmountedB);
       return comp;
     });
 

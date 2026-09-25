@@ -18,21 +18,21 @@ export const onMountedFns = new Map<Node, Array<OnMountedFunction>>();
 export function onMounted(callback: OnMountedFunction, el?: Node) {
   if (!isFn(callback)) return;
 
+  // Handle element callbacks
   if (el) {
-    let callbacks: OnMountedFunction[] = [];
-    if (onMountedFns.has(el)) {
-      callbacks = onMountedFns.get(el)!;
+    if (el.isConnected) {
+      callback();
     } else {
+      const callbacks: OnMountedFunction[] = onMountedFns.has(el) ? onMountedFns.get(el)! : [];
+      callbacks.push(callback);
       onMountedFns.set(el, callbacks);
     }
-    callbacks.push(callback);
-    return;
+  } else {
+    // Handle component callbacks
+    const component = getComponentScope();
+    if (!component) {
+      throw new SeidrError("onMounted called outside of component");
+    }
+    component.onMounted(callback);
   }
-
-  const component = getComponentScope();
-  if (!component) {
-    throw new SeidrError("onMounted called outside of component");
-  }
-
-  component.onMount(callback);
 }

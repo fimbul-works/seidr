@@ -41,15 +41,15 @@ export const getNearestRouter = (component?: SeidrComponent | null): RouterTreeN
   const ids = new Set<number>(tree.keys());
 
   // Traverse up the component tree until we find a router or reach the root
-  let parent: SeidrComponent | null = component.owner;
+  let parent: SeidrComponent | null = component.parent;
   while (parent !== null && !ids.has(parent.id)) {
-    parent = parent.owner;
+    parent = parent.parent;
   }
 
   // Cache the parent router for the current scope
   const node = parent ? tree.get(parent.id)! : null;
   parentMap.set(component.id, node);
-  component.onUnmount(() => parentMap.delete(component.id));
+  component.onUnmounted(() => parentMap.delete(component.id));
 
   return node;
 };

@@ -32,7 +32,7 @@ export const isComponentFactory = <P>(v: any): v is SeidrComponentFactory<P> =>
  * @returns {boolean} `true` if the value is a lazy component factory
  */
 export const isLazyComponent = (v: any): v is LazyComponentFactory<any> =>
-  isComponentFactory(v) && "preload" in v && isFn((v as any).preload);
+  isComponentFactory(v) && "preload" in v && isFn(v.preload);
 
 /**
  * Check if a CharacterData node contains alphanumeric characters.

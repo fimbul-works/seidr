@@ -2,7 +2,7 @@
 
 # Component & Lifecycle API
 
-Seidr components are functions that create and return UI elements. They receive configuration via arguments (*"props"*), create reactive state with [`createValue()`](Value.md#createvalue), and manage resource lifecycles using dedicated lifecycle hooks like [`onMounted()`](#onmounted), [`onAttached()`](#onattached), and [`onUnmounted()`](#onunmounted).
+Seidr components are functions that create and return UI elements. They receive configuration via arguments (*"props"*), create reactive state with [`createValue()`](Value.md#createvalue), and manage resource lifecycles using dedicated lifecycle hooks like [`onMounted()`](#onmounted), and [`onUnmounted()`](#onunmounted).
 
 ---
 
@@ -126,33 +126,6 @@ const CanvasComponent = createComponent(() => {
 
 ---
 
-### `onAttached()`
-
-Registers a callback executed when the component (or a specific target DOM node) is attached to the active document. If the target is already connected, the callback runs immediately.
-
-```typescript
-import { createComponent, onAttached } from '@fimbul-works/seidr';
-import { $canvas } from '@fimbul-works/seidr/html';
-
-const Chart = createComponent(() => {
-  const canvas = $canvas({ width: 400, height: 200 });
-
-  onAttached(() => {
-    // Guaranteed to be connected to document.body
-    const ctx = (canvas as HTMLCanvasElement).getContext('2d');
-    ctx?.fillRect(10, 10, 50, 50);
-  });
-
-  return canvas;
-}, 'Chart');
-```
-
-**Parameters:**
-- `callback: () => void` — Attached callback.
-- `el?: Node` — Optional specific DOM node.
-
----
-
 ### `onUnmounted()`
 
 Registers a cleanup function executed when the component (or a specific target DOM node) is removed from the DOM and destroyed.
@@ -213,7 +186,7 @@ const Inspectable = createComponent(() => {
 
 ### `watchMutations()`
 
-Internal DOM mutation listener that monitors `document.documentElement` to trigger node-level `onMounted`, `onAttached`, and `onUnmounted` handlers. Called automatically by `mount()`.
+Internal DOM mutation listener that monitors `document.documentElement` to trigger node-level `onMounted` and `onUnmounted` handlers. Called automatically by `mount()`.
 
 **Returns:** `CleanupFunction` to disconnect observer when all watchers unregister.
 

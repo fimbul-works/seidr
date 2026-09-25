@@ -38,7 +38,7 @@ describe("onMounted", () => {
 
       onMounted(callback);
 
-      expect(scope.onMount).toHaveBeenCalledWith(callback);
+      expect(scope.onMounted).toHaveBeenCalledWith(callback);
     });
   });
 

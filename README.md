@@ -142,7 +142,7 @@ Before diving into the details, it helps to understand Seidr's mental model. Thi
 - No virtual DOM diffing or full-tree reconciliation
 
 **3. Lifecycle & Cleanup**
-- Dedicated lifecycle hooks (`onMounted`, `onAttached`, `onUnmounted`)
+- Dedicated lifecycle hooks (`onMounted`, `onUnmounted`)
 - Components track their bindings and clean up automatically
 - Guaranteed memory safety when components are unmounted
 

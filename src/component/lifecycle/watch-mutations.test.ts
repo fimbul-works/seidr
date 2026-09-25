@@ -1,7 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { assignProp } from "../../element/assign-prop";
 import { createValue } from "../../observable/value";
-import { onAttached, onAttachedFns } from "./on-attached";
 import { onMounted, onMountedFns } from "./on-mounted";
 import { onUnmounted, onUnmountedFns } from "./on-unmounted";
 import { watchMutations } from "./watch-mutations";
@@ -40,7 +39,6 @@ describe("watchMutations (MutationObserver lifecycle)", () => {
     stopWatching?.();
     root.remove();
     onMountedFns?.clear();
-    onAttachedFns?.clear();
     onUnmountedFns?.clear();
   });
 
@@ -56,7 +54,6 @@ describe("watchMutations (MutationObserver lifecycle)", () => {
       await flushMutationQueue();
 
       expect(onMountCb).toHaveBeenCalledTimes(1);
-      expect(onMountCb).toHaveBeenCalledWith(root);
       expect(onMountedFns?.has(child)).toBe(false);
     });
 
@@ -81,51 +78,8 @@ describe("watchMutations (MutationObserver lifecycle)", () => {
       await flushMutationQueue();
 
       expect(cardMount).toHaveBeenCalledTimes(1);
-      expect(cardMount).toHaveBeenCalledWith(root);
-
       expect(headerMount).toHaveBeenCalledTimes(1);
-      expect(headerMount).toHaveBeenCalledWith(card);
-
       expect(btnMount).toHaveBeenCalledTimes(1);
-      expect(btnMount).toHaveBeenCalledWith(card);
-    });
-  });
-
-  describe("Attachment detection (onAttached)", () => {
-    it("should trigger onAttached when an element is attached into connected root", async () => {
-      const canvas = document.createElement("canvas");
-      const onAttachCb = vi.fn();
-
-      onAttached(onAttachCb, canvas);
-      expect(onAttachCb).not.toHaveBeenCalled();
-
-      root.appendChild(canvas);
-      await flushMutationQueue();
-
-      expect(onAttachCb).toHaveBeenCalledTimes(1);
-      expect(onAttachedFns?.has(canvas)).toBe(false);
-    });
-
-    it("should not trigger onAttached when added to detached container, until container connects", async () => {
-      const detachedContainer = document.createElement("div");
-      const child = document.createElement("div");
-      const onAttachCb = vi.fn();
-
-      onAttached(onAttachCb, child);
-
-      detachedContainer.appendChild(child);
-      await flushMutationQueue();
-
-      // Still detached from Document
-      expect(child.isConnected).toBe(false);
-      expect(onAttachCb).not.toHaveBeenCalled();
-
-      // Now attach container to root (which is connected to document.body)
-      root.appendChild(detachedContainer);
-      await flushMutationQueue();
-
-      expect(child.isConnected).toBe(true);
-      expect(onAttachCb).toHaveBeenCalledTimes(1);
     });
   });
 

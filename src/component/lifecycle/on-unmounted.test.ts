@@ -36,7 +36,7 @@ describe("onUnmounted", () => {
     it("should register cleanup on active component onUnmountedFns", () => {
       const cleanup = vi.fn();
 
-      scope.onUnmount(cleanup);
+      scope.onUnmounted(cleanup);
       scope.unmount();
       expect(cleanup).toHaveBeenCalled();
     });

@@ -67,8 +67,8 @@ export const Suspense = <T>(
     };
 
     const initial =
-      isObj(promiseOrValue) && "preload" in promiseOrValue && isFn((promiseOrValue as any).preload)
-        ? (promiseOrValue as any).preload()
+      isObj(promiseOrValue) && "preload" in promiseOrValue && isFn(promiseOrValue.preload)
+        ? promiseOrValue.preload()
         : isValue<Promise<T>>(promiseOrValue)
           ? promiseOrValue()
           : promiseOrValue;

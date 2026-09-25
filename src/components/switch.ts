@@ -35,7 +35,7 @@ export const Switch = <K extends string | number, B extends SwitchBranches<K> = 
       setComponentScope(scope);
     }
     try {
-      return factory ? (factory as any)(undefined, key) : fallback ? fallback() : null;
+      return factory ? factory(undefined, key) : fallback ? fallback() : null;
     } finally {
       setComponentScope(prevScope);
     }

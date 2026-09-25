@@ -11,7 +11,7 @@ import { initRouter } from "../init-router.js";
  */
 export interface LinkProps<K extends keyof HTMLElementTagNameMap = "a"> {
   /** The route to navigate to */
-  to: string | Value<string> | number;
+  to: Value<string> | string;
   /** Optional HTML tag name (default: "a") */
   tagName?: K;
 }
@@ -30,7 +30,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 ): HTMLElementTagNameMap[K] => {
   initRouter();
   const navigate = useNavigate();
-  const href = wrapValue(to as any, { hydrate: false }).as((t) => t);
+  const href = wrapValue(to, { hydrate: false }).as((t) => t);
 
   return $(
     tagName as K,

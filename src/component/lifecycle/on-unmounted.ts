@@ -17,21 +17,17 @@ export const onUnmountedFns = new Map<Node, Array<CleanupFunction>>();
 export function onUnmounted(callback: CleanupFunction, el?: Node) {
   if (!isFn(callback)) return;
 
+  // Handle element callbacks
   if (el) {
-    let callbacks: CleanupFunction[] = [];
-    if (onUnmountedFns.has(el)) {
-      callbacks = onUnmountedFns.get(el)!;
-    } else {
-      onUnmountedFns.set(el, callbacks);
-    }
+    const callbacks: CleanupFunction[] = onUnmountedFns.has(el) ? onUnmountedFns.get(el)! : [];
     callbacks.push(callback);
-    return;
+    onUnmountedFns.set(el, callbacks);
+  } else {
+    // Handle component callbacks
+    const component = getComponentScope();
+    if (!component) {
+      throw new SeidrError("onUnmounted called outside of component");
+    }
+    component.onUnmounted(callback);
   }
-
-  const component = getComponentScope();
-  if (!component) {
-    throw new SeidrError("onUnmounted called outside of component");
-  }
-
-  component.onUnmount(callback);
 }

@@ -1,4 +1,4 @@
-import { onAttached, onUnmounted } from "../component/lifecycle/index.js";
+import { onMounted, onUnmounted } from "../component/lifecycle/index.js";
 import { BOOL_ATTRIBUTES } from "../constants.js";
 import { unwrapValue } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
@@ -97,7 +97,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
     }
 
     bindings.set("ref", { value });
-    onAttached(() => value(el), el);
+    onMounted(() => value(el), el);
     onUnmounted(() => value(null), el);
     return;
   }
@@ -154,11 +154,11 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
 
       for (let [styleProp, styleValue] of Object.entries(value)) {
         if (isServer()) {
-          styleProp = camelToKebab(styleProp as string);
+          styleProp = camelToKebab(styleProp);
         }
         const styleKey = `style:${styleProp}`;
         setPropBinding(el, styleKey, styleValue, (val) => {
-          (el.style as any)[styleProp] = unwrapValue(val);
+          el.style[styleProp as any] = unwrapValue(val);
         });
       }
     }
@@ -167,7 +167,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
 
   const isBoolProp = BOOL_ATTRIBUTES.has(prop.toLowerCase());
 
-  const applyValue = (target: any, val: any) => {
+  const applyValue = (target: HTMLElementTagNameMap[K], val: any) => {
     if (useAttribute || !(effectiveProp in target) || isBoolProp) {
       isNullish(val) || (isBoolProp && !val)
         ? target.removeAttribute(effectiveProp)
@@ -175,7 +175,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
     }
 
     if (!(useAttribute || !(effectiveProp in target))) {
-      target[effectiveProp] = val;
+      target[effectiveProp as keyof HTMLElementTagNameMap[K]] = val;
     }
   };
 

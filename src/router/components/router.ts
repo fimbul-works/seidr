@@ -1,7 +1,11 @@
 import { createComponent } from "../../component/create-component.js";
 import { getComponentScope, setComponentScope } from "../../component/lifecycle/component-scope.js";
 import { isComponent } from "../../component/type-guards.js";
-import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../../component/types.js";
+import type {
+  SeidrComponent,
+  SeidrComponentFactoryOrFunction,
+  SeidrComponentFactoryPureFunction,
+} from "../../component/types.js";
 import { getMarkerComments } from "../../component/util/get-marker-comments.js";
 import { wrapComponent } from "../../component/wrap-component.js";
 import type { Value } from "../../observable/value.js";
@@ -105,7 +109,7 @@ export const Router = (
       try {
         if (isComponent(currentFactory)) {
           currentComponent = currentFactory as SeidrComponent;
-          currentComponent.owner = routerComponent;
+          currentComponent.parent = routerComponent;
         } else {
           currentComponent = wrapComponent(currentFactory as any, `${name}Route`)();
         }
@@ -186,9 +190,9 @@ export const Router = (
       routerComponent.nodes = [startMarker, ...(nextComp ? nextComp.nodes : []), endMarker];
     };
 
-    routerComponent.onUnmount(currentPath.watch(updateRoutes));
-    routerComponent.onUnmount(routesObservable.watch(updateRoutes));
-    routerComponent.onUnmount(() => currentComponent?.unmount());
+    routerComponent.onUnmounted(currentPath.watch(updateRoutes));
+    routerComponent.onUnmounted(routesObservable.watch(updateRoutes));
+    routerComponent.onUnmounted(() => currentComponent?.unmount());
 
     return [startMarker, ...(currentComponent ? [currentComponent] : []), endMarker];
   }, name)();

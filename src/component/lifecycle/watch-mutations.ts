@@ -3,7 +3,6 @@ import { DATA_KEY_MUTATION_OBSERVERS } from "../../constants.js";
 import type { CleanupFunction } from "../../types.js";
 import { isServer } from "../../util/environment/is-server.js";
 import { isFn } from "../../util/type-guards.js";
-import { onAttachedFns } from "./on-attached.js";
 import { onMountedFns } from "./on-mounted.js";
 import { onUnmountedFns } from "./on-unmounted.js";
 
@@ -26,13 +25,6 @@ const processAddedNode = (node: Node) => {
   if (onMountedFns?.has(node)) {
     const fns = onMountedFns.get(node);
     onMountedFns.delete(node);
-    fns?.forEach((fn) => fn(node.parentElement!));
-  }
-
-  // Trigger onAttached callbacks
-  if (onAttachedFns?.has(node)) {
-    const fns = onAttachedFns.get(node);
-    onAttachedFns.delete(node);
     fns?.forEach((fn) => fn());
   }
 
@@ -42,16 +34,6 @@ const processAddedNode = (node: Node) => {
       for (const [targetNode, fns] of Array.from(onMountedFns.entries())) {
         if (targetNode !== node && node.contains(targetNode) && targetNode.isConnected) {
           onMountedFns.delete(targetNode);
-          fns.forEach((fn) => fn(targetNode.parentElement!));
-        }
-      }
-    }
-
-    // Trigger onAttached callbacks for descendants
-    if (onAttachedFns && onAttachedFns.size > 0) {
-      for (const [targetNode, fns] of Array.from(onAttachedFns.entries())) {
-        if (targetNode !== node && node.contains(targetNode) && targetNode.isConnected) {
-          onAttachedFns.delete(targetNode);
           fns.forEach((fn) => fn());
         }
       }

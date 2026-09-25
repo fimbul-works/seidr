@@ -8,23 +8,21 @@ import type { CleanupFunction } from "../types.js";
 export interface SeidrComponent {
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
   /** Component ID */
-  id: number;
+  readonly id: number;
   /** Component name */
-  name: string;
+  readonly name: string;
   /** Flag to indicate if component is mounted */
   isMounted: boolean;
   /** DOM nodes */
   nodes: ChildNode[];
   /** Parent component for cleanup propagation */
-  owner: SeidrComponent | null;
+  parent: SeidrComponent | null;
   /** Child components */
   children: Set<SeidrComponent>;
   /** Lifecycle: called when component is mounted */
-  onMount(fn: OnMountedFunction): void;
-  /** Lifecycle: called when component is attached to Document */
-  onAttach(fn: OnAttachedFunction): void;
+  onMounted(fn: OnMountedFunction): void;
   /** Lifecycle: called when component is removed from DOM */
-  onUnmount(fn: CleanupFunction): void;
+  onUnmounted(fn: CleanupFunction): void;
   /**
    * Destroys the component, cleaning up resources and removing its elements from the DOM.
    * @internal
@@ -39,22 +37,22 @@ export interface SeidrComponent {
    * Execution sequence array populated during Server-Side Rendering.
    * @internal
    */
-  readonly createdIndex?: (ChildNode | SeidrComponent)[];
+  createdIndex: (ChildNode | SeidrComponent)[];
   /**
    * Map of child component root nodes to their component ID.
    * @internal
    */
-  readonly childCreatedIndex?: Map<Node | SeidrComponent, string>;
+  childCreatedIndex: Map<Node | SeidrComponent, string>;
   /**
    * Tracks a created node in the component's execution sequence.
    * @internal
    */
-  trackChild?(child: ChildNode | SeidrComponent): void;
+  trackChild(child: ChildNode | SeidrComponent): void;
   /**
    * Removes a created node from the component's execution sequence.
    * @internal
    */
-  untrackChild?(child: ChildNode | SeidrComponent): void;
+  untrackChild(child: ChildNode | SeidrComponent): void;
 }
 
 /**
@@ -96,9 +94,4 @@ export type SeidrComponentFactoryOrFunction<P = void> = SeidrComponentFactory<P>
 /**
  * Function to execute when a component is mounted.
  */
-export type OnMountedFunction = (container: HTMLElement) => void;
-
-/**
- * Function to execute when a component or DOM node is attached to the document.
- */
-export type OnAttachedFunction = () => void;
+export type OnMountedFunction = () => void;

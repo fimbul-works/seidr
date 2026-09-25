@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, vi } from "vitest";
 import { getAppState } from "../app-state/app-state.js";
-import type { OnAttachedFunction, OnMountedFunction, SeidrComponent } from "../component/types.js";
+import type { OnMountedFunction, SeidrComponent } from "../component/types.js";
 import { DATA_KEY_COMPONENT_CURSOR, DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import type { CleanupFunction } from "../types.js";
@@ -13,7 +13,6 @@ export function mockComponentScope(node?: HTMLElement) {
   const cleanups: (() => void)[] = [];
 
   const onMountedFns: OnMountedFunction[] = [];
-  const onAttachedFns: OnAttachedFunction[] = [];
   const onUnmountedFns: CleanupFunction[] = [];
 
   let valueIdCounter = 0;
@@ -25,13 +24,10 @@ export function mockComponentScope(node?: HTMLElement) {
     nodes: node ? [node] : [],
     owner: null,
     children: new Set(),
-    onMount: vi.fn((fn) => {
+    onMounted: vi.fn((fn) => {
       onMountedFns.push(fn);
     }),
-    onAttach: vi.fn((fn) => {
-      onAttachedFns.push(fn);
-    }),
-    onUnmount: vi.fn((fn) => {
+    onUnmounted: vi.fn((fn) => {
       cleanups.push(fn);
     }),
     get nextValueId() {
@@ -52,7 +48,6 @@ export function mockComponentScope(node?: HTMLElement) {
     vi.clearAllMocks();
     cleanups.length = 0;
     onMountedFns.length = 0;
-    onAttachedFns.length = 0;
     onUnmountedFns.length = 0;
   });
 
