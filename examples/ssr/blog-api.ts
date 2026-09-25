@@ -22,17 +22,34 @@ export async function getPosts(): Promise<BlogPost[]> {
       .map(async (file) => {
         const md = await fs.readFile(path.join(contentDir, file), "utf-8");
         const {
-          data: { title, date },
+          data: { title, date, tags },
           content,
         } = matter(md);
+
         const slug = file.replace(".md", "");
-        const firstSentence = content.split(". ").shift() ?? content;
-        const excerpt = await marked.parse(`${firstSentence}...`);
+        const trimmedContent = content.trim();
+
+        // Find a suitable place to stop
+        let pos = 0;
+        const maxLength = 300;
+        const minLength = 150;
+        while (pos < maxLength) {
+          const ep = trimmedContent.trim().indexOf("\n", pos);
+          if (ep === -1) break;
+          if (pos >= minLength) break;
+
+          pos = ep + 1;
+        }
+
+        let selection = trimmedContent.slice(0, pos).trim() ?? trimmedContent;
+        if (selection.endsWith(".") && !selection.endsWith("...")) selection += "..";
+        const excerpt = await marked.parse(selection.trim());
 
         return {
           slug,
           title,
           date,
+          tags: Array.isArray(tags) ? tags : [tags],
           excerpt: excerpt,
         };
       }),
@@ -47,15 +64,16 @@ export async function getPost(slug: string): Promise<BlogPost | null> {
     const filePath = path.join(contentDir, `${slug}.md`);
     const md = await fs.readFile(filePath, "utf-8");
     const {
-      data: { title, date },
+      data: { title, date, tags },
       content,
     } = matter(md);
-    const parsedContent = await marked.parse(content);
+    const parsedContent = await marked.parse(content.trim());
 
     return {
       slug,
       title,
       date,
+      tags: Array.isArray(tags) ? tags : [tags],
       content: parsedContent,
     };
   } catch {

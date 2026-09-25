@@ -40,7 +40,7 @@ export const random = (): number => {
   // Get unique RNG ID
   let rngId: number = appState.ctxID;
   try {
-    rngId = getComponentScope()?.nextValueId ?? rngId;
+    rngId = getComponentScope()?.id ?? rngId;
     onUnmounted(() => rngState.delete(rngId));
   } catch {
     // getComponentScope() throws outside component hierarchy — use fallback seed
@@ -60,7 +60,7 @@ export const random = (): number => {
   t ^= t >>> 15;
 
   // Save component RNG state
-  rngState.set(rngId, s);
+  rngState.set(rngId, s >>> 0);
 
   return (t >>> 0) * FRAC;
 };

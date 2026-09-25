@@ -440,13 +440,14 @@ body::after {
 
 .markdown-body a {
   color: #8da4ff;
-  text-decoration: underline;
+  text-decoration: none;
   text-underline-offset: 3px;
   transition: color 0.2s ease;
 }
 
 .markdown-body a:hover {
   color: #ffffff;
+  text-decoration: underline;
   text-shadow: 0 0 8px rgba(102, 119, 187, 0.6);
 }
 
