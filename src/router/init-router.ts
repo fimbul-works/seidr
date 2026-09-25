@@ -1,5 +1,5 @@
 import { getAppState } from "../app-state/app-state.js";
-import { getComponentScope } from "../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { createValue } from "../observable/value.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";

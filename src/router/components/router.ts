@@ -1,5 +1,5 @@
+import { getComponentScope, setComponentScope } from "../../component/component-scope.js";
 import { createComponent } from "../../component/create-component.js";
-import { getComponentScope, setComponentScope } from "../../component/lifecycle/component-scope.js";
 import { isComponent } from "../../component/type-guards.js";
 import type {
   SeidrComponent,

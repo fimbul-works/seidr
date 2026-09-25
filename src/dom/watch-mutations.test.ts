@@ -1,8 +1,8 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { assignProp } from "../../element/assign-prop";
-import { createValue } from "../../observable/value";
-import { onMounted, onMountedFns } from "./on-mounted";
-import { onUnmounted, onUnmountedFns } from "./on-unmounted";
+import { onMounted, onMountedFns } from "../component/lifecycle/on-mounted";
+import { onUnmounted, onUnmountedFns } from "../component/lifecycle/on-unmounted";
+import { assignProp } from "../element/assign-prop";
+import { createValue } from "../observable/value";
 import { watchMutations } from "./watch-mutations";
 
 // Helper to wait for MutationObserver records and microtasks to flush

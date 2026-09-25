@@ -16,7 +16,6 @@ export const Footer = createComponent(
           textContent: `© ${new Date().getFullYear()} `,
         }),
         $a({ href: "https://github.com/fimbul-works", target: "_blank", rel: "noopener noreferrer" }, "FimbulWorks"),
-        $span({ textContent: " • Powered by Seidr SSR & Runtime Graph Hydration" }),
       ]),
     ]),
   "Footer",

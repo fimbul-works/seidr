@@ -1,4 +1,4 @@
-import { getComponentScope } from "../../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../../component/component-scope.js";
 import type { SeidrComponent } from "../../component/types.js";
 import { getRouterState } from "../get-router-state.js";
 import type { RouterTreeNode } from "../types.js";

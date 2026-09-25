@@ -13,7 +13,7 @@ import { defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
 import { isArray, isBool, isFn, isNullish, isNum, isStr } from "../util/type-guards.js";
-import { getComponentScope, setComponentScope } from "./lifecycle/component-scope.js";
+import { getComponentScope, setComponentScope } from "./component-scope.js";
 import { onMounted } from "./lifecycle/on-mounted.js";
 import { onUnmountedFns } from "./lifecycle/on-unmounted.js";
 import { isComponent } from "./type-guards.js";

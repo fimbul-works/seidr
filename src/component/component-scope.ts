@@ -1,6 +1,6 @@
-import { getAppState } from "../../app-state/app-state.js";
-import { DATA_KEY_COMPONENT_CURSOR } from "../../constants.js";
-import type { SeidrComponent } from "../types.js";
+import { getAppState } from "../app-state/app-state.js";
+import { DATA_KEY_COMPONENT_CURSOR } from "../constants.js";
+import type { SeidrComponent } from "./types.js";
 
 /**
  * Sets the active component.

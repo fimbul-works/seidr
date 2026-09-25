@@ -1,10 +1,10 @@
-import { getAppState } from "../../app-state/app-state.js";
-import { DATA_KEY_MUTATION_OBSERVERS } from "../../constants.js";
-import type { CleanupFunction } from "../../types.js";
-import { isServer } from "../../util/environment/is-server.js";
-import { isFn } from "../../util/type-guards.js";
-import { onMountedFns } from "./on-mounted.js";
-import { onUnmountedFns } from "./on-unmounted.js";
+import { getAppState } from "../app-state/app-state.js";
+import { onMountedFns } from "../component/lifecycle/on-mounted.js";
+import { onUnmountedFns } from "../component/lifecycle/on-unmounted.js";
+import { DATA_KEY_MUTATION_OBSERVERS } from "../constants.js";
+import type { CleanupFunction } from "../types.js";
+import { isServer } from "../util/environment/is-server.js";
+import { isFn } from "../util/type-guards.js";
 
 /**
  * Internal single mutation observer state stored in AppState.
@@ -66,16 +66,15 @@ const processRemovedNode = (node: Node) => {
   }
 };
 
-// Minification shorthands
-const runTask = queueMicrotask;
-const CHILD_LIST = "childList";
-
 /**
  * Creates and starts a MutationObserver on the root element.
  * @param {Element} root - The root DOM element to observe
  * @returns {MutationObserver} The active observer
  */
 const createRootObserver = (root: Element): MutationObserver => {
+  const runTask = queueMicrotask;
+  const CHILD_LIST = "childList";
+
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === CHILD_LIST) {

@@ -22,7 +22,7 @@ export const Header = createComponent(
             rel: "noopener noreferrer",
             className: "nav-link github-link",
           },
-          [$img({ src: GitHubIcon, alt: "GitHub", className: "icon icon-github" }), "GitHub ↗"],
+          [$span({ className: "icon icon-github" }), "GitHub ↗"],
         ),
       ]),
     ]),

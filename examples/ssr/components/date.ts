@@ -43,9 +43,9 @@ export const timeAgo = (dateString: string) => {
 export const DateView = createComponent(
   (dateStr: string) =>
     $div({ className: "date" }, [
-      $img({ src: ClockIcon, className: "icon icon-clock" }),
+      $span({ className: "icon icon-clock" }),
       $span({ className: "time-ago" }, timeAgo(dateStr)),
-      $img({ src: NodeIcon, className: "icon icon-node" }),
+      $span({ className: "icon icon-node" }),
       $span({ className: "date-full" }, formatDate(dateStr)),
     ]),
   "Date",

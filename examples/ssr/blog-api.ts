@@ -30,18 +30,10 @@ export async function getPosts(): Promise<BlogPost[]> {
         const trimmedContent = content.trim();
 
         // Find a suitable place to stop
-        let pos = 0;
-        const maxLength = 300;
-        const minLength = 150;
-        while (pos < maxLength) {
-          const ep = trimmedContent.trim().indexOf("\n", pos);
-          if (ep === -1) break;
-          if (pos >= minLength) break;
+        let pos = trimmedContent.indexOf(".");
+        if (pos === -1) pos = trimmedContent.length;
 
-          pos = ep + 1;
-        }
-
-        let selection = trimmedContent.slice(0, pos).trim() ?? trimmedContent;
+        let selection = trimmedContent.slice(0, pos + 1).trim() ?? trimmedContent;
         if (selection.endsWith(".") && !selection.endsWith("...")) selection += "..";
         const excerpt = await marked.parse(selection.trim());
 

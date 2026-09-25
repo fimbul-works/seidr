@@ -1,7 +1,7 @@
 import { SeidrError } from "../../types.js";
 import { isFn } from "../../util/type-guards.js";
+import { getComponentScope } from "../component-scope.js";
 import type { OnMountedFunction } from "../types.js";
-import { getComponentScope } from "./component-scope.js";
 
 /**
  * Map of nodes to their onMounted callbacks.

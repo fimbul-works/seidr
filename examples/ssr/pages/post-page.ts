@@ -58,7 +58,12 @@ export const PostPage = createComponent(() => {
           }
 
           return $article({ className: "post-page" }, [
-            $div({ className: "meta" }, [$span({ className: "meta-badge", textContent: "Article" })]),
+            $div(
+              { className: "meta" },
+              post.tags
+                ? post.tags.map((tag) => $span({ className: "meta-badge", textContent: tag }))
+                : [$span({ className: "meta-badge", textContent: "Article" })],
+            ),
             Link({ to: "/", className: "back-link" }, "← Back to Articles"),
             $h1({ className: "article-title" }, post.title),
             $div({ className: "markdown-body", innerHTML: post.content }),

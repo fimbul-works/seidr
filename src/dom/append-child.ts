@@ -24,11 +24,7 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
   }
 
   if (isArray(val)) {
-    const result: ChildNode[] = [];
-    val.forEach((item) => {
-      result.push(...normalizeChildNodes(item));
-    });
-    return result;
+    return val.flatMap((item) => normalizeChildNodes(item));
   }
 
   if (isComponent(val)) {

@@ -1,10 +1,10 @@
-import { watchMutations } from "../component/lifecycle/watch-mutations.js";
 import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { appendChild } from "./append-child.js";
+import { watchMutations } from "./watch-mutations.js";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.

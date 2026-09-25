@@ -1,4 +1,4 @@
-import { getComponentScope } from "../../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../../component/component-scope.js";
 import { TAG_COMMENT } from "../../constants.js";
 import { getHydrationContext } from "../../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../../ssr/hydrate/storage.js";

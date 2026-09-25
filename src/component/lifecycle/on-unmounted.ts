@@ -1,6 +1,6 @@
 import { type CleanupFunction, SeidrError } from "../../types.js";
 import { isFn } from "../../util/type-guards.js";
-import { getComponentScope } from "./component-scope.js";
+import { getComponentScope } from "../component-scope.js";
 
 /**
  * Map of nodes to their onUnmounted callbacks.

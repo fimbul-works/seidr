@@ -1,4 +1,4 @@
-import { getComponentScope } from "../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument } from "../dom/get-document.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";

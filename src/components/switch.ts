@@ -1,4 +1,4 @@
-import { getComponentScope, setComponentScope } from "../component/lifecycle/component-scope.js";
+import { getComponentScope, setComponentScope } from "../component/component-scope.js";
 import type { SeidrChild } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/value.js";

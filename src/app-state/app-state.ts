@@ -1,5 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getComponentScope } from "../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { isServer } from "../util/environment/is-server.js";
 import { createAppState } from "./create-app-state.js";
 import type { AppState } from "./types.js";

@@ -44,16 +44,33 @@ body::after {
 
 .main-content {
   flex: 1;
-  padding: 2.5rem 0 4rem 0;
+  padding: 0 0 4rem 0;
 }
 
 /* Icons */
 .icon {
-  display: inline;
+  display: block;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.icon-github {
+  background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' shape-rendering='geometricPrecision' text-rendering='geometricPrecision' image-rendering='optimizeQuality' fill-rule='evenodd' clip-rule='evenodd' viewBox='0 0 512 499.368'%3E%3Cpath fill='%23fff' fill-rule='nonzero' d='M256.003 0C114.555 0 0 114.555 0 256.003c0 113.286 73.28 208.961 175.038 242.865 12.796 2.247 17.586-5.433 17.586-12.153 0-6.077-.309-26.225-.309-47.686-64.313 11.844-80.941-15.674-86.058-30.055-2.896-7.37-15.359-30.1-26.269-36.177-8.948-4.808-21.752-16.652-.31-16.961 20.168-.309 34.574 18.564 39.382 26.244 23.038 38.732 59.839 27.828 74.555 21.101 2.227-16.627 8.947-27.828 16.318-34.239-56.968-6.386-116.467-28.471-116.467-126.399 0-27.827 9.907-50.866 26.225-68.787-2.562-6.41-11.51-32.655 2.562-67.853 0 0 21.436-6.72 70.409 26.244 20.483-5.767 42.227-8.638 63.998-8.638 21.751 0 43.52 2.896 63.997 8.638 48.973-33.279 70.39-26.244 70.39-26.244 14.09 35.192 5.117 61.443 2.562 67.853 16.318 17.921 26.244 40.625 26.244 68.787 0 98.237-59.84 119.988-116.801 126.399 9.282 8.014 17.277 23.373 17.277 47.371 0 34.238-.309 61.751-.309 70.389 0 6.721 4.808 14.735 17.586 12.179C438.739 464.964 512 368.955 512 256.003 512 114.555 397.445 0 256.003 0z'/%3E%3C/svg%3E");
   width: 1.5rem;
   height: 1.5rem;
-  fill: currentColor;
-  position: relative;
+}
+
+.icon-clock {
+  background: url("data:image/svg+xml;utf8,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 7V12L14.5 10.5M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z' stroke='rgba(220, 226, 245, 0.65)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  width: 1rem;
+  height: 1rem;
+}
+
+.icon-node {
+  background: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect x='11' y='11' width='18' height='18' transform='rotate(45 20 20)' fill='transparent' stroke='rgba(220, 226, 245, 0.65)' stroke-width='4'/%3E%3C/svg%3E");
+  width: 1rem;
+  height: 1rem;
 }
 
 /* Top Navigation Bar */
@@ -63,7 +80,6 @@ body::after {
   align-items: center;
   padding: 2.5rem 0 2rem 0;
   border-bottom: 1px solid rgba(102, 119, 187, 0.2);
-  margin-bottom: 2rem;
 }
 
 .brand {
@@ -123,6 +139,10 @@ body::after {
   filter: brightness(1.15);
 }
 
+.brand:hover .brand-title {
+  filter: drop-shadow(0 0 10px rgba(102, 119, 187, 0.6));
+}
+
 .links {
   display: flex;
   align-items: center;
@@ -146,13 +166,12 @@ body::after {
   text-shadow: 0 0 10px rgba(102, 119, 187, 0.6);
 }
 
-.nav-link:hover .icon {
+.nav-link .icon {
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .nav-link:hover .icon {
   transform: scale(1.15);
-  filter: drop-shadow(0 0 20px rgba(102, 119, 187, 0.6));
 }
 
 .github-link {
@@ -175,9 +194,7 @@ body::after {
 
 /* Home Page Hero */
 .blog-hero {
-  margin-bottom: 3.5rem;
-  padding-bottom: 3.5rem;
-  border-bottom: 1px solid rgba(102, 119, 187, 0.15);
+  padding: 3.5rem 0;
 }
 
 .hero-title {
@@ -203,11 +220,12 @@ body::after {
 /* Post Cards */
 .post-list {
   list-style: none;
-  padding: 0;
+  padding: 2.5rem 0 0 0;
   margin: 0;
   display: flex;
   flex-direction: column;
   gap: 2.25rem;
+  border-top: 1px solid rgba(102, 119, 187, 0.15);
 }
 
 .post-card {
@@ -219,7 +237,7 @@ body::after {
     linear-gradient(135deg, rgba(119, 68, 153, 0.55) 0%, rgba(102, 119, 187, 0.55) 100%) border-box;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  padding: 2.25rem;
+  padding: 2rem;
   box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -285,18 +303,6 @@ body::after {
   text-decoration: none;
   font-size: 1rem;
   font-weight: 500;
-}
-
-.date .icon-clock {
-  display: inline-flex;
-  width: 1rem;
-  height: 1rem;
-}
-
-.date .icon-node {
-  display: inline-flex;
-  width: 0.75rem;
-  height: 0.75rem;
 }
 
 .post-page .date {
@@ -417,6 +423,10 @@ body::after {
 
 .markdown-body p {
   margin-bottom: 1.5rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 }
 
 .markdown-body ul,
@@ -436,6 +446,14 @@ body::after {
   margin: 1.75rem 0;
   color: rgba(220, 226, 245, 0.9);
   font-style: italic;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  em {
+    font-weight: bold;
+  }
 }
 
 .markdown-body a {
@@ -483,6 +501,10 @@ body::after {
   background: transparent;
   padding: 0;
   border: none;
+}
+
+.markdown-body em {
+  font-style: italic;
 }
 
 /* Buttons */
@@ -596,12 +618,27 @@ body::after {
   }
 
   .blog-hero {
-    padding-bottom: 3rem;
-    margin-bottom: 3rem;
+    padding: 2rem 0;
   }
 
   .post-page {
-    padding: 1.75rem;
+    padding: 3rem 1.5rem 1.5rem 1.5rem;
+
+    .meta {
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(102, 119, 187, 0.15);
+      border-bottom: 1px solid rgba(102, 119, 187, 0.35);
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+
+      .meta-badge {
+        background: transparent;
+        border: none;
+      }
+    }
   }
 
   .post-list {
@@ -636,7 +673,6 @@ body::after {
     flex-direction: column;
     gap: 1rem;
     align-items: flex-start;
-    margin-bottom: 3rem;
     padding: 3rem 0 2rem 0;
   }
 

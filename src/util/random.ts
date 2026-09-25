@@ -1,5 +1,5 @@
 import { getAppState } from "../app-state/app-state.js";
-import { getComponentScope } from "../component/lifecycle/component-scope.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 
 /** AppState key for storing random number generator state */
@@ -43,7 +43,7 @@ export const random = (): number => {
     rngId = getComponentScope()?.id ?? rngId;
     onUnmounted(() => rngState.delete(rngId));
   } catch {
-    // getComponentScope() throws outside component hierarchy — use fallback seed
+    // getComponentScope() throws outside component hierarchy — use fallback rngId
   }
 
   // Seed RNG state
