@@ -23,7 +23,9 @@ export const hydrateValueState = (value: Value): void => {
   }
 
   // Look up the initial value for this Seidr from hydration data using its ID
-  const hydrValue = hydrationData.data[DATA_KEY_STATE]?.[value.id];
+  const hydrValue = hydrationData.stateMap
+    ? hydrationData.stateMap.get(value.id)
+    : hydrationData.data[DATA_KEY_STATE]?.[value.id];
   if (!isNullish(hydrValue)) {
     hydrationData.registry.add(value);
     const restored = unwrapValue(hydrValue);

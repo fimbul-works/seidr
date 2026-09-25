@@ -174,7 +174,10 @@ describe("Hydration", () => {
     cleanupSSR();
 
     // Modify server captured state
-    hydrationData.data[DATA_KEY_STATE]!["test-count"] = 42;
+    const countTuple = (hydrationData.data[DATA_KEY_STATE] as any[]).find((t: any[]) => t.includes("test-count"));
+    if (countTuple) {
+      countTuple[0] = 42;
+    }
 
     cleanupClientMode = enableClientMode();
     container.innerHTML = html;

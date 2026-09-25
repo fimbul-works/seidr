@@ -74,4 +74,9 @@ export interface HydrationDataRegistry extends HydrationData {
    * Set of Value instances that have been hydrated.
    */
   registry: Set<Value>;
+
+  /**
+   * Decoded state lookup map.
+   */
+  stateMap?: Map<string, any>;
 }

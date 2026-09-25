@@ -1,6 +1,8 @@
 import type { AppStateData } from "../app-state/types.js";
 import type { StructureMapTuple } from "./structure/types.js";
 
+export type { HydrationStatePayload, HydrationStateTuple } from "./util/state-tuple.js";
+
 /**
  * Result of SSR rendering containing HTML and hydration data.
  */

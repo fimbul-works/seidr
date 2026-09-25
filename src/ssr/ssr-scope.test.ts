@@ -4,6 +4,7 @@ import { DATA_KEY_STATE } from "../observable/constants.js";
 import { createValue } from "../observable/value.js";
 import { enableSSRMode, resetNextId } from "../test-setup/index.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
+import { unpackHydrationState } from "./util/state-tuple.js";
 
 const originalSSREnv = process.env.SEIDR_TEST_SSR;
 
@@ -52,10 +53,11 @@ describe("SSRScope", () => {
     const _derived = root1.as((x) => x * 2);
 
     const hydrationData = scope.captureHydrationData();
+    const stateMap = unpackHydrationState(hydrationData.data[DATA_KEY_STATE]!);
 
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
-    expect(hydrationData.data[DATA_KEY_STATE]!.root1).toBe(root1());
-    expect(hydrationData.data[DATA_KEY_STATE]!.root2).toBe(root2());
+    expect(stateMap.size).toBe(2);
+    expect(stateMap.get("root1")).toBe(root1());
+    expect(stateMap.get("root2")).toBe(root2());
   });
 
   it("should skip values marked with hydrate: false", () => {
@@ -63,9 +65,10 @@ describe("SSRScope", () => {
     createValue("secret", { id: "unhydrated", hydrate: false });
 
     const hydrationData = scope.captureHydrationData();
+    const stateMap = unpackHydrationState(hydrationData.data[DATA_KEY_STATE]!);
 
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toEqual(["hydrated"]);
-    expect(hydrationData.data[DATA_KEY_STATE]!.hydrated).toBe(10);
+    expect(Array.from(stateMap.keys())).toEqual(["hydrated"]);
+    expect(stateMap.get("hydrated")).toBe(10);
   });
 
   it("should capture complex types", () => {
@@ -73,9 +76,10 @@ describe("SSRScope", () => {
     const arrVal = createValue([1, 2, 3], { id: "arr" });
 
     const hydrationData = scope.captureHydrationData();
+    const stateMap = unpackHydrationState(hydrationData.data[DATA_KEY_STATE]!);
 
-    expect(hydrationData.data[DATA_KEY_STATE]!.obj).toEqual(objVal());
-    expect(hydrationData.data[DATA_KEY_STATE]!.arr).toEqual(arrVal());
+    expect(stateMap.get("obj")).toEqual(objVal());
+    expect(stateMap.get("arr")).toEqual(arrVal());
   });
 
   it("should clear all values and state on clear", () => {

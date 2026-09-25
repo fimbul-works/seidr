@@ -32,9 +32,9 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Count: 42");
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
+    expect(hydrationData.data[DATA_KEY_STATE]!).toHaveLength(1);
 
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values[0]).toBe(42);
   });
 
@@ -55,9 +55,9 @@ describe("renderToString", () => {
 
     expect(html).toContain("Count: 10");
     expect(html).toContain("Doubled: 20");
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(1);
+    expect(hydrationData.data[DATA_KEY_STATE]!).toHaveLength(1);
 
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values[0]).toBe(10);
   });
 
@@ -75,9 +75,9 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("John Doe");
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
+    expect(hydrationData.data[DATA_KEY_STATE]!).toHaveLength(2);
 
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values).toContain("John");
     expect(values).toContain("Doe");
   });
@@ -94,9 +94,9 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("Sum: 5");
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!)).toHaveLength(2);
+    expect(hydrationData.data[DATA_KEY_STATE]!).toHaveLength(2);
 
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values).toContain(2);
     expect(values).toContain(3);
   });
@@ -123,7 +123,7 @@ describe("renderToString", () => {
     const { html, hydrationData } = await renderToString(TestComponent);
 
     expect(html).toContain("fetched from server");
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values).toContain("fetched from server");
   });
 

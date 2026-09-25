@@ -19,7 +19,7 @@ describe("registerStateStrategy", () => {
   });
 
   describe("capture", () => {
-    it("should capture root observables", () => {
+    it("should capture root observables into tuple array", () => {
       const appState = getAppState();
       const _s1 = createValue(1, { id: "s1" });
       const _s2 = createValue("two", { id: "s2" });
@@ -27,10 +27,10 @@ describe("registerStateStrategy", () => {
       const captureFn = appState.getDataStrategy(DATA_KEY_STATE)![0];
       const data = captureFn();
 
-      expect(data).toEqual({
-        s1: 1,
-        s2: "two",
-      });
+      expect(data).toEqual([
+        [1, "s1"],
+        ["two", "s2"],
+      ]);
     });
 
     it("should skip derived observables", () => {
@@ -41,8 +41,7 @@ describe("registerStateStrategy", () => {
       const captureFn = appState.getDataStrategy(DATA_KEY_STATE)![0];
       const data = captureFn();
 
-      expect(data).toHaveProperty("root", 10);
-      expect(data).not.toHaveProperty("derived");
+      expect(data).toEqual([[10, "root"]]);
     });
 
     it("should skip observables with hydrate: false", () => {
@@ -53,18 +52,17 @@ describe("registerStateStrategy", () => {
       const captureFn = appState.getDataStrategy(DATA_KEY_STATE)![0];
       const data = captureFn();
 
-      expect(data).toHaveProperty("s1", 1);
-      expect(data).not.toHaveProperty("s2");
+      expect(data).toEqual([[1, "s1"]]);
     });
   });
 
   describe("restore", () => {
-    it("should update existing Value instances", () => {
+    it("should update existing Value instances from tuple format", () => {
       const appState = getAppState();
       const s1 = createValue(1, { id: "s1" });
 
       const restoreFn = appState.getDataStrategy(DATA_KEY_STATE)![1];
-      restoreFn({ s1: 100 });
+      restoreFn([[100, "s1"]]);
 
       expect(s1()).toBe(100);
     });
@@ -73,11 +71,21 @@ describe("registerStateStrategy", () => {
       const appState = getAppState();
       const restoreFn = appState.getDataStrategy(DATA_KEY_STATE)![1];
 
-      restoreFn({ newValue: "hello" });
+      restoreFn([["hello", "newValue"]]);
 
       const values = appState.getData<Map<string, Value>>(DATA_KEY_STATE);
       expect(values?.has("newValue")).toBe(true);
       expect(values?.get("newValue")?.()).toBe("hello");
+    });
+
+    it("should support legacy object dictionary format", () => {
+      const appState = getAppState();
+      const s1 = createValue(1, { id: "s1" });
+
+      const restoreFn = appState.getDataStrategy(DATA_KEY_STATE)![1];
+      restoreFn({ s1: 200 });
+
+      expect(s1()).toBe(200);
     });
   });
 });

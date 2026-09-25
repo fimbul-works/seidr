@@ -3,6 +3,7 @@ import { DATA_KEY_STATE } from "../observable/constants.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import type { Value } from "../observable/value.js";
 import { createValue } from "../observable/value.js";
+import { packHydrationState, unpackHydrationState } from "./util/state-tuple.js";
 
 /**
  * Registers the default Value state hydration strategy.
@@ -11,9 +12,9 @@ export const registerStateStrategy = (): void => {
   const appState = getAppState();
   appState.defineDataStrategy(
     DATA_KEY_STATE,
-    // Capture function: extracts serializable values from all root Value instances
+    // Capture function: extracts serializable values from all root Value instances into a deduplicated tuple array
     () => {
-      const captured: Record<string, any> = {};
+      const rawValues = new Map<string, any>();
 
       const values = appState.getData<Map<string, Value>>(DATA_KEY_STATE);
       if (values) {
@@ -22,17 +23,21 @@ export const registerStateStrategy = (): void => {
           if (value.isDerived || !value.hydrate) {
             continue;
           }
-          captured[id] = unwrapValue(value());
+          rawValues.set(id, unwrapValue(value()));
         }
       }
 
-      return captured;
+      return packHydrationState(rawValues);
     },
     // Restore function: rehydrates Value instances from captured data
-    (capturedState: Record<string, any>) => {
+    (capturedState: any) => {
       const values = appState.getData<Map<string, Value>>(DATA_KEY_STATE) ?? new Map<string, Value>();
 
-      for (const [id, val] of Object.entries(capturedState)) {
+      const stateMap: Map<string, any> = Array.isArray(capturedState)
+        ? unpackHydrationState(capturedState)
+        : new Map(Object.entries(capturedState ?? {}));
+
+      for (const [id, val] of stateMap.entries()) {
         const existing = values.get(id);
         if (existing) {
           existing(val);

@@ -67,10 +67,10 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">16<"); // final
 
     // Verify hydration data has captured observables
-    expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThanOrEqual(3);
+    expect(hydrationData.data[DATA_KEY_STATE]!.length).toBeGreaterThanOrEqual(3);
 
     // Only root observables should be captured (a, b, c)
-    const observableValues = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const observableValues = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(observableValues).toContain(1);
     expect(observableValues).toContain(2);
     expect(observableValues).toContain(3);
@@ -125,7 +125,7 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">28<"); // abc
 
     // Only a, b, c should be captured
-    const observableValues = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const observableValues = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(observableValues).toContain(10);
 
     // Switch to client mode and hydrate
@@ -180,9 +180,9 @@ describe("Complex Graph Hydration (4+ levels)", () => {
     expect(html).toContain(">9<"); // l4
     expect(html).toContain(">27<"); // l5
 
-    // Only roots (a, b) should be captured
-    const observableValues = Object.values(hydrationData.data[DATA_KEY_STATE]!);
-    expect(observableValues).toEqual([1, 1]);
+    // Only roots (a, b) should be captured; identical primitive 1 is deduplicated in tuple payload
+    const observableValues = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
+    expect(observableValues).toEqual([1]);
 
     // Switch to client mode and hydrate
     cleanupMode = enableClientMode();

@@ -38,9 +38,9 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(result3.html).toContain("Count: 0");
 
     // Each should have captured the correct observable value
-    const obs1 = Object.values(result1.hydrationData.data[DATA_KEY_STATE]!);
-    const obs2 = Object.values(result2.hydrationData.data[DATA_KEY_STATE]!);
-    const obs3 = Object.values(result3.hydrationData.data[DATA_KEY_STATE]!);
+    const obs1 = result1.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
+    const obs2 = result2.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
+    const obs3 = result3.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
 
     expect(obs1).toContain(42);
     expect(obs2).toContain(100);
@@ -78,9 +78,9 @@ describe("Concurrent SSR Request Isolation", () => {
     expect(r3.html).toContain("45");
 
     // Each should have captured only its root observable
-    const values1 = Object.values(r1.hydrationData.data[DATA_KEY_STATE]!);
-    const values2 = Object.values(r2.hydrationData.data[DATA_KEY_STATE]!);
-    const values3 = Object.values(r3.hydrationData.data[DATA_KEY_STATE]!);
+    const values1 = r1.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
+    const values2 = r2.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
+    const values3 = r3.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
 
     expect(values1).toEqual([5]);
     expect(values2).toEqual([10]);
@@ -132,11 +132,11 @@ describe("Concurrent SSR Request Isolation", () => {
     const [simple, complex] = await Promise.all([renderToString(simpleComponent), renderToString(complexComponent)]);
 
     expect(simple.html).toContain("1");
-    expect(Object.values(simple.hydrationData.data[DATA_KEY_STATE]!)).toEqual([1]);
+    expect(simple.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val)).toEqual([1]);
 
     expect(complex.html).toContain("3");
     expect(complex.html).toContain("5");
     expect(complex.html).toContain("6");
-    expect(Object.values(complex.hydrationData.data[DATA_KEY_STATE]!)).toEqual([1, 2, 3]);
+    expect(complex.hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val)).toEqual([1, 2, 3]);
   });
 });

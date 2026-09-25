@@ -136,8 +136,9 @@ describe("Hydration Integration", () => {
     container.innerHTML = html;
 
     // We deliberately alter the server state to something else before hydration
-    if (hydrationData.data[DATA_KEY_STATE]?.title) {
-      hydrationData.data[DATA_KEY_STATE].title = "Modified App Title";
+    const titleTuple = (hydrationData.data[DATA_KEY_STATE] as any[]).find((t: any[]) => t.includes("title"));
+    if (titleTuple) {
+      titleTuple[0] = "Modified App Title";
     }
 
     // Since the client receives this modified hydration state, the component will render with this new state

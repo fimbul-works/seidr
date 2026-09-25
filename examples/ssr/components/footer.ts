@@ -7,7 +7,10 @@ import { $a, $div, $footer, $img, $span } from "@fimbul-works/seidr/html";
 export const Footer = createComponent(
   () =>
     $footer({ className: "site-footer" }, [
-      $div({ className: "footer-brand" }, $img({ src: "/seidr-logo.svg", alt: "Seidr logo", className: "brand-logo" })),
+      $div(
+        { className: "footer-brand" },
+        $img({ src: "/seidr-logo-monochrome.svg", alt: "Seidr logo", className: "brand-logo" }),
+      ),
       $div({ className: "footer-meta" }, [
         $span({
           textContent: `© ${new Date().getFullYear()} `,

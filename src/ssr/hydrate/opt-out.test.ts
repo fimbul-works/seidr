@@ -23,7 +23,7 @@ describe("Value Hydration Opt-out", () => {
 
     const { hydrationData } = await renderToString(TestComponent);
 
-    const values = Object.values(hydrationData.data[DATA_KEY_STATE]!);
+    const values = hydrationData.data[DATA_KEY_STATE]!.map(([val]: any[]) => val);
     expect(values).toContain("keep me");
     expect(values).not.toContain("drop me");
   });
