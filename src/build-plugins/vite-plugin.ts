@@ -25,9 +25,7 @@ export function seidrVitePlugin({ disableSSR = false }: SeidrVitePluginOptions =
       return {
         transform(code: string, id: string) {
           // Only transfrom TypeScript and JavaScript sources
-          if (!id.endsWith(".ts") && !id.endsWith(".js")) {
-            return null;
-          }
+          if (!/\.[cm]?[jt]s?$/.test(id)) return null;
 
           return transformSource(id, code, env.config.consumer === "client" ? "browser" : "ssr", disableSSR);
         },
