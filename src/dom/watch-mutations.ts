@@ -18,7 +18,7 @@ export interface MutationObserverState {
  * Helper to process mount and attached hooks for a node and any of its registered descendants.
  * @param {Node} node - Node to process
  */
-const processAddedNode = (node: Node) => {
+function processAddedNode(node: Node) {
   if (!node.isConnected) return;
 
   // Trigger onMounted callbacks
@@ -39,13 +39,13 @@ const processAddedNode = (node: Node) => {
       }
     }
   }
-};
+}
 
 /**
  * Helper to process unmount hooks for a node and any of its registered descendants.
  * @param {Node} node - Node to process
  */
-const processRemovedNode = (node: Node) => {
+function processRemovedNode(node: Node) {
   if (node.isConnected) return;
 
   // Process the node itself
@@ -64,14 +64,14 @@ const processRemovedNode = (node: Node) => {
       }
     }
   }
-};
+}
 
 /**
  * Creates and starts a MutationObserver on the root element.
  * @param {Element} root - The root DOM element to observe
  * @returns {MutationObserver} The active observer
  */
-const createRootObserver = (root: Element): MutationObserver => {
+function createRootObserver(root: Element): MutationObserver {
   const runTask = queueMicrotask;
   const CHILD_LIST = "childList";
 
@@ -86,7 +86,7 @@ const createRootObserver = (root: Element): MutationObserver => {
 
   observer.observe(root, { [CHILD_LIST]: true, subtree: true });
   return observer;
-};
+}
 
 /**
  * Watch for DOM mutations using a single root MutationObserver attached to document.documentElement.
@@ -113,7 +113,7 @@ export const watchMutations = (node?: Element): CleanupFunction => {
   state.watchCount++;
 
   if (!state.activeObserver) {
-    const root = (typeof document !== "undefined" && (document.documentElement || document.body)) || node;
+    const root = typeof document !== "undefined" ? document.documentElement || document.body : node;
     if (root) {
       state.activeObserver = createRootObserver(root);
     }

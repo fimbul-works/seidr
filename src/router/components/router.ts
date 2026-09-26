@@ -180,11 +180,10 @@ export const Router = (
       const nextComp = updateComponent(matchedIndex);
 
       if (nextComp && parent) {
-        routerComponent.children.add(nextComp);
-        nextComp.isMounted = true;
         for (const node of nextComp.nodes) {
           parent.insertBefore(node, endMarker);
         }
+        routerComponent.addChild(nextComp);
       }
 
       routerComponent.nodes = [startMarker, ...(nextComp ? nextComp.nodes : []), endMarker];

@@ -28,7 +28,6 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
   }
 
   if (isComponent(val)) {
-    val.isMounted = true;
     return val.nodes;
   }
 
@@ -154,7 +153,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
 
   // Append Seidr component
   if (isComponent(child)) {
-    child.isMounted = true;
     const [startMarker, endMarker] = getMarkerComments(child, false) || [];
     if (startMarker && !child.nodes.includes(startMarker) && startMarker.parentNode !== parent) {
       appendChild(parent, startMarker);
@@ -166,6 +164,9 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
       appendChild(parent, endMarker);
     }
 
+    if (parent.isConnected) {
+      child.mount();
+    }
     return;
   } else if (isValue(child)) {
     const nodes = createReactiveValueNodes(child, (cleanup, marker) => {

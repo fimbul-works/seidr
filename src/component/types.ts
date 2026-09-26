@@ -12,16 +12,35 @@ export interface SeidrComponent {
   /** Component name */
   readonly name: string;
   /** Flag to indicate if component is mounted */
-  isMounted: boolean;
+  readonly isMounted: boolean;
   /** DOM nodes */
   nodes: ChildNode[];
   /** Parent component for cleanup propagation */
   parent: SeidrComponent | null;
   /** Child components */
-  children: Set<SeidrComponent>;
-  /** Lifecycle: called when component is mounted */
+  readonly children: Set<SeidrComponent>;
+  /**
+   * Adds a child component to the component.
+   * @param child Component to add
+   */
+  addChild(child: SeidrComponent): void;
+  /**
+   * Removes a child component from the component.
+   * @param child Component to remove
+   */
+  removeChild(child: SeidrComponent): void;
+  /**
+   * Propagates the mount call to its children.
+   * @internal
+   */
+  mount(): void;
+  /**
+   * Lifecycle callback called when component is added to DOM.
+   */
   onMounted(fn: OnMountedFunction): void;
-  /** Lifecycle: called when component is removed from DOM */
+  /**
+   * Lifecycle callback called when component is removed from DOM.
+   */
   onUnmounted(fn: CleanupFunction): void;
   /**
    * Destroys the component, cleaning up resources and removing its elements from the DOM.
@@ -59,7 +78,9 @@ export interface SeidrComponent {
  * Seidr component factories has a boolean flag to identify it has been wrapped with `createComponent()`.
  */
 interface SeidrComponentFactoryInterface {
+  /** Type guard */
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT_FACTORY;
+  /** Component name */
   readonly name: string;
 }
 

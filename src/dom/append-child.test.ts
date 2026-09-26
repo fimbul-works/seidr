@@ -186,8 +186,6 @@ describeDualMode("appendChild", ({ getDocument }) => {
     expect(parent.childNodes[0].textContent).toBe(`$Comp-${encodeBase62(comp.id)}`);
     expect(parent.childNodes[3].nodeType).toBe(8); // Comment
     expect(parent.childNodes[3].textContent).toBe(`/Comp-${encodeBase62(comp.id)}`);
-
-    expect(comp.isMounted).toBe(true);
   });
 
   it("should skip empty or whitespace-only children", () => {

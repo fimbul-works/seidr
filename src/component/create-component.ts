@@ -12,10 +12,9 @@ import type { CleanupFunction } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
-import { isArray, isBool, isFn, isNullish, isNum, isStr } from "../util/type-guards.js";
+import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { getComponentScope, setComponentScope } from "./component-scope.js";
 import { onMounted } from "./lifecycle/on-mounted.js";
-import { onUnmountedFns } from "./lifecycle/on-unmounted.js";
 import { isComponent } from "./type-guards.js";
 import type {
   OnMountedFunction,
@@ -24,6 +23,7 @@ import type {
   SeidrComponentFactoryPureFunction,
 } from "./types.js";
 import { setComponentNodes } from "./util/set-component-nodes.js";
+import { unsetComponentNodes } from "./util/unset-component-nodes.js";
 
 /**
  * Creates a component with automatic lifecycle and resource management.
@@ -66,11 +66,18 @@ export function createComponent<P = void>(
       }
     }
 
-    // Running counter for Value IDs
-    let valueIdCounter = 1;
+    // Component mounted status
+    let isMounted: boolean = false;
 
+    // Child components
+    const children = new Set<SeidrComponent>();
+
+    // Lifecycle callbacks
     const componentMountedFns: OnMountedFunction[] = [];
     const componentUnmountedFns: CleanupFunction[] = [];
+
+    // Running counter for Value IDs
+    let valueIdCounter = 1;
 
     // Create component instance
     const currentComponent = {
@@ -83,10 +90,40 @@ export function createComponent<P = void>(
       get name() {
         return name;
       },
-      isMounted: false,
+      get isMounted() {
+        return isMounted;
+      },
       nodes: [],
-      children: new Set(),
+      get children() {
+        return children;
+      },
+      addChild: (child: SeidrComponent) => {
+        children.add(child);
+        child.parent = currentComponent;
+        if (isMounted) {
+          child.mount();
+        }
+        if (isServer()) {
+          currentComponent.trackChild?.(child);
+        }
+      },
+      removeChild: (child: SeidrComponent) => {
+        child.parent = null;
+        children.delete(child);
+        if (isServer()) {
+          currentComponent.untrackChild?.(child);
+        }
+      },
       parent: parentComponent,
+      mount() {
+        if (componentMountedFns.length > 0 && currentComponent.nodes.length > 0) {
+          const target = currentComponent.nodes[0];
+          componentMountedFns.forEach((fn) => onMounted(fn, target));
+          componentMountedFns.length = 0;
+        }
+        isMounted = true;
+        children.forEach((child) => child.mount());
+      },
       onMounted: (fn: OnMountedFunction) => componentMountedFns.push(fn),
       onUnmounted: (fn: CleanupFunction) => componentUnmountedFns.push(fn),
       unmount(): void {
@@ -101,42 +138,16 @@ export function createComponent<P = void>(
         }
 
         appState.components.delete(currentComponent);
-        currentComponent.parent?.children.delete(currentComponent);
+        currentComponent.parent?.removeChild(currentComponent);
 
         componentUnmountedFns.forEach((fn) => fn());
         componentUnmountedFns.length = 0;
 
-        currentComponent.children.forEach((c) => c.unmount());
-        currentComponent.children.clear();
+        children.forEach((c) => c.unmount());
+        children.clear();
 
-        currentComponent.nodes.forEach((n) => {
-          if (n && isFn(n.remove)) {
-            if (onUnmountedFns?.has(n)) {
-              const fns = onUnmountedFns.get(n);
-              onUnmountedFns.delete(n);
-              fns?.forEach((fn) => fn());
-            }
-            if (isFn(n.contains) && onUnmountedFns && onUnmountedFns.size > 0) {
-              for (const [targetNode, fns] of Array.from(onUnmountedFns.entries())) {
-                if (targetNode !== n) {
-                  let isContained = false;
-                  try {
-                    isContained = Boolean(n.contains?.(targetNode));
-                  } catch {
-                    isContained = false;
-                  }
-                  if (isContained) {
-                    onUnmountedFns.delete(targetNode);
-                    fns.forEach((fn) => fn());
-                  }
-                }
-              }
-            }
-            n.remove();
-            appState.nodeIndex.delete(n);
-          }
-        });
-        currentComponent.isMounted = false;
+        unsetComponentNodes(currentComponent);
+        isMounted = false;
       },
       get nextValueId() {
         return valueIdCounter++;
@@ -161,14 +172,8 @@ export function createComponent<P = void>(
       };
     }
 
-    // Register with AppState and parent component
+    // Register with AppState
     appState.components.add(currentComponent);
-    if (parentComponent) {
-      parentComponent.children.add(currentComponent);
-      if (isServer()) {
-        parentComponent.trackChild?.(currentComponent);
-      }
-    }
 
     // Set active component scope
     setComponentScope(currentComponent);
@@ -191,12 +196,8 @@ export function createComponent<P = void>(
         } else if (isValue(item)) {
           return createReactiveValueNodes(item, (cleanup) => componentUnmountedFns.push(cleanup));
         } else if (isComponent(item)) {
-          item.isMounted = true;
+          currentComponent.addChild(item);
           item.parent = currentComponent;
-          currentComponent.children.add(item);
-          if (isServer()) {
-            currentComponent.trackChild?.(item);
-          }
           return item.nodes;
         }
         return [item as ChildNode];
@@ -206,13 +207,6 @@ export function createComponent<P = void>(
       const result = factory(props);
       const nodes = (isArray(result) ? result : [result]).filter(Boolean).flatMap(childToNodes);
       setComponentNodes(currentComponent, nodes);
-
-      // Trigger onMounted callbacks
-      if (componentMountedFns.length > 0 && currentComponent.nodes.length > 0) {
-        const target = currentComponent.nodes[0];
-        componentMountedFns.forEach((fn) => onMounted(fn, target));
-        componentMountedFns.length = 0;
-      }
     } catch (error) {
       console.error(error);
       throw error;
@@ -223,8 +217,8 @@ export function createComponent<P = void>(
       }
     }
 
-    if (parentComponent && isServer()) {
-      parentComponent.trackChild?.(currentComponent);
+    if (parentComponent) {
+      parentComponent.addChild(currentComponent);
     }
 
     return currentComponent;

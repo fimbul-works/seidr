@@ -1,37 +1,60 @@
+import { getAppState } from "../app-state/app-state.js";
 import { onMounted, onUnmounted } from "../component/lifecycle/index.js";
 import { BOOL_ATTRIBUTES } from "../constants.js";
-import { unwrapValue } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
+import { unwrapValue } from "../observable/unwrap-value.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
 import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import type { PropName, SeidrElementProps } from "./types.js";
 
+// Data-key for element prop bindingss
+const ELEMENT_BINDINGS_DATA_KEY = "seidr.bindings";
+
+/**
+ * Interface for a reactive binding.
+ */
 interface PropBinding {
+  /**
+   * The reactive value.
+   */
   value: unknown;
+  /**
+   * Cleanup function.
+   */
   cleanup?: CleanupFunction;
 }
 
 /**
- * Registry of active reactive bindings per DOM Node.
+ * Returns the bindings for a given element, or creates them if they don't exist.
  * Maps: Node -> (PropKey -> PropBinding)
+ * @param {Node} el - The element to get the bindings for.
+ * @returns {Map<string, PropBinding>} The bindings for the given element.
  */
-const propBindings = new WeakMap<Node, Map<string, PropBinding>>();
-
-const getElementBindings = (el: Node): Map<string, PropBinding> => {
+function getElementBindings(el: Node): Map<string, PropBinding> {
+  const appState = getAppState();
+  if (!appState.hasData(ELEMENT_BINDINGS_DATA_KEY)) {
+    appState.setData(ELEMENT_BINDINGS_DATA_KEY, new WeakMap<Node, Map<string, PropBinding>>());
+  }
+  const propBindings = appState.getData<WeakMap<Node, Map<string, PropBinding>>>(ELEMENT_BINDINGS_DATA_KEY)!;
   let bindings = propBindings.get(el);
   if (!bindings) {
     bindings = new Map<string, PropBinding>();
     propBindings.set(el, bindings);
   }
   return bindings;
-};
+}
 
 /**
  * Cleans up and registers a reactive binding for an element prop.
+ *
+ * @param {HTMLElement} el - The element to register the binding for.
+ * @param {string} bindingKey - The key of the binding.
+ * @param {any} newValue - The new value to bind.
+ * @param {(val: any) => void} applyFn - The function to apply the value to.
  */
-const setPropBinding = (el: HTMLElement, bindingKey: string, newValue: any, applyFn: (val: any) => void): void => {
+function setPropBinding(el: HTMLElement, bindingKey: string, newValue: any, applyFn: (val: any) => void): void {
   const bindings = getElementBindings(el);
   const existing = bindings.get(bindingKey);
 
@@ -60,7 +83,7 @@ const setPropBinding = (el: HTMLElement, bindingKey: string, newValue: any, appl
     bindings.delete(bindingKey);
     applyFn(newValue);
   }
-};
+}
 
 /**
  * Assigns a property to an element, handling reactive Value bindings.

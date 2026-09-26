@@ -46,6 +46,7 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
     : wrapComponent(componentOrFactory, "Root")();
 
   appendChild(container, rootComponent);
+  rootComponent.mount();
 
   // Return cleanup function
   return () => (cleanup?.(), rootComponent.unmount());

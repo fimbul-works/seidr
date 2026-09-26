@@ -54,25 +54,25 @@ describe("Multi-section SSR and Hydration with Router", () => {
     ]);
   }, "Navigation");
 
-  let canvas: HTMLCanvasElement| null = null
+  let canvas: HTMLCanvasElement | null = null;
 
-  const HeroLoiske = () => {
+  const HeroCanvas = () => {
     const canvasRef = createValue<HTMLCanvasElement | null>(null, { hydrate: false });
 
     inClient(() => {
       onMounted(() => {
         // Canvas initialized
-        canvas = canvasRef()
+        canvas = canvasRef();
       });
       onUnmounted(() => {});
     });
 
-    return $canvas({ id: "hero-loiske", ref: canvasRef });
+    return $canvas({ id: "hero-canvas", ref: canvasRef });
   };
 
   const HeroSection = createComponent(() => {
     return $section({ id: "hero" }, [
-      HeroLoiske(),
+      HeroCanvas(),
       $div({ className: "content" }, [
         $div({ className: "overline" }, "The Forge is Open"),
         $h1({ className: "title" }, ["FIMBUL", $span({ className: "accent" }, "WORKS")]),
@@ -106,22 +106,23 @@ describe("Multi-section SSR and Hydration with Router", () => {
     cleanupSSR();
 
     expect(html).toContain("home-navigation");
-    expect(html).toContain("hero-loiske");
+    expect(html).toContain("hero-canvas");
     expect(html).toContain("contact");
 
     // 2. Client Hydrate
     const cleanupClient = enableClientMode();
-    const container = document.createElement("body");
+    const container = document.body;
     container.innerHTML = html;
 
     const unmount = hydrate(() => App("http://localhost:4242/"), container, hydrationData);
 
-    expect(container.querySelector("#hero-loiske")).toBeTruthy();
+    expect(container.querySelector("#hero-canvas")).toBeTruthy();
     expect(container.querySelector(".home-navigation")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();
-    expect(canvas).toBeTruthy()
+    expect(canvas).toBeTruthy();
 
     unmount();
+    container.innerHTML = "";
     cleanupClient();
   });
 });

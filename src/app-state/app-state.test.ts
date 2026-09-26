@@ -1,7 +1,7 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component/create-component";
-import { setComponentScope } from "../component/lifecycle/component-scope";
+import { setComponentScope } from "../component/component-scope";
 import { $ } from "../element";
 import { createValue } from "../observable";
 import { enableClientMode, enableSSRMode } from "../test-setup";
