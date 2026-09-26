@@ -29,9 +29,9 @@
 - 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API:** Simple, composable functions for DOM creation and state
 - 📦 **Tiny Footprint:**
-  - Hello World: **3.9KB** (brotli)
-  - TodoMVC: **5.3KB** (brotli)
-  - SSR Enabled: **8.9KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
+  - Hello World: **3.8KB** (brotli)
+  - TodoMVC: **5.2KB** (brotli)
+  - SSR Bundle: **9.9KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
 
@@ -316,13 +316,18 @@ const UserProfile = createComponent<ProfileProps>(({ name, initialAge = 30 }) =>
 
 For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
 
+- [Application State (`AppState.md`)](docs/AppState.md)
 - [Reactive State (`Value.md`)](docs/Value.md)
 - [DOM Elements & Queries (`DOM.md`)](docs/DOM.md)
 - [Components & Lifecycle (`components.md`)](docs/components.md)
 - [Control Flow (`Show.md`, `List.md`, `Switch.md`, `Safe.md`, `Suspense.md`, `Lazy.md`)](docs/components.md#built-in-components)
+- [Routing (`Router.md`)](docs/Router.md)
 - [Type Guards (`type-guards.md`)](docs/type-guards.md)
 - [Server-Side Rendering (`SSR.md`)](docs/SSR.md)
+- [Build Plugins (`build.md`)](docs/build.md)
+- [Testing Utilities (`testing.md`)](docs/testing.md)
 - [Utilities (`utils.md`)](docs/utils.md)
+
 
 ---
 

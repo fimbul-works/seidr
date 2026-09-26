@@ -209,14 +209,16 @@ const componentInstance = factory();
 
 ## Built-In Components
 
-Seidr provides specialized built-in components for reactive UI control flow:
+Seidr provides specialized built-in components and control-flow utilities:
 
-- [`Show()`](Show.md) — Conditionally renders UI based on a boolean `Value`.
+- [`Show()`](Show.md) — Conditionally renders content based on a reactive condition `Value`.
 - [`List()`](List.md) — Efficiently renders and reconciles dynamic keyed lists from an array `Value`.
 - [`Switch()`](Switch.md) — Matches and renders UI branches based on a discriminant `Value`.
 - [`Safe()`](Safe.md) — Error boundary component with isolated cleanup and fallback UI.
 - [`Suspense()`](Suspense.md) — Asynchronous boundary managing Promise resolution and loading/error states.
 - [`lazy()`](Lazy.md) — Asynchronous code-splitting utility for dynamically imported component modules.
+- [`Router()`](Router.md) — Declarative routing system with route matching, nested routers, and SSR state hydration.
+- [`Link()`](Router.md#link) — Declarative navigation link preventing full-page reloads.
 
 ---
 
@@ -227,18 +229,20 @@ The runtime component instance structure:
 ```typescript
 export interface SeidrComponent {
   readonly [TYPE_PROP]: typeof TYPE_COMPONENT;
-  id: number;
-  name: string;
-  isMounted: boolean;
+  readonly id: number;
+  readonly name: string;
+  readonly isMounted: boolean;
   nodes: ChildNode[];
-  owner: SeidrComponent | null;
-  children: Set<SeidrComponent>;
-  onMount(fn: OnMountedFunction): void;
-  onAttach(fn: OnAttachedFunction): void;
-  onUnmount(fn: CleanupFunction): void;
+  parent: SeidrComponent | null;
+  readonly children: Set<SeidrComponent>;
+  addChild(child: SeidrComponent): void;
+  removeChild(child: SeidrComponent): void;
+  onMounted(fn: OnMountedFunction): void;
+  onUnmounted(fn: CleanupFunction): void;
   unmount(): void;
 }
 ```
+
 
 ---
 

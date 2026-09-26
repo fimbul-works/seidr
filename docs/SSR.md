@@ -105,6 +105,7 @@ Renders a component tree to an HTML string and captures the hydration payload.
 
 **Parameters:**
 - `factory: SeidrComponent | Function` — Root component or factory function.
+- `initialAppState?: AppStateData` — Optional initial application state object to populate in the per-request [`AppState`](AppState.md).
 
 **Returns:** `Promise<SSRRenderResult>`
 - `html: string` — Rendered HTML string.
@@ -113,7 +114,10 @@ Renders a component tree to an HTML string and captures the hydration payload.
 ```typescript
 import { renderToString } from '@fimbul-works/seidr/ssr';
 
-const { html, hydrationData } = await renderToString(() => App(initialProps));
+const { html, hydrationData } = await renderToString(
+  () => App(initialProps),
+  { currentUser: { id: '123', name: 'Alice' } }
+);
 ```
 
 ---
@@ -125,17 +129,38 @@ Hydrates server-rendered markup in the browser using the captured SSR hydration 
 **Parameters:**
 - `factory: SeidrComponent | Function` — Root component or factory function.
 - `container: HTMLElement` — Target DOM container containing server HTML.
-- `hydrationData: HydrationData` — Hydration data payload from the server.
+- `hydrationData: HydrationData | string` — Hydration data payload from the server (either as a parsed object or serialized string).
 
 **Returns:** `CleanupFunction` (`() => void`) to unmount and destroy the hydrated tree.
 
 ```typescript
 import { hydrate } from '@fimbul-works/seidr';
 
+// Passing parsed object
 const unmount = hydrate(App, document.getElementById('app')!, window.__SEIDR_HYDRATION_DATA__);
+
+// Alternatively, passing raw serialized JSON string directly
+const unmountRaw = hydrate(App, document.getElementById('app')!, '{"ctxID":1,"data":{},"components":[]}');
 ```
 
 ---
+
+### `isHydrating()`
+
+Returns `true` if a hydration pass is currently in progress. Useful inside components or custom directives that need to conditionally alter behavior during the initial hydration pass.
+
+**Returns:** `boolean`
+
+```typescript
+import { isHydrating } from '@fimbul-works/seidr';
+
+if (isHydrating()) {
+  console.log('Currently hydrating server-rendered markup');
+}
+```
+
+---
+
 
 ### `isClient()`
 
@@ -215,4 +240,38 @@ const AsyncProfile = () => {
 
 ---
 
+## Hydration Serialization
+
+Seidr uses a pluggable serializer to stringify and parse SSR hydration payloads. By default, it uses the global native `JSON` object (`defaultHydrationSerializer`).
+
+### Custom Serializers (e.g. `superjson`, `devalue`)
+
+If your application state includes types not supported by standard JSON (such as `Date`, `Map`, `Set`, `BigInt`, or `RegExp`), you can register a custom serializer via `setHydrationSerializer()`:
+
+```typescript
+import { setHydrationSerializer, type HydrationSerializer } from '@fimbul-works/seidr';
+import superjson from 'superjson';
+
+// Configure custom serializer on both server and client:
+const superjsonSerializer: HydrationSerializer = {
+  stringify: (data) => superjson.stringify(data),
+  parse: (text) => superjson.parse(text)
+};
+
+setHydrationSerializer(superjsonSerializer);
+```
+
+### `getHydrationSerializer()`
+
+Returns the currently active hydration serializer instance.
+
+```typescript
+import { getHydrationSerializer } from '@fimbul-works/seidr';
+
+const serializer = getHydrationSerializer();
+```
+
+---
+
 [Seidr](https://github.com/fimbul-works/seidr) brought to you by [FimbulWorks](https://github.com/fimbul-works) | [README.md](../README.md) | [API.md](API.md)
+

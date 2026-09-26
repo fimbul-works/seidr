@@ -8,12 +8,16 @@ Seidr provides a functional, lightweight DOM element creation and query API with
 
 ## `$()` — Create DOM Elements
 
-Creates a DOM element with reactive props, attributes, event handlers, and child nodes.
+Creates a DOM element with reactive props, attributes, event handlers, and child nodes. Props are optional—children can be passed directly as the second argument.
+
+**Overloaded Signatures:**
+- `$(tag, children?)` — Create element directly with children (omitting props).
+- `$(tag, props?, children?)` — Create element with props and children.
 
 **Parameters:**
 - `tag: string` — HTML tag name (e.g. `'div'`, `'button'`, `'input'`).
-- `props?: ElementProps` — Object with element properties, attributes, and event handlers (can include [`Value`](Value.md) observables).
-- `children?: SeidrChild | SeidrChild[]` — Array of child elements, strings, numbers, reactive [`Value`](Value.md) observables, or [`SeidrComponents`](components.md).
+- `props?: ElementProps | null` — Object with element properties, attributes, and event handlers (can include [`Value`](Value.md) observables).
+- `children?: SeidrChild | SeidrChild[]` — Array or single child element, string, number, reactive [`Value`](Value.md) observable, or [`SeidrComponent`](components.md).
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
@@ -30,7 +34,14 @@ const button = $('button', {
 }, []);
 
 document.body.appendChild(button);
+
+// Shorthand: omitting props when only children are needed
+const container = $('div', [
+  $('h1', 'Title'),
+  $('p', 'Paragraph content without explicit props object')
+]);
 ```
+
 
 ---
 
@@ -169,4 +180,56 @@ const formInputs = $queryAll<HTMLInputElement>('input', formElement);
 
 ---
 
+## Low-Level Node & Document Utilities
+
+### `$text()`
+
+Creates a DOM `Text` node. In SSR mode, the text node is registered in the component creation index. During client-side hydration, it is claimed from the existing server DOM.
+
+**Parameters:**
+- `text: string` — Text content.
+
+**Returns:** `Text`
+
+```typescript
+import { $text } from '@fimbul-works/seidr';
+
+const textNode = $text('Hello world');
+```
+
+---
+
+### `$comment()`
+
+Creates a DOM `Comment` node. Used by Seidr components and reactive bindings for marker comments, and available for custom structural markers.
+
+**Parameters:**
+- `text: string` — Comment string.
+
+**Returns:** `Comment`
+
+```typescript
+import { $comment } from '@fimbul-works/seidr';
+
+const marker = $comment('custom-boundary');
+```
+
+---
+
+### `getDocument()`
+
+Retrieves the active `Document` instance. Returns the global `window.document` in browser environments, or the per-request SSR DOM document during server-side rendering.
+
+**Returns:** `Document`
+
+```typescript
+import { getDocument } from '@fimbul-works/seidr';
+
+const doc = getDocument();
+const element = doc.createElement('div');
+```
+
+---
+
 [Seidr](https://github.com/fimbul-works/seidr) brought to you by [FimbulWorks](https://github.com/fimbul-works) | [README.md](../README.md) | [API.md](API.md)
+

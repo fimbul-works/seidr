@@ -1,7 +1,5 @@
 import { createComponent } from "@fimbul-works/seidr";
-import { $div, $img, $span } from "@fimbul-works/seidr/html";
-import ClockIcon from "../icons/clock.svg";
-import NodeIcon from "../icons/node.svg";
+import { $div, $span } from "@fimbul-works/seidr/html";
 
 /**
  * Format a date string to a long date format.

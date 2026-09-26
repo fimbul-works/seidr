@@ -169,6 +169,24 @@ console.log(isComponentFactory(PlainFn)); // false
 
 ---
 
+### `isLazyComponent()`
+
+Checks if a value is a lazy component factory created via `lazy()`.
+
+```typescript
+import { createComponent, lazy, isLazyComponent } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
+
+const LazyModal = lazy(() => import('./Modal.js'));
+const NormalComp = createComponent(() => $div(), 'NormalComp');
+
+console.log(isLazyComponent(LazyModal));  // true
+console.log(isLazyComponent(NormalComp)); // false
+```
+
+---
+
+
 ## DOM Type Guards
 
 ### `isDOMNode()`

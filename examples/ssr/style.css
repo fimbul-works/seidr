@@ -439,6 +439,10 @@ body::after {
   margin-bottom: 0.5rem;
 }
 
+.markdown-body em {
+  font-style: italic;
+}
+
 .markdown-body blockquote {
   border-left: 3px solid #67b;
   background: rgba(102, 119, 187, 0.1);
@@ -501,10 +505,6 @@ body::after {
   background: transparent;
   padding: 0;
   border: none;
-}
-
-.markdown-body em {
-  font-style: italic;
 }
 
 /* Buttons */

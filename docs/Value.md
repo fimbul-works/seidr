@@ -57,11 +57,11 @@ const count = createValue(0, {
   ```
 
   > [!NOTE]
-  > Values with explicit IDs act as **singletons** within their `AppState`. If `createValue` is called with an `id` that already exists in the current application state, it returns the existing `Value` instance instead of creating a new one. This enables safe state sharing across modules and components in both client and SSR contexts.
+  > Values with explicit IDs act as **singletons** within their [`AppState`](AppState.md). If `createValue` is called with an `id` that already exists in the current application state, it returns the existing `Value` instance instead of creating a new one. This enables safe state sharing across modules and components in both client and SSR contexts.
 
   **Deterministic IDs in SSR:**
   - **Inside Components**: Values created within a component automatically receive an ID derived from the component's ID and its creation sequence (e.g. `1-1`, `1-2`), ensuring deterministic hydration matches.
-  - **Outside Components**: Values created globally receive sequential IDs managed by `AppState`.
+  - **Outside Components**: Values created globally receive sequential IDs managed by [`AppState`](AppState.md).
 
 - `isDerived: boolean` — Readonly boolean indicating if this value is derived from one or more parent values.
 

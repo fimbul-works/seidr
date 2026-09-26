@@ -32,7 +32,7 @@ try {
 
 ## `random()`
 
-A deterministic, high-entropy pseudo-random number generator using the SplitMix32 algorithm. The random sequence is maintained in `AppState` so that random numbers generated during SSR match the hydration pass deterministically on the client.
+A deterministic, high-entropy pseudo-random number generator using the SplitMix32 algorithm. The random sequence is maintained in [`AppState`](AppState.md) so that random numbers generated during SSR match the hydration pass deterministically on the client.
 
 **Returns:** `number` — A float between 0 and 1.
 
@@ -42,6 +42,7 @@ import { random } from '@fimbul-works/seidr';
 const rand = random();
 console.log(rand); // Deterministic float in [0, 1)
 ```
+
 
 ---
 

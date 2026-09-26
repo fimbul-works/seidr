@@ -1,8 +1,6 @@
 import { createComponent, Link } from "@fimbul-works/seidr";
 import { $a, $div, $img, $nav, $span } from "@fimbul-works/seidr/html";
 
-import GitHubIcon from "../icons/github.svg";
-
 /**
  * Page header component.
  */

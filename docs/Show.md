@@ -2,44 +2,61 @@
 
 # Show Component
 
-The `Show` component conditionally mounts and unmounts child elements or components based on a reactive boolean [`Value`](Value.md).
+The `Show` function conditionally renders content or components based on a reactive condition [`Value`](Value.md).
 
 ---
 
 ## `Show()`
 
 **Parameters:**
-- `condition: Value<boolean>` — Boolean `Value` observable controlling visibility.
-- `factory: () => SeidrChild` — Factory function returning the elements or component to display when `condition` is `true`.
-- `name?: string` (default: `"Show"`) — Optional component name.
+- `condition: Value<any>` — Reactive condition observable.
+- `whenTrue: () => SeidrChild` — Factory function returning the elements or component to display when `condition` is truthy.
+- `whenFalse?: () => SeidrChild` — Optional fallback factory function returning elements to display when `condition` is falsy.
 
-**Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
+**Returns:** `Value<SeidrChild>` — A reactive derived `Value` representing the currently active branch.
 
 ```typescript
 import { Show, createValue, mount } from '@fimbul-works/seidr';
 import { $button, $div, $p } from '@fimbul-works/seidr/html';
 
-const isVisible = createValue(false);
-
-const SecretMessage = () => $p({ textContent: '🎉 This is a conditionally rendered message!' });
-
 const App = () => {
+  const isVisible = createValue(false);
+  
   return $div({ className: 'container' }, [
     $button({
       textContent: isVisible.as((v) => (v ? 'Hide Details' : 'Show Details')),
       onclick: () => isVisible((v) => !v)
     }),
-    Show(isVisible, SecretMessage)
+    Show(isVisible, () => $p({ textContent: '🎉 This is a conditionally rendered message!' })
   ]);
 };
 
 mount(App, document.body);
 ```
 
-### Behavior
-- When `condition()` evaluates to `true`, the `factory` function is invoked, and the resulting nodes are inserted into the DOM.
-- When `condition()` evaluates to `false`, the rendered nodes and child components are unmounted and removed from the DOM, triggering any registered `onUnmounted` cleanup hooks.
-- Node positions are anchored using lightweight marker comments.
+### Fallback Content with `whenFalse`
+
+You can supply an optional third callback to render fallback content when `condition` is falsy:
+
+```typescript
+import { Show, createValue } from '@fimbul-works/seidr';
+import { $p } from '@fimbul-works/seidr/html';
+
+const isLoggedIn = createValue(false);
+
+const UserGreeting = () =>
+  Show(
+    isLoggedIn,
+    () => $p({ textContent: 'Welcome back, authenticated user!' }),
+    () => $p({ textContent: 'Please log in to continue.' })
+  );
+```
+
+### Behavior & Semantics
+- **Derived Value Return:** `Show` returns a reactive `Value<SeidrChild>` (implemented via `condition.as(...)`). It can be passed directly as a child inside any Seidr element creator (like `$div`, `$section`), and the DOM automatically updates when the condition changes.
+- **Truthiness:** Evaluates the JavaScript truthiness of `condition()`. Any truthy value displays `whenTrue()`.
+- **Falsy Handling:** When falsy, renders `whenFalse()` if provided, or `null` (rendering nothing).
+- **Automatic Lifecycle Cleanup:** When components are conditionally unmounted, all registered `onUnmounted` cleanup hooks are executed.
 
 ---
 
