@@ -33,11 +33,10 @@ interface PropBinding {
  * @returns {Map<string, PropBinding>} The bindings for the given element.
  */
 function getElementBindings(el: Node): Map<string, PropBinding> {
-  const appState = getAppState();
-  if (!appState.hasData(ELEMENT_BINDINGS_DATA_KEY)) {
-    appState.setData(ELEMENT_BINDINGS_DATA_KEY, new WeakMap<Node, Map<string, PropBinding>>());
-  }
-  const propBindings = appState.getData<WeakMap<Node, Map<string, PropBinding>>>(ELEMENT_BINDINGS_DATA_KEY)!;
+  const propBindings = getAppState().getData<WeakMap<Node, Map<string, PropBinding>>>(
+    ELEMENT_BINDINGS_DATA_KEY,
+    new WeakMap<Node, Map<string, PropBinding>>(),
+  )!;
   let bindings = propBindings.get(el);
   if (!bindings) {
     bindings = new Map<string, PropBinding>();

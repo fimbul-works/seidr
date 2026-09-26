@@ -27,6 +27,7 @@ import {
 import type { CleanupFunction } from "../../types.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { usePathname } from "../hooks/use-pathname.js";
+import { DATA_KEY_ROUTER } from "../constants.js";
 import { clearRouterState } from "../test/index.js";
 import { Link } from "./link.js";
 import { Router } from "./router.js";
@@ -248,6 +249,41 @@ describe("Router Hydration", () => {
 
     expect(container.innerHTML).toBe(html);
 
+    cleanupClientMode();
+  });
+
+  it("should hydrate without passing window.location.pathname to component factory", async () => {
+    const BlogApp = createComponent(() => {
+      return $div({ className: "app-container" }, [
+        Router([
+          { path: "/", component: HomePage, exact: true },
+          { path: "/about", component: AboutPage },
+        ]),
+      ]);
+    }, "BlogApp");
+
+    // 1. SSR with initial AppState URL
+    const cleanupSSR = enableSSRMode();
+    const { html, hydrationData } = await renderToString(BlogApp, { [DATA_KEY_ROUTER]: "/about" });
+    cleanupSSR();
+
+    expect(html).toContain("about-page");
+
+    // 2. Setup browser DOM and location
+    cleanupClientMode = enableClientMode();
+    const origPathname = window.location.pathname;
+    window.history.pushState({}, "", "/about");
+
+    const container = document.createElement("div");
+    container.innerHTML = html;
+    document.body.appendChild(container);
+
+    // 3. Hydrate without passing URL parameter
+    unmount = hydrate(BlogApp, container, hydrationData);
+
+    expect(container.querySelector(".about-page")).toBeTruthy();
+
+    window.history.pushState({}, "", origPathname);
     cleanupClientMode();
   });
 });

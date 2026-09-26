@@ -37,9 +37,10 @@ export interface AppState {
    * Get data.
    *
    * @param {string} key - The key to get
+   * @param {T} defaultValue - Optional default value to return if data is not found
    * @returns {T | undefined} The data, or undefined if not found
    */
-  getData<T>(key: string): T | undefined;
+  getData<T>(key: string, defaultValue?: T): typeof defaultValue extends undefined ? T | undefined : T;
 
   /**
    * Set data.

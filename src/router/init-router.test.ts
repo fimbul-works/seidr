@@ -36,4 +36,25 @@ describe("initRouter()", () => {
     const routerState = getAppState().getData<RouterState>(DATA_KEY_ROUTER)!;
     expect(routerState.url().href).toBe("http://base.com/foo");
   });
+
+  it("should use window.location.pathname by default in browser", () => {
+    const origPathname = window.location.pathname;
+    try {
+      window.history.pushState({}, "", "/blog/my-post");
+      initRouter();
+
+      const routerState = getAppState().getData<RouterState>(DATA_KEY_ROUTER)!;
+      expect(routerState.url().pathname).toBe("/blog/my-post");
+    } finally {
+      window.history.pushState({}, "", origPathname);
+    }
+  });
+
+  it("should use initial AppState value if set before initRouter", () => {
+    getAppState().setData(DATA_KEY_ROUTER, "/articles/42");
+    initRouter();
+
+    const routerState = getAppState().getData<RouterState>(DATA_KEY_ROUTER)!;
+    expect(routerState.url().pathname).toBe("/articles/42");
+  });
 });

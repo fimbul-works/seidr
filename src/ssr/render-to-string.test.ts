@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../examples/todo-mvc/todo-mvc.js";
+import { getAppState } from "../app-state/app-state.js";
 import { createComponent } from "../component/create-component.js";
 import { Suspense, type SuspenseState } from "../components/suspense.js";
 import { $ } from "../element/create-element.js";
@@ -133,7 +134,7 @@ describe("renderToString", () => {
     });
 
     const TestComponent = createComponent(() => {
-      return Suspense(asyncPromise, ({ state, value }: SuspenseState<string>) => {
+      return Suspense(asyncPromise, ({ value }: SuspenseState<string>) => {
         return $("div", {
           textContent: value.as((v) => v ?? "loading..."),
         });
@@ -156,5 +157,17 @@ describe("renderToString", () => {
     expect(html).toContain("Test Todo");
 
     expect(Object.keys(hydrationData.data[DATA_KEY_STATE]!).length).toBeGreaterThan(0);
+  });
+
+  it("should accept initial AppState values as second parameter", async () => {
+    let capturedValue: any;
+    const TestComponent = createComponent(() => {
+      capturedValue = getAppState().getData("test.custom");
+      return $("div", { textContent: String(capturedValue) });
+    });
+
+    const { html } = await renderToString(TestComponent, { "test.custom": "hello-world" });
+    expect(capturedValue).toBe("hello-world");
+    expect(html).toContain("hello-world");
   });
 });

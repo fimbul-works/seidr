@@ -1,9 +1,10 @@
 import { getAppState } from "../app-state/app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
+import { isValue } from "../observable/type-guards.js";
 import { createValue } from "../observable/value.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
-import { isStr } from "../util/type-guards.js";
+import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_ROUTER, DUMMY_BASE_URL, VALUE_ID_ROUTER_URL } from "./constants.js";
 import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
@@ -11,7 +12,7 @@ import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
 /**
  * Initialize the router state.
  *
- * @param {string | URL | Location} [initialUrl] - Initial URL for the router (default: current window location or "/")
+ * @param {string | URL | Location} [initialUrl] - Initial URL for the router (default: current window location pathname or "/")
  * @param {string} [base=DUMMY_BASE_URL] - Base URL for resolving relative URLs, default `DUMMY_BASE_URL`
  */
 export const initRouter = (
@@ -41,16 +42,24 @@ export const initRouter = (
   };
 
   const appState = getAppState();
-  if (appState.hasData(DATA_KEY_ROUTER)) {
-    if (initialUrl !== undefined) {
-      appState.getData<RouterState>(DATA_KEY_ROUTER)!.url(getUrlObject(initialUrl));
+  const existing = appState.getData<string | RouterState>(DATA_KEY_ROUTER);
+
+  // Check if router has already been initialized
+  if (isObj<RouterState>(existing) && existing.tree instanceof Map && isValue(existing.url)) {
+    if (!isNullish(initialUrl)) {
+      existing.url(getUrlObject(initialUrl));
     }
     return;
   }
 
+  // Use URL from AppState if no explicit initialUrl was passed
+  if (isNullish(initialUrl) && isStr(existing)) {
+    initialUrl = existing;
+  }
+
   // Fallback to default if not provided
-  if (initialUrl === undefined) {
-    initialUrl = isClient() ? window.location.href : "/";
+  if (isNullish(initialUrl)) {
+    initialUrl = isClient() ? window.location.pathname : "/";
   }
 
   const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, hydrate: false });
@@ -73,6 +82,17 @@ export const initRouter = (
     currentScope.onUnmounted(cleanup);
   }
 
+  // Define data strategy for hydration
+  if (!process.env.SEIDR_DISABLE_SSR) {
+    appState.defineDataStrategy<string, string>(
+      DATA_KEY_ROUTER,
+      // Capture function: store current URL and other serializable state
+      () => url().href,
+      // Restore function: restore URL from captured data
+      (urlStr: string) => url(new URL(urlStr, base)),
+    );
+  }
+
   // Store state in AppState
   appState.setData<RouterState>(DATA_KEY_ROUTER, {
     url,
@@ -83,12 +103,4 @@ export const initRouter = (
 
   // Eagerly initialize the browser router singleton
   browserRouter();
-
-  appState.defineDataStrategy<string, string>(
-    DATA_KEY_ROUTER,
-    // Capture function: store current URL and other serializable state
-    () => url().href,
-    // Restore function: restore URL from captured data
-    (urlStr: string) => url(new URL(urlStr, base)),
-  );
 };

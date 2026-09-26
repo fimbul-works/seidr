@@ -101,14 +101,10 @@ export const watchMutations = (node?: Element): CleanupFunction => {
   }
 
   const appState = getAppState();
-  let state = appState.getData<MutationObserverState>(DATA_KEY_MUTATION_OBSERVERS);
-  if (!state) {
-    state = {
-      activeObserver: null,
-      watchCount: 0,
-    };
-    appState.setData(DATA_KEY_MUTATION_OBSERVERS, state);
-  }
+  let state = appState.getData<MutationObserverState>(DATA_KEY_MUTATION_OBSERVERS, {
+    activeObserver: null,
+    watchCount: 0,
+  });
 
   state.watchCount++;
 

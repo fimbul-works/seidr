@@ -90,9 +90,7 @@ describe("Hydration Tuple Encoding & Deduplication", () => {
         resolvedValue = value;
         return $("div", { id: "blog" }, [
           $("span", { id: "status", textContent: state }),
-          $("ul", { id: "list" }, [
-            $("li", { id: "first", textContent: value.as((v) => (v ? v[0].title : "none")) }),
-          ]),
+          $("ul", { id: "list" }, [$("li", { id: "first", textContent: value.as((v) => (v ? v[0].title : "none")) })]),
         ]);
       });
     }
@@ -145,9 +143,7 @@ describe("Hydration Tuple Encoding & Deduplication", () => {
 
     // 2. Verify payload: both "posts" and the internal Suspense value ID share ONE tuple
     const statePayload = hydrationData.data[DATA_KEY_STATE];
-    const sharedTuple = statePayload.find(
-      (tuple: any[]) => tuple.includes("posts") && tuple.length >= 3,
-    );
+    const sharedTuple = statePayload.find((tuple: any[]) => tuple.includes("posts") && tuple.length >= 3);
     expect(sharedTuple).toBeDefined();
     // The tuple has the posts array and at least two Value IDs ("posts" and the Suspense value ID)
     expect(sharedTuple).toContain("posts");

@@ -78,29 +78,26 @@
   "dependencies": {
     "@fimbul-works/futhark": "^1.0.0",
     "@fimbul-works/hash": "^1.2.1",
-    "magic-string": "^1.4.1",
+    "magic-string": "^1.4.2",
     "oxc-parser": "^0.151.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.14",
     "@fimbul-works/bundle-size": "^1.0.0",
-    "@fimbul-works/noise": "link:../noise",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^30.0.0",
-    "@types/node": "^25.6.2",
+    "@types/node": "^25.9.8",
     "express": "^5.2.1",
     "gray-matter": "^4.0.3",
     "jsdom": "^30.1.1",
     "marked": "^18.0.14",
-    "rolldown": "^1.2.10",
+    "rolldown": "^1.2.11",
     "sirv": "^3.0.2",
     "superjson": "^2.2.6",
-    "terser": "^5.51.2",
     "tsdown": "^0.23.0",
-    "tsx": "^4.23.15",
-    "typescript": "^7.0.2",
+    "typescript": "^6.0.3",
     "unrun": "^0.3.1",
-    "vite": "^8.3.0",
-    "vitest": "^5.0.1"
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
   }
 }

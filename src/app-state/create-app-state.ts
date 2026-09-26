@@ -1,4 +1,5 @@
 import type { SeidrComponent } from "../component/types.js";
+import { isNullish } from "../util/type-guards.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/value.js";
@@ -20,8 +21,12 @@ export const createAppState = (ctxId: number): AppState => ({
   hasData(key: string): boolean {
     return this.data.has(key);
   },
-  getData<T>(key: string): T | undefined {
-    return this.data.get(key) as T | undefined;
+  getData<T>(key: string, defaultValue?: T): typeof defaultValue extends undefined ? T | undefined : T {
+    if (!this.data.has(key) && !isNullish(defaultValue)) {
+      this.data.set(key, defaultValue);
+      return defaultValue;
+    }
+    return this.data.get(key);
   },
   setData<T>(key: string, value: T): void {
     this.data.set(key, value);

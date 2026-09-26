@@ -21,13 +21,15 @@ export const random = (): number => {
   const appState = getAppState();
 
   // Ensure SSR boundary data strategy
-  if (!appState.getDataStrategy(DATA_KEY_RANDOM)) {
-    appState.defineDataStrategy(
-      DATA_KEY_RANDOM,
-      () => Array.from(appState.getData<Map<number, number>>(DATA_KEY_RANDOM)?.entries() ?? []),
-      (data: [number, number][]) =>
-        appState.setData(DATA_KEY_RANDOM, new Map(data.map(([k, v]) => [Number(k), Number(v)]))),
-    );
+  if (!process.env.SEIDR_DISABLE_SSR) {
+    if (!appState.getDataStrategy(DATA_KEY_RANDOM)) {
+      appState.defineDataStrategy(
+        DATA_KEY_RANDOM,
+        () => Array.from(appState.getData<Map<number, number>>(DATA_KEY_RANDOM)?.entries() ?? []),
+        (data: [number, number][]) =>
+          appState.setData(DATA_KEY_RANDOM, new Map(data.map(([k, v]) => [Number(k), Number(v)]))),
+      );
+    }
   }
 
   // Initialize RNG state

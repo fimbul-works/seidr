@@ -79,11 +79,7 @@ describe("state-tuple (packHydrationState & unpackHydrationState)", () => {
     const payload = packHydrationState(values);
 
     // postsArray is at index 0, with child indices [1, 2], and value IDs "posts" and "Bj9xd-2"
-    expect(payload).toEqual([
-      [[1, 2], "posts", "Bj9xd-2"],
-      [post1],
-      [post2],
-    ]);
+    expect(payload).toEqual([[[1, 2], "posts", "Bj9xd-2"], [post1], [post2]]);
 
     const restored = unpackHydrationState(payload);
     const restoredPosts = restored.get("posts");
@@ -99,12 +95,7 @@ describe("state-tuple (packHydrationState & unpackHydrationState)", () => {
     const values = new Map<string, any>([["coords", [10, 20, 30]]]);
 
     const payload = packHydrationState(values);
-    expect(payload).toEqual([
-      [[1, 2, 3], "coords"],
-      [10],
-      [20],
-      [30],
-    ]);
+    expect(payload).toEqual([[[1, 2, 3], "coords"], [10], [20], [30]]);
 
     const restored = unpackHydrationState(payload);
     expect(restored.get("coords")).toEqual([10, 20, 30]);
@@ -115,10 +106,7 @@ describe("state-tuple (packHydrationState & unpackHydrationState)", () => {
 
     const payload = packHydrationState(values);
     // 0 is registered once at index 1; the array points to index 1 four times
-    expect(payload).toEqual([
-      [[1, 1, 1, 1], "zeros"],
-      [0],
-    ]);
+    expect(payload).toEqual([[[1, 1, 1, 1], "zeros"], [0]]);
 
     const restored = unpackHydrationState(payload);
     expect(restored.get("zeros")).toEqual([0, 0, 0, 0]);

@@ -11,10 +11,10 @@ export const routes: Route[] = [
 ];
 
 // Main App
-export const BlogApp = createComponent((url?: string) => {
+export const BlogApp = createComponent(() => {
   return $div({ className: "app-container" }, [
     Header(),
-    $div({ className: "main-content" }, [Router(routes, { url })]),
+    $div({ className: "main-content" }, [Router(routes)]),
     Footer(),
   ]);
 }, "BlogApp");

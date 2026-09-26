@@ -1,5 +1,5 @@
 import SuperJSON from "superjson";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component.js";
 import { $div } from "../elements/div.js";
 import { $p } from "../elements/p.js";
@@ -7,11 +7,7 @@ import { $span } from "../elements/span.js";
 import { createValue, type Value } from "../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
 import { hydrate } from "./hydrate/hydrate.js";
-import {
-  defaultHydrationSerializer,
-  getHydrationSerializer,
-  setHydrationSerializer,
-} from "./hydration-serializer.js";
+import { defaultHydrationSerializer, getHydrationSerializer, setHydrationSerializer } from "./hydration-serializer.js";
 import { renderToString } from "./render-to-string.js";
 import type { HydrationData } from "./types.js";
 
@@ -55,16 +51,31 @@ describe("HydrationSerializer", () => {
     const ComplexComponent = createComponent(() => {
       const dateVal = createValue(new Date("2026-09-26T12:00:00.000Z"), { id: "test-date" });
       const setVal = createValue(new Set(["seidr", "superjson"]), { id: "test-set" });
-      const mapVal = createValue(new Map([["framework", "seidr"], ["version", "1.0"]]), { id: "test-map" });
+      const mapVal = createValue(
+        new Map([
+          ["framework", "seidr"],
+          ["version", "1.0"],
+        ]),
+        { id: "test-map" },
+      );
 
       capturedDateValue = dateVal;
       capturedSetValue = setVal;
       capturedMapValue = mapVal;
 
       return $div({ id: "complex-root" }, [
-        $p({ id: "date-display" }, dateVal.as((d) => d.toISOString())),
-        $span({ id: "set-count" }, setVal.as((s) => `Count: ${s.size}`)),
-        $span({ id: "map-entry" }, mapVal.as((m) => `Framework: ${m.get("framework")}`)),
+        $p(
+          { id: "date-display" },
+          dateVal.as((d) => d.toISOString()),
+        ),
+        $span(
+          { id: "set-count" },
+          setVal.as((s) => `Count: ${s.size}`),
+        ),
+        $span(
+          { id: "map-entry" },
+          mapVal.as((m) => `Framework: ${m.get("framework")}`),
+        ),
       ]);
     }, "ComplexComponent");
 

@@ -1,11 +1,7 @@
 import { getComponentScope, setComponentScope } from "../../component/component-scope.js";
 import { createComponent } from "../../component/create-component.js";
 import { isComponent } from "../../component/type-guards.js";
-import type {
-  SeidrComponent,
-  SeidrComponentFactoryOrFunction,
-  SeidrComponentFactoryPureFunction,
-} from "../../component/types.js";
+import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../../component/types.js";
 import { getMarkerComments } from "../../component/util/get-marker-comments.js";
 import { wrapComponent } from "../../component/wrap-component.js";
 import type { Value } from "../../observable/value.js";
@@ -24,7 +20,7 @@ import type { Route, RouteMatch, RouterInterface } from "../types.js";
  */
 export interface RouterOptions {
   router?: RouterInterface;
-  url?: string | URL;
+  url?: string | URL | Location;
 }
 
 /**
@@ -32,7 +28,8 @@ export interface RouterOptions {
  * Use a wildcard route ("*") as the last entry for fallback behavior.
  *
  * @param {Array<Route> | Value<Array<Route>>} routes - Array of route definitions or a Value that resolves to it
- * @param {RouterOptions} [options={}] - Optional router options. If not provided, browserRouter() will be used.
+ * @param {RouterOptions} [options={}] - Optional router options. If not provided, browserRouter() will be used,
+ *                                       and the URL defaults to window.location.pathname in browser or "/" in SSR.
  * @param {string} [name="Router"] - Optional name for the component (used for debugging)
  * @returns {SeidrComponent} The Router component instance
  */

@@ -17,8 +17,7 @@
         "noForEach": "off",
         "noCommaOperator": "off",
         "noArguments": "off",
-        "noImportantStyles": "off",
-        "noDescendingSpecificity": "off"
+        "noImportantStyles": "off"
       },
       "suspicious": {
         "noAssignInExpressions": "off",

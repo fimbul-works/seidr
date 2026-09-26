@@ -6,6 +6,7 @@ import { clearTestAppState, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
+import { DATA_KEY_ROUTER } from "../constants.js";
 import { clearRouterState } from "../test/index.js";
 import { Router } from "./router.js";
 
@@ -144,5 +145,37 @@ describe("Router SSR", () => {
     const result2 = await renderToString(() => App("/"));
     expect(result2.html).toContain("Home Page");
     expect(result2.html).not.toContain("About Page");
+  });
+
+  it("should render route using initial AppState passed to renderToString", async () => {
+    const App = createComponent(
+      () =>
+        Router([
+          { path: "/", component: Home, exact: true },
+          { path: "/about", component: About },
+        ]),
+      "App",
+    );
+
+    const { html } = await renderToString(App, { [DATA_KEY_ROUTER]: "/about" });
+    expect(html).toContain('class="about"');
+    expect(html).toContain("About Component");
+    expect(html).not.toContain("Home Component");
+  });
+
+  it("should render route using DATA_KEY_ROUTER in initial AppState", async () => {
+    const App = createComponent(
+      () =>
+        Router([
+          { path: "/", component: Home, exact: true },
+          { path: "/about", component: About },
+        ]),
+      "App",
+    );
+
+    const { html } = await renderToString(App, { [DATA_KEY_ROUTER]: "/about" });
+    expect(html).toContain('class="about"');
+    expect(html).toContain("About Component");
+    expect(html).not.toContain("Home Component");
   });
 });

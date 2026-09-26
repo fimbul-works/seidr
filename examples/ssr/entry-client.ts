@@ -15,5 +15,5 @@ const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
 const appEl = $getById("app");
 if (appEl && hydrationData) {
-  hydrate(() => BlogApp(window.location.pathname), appEl, hydrationData);
+  hydrate(BlogApp, appEl, hydrationData);
 }
