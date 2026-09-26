@@ -14,7 +14,6 @@ import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
 import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { getComponentScope, setComponentScope } from "./component-scope.js";
-import { onMounted } from "./lifecycle/on-mounted.js";
 import { isComponent } from "./type-guards.js";
 import type {
   OnMountedFunction,
@@ -116,12 +115,11 @@ export function createComponent<P = void>(
       },
       parent: parentComponent,
       mount() {
-        if (componentMountedFns.length > 0 && currentComponent.nodes.length > 0) {
-          const target = currentComponent.nodes[0];
-          componentMountedFns.forEach((fn) => onMounted(fn, target));
-          componentMountedFns.length = 0;
-        }
         isMounted = true;
+
+        componentMountedFns.forEach((fn) => fn());
+        componentMountedFns.length = 0;
+
         children.forEach((child) => child.mount());
       },
       onMounted: (fn: OnMountedFunction) => componentMountedFns.push(fn),
@@ -197,7 +195,6 @@ export function createComponent<P = void>(
           return createReactiveValueNodes(item, (cleanup) => componentUnmountedFns.push(cleanup));
         } else if (isComponent(item)) {
           currentComponent.addChild(item);
-          item.parent = currentComponent;
           return item.nodes;
         }
         return [item as ChildNode];
@@ -208,7 +205,6 @@ export function createComponent<P = void>(
       const nodes = (isArray(result) ? result : [result]).filter(Boolean).flatMap(childToNodes);
       setComponentNodes(currentComponent, nodes);
     } catch (error) {
-      console.error(error);
       throw error;
     } finally {
       setComponentScope(parentComponent);

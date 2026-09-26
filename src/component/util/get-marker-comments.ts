@@ -3,7 +3,7 @@ import { getAppState } from "../../app-state/app-state.js";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants.js";
 import { getDocument } from "../../dom/get-document.js";
 import { isComment } from "../../dom/type-guards.js";
-import { isStr } from "../../util/type-guards.js";
+import { isObj, isStr } from "../../util/type-guards.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
@@ -18,51 +18,32 @@ export const getMarkerComments = (
   instanceOrId: SeidrComponent | string,
   create: boolean = true,
 ): [Comment, Comment] | undefined => {
-  const commentText =
-    typeof instanceOrId === "string"
-      ? instanceOrId
-      : process.env.NODE_ENV === "production"
-        ? encodeBase62(instanceOrId.id)
-        : `${instanceOrId.name}-${encodeBase62(instanceOrId.id)}`;
+  // Determine the comment text based on whether we're dealing with an instance or an ID
+  const commentText = isStr(instanceOrId)
+    ? instanceOrId
+    : process.env.NODE_ENV === "production"
+      ? encodeBase62(instanceOrId.id)
+      : `${instanceOrId.name}-${encodeBase62(instanceOrId.id)}`;
+  const startText = SEIDR_COMPONENT_START_PREFIX + commentText;
+  const endText = SEIDR_COMPONENT_END_PREFIX + commentText;
 
+  // Check for existing
   const state = getAppState();
   const cached = state.markers.get(commentText);
-  if (cached?.[0] && cached[1]) {
+  if (cached) {
     return cached;
   }
 
   // Check if markers already exist in component's existing DOM nodes or siblings
-  if (!isStr(instanceOrId) && instanceOrId.nodes && instanceOrId.nodes.length > 0) {
+  if (isObj(instanceOrId) && instanceOrId.nodes.length > 0) {
     const nodes = instanceOrId.nodes.filter(Boolean);
-    const firstNode = nodes[0];
-    const lastNode = nodes[nodes.length - 1];
-    const startText = SEIDR_COMPONENT_START_PREFIX + commentText;
-    const endText = SEIDR_COMPONENT_END_PREFIX + commentText;
+    const firstNode = nodes[0]!;
+    const lastNode = nodes[nodes.length - 1]!;
 
-    let startComment: Comment | undefined =
-      isComment(firstNode) && firstNode.textContent === startText ? (firstNode as Comment) : cached?.[0];
-    let endComment: Comment | undefined =
-      isComment(lastNode) && lastNode.textContent === endText ? (lastNode as Comment) : cached?.[1];
-
-    if (!startComment && firstNode?.previousSibling && isComment(firstNode.previousSibling)) {
-      const prev = firstNode.previousSibling as Comment;
-      if (
-        prev.textContent === startText ||
-        prev.textContent?.startsWith(SEIDR_COMPONENT_START_PREFIX + instanceOrId.name)
-      ) {
-        startComment = prev;
-      }
-    }
-
-    if (!endComment && lastNode?.nextSibling && isComment(lastNode.nextSibling)) {
-      const next = lastNode.nextSibling as Comment;
-      if (
-        next.textContent === endText ||
-        next.textContent?.startsWith(SEIDR_COMPONENT_END_PREFIX + instanceOrId.name)
-      ) {
-        endComment = next;
-      }
-    }
+    let startComment: Comment | null =
+      isComment(firstNode) && firstNode.textContent === startText ? (firstNode as Comment) : null;
+    let endComment: Comment | null =
+      isComment(lastNode) && lastNode.textContent === endText ? (lastNode as Comment) : null;
 
     if (startComment && endComment) {
       const markers: [Comment, Comment] = [startComment, endComment];
@@ -72,15 +53,11 @@ export const getMarkerComments = (
   }
 
   if (!create) {
-    return cached && (cached[0] || cached[1]) ? cached : undefined;
+    return undefined;
   }
 
   const doc = getDocument();
-  const markers: [Comment, Comment] = [
-    cached?.[0] || doc.createComment(SEIDR_COMPONENT_START_PREFIX + commentText),
-    cached?.[1] || doc.createComment(SEIDR_COMPONENT_END_PREFIX + commentText),
-  ];
-
+  const markers: [Comment, Comment] = [doc.createComment(startText), doc.createComment(endText)];
   state.markers.set(commentText, markers);
   return markers;
 };

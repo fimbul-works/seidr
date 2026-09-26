@@ -27,10 +27,10 @@ export default defineConfig({
 });
 ```
 
-### Options: `SeidrPluginOptions`
+### Options: `SeidrVitePluginOptions`
 
 ```typescript
-export interface SeidrPluginOptions {
+export interface SeidrVitePluginOptions {
   /**
    * Disable server-side rendering support.
    * When true, strips all SSR tracking and hydration code for maximum client-only size optimization.
@@ -42,21 +42,41 @@ export interface SeidrPluginOptions {
 
 ---
 
-## Rolldown Bundle Plugin: `seidrBundlePlugin()`
+## Rolldown Bundle Plugin: `seidrRolldownPlugin()`
 
 A Rolldown-compatible plugin performing compile-time dead-code replacements for standalone component or library bundles.
 
 ```typescript
 import { defineConfig } from 'rolldown';
-import { seidrBundlePlugin } from '@fimbul-works/seidr/build';
+import { seidrRolldownPlugin } from '@fimbul-works/seidr/build';
 
 export default defineConfig({
   plugins: [
-    seidrBundlePlugin({
-      disableSSR: false
+    seidrRolldownPlugin({
+      target: "browser",
+      disableSSR: false,
     })
   ]
 });
+```
+
+### Options: `SeidrRolldownPluginOptions`
+
+```typescript
+export interface SeidrRolldownPluginOptions {
+  /**
+   * Target environment for code stripping.
+   * @default "browser"
+   */
+  target?: "browser" | "server";
+
+  /**
+   * Disable server-side rendering support.
+   * When true, strips all SSR tracking and hydration code for maximum client-only size optimization.
+   * @default false
+   */
+  disableSSR?: boolean;
+}
 ```
 
 ---

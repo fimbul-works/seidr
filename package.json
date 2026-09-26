@@ -44,11 +44,10 @@
   },
   "files": [
     "dist",
-    "bundles",
     "docs",
     "README.md",
     "LICENSE",
-    "seidr-logo.svg"
+    "public/seidr-logo.svg"
   ],
   "sideEffects": false,
   "engines": {
@@ -60,7 +59,7 @@
     "clean": "pnpm clean:dist && pnpm clean:examples",
     "build": "pnpm build:lib && pnpm build:bundles",
     "build:lib": "tsc",
-    "build:bundles": "tsdown --config-loader unrun",
+    "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
     "build:examples": "pnpm clean:examples && ./build-examples.sh",
     "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
     "dev": "vite",

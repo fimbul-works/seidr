@@ -81,6 +81,21 @@ describe("watchMutations (MutationObserver lifecycle)", () => {
       expect(headerMount).toHaveBeenCalledTimes(1);
       expect(btnMount).toHaveBeenCalledTimes(1);
     });
+
+    it("should trigger onMounted for registered descendants when an unregistered subtree is appended", async () => {
+      const container = document.createElement("div");
+      const child = document.createElement("p");
+      container.appendChild(child);
+
+      const childMount = vi.fn();
+      onMounted(childMount, child);
+
+      // Append container (which is NOT registered with onMounted)
+      root.appendChild(container);
+      await flushMutationQueue();
+
+      expect(childMount).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("Unmount detection (onUnmounted)", () => {
@@ -131,6 +146,25 @@ describe("watchMutations (MutationObserver lifecycle)", () => {
       expect(cardUnmount).toHaveBeenCalledTimes(1);
       expect(headerUnmount).toHaveBeenCalledTimes(1);
       expect(btnUnmount).toHaveBeenCalledTimes(1);
+    });
+
+    it("should trigger onUnmounted for registered descendants when an unregistered parent subtree is removed", async () => {
+      const container = document.createElement("div");
+      const child = document.createElement("p");
+      container.appendChild(child);
+
+      const childUnmount = vi.fn();
+      onUnmounted(childUnmount, child);
+
+      root.appendChild(container);
+      await flushMutationQueue();
+      expect(childUnmount).not.toHaveBeenCalled();
+
+      // Remove container (which is NOT registered with onUnmounted)
+      container.remove();
+      await flushMutationQueue();
+
+      expect(childUnmount).toHaveBeenCalledTimes(1);
     });
   });
 

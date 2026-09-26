@@ -28,7 +28,5 @@ export const Counter = () => {
   );
 };
 
-// Mount component only in browser environment (not in tests)
-if (!process.env.VITEST) {
-  mount(Counter, document.body);
-}
+// Mount component
+mount(Counter, document.body);

@@ -16,7 +16,12 @@ export const onMountedFns = new Map<Node, Array<OnMountedFunction>>();
  * @throws {SeidrError} if called outside of component hierarchy
  */
 export function onMounted(callback: OnMountedFunction, el?: Node) {
-  if (!isFn(callback)) return;
+  if (!isFn(callback)) {
+    if (process.env.NODE_ENV === "development") {
+      console.trace("onMounted callback is not a function");
+    }
+    return;
+  }
 
   // Handle element callbacks
   if (el) {

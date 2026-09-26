@@ -15,7 +15,12 @@ export const onUnmountedFns = new Map<Node, Array<CleanupFunction>>();
  * @throws {SeidrError} if called outside of component hierarchy
  */
 export function onUnmounted(callback: CleanupFunction, el?: Node) {
-  if (!isFn(callback)) return;
+  if (!isFn(callback)) {
+    if (process.env.NODE_ENV === "development") {
+      console.trace("onUnmounted callback is not a function");
+    }
+    return;
+  }
 
   // Handle element callbacks
   if (el) {

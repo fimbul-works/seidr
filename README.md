@@ -10,17 +10,22 @@
 
 ## Table of Contents
 
-- [Features](#-features)
-- [When to Use Seidr](#-when-to-use-seidr)
-- [Installation](#-installation)
-- [Quick Start](#-quick-start)
-- [Conceptual Overview](#-conceptual-overview)
-- [Core Concepts](#-core-concepts)
-- [API Reference](#-api-reference)
-- [Server-Side Rendering](#-server-side-rendering)
-- [Animation](#-animation)
-- [Performance](#-performance)
-- [Browser Support](#-browser-support)
+- [Features](#features)
+- [When to Use Seidr](#when-to-use-seidr)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Conceptual Overview](#conceptual-overview)
+- [Core Concepts](#core-concepts)
+  - [Reactive State](#reactive-state)
+  - [Components](#components)
+  - [Control Flow](#control-flow)
+  - [Routing](#routing)
+- [Server-Side Rendering](#server-side-rendering)
+- [Animation](#animation)
+- [Performance](#performance)
+- [Browser Support](#browser-support)
+- [API Reference](#api-reference)
+- [License](#license)
 
 ## Features
 
@@ -29,9 +34,9 @@
 - 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API:** Simple, composable functions for DOM creation and state
 - 📦 **Tiny Footprint:**
-  - Hello World: **3.8KB** (brotli)
-  - TodoMVC: **5.2KB** (brotli)
-  - SSR Bundle: **9.9KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
+  - Hello World: **3.7KB** (brotli)
+  - TodoMVC: **5.0KB** (brotli)
+  - SSR Bundle: **9.2KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
 
@@ -94,6 +99,16 @@ pnpm install @fimbul-works/seidr
 # or
 yarn add @fimbul-works/seidr
 ```
+
+### Package Exports
+
+| Entry Point | Description |
+|---|---|
+| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), routing (`Router`, `Route`, `Link`), and AppState. |
+| `@fimbul-works/seidr/html` | Predefined reactive DOM element creators (`$div`, `$span`, `$button`, `$input`, `$a`, `$ul`, `$li`, `$table`, etc.). |
+| `@fimbul-works/seidr/ssr` | Server-Side Rendering (`renderToString`), hydration (`hydrate`), and SSR context utilities. |
+| `@fimbul-works/seidr/build` | Official Vite and Rolldown build plugins (`seidrVitePlugin`, `seidrRolldownPlugin`) for compile-time branch pruning. |
+| `@fimbul-works/seidr/testing` | Dual-mode test runners (`describeDualMode`, `itHasParity`) and testing environment utilities (`setupDom`). |
 
 ## Quick Start
 
@@ -310,32 +325,99 @@ const UserProfile = createComponent<ProfileProps>(({ name, initialAge = 30 }) =>
 
 **Learn more:** [`createComponent()`](docs/components.md#createcomponent) | [`Lifecycle Hooks`](docs/components.md#lifecycle-hooks)
 
----
+### Control Flow
 
-## 📚 API Reference
+Seidr provides built-in control flow components that avoid full branch re-renders:
 
-For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
+- **`Show`**: Conditionally renders children or fallback when a boolean `Value` changes.
+- **`List`**: Reconciles dynamic collections using keyed diffing.
+- **`Switch`**: Matches a reactive discriminant value against discrete cases.
+- **`Safe`**: Error boundary component that catches render/initialization errors and displays fallback UI.
+- **`Suspense`** & **`Lazy`**: Asynchronous boundaries and code-split module loading.
 
-- [Application State (`AppState.md`)](docs/AppState.md)
-- [Reactive State (`Value.md`)](docs/Value.md)
-- [DOM Elements & Queries (`DOM.md`)](docs/DOM.md)
-- [Components & Lifecycle (`components.md`)](docs/components.md)
-- [Control Flow (`Show.md`, `List.md`, `Switch.md`, `Safe.md`, `Suspense.md`, `Lazy.md`)](docs/components.md#built-in-components)
-- [Routing (`Router.md`)](docs/Router.md)
-- [Type Guards (`type-guards.md`)](docs/type-guards.md)
-- [Server-Side Rendering (`SSR.md`)](docs/SSR.md)
-- [Build Plugins (`build.md`)](docs/build.md)
-- [Testing Utilities (`testing.md`)](docs/testing.md)
-- [Utilities (`utils.md`)](docs/utils.md)
+```typescript
+import { createValue, Show } from '@fimbul-works/seidr';
+import { $button, $div, $p } from '@fimbul-works/seidr/html';
 
+const ToggleView = () => {
+  const visible = createValue(false);
+
+  return $div({}, [
+    $button({
+      textContent: 'Toggle Details',
+      onclick: () => visible((prev) => !prev)
+    }),
+    Show(
+      visible,
+      () => $p({ textContent: 'Secret project details revealed!' }),
+      () => $p({ textContent: 'Click above to reveal details.' })
+    )
+  ]);
+};
+```
+
+**Learn more:** [`Show`](docs/Show.md) | [`List`](docs/List.md) | [`Switch`](docs/Switch.md) | [`Safe`](docs/Safe.md) | [`Suspense`](docs/Suspense.md) | [`Lazy`](docs/Lazy.md)
+
+### Routing
+
+Seidr includes a built-in, lightweight router that supports nested routes, dynamic parameters, history navigation, and SSR hydration out of the box:
+
+```typescript
+import { createComponent, Link, Route, Router } from '@fimbul-works/seidr';
+import { $div, $h1, $nav, $p } from '@fimbul-works/seidr/html';
+
+const App = createComponent(() => {
+  return $div({}, [
+    $nav({}, [
+      Link({ to: '/', textContent: 'Home' }),
+      Link({ to: '/about', textContent: 'About' })
+    ]),
+    Router([
+      Route('/', () => $h1({ textContent: 'Welcome Home' })),
+      Route('/about', () => $p({ textContent: 'About Seidr' })),
+      Route('*', () => $p({ textContent: '404 - Page Not Found' }))
+    ])
+  ]);
+});
+```
+
+**Learn more:** [`Router API`](docs/Router.md)
 
 ---
 
 ## 🌐 Server-Side Rendering
 
-Seidr provides SSR support with automatic state capture and deterministic client-side hydration.
+Seidr provides first-class SSR support with automatic state capture and deterministic client-side hydration. Components execute identically on both server and client.
 
-For more information, see **[SSR.md](docs/SSR.md)**.
+### Server Render
+
+```typescript
+import { renderToString } from '@fimbul-works/seidr/ssr';
+import { App } from './app';
+
+const { html, state } = await renderToString(App);
+
+const responseHtml = `
+<!DOCTYPE html>
+<html>
+  <body>
+    <div id="app">${html}</div>
+    <script>window.__HYDRATION_DATA__ = ${state};</script>
+    <script type="module" src="/client.js"></script>
+  </body>
+</html>`;
+```
+
+### Client Hydration
+
+```typescript
+import { hydrate } from '@fimbul-works/seidr/ssr';
+import { App } from './app';
+
+hydrate(App, document.getElementById('app')!, window.__HYDRATION_DATA__);
+```
+
+**Learn more:** [`SSR Guide`](docs/SSR.md)
 
 ---
 
@@ -359,7 +441,7 @@ Unlike React/Vue, Seidr doesn't diff entire virtual component trees. Updates go 
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.8KB (Seidr client-side runtime)
+- **Seidr TodoMVC**: ~5.6KB (Seidr client-side runtime)
 
 ---
 
@@ -371,6 +453,26 @@ Seidr works in all modern browsers:
 - ✅ Firefox 88+
 - ✅ Safari 14+
 - ✅ Opera 76+
+
+---
+
+## 📚 API Reference
+
+For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
+
+- [Application State (`AppState.md`)](docs/AppState.md) — Central execution context, component registry, and pluggable state strategies.
+- [Reactive State (`Value.md`)](docs/Value.md) — Callable getter-setter observables, derivation, and object wrapping.
+- [DOM Elements & Queries (`DOM.md`)](docs/DOM.md) — Reactive element creation, custom element factories, and DOM queries.
+- [Components & Lifecycle (`components.md`)](docs/components.md) — Component definitions, scopes, and lifecycle hooks (`onMounted`, `onUnmounted`).
+- [Control Flow](docs/components.md#built-in-components) — Fine-grained control flow: [`Show`](docs/Show.md), [`List`](docs/List.md), [`Switch`](docs/Switch.md), [`Safe`](docs/Safe.md), [`Suspense`](docs/Suspense.md), [`Lazy`](docs/Lazy.md).
+- [Routing (`Router.md`)](docs/Router.md) — Declarative routing, navigation hooks, route matching, and history drivers.
+- [Type Guards (`type-guards.md`)](docs/type-guards.md) — Zero-dependency type predicates for primitives, components, DOM nodes, and observables.
+- [Server-Side Rendering (`SSR.md`)](docs/SSR.md) — Isomorphic rendering, hydration serialization, and environment flags.
+- [Build Plugins (`build.md`)](docs/build.md) — Vite and Rolldown compiler plugins for dead-code pruning.
+- [Testing Utilities (`testing.md`)](docs/testing.md) — Dual-mode test runners (`describeDualMode`) and testing environment helpers.
+- [Utilities (`utils.md`)](docs/utils.md) — Deterministic random numbers (`random`), error wrapping, and runtime error classes.
+
+---
 
 ## 📄 License
 

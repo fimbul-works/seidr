@@ -37,6 +37,6 @@ export function replace(ms: MagicString, replacements: Record<string, any> = {})
   for (const key of keys) {
     const search = getReplaceRegex(key);
     const replacement = replacements[key];
-    ms.replaceAll(search, String(replacement));
+    ms.replaceAll(key, String(replacement));
   }
 }

@@ -147,10 +147,9 @@ export function lazy<P = void>(loader: LazyComponentLoader<P>, options: LazyOpti
           if (parentScope) {
             setComponentScope(parentScope);
           }
+
           try {
-            const compFactory = wrapComponent<P>(comp, componentName);
-            const compInstance = compFactory(props);
-            currentChild(compInstance);
+            currentChild(wrapComponent<P>(comp, componentName)(props));
           } finally {
             setComponentScope(prevScope);
           }
@@ -179,6 +178,5 @@ export function lazy<P = void>(loader: LazyComponentLoader<P>, options: LazyOpti
   ) as LazyComponentFactory<P>;
 
   factory.preload = () => load();
-
   return factory;
 }

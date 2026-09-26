@@ -9,9 +9,6 @@ import { camelToKebab } from "../util/string.js";
 import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import type { PropName, SeidrElementProps } from "./types.js";
 
-// Data-key for element prop bindingss
-const ELEMENT_BINDINGS_DATA_KEY = "seidr.bindings";
-
 /**
  * Interface for a reactive binding.
  */
@@ -34,7 +31,7 @@ interface PropBinding {
  */
 function getElementBindings(el: Node): Map<string, PropBinding> {
   const propBindings = getAppState().getData<WeakMap<Node, Map<string, PropBinding>>>(
-    ELEMENT_BINDINGS_DATA_KEY,
+    "seidr.bindings",
     new WeakMap<Node, Map<string, PropBinding>>(),
   );
 

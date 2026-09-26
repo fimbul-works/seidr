@@ -22,20 +22,18 @@ function processAddedNode(node: Node) {
   if (!node.isConnected) return;
 
   // Trigger onMounted callbacks
-  if (onMountedFns?.has(node)) {
-    const fns = onMountedFns.get(node);
+  if (onMountedFns.has(node)) {
+    const fns = onMountedFns.get(node)!;
     onMountedFns.delete(node);
-    fns?.forEach((fn) => fn());
+    fns.forEach((fn) => fn());
   }
 
   // Process any registered descendants if node is a ParentNode
-  if (isFn(node.contains)) {
-    if (onMountedFns && onMountedFns.size > 0) {
-      for (const [targetNode, fns] of Array.from(onMountedFns.entries())) {
-        if (targetNode !== node && node.contains(targetNode) && targetNode.isConnected) {
-          onMountedFns.delete(targetNode);
-          fns.forEach((fn) => fn());
-        }
+  if (isFn(node.contains) && onMountedFns.size > 0) {
+    for (const [targetNode, fns] of Array.from(onMountedFns.entries())) {
+      if (targetNode !== node && node.contains(targetNode) && targetNode.isConnected) {
+        onMountedFns.delete(targetNode);
+        fns.forEach((fn) => fn());
       }
     }
   }
@@ -48,15 +46,15 @@ function processAddedNode(node: Node) {
 function processRemovedNode(node: Node) {
   if (node.isConnected) return;
 
-  // Process the node itself
-  if (onUnmountedFns?.has(node)) {
-    const fns = onUnmountedFns.get(node);
+  // Trigger onUnmounted callbacks
+  if (onUnmountedFns.has(node)) {
+    const fns = onUnmountedFns.get(node)!;
     onUnmountedFns.delete(node);
-    fns?.forEach((fn) => fn());
+    fns.forEach((fn) => fn());
   }
 
   // Process any registered descendants if node is a ParentNode
-  if (isFn(node.contains) && onUnmountedFns && onUnmountedFns.size > 0) {
+  if (isFn(node.contains) && onUnmountedFns.size > 0) {
     for (const [targetNode, fns] of Array.from(onUnmountedFns.entries())) {
       if (targetNode !== node && node.contains(targetNode) && !targetNode.isConnected) {
         onUnmountedFns.delete(targetNode);
@@ -73,28 +71,27 @@ function processRemovedNode(node: Node) {
  */
 function createRootObserver(root: Element): MutationObserver {
   const runTask = queueMicrotask;
-  const CHILD_LIST = "childList";
 
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
-      if (mutation.type === CHILD_LIST) {
+      if (mutation.type === "childList") {
         mutation.addedNodes.forEach((added) => runTask(() => processAddedNode(added)));
         mutation.removedNodes.forEach((removed) => runTask(() => processRemovedNode(removed)));
       }
     }
   });
 
-  observer.observe(root, { [CHILD_LIST]: true, subtree: true });
+  observer.observe(root, { childList: true, subtree: true });
   return observer;
 }
 
 /**
  * Watch for DOM mutations using a single root MutationObserver attached to document.documentElement.
  *
- * @param {Element} [_node] - Optional target node (root element preferred)
+ * @param {Element} [el] - Optional target node (root element preferred)
  * @returns {CleanupFunction} Function that stops observing when all watchers unregister
  */
-export const watchMutations = (node?: Element): CleanupFunction => {
+export const watchMutations = (el?: Element): CleanupFunction => {
   if (isServer()) {
     // Do nothing in SSR
     return () => {};
@@ -109,7 +106,7 @@ export const watchMutations = (node?: Element): CleanupFunction => {
   state.watchCount++;
 
   if (!state.activeObserver) {
-    const root = typeof window !== "undefined" ? document.documentElement || document.body : node;
+    const root = typeof window !== "undefined" ? document.documentElement || document.body : el;
     if (root) {
       state.activeObserver = createRootObserver(root);
     }

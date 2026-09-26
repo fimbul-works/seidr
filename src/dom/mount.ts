@@ -35,9 +35,10 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
     throw new SeidrError("Cannot mount to null parent");
   }
 
+  // Register MutationObserver in client mode
   let cleanup: CleanupFunction;
   if (isClient()) {
-    cleanup = watchMutations(container);
+    cleanup = watchMutations();
   }
 
   // Create the component
@@ -45,6 +46,7 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
     ? componentOrFactory
     : wrapComponent(componentOrFactory, "Root")();
 
+  // Append the component to the container
   appendChild(container, rootComponent);
   rootComponent.mount();
 

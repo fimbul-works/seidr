@@ -1,15 +1,21 @@
 import { resolve } from "path";
 import { defineConfig, type UserConfig } from "vite";
-import seidr from "./src/build-plugins/index.ts";
+import { seidrVitePlugin } from "./src/build-plugins/index.ts";
 
 export default defineConfig(() => {
   const example = process.env.EXAMPLE;
   const input = example ? `examples/${example}/index.html` : "examples/index.html";
-
+  const output = example
+    ? {
+        format: "es",
+        entryFileNames: `${example}.js`,
+        codeSplitting: false,
+      }
+    : {};
   return {
     root: "examples",
     publicDir: resolve(import.meta.dirname, "public"),
-    plugins: [seidr({ disableSSR: true })],
+    plugins: [seidrVitePlugin({ disableSSR: true })],
     resolve: {
       alias: {
         "@fimbul-works/seidr/router": resolve(import.meta.dirname, "./src/router/index.ts"),
@@ -27,11 +33,7 @@ export default defineConfig(() => {
       target: "chrome107",
       rolldownOptions: {
         input,
-        output: {
-          format: "es",
-          entryFileNames: `${example}.js`,
-          codeSplitting: false,
-        },
+        output,
         context: "window",
         treeshake: true,
         optimization: {

@@ -136,7 +136,5 @@ const PomodoroTimer = () => {
   );
 };
 
-// Mount component only in browser environment (not in tests)
-if (isClient()) {
-  mount(PomodoroTimer, document.body);
-}
+// Mount component
+mount(PomodoroTimer, document.body);

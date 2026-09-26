@@ -1,64 +1,56 @@
-import type { InputOptions } from "rolldown";
-import { type DepsConfig, defineConfig } from "tsdown";
-import { seidrBundlePlugin } from "./src/build-plugins/bundle-plugin.ts";
+import { type UserConfig, defineConfig } from "tsdown";
+import { seidrRolldownPlugin } from "./src/build-plugins/index.ts";
 
-const deps: DepsConfig = {
-  alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash"],
-};
+// Target option for seidrRolldownPlugin
+const target = "browser";
 
-const inputOptions: InputOptions = {
-  optimization: {
-    inlineConst: false,
+// Common build configuration for all entry points
+const common: UserConfig = {
+  platform: "browser",
+  format: ["esm"],
+  target: "es2022",
+  dts: false,
+  treeshake: true,
+  outDir: "bundles",
+  deps: {
+    alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash"],
   },
-  experimental: {
-    attachDebugInfo: "none",
+  inputOptions: {
+    optimization: {
+      inlineConst: false,
+    },
+    experimental: {
+      attachDebugInfo: "none",
+    },
+  },
+  define: {
+    "process.env.NODE_ENV": JSON.stringify("production"),
   },
 };
 
 export default defineConfig([
-  // Full client-side bundle with hydration
+  // Client-side bundle with SSR hydration
   {
     entry: {
       seidr: "src/index.ts",
     },
-    platform: "browser",
-    format: ["esm", "cjs"],
-    target: "es2022",
-    dts: true,
-    treeshake: true,
-    outDir: "bundles",
-    plugins: [seidrBundlePlugin({ disableSSR: false })],
-    deps,
-    inputOptions,
+    ...common,
+    plugins: [seidrRolldownPlugin({ disableSSR: false, target })],
+  },
+  // Full client-side bundle with SSR hydration
+  {
+    entry: {
+      "seidr.full": "src/index.full.ts",
+    },
+    ...common,
+    plugins: [seidrRolldownPlugin({ disableSSR: false, target })],
   },
   // Core bundle (no SSR)
   {
     entry: {
       "seidr.core": "src/index.core.ts",
     },
-    platform: "browser",
-    format: ["esm", "cjs"],
-    target: "es2022",
-    dts: true,
-    treeshake: true,
-    outDir: "bundles",
-    plugins: [seidrBundlePlugin({ disableSSR: true })],
-    deps,
-    inputOptions,
-  },
-  // Core bundle (no SSR)
-  {
-    entry: {
-      "seidr.full": "src/index.full.ts",
-    },
-    platform: "browser",
-    format: ["esm", "cjs"],
-    target: "es2022",
-    dts: true,
-    treeshake: true,
-    outDir: "bundles",
-    plugins: [seidrBundlePlugin({ disableSSR: true })],
-    deps,
-    inputOptions,
+    ...common,
+    plugins: [seidrRolldownPlugin({ disableSSR: true, target })],
   },
 ]);

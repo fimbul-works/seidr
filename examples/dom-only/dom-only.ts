@@ -10,5 +10,5 @@ export const HelloWorld = $("button", {
   onclick: () => textContent("Components? Optional"), // Update the reactive value.
 });
 
-// Mount directly to the DOM
+// Append directly to DOM
 document.body.append(HelloWorld);
