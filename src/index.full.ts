@@ -6,6 +6,7 @@ export * from "./elements/index.js";
 export * from "./index.core.js";
 export * from "./router/index.js";
 export { hydrate, isHydrating } from "./ssr/hydrate/index.js";
+export * from "./ssr/hydration-serializer.js";
 export type { HydrationData } from "./ssr/types.js";
 export * from "./util/environment/index.js";
 export * from "./util/random.js";
