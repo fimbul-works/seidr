@@ -101,7 +101,7 @@ export const watchMutations = (node?: Element): CleanupFunction => {
   }
 
   const appState = getAppState();
-  let state = appState.getData<MutationObserverState>(DATA_KEY_MUTATION_OBSERVERS, {
+  const state = appState.getData<MutationObserverState>(DATA_KEY_MUTATION_OBSERVERS, {
     activeObserver: null,
     watchCount: 0,
   });
@@ -109,7 +109,7 @@ export const watchMutations = (node?: Element): CleanupFunction => {
   state.watchCount++;
 
   if (!state.activeObserver) {
-    const root = typeof document !== "undefined" ? document.documentElement || document.body : node;
+    const root = typeof window !== "undefined" ? document.documentElement || document.body : node;
     if (root) {
       state.activeObserver = createRootObserver(root);
     }

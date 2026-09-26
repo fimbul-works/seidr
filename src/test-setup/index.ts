@@ -8,7 +8,6 @@ export {
   testAppState,
 } from "./app-state.js";
 export { enableClientMode } from "./client-mode.js";
-export { expectHtmlToBe, normalizeHtml, renderToHtml } from "./dom.js";
 export { describeDualMode, itHasParity } from "./dual-mode.js";
 export { setupTestLifecycle } from "./lifecycle.js";
 export { mockComponentScope, mockNavigator } from "./mock.js";

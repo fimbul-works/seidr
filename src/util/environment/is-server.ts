@@ -2,7 +2,7 @@
 
 import { getAppState } from "../../app-state/app-state.js";
 import { DATA_KEY_IS_SSR } from "../../constants.js";
-import { isNullish } from "../type-guards.js";
+import { isFn, isNullish } from "../type-guards.js";
 
 /**
  * Returns true if the current environment is the server (Node.js/SSR).
@@ -14,9 +14,8 @@ export const isServer = (): boolean => {
     return false;
   }
 
-  if (process.env.VITEST && typeof getAppState === "function") {
-    const state = getAppState();
-    const isSSR = state?.getData<boolean>(DATA_KEY_IS_SSR);
+  if (process.env.VITEST && isFn(getAppState)) {
+    const isSSR = getAppState()?.getData<boolean>(DATA_KEY_IS_SSR);
     if (!isNullish(isSSR)) {
       return isSSR;
     }

@@ -64,8 +64,7 @@ describeDualMode("Show Component", ({ getDocument }) => {
     const unmountedSpy = vi.fn();
 
     const View = createComponent(() => {
-      const el = $("span", { textContent: "Visible" });
-      const comp = createComponent(() => el)();
+      const comp = createComponent(() => $("span", { textContent: "Visible" }))();
       comp.onUnmounted(unmountedSpy);
       return comp;
     });

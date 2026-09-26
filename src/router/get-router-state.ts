@@ -14,5 +14,6 @@ export const getRouterState = (): RouterState => {
   if (!appState.hasData(DATA_KEY_ROUTER)) {
     throw new SeidrError(ERROR_ROUTER_NOT_INITIALIZED);
   }
+
   return appState.getData<RouterState>(DATA_KEY_ROUTER)!;
 };

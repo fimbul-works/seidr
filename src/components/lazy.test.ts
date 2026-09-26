@@ -102,9 +102,9 @@ describeDualMode("lazy() Component", ({ getDocument }) => {
 
     const LazyComp = lazy(loader);
 
-    const c1 = LazyComp();
-    const c2 = LazyComp();
-    const c3 = LazyComp();
+    LazyComp();
+    LazyComp();
+    LazyComp();
 
     expect(callCount).toBe(1);
 

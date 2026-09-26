@@ -1,5 +1,6 @@
 import type MagicString from "magic-string";
 import { type CallExpression, type Node, parseSync } from "oxc-parser";
+import { isObj } from "../util/type-guards.js";
 
 /**
  * Depth-first generator over all CallExpression nodes in an AST.
@@ -9,7 +10,7 @@ import { type CallExpression, type Node, parseSync } from "oxc-parser";
  */
 function* walkCallExpressions(node: Node, parent?: Node): Generator<{ call: CallExpression; parent?: Node }> {
   // Skip non-objects
-  if (typeof node !== "object") {
+  if (!isObj(node)) {
     return;
   }
 
@@ -28,11 +29,11 @@ function* walkCallExpressions(node: Node, parent?: Node): Generator<{ call: Call
     const child = node[key as keyof typeof node];
     if (Array.isArray(child)) {
       for (const item of child) {
-        if (item && typeof item === "object" && "type" in item) {
+        if (item && isObj(item) && "type" in item) {
           yield* walkCallExpressions(item, node);
         }
       }
-    } else if (child && typeof child === "object" && "type" in child) {
+    } else if (child && isObj(child) && "type" in child) {
       yield* walkCallExpressions(child, node);
     }
   }

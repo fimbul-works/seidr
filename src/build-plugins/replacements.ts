@@ -28,10 +28,8 @@ export const serverReplace = {
   [IS_HYDRATING]: "false",
   "import.meta.env.SSR": "true",
   "import.meta.env?.SSR": "true",
-  'typeof window !== "undefined"': "false",
-  'typeof window === "undefined"': "true",
-  'typeof process === "undefined"': "false",
-  'typeof process !== "undefined"': "true",
+  "typeof window": "'undefined'",
+  "typeof process": "{}",
 };
 
 /**
@@ -45,9 +43,8 @@ export const clientReplace = {
   [IS_SERVER]: "false",
   "import.meta.env.SSR": "false",
   "import.meta.env?.SSR": "false",
-  'typeof window !== "undefined"': "true",
-  'typeof window === "undefined"': "false",
-  process: "undefined",
+  "typeof window": "{}",
+  "typeof process": "'undefined'",
 };
 
 /**

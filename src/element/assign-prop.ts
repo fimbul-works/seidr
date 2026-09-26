@@ -36,7 +36,8 @@ function getElementBindings(el: Node): Map<string, PropBinding> {
   const propBindings = getAppState().getData<WeakMap<Node, Map<string, PropBinding>>>(
     ELEMENT_BINDINGS_DATA_KEY,
     new WeakMap<Node, Map<string, PropBinding>>(),
-  )!;
+  );
+
   let bindings = propBindings.get(el);
   if (!bindings) {
     bindings = new Map<string, PropBinding>();

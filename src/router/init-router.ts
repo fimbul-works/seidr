@@ -34,7 +34,7 @@ export const initRouter = (
       return new URL(url, base);
     }
 
-    if (isClient() && typeof Location !== "undefined" && url instanceof Location) {
+    if (isClient() && url instanceof Location) {
       return new URL(url.href, base);
     }
 

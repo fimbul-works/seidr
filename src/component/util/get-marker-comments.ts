@@ -3,6 +3,7 @@ import { getAppState } from "../../app-state/app-state.js";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants.js";
 import { getDocument } from "../../dom/get-document.js";
 import { isComment } from "../../dom/type-guards.js";
+import { isStr } from "../../util/type-guards.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
@@ -31,7 +32,7 @@ export const getMarkerComments = (
   }
 
   // Check if markers already exist in component's existing DOM nodes or siblings
-  if (typeof instanceOrId !== "string" && instanceOrId.nodes && instanceOrId.nodes.length > 0) {
+  if (!isStr(instanceOrId) && instanceOrId.nodes && instanceOrId.nodes.length > 0) {
     const nodes = instanceOrId.nodes.filter(Boolean);
     const firstNode = nodes[0];
     const lastNode = nodes[nodes.length - 1];

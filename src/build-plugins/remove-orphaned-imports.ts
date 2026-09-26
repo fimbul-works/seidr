@@ -9,6 +9,7 @@ import {
   type TSIndexSignatureName,
   type TSThisParameter,
 } from "oxc-parser";
+import { isObj } from "../util/type-guards.js";
 
 type IdentifierNode =
   | IdentifierName
@@ -46,11 +47,11 @@ function* walkIdentifiers(node: Node): Generator<IdentifierNode> {
     const child = node[key as keyof typeof node];
     if (Array.isArray(child)) {
       for (const item of child) {
-        if (item && typeof item === "object" && "type" in item) {
+        if (isObj(item) && "type" in item) {
           yield* walkIdentifiers(item);
         }
       }
-    } else if (child && typeof child === "object" && "type" in child) {
+    } else if (isObj(child) && "type" in child) {
       yield* walkIdentifiers(child);
     }
   }

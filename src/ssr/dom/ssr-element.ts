@@ -48,7 +48,7 @@ export class SSRElement<
         if (prop === "__isProxy") return true;
         if (prop === "__target") return target;
 
-        if (typeof prop !== "string") {
+        if (!isStr(prop)) {
           return Reflect.get(target, prop, receiver);
         }
 
@@ -71,7 +71,7 @@ export class SSRElement<
         return target.getAttribute(sProp);
       },
       set(target, prop, value, receiver) {
-        if (typeof prop !== "string") {
+        if (!isStr(prop)) {
           return Reflect.set(target, prop, value, receiver);
         }
 
@@ -295,7 +295,7 @@ export class SSRElement<
     const self = this;
     return new Proxy({} as CSSStyleDeclaration, {
       get(_, prop) {
-        if (typeof prop !== "string") return Reflect.get(storage, prop);
+        if (!isStr(prop)) return Reflect.get(storage, prop);
         if (prop === "toString") return () => self._serializeStyle();
         if (prop === "cssText") return self._serializeStyle();
         if (prop === "setProperty") return (k: string, v: string) => (storage[k] = v);
@@ -306,7 +306,7 @@ export class SSRElement<
         return storage[camelToKebab(prop)] || "";
       },
       set(_, prop, value) {
-        if (typeof prop !== "string") return Reflect.set(storage, prop, value);
+        if (!isStr(prop)) return Reflect.set(storage, prop, value);
         if (prop === "cssText") {
           Object.keys(storage).forEach((k) => delete storage[k]);
           String(value)
@@ -334,11 +334,11 @@ export class SSRElement<
       {},
       {
         get(_, prop) {
-          if (typeof prop !== "string") return undefined;
+          if (!isStr(prop)) return undefined;
           return attrs[`data-${camelToKebab(prop)}`];
         },
         set(_, prop, value) {
-          if (typeof prop !== "string") return false;
+          if (!isStr(prop)) return false;
           attrs[`data-${camelToKebab(prop)}`] = value;
           return true;
         },
