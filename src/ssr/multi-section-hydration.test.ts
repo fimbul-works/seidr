@@ -116,6 +116,9 @@ describe("Multi-section SSR and Hydration with Router", () => {
 
     const unmount = hydrate(() => App("http://localhost:4242/"), container, hydrationData);
 
+    // Wait for microtask completion
+    await new Promise(resolve => setTimeout(resolve));
+
     expect(container.querySelector("#hero-canvas")).toBeTruthy();
     expect(container.querySelector(".home-navigation")).toBeTruthy();
     expect(container.querySelector("#contact")).toBeTruthy();

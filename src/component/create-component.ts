@@ -117,6 +117,7 @@ export function createComponent<P = void>(
       mount() {
         isMounted = true;
 
+        // Trigger onMounted callbacks after a small delay on client-side
         componentMountedFns.forEach((fn) => fn());
         componentMountedFns.length = 0;
 

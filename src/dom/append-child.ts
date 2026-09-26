@@ -9,6 +9,7 @@ import { isValue } from "../observable/type-guards.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import type { Value } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
+import { isClient } from "../util/environment/is-client.js";
 import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { $text } from "./node/text.js";
 
@@ -165,7 +166,12 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     }
 
     if (parent.isConnected) {
-      child.mount();
+      if (isClient()) {
+        // Add a small delay before triggering onMounted callbacks
+        setTimeout(child.mount);
+      } else {
+        child.mount();
+      }
     }
     return;
   } else if (isValue(child)) {
