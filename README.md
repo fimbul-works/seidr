@@ -34,9 +34,9 @@
 - 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API:** Simple, composable functions for DOM creation and state
 - 📦 **Tiny Footprint:**
-  - Hello World: **3.7KB** (brotli)
-  - TodoMVC: **5.0KB** (brotli)
-  - SSR Bundle: **9.2KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
+  - Hello World: **3.6KB** (brotli)
+  - TodoMVC: **4.8KB** (brotli)
+  - SSR Bundle: **9.0KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
 
@@ -441,7 +441,7 @@ Unlike React/Vue, Seidr doesn't diff entire virtual component trees. Updates go 
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.6KB (Seidr client-side runtime)
+- **Seidr TodoMVC**: ~5.4KB (Seidr client-side runtime)
 
 ---
 

@@ -1,86 +1,12 @@
-import { getAppState } from "../app-state/app-state.js";
-import { onMounted, onUnmounted } from "../component/lifecycle/index.js";
+import { onUnmounted } from "../component/lifecycle/index.js";
 import { BOOL_ATTRIBUTES } from "../constants.js";
 import { isValue } from "../observable/type-guards.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
-import { type CleanupFunction, SeidrError } from "../types.js";
+import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
 import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import type { PropName, SeidrElementProps } from "./types.js";
-
-/**
- * Interface for a reactive binding.
- */
-interface PropBinding {
-  /**
-   * The reactive value.
-   */
-  value: unknown;
-  /**
-   * Cleanup function.
-   */
-  cleanup?: CleanupFunction;
-}
-
-/**
- * Returns the bindings for a given element, or creates them if they don't exist.
- * Maps: Node -> (PropKey -> PropBinding)
- * @param {Node} el - The element to get the bindings for.
- * @returns {Map<string, PropBinding>} The bindings for the given element.
- */
-function getElementBindings(el: Node): Map<string, PropBinding> {
-  const propBindings = getAppState().getData<WeakMap<Node, Map<string, PropBinding>>>(
-    "seidr.bindings",
-    new WeakMap<Node, Map<string, PropBinding>>(),
-  );
-
-  let bindings = propBindings.get(el);
-  if (!bindings) {
-    bindings = new Map<string, PropBinding>();
-    propBindings.set(el, bindings);
-  }
-  return bindings;
-}
-
-/**
- * Cleans up and registers a reactive binding for an element prop.
- *
- * @param {HTMLElement} el - The element to register the binding for.
- * @param {string} bindingKey - The key of the binding.
- * @param {any} newValue - The new value to bind.
- * @param {(val: any) => void} applyFn - The function to apply the value to.
- */
-function setPropBinding(el: HTMLElement, bindingKey: string, newValue: any, applyFn: (val: any) => void): void {
-  const bindings = getElementBindings(el);
-  const existing = bindings.get(bindingKey);
-
-  // If identical Value or identical primitive already bound, do nothing
-  if (existing && existing.value === newValue) {
-    return;
-  }
-
-  // Clean up previous binding if different
-  if (existing?.cleanup) {
-    existing.cleanup();
-    bindings.delete(bindingKey);
-  }
-
-  if (isValue(newValue)) {
-    const cleanup = newValue.bind((val) => applyFn(unwrapValue(val)));
-    bindings.set(bindingKey, { value: newValue, cleanup });
-    onUnmounted(() => {
-      const current = bindings.get(bindingKey);
-      if (current && current.value === newValue) {
-        current.cleanup?.();
-        bindings.delete(bindingKey);
-      }
-    }, el);
-  } else {
-    bindings.delete(bindingKey);
-    applyFn(newValue);
-  }
-}
 
 /**
  * Assigns a property to an element, handling reactive Value bindings.
@@ -107,17 +33,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
       throw new SeidrError("ref must be a Value");
     }
 
-    const bindings = getElementBindings(el);
-    const existing = bindings.get("ref");
-    if (existing && existing.value === value) {
-      return;
-    }
-    if (existing?.cleanup) {
-      existing.cleanup();
-    }
-
-    bindings.set("ref", { value });
-    onMounted(() => value(el), el);
+    value(el);
     onUnmounted(() => value(null), el);
     return;
   }
@@ -144,42 +60,26 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
   }
 
   if (prop === "style") {
-    const bindings = getElementBindings(el);
-
-    const clearStyleSubBindings = () => {
-      for (const [key, binding] of Array.from(bindings.entries())) {
-        if (key.startsWith("style:")) {
-          binding.cleanup?.();
-          bindings.delete(key);
-        }
-      }
-    };
-
     if (isValue(value)) {
-      clearStyleSubBindings();
-      setPropBinding(el, "style:cssText", value, (val) => {
-        el.style = unwrapValue(val);
-      });
+      onUnmounted(
+        value.bind((style) => (el.style = unwrapValue(style))),
+        el,
+      );
     } else if (isStr(value)) {
-      clearStyleSubBindings();
-      setPropBinding(el, "style:cssText", value, (val) => {
-        el.style = val as string;
-      });
+      el.style = value;
     } else if (isObj(value)) {
-      const existingCssText = bindings.get("style:cssText");
-      if (existingCssText) {
-        existingCssText.cleanup?.();
-        bindings.delete("style:cssText");
-      }
-
       for (let [styleProp, styleValue] of Object.entries(value)) {
         if (isServer()) {
           styleProp = camelToKebab(styleProp);
         }
-        const styleKey = `style:${styleProp}`;
-        setPropBinding(el, styleKey, styleValue, (val) => {
-          el.style[styleProp as any] = unwrapValue(val);
-        });
+        if (isValue(styleValue)) {
+          onUnmounted(
+            styleValue.bind((val) => (el.style[styleProp as any] = unwrapValue(val))),
+            el,
+          );
+        } else {
+          el.style[styleProp as any] = styleValue;
+        }
       }
     }
     return;
@@ -199,5 +99,12 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
     }
   };
 
-  setPropBinding(el, effectiveProp as string, value, (val) => applyValue(el, val));
+  if (isValue(value)) {
+    onUnmounted(
+      value.bind((val) => applyValue(el, unwrapValue(val))),
+      el,
+    );
+  } else {
+    applyValue(el, value);
+  }
 };

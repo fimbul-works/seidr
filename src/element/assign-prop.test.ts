@@ -19,7 +19,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     onUnmountedFns?.get(el)?.forEach((fn) => fn());
   };
 
-  describe("1. Ref Assignment & Lifecycle (prop === 'ref')", () => {
+  describe("Ref Assignment & Lifecycle (prop === 'ref')", () => {
     it("should throw SeidrError if ref is not a reactive Value instance", () => {
       const el = getDocument().createElement("div");
 
@@ -62,7 +62,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("2. Property & Attribute Name Transformations", () => {
+  describe("Property & Attribute Name Transformations", () => {
     it("should handle explicit aria-* attributes (propStartsWith('aria-'))", () => {
       const el = getDocument().createElement("button");
 
@@ -149,7 +149,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("3. Style Assignment (prop === 'style')", () => {
+  describe("Style Assignment (prop === 'style')", () => {
     it("should handle style as a static string", () => {
       const el = getDocument().createElement("div");
 
@@ -221,7 +221,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("4. Boolean Attributes (BOOL_ATTRIBUTES)", () => {
+  describe("Boolean Attributes (BOOL_ATTRIBUTES)", () => {
     it("should set empty string attribute for truthy boolean values", () => {
       const button = getDocument().createElement("button");
       const input = getDocument().createElement("input");
@@ -296,7 +296,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("5. Value Removal & Empty Values (isNullish)", () => {
+  describe("Value Removal & Empty Values (isNullish)", () => {
     it("should remove custom and data attributes when value is null or undefined", () => {
       const el = getDocument().createElement("div");
 
@@ -328,7 +328,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("6. General Reactive Value Binding & Lifecycle Cleanup", () => {
+  describe("General Reactive Value Binding & Lifecycle Cleanup", () => {
     it("should bind reactive property and update on changes", () => {
       const el = getDocument().createElement("div");
       const title = createValue("Initial Title");
@@ -359,135 +359,6 @@ describeDualMode("assignProp", ({ getDocument }) => {
       // Updating values after unmount does not affect the element
       id("new-id");
       expect(el.id).toBe("main-id");
-    });
-  });
-
-  describe("7. Reactive Value Swapping & Prop Reassignment", () => {
-    it("should unsubscribe old Value and subscribe new Value when swapping Value prop", () => {
-      const el = getDocument().createElement("div");
-      const valA = createValue("Hello from A");
-      const valB = createValue("Hello from B");
-
-      assignProp(el, "title", valA);
-      expect(el.title).toBe("Hello from A");
-      expect(valA.observerCount).toBe(1);
-      expect(valB.observerCount).toBe(0);
-
-      // Swap to valB
-      assignProp(el, "title", valB);
-      expect(el.title).toBe("Hello from B");
-      expect(valA.observerCount).toBe(0);
-      expect(valB.observerCount).toBe(1);
-
-      // Updating old valA does NOT mutate el
-      valA("Stale A update");
-      expect(el.title).toBe("Hello from B");
-
-      // Updating active valB mutates el
-      valB("Fresh B update");
-      expect(el.title).toBe("Fresh B update");
-    });
-
-    it("should unsubscribe Value when replacing with a static value", () => {
-      const el = getDocument().createElement("div");
-      const val = createValue("Dynamic Title");
-
-      assignProp(el, "title", val);
-      expect(el.title).toBe("Dynamic Title");
-      expect(val.observerCount).toBe(1);
-
-      // Replace with static string
-      assignProp(el, "title", "Static Title");
-      expect(el.title).toBe("Static Title");
-      expect(val.observerCount).toBe(0);
-
-      // Updating val has no effect
-      val("Ignored Update");
-      expect(el.title).toBe("Static Title");
-    });
-
-    it("should not duplicate subscriptions when reassigning the same Value instance", () => {
-      const el = getDocument().createElement("div");
-      const val = createValue("Initial");
-
-      assignProp(el, "title", val);
-      expect(val.observerCount).toBe(1);
-
-      // Reassign same instance
-      assignProp(el, "title", val);
-      expect(val.observerCount).toBe(1);
-    });
-
-    it("should handle swapping boolean attribute Value instances correctly", () => {
-      const button = getDocument().createElement("button");
-      const disabledA = createValue(true);
-      const disabledB = createValue(false);
-
-      assignProp(button, "disabled", disabledA);
-      expect(button.disabled).toBe(true);
-      expect(button.hasAttribute("disabled")).toBe(true);
-      expect(disabledA.observerCount).toBe(1);
-
-      // Swap to disabledB (false)
-      assignProp(button, "disabled", disabledB);
-      expect(button.disabled).toBe(false);
-      expect(button.hasAttribute("disabled")).toBe(false);
-      expect(disabledA.observerCount).toBe(0);
-      expect(disabledB.observerCount).toBe(1);
-
-      // Changing disabledA has no effect
-      disabledA(true);
-      expect(button.disabled).toBe(false);
-
-      // Changing disabledB works
-      disabledB(true);
-      expect(button.disabled).toBe(true);
-      expect(button.hasAttribute("disabled")).toBe(true);
-    });
-
-    it("should handle swapping reactive style properties and whole style strings", () => {
-      const el = getDocument().createElement("div");
-      const colorA = createValue("red");
-      const colorB = createValue("blue");
-
-      assignProp(el, "style", { color: colorA });
-      expect(el.style.color).toBe("red");
-      expect(colorA.observerCount).toBe(1);
-      expect(colorB.observerCount).toBe(0);
-
-      // Swap colorA with colorB
-      assignProp(el, "style", { color: colorB });
-      expect(el.style.color).toBe("blue");
-      expect(colorA.observerCount).toBe(0);
-      expect(colorB.observerCount).toBe(1);
-
-      // Mutating colorA has no effect
-      colorA("purple");
-      expect(el.style.color).toBe("blue");
-
-      // Mutating colorB works
-      colorB("green");
-      expect(el.style.color).toBe("green");
-
-      // Replace object style with static string style
-      assignProp(el, "style", "font-size: 20px;");
-      expect(colorB.observerCount).toBe(0);
-      expect(el.style.fontSize).toBe("20px");
-    });
-
-    it("should clean up swapped active bindings when component unmounts", () => {
-      const el = getDocument().createElement("div");
-      const valA = createValue("A");
-      const valB = createValue("B");
-
-      assignProp(el, "title", valA);
-      assignProp(el, "title", valB);
-
-      expect(valA.observerCount).toBe(0);
-      expect(valB.observerCount).toBe(1);
-
-      triggerUnmount(el);
-      expect(valB.observerCount).toBe(0);
     });
   });
 });
