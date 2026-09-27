@@ -1,5 +1,4 @@
 import { getAppState } from "../app-state/app-state.js";
-import { onMountedFns } from "../component/lifecycle/on-mounted.js";
 import { onUnmountedFns } from "../component/lifecycle/on-unmounted.js";
 import { DATA_KEY_MUTATION_OBSERVERS } from "../constants.js";
 import type { CleanupFunction } from "../types.js";
@@ -12,31 +11,6 @@ import { isFn } from "../util/type-guards.js";
 export interface MutationObserverState {
   activeObserver: MutationObserver | null;
   watchCount: number;
-}
-
-/**
- * Helper to process mount and attached hooks for a node and any of its registered descendants.
- * @param {Node} node - Node to process
- */
-function processAddedNode(node: Node) {
-  if (!node.isConnected) return;
-
-  // Trigger onMounted callbacks
-  if (onMountedFns.has(node)) {
-    const fns = onMountedFns.get(node)!;
-    onMountedFns.delete(node);
-    fns.forEach((fn) => fn());
-  }
-
-  // Process any registered descendants if node is a ParentNode
-  if (isFn(node.contains) && onMountedFns.size > 0) {
-    for (const [targetNode, fns] of Array.from(onMountedFns.entries())) {
-      if (targetNode !== node && node.contains(targetNode) && targetNode.isConnected) {
-        onMountedFns.delete(targetNode);
-        fns.forEach((fn) => fn());
-      }
-    }
-  }
 }
 
 /**
@@ -75,7 +49,6 @@ function createRootObserver(root: Element): MutationObserver {
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       if (mutation.type === "childList") {
-        mutation.addedNodes.forEach((added) => runTask(() => processAddedNode(added)));
         mutation.removedNodes.forEach((removed) => runTask(() => processRemovedNode(removed)));
       }
     }
