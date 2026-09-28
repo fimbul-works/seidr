@@ -113,9 +113,18 @@ console.log(label());   // "Count: 5"
 Registers a change handler callback that is invoked whenever the value changes.
 
 **Parameters:**
-- `handler: (value: T, prevValue?: T) => any` — Callback receiving the new value and previous value.
+- `handler: (value: T, prevValue?: T) => CleanupFunction | void` — Callback receiving the new value and previous value. Can optionally return a `CleanupFunction` (`() => void`).
 
-**Returns:** `CleanupFunction` (`() => void`) to unregister the handler.
+**Returns:** `CleanupFunction` (`() => void`) to unregister the handler and run any active cleanup.
+
+#### Cleanup Function Lifecycle
+
+Handlers can return an optional cleanup function (similar to React's `useEffect` teardown). When returned:
+1. **Before subsequent runs**: If the value changes again, the previously returned cleanup runs immediately before the handler is invoked with the new value.
+2. **On unwatch**: When the returned unsubscribe function (`unwatch()`) is invoked, the active cleanup function runs immediately.
+3. **On `.destroy()`**: If the `Value` is destroyed, any active cleanup function is executed.
+
+#### Basic Usage
 
 ```typescript
 const count = createValue(0);
@@ -131,6 +140,22 @@ count(2); // Logs: "Changed from 1 to 2"
 unwatch();
 ```
 
+#### Side Effects with Teardown
+
+```typescript
+const userId = createValue('user-1');
+
+const unwatch = userId.watch((id) => {
+  const controller = new AbortController();
+  fetch(`/api/users/${id}`, { signal: controller.signal })
+    .then((res) => res.json())
+    .then((data) => console.log('User data:', data));
+
+  // Cleanup runs before next user ID change or when unwatching
+  return () => controller.abort();
+});
+```
+
 ---
 
 ### `.bind()`
@@ -138,9 +163,17 @@ unwatch();
 Registers a change handler callback that is invoked **immediately** with the current value and again whenever the value changes.
 
 **Parameters:**
-- `handler: (value: T, prevValue?: T) => any` — Callback receiving the current/new value and previous value.
+- `handler: (value: T, prevValue?: T) => CleanupFunction | void` — Callback receiving the current/new value and previous value. Can optionally return a `CleanupFunction` (`() => void`).
 
-**Returns:** `CleanupFunction` (`() => void`) to unregister the handler.
+**Returns:** `CleanupFunction` (`() => void`) to unregister the handler and run any active cleanup.
+
+#### Immediate Execution & Teardown Lifecycle
+
+Unlike `.watch()`, `.bind()` executes the handler immediately upon registration with `(currentValue, currentValue)`.
+- If the handler returns a cleanup function, it is captured from the initial call.
+- The cleanup function automatically runs before subsequent updates, when calling the unbind function, or when `.destroy()` is called on the `Value`.
+
+#### Basic Usage
 
 ```typescript
 const count = createValue(10);
@@ -153,6 +186,32 @@ const unbind = count.bind((value) => {
 count(20); // Logs: "Current value: 20"
 
 unbind();
+```
+
+#### Managing External Subscriptions
+
+`.bind()` is particularly useful for establishing active subscriptions or listeners that should be active immediately and cleaned up upon change or teardown:
+
+```typescript
+const isTracking = createValue(false);
+
+const unbind = isTracking.bind((active) => {
+  if (!active) return;
+
+  const onMouseMove = (e: MouseEvent) => {
+    console.log(`Pointer at (${e.clientX}, ${e.clientY})`);
+  };
+
+  window.addEventListener('mousemove', onMouseMove);
+
+  // Automatically cleans up before active changes or when unbound
+  return () => window.removeEventListener('mousemove', onMouseMove);
+});
+
+isTracking(true);  // Attaches event listener
+isTracking(false); // Cleans up event listener
+
+unbind();          // Removes handler and runs active cleanup
 ```
 
 ---
@@ -175,7 +234,7 @@ count.cleanup(() => {
 
 ### `.destroy()`
 
-Removes all registered watcher/binding callbacks and executes all registered cleanups.
+Removes all registered watcher and binding callbacks, runs their active cleanup functions, and executes all registered cleanups.
 
 ```typescript
 const count = createValue(0);

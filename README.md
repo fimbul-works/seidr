@@ -34,9 +34,9 @@
 - 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes
 - 🔧 **Functional API:** Simple, composable functions for DOM creation and state
 - 📦 **Tiny Footprint:**
-  - Hello World: **3.4KB** (brotli)
-  - TodoMVC: **4.8KB** (brotli)
-  - SSR Bundle: **8.9KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
+  - Hello World: **3.2KB** (brotli)
+  - TodoMVC: **4.6KB** (brotli)
+  - SSR Bundle: **8.7KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
 
@@ -293,6 +293,26 @@ const message = count.as((n) => (n > 5 ? 'Many!' : `Count: ${n}`));
 
 **Learn more:** [`instance.as()`](docs/Value.md#as) | [`mergeValues()`](docs/Value.md#mergevalues)
 
+#### Watching & Side Effects
+
+Subscribe to changes with `.watch()` or `.bind()`. Handlers can return an optional cleanup function that executes automatically before the next change or when unsubscribed:
+
+```typescript
+const isTracking = createValue(false);
+
+const unbind = isTracking.bind((active) => {
+  if (!active) return;
+
+  const onMouseMove = (e: MouseEvent) => console.log(e.clientX, e.clientY);
+  window.addEventListener('mousemove', onMouseMove);
+
+  // Return a teardown function (runs on next change or when unbinding)
+  return () => window.removeEventListener('mousemove', onMouseMove);
+});
+```
+
+**Learn more:** [`.watch()`](docs/Value.md#watch) | [`.bind()`](docs/Value.md#bind)
+
 ### Components
 
 Seidr components are functions that return UI elements. They have full access to Seidr's reactivity and lifecycle hooks.
@@ -441,7 +461,7 @@ Unlike React/Vue, Seidr doesn't diff entire virtual component trees. Updates go 
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.3KB (Seidr client-side runtime)
+- **Seidr TodoMVC**: ~5.1KB (Seidr client-side runtime)
 
 ---
 

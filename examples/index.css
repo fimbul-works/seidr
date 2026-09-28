@@ -3,13 +3,6 @@ h1.index {
   margin-top: 0;
 }
 
-.container {
-  max-width: 1200px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
 .subtitle {
   color: rgba(255, 255, 255, 0.9);
   text-align: center;
@@ -25,7 +18,7 @@ h1.index {
 
 .examples-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
   gap: 2rem;
   margin-bottom: 2rem;
 }

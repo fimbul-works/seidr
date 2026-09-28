@@ -5,7 +5,7 @@
 
 #app {
   width: 100%;
-  max-width: var(--card-width);
+  max-width: var(--container-width);
   margin: 0 auto;
 }
 
@@ -78,8 +78,7 @@
 .toggle-all + label {
   display: flex;
   align-items: center;
-  padding: 0.5rem calc(0.5rem - 4px);
-  font-size: 0.9rem;
+  padding: 0.25rem calc(0.5rem - 4px);
   font-weight: 500;
   letter-spacing: 0.02em;
   color: #c8d4ff;

@@ -1,20 +1,14 @@
-const IS_TEST = "process.env.VITEST";
-const IS_SSR_TEST = "process.env.SEIDR_TEST_SSR";
-
-const SEIDR_DISABLE_SSR = "process.env.SEIDR_DISABLE_SSR";
-const SEIDR_USE_SCHEDULER = "process.env.SEIDR_USE_SCHEDULER";
-
-const IS_CLIENT = "isClient()";
-const IS_SERVER = "isServer()";
-const IS_HYDRATING = "isHydrating()";
-
 /**
  * Common replacements for Seidr builds.
  */
 export const commonReplace = {
-  [IS_TEST]: "false",
-  [IS_SSR_TEST]: "false",
+  "process.env.VITEST": "false",
+  "process.env.SEIDR_TEST_SSR": "false",
 };
+
+const IS_CLIENT = "isClient()";
+const IS_SERVER = "isServer()";
+const SEIDR_DISABLE_SSR = "process.env.SEIDR_DISABLE_SSR";
 
 /**
  * Replacements for server-side rendering builds.
@@ -22,10 +16,9 @@ export const commonReplace = {
 export const serverReplace = {
   ...commonReplace,
   [SEIDR_DISABLE_SSR]: "false",
-  [SEIDR_USE_SCHEDULER]: "false",
   [IS_CLIENT]: "false",
   [IS_SERVER]: "true",
-  [IS_HYDRATING]: "false",
+  "isHydrating()": "false",
   "import.meta.env.SSR": "true",
   "import.meta.env?.SSR": "true",
   "typeof window": "'undefined'",
@@ -38,7 +31,6 @@ export const serverReplace = {
 export const clientReplace = {
   ...commonReplace,
   [SEIDR_DISABLE_SSR]: "false",
-  [SEIDR_USE_SCHEDULER]: "true",
   [IS_CLIENT]: "true",
   [IS_SERVER]: "false",
   "import.meta.env.SSR": "false",
@@ -53,5 +45,5 @@ export const clientReplace = {
 export const clientOnlyReplacements = {
   ...clientReplace,
   [SEIDR_DISABLE_SSR]: "true",
-  [IS_HYDRATING]: "false",
+  "isHydrating()": "false",
 };
