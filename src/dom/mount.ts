@@ -2,9 +2,7 @@ import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
-import { isClient } from "../util/environment/is-client.js";
 import { appendChild } from "./append-child.js";
-import { watchMutations } from "./watch-mutations.js";
 
 /**
  * Mounts a component or element factory into a container element with automatic cleanup.
@@ -35,12 +33,6 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
     throw new SeidrError("Cannot mount to null parent");
   }
 
-  // Register MutationObserver in client mode
-  let cleanup: CleanupFunction;
-  if (isClient()) {
-    cleanup = watchMutations();
-  }
-
   // Create the component
   const rootComponent: SeidrComponent = isComponent(componentOrFactory)
     ? componentOrFactory
@@ -48,8 +40,7 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
 
   // Append the component to the container
   appendChild(container, rootComponent);
-  rootComponent.mount();
 
   // Return cleanup function
-  return () => (cleanup?.(), rootComponent.unmount());
+  return () => rootComponent.unmount();
 };

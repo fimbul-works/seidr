@@ -44,11 +44,7 @@ export function setComponentNodes(instance: SeidrComponent, nodes: ChildNode[]) 
   instance.nodes = nodes;
 
   // Bind root nodes to component instance (preserving inner child component bindings)
-  nodes.forEach((n) => {
-    if (!appState.nodeIndex.has(n)) {
-      appState.nodeIndex.set(n, instance);
-    }
-  });
+  nodes.forEach((n) => !appState.nodeIndex.has(n) && appState.nodeIndex.set(n, instance));
 
   // Insert nodes if parent exists
   if (parentNode) {

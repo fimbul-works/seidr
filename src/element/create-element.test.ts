@@ -1,25 +1,20 @@
-import { beforeEach, expect, it } from "vitest";
+import { expect } from "vitest";
+import { $text } from "../dom";
 import { isHTMLElement } from "../dom/type-guards";
-import { describeDualMode, mockComponentScope } from "../test-setup";
+import { describeDualMode, itHasParity } from "../test-setup";
 import { $ } from "./create-element";
 
-describeDualMode("$ (createElement)", ({ getDocument }) => {
-  let document: Document;
-
-  mockComponentScope();
-
-  beforeEach(() => {
-    document = getDocument();
-  });
-
-  it("should create basic HTML element", () => {
+describeDualMode("$ (createElement)", () => {
+  itHasParity("should create basic HTML element", () => {
     const div = $("div");
 
     expect(div.tagName).toBe("DIV");
     expect(isHTMLElement(div)).toBe(true);
+
+    return div;
   });
 
-  it("should assign properties to element", () => {
+  itHasParity("should assign properties to element", () => {
     const div = $("div", {
       id: "test-id",
       className: "test-class",
@@ -29,20 +24,24 @@ describeDualMode("$ (createElement)", ({ getDocument }) => {
     expect(div.id).toBe("test-id");
     expect(div.className).toBe("test-class");
     expect(div.textContent).toBe("Hello World");
+
+    return div;
   });
 
-  it("should append children to element", () => {
-    const child1 = document.createElement("span");
-    const child2 = document.createTextNode("text");
+  itHasParity("should append children to element", () => {
+    const child1 = $("span");
+    const child2 = $text("text");
     const div = $("div", {}, [child1, child2]);
 
     expect(div.children.length).toBe(1);
     expect(div.children[0]).toBe(child1);
     expect(div.childNodes.length).toBe(2);
     expect(div.childNodes[1]).toBe(child2);
+
+    return div;
   });
 
-  it("should work with different HTML elements", () => {
+  itHasParity("should work with different HTML elements", () => {
     const button = $("button", { type: "button", textContent: "Click me" });
     const input = $("input", { type: "text", placeholder: "Enter text" });
     const anchor = $("a", { href: "#", textContent: "Link" });
@@ -58,18 +57,22 @@ describeDualMode("$ (createElement)", ({ getDocument }) => {
     expect(anchor.tagName).toBe("A");
     expect(anchor.href).toContain("#");
     expect(anchor.textContent).toBe("Link");
+
+    return $("div", [button, input, anchor]);
   });
 
-  it("should support defining children directly as 2nd parameter without props", () => {
+  itHasParity("should support defining children directly as 2nd parameter without props", () => {
     const div1 = $("div", "Hello Direct Child");
     expect(div1.textContent).toBe("Hello Direct Child");
 
-    const span = document.createElement("span");
+    const span = $("span");
     span.textContent = "Inner";
     const div2 = $("div", span);
     expect(div2.children[0]).toBe(span);
 
-    const div3 = $("div", [document.createElement("span"), "text"]);
+    const div3 = $("div", [$("span"), "text"]);
     expect(div3.childNodes.length).toBe(2);
+
+    return $("div", [div1, div2, div3]);
   });
 });

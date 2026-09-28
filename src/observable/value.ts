@@ -15,6 +15,16 @@ export const TYPE_VALUE = "value";
 const parentsStack: Set<Value>[] = [];
 
 /**
+ * Type for event handlers that are called when an observable's value changes.
+ *
+ * @template T - The data type for the event
+ * @param {T} value - Data to handle
+ * @param {T} prevValue - Previous data value
+ * @returns {CleanupFunction | any} - Optional cleanup function or any value (which is ignored)
+ */
+export type ValueChangeHandler<T> = (value: T, prevValue?: T) => CleanupFunction | void;
+
+/**
  * Value interface, implementing a getter-setter pattern.
  * Notifies listeners when that value changes.
  * Allows immediate binding to a target.
@@ -111,15 +121,6 @@ export interface Value<T = any> {
 }
 
 /**
- * Type for event handlers that are called when an observable's value changes.
- *
- * @template T - The data type for the event
- * @param {T} value - Data to handle
- * @param {T} prevValue - Previous data value
- */
-export type ValueChangeHandler<T> = (value: T, prevValue?: T) => any;
-
-/**
  * Options for creating a value.
  */
 export interface ValueOptions {
@@ -204,11 +205,30 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   }
 
   const handlers = new Set<ValueChangeHandler<T>>();
+  const handlerCleanups = new Map<ValueChangeHandler<T>, CleanupFunction>();
   const cleanups = new Set<CleanupFunction>();
   const isDerived = p.length > 0;
   const parents = p.slice();
 
   let currentValue = initialValue as T;
+
+  const runHandler = (listener: ValueChangeHandler<T>, value: T, prevValue?: T) => {
+    const cleanup = handlerCleanups.get(listener);
+    if (isFn(cleanup)) {
+      handlerCleanups.delete(listener);
+      try {
+        cleanup();
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(err);
+        }
+      }
+    }
+    const newCleanup = listener(value, prevValue);
+    if (isFn(newCleanup)) {
+      handlerCleanups.set(listener, newCleanup);
+    }
+  };
 
   // Access to arguments requires a standard function
   function valueGetSetter(newValue?: T | ((prevValue: T) => T)): T {
@@ -232,7 +252,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
 
     const prevValue = currentValue;
     currentValue = newValue as T;
-    handlers.forEach((listener) => listener(currentValue, prevValue));
+    handlers.forEach((listener) => runHandler(listener, currentValue, prevValue));
     return prevValue;
   }
 
@@ -246,27 +266,55 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     defineValueProp(fn, "hydrate", !isDerived && hydrate, false);
   }
 
-  defineValueProp(
-    fn,
-    "watch",
-    (handler: ValueChangeHandler<T>): CleanupFunction => (
-      !process.env.SEIDR_DISABLE_SSR && registerValueForSSR?.(fn), handlers.add(handler), () => handlers.delete(handler)
-    ),
-  );
+  const cleanupHandler = (handler: ValueChangeHandler<T>): void => {
+    handlers.delete(handler);
+    const cleanup = handlerCleanups.get(handler);
+    if (isFn(cleanup)) {
+      handlerCleanups.delete(handler);
+      try {
+        cleanup();
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(err);
+        }
+      }
+    }
+  };
 
-  defineValueProp(
-    fn,
-    "bind",
-    (handler: ValueChangeHandler<T>): CleanupFunction => (
-      !process.env.SEIDR_DISABLE_SSR && registerValueForSSR?.(fn),
-      handler(currentValue, currentValue),
-      fn.watch(handler)
-    ),
-  );
+  defineValueProp(fn, "watch", (handler: ValueChangeHandler<T>): CleanupFunction => {
+    if (!process.env.SEIDR_DISABLE_SSR) {
+      registerValueForSSR?.(fn);
+    }
+    handlers.add(handler);
+    return () => cleanupHandler(handler);
+  });
+
+  defineValueProp(fn, "bind", (handler: ValueChangeHandler<T>): CleanupFunction => {
+    if (!process.env.SEIDR_DISABLE_SSR) {
+      registerValueForSSR?.(fn);
+    }
+    handlers.add(handler);
+    runHandler(handler, currentValue, currentValue);
+    return () => cleanupHandler(handler);
+  });
 
   defineValueProp(fn, "cleanup", (cleanupFn: CleanupFunction) => cleanups.add(cleanupFn));
 
-  defineValueProp(fn, "destroy", () => (handlers.clear(), cleanups.forEach((fn) => fn()), cleanups.clear()));
+  defineValueProp(fn, "destroy", () => {
+    handlerCleanups.forEach((cleanup) => {
+      try {
+        cleanup();
+      } catch (err) {
+        if (process.env.NODE_ENV !== "production") {
+          console.error(err);
+        }
+      }
+    });
+    handlerCleanups.clear();
+    handlers.clear();
+    cleanups.forEach((fn) => fn());
+    cleanups.clear();
+  });
 
   defineValueProp(fn, "as", <D>(transformFn: (value: T) => D, options: ValueOptions = {}) =>
     mergeValues(() => transformFn(fn()), options),

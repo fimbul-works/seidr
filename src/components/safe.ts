@@ -1,6 +1,5 @@
 import { createComponent } from "../component/create-component.js";
-import type { SeidrComponent } from "../component/types.js";
-import type { SeidrChild } from "../element/types.js";
+import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapError } from "../index.core.js";
 
 /**
@@ -10,14 +9,14 @@ import { wrapError } from "../index.core.js";
  * an error during initialization, the error boundary factory is called to create
  * a fallback UI instead of crashing.
  *
- * @param {() => SeidrChild} factory - Function that creates the component or element
- * @param {(error: Error) => SeidrChild} errorBoundary - Error handler that returns fallback UI
+ * @param {SeidrComponentFactoryOrFunction<void>} factory - Function that creates the component or element
+ * @param {SeidrComponentFactoryOrFunction<Error>} errorBoundary - Error handler that returns fallback UI
  * @param {string} [name="Safe"] - Optional name for the component
  * @returns {SeidrComponent} A Component instance with error handling
  */
 export const Safe = (
-  factory: () => SeidrChild,
-  errorBoundary: (error: Error) => SeidrChild,
+  factory: SeidrComponentFactoryOrFunction<void>,
+  errorBoundary: SeidrComponentFactoryOrFunction<Error>,
   name: string = "Safe",
 ): SeidrComponent =>
   createComponent(() => {

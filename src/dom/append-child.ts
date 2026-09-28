@@ -1,10 +1,9 @@
 import { getAppState } from "../app-state/app-state.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 import { isComponent } from "../component/type-guards.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
-import { TYPE_TEXT_NODE } from "../constants.js";
-import { isDOMNode, isHTMLElement } from "../dom/type-guards.js";
+import { isDOMNode, isHTMLElement, isTextNode } from "../dom/type-guards.js";
 import type { SeidrChild } from "../element/types.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 import { isValue } from "../observable/type-guards.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import type { Value } from "../observable/value.js";
@@ -46,45 +45,43 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
  * Creates reactive value nodes surrounded by start and end marker comments.
  * Automatically tracks and updates the DOM nodes when the Value changes.
  *
- * @param {Value<any>} value - The reactive Value
- * @param {(cleanup: () => void, marker: Comment) => void} onCleanupRegister - Callback to register the cleanup watcher
+ * @param {Value} value - The reactive Value
+ * @param {(cleanup: () => void) => void} onCleanupRegister - Callback to register the cleanup watcher
  * @returns {ChildNode[]} The initial list of nodes, including start and end markers
  */
 export const createReactiveValueNodes = (
-  value: Value<any>,
-  onCleanupRegister: (cleanup: () => void, marker: Comment) => void,
+  value: Value,
+  onCleanupRegister?: (cleanup: () => void) => void,
 ): ChildNode[] => {
   const [startMarker, endMarker] = getMarkerComments(value.id)!;
 
-  const initialNodes = normalizeChildNodes(unwrapValue(value));
-
-  const cleanup = value.watch((newVal) => {
+  const unbind = value.watch((newVal) => {
     const parentNode = startMarker.parentNode;
     if (!parentNode) {
       return;
     }
 
-    // Fast-path: Update textContent if single text node
+    // Update textContent if single text node
     const firstChild = startMarker.nextSibling;
     if (
-      firstChild &&
+      isTextNode(firstChild) &&
       firstChild.nextSibling === endMarker &&
-      firstChild.nodeType === TYPE_TEXT_NODE &&
       (isStr(newVal) || isNum(newVal)) &&
       String(newVal).trim() !== ""
     ) {
-      (firstChild as Text).textContent = String(newVal);
-      return;
+      firstChild.textContent = String(newVal);
+      return () => firstChild.remove();
     }
 
-    // General path: remove old nodes between startMarker and endMarker
+    // Remove old nodes between startMarker and endMarker
     const appState = getAppState();
     let current = startMarker.nextSibling;
-    while (current && current !== endMarker) {
+
+    while (isDOMNode(current) && current !== endMarker) {
       const next = current.nextSibling;
-      const comp = appState.nodeIndex.get(current);
-      if (comp && !comp.nodes.includes(startMarker) && !comp.nodes.includes(endMarker)) {
-        comp.unmount();
+      const component = appState.nodeIndex.get(current);
+      if (component && !component.nodes.includes(startMarker) && !component.nodes.includes(endMarker)) {
+        component.unmount();
       } else {
         current.remove();
       }
@@ -92,17 +89,19 @@ export const createReactiveValueNodes = (
     }
 
     // Insert new nodes before endMarker
-    const newNodes = normalizeChildNodes(newVal);
-    for (const node of newNodes) {
-      parentNode.insertBefore(node, endMarker);
+    normalizeChildNodes(newVal).forEach((node) => parentNode.insertBefore(node, endMarker));
+
+    if (isComponent(newVal) && parentNode.isConnected) {
+      newVal.mount();
     }
   });
 
   const fullCleanup = () => {
-    cleanup();
+    unbind();
+
     const appState = getAppState();
     let current = startMarker.nextSibling;
-    while (current && current !== endMarker) {
+    while (isDOMNode(current) && current !== endMarker) {
       const next = current.nextSibling;
       const comp = appState.nodeIndex.get(current);
       if (comp && !comp.nodes.includes(startMarker) && !comp.nodes.includes(endMarker)) {
@@ -114,18 +113,25 @@ export const createReactiveValueNodes = (
     }
   };
 
-  onCleanupRegister(fullCleanup, startMarker);
+  onCleanupRegister?.(fullCleanup);
 
+  const initialNodes = normalizeChildNodes(unwrapValue(value));
   return [startMarker, ...initialNodes, endMarker];
 };
 
 /**
  * Appends a child node to a parent node.
  *
- * @param {Node} parent - The parent node to append the child to
+ * @param {ParentNode} parent - The parent node to append the child to
  * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to append
  */
-export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | null | undefined) => {
+export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[] | null | undefined) => {
+  if (child === parent) {
+    if (process.env.NODE_ENV === "development")
+      console.log(`Parent and child are the same, skipping append child. ${parent}`);
+    return;
+  }
+
   // Skip empty children
   if (isNullish(child)) {
     return;
@@ -137,8 +143,6 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   if (isArray(child)) {
     return child.forEach((c) => appendChild(parent, c));
   }
-
-  const target = parent as ParentNode;
 
   // Hydration guard: if the node/component is already in the target, do nothing
   if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
@@ -154,6 +158,7 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
   // Append Seidr component
   if (isComponent(child)) {
     const [startMarker, endMarker] = getMarkerComments(child, false) || [];
+
     if (startMarker && !child.nodes.includes(startMarker) && startMarker.parentNode !== parent) {
       appendChild(parent, startMarker);
     }
@@ -167,38 +172,28 @@ export const appendChild = (parent: Node, child: SeidrChild | SeidrChild[] | nul
     if (parent.isConnected) {
       child.mount();
     }
-    return;
   } else if (isValue(child)) {
-    const nodes = createReactiveValueNodes(child, (cleanup, marker) => {
+    const nodes = createReactiveValueNodes(child, (cleanup) => {
       if (process.env.VITEST) {
         try {
-          onUnmounted(cleanup, marker);
+          onUnmounted(cleanup);
         } catch (error) {
           if (process.env.NODE_ENV === "development") {
             console.error(error);
           }
         }
       } else {
-        onUnmounted(cleanup, marker);
+        onUnmounted(cleanup);
       }
     });
 
-    nodes.forEach((node) => {
-      if (node.parentNode !== parent) {
-        target.appendChild(node);
-      }
-    });
-    return;
-  }
+    nodes.forEach((node) => node.parentNode !== parent && parent.appendChild(node));
+  } else {
+    const childNode = isDOMNode(child) ? child : $text(child);
 
-  const childNode = isDOMNode(child) ? child : $text(child as string | number);
-
-  // Final safety check to avoid hierarchy request error if childNode is already a parent of target
-  if (
-    childNode !== parent &&
-    childNode.parentNode !== parent &&
-    (!isHTMLElement(childNode) || !childNode.contains(parent))
-  ) {
-    target.appendChild(childNode);
+    // Avoid hierarchy request error if childNode is already a parent of target
+    if (!isHTMLElement(childNode) || !childNode.contains(parent)) {
+      parent.appendChild(childNode);
+    }
   }
 };

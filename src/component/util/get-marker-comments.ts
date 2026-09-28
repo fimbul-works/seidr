@@ -18,14 +18,11 @@ export const getMarkerComments = (
   instanceOrId: SeidrComponent | string,
   create: boolean = true,
 ): [Comment, Comment] | undefined => {
-  // Determine the comment text based on whether we're dealing with an instance or an ID
   const commentText = isStr(instanceOrId)
     ? instanceOrId
     : process.env.NODE_ENV === "production"
       ? encodeBase62(instanceOrId.id)
       : `${instanceOrId.name}-${encodeBase62(instanceOrId.id)}`;
-  const startText = SEIDR_COMPONENT_START_PREFIX + commentText;
-  const endText = SEIDR_COMPONENT_END_PREFIX + commentText;
 
   // Check for existing
   const state = getAppState();
@@ -34,16 +31,17 @@ export const getMarkerComments = (
     return cached;
   }
 
+  const startText = SEIDR_COMPONENT_START_PREFIX + commentText;
+  const endText = SEIDR_COMPONENT_END_PREFIX + commentText;
+
   // Check if markers already exist in component's existing DOM nodes or siblings
   if (isObj(instanceOrId) && instanceOrId.nodes.length > 0) {
     const nodes = instanceOrId.nodes.filter(Boolean);
-    const firstNode = nodes[0]!;
-    const lastNode = nodes[nodes.length - 1]!;
+    const firstNode = nodes.at(0);
+    const lastNode = nodes.at(-1);
 
-    let startComment: Comment | null =
-      isComment(firstNode) && firstNode.textContent === startText ? (firstNode as Comment) : null;
-    let endComment: Comment | null =
-      isComment(lastNode) && lastNode.textContent === endText ? (lastNode as Comment) : null;
+    const startComment = isComment(firstNode) && firstNode.textContent === startText ? firstNode : null;
+    const endComment = isComment(lastNode) && lastNode.textContent === endText ? lastNode : null;
 
     if (startComment && endComment) {
       const markers: [Comment, Comment] = [startComment, endComment];

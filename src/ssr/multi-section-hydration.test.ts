@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component.js";
-import { onMounted } from "../component/lifecycle/on-mounted.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 import { List } from "../components/list.js";
 import { $a } from "../elements/a.js";
 import { $canvas } from "../elements/canvas.js";
@@ -12,6 +10,8 @@ import { $p } from "../elements/p.js";
 import { $section } from "../elements/section.js";
 import { $span } from "../elements/span.js";
 import { $ul } from "../elements/ul.js";
+import { onMounted } from "../hooks/on-mounted.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 import { createValue, type Value } from "../observable/value.js";
 import { Link } from "../router/components/link.js";
 import { Router } from "../router/components/router.js";
@@ -117,7 +117,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
     const unmount = hydrate(() => App("http://localhost:4242/"), container, hydrationData);
 
     // Wait for microtask completion
-    await new Promise(resolve => setTimeout(resolve));
+    await new Promise((resolve) => setTimeout(resolve));
 
     expect(container.querySelector("#hero-canvas")).toBeTruthy();
     expect(container.querySelector(".home-navigation")).toBeTruthy();

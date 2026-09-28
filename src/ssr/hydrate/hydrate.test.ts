@@ -12,6 +12,7 @@ import { renderToString } from "../render-to-string.js";
 import { setSSRScope } from "../ssr-scope.js";
 import type { HydrationData } from "../types.js";
 import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index.js";
+import { mount } from "../../dom/mount.js";
 
 describe("Hydration", () => {
   let container: HTMLElement;
@@ -149,15 +150,22 @@ describe("Hydration", () => {
     const derived = name.as((s) => s.toUpperCase());
     const disabled = createValue(false);
 
-    const button = $("button", {
-      textContent: derived,
-      disabled,
-    }) as HTMLButtonElement;
+    let button: HTMLButtonElement | undefined = undefined;
+    const cleanup = mount(() => {
+      button = $("button", {
+        textContent: derived,
+        disabled,
+      });
+      return button;
+    }, document.body);
 
     expect(name()).toBe("hydrated-name");
     expect(disabled()).toBe(true);
-    expect(button.textContent).toBe("HYDRATED-NAME");
-    expect(button.disabled).toBe(true);
+    expect(button).toBeDefined();
+    expect(button!.textContent).toBe("HYDRATED-NAME");
+    expect(button!.disabled).toBe(true);
+
+    cleanup();
   });
 
   it("should restore observable values during hydration", async () => {

@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component/create-component.js";
-import { onMounted } from "../component/lifecycle/on-mounted.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 import { isComponentFactory, isLazyComponent } from "../component/type-guards.js";
 import { mount } from "../dom/mount.js";
 import { $ } from "../element/create-element.js";
+import { onMounted } from "../hooks/on-mounted.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 import { createValue } from "../observable/value.js";
 import { Router } from "../router/components/router.js";
 import { initRouter } from "../router/init-router.js";

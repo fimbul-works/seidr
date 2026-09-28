@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { onUnmounted } from "../component/lifecycle/on-unmounted";
 import { mount } from "../dom/mount";
 import { $ } from "../element";
+import { onUnmounted } from "../hooks/on-unmounted";
 import { describeDualMode } from "../test-setup";
 import { type CleanupFunction, SeidrError } from "../types";
 import { Safe } from "./safe";

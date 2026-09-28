@@ -19,20 +19,21 @@ export const isComponent = (v: any): v is SeidrComponent => isObj<SeidrComponent
 
 /**
  * Check if a value is a Seidr component factory.
+ * @template T
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Seidr component factory, `false` otherwise
  */
-export const isComponentFactory = <P>(v: any): v is SeidrComponentFactory<P> =>
-  isFn<SeidrComponentFactory<P>>(v) && TYPE_PROP in v && v[TYPE_PROP] === TYPE_COMPONENT_FACTORY;
+export const isComponentFactory = <T = void>(v: any): v is SeidrComponentFactory<T> =>
+  isFn<SeidrComponentFactory<T>>(v) && TYPE_PROP in v && v[TYPE_PROP] === TYPE_COMPONENT_FACTORY;
 
 /**
  * Type guard to check if a value is a lazy component factory.
- *
+ * @template T
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a lazy component factory
  */
-export const isLazyComponent = (v: any): v is LazyComponentFactory<any> =>
-  isComponentFactory(v) && "preload" in v && isFn(v.preload);
+export const isLazyComponent = <T = void>(v: any): v is LazyComponentFactory<T> =>
+  isComponentFactory<T>(v) && "preload" in v && isFn(v.preload);
 
 /**
  * Check if a CharacterData node contains alphanumeric characters.

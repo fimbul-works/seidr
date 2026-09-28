@@ -6,12 +6,12 @@ import { type Todo, TodoApp } from "./todo-mvc";
 
 describe("TodoMVC", () => {
   let dom: JSDOM;
-  let document: Document;
+  let doc: Document;
   let unmount: CleanupFunction;
 
   beforeEach(() => {
     dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", { url: "http://localhost" });
-    document = dom.window.document;
+    doc = dom.window.document;
     dom.window.localStorage.clear();
     clearTestAppState();
   });
@@ -21,17 +21,17 @@ describe("TodoMVC", () => {
   });
 
   it("should render  input", async () => {
-    unmount = mount(TodoApp, document.body);
+    unmount = mount(TodoApp, doc.body);
 
-    const input = document.querySelector<HTMLInputElement>(".new-todo");
+    const input = doc.querySelector<HTMLInputElement>(".new-todo");
 
     expect(input?.placeholder).toBe("What needs to be done?");
   });
 
   it("should not render list without items", async () => {
-    unmount = mount(TodoApp, document.body);
+    unmount = mount(TodoApp, doc.body);
 
-    expect(document.querySelector(".todo-list")).toBeNull();
+    expect(doc.querySelector(".todo-list")).toBeNull();
   });
 
   it("should render with initial todos", async () => {
@@ -39,21 +39,21 @@ describe("TodoMVC", () => {
       { id: 1, title: "Learn Seidr", completed: false },
       { id: 2, title: "Build apps", completed: false },
     ];
-    unmount = mount(() => TodoApp(initialTodos), document.body);
+    unmount = mount(() => TodoApp(initialTodos), doc.body);
 
-    const todoList = document.querySelector(".todo-list");
+    const todoList = doc.querySelector(".todo-list");
     const listItems = todoList?.querySelectorAll("li");
     expect(listItems?.length).toBe(2);
   });
 
   it("should add and toggle todos dynamically", async () => {
-    unmount = mount(TodoApp, document.body);
+    unmount = mount(TodoApp, doc.body);
 
-    const input = document.querySelector<HTMLInputElement>(".new-todo");
+    const input = doc.querySelector<HTMLInputElement>(".new-todo");
     input!.value = "New Item";
     (input as any).onkeydown?.({ target: input, key: "Enter" });
 
-    const todoList = document.querySelector(".todo-list");
+    const todoList = doc.querySelector(".todo-list");
     expect(todoList).not.toBeNull();
     const items = todoList?.querySelectorAll("li");
     expect(items?.length).toBe(1);

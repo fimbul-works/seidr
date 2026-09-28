@@ -128,7 +128,9 @@ export function createComponent<P = void>(
       unmount(): void {
         if (isServer()) {
           getSSRScope()?.unregisterComponent(currentComponent);
-          currentComponent.createdIndex.length = 0;
+          if (isArray(currentComponent.createdIndex)) {
+            currentComponent.createdIndex.length = 0;
+          }
           currentComponent.parent?.untrackChild?.(currentComponent);
         }
 

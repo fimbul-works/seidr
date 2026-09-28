@@ -2,12 +2,18 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { $ } from "../element/create-element.js";
 import { createValue, mergeValues } from "../observable/value.js";
 import { enableSSRMode } from "../test-setup/index.js";
+import { createComponent, getDocument, mount } from "../index.core.js";
+import { SSRElement } from "./dom/ssr-element.js";
+import { isHTMLElement } from "../dom/type-guards.js";
+import { renderToString } from "./render-to-string.js";
 
 describe("SSR Integration Tests", () => {
   let cleanup: () => void;
+  let document: Document;
 
   beforeEach(() => {
     cleanup = enableSSRMode();
+    document = getDocument();
   });
 
   afterEach(() => {
@@ -17,12 +23,15 @@ describe("SSR Integration Tests", () => {
   describe("Basic Element Creation in SSR", () => {
     it("should create ServerHTMLElement instead of DOM element", () => {
       const div = $("div", { className: "test" });
-      expect(div.nodeType).toBe(1);
+
+      expect(isHTMLElement(div)).toBeTruthy();
+      expect(div).toBeInstanceOf(SSRElement)
       expect(div.tagName).toBe("DIV");
     });
 
     it("should generate HTML string via toString", () => {
       const div = $("div", { className: "container", id: "main" });
+
       const html = div.toString();
       expect(html).toContain('id="main"');
       expect(html).toContain('class="container"');
@@ -30,6 +39,7 @@ describe("SSR Integration Tests", () => {
 
     it("should handle textContent correctly", () => {
       const h1 = $("h1", { textContent: "Hello World" });
+
       expect(h1.toString()).toBe("<h1>Hello World</h1>");
     });
 
@@ -47,167 +57,186 @@ describe("SSR Integration Tests", () => {
   });
 
   describe("Reactive Bindings in SSR", () => {
-    it("should handle initial value from Value observable", () => {
-      const count = createValue(42);
-      const display = $("span", { textContent: count.as((n) => `Count: ${n}`) });
+    it("should handle initial value from Value observable", async () => {
+      const { html } = await renderToString(() => {
+        const count = createValue(42);
+        return $("span", { textContent: count.as((n) => `Count: ${n}`) });
+      })
 
-      // SSR should capture the initial value
-      expect(display.toString()).toContain("Count: 42");
+      expect(html).toContain("Count: 42");
     });
 
-    it("should handle derived values", () => {
-      const firstName = createValue("John");
-      const lastName = createValue("Doe");
-      const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
+    it("should handle derived values", async () => {
+      const { html } = await renderToString(() => {
+        const firstName = createValue("John");
+        const lastName = createValue("Doe");
+        const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
+        return $("div", { textContent: fullName });
+      })
 
-      const element = $("div", { textContent: fullName });
-      expect(element.toString()).toContain("John Doe");
+      expect(html).toContain("John Doe");
     });
 
     it("should handle boolean attributes", () => {
       const isLoading = createValue(false);
-      const button = $("button", { disabled: isLoading });
+
+      const unmount = mount(() => {
+        return $("button", { disabled: isLoading });
+      }, document.body)
 
       // Initially disabled is false, so attribute shouldn't be present
-      expect(button.toString()).not.toContain("disabled");
+      expect(document.body.toString()).not.toContain("disabled");
 
       isLoading(true);
+
       // In SSR, the binding updates the ServerHTMLElement
-      expect(button.toString()).toContain("disabled");
+      expect(document.body.toString()).toContain("disabled");
+
+      unmount();
+      isLoading.destroy();
     });
 
-    it("should handle class binding", () => {
-      const isActive = createValue(true);
-      // @ts-expect-error
-      const button = $("button", { className: isActive.as((a) => (a ? "active" : "")) });
+    it("should handle class binding", async () => {
+      const { html } = await renderToString(() => {
+        const isActive = createValue(true);
+        return $("button", { className: isActive.as<string>((a) => (a ? "active" : "")) });
+      })
 
-      expect(button.toString()).toContain("active");
+      expect(html).toContain("active");
     });
 
-    it("should handle multiple reactive props", () => {
-      const theme = createValue("dark");
-      const count = createValue(5);
+    it("should handle multiple reactive props", async () => {
+      const { html } = await renderToString(() => {
+        const theme = createValue("dark");
+        const count = createValue(5);
 
-      const card = $("div", {
-        className: theme.as((t) => `card theme-${t}`),
-        "data-count": count,
-      });
+        return $("div", {
+          className: theme.as((t) => `card theme-${t}`),
+          "data-count": count,
+        });
+      })
 
-      const html = card.toString();
       expect(html).toContain('class="card theme-dark"');
       expect(html).toContain('data-count="5"');
     });
   });
 
   describe("Form Elements in SSR", () => {
-    it("should handle input element with value and type", () => {
-      const input = $("input", { type: "text", value: "test value", placeholder: "Enter text" });
+    it("should handle input element with value and type", async () => {
+      const { html } = await renderToString(() => {
+        return $("input", { type: "text", value: "test value", placeholder: "Enter text" });
+      }, document.body)
 
-      const html = input.toString();
       expect(html).toContain('type="text"');
       expect(html).toContain('value="test value"');
       expect(html).toContain('placeholder="Enter text"');
       expect(html).toMatch(/<input\s+.*\s+\/>/);
     });
 
-    it("should handle checkbox with checked state", () => {
-      const isChecked = createValue(true);
-      const checkbox = $("input", { type: "checkbox", checked: isChecked });
+    it("should handle checkbox with checked state", async () => {
+      const { html } = await renderToString(() => {
+        const isChecked = createValue(true);
+        return $("input", { type: "checkbox", checked: isChecked });
+      }, document.body)
 
-      const html = checkbox.toString();
       expect(html).toContain('type="checkbox"');
       expect(html).toContain("checked");
     });
 
-    it("should handle disabled button", () => {
-      const isDisabled = createValue(true);
-      const button = $("button", { disabled: isDisabled, textContent: "Click me" });
+    it("should handle disabled button", async () => {
+      const { html } = await renderToString(() => {
+        const isDisabled = createValue(true);
+        return $("button", { disabled: isDisabled, textContent: "Click me" });
+      }, document.body)
 
-      const html = button.toString();
       expect(html).toContain("disabled");
       expect(html).toContain(">Click me<");
     });
   });
 
   describe("Complex SSR Scenarios", () => {
-    it("should render a complete user profile", () => {
-      const user = createValue({ name: "Alice", email: "alice@example.com", age: 30 });
+    it("should render a complete user profile", async() => {
+      const { html } = await renderToString(() => {
+        const user = createValue({ name: "Alice", email: "alice@example.com", age: 30 });
+        return $("div", { className: "user-profile" }, [
+          $("h2", { textContent: user.as((u) => u.name) }),
+          $("p", { textContent: user.as((u) => `Email: ${u.email}`) }),
+          $("p", { textContent: user.as((u) => `Age: ${u.age}`) }),
+        ]);
+      }, document.body)
 
-      const profile = $("div", { className: "user-profile" }, [
-        $("h2", { textContent: user.as((u) => u.name) }),
-        $("p", { textContent: user.as((u) => `Email: ${u.email}`) }),
-        $("p", { textContent: user.as((u) => `Age: ${u.age}`) }),
-      ]);
-
-      const html = profile.toString();
       expect(html).toContain("Alice");
       expect(html).toContain("alice@example.com");
       expect(html).toContain("Age: 30");
     });
 
-    it("should render a todo list", () => {
-      const todos = createValue([
-        { id: 1, text: "Learn Seidr", completed: false },
-        { id: 2, text: "Build SSR app", completed: true },
-      ]);
+    it("should render a todo list", async () => {
+      const { html } = await renderToString(() => {
+        const todos = createValue([
+          { id: 1, text: "Learn Seidr", completed: false },
+          { id: 2, text: "Build SSR app", completed: true },
+        ]);
 
-      const list = $("ul", { className: "todo-list" }, [
-        ...todos().map((todo) =>
-          $("li", {
-            className: todo.completed ? "completed" : "",
-            textContent: todo.text,
-          }),
-        ),
-      ]);
+        return $("ul", { className: "todo-list" }, [
+          ...todos().map((todo) =>
+            $("li", {
+              className: todo.completed ? "completed" : "",
+              textContent: todo.text,
+            }),
+          ),
+        ]);
+      });
 
-      const html = list.toString();
       expect(html).toContain("Learn Seidr");
       expect(html).toContain("Build SSR app");
       expect(html).toContain("completed");
     });
 
-    it("should render a navigation menu", () => {
-      const isActive = createValue("home");
+    it("should render a navigation menu", async() => {
+      const { html } = await renderToString(() => {
+        const isActive = createValue("home");
 
-      const nav = $("nav", { className: "main-nav" }, [
-        $("a", {
-          href: "/home",
-          className: isActive.as((a) => (a === "home" ? "active" : "")),
-          textContent: "Home",
-        }),
-        $("a", {
-          href: "/about",
-          className: isActive.as((a) => (a === "about" ? "active" : "")),
-          textContent: "About",
-        }),
-        $("a", {
-          href: "/contact",
-          className: isActive.as((a) => (a === "contact" ? "active" : "")),
-          textContent: "Contact",
-        }),
-      ]);
+        return $("nav", { className: "main-nav" }, [
+          $("a", {
+            href: "/home",
+            className: isActive.as<string>((a) => (a === "home" ? "active" : "")),
+            textContent: "Home",
+          }),
+          $("a", {
+            href: "/about",
+            className: isActive.as<string>((a) => (a === "about" ? "active" : "")),
+            textContent: "About",
+          }),
+          $("a", {
+            href: "/contact",
+            className: isActive.as<string>((a) => (a === "contact" ? "active" : "")),
+            textContent: "Contact",
+          }),
+        ]);
+      });
 
-      const html = nav.toString();
       expect(html).toContain('class="active"');
       expect(html).toContain("Home");
       expect(html).toContain('href="/home"');
     });
 
-    it("should handle show class binding based on multiple states", () => {
-      const isLoading = createValue(false);
-      const hasError = createValue(false);
-      const isSuccess = createValue(true);
+    it("should handle show class binding based on multiple states", async () => {
+      const { html } = await renderToString(() => {
+        const isLoading = createValue(false);
+        const hasError = createValue(false);
+        const isSuccess = createValue(true);
 
-      // Create a merge observable for the className
-      const alertClass = mergeValues(() =>
-        ["alert", isLoading() && "loading", hasError() && "error", isSuccess() && "success"].filter(Boolean).join(" "),
-      );
+        // Create a merge observable for the className
+        const alertClass = mergeValues(() =>
+          ["alert", isLoading() && "loading", hasError() && "error", isSuccess() && "success"].filter(Boolean).join(" "),
+        );
 
-      const alert = $("div", {
-        className: alertClass,
-      });
+        const alert = $("div", {
+          className: alertClass,
+        });
+        return alert;
+      }, document.body);
 
-      const html = alert.toString();
       expect(html).toContain("alert");
       expect(html).toContain("success");
       expect(html).not.toContain("loading");
@@ -240,25 +269,37 @@ describe("SSR Integration Tests", () => {
 
   describe("Attribute Handling in SSR", () => {
     it("should handle aria attributes", () => {
-      const button = $("button", {
+      const button1 = $("button", {
         "aria-label": "Close dialog",
         "aria-expanded": "false",
       });
 
-      const html = button.toString();
-      expect(html).toContain('aria-label="Close dialog"');
-      expect(html).toContain('aria-expanded="false"');
+      const button2 = $("button", {
+        "ariaLabel": "Close dialog",
+        "ariaExpanded": "false",
+      });
+
+      const html1 = button1.toString();
+      expect(html1).toContain('aria-label="Close dialog"');
+      expect(html1).toContain('aria-expanded="false"');
+      expect(button2.toString()).toEqual(html1)
     });
 
     it("should handle data attributes", () => {
-      const div = $("div", {
+      const div1 = $("div", {
         "data-id": "123",
         "data-name": "test",
       });
 
-      const html = div.toString();
-      expect(html).toContain('data-id="123"');
-      expect(html).toContain('data-name="test"');
+      const div2 = $("div", {
+        "dataId": "123",
+        "dataName": "test",
+      });
+
+      const html1 = div1.toString();
+      expect(html1).toContain('data-id="123"');
+      expect(html1).toContain('data-name="test"');
+      expect(div2.toString()).toEqual(html1)
     });
 
     it("should allow HTML in attributes for now", () => {
@@ -285,9 +326,7 @@ describe("SSR Integration Tests", () => {
       const p = $("p", {}, ["Text before ", $("strong", { textContent: "bold" }), " text after"]);
 
       const html = p.toString();
-      expect(html).toContain("Text before ");
-      expect(html).toContain("<strong>bold</strong>");
-      expect(html).toContain(" text after");
+      expect(html).toContain("Text before <strong>bold</strong> text after");
     });
   });
 
@@ -347,14 +386,6 @@ describe("SSR Integration Tests", () => {
 
       child.remove();
       expect(parent.children.length).toBe(0);
-    });
-
-    it("should support destroy method", () => {
-      const element = $("div", {}, [$("div", { textContent: "Child" })]);
-      element.remove();
-
-      // Structure remains, but it's officially "unmounted" and cleaned up
-      expect(element.children.length).toBe(1);
     });
   });
 });

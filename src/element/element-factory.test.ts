@@ -1,21 +1,21 @@
-import { describe, expect, it } from "vitest";
-import { mockComponentScope } from "../test-setup";
+import { expect } from "vitest";
+import { describeDualMode, itHasParity } from "../test-setup";
 import { $ } from "./create-element";
 import { $factory } from "./element-factory";
 
-describe("elementFactory", () => {
-  mockComponentScope();
-
-  it("should return a function that creates elements", () => {
+describeDualMode("elementFactory", ({ getDocument }) => {
+  itHasParity("should return a function that creates elements", () => {
     const createDiv = $factory("div");
     const div = createDiv({ className: "test" });
 
     expect(typeof createDiv).toBe("function");
     expect(div.tagName).toBe("DIV");
     expect(div.className).toBe("test");
+
+    return div;
   });
 
-  it("should create specialized element creators", () => {
+  itHasParity("should create specialized element creators", () => {
     const createInput = $factory("input");
     const createButton = $factory("button");
 
@@ -28,9 +28,13 @@ describe("elementFactory", () => {
 
     expect(button.tagName).toBe("BUTTON");
     expect(button.textContent).toBe("Submit");
+
+    const body = getDocument().body;
+    body.append(input, button);
+    return body;
   });
 
-  it("should handle optional parameters correctly", () => {
+  itHasParity("should handle optional parameters correctly", () => {
     const createDiv = $factory("div");
 
     // No parameters
@@ -54,5 +58,9 @@ describe("elementFactory", () => {
     const div5 = createDiv([$("span", { textContent: "1" }), $("span", { textContent: "2" })]);
     expect(div5.children.length).toBe(2);
     expect(div5.textContent).toBe("12");
+
+    const body = getDocument().body;
+    body.append(div1, div2, div3, div4, div5);
+    return body;
   });
 });

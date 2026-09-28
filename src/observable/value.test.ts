@@ -604,6 +604,29 @@ describeDualMode("Value", () => {
         expect(callCount).toBe(1);
         expect(value.observerCount).toBe(0);
       });
+
+      it("should execute cleanup function returned by handler before next update and on unsubscribe", () => {
+        const val = createValue(1);
+        const cleanup1 = vi.fn();
+        const cleanup2 = vi.fn();
+        let currentCleanup = cleanup1;
+
+        const unwatch = val.watch(() => {
+          return currentCleanup;
+        });
+
+        val(2);
+        expect(cleanup1).not.toHaveBeenCalled();
+
+        currentCleanup = cleanup2;
+        val(3);
+        expect(cleanup1).toHaveBeenCalledTimes(1);
+        expect(cleanup2).not.toHaveBeenCalled();
+
+        unwatch();
+        expect(cleanup2).toHaveBeenCalledTimes(1);
+        expect(cleanup1).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe("bind", () => {
@@ -674,6 +697,28 @@ describeDualMode("Value", () => {
 
         expect(handler).toHaveBeenCalledWith(100, 42);
       });
+
+      it("should execute cleanup function returned by handler before next update and on unsubscribe", () => {
+        const val = createValue("first");
+        const cleanup1 = vi.fn();
+        const cleanup2 = vi.fn();
+        let currentCleanup = cleanup1;
+
+        const unbind = val.bind(() => {
+          return currentCleanup;
+        });
+
+        expect(cleanup1).not.toHaveBeenCalled();
+
+        currentCleanup = cleanup2;
+        val("second");
+        expect(cleanup1).toHaveBeenCalledTimes(1);
+        expect(cleanup2).not.toHaveBeenCalled();
+
+        unbind();
+        expect(cleanup2).toHaveBeenCalledTimes(1);
+        expect(cleanup1).toHaveBeenCalledTimes(1);
+      });
     });
 
     describe("cleanup", () => {
@@ -725,6 +770,15 @@ describeDualMode("Value", () => {
         value.destroy();
 
         expect(cleanupFn).toHaveBeenCalledTimes(1);
+      });
+
+      it("should execute active handler cleanups when value is destroyed", () => {
+        const val = createValue(10);
+        const cleanup = vi.fn();
+        val.bind(() => cleanup);
+
+        val.destroy();
+        expect(cleanup).toHaveBeenCalledTimes(1);
       });
 
       it("should not throw when destroyed multiple times", () => {
@@ -1138,7 +1192,7 @@ describeDualMode("Value", () => {
         },
       );
 
-      derived.watch(() => derivedNotifyCount++);
+      derived.watch(() => derivedNotifyCount++ as any);
 
       // Initial computation
       expect(deriveCount).toBe(1);

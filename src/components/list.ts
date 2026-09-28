@@ -1,11 +1,11 @@
 import { getAppState } from "../app-state/app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
-import type { SeidrComponent } from "../component/types.js";
+import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
 import { normalizeChildNodes } from "../dom/append-child.js";
-import type { SeidrChild } from "../element/types.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
+import { wrapComponent } from "../index.core.js";
 import type { Value } from "../observable/value.js";
 import { createValue } from "../observable/value.js";
 
@@ -18,14 +18,14 @@ import { createValue } from "../observable/value.js";
  *
  * @param {Value<T[]>} observable - Array observable Value
  * @param {(item: T) => K} getKey - Unique key extractor
- * @param {(itemValue: Value<T>, key: K) => SeidrChild} factory - Item render factory receiving a reactive item Value
+ * @param {SeidrComponentFactoryOrFunction<Value<T>>} factory - Item render factory receiving a reactive item Value
  * @param {string} [name="List"] - Component name
  * @returns {SeidrComponent} The List component
  */
 export const List = <T, K extends string | number>(
   observable: Value<T[]> | Value<readonly T[]>,
   getKey: (item: T) => K,
-  factory: (itemValue: Value<T>, key: K) => SeidrChild,
+  factory: SeidrComponentFactoryOrFunction<Value<T>>,
   name: string = "List",
 ): SeidrComponent =>
   createComponent(() => {
@@ -33,10 +33,11 @@ export const List = <T, K extends string | number>(
 
     const listComponent = getComponentScope()!;
     const itemMap = new Map<K, ItemEntry>();
+    const itemComponent = wrapComponent(factory, `${name}Item`);
 
     const renderItem = (item: T, key: K): ItemEntry => {
       const itemValue = createValue(item, { hydrate: false });
-      const result = factory(itemValue, key);
+      const result = itemComponent(itemValue, key);
       const nodes = normalizeChildNodes(result);
       return { itemValue, nodes };
     };

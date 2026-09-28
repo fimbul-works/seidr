@@ -1,6 +1,6 @@
 import { getAppState } from "../app-state/app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 
 /** AppState key for storing random number generator state */
 export const DATA_KEY_RANDOM = "seidr.random";

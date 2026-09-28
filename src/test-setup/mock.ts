@@ -28,17 +28,20 @@ export function mockComponentScope(node?: HTMLElement) {
       onMountedFns.push(fn);
     }),
     onUnmounted: vi.fn((fn) => {
-      cleanups.push(fn);
+      onUnmountedFns.push(fn);
+    }),
+    mount: vi.fn(() => {
+      onMountedFns.forEach((fn) => fn());
+      onMountedFns.length = 0;
+    }),
+    unmount: vi.fn(() => {
+      onUnmountedFns.forEach((fn) => fn());
+      onUnmountedFns.length = 0;
     }),
     get nextValueId() {
       return valueIdCounter++;
     },
-    cleanup: vi.fn(() => {
-      cleanups.forEach((fn) => fn());
-      cleanups.length = 0;
-    }),
-    unmount: vi.fn(() => mockComponent.cleanup()),
-  } as unknown as SeidrComponent & { cleanup: () => void };
+  } as unknown as SeidrComponent;
 
   beforeEach(() => {
     valueIdCounter = 0;
@@ -52,7 +55,7 @@ export function mockComponentScope(node?: HTMLElement) {
   });
 
   afterEach(() => {
-    mockComponent.cleanup();
+    mockComponent.unmount();
     getAppState().deleteData(DATA_KEY_COMPONENT_SCOPE);
     getAppState().deleteData(DATA_KEY_COMPONENT_CURSOR);
     getAppState().deleteData(DATA_KEY_STATE);

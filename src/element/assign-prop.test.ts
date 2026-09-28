@@ -1,23 +1,25 @@
-import { describe, expect, it } from "vitest";
-import { onMountedFns } from "../component/lifecycle/on-mounted";
-import { onUnmountedFns } from "../component/lifecycle/on-unmounted";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { createComponent, type SeidrComponent } from "../component";
+import { setComponentScope } from "../component/component-scope";
 import { createValue } from "../observable/value";
 import { describeDualMode } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { SeidrError } from "../types";
 import { assignProp } from "./assign-prop";
 
 describeDualMode("assignProp", ({ getDocument }) => {
-  mockComponentScope();
+  const comp = createComponent(() => null);
+  let scope: SeidrComponent;
 
-  // Helper to trigger lifecycle on elements in tests
-  const triggerMount = (el: HTMLElement) => {
-    onMountedFns?.get(el)?.forEach((fn) => fn());
-  };
+  beforeEach(() => {
+    scope = comp();
+    setComponentScope(scope);
+  });
 
-  const triggerUnmount = (el: HTMLElement) => {
-    onUnmountedFns?.get(el)?.forEach((fn) => fn());
-  };
+  afterEach(() => {
+    if (scope) scope.unmount();
+
+    setComponentScope(null);
+  });
 
   describe("Ref Assignment & Lifecycle (prop === 'ref')", () => {
     it("should throw SeidrError if ref is not a reactive Value instance", () => {
@@ -31,33 +33,17 @@ describeDualMode("assignProp", ({ getDocument }) => {
       expect(() => assignProp(el, "ref", null)).toThrow(SeidrError);
     });
 
-    it("should bind element to ref Value on attach and set to null on unmount", () => {
+    it("should bind element to ref Value on mount and set to null on unmount", () => {
       const el = getDocument().createElement("div");
       const ref = createValue<HTMLElement | null>(null);
 
       expect(ref()).toBeNull();
 
       assignProp(el, "ref", ref);
-
-      // Trigger attached hook
-      triggerMount(el);
       expect(ref()).toBe(el);
 
-      // Trigger unmounting hook
-      triggerUnmount(el);
-      expect(ref()).toBeNull();
-    });
+      scope.unmount();
 
-    it("should bind element immediately if element is already connected", () => {
-      const el = getDocument().createElement("div");
-      getDocument().body.appendChild(el);
-      const ref = createValue<HTMLElement | null>(null);
-
-      assignProp(el, "ref", ref);
-      expect(ref()).toBe(el);
-
-      el.remove();
-      triggerUnmount(el);
       expect(ref()).toBeNull();
     });
   });
@@ -171,7 +157,9 @@ describeDualMode("assignProp", ({ getDocument }) => {
 
       // Verify unmount cleanup
       expect(styleText.observerCount).toBe(1);
-      triggerUnmount(el);
+
+      scope.unmount();
+
       expect(styleText.observerCount).toBe(0);
     });
 
@@ -214,7 +202,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
       expect(color.observerCount).toBe(1);
       expect(fontSize.observerCount).toBe(1);
 
-      triggerUnmount(el);
+      scope.unmount();
 
       expect(color.observerCount).toBe(0);
       expect(fontSize.observerCount).toBe(0);
@@ -291,7 +279,9 @@ describeDualMode("assignProp", ({ getDocument }) => {
 
       // Cleanup on unmount
       expect(isDisabled.observerCount).toBe(1);
-      triggerUnmount(button);
+
+      scope.unmount();
+
       expect(isDisabled.observerCount).toBe(0);
     });
   });
@@ -351,7 +341,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
       expect(id.observerCount).toBe(1);
       expect(className.observerCount).toBe(1);
 
-      triggerUnmount(el);
+      scope.unmount();
 
       expect(id.observerCount).toBe(0);
       expect(className.observerCount).toBe(0);

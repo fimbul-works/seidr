@@ -1,29 +1,24 @@
 import { expect, it } from "vitest";
-import { describeDualMode, mockComponentScope } from "../test-setup";
+import { describeDualMode } from "../test-setup";
 import { assignProps } from "./assign-props";
 
 describeDualMode("assignProps", ({ getDocument }) => {
-  mockComponentScope();
-
   it("should assign basic props", () => {
-    const factory = getDocument();
-    const el = factory.createElement("div");
+    const el = getDocument().createElement("div");
     assignProps(el, { id: "foo", title: "bar" });
     expect(el.id).toBe("foo");
     expect(el.title).toBe("bar");
   });
 
   it("should handle custom data attributes", () => {
-    const factory = getDocument();
-    const el = factory.createElement("div");
+    const el = getDocument().createElement("div");
     assignProps(el, { "data-custom": "value", dataTest: "value2" });
     expect(el.getAttribute("data-custom")).toBe("value");
     expect(el.dataset.test).toBe("value2");
   });
 
   it("should handle style props", () => {
-    const factory = getDocument();
-    const el = factory.createElement("div");
+    const el = getDocument().createElement("div");
     assignProps(el, { style: { color: "red", fontSize: "10px" } });
     expect(el.style.color).toBe("red");
     // browsers might return '10px' or '10.0px' depending on engine, but SSR should be exact

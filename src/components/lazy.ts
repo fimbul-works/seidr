@@ -1,6 +1,5 @@
 import { getComponentScope, setComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
-import { onUnmounted } from "../component/lifecycle/on-unmounted.js";
 import type {
   SeidrComponentFactory,
   SeidrComponentFactoryOrFunction,
@@ -8,6 +7,7 @@ import type {
 } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 import { createValue } from "../observable/value.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
@@ -31,12 +31,12 @@ export interface LazyOptions {
   /**
    * Optional fallback content to display while the component is loading.
    */
-  fallback?: () => SeidrChild;
+  fallback?: SeidrComponentFactoryOrFunction<void>;
 
   /**
    * Optional fallback content to display if the module fails to load.
    */
-  onError?: (error: Error) => SeidrChild;
+  onError?: SeidrComponentFactoryOrFunction<Error>;
 
   /**
    * Optional component name for debugging and SSR identification.

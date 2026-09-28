@@ -96,14 +96,14 @@ export type SeidrComponentReturnValue = SeidrChild | SeidrChild[] | null | undef
  */
 export type SeidrComponentFactoryPureFunction<P = void> = P extends void
   ? () => SeidrComponentReturnValue
-  : (props: P) => SeidrComponentReturnValue;
+  : (props: P, identifier?: unknown) => SeidrComponentReturnValue;
 
 /**
  * Seidr component factory function type.
  *
  * @template P - Props object type (optional)
  */
-export type SeidrComponentFactory<P = void> = ((props: P) => SeidrComponent) & SeidrComponentFactoryInterface;
+export type SeidrComponentFactory<P = void> = ((props: P, identifier?: unknown) => SeidrComponent) & SeidrComponentFactoryInterface;
 
 /**
  * Type representing a Seidr component, which can be either a factory or a pure function.
