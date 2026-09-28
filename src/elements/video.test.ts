@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $video } from "./video";
 
 describeDualMode("Video Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with media attributes", () => {
     return $video({
       src: "movie.mp4",

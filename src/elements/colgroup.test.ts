@@ -1,11 +1,8 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $col } from "./col";
 import { $colgroup } from "./colgroup";
 
 describeDualMode("Column Grouping Elements Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders colgroup with span", () => {
     return $colgroup({ span: 3 });
   });

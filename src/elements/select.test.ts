@@ -1,11 +1,8 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $option } from "./option";
 import { $select } from "./select";
 
 describeDualMode("Select Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with various attributes", () => {
     return $select(
       {

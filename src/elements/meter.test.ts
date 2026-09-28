@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $meter } from "./meter";
 
 describeDualMode("Meter Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with gauging attributes", () => {
     return $meter(
       {

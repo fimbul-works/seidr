@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $textarea } from "./textarea";
 
 describeDualMode("Textarea Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with various attributes", () => {
     return $textarea(
       {

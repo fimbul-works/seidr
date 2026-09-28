@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $canvas } from "./canvas";
 
 describeDualMode("Canvas Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with width and height", () => {
     return $canvas({ width: 800, height: 600 });
   });

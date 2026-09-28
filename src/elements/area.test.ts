@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $area } from "./area";
 
 describeDualMode("Area Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with href and alt", () => {
     return $area({ href: "/map", alt: "Site Map" });
   });

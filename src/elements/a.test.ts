@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $a } from "./a";
 
 describeDualMode("Anchor Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with basic attributes", () => {
     return $a({ href: "https://example.com", target: "_blank", rel: "noopener" }, ["Example"]);
   });

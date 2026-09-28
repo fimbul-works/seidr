@@ -1,10 +1,7 @@
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
-import { mockComponentScope } from "../test-setup/mock";
 import { $base } from "./base";
 
 describeDualMode("Document Base URL Element Parity", () => {
-  mockComponentScope();
-
   itHasParity("renders with href", () => {
     return $base({ href: "https://example.com/" });
   });
