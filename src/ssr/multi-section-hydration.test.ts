@@ -20,6 +20,7 @@ import { hydrate } from "../ssr/hydrate/hydrate.js";
 import { renderToString } from "../ssr/render-to-string.js";
 import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
 import { inClient } from "../util/environment/in-client.js";
+import { useRef } from "../hooks";
 
 describe("Multi-section SSR and Hydration with Router", () => {
   type NavItem = { href: string; textContent: string };
@@ -57,7 +58,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
   let canvas: HTMLCanvasElement | null = null;
 
   const HeroCanvas = () => {
-    const canvasRef = createValue<HTMLCanvasElement | null>(null, { hydrate: false });
+    const canvasRef = useRef<HTMLCanvasElement>();
 
     inClient(() => {
       onMounted(() => {

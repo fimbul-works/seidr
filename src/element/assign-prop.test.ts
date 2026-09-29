@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createComponent, type SeidrComponent } from "../component";
 import { setComponentScope } from "../component/component-scope";
+import { useRef } from "../hooks";
 import { createValue } from "../observable/value";
 import { describeDualMode } from "../test-setup/dual-mode";
 import { SeidrError } from "../types";
@@ -35,7 +36,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
 
     it("should bind element to ref Value on mount and set to null on unmount", () => {
       const el = getDocument().createElement("div");
-      const ref = createValue<HTMLElement | null>(null);
+      const ref = useRef();
 
       expect(ref()).toBeNull();
 

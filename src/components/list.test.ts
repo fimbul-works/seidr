@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { createComponent, onUnmounted } from "../component";
+import { createComponent } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { mount } from "../dom";
 import { $ } from "../element";
@@ -7,6 +7,7 @@ import { createValue, type Value } from "../observable";
 import { describeDualMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
 import { List } from "./list";
+import { onUnmounted } from "../hooks";
 
 type Item = { id: number; text: string };
 

@@ -1,4 +1,5 @@
 import type { SeidrComponent } from "../component/types.js";
+import type { Ref } from "../hooks/use-ref.js";
 import type { Value } from "../observable/value.js";
 
 /**
@@ -140,7 +141,7 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
     ReactiveARIAKebabCase &
     ReactiveDataKebabCase &
     ReactiveDataCamelCase
-> & { style?: ReactiveCSSStyleDeclaration | string | Value<string>; ref?: Value<HTMLElementTagNameMap[K] | null> };
+> & { style?: ReactiveCSSStyleDeclaration | string | Value<string>; ref?: Ref<HTMLElementTagNameMap[K]> };
 
 /**
  * Union type representing allowed nodes for Seidr elements.

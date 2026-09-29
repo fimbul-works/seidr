@@ -1,6 +1,6 @@
 import { BOOL_ATTRIBUTES } from "../constants.js";
 import { onUnmounted } from "../hooks/index.js";
-import { isValue } from "../observable/type-guards.js";
+import { isRef, isValue } from "../observable/type-guards.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
@@ -29,8 +29,8 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
 
   // Handle ref
   if (prop === "ref") {
-    if (!isValue<Element | null>(value)) {
-      throw new SeidrError("ref must be a Value");
+    if (!isRef(value)) {
+      throw new SeidrError("Invalid ref");
     }
 
     value(el);

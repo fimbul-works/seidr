@@ -36,7 +36,7 @@
 - 📦 **Tiny Footprint:**
   - Hello World: **3.2KB** (brotli)
   - TodoMVC: **4.6KB** (brotli)
-  - SSR Bundle: **8.7KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
+  - SSR Bundle: **8.8KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
   - Tree-shakable: Import only what you need
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
 
