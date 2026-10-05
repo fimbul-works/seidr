@@ -39,13 +39,13 @@ export const Router = (
   name: string = "Router",
 ): SeidrComponent =>
   createComponent(() => {
-    initRouter(options.url);
-
     const routerComponent = getComponentScope()!;
     const [startMarker, endMarker] = getMarkerComments(routerComponent)!;
     const routesObservable = wrapValue(routes, { hydrate: false });
     const routerInstance = options.router || browserRouter();
     const parentNode = getNearestRouter();
+
+    initRouter(options.url);
 
     // Calculate the matched path prefix from ancestors
     let parentPrefix = "";
@@ -101,6 +101,7 @@ export const Router = (
         currentComponent = null;
         return null;
       }
+
       const prevScope = getComponentScope();
       setComponentScope(routerComponent);
       try {
