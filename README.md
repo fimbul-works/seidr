@@ -461,7 +461,7 @@ Unlike React/Vue, Seidr doesn't diff entire virtual component trees. Updates go 
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.1KB (Seidr client-side runtime)
+- **Seidr TodoMVC**: ~5.2KB (Seidr client-side runtime)
 
 ---
 
