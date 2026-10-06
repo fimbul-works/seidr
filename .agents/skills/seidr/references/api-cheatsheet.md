@@ -19,9 +19,20 @@ Creates a callable reactive signal.
 - `.as<D>(transformFn: (val: T) => D, options?: ValueOptions): Value<D>`
   Derived value from a single source.
 - `.watch(handler: (newVal: T, prevVal?: T) => CleanupFunction | void): CleanupFunction`
-  Runs callback on subsequent updates. Optional teardown returned from handler runs before next update or on unwatch. Always pass the returned cleanup function to `onUnmounted()` hook!
+  Runs callback on subsequent updates.
+  - **Unsubscribe Handle** (returned by `.watch()`): Pass this to `onUnmounted(unwatch)` to unregister the watcher when the component unmounts.
+  - **Per-Update Teardown** (returned by `handler`): Optional function run automatically by Seidr before the next callback execution or upon unsubscribe.
 - `.bind(handler: (val: T, prevVal?: T) => CleanupFunction | void): CleanupFunction`
-  Runs callback **immediately** with current value, and on subsequent updates. Always pass the returned cleanup function to `onUnmounted()` hook!
+  Runs callback **immediately** with current value, and on subsequent updates.
+  - Same dual cleanup mechanism as `.watch()`.
+```typescript
+// Example: Both cleanups in action
+const unwatch = val.watch((newVal) => {
+  const timer = setTimeout(() => handle(newVal), 100);
+  return () => clearTimeout(timer); // 1. Per-update teardown (cleans up previous run)
+});
+onUnmounted(unwatch); // 2. Unsubscribe handle (stops watching on component unmount)
+```
 - `.cleanup(fn: CleanupFunction): void`
   Registers a teardown callback executed when `.destroy()` is called.
 - `.destroy(): void`
@@ -127,4 +138,19 @@ Creates a callable reactive signal.
 - `isClient(): boolean` — `true` in browser.
 - `inServer<T>(fn: () => T): T | undefined` — Executes only on server.
 - `inClient<T>(fn: () => T): T | undefined` — Executes only on client.
-- `getAppState(): AppState` — Accesses active application state container.
+- `getAppState(): AppState` — Accesses active application state container. **Use ONLY for app-wide singletons (theme, session). NEVER store per-instance compound component state in `getAppState()` or with fixed `{ id }` values.**
+
+> [!WARNING]
+> **API Export Verification**:
+> The client isomorphic helper is `inClient` and the predicate is `isClient`.
+> Do **NOT** use `inBrowser` or `isBrowser` — they do not exist and are not exported by `@fimbul-works/seidr`.
+
+---
+
+## 7. Known Framework Gaps (Do Not Invent)
+
+- **Portal (`createPortal` / `<Portal>`) is NOT yet supported in Seidr.**
+  Radix Dialog, Popover, Tooltip, Select, and DropdownMenu all lean on Portal in React to render content outside the parent hierarchy into `document.body`.
+  - **Rule**: If a ported component requires a Portal, **STOP and report the missing capability to the user instead of improvising or hallucinating an API.**
+  - Do not invent `createPortal`, do not create a fake Portal wrapper, and do not hack imperative body appends unless explicitly directed by the user.
+  - Safe overlay-free primitives to port first: Switch, Checkbox, RadioGroup, Slider, Accordion, Tabs, Toggle, Label, Progress, Separator, Avatar, and Collapsible.

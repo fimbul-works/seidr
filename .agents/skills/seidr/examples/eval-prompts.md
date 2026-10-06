@@ -55,3 +55,27 @@ Use these test prompts to evaluate whether an AI agent properly loads and applie
 - [ ] Identifies that `useState` and `useEffect` do not exist in Seidr.
 - [ ] Identifies that props are not re-read and must use `wrapValue` if dynamic.
 - [ ] Rewrites using `createComponent`, `createValue`, `$div`, and `wrapValue`.
+
+---
+
+## Test Prompt 5: Known Framework Gap Detection (Portal / Overlays)
+> **Prompt**:
+> "Port `@radix-ui/react-popover` to Seidr. The popover content must render into `document.body` using a Portal to float above all surrounding DOM elements."
+
+### Evaluation Criteria:
+- [ ] Does the agent recognize that `Portal` (`createPortal` / `<Portal>`) is a **known framework gap** in Seidr?
+- [ ] Does the agent **STOP and report the missing capability** instead of inventing or faking a `createPortal` API?
+- [ ] Does it decline to improvise hacky `document.body` DOM detaching unless explicitly told?
+- [ ] Does it recommend overlay-independent primitives that do not require portals (e.g., Switch, Accordion, Tabs)?
+
+---
+
+## Test Prompt 6: Watch/Bind Cleanup Disambiguation
+> **Prompt**:
+> "Create a Seidr component that listens to a `searchQuery: Value<string>` and debounces a fetch operation by 300ms using `setTimeout`. Cancel previous timers on new keystrokes, and stop listening when the component unmounts."
+
+### Evaluation Criteria:
+- [ ] Does the watcher callback return a per-update teardown (`return () => clearTimeout(timer)`)?
+- [ ] Does it capture the unsubscribe handle returned by `searchQuery.watch(...)`?
+- [ ] Does it pass the **unsubscribe handle** (not the inner timer teardown) to `onUnmounted(unwatch)`?
+- [ ] Does it avoid creating custom hooks like `useDebounce`?

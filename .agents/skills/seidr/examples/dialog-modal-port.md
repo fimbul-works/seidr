@@ -12,6 +12,7 @@ A Dialog requires:
 3. **Focus Restoration**: Remembering the previously active trigger element and restoring focus when closed.
 4. **Accessible Structure**: `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `aria-describedby`.
 5. **Backdrop & Dismissal**: Clicking outside or on the backdrop triggers close.
+6. **Inline Rendering**: *Note: This example renders inline within the parent component. True overlay teleportation via Portal is not yet supported in Seidr.*
 
 ---
 
@@ -39,13 +40,14 @@ export interface DialogOptions {
 }
 
 /**
- * Creates an accessible, headless Dialog primitive.
+ * Creates an accessible, headless Dialog primitive (inline).
  */
 export const createDialog = (options: DialogOptions = {}) => {
   const isOpen = wrapValue(options.open ?? options.defaultOpen ?? false);
 
   if (options.onOpenChange) {
-    onUnmounted(isOpen.watch(options.onOpenChange));
+    const unwatch = isOpen.watch(options.onOpenChange);
+    onUnmounted(unwatch);
   }
 
   const triggerRef = useRef<HTMLButtonElement>();
@@ -56,7 +58,7 @@ export const createDialog = (options: DialogOptions = {}) => {
   const toggle = () => isOpen((o) => !o);
 
   // 1. Escape key handler & focus restoration via .bind() lifecycle
-  onUnmounted(isOpen.bind((active) => {
+  const unbindEscape = isOpen.bind((active) => {
     if (!active) return;
 
     return inClient(() => {
@@ -78,7 +80,9 @@ export const createDialog = (options: DialogOptions = {}) => {
         previousActiveElement?.focus?.();
       };
     });
-  }));
+  });
+
+  onUnmounted(unbindEscape);
 
   // 2. Trigger Component
   const Trigger = (props: SeidrElementProps = {}, children?: SeidrChild | SeidrChild[]) =>

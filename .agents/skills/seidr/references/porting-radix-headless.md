@@ -121,27 +121,29 @@ Always bind reactive states directly to ARIA properties:
 
 ---
 
-## 5. Cross-Tree State via `AppState` Data API
+## 5. Cross-Tree State (Global Services Only)
 
-When components across separate subtrees need to communicate without explicit prop passing, use `getAppState()`:
+When true global services or top-level managers need to communicate across separate subtrees (e.g., a global toast alert queue or global modal manager), use `getAppState()`:
 
 ```typescript
 import { getAppState } from '@fimbul-works/seidr';
 
-const COMPONENT_KEY = 'seidr-ui.active-accordion';
+const TOAST_KEY = 'seidr-ui.toasts';
 const appState = getAppState();
 
-if (!appState.hasData(COMPONENT_KEY)) {
-  appState.setData(COMPONENT_KEY, new Map());
+if (!appState.hasData(TOAST_KEY)) {
+  appState.setData(TOAST_KEY, createValue([]));
 }
-const accordionRegistry = appState.getData<Map<string, any>>(COMPONENT_KEY);
+const toastRegistry = appState.getData<Value<ToastItem[]>>(TOAST_KEY);
 ```
 
-For state that must serialize during SSR and restore during client hydration, implement `registerDataStrategy()` on `AppState`.
+> [!CAUTION]
+> **Per-Instance State Rule**:
+> NEVER use `getAppState()` or `createValue({ id })` for individual compound components (accordions, tabs, dialogs). Doing so causes instance state collisions if more than one instance exists on a page. Per-instance state belongs strictly inside coordinator factory closures.
 
 ---
 
-## 6. Radix DOM Utilities & Missing Primitives
+## 6. Radix DOM Utilities & Known Gaps
 
 ### DOM Helpers:
 When porting Radix DOM utilities:
@@ -165,8 +167,50 @@ export const getActiveElement = (doc: Document = getDocument()): Element | null 
 };
 ```
 
-### The Portal Primitive Plan (`createPortal`):
-- Simple primitives (Toggle, Switch, Checkbox, RadioGroup, Slider, Accordion) **do not require portals**. Port them first!
-- Complex overlay primitives (Dialog, Popover, Tooltip) require mounting outside the parent hierarchy (e.g. into `document.body`).
-- Current workaround: Attach the element to `document.body` inside `onMounted()`, and detach it inside `onUnmounted()`.
-- Future core primitive: A first-class `createPortal()` DOM utility will be introduced when building overlay components.
+### Known Framework Gap: Portal (`createPortal` / `<Portal>`)
+- Radix Dialog, Popover, Tooltip, Select, and DropdownMenu all lean on Portal in React to render overlays into `document.body`.
+- **Portal does NOT yet exist in Seidr.**
+- **MANDATORY RULE FOR AGENTS**:
+  If a requested port depends on a Portal, **STOP and report the missing capability to the user**.
+  **Do NOT invent or hallucinate a `createPortal()` API.** Do not fake a Portal component, and do not improvise custom document body mutation hacks.
+- **Port overlay-independent primitives first**: Focus on primitives that mount completely within their parent hierarchy:
+  **Switch, Checkbox, RadioGroup, Slider, Accordion, Tabs, Toggle, Label, Progress, Separator, Avatar, and Collapsible**.
+
+---
+
+## 7. Monorepo Package Scaffolding & Verification
+
+Ported primitives live in the Turborepo monorepo under `packages/`:
+
+### 1. Package Directory Structure:
+```text
+packages/
+└── primitives/           # or packages/<primitive-name>
+    ├── package.json
+    ├── tsconfig.json
+    ├── src/
+    │   ├── switch/
+    │   ├── accordion/
+    │   └── index.ts
+    └── test/
+        └── switch.test.ts
+```
+
+### 2. Addon `package.json`:
+```json
+{
+  "name": "@fimbul-works/seidr-primitives",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@fimbul-works/seidr": "workspace:*"
+  }
+}
+```
+
+### 3. Verification Commands:
+- **Run tests for this addon**: `pnpm turbo run test --filter=@fimbul-works/seidr-primitives`
+- **Build this addon**: `pnpm turbo run build --filter=@fimbul-works/seidr-primitives`
+- **Typecheck this addon**: `pnpm turbo run build:lib --filter=@fimbul-works/seidr-primitives`

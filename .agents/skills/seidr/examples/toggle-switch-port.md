@@ -85,7 +85,8 @@ export const createSwitch = (options: SwitchOptions = {}) => {
   const isDisabled = wrapValue(options.disabled ?? false);
 
   if (options.onCheckedChange) {
-    onUnmounted(isChecked.watch(options.onCheckedChange));
+    const unwatch = isChecked.watch(options.onCheckedChange);
+    onUnmounted(unwatch);
   }
 
   const toggle = () => {

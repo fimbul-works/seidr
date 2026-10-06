@@ -72,6 +72,9 @@ Models often confuse Seidr with SolidJS, Preact Signals, or Svelte.
 | `batch(() => ...)` | Updates trigger immediately; batching is handled internally |
 | `createRef()` | `useRef<T>()` |
 | `onCleanup(fn)` | `onUnmounted(fn)` or return a teardown from `.watch()` / `.bind()` |
+| `inBrowser(fn)` | `inClient(fn)` — `inBrowser` DOES NOT EXIST in Seidr |
+| `isBrowser()` | `isClient()` — `isBrowser` DOES NOT EXIST in Seidr |
+| `createPortal(el, container)` / `<Portal>` | **Known framework gap.** DO NOT INVENT. Stop and report to user |
 
 ---
 
@@ -182,3 +185,66 @@ When a `Value` is assigned an explicit `id` (e.g. `createValue('dark', { id: 'th
 `withStorage(key, value)` immediately reads from `localStorage` upon initialization on the client. Because this occurs at construction time, any existing value stored in the client's `localStorage` can silently overwrite the server-hydrated state before hydration completes.
 
 - **Rule**: If a `Value` is hydrated via SSR and persists across client sessions with `withStorage`, be aware that local browser state will supersede the initial SSR snapshot immediately upon client execution.
+
+---
+
+## 8. Storing Per-Instance Component State in App-Level Singletons or `getAppState()`
+
+### ❌ Anti-Pattern: Shared Singletons for Compound Components
+```typescript
+// BAD: Assigning fixed singleton IDs or using getAppState() for compound components
+export const createDialog = () => {
+  // ⚠️ COLLISION BUG: If two dialogs exist on the same page, they share 'dialog-open'!
+  const isOpen = createValue(false, { id: 'dialog-open' });
+
+  return { isOpen, ... };
+};
+```
+When two dialogs, accordions, or dropdowns are mounted on the same page, giving their state a fixed `id` or saving them in `getAppState()` causes them to collide. Opening Dialog A will unexpectedly open Dialog B!
+
+### ✅ Idiomatic Seidr: Instance-Scoped Closures
+```typescript
+// GOOD: Each dialog instance owns a distinct, un-namespaced reactive Value
+export const createDialog = (options = {}) => {
+  const isOpen = createValue(options.defaultOpen ?? false); // Scoped to this instance!
+
+  return { isOpen, ... };
+};
+```
+- **Rule**: Per-instance state **never** goes in app-level singletons or `createValue(..., { id: 'fixed-key' })`.
+- Reserve `getAppState()` and `{ id: '...' }` strictly for true application-wide globals (theme, active user profile, toast notifications).
+
+---
+
+## 9. Watch/Bind Cleanup Confusion: Teardown vs. Unsubscribe
+
+Both `.watch()` and `.bind()` involve two distinct cleanup concepts:
+1. The **unsubscribe handle** returned by the `.watch()` / `.bind()` call itself.
+2. The **per-update teardown callback** optionally returned by your handler function.
+
+### ❌ Anti-Pattern: Wiring Up the Wrong Cleanup
+```typescript
+// BAD: Failing to capture the unsubscribe handle, or passing an inner teardown to onUnmounted
+val.watch((v) => {
+  const handler = () => doWork(v);
+  window.addEventListener('resize', handler);
+  // Who unsubscribes val.watch when the component unmounts? Nobody! Memory leak!
+});
+```
+
+### ✅ Idiomatic Seidr: Disconnect via Returned Unsubscribe Handle
+```typescript
+// GOOD:
+// 1. Capture the unsubscribe handle returned by .watch() / .bind()
+// 2. Pass THAT handle to onUnmounted()
+const unwatch = val.watch((v) => {
+  const handler = () => doWork(v);
+  window.addEventListener('resize', handler);
+
+  // Return a per-update teardown: runs before NEXT update or upon unwatch
+  return () => window.removeEventListener('resize', handler);
+});
+
+// Pass the unsubscribe handle so listening stops when component is unmounted
+onUnmounted(unwatch);
+```

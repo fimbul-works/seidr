@@ -55,8 +55,8 @@ In React, `useEffect` serves multiple distinct purposes. In Seidr, choose based 
 
 | React Intent | Seidr Primitive | Why |
 | :--- | :--- | :--- |
-| Run side-effect when a value changes | `value.watch((newVal, prevVal) => { ... })` | Does not run on setup; runs on subsequent value updates. Teardown function supported. Always pass the returned cleanup function to `onUnmounted()` hook! |
-| Run side-effect immediately and on subsequent changes | `value.bind((currentVal) => { ... })` | Runs once immediately, then on every change. Teardown function supported. Always pass the returned cleanup function to `onUnmounted()` hook! |
+| Run side-effect when a value changes | `value.watch((newVal, prevVal) => { ... })` | Does not run on setup; runs on subsequent value updates. Returns **unsubscribe handle**. Handler can return an optional **per-update teardown**. |
+| Run side-effect immediately and on subsequent changes | `value.bind((currentVal) => { ... })` | Runs once immediately, then on every change. Returns **unsubscribe handle**. Handler can return an optional **per-update teardown**. |
 | Run side-effect once when DOM element attaches | `onMounted((container) => { ... })` | Guarantees element is attached to DOM. |
 | Run cleanup when component detaches | `onUnmounted(() => { ... })` | Cancels timers, listeners, subscriptions. |
 
@@ -70,14 +70,17 @@ useEffect(() => {
 }, [active]);
 
 // --- Seidr: .bind() handles immediate check + subscription lifecycle ---
-// Always pass the returned cleanup function to `onUnmounted()` hook!
-onUnmounted(active.bind((isActive) => {
+// 1. .bind() returns the UNSUBSCRIBE handle. Pass it to onUnmounted:
+const unwatch = active.bind((isActive) => {
   if (!isActive) return;
   const onKey = (e: KeyboardEvent) => { ... };
   window.addEventListener('keydown', onKey);
-  // Teardown is called before next change and when active is destroyed
+
+  // 2. The callback returns a PER-UPDATE TEARDOWN (runs before next update or on unwatch):
   return () => window.removeEventListener('keydown', onKey);
-}));
+});
+
+onUnmounted(unwatch);
 ```
 
 ### 4. `useCallback` ➔ Plain Functions
@@ -122,21 +125,46 @@ export const AutoFocusInput = createComponent(() => {
 }, 'AutoFocusInput');
 ```
 
-### 6. `useContext` ➔ `getAppState()` or Coordinator Object
+### 6. `useContext` ➔ Coordinator Object (Per-Instance) or `getAppState()` (App-Wide Only)
 
-React uses Context because props cannot easily bypass intermediate VDOM nodes. In Seidr:
-1. **Direct Parameter Passing**: Component factories are JavaScript functions; you can pass coordinator objects or stores down cleanly.
-2. **Global / Scoped Shared State**: Use `getAppState()`:
+React uses Context for two distinct use cases with completely different Seidr mappings:
+
+#### A. Compound Components (Dialog, Accordion, Tabs, Dropdown) ➔ Coordinator Object
+> [!CAUTION]
+> **NEVER use `getAppState()` or `createValue({ id })` for compound component state!**
+> If you put dialog or accordion state in global singletons, rendering multiple instances on the same page will cause collisions where interacting with one triggers all of them.
+
+Instead, instantiate per-instance state inside a **Coordinator Factory closure** and expose sub-components:
+```typescript
+// Compound components share state through closure scope:
+export const createTabs = (defaultTab: string) => {
+  const activeTab = createValue(defaultTab); // Scoped to THIS tabs instance
+
+  const Tab = (props: { id: string }, children) =>
+    $button({
+      onclick: () => activeTab(props.id),
+      ariaSelected: activeTab.as((t) => t === props.id)
+    }, children);
+
+  const Panel = (props: { id: string }, children) =>
+    Show(activeTab.as((t) => t === props.id), () => $div(props, children));
+
+  return { activeTab, Tab, Panel };
+};
+```
+
+#### B. App-Wide Shared Services (Theme, User Session) ➔ `getAppState()`
+For true application-wide global singletons, use `getAppState()`:
 ```typescript
 import { getAppState } from '@fimbul-works/seidr';
 
-const APP_CONTEXT_KEY = 'my-library.context';
+const APP_CONTEXT_KEY = 'app.theme';
 const state = getAppState();
 
 if (!state.hasData(APP_CONTEXT_KEY)) {
-  state.setData(APP_CONTEXT_KEY, new Map());
+  state.setData(APP_CONTEXT_KEY, createValue('light'));
 }
-const contextMap = state.getData<Map<string, any>>(APP_CONTEXT_KEY);
+const theme = state.getData<Value<string>>(APP_CONTEXT_KEY);
 ```
 
 ### 7. Controlled vs Uncontrolled (`useControllableState`) ➔ `wrapValue`

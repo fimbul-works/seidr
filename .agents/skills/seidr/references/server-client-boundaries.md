@@ -15,6 +15,9 @@ Seidr provides four primitives in `@fimbul-works/seidr` for managing environment
 | `inServer(fn)` | `<T>(fn: () => T) => T \| undefined` | Executes `fn` **only on the server**. Returns `undefined` on the client. |
 | `inClient(fn)` | `<T>(fn: () => T) => T \| undefined` | Executes `fn` **only on the client**. Returns `undefined` on the server. |
 
+> [!WARNING]
+> **Naming Invariant**: Always import `inClient` and `isClient`. Do not use `inBrowser` or `isBrowser` — they are NOT exported by `@fimbul-works/seidr`!
+
 ### Idiomatic Data Fetching Pattern (from `examples/ssr`):
 ```typescript
 import { createComponent, createValue, inClient, inServer, isServer, Suspense } from '@fimbul-works/seidr';
