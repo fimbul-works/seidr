@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
 
 # Show Component
 

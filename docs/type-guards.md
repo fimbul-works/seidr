@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
 
 # Type Guards
 
@@ -128,6 +128,22 @@ console.log(isValue(count));    // true
 console.log(isValue(derived));  // true
 console.log(isValue(42));       // false
 console.log(isValue(() => {})); // false
+```
+
+---
+
+### `isRef()`
+
+Checks if a value is a Seidr [`Ref`](DOM.md#element-references-useref) element reference observable created via `useRef()`.
+
+```typescript
+import { isRef, useRef } from '@fimbul-works/seidr';
+
+const ref = useRef<HTMLCanvasElement>();
+
+console.log(isRef(ref));    // true
+console.log(isRef(null));   // false
+console.log(isRef({}));     // false
 ```
 
 ---

@@ -1,4 +1,4 @@
-import { createValue, isClient, mount, onUnmounted } from "@fimbul-works/seidr";
+import { createValue, mount, onUnmounted } from "@fimbul-works/seidr";
 import { $button, $div, $h2 } from "@fimbul-works/seidr/html";
 
 const BEEP_SOUND =

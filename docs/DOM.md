@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
 
 # DOM Elements API
 
@@ -112,6 +112,79 @@ const counter = $div({ className: 'counter-container' }, [
 - **Lists:** `$ul`, `$ol`, `$li`, `$dl`, `$dt`, `$dd`
 - **Tables:** `$table`, `$thead`, `$tbody`, `$tfoot`, `$tr`, `$td`, `$th`, `$caption`
 - **Media & Canvas:** `$img`, `$video`, `$audio`, `$canvas`, `$svg`
+
+---
+
+## Element References (`useRef`)
+
+The `useRef()` hook provides a streamlined way to capture and interact with underlying DOM element instances. It enables imperative access to DOM nodes created via [`$()`](#--create-dom-elements) or predefined element creators when declarative bindings are insufficient (e.g., drawing on `<canvas>`, managing focus on `<input>`, or integrating third-party imperative DOM libraries).
+
+### `useRef()`
+
+Creates a typed `Ref<T>` reference object.
+
+**Generic Type:**
+- `T extends Element = Element` — The specific DOM element type (e.g. `HTMLCanvasElement`, `HTMLInputElement`).
+
+**Returns:** `Ref<T>` — A decorated [`Value<T | null>`](Value.md) observable.
+
+```typescript
+import { createComponent, onMounted, useRef } from '@fimbul-works/seidr';
+import { $button, $canvas, $div } from '@fimbul-works/seidr/html';
+
+const CanvasViewer = createComponent(() => {
+  const canvasRef = useRef<HTMLCanvasElement>();
+
+  // The element reference is reliably available inside onMounted
+  onMounted(() => {
+    const canvas = canvasRef();
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.fillStyle = '#4f46e5';
+        ctx.fillRect(20, 20, 160, 100);
+      }
+    }
+  });
+
+  return $div([
+    $canvas({ id: 'viewer-canvas', width: 300, height: 200, ref: canvasRef }),
+    $button({
+      textContent: 'Clear',
+      onclick: () => {
+        const canvas = canvasRef();
+        const ctx = canvas?.getContext('2d');
+        ctx?.clearRect(0, 0, 300, 200);
+      }
+    })
+  ]);
+}, 'CanvasViewer');
+```
+
+### The `ref` Prop
+
+Pass the `Ref` instance into the `ref` prop of any element created with [`$()`](#--create-dom-elements) or HTML helper functions:
+
+```typescript
+const inputRef = useRef<HTMLInputElement>();
+const input = $('input', { type: 'text', ref: inputRef });
+```
+
+### Lifecycle & Timing: Using with `onMounted()`
+
+> **IMPORTANT**
+>
+> A `Ref` starts initialized to `null`. When passed to an element via the `ref` prop, Seidr assigns the element instance to the ref and automatically resets it back to `null` when unmounted.
+>
+> However, the referenced element is **only guaranteed to be attached to the active DOM document once the component mounts**. Therefore, querying layout geometry, setting focus, or accessing rendering contexts should always be performed inside the [`onMounted()`](components.md#onmounted) lifecycle hook.
+
+### Reactive Nature (`Ref<T>`)
+
+A `Ref<T>` is a decorated [`Value<T | null>`](Value.md) with SSR hydration disabled (`hydrate: false`). It supports standard `Value` semantics:
+
+- **Getter**: `ref()` returns `T | null`.
+- **Setter**: `ref(newElement)` or `ref(null)` manually updates the reference (accepts `HTMLElement` or `null`, throws `SeidrError` otherwise).
+- **Observable methods**: Supports `.watch()`, `.bind()`, and `.destroy()` just like standard `Value` instances.
 
 ---
 

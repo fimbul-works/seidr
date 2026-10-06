@@ -1,4 +1,4 @@
-<img src="public/seidr-logo.svg" alt="Seidr logo" style="height:200px;margin-bottom:1em;"/>
+<img src="./public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;"/>
 
 **Batteries-included** reactivity in a **kilobyte-sized** package. Seidr brings type-safe components, routing, and SSR to vanilla JavaScript/TypeScript with **build step optional**.
 
@@ -104,7 +104,7 @@ yarn add @fimbul-works/seidr
 
 | Entry Point | Description |
 |---|---|
-| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), routing (`Router`, `Route`, `Link`), and AppState. |
+| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`, `useRef`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), routing (`Router`, `Route`, `Link`), and AppState. |
 | `@fimbul-works/seidr/html` | Predefined reactive DOM element creators (`$div`, `$span`, `$button`, `$input`, `$a`, `$ul`, `$li`, `$table`, etc.). |
 | `@fimbul-works/seidr/ssr` | Server-Side Rendering (`renderToString`), hydration (`hydrate`), and SSR context utilities. |
 | `@fimbul-works/seidr/build` | Official Vite and Rolldown build plugins (`seidrVitePlugin`, `seidrRolldownPlugin`) for compile-time branch pruning. |
@@ -157,7 +157,7 @@ Before diving into the details, it helps to understand Seidr's mental model. Thi
 - No virtual DOM diffing or full-tree reconciliation
 
 **3. Lifecycle & Cleanup**
-- Dedicated lifecycle hooks (`onMounted`, `onUnmounted`)
+- Dedicated lifecycle and element reference hooks (`onMounted`, `onUnmounted`, `useRef`)
 - Components track their bindings and clean up automatically
 - Guaranteed memory safety when components are unmounted
 
@@ -482,7 +482,7 @@ For complete API documentation with all methods, parameters, and examples, see *
 
 - [Application State (`AppState.md`)](docs/AppState.md) — Central execution context, component registry, and pluggable state strategies.
 - [Reactive State (`Value.md`)](docs/Value.md) — Callable getter-setter observables, derivation, and object wrapping.
-- [DOM Elements & Queries (`DOM.md`)](docs/DOM.md) — Reactive element creation, custom element factories, and DOM queries.
+- [DOM Elements & Queries (`DOM.md`)](docs/DOM.md) — Reactive element creation, custom element factories, element references (`useRef`), and DOM queries.
 - [Components & Lifecycle (`components.md`)](docs/components.md) — Component definitions, scopes, and lifecycle hooks (`onMounted`, `onUnmounted`).
 - [Control Flow](docs/components.md#built-in-components) — Fine-grained control flow: [`Show`](docs/Show.md), [`List`](docs/List.md), [`Switch`](docs/Switch.md), [`Safe`](docs/Safe.md), [`Suspense`](docs/Suspense.md), [`Lazy`](docs/Lazy.md).
 - [Routing (`Router.md`)](docs/Router.md) — Declarative routing, navigation hooks, route matching, and history drivers.

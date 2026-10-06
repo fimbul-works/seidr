@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
 
 # Component & Lifecycle API
 
@@ -123,6 +123,11 @@ const CanvasComponent = createComponent(() => {
 **Parameters:**
 - `callback: (container: HTMLElement) => void` — Callback receiving the container element.
 - `el?: Node` — Optional specific DOM node to attach the hook to.
+
+> **TIP**
+>
+> **Working with DOM References (`useRef`)**:
+> If you need direct access to child DOM elements (such as measuring an element, focusing an input, or drawing to a `<canvas>`), use the [`useRef()`](DOM.md#element-references-useref) hook. Because elements are only guaranteed to be attached to the active document after mounting, inspect and manipulate your element refs inside `onMounted()`.
 
 ---
 

@@ -2,7 +2,5 @@ node_modules/
 dist/
 build/
 bundles/
-*.gz
-*.map
-*.br
+bundle-sizes/
 examples/ssr/data/

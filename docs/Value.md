@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="Seidr logo" style="height:150px;margin-bottom:-2.5em;"/>
+<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
 
 # Reactive State: Values
 
@@ -451,6 +451,21 @@ The same adapter can be used with other libraries that expect mutable object pro
 
 ---
 
+### `useRef()`
+
+Creates a specialized `Ref<T>` observable holding a DOM element reference (or `null`). A `Ref` is a decorated `Value` tailored for DOM element bindings via the `ref` prop, with SSR hydration disabled.
+
+```typescript
+import { useRef } from '@fimbul-works/seidr';
+
+const inputRef = useRef<HTMLInputElement>();
+console.log(inputRef()); // null initially
+```
+
+For full details on using `useRef` with elements, the `ref` prop, and lifecycle timing with `onMounted()`, see **[DOM Elements: Element References (`useRef`)](DOM.md#element-references-useref)**.
+
+---
+
 ### `isValue()`
 
 Type guard checking if a value is a Seidr `Value` observable.
@@ -466,6 +481,25 @@ import { createValue, isValue } from '@fimbul-works/seidr';
 const count = createValue(0);
 console.log(isValue(count)); // true
 console.log(isValue(42));    // false
+```
+
+---
+
+### `isRef()`
+
+Type guard checking if a value is a Seidr `Ref` observable created by `useRef()`.
+
+**Parameters:**
+- `v: any` — Value to test.
+
+**Returns:** `boolean` (type narrows to `v is Ref<T>`).
+
+```typescript
+import { isRef, useRef } from '@fimbul-works/seidr';
+
+const ref = useRef<HTMLDivElement>();
+console.log(isRef(ref)); // true
+console.log(isRef({}));  // false
 ```
 
 ---

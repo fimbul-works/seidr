@@ -1,4 +1,4 @@
-import { type UserConfig, defineConfig } from "tsdown";
+import { defineConfig, type UserConfig } from "tsdown";
 import { seidrRolldownPlugin } from "./src/build-plugins/index.ts";
 
 // Target option for seidrRolldownPlugin

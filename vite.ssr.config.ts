@@ -22,7 +22,8 @@ export default defineConfig(() => {
       outDir: "dist",
       emptyOutDir: true,
       sourcemap: true,
-      minify: "terser",
+      modulePreload: { polyfill: false },
+      minify: 'terser',
       target: "esnext",
       rolldownOptions: {
         input: resolve("examples", "ssr", "index.html"),
