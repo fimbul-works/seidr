@@ -27,7 +27,7 @@ export async function getPosts(): Promise<BlogPost[]> {
         } = matter(md);
 
         const slug = file.replace(".md", "");
-        const trimmedContent = content.trim();
+        const trimmedContent = content.trim().replaceAll(/\[(.+)\]\(.+\)/gm, "$1");
 
         // Find a suitable place to stop
         let pos = trimmedContent.indexOf(".");

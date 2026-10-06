@@ -27,12 +27,12 @@ export const timeAgo = (dateString: string) => {
   const years = Math.floor(diff / 31536000000);
 
   if (minutes < 1) return "Just now";
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
-  if (weeks < 4) return `${weeks}w ago`;
-  if (months < 12) return `${months}mo ago`;
-  return `${years}y ago`;
+  if (minutes < 60) return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+  if (hours < 24) return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+  if (days < 7) return `${days} day${days !== 1 ? "s" : ""} ago`;
+  if (weeks < 4) return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
+  if (months < 12) return `${months} month${months !== 1 ? "s" : ""} ago`;
+  return `${years} year${years !== 1 ? "s" : ""} ago`;
 };
 
 /**
@@ -42,9 +42,7 @@ export const DateView = createComponent(
   (dateStr: string) =>
     $div({ className: "date" }, [
       $span({ className: "icon icon-clock" }),
-      $span({ className: "time-ago" }, timeAgo(dateStr)),
-      $span({ className: "icon icon-node" }),
-      $span({ className: "date-full" }, formatDate(dateStr)),
+      $span({ className: "date-full", title: timeAgo(dateStr) }, formatDate(dateStr)),
     ]),
   "Date",
 );

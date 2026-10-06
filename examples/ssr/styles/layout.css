@@ -1,0 +1,97 @@
+/* Reset & Base */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  background: linear-gradient(135deg, #161224 0%, #20273d 100%);
+  color: var(--text);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  line-height: 1.7;
+  position: relative;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body::after {
+  content: "";
+  background: radial-gradient(circle at center, rgba(102, 119, 187, 0.08) 0%, rgba(10, 8, 20, 0.75) 100%);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* Layout */
+.app-container {
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 0 0 var(--spacing-xxl) 0;
+}
+
+.site-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+
+  border-top: 1px solid rgba(102, 119, 187, 0.2);
+  padding: var(--spacing-xxl) 0 var(--spacing-xxl) 0;
+  text-align: center;
+  color: rgba(220, 226, 245, 0.5);
+  font-size: 0.875rem;
+
+  .brand-logo {
+    top: 0;
+
+    height: var(--spacing-xl);
+    filter: brightness(100);
+    opacity: 0.4;
+  }
+
+  .footer-meta a {
+    color: var(--text-link);
+    text-decoration: none;
+    transition: all var(--transition-duration) ease-in-out;
+  }
+
+  .footer-meta a:hover {
+    color: var(--text-link-hover);
+    text-decoration: underline;
+    text-shadow: var(--text-link-hover-shadow);
+  }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 650px) {
+  .app-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .main-content {
+    padding: 0rem 0 var(--spacing-xl) 0;
+  }
+
+  .site-footer {
+    padding: var(--spacing-xl) 0 var(--spacing-xl) 0;
+  }
+}

@@ -52,19 +52,24 @@ export const PostPage = createComponent(() => {
           if (!post) {
             return $div({ className: "error not-found-card" }, [
               $h1({ className: "error-title" }, "Post Not Found"),
-              $div({ className: "error-message" }, "The requested dispatch does not exist or has been relocated."),
-              Link({ to: "/", className: "back-link" }, "← Back to Articles"),
+              $div({ className: "error-message" }, "The requested post does not exist or has been relocated."),
+              Link({ to: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
             ]);
           }
 
           return $article({ className: "post-page" }, [
-            $div(
-              { className: "meta" },
-              post.tags
-                ? post.tags.map((tag) => $span({ className: "meta-badge", textContent: tag }))
-                : [$span({ className: "meta-badge", textContent: "Article" })],
-            ),
-            Link({ to: "/", className: "back-link" }, "← Back to Articles"),
+            $div({ className: "meta" }, [
+              Link({ to: "/", className: "back-link", activeClass: "active" }, [
+                $span({ className: "long" }, "← Back to Articles"),
+                $span({ className: "short" }, "← Back"),
+              ]),
+              $div(
+                { className: "tags" },
+                post.tags
+                  ? post.tags.map((tag) => $span({ className: "meta-badge", textContent: tag }))
+                  : [$span({ className: "meta-badge", textContent: "Article" })],
+              ),
+            ]),
             $h1({ className: "article-title" }, post.title),
             $div({ className: "markdown-body", innerHTML: post.content }),
             DateView(post.date),

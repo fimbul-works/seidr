@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import "./style.css";
+import "./styles/style.css";
 
 import { $getById, hydrate } from "@fimbul-works/seidr";
 import type { HydrationData } from "@fimbul-works/seidr/ssr";

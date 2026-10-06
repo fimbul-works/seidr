@@ -1,0 +1,132 @@
+/* Markdown Article Body */
+.markdown-body {
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: rgba(230, 236, 255, 0.9);
+  border-top: 1px solid rgba(102, 119, 187, 0.2);
+  margin: 0 var(--spacing-xl) var(--spacing-md) var(--spacing-xl);
+  padding-top: var(--spacing-sm);
+}
+
+.markdown-body h2 {
+  font-size: 1.65rem;
+  color: #ffffff;
+  margin: 2.75rem 0 1rem 0;
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 1px solid rgba(102, 119, 187, 0.25);
+  font-weight: 700;
+}
+
+.markdown-body h3 {
+  font-size: 1.35rem;
+  color: #dce4ff;
+  margin: var(--spacing-xl) 0 0.85rem 0;
+  font-weight: 600;
+}
+
+.markdown-body p {
+  margin-bottom: var(--spacing-lg);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-bottom: 1.75rem;
+  padding-left: var(--spacing-lg);
+}
+
+.markdown-body li {
+  margin-bottom: var(--spacing-sm);
+}
+
+.markdown-body em {
+  font-style: italic;
+}
+
+.markdown-body blockquote {
+  border-left: 3px solid #67b;
+  background: rgba(102, 119, 187, 0.1);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: var(--spacing-md) 0;
+  color: rgba(220, 226, 245, 0.9);
+  font-style: italic;
+
+  p:last-child {
+    margin-bottom: 0;
+  }
+
+  em {
+    font-weight: bold;
+  }
+}
+
+.markdown-body a {
+  color: #8da4ff;
+  text-decoration: none;
+  text-underline-offset: 3px;
+  transition: color var(--transition-duration) ease-in-out;
+}
+
+.markdown-body a:hover {
+  color: #ffffff;
+  text-decoration: underline;
+  text-shadow: 0 0 8px rgba(102, 119, 187, 0.6);
+}
+
+.markdown-body pre {
+  background: rgba(10, 8, 20, 0.85);
+  border: 1px solid rgba(102, 119, 187, 0.35);
+  border-radius: 0;
+  padding: var(--spacing-md) var(--spacing-lg);
+  overflow-x: auto;
+  margin: 1.75rem 0;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.95rem;
+  line-height: 1.6;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+}
+
+.markdown-body p code,
+.markdown-body li code {
+  background: rgba(102, 119, 187, 0.16);
+  border: 1px solid rgba(102, 119, 187, 0.35);
+  color: #e0e8ff;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--spacing-xs);
+  font-size: 0.9em;
+}
+
+.markdown-body pre code {
+  color: var(--text);
+  background: transparent;
+  padding: 0;
+  border: none;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 650px) {
+  .markdown-body {
+    margin: var(--spacing-sm) var(--spacing-lg) var(--spacing-sm) var(--spacing-lg);
+    padding: 0;
+  }
+
+  .markdown-body blockquote {
+    padding: var(--spacing-sm) var(--spacing-md);
+    margin: var(--spacing-sm) 0;
+  }
+
+  .markdown-body p + blockquote {
+    margin-top: calc(var(--spacing-md) * -1);
+  }
+
+  .article-title {
+    padding-top: 0;
+  }
+}
