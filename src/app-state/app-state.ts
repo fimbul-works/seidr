@@ -46,7 +46,7 @@ export const getNextValueId = (): string => {
     return `${encodeBase62(scope.id)}.${encodeBase62(scope.nextValueId)}`;
   }
 
-  if (isServer() && process.env.NODE_ENV === "development") {
+  if (isServer() && (process.env.NODE_ENV === "development" || process.env.VITEST)) {
     console.warn(
       "[getNextValueId] Warning: Generating Value ID outside of component scope. This can lead to non-deterministic IDs and hydration mismatches. Please ensure all Value instances are created within a component.",
     );

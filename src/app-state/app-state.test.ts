@@ -67,7 +67,7 @@ describe("AppState Infrastructure", () => {
     });
   });
 
-  describe("getNextSeidrId", () => {
+  describe("getNextValueId", () => {
     it("should generate deterministic IDs within component scope", () => {
       const TestComp = createComponent(() => {
         const id1 = getNextValueId();
@@ -79,12 +79,12 @@ describe("AppState Infrastructure", () => {
       const el1 = comp1.nodes[0] as HTMLElement;
 
       // ID format is: [ComponentIDBase62]-[CounterBase62]
-      expect(el1.id).toBe(`${encodeBase62(comp1.id)}-1`);
-      expect(el1.className).toBe(`${encodeBase62(comp1.id)}-2`);
+      expect(el1.id).toBe(`${encodeBase62(comp1.id)}.1`);
+      expect(el1.className).toBe(`${encodeBase62(comp1.id)}.2`);
 
       const comp2 = TestComp();
       const el2 = comp2.nodes[0] as HTMLElement;
-      expect(el2.id).toBe(`${encodeBase62(comp2.id)}-1`);
+      expect(el2.id).toBe(`${encodeBase62(comp2.id)}.1`);
     });
 
     it("should fallback to AppState counter when outside of scope", () => {
