@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
+![@fimbul-works/seidr](../public/seidr-logo.svg)
 
 # API Reference
 
@@ -75,7 +75,6 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 ## [Utilities & Type Guards](type-guards.md) (`@fimbul-works/seidr`)
 - Utilities (`docs/utils.md`):
   - [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
-  - [`random()`](utils.md#random) — Deterministic pseudo-random number generator (SplitMix32) preserved across SSR.
   - [`SeidrError`](utils.md#seidrerror) — Standard Seidr runtime assertion error class.
 - [Type Guards](type-guards.md):
   - Primitives: [`isArray`](type-guards.md#isarray), [`isBool`](type-guards.md#isbool), [`isFn`](type-guards.md#isfn), [`isNum`](type-guards.md#isnum), [`isObj`](type-guards.md#isobj), [`isStr`](type-guards.md#isstr), [`isNullish`](type-guards.md#isnullish).
@@ -102,6 +101,9 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 ## [Testing Utilities](testing.md) (`@fimbul-works/seidr/testing`)
 - Dual-Mode Runners: [`describeDualMode()`](testing.md#describedualmode), [`itHasParity()`](testing.md#ithasparity).
 - Environment Controls: `enableClientMode()`, `enableSSRMode()`, `setupAppState()`, `mockLocation()`.
+
+## [Official Addons](addons.md) (`@fimbul-works/seidr-*`)
+- [`@fimbul-works/seidr-random`](addons.md#seidr-random-package) — Deterministic pseudo-random number generation.
 
 ---
 

@@ -1,5 +1,6 @@
 #!/bin/bash
 rm -rf examples/build
+rm -rf examples/ssr/dist
 
 EXAMPLE=hello-world npx vite build
 EXAMPLE=counter npx vite build

@@ -8,7 +8,6 @@ export { hydrate, isHydrating } from "./ssr/hydrate/index.js";
 export * from "./ssr/hydration-serializer.js";
 export type { HydrationData } from "./ssr/types.js";
 export * from "./util/environment/index.js";
-export * from "./util/random.js";
 
 // Register functionality for SSR hydration
 if (!isServer()) {

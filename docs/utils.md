@@ -1,8 +1,20 @@
-<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
+![@fimbul-works/seidr](../public/seidr-logo.svg)
 
 # Utilities API
 
 Seidr includes several built-in utilities for error wrapping, deterministic random number generation, and type validation.
+
+---
+
+## `SeidrError`
+
+The standard error class thrown by Seidr runtime assertions and invalid lifecycle operations.
+
+```typescript
+import { SeidrError } from '@fimbul-works/seidr';
+
+throw new SeidrError('Custom Seidr error message');
+```
 
 ---
 
@@ -26,34 +38,6 @@ try {
   console.log(err instanceof SeidrError); // true
   console.log(err.message); // "Something went wrong"
 }
-```
-
----
-
-## `random()`
-
-A deterministic, high-entropy pseudo-random number generator using the SplitMix32 algorithm. The random sequence is maintained in [`AppState`](AppState.md) so that random numbers generated during SSR match the hydration pass deterministically on the client.
-
-**Returns:** `number` — A float between 0 and 1.
-
-```typescript
-import { random } from '@fimbul-works/seidr';
-
-const rand = random();
-console.log(rand); // Deterministic float in [0, 1)
-```
-
-
----
-
-## `SeidrError`
-
-The standard error class thrown by Seidr runtime assertions and invalid lifecycle operations.
-
-```typescript
-import { SeidrError } from '@fimbul-works/seidr';
-
-throw new SeidrError('Custom Seidr error message');
 ```
 
 ---

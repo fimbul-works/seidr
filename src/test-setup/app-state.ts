@@ -48,7 +48,7 @@ export function setupAppState() {
  */
 export const resetNextId = (): void => {
   try {
-    getAppState().seidrIdCounter = 0;
+    getAppState().uniqID = 0;
   } catch (_e) {
     // Ignore if no app state is available
   }

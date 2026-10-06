@@ -27,6 +27,9 @@ importers:
       '@fimbul-works/bundle-size':
         specifier: ^2.0.0
         version: 2.0.0(esbuild@0.28.2)
+      '@fimbul-works/seidr-random':
+        specifier: link:../seidr-random
+        version: link:../seidr-random
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6

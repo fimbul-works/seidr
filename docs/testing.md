@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
+![@fimbul-works/seidr](../public/seidr-logo.svg)
 
 # Testing Utilities (`@fimbul-works/seidr/testing`)
 

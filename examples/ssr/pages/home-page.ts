@@ -6,14 +6,15 @@ import {
   isServer,
   Link,
   List,
-  random,
   Suspense,
   Switch,
   type Value,
 } from "@fimbul-works/seidr";
 import { $div, $footer, $h1, $h2, $li, $main, $p, $span, $ul } from "@fimbul-works/seidr/html";
+import { random } from "@fimbul-works/seidr-random";
 import { getPosts } from "../blog-api.js";
 import { DateView } from "../components/date.js";
+import { LoadingSpinner } from "../components/loading-spinner.js";
 import { TAGLINES } from "../hero-content.js";
 import type { BlogPost } from "../types.js";
 
@@ -44,11 +45,11 @@ const PostCard = createComponent((post: Value<BlogPost>) => {
  * Home page component.
  */
 export const HomePage = createComponent(() => {
-  // Default title and tagline
-  const title = createValue<string>("Seiðr, Actually", { id: "title" });
-  const tagline = createValue<string>("A love letter to reactive state, written under duress.", { id: "tagline" });
+  const title = createValue<string>("", { id: "title" });
+  const tagline = createValue<string>("", { id: "tagline" });
 
   inServer(() => {
+    // Only server sets the title and tagline, saving precious kilobytes!
     const r1 = Math.floor(random() * Number.MAX_SAFE_INTEGER);
     const r2 = Math.floor(random() * Number.MAX_SAFE_INTEGER);
     const [titleStr, taglines] = TAGLINES[r1 % TAGLINES.length];
@@ -93,7 +94,7 @@ export const HomePage = createComponent(() => {
             ]),
           "ResolvedPosts",
         ),
-        pending: createComponent(() => $div({ className: "loading-state" }, "Loading dispatches..."), "PendingPosts"),
+        pending: LoadingSpinner,
         error: createComponent(
           () => $div({ className: "error" }, [$h1("Oops"), error()?.message || "Something went wrong."]),
           "ErrorPosts",

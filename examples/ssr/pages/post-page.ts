@@ -114,7 +114,7 @@ export const PostPage = createComponent(() => {
     createComponent(({ state, value, error }: SuspenseState<BlogPost | null>) => {
       return Switch(state, {
         resolved: () => PostContainer(value),
-        pending: () => LoadingSpinner(),
+        pending: LoadingSpinner,
         error: () => PostError(error),
       });
     }, "PostSuspense"),

@@ -13,9 +13,9 @@ import { useNavigate } from "./hooks/use-navigate.js";
  * Applicable for dynamic content (such as Markdown-rendered HTML) on both client and server.
  *
  * Criteria for intercepting a link:
- * 1. The link does not have a "target" attribute.
- * 2. The link URL path is relative OR its origin matches the current router's origin.
- * 3. The link does not already have an `onclick` handler attached.
+ * 1. The link does not have a "target" or "download" attribute.
+ * 2. The link does not already have an `onclick` handler attached.
+ * 3. The link URL path is relative OR its origin matches the current router's origin.
  *
  * Special mouse clicks (Ctrl, Cmd/Meta, Shift, or middle-click) pass through without interception.
  *
@@ -29,8 +29,6 @@ export const interceptLinks = (root: Element = getDocument().body): void => {
     return;
   }
 
-  // Use microtask to allow dynamic content to be rendered before intercepting links
-  // queueMicrotask(() => {
   const navigate = useNavigate();
   const currentUrl = routerState.url();
 
@@ -40,8 +38,8 @@ export const interceptLinks = (root: Element = getDocument().body): void => {
   }
 
   for (const link of anchors) {
-    // Skip if link has a "target" attribute or an onclick handler
-    if (link.hasAttribute("target") || !isNullish(link.onclick)) {
+    // Skip if link has a "target" or "download" attributes, or an existing onclick handler
+    if (link.hasAttribute("target") || link.hasAttribute("download") || !isNullish(link.onclick)) {
       continue;
     }
 

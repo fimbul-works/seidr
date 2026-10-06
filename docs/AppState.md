@@ -1,4 +1,4 @@
-<img src="../public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;margin-bottom:-1rem;"/>
+![@fimbul-works/seidr](../public/seidr-logo.svg)
 
 # AppState API
 
@@ -120,9 +120,8 @@ Seidr uses `AppState` data strategies internally to provide seamless SSR hydrati
 
 | Key | Subsystem | Description |
 | :--- | :--- | :--- |
-| `DATA_KEY_STATE` (`"seidr.state"`) | Reactive Values | Captures all registered `Value` instances created with `{ hydrate: true }` and restores them during hydration. |
-| `DATA_KEY_ROUTER` (`"seidr.router"`) | Router | Captures the server request URL and restores it during client-side hydration so the router starts on the exact server-matched route. |
-| `DATA_KEY_RANDOM` (`"seidr.random"`) | `random()` | Serializes the SplitMix32 PRNG seed and sequence per component so random numbers generated on the server match client hydration without markup mismatches. |
+| `DATA_KEY_STATE` (`state"`) | Reactive Values | Captures all registered `Value` instances created with `{ hydrate: true }` and restores them during hydration. |
+| `DATA_KEY_ROUTER` (`"router"`) | Router | Captures the server request URL and restores it during client-side hydration so the router starts on the exact server-matched route. |
 
 ---
 

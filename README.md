@@ -1,4 +1,4 @@
-<img src="./public/seidr-logo.svg" alt="@fimbul-works/seidr" style="height:200px;"/>
+# ![@fimbul-works/seidr](./public/seidr-logo.svg)
 
 **Batteries-included** reactivity in a **kilobyte-sized** package. Seidr brings type-safe components, routing, and SSR to vanilla JavaScript/TypeScript with **build step optional**.
 
@@ -479,18 +479,6 @@ Seidr works in all modern browsers:
 ## 📚 API Reference
 
 For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
-
-- [Application State (`AppState.md`)](docs/AppState.md) — Central execution context, component registry, and pluggable state strategies.
-- [Reactive State (`Value.md`)](docs/Value.md) — Callable getter-setter observables, derivation, and object wrapping.
-- [DOM Elements & Queries (`DOM.md`)](docs/DOM.md) — Reactive element creation, custom element factories, element references (`useRef`), and DOM queries.
-- [Components & Lifecycle (`components.md`)](docs/components.md) — Component definitions, scopes, and lifecycle hooks (`onMounted`, `onUnmounted`).
-- [Control Flow](docs/components.md#built-in-components) — Fine-grained control flow: [`Show`](docs/Show.md), [`List`](docs/List.md), [`Switch`](docs/Switch.md), [`Safe`](docs/Safe.md), [`Suspense`](docs/Suspense.md), [`Lazy`](docs/Lazy.md).
-- [Routing (`Router.md`)](docs/Router.md) — Declarative routing, navigation hooks, route matching, and history drivers.
-- [Type Guards (`type-guards.md`)](docs/type-guards.md) — Zero-dependency type predicates for primitives, components, DOM nodes, and observables.
-- [Server-Side Rendering (`SSR.md`)](docs/SSR.md) — Isomorphic rendering, hydration serialization, and environment flags.
-- [Build Plugins (`build.md`)](docs/build.md) — Vite and Rolldown compiler plugins for dead-code pruning.
-- [Testing Utilities (`testing.md`)](docs/testing.md) — Dual-mode test runners (`describeDualMode`) and testing environment helpers.
-- [Utilities (`utils.md`)](docs/utils.md) — Deterministic random numbers (`random`), error wrapping, and runtime error classes.
 
 ---
 

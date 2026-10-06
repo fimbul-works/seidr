@@ -102,6 +102,25 @@ describeDualMode("interceptLinks", ({ getDocument, isSSR }) => {
       expect(linkSelf.onclick).toBeNull();
     });
 
+    it("should not intercept links with a download attribute", () => {
+      initRouter("/");
+
+      const linkDownload = doc.createElement("a");
+      linkDownload.setAttribute("href", "/file.txt");
+      linkDownload.setAttribute("download", "file.txt");
+      container.appendChild(linkDownload);
+
+      const linkDownload2 = doc.createElement("a");
+      linkDownload2.setAttribute("href", "/file.txt");
+      linkDownload2.setAttribute("download", "file.txt");
+      container.appendChild(linkDownload2);
+
+      interceptLinks(container);
+
+      expect(linkDownload.onclick).toBeNull();
+      expect(linkDownload2.onclick).toBeNull();
+    });
+
     it("should not intercept cross-origin links", () => {
       initRouter("/");
 

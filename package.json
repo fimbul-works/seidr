@@ -70,6 +70,9 @@
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "peerDependenciesMeta": {
+    "@fimbul-works/seidr-random": {
+      "optional": true
+    },
     "vite": {
       "optional": true
     }
@@ -83,6 +86,7 @@
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
     "@fimbul-works/bundle-size": "^2.0.0",
+    "@fimbul-works/seidr-random": "link:../seidr-random",
     "@types/express": "^5.0.6",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.4",
