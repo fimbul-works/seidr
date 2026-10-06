@@ -1,0 +1,23 @@
+{
+  "name": "@repo/vitest-config",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./base": "./dist/configs/base-config.js",
+    "./seidr": "./dist/configs/seidr-config.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "vitest": "5.0.3"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "jsdom": "30.1.1",
+    "typescript": "6.0.3"
+  }
+}

@@ -1,8 +1,8 @@
 ![@fimbul-works/seidr](../public/seidr-logo.svg)
 
-# Build Plugins API (`@fimbul-works/seidr/build`)
+# Build Plugins API (`@fimbul-works/seidr-build-tools`)
 
-Seidr components are isomorphic by construction. To ensure optimal production bundle sizes, `@fimbul-works/seidr/build` provides build-time plugins for Vite and Rolldown that perform dead-code elimination, prune environment-inapplicable branches (`inServer`, `inClient`), and strip orphaned imports.
+Seidr components are isomorphic by construction. To ensure optimal production bundle sizes, `@fimbul-works/seidr-build-tools` provides build-time plugins for Vite and Rolldown that perform dead-code elimination, prune environment-inapplicable branches (`inServer`, `inClient`), and strip orphaned imports.
 
 ---
 
@@ -16,7 +16,7 @@ The official Seidr Vite plugin. It transforms TypeScript and JavaScript sources 
 ```typescript
 // vite.config.ts
 import { defineConfig } from 'vite';
-import { seidrVitePlugin } from '@fimbul-works/seidr/build';
+import { seidrVitePlugin } from '@fimbul-works/seidr-build-tools/vite';
 
 export default defineConfig({
   plugins: [
@@ -48,7 +48,7 @@ A Rolldown-compatible plugin performing compile-time dead-code replacements for 
 
 ```typescript
 import { defineConfig } from 'rolldown';
-import { seidrRolldownPlugin } from '@fimbul-works/seidr/build';
+import { seidrRolldownPlugin } from '@fimbul-works/seidr-build-tools/rolldown';
 
 export default defineConfig({
   plugins: [

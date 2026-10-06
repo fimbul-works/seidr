@@ -1,0 +1,60 @@
+{
+  "name": "@fimbul-works/seidr-random",
+  "description": "SSR-safe deterministic pseudo-random number generator for Seidr, based on the SplitMix32 algorithm",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/seidr#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/seidr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/seidr/issues"
+  },
+  "keywords": [
+    "random",
+    "rng",
+    "prng",
+    "splitmix32",
+    "ssr",
+    "functional",
+    "typescript"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm build:clean && pnpm build:lib && pnpm build:bundles",
+    "build:clean": "rimraf dist/ bundles/",
+    "build:lib": "tsc",
+    "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm clean:dist && pnpm build"
+  },
+  "peerDependencies": {
+    "@fimbul-works/seidr": "^1.0.0"
+  },
+  "devDependencies": {
+    "@fimbul-works/seidr": "workspace:*",
+    "@fimbul-works/seidr-build-tools": "workspace:*",
+    "@repo/biome-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*"
+  }
+}

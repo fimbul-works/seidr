@@ -3,8 +3,13 @@ import type { BundleSizeOptions } from "@fimbul-works/bundle-size";
 const config: BundleSizeOptions = {
   groups: [
     {
-      name: "Bundles",
-      include: "bundles/*.js",
+      name: "Main Bundles",
+      include: "packages/seidr/bundles/*.js",
+    },
+    {
+      name: "Addons",
+      include: ["packages/seidr-*/bundles/*.js"],
+      exclude: "packages/seidr/bundles/*.js",
     },
     {
       name: "Examples",

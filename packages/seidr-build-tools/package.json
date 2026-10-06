@@ -1,0 +1,73 @@
+{
+  "name": "@fimbul-works/seidr-build-tools",
+  "description": "Official build plugins and transform utilities for Seidr (Vite, Rolldown)",
+  "version": "1.0.0",
+  "type": "module",
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/seidr#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/seidr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/seidr/issues"
+  },
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite-plugin.d.ts",
+      "import": "./dist/vite-plugin.js",
+      "default": "./dist/vite-plugin.js"
+    },
+    "./rolldown": {
+      "types": "./dist/rolldown-plugin.d.ts",
+      "import": "./dist/rolldown-plugin.js",
+      "default": "./dist/rolldown-plugin.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm build:clean && pnpm build:lib",
+    "build:clean": "rimraf dist/",
+    "build:lib": "tsc",
+    "check-types": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "rolldown": "*",
+    "vite": "^5.0.0 || ^6.0.0 || ^7.0.0 || ^8.0.0"
+  },
+  "peerDependenciesMeta": {
+    "rolldown": {
+      "optional": true
+    },
+    "vite": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "magic-string": "^1.4.3",
+    "oxc-parser": "^0.153.0"
+  },
+  "devDependencies": {
+    "@repo/biome-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "rimraf": "^6.1.3",
+    "rolldown": "^1.2.12",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.2"
+  }
+}

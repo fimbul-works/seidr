@@ -1,9 +1,9 @@
 {
-  "name": "@fimbul-works/seidr",
-  "description": "",
+  "name": "seidr-monorepo",
+  "description": "Monorepo for Seidr reactive UI framework and addons",
   "version": "1.0.0",
   "type": "module",
-  "private": false,
+  "private": true,
   "license": "MIT",
   "author": "FimbulWorks <contact@fimbul.works>",
   "homepage": "https://github.com/fimbul-works/seidr#readme",
@@ -14,94 +14,44 @@
   "bugs": {
     "url": "https://github.com/fimbul-works/seidr/issues"
   },
-  "keywords": [],
-  "types": "./dist/index.d.ts",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "default": "./dist/index.js"
-    },
-    "./ssr": {
-      "types": "./dist/index.ssr.d.ts",
-      "import": "./dist/index.ssr.js",
-      "default": "./dist/index.ssr.js"
-    },
-    "./html": {
-      "types": "./dist/elements/index.d.ts",
-      "import": "./dist/elements/index.js",
-      "require": "./dist/elements/index.js",
-      "default": "./dist/elements/index.js"
-    },
-    "./testing": {
-      "types": "./dist/test-setup/index.d.ts",
-      "import": "./dist/test-setup/index.js"
-    },
-    "./build": {
-      "types": "./dist/build-plugins/index.d.ts",
-      "import": "./dist/build-plugins/index.js"
-    }
-  },
-  "files": [
-    "dist",
-    "docs",
-    "README.md",
-    "LICENSE",
-    "public/seidr-logo.svg"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=22.18.0"
-  },
   "scripts": {
-    "clean:dist": "rm -rf dist && rm -rf bundles",
-    "clean:examples": "rm -rf examples/build",
-    "clean": "pnpm clean:dist && pnpm clean:examples",
-    "build": "pnpm build:lib && pnpm build:bundles",
-    "build:lib": "tsc",
-    "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
-    "build:examples": "pnpm clean:examples && ./build-examples.sh",
-    "build:all": "pnpm clean && pnpm build && pnpm build:examples && pnpm sizes",
-    "dev": "vite",
-    "dev:ssr": "tsx watch examples/ssr/server.ts",
-    "test": "vitest run",
-    "format": "npx biome format --write src *.json *.ts",
-    "sizes": "npx bundle-size",
-    "prepublishOnly": "pnpm clean:dist && pnpm build"
-  },
-  "peerDependenciesMeta": {
-    "@fimbul-works/seidr-random": {
-      "optional": true
-    },
-    "vite": {
-      "optional": true
-    }
+    "preinstall": "npx only-allow pnpm",
+    "test": "npx vitest",
+    "build": "turbo run build",
+    "build:all": "pnpm run build && pnpm run sizes",
+    "types": "turbo run types",
+    "publish": "pnpm run build && pnpm run types && pnpm run release:only",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "biome format --write",
+    "check-types": "turbo run check-types",
+    "sizes": "npx bundle-size"
   },
   "dependencies": {
     "@fimbul-works/futhark": "^1.1.0",
-    "@fimbul-works/hash": "^1.2.1",
-    "magic-string": "^1.4.3",
-    "oxc-parser": "^0.153.0"
+    "@fimbul-works/hash": "^1.2.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.15",
+    "@biomejs/biome": "2.5.15",
     "@fimbul-works/bundle-size": "^2.0.0",
-    "@fimbul-works/seidr-random": "link:../seidr-random",
-    "@types/express": "^5.0.6",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.4",
-    "express": "^5.2.1",
-    "gray-matter": "^4.0.3",
+    "magic-string": "^1.4.3",
+    "oxc-parser": "^0.153.0",
     "jsdom": "^30.1.2",
-    "marked": "^18.0.14",
+    "rimraf": "^6.1.3",
     "rolldown": "^1.2.12",
-    "sirv": "^3.0.2",
-    "superjson": "^2.2.6",
     "tsdown": "^0.23.0",
     "tsx": "^4.23.15",
+    "turbo": "2.10.12",
     "typescript": "^6.0.3",
     "unrun": "^0.3.1",
     "vite": "^8.3.2",
     "vitest": "^5.0.3"
+  },
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "pnpm": "^12.3.4",
+    "node": ">=24"
   }
 }

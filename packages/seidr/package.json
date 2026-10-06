@@ -1,0 +1,76 @@
+{
+  "name": "@fimbul-works/seidr",
+  "description": "",
+  "version": "1.0.0",
+  "type": "module",
+  "private": false,
+  "license": "MIT",
+  "author": "FimbulWorks <contact@fimbul.works>",
+  "homepage": "https://github.com/fimbul-works/seidr#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fimbul-works/seidr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/fimbul-works/seidr/issues"
+  },
+  "keywords": [
+    "frontend",
+    "dom",
+    "reactive",
+    "reactive-programming",
+    "functional",
+    "typescript"
+  ],
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./ssr": {
+      "types": "./dist/index.ssr.d.ts",
+      "import": "./dist/index.ssr.js",
+      "default": "./dist/index.ssr.js"
+    },
+    "./html": {
+      "types": "./dist/elements/index.d.ts",
+      "import": "./dist/elements/index.js",
+      "require": "./dist/elements/index.js",
+      "default": "./dist/elements/index.js"
+    },
+    "./testing": {
+      "types": "./dist/test-setup/index.d.ts",
+      "import": "./dist/test-setup/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "pnpm build:clean && pnpm build:lib && pnpm build:bundles",
+    "build:clean": "rimraf dist/ bundles/",
+    "build:lib": "tsc",
+    "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
+    "test": "vitest run",
+    "prepublishOnly": "pnpm clean:dist && pnpm build"
+  },
+  "dependencies": {
+    "@fimbul-works/futhark": "^1.1.0",
+    "@fimbul-works/hash": "^1.2.1"
+  },
+  "devDependencies": {
+    "@fimbul-works/seidr-build-tools": "workspace:*",
+    "@repo/biome-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "@repo/vitest-config": "workspace:*",
+    "superjson": "^2.2.6"
+  }
+}

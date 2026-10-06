@@ -7,7 +7,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - **Core API** (`@fimbul-works/seidr`): Reactive state, components, lifecycle hooks, router, DOM utilities, and environment helpers.
 - **HTML Elements** (`@fimbul-works/seidr/html`): Predefined element creators for standard HTML tags.
 - **SSR API** (`@fimbul-works/seidr/ssr`): Server-side rendering, request context isolation, and hydration serializers.
-- **Build Plugins** (`@fimbul-works/seidr/build`): Vite and Rolldown plugins for compile-time dead-code elimination.
+- **Build Tools** (`@fimbul-works/seidr-build-tools`): Vite and Rolldown plugins for compile-time dead-code elimination.
 - **Testing Utilities** (`@fimbul-works/seidr/testing`): Dual-mode (Client + SSR) test runners and HTML assertion helpers.
 
 ---
@@ -94,9 +94,9 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`isServer()`](SSR.md#isserver) — Check if running in the server (SSR) environment.
   - [`inServer()`](SSR.md#inserver) — Run code only on the server (awaits async Promises during SSR).
 
-## [Build Plugins](build.md) (`@fimbul-works/seidr/build`)
+## [Build Plugins](build.md) (`@fimbul-works/seidr-build-tools`)
 - [`seidrVitePlugin()`](build.md#vite-plugin-seidrviteplugin) — Official Vite plugin for compile-time branch pruning and dead-code elimination.
-- [`seidrBundlePlugin()`](build.md#rolldown-bundle-plugin-seidrbundleplugin) — Official Rolldown plugin for component bundling.
+- [`seidrRolldownPlugin()`](build.md#rolldown-bundle-plugin-seidrrolldownplugin) — Official Rolldown plugin for component and bundle builds.
 
 ## [Testing Utilities](testing.md) (`@fimbul-works/seidr/testing`)
 - Dual-Mode Runners: [`describeDualMode()`](testing.md#describedualmode), [`itHasParity()`](testing.md#ithasparity).

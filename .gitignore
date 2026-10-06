@@ -1,6 +1,12 @@
 node_modules/
 dist/
+.vscode/
+.idea/
+.DS_Store
+.turbo/
+
 build/
 bundles/
 bundle-sizes/
 examples/ssr/data/
+coverage/

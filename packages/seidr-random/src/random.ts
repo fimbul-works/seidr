@@ -1,0 +1,66 @@
+import { getAppState, getComponentScope, onUnmounted } from "@fimbul-works/seidr";
+
+/** AppState key for storing random number generator state */
+export const DATA_KEY_RANDOM = "random.splitmix32";
+
+/**
+ * Deterministic random number generator for Seidr using the SplitMix32 algorithm.
+ *
+ * This function maintains state within the current AppState to provide
+ * a sequence of high-entropy pseudo-random numbers that is deterministic
+ * across the SSR/Hydration boundary.
+ *
+ * @returns {number} A random number between 0 and 1.
+ */
+export const random = (): number => {
+  const FRAC = 2 ** -32;
+  const LCG_M = 0xefc8249d;
+
+  const appState = getAppState();
+
+  // Ensure SSR boundary data strategy
+  if (!process.env.SEIDR_DISABLE_SSR) {
+    if (!appState.getDataStrategy(DATA_KEY_RANDOM)) {
+      appState.defineDataStrategy(
+        DATA_KEY_RANDOM,
+        () => Array.from(appState.getData<Map<number, number>>(DATA_KEY_RANDOM)?.entries() ?? []),
+        (data: [number, number][]) =>
+          appState.setData(DATA_KEY_RANDOM, new Map(data.map(([k, v]) => [Number(k), Number(v)]))),
+      );
+    }
+  }
+
+  // Initialize RNG state
+  let rngState = appState.getData<Map<number, number>>(DATA_KEY_RANDOM);
+  if (!rngState) {
+    rngState = new Map<number, number>();
+    appState.setData(DATA_KEY_RANDOM, rngState);
+  }
+
+  // Get unique RNG ID
+  let rngId = appState.ctxID;
+  try {
+    rngId = getComponentScope()?.id ?? rngId;
+    onUnmounted(() => rngState.delete(rngId));
+  } catch {
+    // getComponentScope() throws outside component hierarchy — use fallback rngId
+  }
+
+  // Seed RNG state
+  if (!rngState.has(rngId)) {
+    rngState.set(rngId, Math.imul(appState.ctxID ^ LCG_M, rngId) >>> 0);
+  }
+
+  // Generate next number using the stored state
+  let s = rngState.get(rngId)!;
+  s = (s + 0x9e3779b9) | 0;
+
+  let t = Math.imul(s ^ (s >>> 16), 0x21f0aaad);
+  t = Math.imul(t ^ (t >>> 15), 0x735a2d97);
+  t ^= t >>> 15;
+
+  // Save component RNG state
+  rngState.set(rngId, s >>> 0);
+
+  return (t >>> 0) * FRAC;
+};

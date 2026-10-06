@@ -1,0 +1,30 @@
+{
+  "$schema": "https://turborepo.dev/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**"],
+      "outputLogs": "new-only"
+    },
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "check-types": {
+      "dependsOn": ["^check-types"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {
+      "inputs": ["$TURBO_DEFAULT$"],
+      "dependsOn": ["^build", "@repo/vitest-config#build"],
+      "outputs": ["coverage/blob/**"]
+    },
+    "transit": {
+      "dependsOn": ["^transit"]
+    }
+  }
+}
