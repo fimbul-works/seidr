@@ -25,9 +25,9 @@ import {
   resetRequestIdCounter,
 } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
+import { DATA_KEY_ROUTER } from "../constants.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { usePathname } from "../hooks/use-pathname.js";
-import { DATA_KEY_ROUTER } from "../constants.js";
 import { clearRouterState } from "../test/index.js";
 import { Link } from "./link.js";
 import { Router } from "./router.js";

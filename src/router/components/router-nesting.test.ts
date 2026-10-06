@@ -6,6 +6,7 @@ import { clearTestAppState, describeDualMode } from "../../test-setup/index.js";
 import { usePathname } from "../hooks/use-pathname.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
 import { clearRouterState } from "../test/index.js";
+import { Link } from "./link.js";
 import { Router } from "./router.js";
 
 describeDualMode("Router Nesting", ({ getDocument }) => {
@@ -103,5 +104,28 @@ describeDualMode("Router Nesting", ({ getDocument }) => {
 
     expect(userParams).toEqual({ userId: "123" });
     expect(orderParams).toEqual({ orderId: "456" });
+  });
+
+  it("should support Link activeClass and inactiveClass in nested routes", () => {
+    const SettingsPage = () => $div({ textContent: "Settings Page" });
+    const ProfilePage = () => $div({ textContent: "Profile Page" });
+
+    const UserDashboard = () =>
+      $div({}, [
+        Link({ to: "/settings", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Settings"),
+        Link({ to: "/profile", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Profile"),
+        Router([
+          { path: "/settings", component: SettingsPage },
+          { path: "/profile", component: ProfilePage },
+        ]),
+      ]);
+
+    const App = () => Router([{ path: "/user/:id", component: UserDashboard }], { url: "/user/123/settings" });
+
+    mount(App, container);
+
+    const links = container.querySelectorAll("a");
+    expect(links[0].className).toBe("tab-active");
+    expect(links[1].className).toBe("tab-inactive");
   });
 });

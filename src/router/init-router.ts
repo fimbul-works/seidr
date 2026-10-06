@@ -59,7 +59,7 @@ export const initRouter = (
 
   // Fallback to default if not provided
   if (isNullish(initialUrl)) {
-    initialUrl = isClient() ? window.location.pathname : "/";
+    initialUrl = isClient() ? window.location.href : "/";
   }
 
   const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, hydrate: false });
@@ -87,7 +87,7 @@ export const initRouter = (
     appState.defineDataStrategy<string, string>(
       DATA_KEY_ROUTER,
       // Capture function: store current URL and other serializable state
-      () => url().href,
+      () => (url().origin !== DUMMY_BASE_URL ? url().href : url().pathname + url().search + url().hash),
       // Restore function: restore URL from captured data
       (urlStr: string) => url(new URL(urlStr, base)),
     );
