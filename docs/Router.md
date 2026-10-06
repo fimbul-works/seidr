@@ -87,6 +87,9 @@ const buttonLink = Link({ to: '/dashboard', tagName: 'button' }, 'Go to Dashboar
 - `props: LinkProps<K> & SeidrElementProps<K>`:
   - `to: string | Value<string>` — The destination route pathname or URL.
   - `tagName?: K` (default: `"a"`) — HTML element tag to create.
+  - `activeClass?: string | Value<string>` — CSS class to apply when the link is active.
+  - `inactiveClass?: string | Value<string>` — CSS class to apply when the link is inactive.
+  - `exact?: boolean | Value<boolean>` (default: `false`) — Whether the link is exact. When `true`, requires the pathname parts to match the pattern parts exactly in length.
   - All standard HTML element properties, attributes, and event handlers.
 - `children?: SeidrChild | SeidrChild[]` — Child nodes or components.
 
@@ -259,102 +262,31 @@ export const App = () => Router(rootRoutes);
 
 ---
 
-## Router Drivers & Initialization
+## Utilities
 
-### `initRouter()`
+### `interceptLinks()`
 
-Initializes the global router state within the current [`AppState`](AppState.md). Called automatically by `Router()`, `Link()`, and all router hooks.
-
-```typescript
-import { initRouter } from '@fimbul-works/seidr';
-
-// Initialize with an explicit initial URL (useful in tests or custom SSR servers)
-initRouter('/blog/post-1');
-```
-
-- When running under SSR, `initRouter` defines an [`AppState`](AppState.md) hydration strategy under `DATA_KEY_ROUTER`, serializing the initial URL and restoring it deterministically during client hydration.
-
-### `browserRouter()`
-
-Returns the singleton `RouterInterface` backed by standard HTML5 browser history (`window.history.pushState` / `window.history.replaceState`).
+Client-side utility that scans an element (or `document.body`) for anchor tags (`<a>`) and intercepts eligible link clicks to navigate with the Seidr router instead of causing a full-page reload. Ideal for dynamic content such as Markdown-rendered HTML.
 
 ```typescript
-import { browserRouter } from '@fimbul-works/seidr';
+import { interceptLinks, onMounted, useRef } from '@fimbul-works/seidr';
+import { $div } from '@fimbul-works/seidr/html';
 
-const router = browserRouter();
-console.log(router.pathname()); // Current path
-router.push('/dashboard');      // Navigate
-```
+const InterceptedLinksExample = () => {
+  const containerRef = useRef<HTMLDivElement>();
 
+  onMounted(() => interceptLinks(containerRef()));
 
-### `history()`
-
-Low-level history navigation controller.
-
-```typescript
-import { history } from '@fimbul-works/seidr';
-
-const hist = history();
-hist.push('/page-2');
-hist.replace('/page-2-edited');
-hist.go(-1);
-```
-
----
-
-## Matching & Routing Utilities
-
-### `matchRoute()`
-
-Matches a pathname against a list of route definitions.
-
-```typescript
-import { matchRoute, type Route } from '@fimbul-works/seidr';
-
-const routes: Route[] = [
-  { path: '/users/:id', component: () => null }
-];
-
-const match = matchRoute('/users/42?tab=activity', routes);
-if (match) {
-  console.log(match.index);       // 0
-  console.log(match.params);      // { id: '42' }
-  console.log(match.matchedPath); // "/users/42"
-}
-```
-
-### `parseRouteParams()`
-
-Parses route parameters from a pattern and pathname.
-
-```typescript
-import { parseRouteParams } from '@fimbul-works/seidr';
-
-const params1 = parseRouteParams('/users/:id', '/users/100');
-console.log(params1); // { id: '100' }
-
-const params2 = parseRouteParams('/files/*', '/files/docs/2026/spec.pdf');
-console.log(params2); // { '*': 'docs/2026/spec.pdf' }
-
-const mismatch = parseRouteParams('/users/:id', '/posts/100');
-console.log(mismatch); // false
-```
-
-### `addPopstateListener()` & `removePopstateListener()`
-
-Registers and unregisters listeners triggered when the URL changes via browser forward/back buttons.
-
-```typescript
-import { addPopstateListener, removePopstateListener } from '@fimbul-works/seidr';
-
-const onPop = (url: string) => {
-  console.log('Navigated to:', url);
+  return $div({ ref: containerRef, innerHTML: '<a href="/blog/123">Some post</a>' });
 };
-
-addPopstateListener(onPop);
-// Later:
-removePopstateListener(onPop);
 ```
+
+#### Criteria for link interception:
+- The `<a>` element does not have a `target` attribute.
+- The destination URL is either a relative path or has the same origin as the router.
+- The `<a>` element does not already have an `onclick` handler attached.
+- Throws a `SeidrError` if the router system is not initialized.
+- Safely no-ops during SSR (`!isClient()`).
 
 ---
 

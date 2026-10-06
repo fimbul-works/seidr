@@ -1,7 +1,7 @@
 import { getDocument } from "../get-document.js";
 
 /**
- * Call HTMLElement.querySelectorAll to find all matching elements.
+ * Call Element.querySelectorAll to find all matching elements.
  *
  * This utility provides a type-safe way to query multiple DOM elements
  * with CSS selectors. Returns an array instead of a NodeList for easier
@@ -10,8 +10,10 @@ import { getDocument } from "../get-document.js";
  * @template {HTMLElement} T - The expected HTMLElement type
  *
  * @param {string} query - The CSS selector string to query for
- * @param {HTMLElement} [el] - The element to query within (defaults: document.body)
+ * @param {Element | Document} [el] - The element to query within (defaults: document.documentElement)
  * @returns {T[]} An array of all elements matching the selector
  */
-export const $queryAll = <T extends HTMLElement>(query: string, el: HTMLElement = getDocument().documentElement): T[] =>
-  Array.from(el.querySelectorAll(query)) as T[];
+export const $queryAll = <T extends HTMLElement>(
+  query: string,
+  el: Element | Document = getDocument().documentElement,
+): T[] => Array.from(el.querySelectorAll(query)) as T[];

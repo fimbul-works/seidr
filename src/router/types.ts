@@ -10,8 +10,16 @@ export type PopstateListener = (url: string) => void;
  * Route definition for Router.
  */
 export interface Route {
+  /** The path pattern to match. */
   path: string | RegExp;
+
+  /** The component to render when the path matches. */
   component: SeidrComponentFactoryOrFunction<any>;
+
+  /**
+   * Whether the route should match only exact paths.
+   * @default false
+   */
   exact?: boolean;
 }
 

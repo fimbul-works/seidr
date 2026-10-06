@@ -69,14 +69,8 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`usePathname()`](Router.md#usepathname) — Reactive current pathname hook.
   - [`useRouteParams()`](Router.md#userouteparams--userouterparams) / `useRouterParams()` — Reactive route parameters hook.
   - [`useSearchParams()`](Router.md#usesearchparams) — Reactive URL search query parameters hook.
-- Drivers & Controllers:
-  - [`browserRouter()`](Router.md#browserrouter) — Singleton browser history driver.
-  - [`history()`](Router.md#history) — Low-level history controller (`push`, `replace`, `go`).
-  - [`initRouter()`](Router.md#initrouter) — Router initialization with SSR hydration strategy.
 - Utilities:
-  - [`matchRoute()`](Router.md#matchroute) — Match a path against a list of route definitions.
-  - [`parseRouteParams()`](Router.md#parserouteparams) — Parse parameters from a pattern and path.
-  - [`addPopstateListener()`](Router.md#addpopstatelistener--removepopstatelistener), [`removePopstateListener()`](Router.md#addpopstatelistener--removepopstatelistener) — Listen to browser navigation events.
+  - [`interceptLinks()`](Router.md#interceptlinks) — Intercept clicks on anchor tags and navigate with the Seidr router.
 
 ## [Utilities & Type Guards](type-guards.md) (`@fimbul-works/seidr`)
 - Utilities (`docs/utils.md`):

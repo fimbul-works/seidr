@@ -20,9 +20,9 @@ const parentsStack: Set<Value>[] = [];
  * @template T - The data type for the event
  * @param {T} value - Data to handle
  * @param {T} prevValue - Previous data value
- * @returns {CleanupFunction | any} - Optional cleanup function or any value (which is ignored)
+ * @returns {CleanupFunction | unknown} - Optional cleanup function or any value (which is ignored)
  */
-export type ValueChangeHandler<T> = (value: T, prevValue?: T) => CleanupFunction | void;
+export type ValueChangeHandler<T> = (value: T, prevValue?: T) => CleanupFunction | unknown;
 
 /**
  * Value interface, implementing a getter-setter pattern.

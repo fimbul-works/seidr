@@ -3,6 +3,7 @@ import { createComponent } from "../../component/create-component.js";
 import type { SeidrComponentFactoryPureFunction } from "../../component/types.js";
 import { mount } from "../../dom/mount.js";
 import { $div } from "../../elements/div.js";
+import { onUnmounted } from "../../hooks/on-unmounted.js";
 import { createValue } from "../../observable/value.js";
 import { describeDualMode } from "../../test-setup/dual-mode.js";
 import type { CleanupFunction } from "../../types.js";
@@ -97,7 +98,7 @@ describeDualMode("Router Component", ({ getDocument }) => {
     expect(userEl.textContent).toBe("User Component 123");
 
     navigate("/user/456");
-    expect(userEl.textContent).toBe("User Component 456");
+    expect(document.getElementById("user")?.textContent).toBe("User Component 456");
   });
 
   it("should handle nested routes or complex patterns", () => {
@@ -208,5 +209,42 @@ describeDualMode("Router Component", ({ getDocument }) => {
     navigate("/admin/settings/profile");
     expect(capturedParams()["*"]).toBe("settings/profile");
     expect(container.textContent).toContain("Path: settings/profile");
+  });
+
+  it("should retain component instance and update parameters reactively when only route parameters change", () => {
+    let mountCount = 0;
+    let unmountCount = 0;
+    const observedParam = createValue("");
+
+    const Profile = createComponent(() => {
+      mountCount++;
+      const params = useRouteParams();
+      params.watch((p) => observedParam(p.id));
+      observedParam(params().id);
+      onUnmounted(() => {
+        unmountCount++;
+      });
+      return $div({ id: "profile", textContent: params.as((p) => `Profile ${p.id}`) });
+    }, "Profile");
+
+    const App = createComponent(() => Router([{ path: "/profile/:id", component: Profile }]), "App");
+
+    const navigate = useNavigate();
+    navigate("/profile/alice");
+    unmount = mount(App, container);
+
+    expect(mountCount).toBe(1);
+    expect(unmountCount).toBe(0);
+    expect(observedParam()).toBe("alice");
+    expect(container.textContent).toContain("Profile alice");
+
+    // Navigate to same route pattern with a different parameter
+    navigate("/profile/bob");
+
+    // Component instance is retained (not remounted), and route params update reactively
+    expect(mountCount).toBe(1);
+    expect(unmountCount).toBe(0);
+    expect(observedParam()).toBe("bob");
+    expect(container.textContent).toContain("Profile bob");
   });
 });

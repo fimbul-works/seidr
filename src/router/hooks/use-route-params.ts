@@ -12,8 +12,3 @@ export const useRouteParams = (): Value<Record<string, string>> => {
   initRouter();
   return (getNearestRouter()?.routerParams || browserRouter().routeParams).as((params) => params);
 };
-
-/**
- * Alias for useRouteParams.
- */
-export const useRouterParams = useRouteParams;

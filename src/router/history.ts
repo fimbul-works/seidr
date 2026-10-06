@@ -7,7 +7,7 @@ import type { History } from "./types.js";
  *
  * @returns {History} History instance
  */
-export const history = (): History => {
+export const history: () => History = (): History => {
   const url = getRouterState().url;
 
   // Initialize history with the current URL

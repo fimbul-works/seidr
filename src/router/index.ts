@@ -1,12 +1,5 @@
-export { browserRouter } from "./browser-router.js";
 export * from "./components/index.js";
 export { DATA_KEY_ROUTER } from "./constants.js";
-export { getRouterState } from "./get-router-state.js";
-export { history } from "./history.js";
 export * from "./hooks/index.js";
-export { initRouter } from "./init-router.js";
-export { addPopstateListener, removePopstateListener } from "./listeners.js";
-export { matchRoute } from "./match-route.js";
-export { parseRouteParams } from "./parse-route-params.js";
-export * from "./router-tree/index.js";
+export { interceptLinks } from "./intercept-links.js";
 export * from "./types.js";

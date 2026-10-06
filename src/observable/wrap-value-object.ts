@@ -18,7 +18,7 @@ interface GetterSetter<T> {
  *
  * @template T - The type of value stored in the observable.
  * @template K - The property key name on the returned object (defaults to `"value"`).
- * @param {Value<T>} value - The reactive `Value<T>` observable to wrap.
+ * @param {Value<T> | GetterSetter<T>} value - The reactive `Value<T>` observable to wrap.
  * @param {K} [key="value" as K] - The property key on the resulting object.
  * @returns {Record<K, T>} An object with getter and setter accessors bound to the `Value`.
  *

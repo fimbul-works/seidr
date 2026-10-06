@@ -46,8 +46,10 @@ export const Router = (
     const parentNode = getNearestRouter();
 
     // Calculate the matched path prefix from ancestors
-    let parentPrefix = "";
-    if (parentNode) {
+    const getParentPrefix = (): string => {
+      if (!parentNode) {
+        return "";
+      }
       let current = parentNode;
       const prefixes = [current.matchedPath];
       while (current.parentId !== undefined) {
@@ -59,11 +61,12 @@ export const Router = (
         prefixes.unshift(parent.matchedPath);
         current = parent;
       }
-      parentPrefix = prefixes.join("").replace(/\/+$/, "");
-    }
+      return prefixes.join("").replace(/\/+$/, "");
+    };
 
     // The local path is the router's pathname minus the prefix from parent routers
     const currentPath = routerInstance.pathname.as((path) => {
+      const parentPrefix = getParentPrefix();
       if (path.startsWith(parentPrefix)) {
         const local = path.slice(parentPrefix.length);
         return local.startsWith("/") ? local : `/${local}`;
