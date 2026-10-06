@@ -17,7 +17,8 @@
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
-.error-title {
+.error-title,
+.error h1 {
   font-family: var(--font-brand);
   letter-spacing: var(--font-brand-letter-spacing);
   font-size: 2rem;

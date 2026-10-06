@@ -95,7 +95,7 @@ export const HomePage = createComponent(() => {
         ),
         pending: createComponent(() => $div({ className: "loading-state" }, "Loading dispatches..."), "PendingPosts"),
         error: createComponent(
-          () => $div({ className: "error" }, error()?.message || "Something went wrong."),
+          () => $div({ className: "error" }, [$h1("Oops"), error()?.message || "Something went wrong."]),
           "ErrorPosts",
         ),
       });

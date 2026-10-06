@@ -1,7 +1,7 @@
 ---
 title: I accidentally a whole library!
 date: 2025-12-19
-tags: [React, Personal]
+tags: [Personal, Reactive, Library]
 ---
 The past week I've been working on a small SPA using React for my WebGL library, *Loiske*, to showcase some example shader apps... At some point I started asking myself:
 

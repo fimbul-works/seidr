@@ -1,0 +1,179 @@
+/* Seidr loading spinner (pure CSS, ~2.3 KB) */
+.loading-spinner-wrapper {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loading-spinner {
+  --s: 0.3px; /* 1 logo unit; scales everything */
+  --c1: #6677bb; /* front: blue   */
+  --c2: #774499; /* back: purple  */
+  --cm: color-mix(in srgb, var(--c1), var(--c2)); /* center node */
+  --d: calc(100 * var(--s)); /* orbit radius */
+  --n: calc(75 * var(--s)); /* node outer side */
+  --t: calc(24 * var(--s)); /* node border */
+  --w: calc(24 * var(--s)); /* edge width */
+  --h: calc(var(--n) * 0.7071 - 12 * var(--s)); /* edge inset at node tip */
+  --seg: calc(var(--d) - 2 * var(--h)); /* visible edge length */
+  --tilt: 0deg;
+  --dur: 1.5s;
+  --ease: linear;
+  /* one blue<->purple cycle (sine-sampled). It is tiled vertically and slid through
+     each node/edge with background-position, so colors fade smoothly in every browser. */
+  --tone: linear-gradient(
+    var(--cm),
+    color-mix(in srgb, var(--c1) 15%, var(--c2)),
+    var(--c2),
+    color-mix(in srgb, var(--c1) 15%, var(--c2)),
+    var(--cm),
+    color-mix(in srgb, var(--c1) 85%, var(--c2)),
+    var(--c1),
+    color-mix(in srgb, var(--c1) 85%, var(--c2)),
+    var(--cm)
+  );
+  position: relative;
+  display: inline-block;
+  width: calc(2 * var(--d) + 1.6 * var(--n));
+  height: calc(2 * var(--d) + 1.6 * var(--n));
+  perspective: calc(var(--d) * 5);
+  transform-style: preserve-3d;
+}
+/* nodes: hollow diamonds (the center one is a fixed mix of both colors) */
+.loading-spinner::before,
+.loading-spinner > span::before,
+.loading-spinner > span::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: var(--n);
+  height: var(--n);
+  margin: calc(var(--n) / -2) 0 0 calc(var(--n) / -2);
+  background: var(--cm);
+  clip-path: polygon(
+    evenodd,
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 0,
+    var(--t) var(--t),
+    calc(100% - var(--t)) var(--t),
+    calc(100% - var(--t)) calc(100% - var(--t)),
+    var(--t) calc(100% - var(--t)),
+    var(--t) var(--t)
+  );
+  transform: rotate(45deg);
+}
+/* orbiting arm: one horizontal rod with a node at each end, turning around the center node */
+.loading-spinner > span {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--d) * 2);
+  height: var(--w);
+  margin: calc(var(--w) / -2) 0 0 calc(var(--d) * -1);
+  transform-style: preserve-3d;
+  animation:
+    seidr-arm var(--dur) var(--ease) infinite,
+    seidr-edge var(--dur) linear infinite;
+}
+/* edges stop at the node tips: each fades from the center color to its node's current color.
+   A second plane (<i>) keeps them visible when the arm points at you. */
+.loading-spinner > span,
+.loading-spinner i {
+  --P: calc(var(--w) * 100);
+  background-image:
+    linear-gradient(
+      to right,
+      transparent 0 var(--h),
+      var(--cm) calc(var(--d) - var(--h)),
+      transparent 0 calc(var(--d) + var(--h)),
+      var(--cm) 0,
+      transparent calc(var(--d) * 2 - var(--h))
+    ),
+    var(--tone), var(--tone);
+  background-size:
+    100% 100%,
+    var(--seg) var(--P),
+    var(--seg) var(--P);
+  background-repeat:
+    no-repeat,
+    no-repeat repeat,
+    no-repeat repeat;
+  background-position:
+    0 0,
+    var(--h) calc(var(--P) / -2),
+    calc(var(--d) + var(--h)) 0;
+}
+.loading-spinner i {
+  position: absolute;
+  inset: 0;
+  transform: rotateX(90deg);
+  animation: seidr-edge var(--dur) linear infinite;
+}
+/* end nodes counter-rotate so they always face the viewer */
+.loading-spinner > span::before,
+.loading-spinner > span::after {
+  --Pn: calc(var(--n) * 100);
+  background: var(--tone) 0 0 / 100% var(--Pn) repeat-y;
+  animation:
+    seidr-node var(--dur) var(--ease) infinite,
+    seidr-ring var(--dur) linear infinite;
+}
+.loading-spinner > span::before {
+  --sx: -1;
+  --p0: -0.5;
+}
+.loading-spinner > span::after {
+  --sx: 1;
+  --p0: 0;
+}
+
+@keyframes seidr-arm {
+  from {
+    transform: rotateX(var(--tilt)) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(var(--tilt)) rotateY(360deg);
+  }
+}
+@keyframes seidr-node {
+  from {
+    transform: translateX(calc(var(--sx) * var(--d))) rotateY(0deg) rotateX(calc(var(--tilt) * -1)) rotate(45deg);
+  }
+  to {
+    transform: translateX(calc(var(--sx) * var(--d))) rotateY(-360deg) rotateX(calc(var(--tilt) * -1)) rotate(45deg);
+  }
+}
+@keyframes seidr-ring {
+  from {
+    background-position: 0 calc(var(--p0) * var(--Pn));
+  }
+  to {
+    background-position: 0 calc((var(--p0) - 1) * var(--Pn));
+  }
+}
+@keyframes seidr-edge {
+  from {
+    background-position:
+      0 0,
+      var(--h) calc(var(--P) * -0.5),
+      calc(var(--d) + var(--h)) 0;
+  }
+  to {
+    background-position:
+      0 0,
+      var(--h) calc(var(--P) * -1.5),
+      calc(var(--d) + var(--h)) calc(var(--P) * -1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    --dur: 8s;
+  }
+}
