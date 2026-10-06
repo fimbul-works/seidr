@@ -4,7 +4,7 @@
 
 Seidr includes a built-in, lightweight, declarative routing system designed for both Client-Side Single Page Applications (SPAs) and Server-Side Rendering (SSR).
 
-The router supports dynamic path parameters, wildcard routes, regular expression patterns, nested route trees, programmatic navigation, reactive search query parameters, and custom router drivers (browser history or URL hash).
+The router supports dynamic path parameters, wildcard routes, regular expression patterns, nested route trees, programmatic navigation, and reactive search query parameters.
 
 ---
 
@@ -32,7 +32,6 @@ export const App = () => Router(routes);
 #### Parameters:
 - `routes: Array<Route> | Value<Array<Route>>` — Static array of route definitions, or a reactive [`Value`](Value.md) allowing dynamic route changes.
 - `options?: RouterOptions` — Optional router configuration:
-  - `router?: RouterInterface` (default: `browserRouter()`) — Custom router instance (e.g. `hashRouter()`).
   - `url?: string | URL | Location` — Initial URL (defaults to `window.location.pathname` in the browser or `"/"` in SSR).
 - `name?: string` (default: `"Router"`) — Component name used for debugging and SSR tracking.
 
@@ -287,15 +286,6 @@ console.log(router.pathname()); // Current path
 router.push('/dashboard');      // Navigate
 ```
 
-### `hashRouter()`
-
-Returns the singleton `RouterInterface` backed by the URL hash fragment (e.g. `#/about`, `#/users/42`). Ideal for static hosting or environments without URL rewriting.
-
-```typescript
-import { Router, hashRouter } from '@fimbul-works/seidr';
-
-export const App = () => Router(routes, { router: hashRouter() });
-```
 
 ### `history()`
 

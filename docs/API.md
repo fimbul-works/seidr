@@ -71,7 +71,6 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`useSearchParams()`](Router.md#usesearchparams) — Reactive URL search query parameters hook.
 - Drivers & Controllers:
   - [`browserRouter()`](Router.md#browserrouter) — Singleton browser history driver.
-  - [`hashRouter()`](Router.md#hashrouter) — Singleton URL hash driver.
   - [`history()`](Router.md#history) — Low-level history controller (`push`, `replace`, `go`).
   - [`initRouter()`](Router.md#initrouter) — Router initialization with SSR hydration strategy.
 - Utilities:

@@ -13,13 +13,12 @@ import { initRouter } from "../init-router.js";
 import { matchRoute } from "../match-route.js";
 import { getNearestRouter } from "../router-tree/get-nearest-router.js";
 import { registerRouter } from "../router-tree/register-router.js";
-import type { Route, RouteMatch, RouterInterface } from "../types.js";
+import type { Route, RouteMatch } from "../types.js";
 
 /**
  * Router component options.
  */
 export interface RouterOptions {
-  router?: RouterInterface;
   url?: string | URL | Location;
 }
 
@@ -28,8 +27,7 @@ export interface RouterOptions {
  * Use a wildcard route ("*") as the last entry for fallback behavior.
  *
  * @param {Array<Route> | Value<Array<Route>>} routes - Array of route definitions or a Value that resolves to it
- * @param {RouterOptions} [options={}] - Optional router options. If not provided, browserRouter() will be used,
- *                                       and the URL defaults to window.location.pathname in browser or "/" in SSR.
+ * @param {RouterOptions} [options={}] - Optional router options. The URL defaults to window.location.pathname in browser or "/" in SSR.
  * @param {string} [name="Router"] - Optional name for the component (used for debugging)
  * @returns {SeidrComponent} The Router component instance
  */
@@ -44,7 +42,7 @@ export const Router = (
     const routerComponent = getComponentScope()!;
     const [startMarker, endMarker] = getMarkerComments(routerComponent)!;
     const routesObservable = wrapValue(routes, { hydrate: false });
-    const routerInstance = options.router || browserRouter();
+    const routerInstance = browserRouter();
     const parentNode = getNearestRouter();
 
     // Calculate the matched path prefix from ancestors

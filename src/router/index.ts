@@ -2,7 +2,6 @@ export { browserRouter } from "./browser-router.js";
 export * from "./components/index.js";
 export { DATA_KEY_ROUTER } from "./constants.js";
 export { getRouterState } from "./get-router-state.js";
-export { hashRouter } from "./hash-router.js";
 export { history } from "./history.js";
 export * from "./hooks/index.js";
 export { initRouter } from "./init-router.js";
