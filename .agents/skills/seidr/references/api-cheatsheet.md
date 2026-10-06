@@ -59,10 +59,11 @@ Creates a callable reactive signal.
   $input({ ...bindInput(textValue) });
   ```
 
-### Element References (`useRef`):
-- `useRef<T extends Element = Element>(): Ref<T>`
+### References (`useRef`):
+- `useRef<T = any>(initialValue: T | null = null): Ref<T>`
   Returns a `Ref<T>` (a decorated `Value<T | null>` with `hydrate: false`).
-  Pass to `{ ref: myRef }`. Safely inspect inside `onMounted()`.
+  Accepts elements, objects, arrays, or primitives (any non-undefined value).
+  Pass to `{ ref: myRef }` for DOM binding, or use as a mutable reference container. Safely inspect inside `onMounted()`.
 
 ### DOM Query Helpers:
 - `getDocument(): Document` — Returns `document` in browser, or JSDOM instance in SSR.

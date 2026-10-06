@@ -121,10 +121,13 @@ The `useRef()` hook provides a streamlined way to capture and interact with unde
 
 ### `useRef()`
 
-Creates a typed `Ref<T>` reference object.
+Creates a typed `Ref<T>` reference object. Holds references to DOM elements, objects, arrays, or primitive values.
 
 **Generic Type:**
-- `T extends Element = Element` — The specific DOM element type (e.g. `HTMLCanvasElement`, `HTMLInputElement`).
+- `T = any` — The referenced type (e.g. `HTMLCanvasElement`, `HTMLElement[]`, `number`).
+
+**Parameters:**
+- `initialValue?: T | null` (default: `null`) — Optional initial value.
 
 **Returns:** `Ref<T>` — A decorated [`Value<T | null>`](Value.md) observable.
 

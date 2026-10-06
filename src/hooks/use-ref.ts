@@ -1,5 +1,4 @@
 import { TYPE_PROP } from "../constants.js";
-import { isHTMLElement } from "../dom/type-guards.js";
 import { createValue, type ValueChangeHandler } from "../observable/value.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
@@ -10,7 +9,7 @@ export const TYPE_REF = "ref";
 /**
  * Ref object.
  */
-export interface Ref<T extends Element = Element> {
+export interface Ref<T = any> {
   readonly [TYPE_PROP]: typeof TYPE_REF;
 
   /**
@@ -53,19 +52,20 @@ export interface Ref<T extends Element = Element> {
 
 /**
  * Creates a Ref object.
- * Ref is a convenience wrapper for a Value that holds either an Element or null.
- * @template {Element} T - Type of Element to reference.
+ * Ref is a convenience wrapper for a non-hydrated Value that holds a reference to a DOM element, object, array, or primitive.
+ * @template T - Type of value to reference.
+ * @param {T | null} [initialValue=null] - Optional initial value.
  * @returns {Ref<T>} Ref object.
  */
-export function useRef<T extends Element = Element>(): Ref<T> {
-  const value = createValue<T | null>(null, { hydrate: false });
+export function useRef<T = any, R = T extends undefined | null ? never : Ref<T>>(initialValue: T | null = null): R {
+  const value = createValue<T | null>(initialValue, { hydrate: false });
 
   // Access to arguments requires a standard function
-  function fn(newValue?: null): T | null {
+  function fn(newValue?: T | null): T | null {
     if (!arguments.length) {
       return value();
     }
-    if (isHTMLElement(newValue) || newValue === null) {
+    if (newValue !== undefined) {
       value(newValue);
       return newValue;
     } else {
@@ -74,12 +74,12 @@ export function useRef<T extends Element = Element>(): Ref<T> {
   }
 
   // Attach the value property to the function
-  const ref = defineValueProp(fn as Ref<T>, TYPE_PROP, TYPE_REF, false);
+  const ref = defineValueProp(fn as Ref<any>, TYPE_PROP, TYPE_REF, false);
 
   // Copy Value properties to Ref object
   (["watch", "bind", "destroy"] as (keyof Ref)[]).forEach((prop) => {
     defineValueProp(ref, prop, value[prop]);
   });
 
-  return ref;
+  return ref as R;
 }

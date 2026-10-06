@@ -16,9 +16,8 @@ export const isValue = <T = any>(v: any): v is Value<T> =>
 /**
  * Check if a value is a Ref.
  *
- * @template {Element} T - The type of the element
+ * @template T - The type of the element
  * @param {any} v - Value to check
  * @returns {boolean} `true` if the value is a Ref, `false` otherwise
  */
-export const isRef = <T extends Element = Element>(v: any): v is Ref<T> =>
-  isFn<Ref>(v) && TYPE_PROP in v && v[TYPE_PROP] === TYPE_REF;
+export const isRef = <T = any>(v: any): v is Ref<T> => isFn<Ref>(v) && TYPE_PROP in v && v[TYPE_PROP] === TYPE_REF;
