@@ -12,11 +12,16 @@ const config: BundleSizeOptions = {
       exclude: "packages/seidr/bundles/*.js",
     },
     {
-      name: "Examples",
-      include: "examples/build/**/*.js",
+      name: "SPA Examples",
+      include: "examples/spa/dist/*.js",
+      exclude: "examples/spa/dist/particles.js",
     },
     {
-      name: "SSR Example",
+      name: "Particle Shader",
+      include: "examples/spa/dist/particles.js",
+    },
+    {
+      name: "SSR Examples",
       include: "examples/ssr/dist/**/*.js",
     },
   ],

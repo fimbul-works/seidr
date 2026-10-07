@@ -1,5 +1,5 @@
-import { defineConfig } from "tsdown";
 import { seidrRolldownPlugin } from "@fimbul-works/seidr-build-tools/rolldown";
+import { defineConfig } from "tsdown";
 import { commonConfig } from "../../tsdown.common.js";
 
 // Target option for seidrRolldownPlugin

@@ -67,7 +67,7 @@ app.get(/.*/, async (req, res) => {
       .replace(`<!--app-html-->`, rendered.html ?? "")
       .replace(
         "<!--app-state-->",
-        `<script>window.__SEIDR_HYDRATION_DATA__ = ${JSON.stringify(rendered.hydrationData, null, 2)}</script>`,
+        `<script>window.__SEIDR_HYDRATION_DATA__ = ${JSON.stringify(rendered.hydrationData)}</script>`,
       );
 
     res.status(200).set({ "Content-Type": "text/html" }).send(html);

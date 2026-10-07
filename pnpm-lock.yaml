@@ -122,6 +122,9 @@ importers:
       '@fimbul-works/bundle-size':
         specifier: ^2.0.0
         version: 2.0.0(esbuild@0.28.2)
+      '@fimbul-works/loiske':
+        specifier: link:../loiske
+        version: link:../loiske
       '@types/jsdom':
         specifier: ^30.0.0
         version: 30.0.0
@@ -164,6 +167,34 @@ importers:
       vitest:
         specifier: ^5.0.3
         version: 5.0.3(@types/node@26.6.4)(jsdom@30.1.2)(vite@8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.15))
+
+  examples/spa:
+    dependencies:
+      '@fimbul-works/seidr':
+        specifier: workspace:*
+        version: link:../../packages/seidr
+      '@fimbul-works/seidr-random':
+        specifier: workspace:*
+        version: link:../../packages/seidr-random
+      '@fimbul-works/seidr-router':
+        specifier: workspace:*
+        version: link:../../packages/seidr-router
+    devDependencies:
+      '@fimbul-works/seidr-build-tools':
+        specifier: workspace:*
+        version: link:../../packages/seidr-build-tools
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.3.2
+        version: 8.3.2(@types/node@26.6.4)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.15)
 
   examples/ssr:
     dependencies:

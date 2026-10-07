@@ -1,18 +1,18 @@
+import { seidrRolldownPlugin } from "@fimbul-works/seidr-build-tools/rolldown";
 import { defineConfig } from "tsdown";
 import { commonConfig } from "../../tsdown.common.js";
-import { seidrRolldownPlugin } from "@fimbul-works/seidr-build-tools/rolldown";
 
 export default defineConfig([
   {
     entry: {
-      "seidr-random.ssr": "src/index.ts",
+      "random.ssr": "src/index.ts",
     },
     ...commonConfig,
     plugins: [seidrRolldownPlugin({ disableSSR: false, target: "browser" })],
   },
   {
     entry: {
-      "seidr-random.core": "src/index.ts",
+      "random.core": "src/index.ts",
     },
     ...commonConfig,
     plugins: [seidrRolldownPlugin({ disableSSR: true, target: "browser" })],

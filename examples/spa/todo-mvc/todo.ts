@@ -1,4 +1,4 @@
-import { $getById, mount } from "../../src/index";
+import { $getById, mount } from "@fimbul-works/seidr";
 import { TodoApp } from "./todo-mvc";
 
 // Mount component

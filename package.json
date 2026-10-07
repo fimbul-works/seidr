@@ -34,6 +34,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@fimbul-works/bundle-size": "^2.0.0",
+    "@fimbul-works/loiske": "link:../loiske",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.4",
     "magic-string": "^1.4.3",

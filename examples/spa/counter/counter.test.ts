@@ -1,5 +1,5 @@
+import { $query, $queryAll, type CleanupFunction, createComponent, mount } from "@fimbul-works/seidr";
 import { afterEach, describe, expect, it } from "vitest";
-import { $query, $queryAll, type CleanupFunction, createComponent, mount } from "../../src/index";
 import { Counter } from "./counter";
 
 describe("Counter Example", () => {

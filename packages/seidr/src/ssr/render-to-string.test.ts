@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { TodoApp } from "../../../../examples/todo-mvc/todo-mvc.js";
+import { TodoApp } from "../../../../examples/spa/todo-mvc/todo-mvc.js";
 import { getAppState } from "../app-state/app-state.js";
 import { createComponent } from "../component/create-component.js";
 import { Suspense, type SuspenseState } from "../components/suspense.js";
