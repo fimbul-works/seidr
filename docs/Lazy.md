@@ -49,8 +49,9 @@ mount(App, document.body);
 `lazy()` integrates directly with Seidr's `Router`. Since `lazy()` returns a standard `SeidrComponentFactory`, you can pass lazy components straight into your route definitions:
 
 ```typescript
-import { Router, lazy } from '@fimbul-works/seidr';
+import { lazy } from '@fimbul-works/seidr';
 import { $div } from '@fimbul-works/seidr/html';
+import { Router } from '@fimbul-works/seidr-router';
 
 const Home = lazy(() => import('./pages/home.js'));
 const About = lazy(() => import('./pages/about.js'), {

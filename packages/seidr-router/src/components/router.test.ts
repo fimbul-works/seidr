@@ -1,5 +1,5 @@
 import type { CleanupFunction, SeidrComponentFactoryPureFunction } from "@fimbul-works/seidr";
-import { createComponent, createValue, mount, onUnmounted } from "@fimbul-works/seidr";
+import { createComponent, createValue, lazy, mount, onUnmounted } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it } from "vitest";
@@ -242,5 +242,28 @@ describeDualMode("Router Component", ({ getDocument }) => {
     expect(unmountCount).toBe(0);
     expect(observedParam()).toBe("bob");
     expect(container.textContent).toContain("Profile bob");
+  });
+
+  it("should integrate seamlessly with lazy() for route code-splitting", async () => {
+    initRouter("/home");
+
+    const HomeComp = createComponent(() => $div({ textContent: "Home Page" }));
+    const LazyAboutComp = lazy(() => Promise.resolve({ default: () => $div({ textContent: "About Page" }) }), {
+      fallback: () => $div({ textContent: "Loading Route..." }),
+    });
+
+    const routes = [
+      { path: "/home", component: HomeComp },
+      { path: "/about", component: LazyAboutComp },
+    ];
+
+    unmount = mount(() => Router(routes), container);
+    expect(container.textContent).toBe("Home Page");
+
+    const navigate = useNavigate();
+    navigate("/about");
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(container.textContent).toBe("About Page");
   });
 });

@@ -1,24 +1,21 @@
+import {
+  createComponent,
+  createValue,
+  hydrate,
+  inClient,
+  List,
+  onMounted,
+  onUnmounted,
+  useRef,
+  type Value,
+} from "@fimbul-works/seidr";
+import { $a, $canvas, $div, $h1, $nav, $p, $section, $span, $ul } from "@fimbul-works/seidr/html";
+import { renderToString } from "@fimbul-works/seidr/ssr";
+import { enableClientMode, enableSSRMode } from "@fimbul-works/seidr/testing";
 import { describe, expect, it } from "vitest";
-import { createComponent } from "../component/create-component.js";
-import { List } from "../components/list.js";
-import { $a } from "../elements/a.js";
-import { $canvas } from "../elements/canvas.js";
-import { $div } from "../elements/div.js";
-import { $h1 } from "../elements/h1.js";
-import { $nav } from "../elements/nav.js";
-import { $p } from "../elements/p.js";
-import { $section } from "../elements/section.js";
-import { $span } from "../elements/span.js";
-import { $ul } from "../elements/ul.js";
-import { useRef } from "../hooks/index.js";
-import { onMounted } from "../hooks/on-mounted.js";
-import { onUnmounted } from "../hooks/on-unmounted.js";
-import { createValue, type Value } from "../observable/value.js";
-import { Router, Link, type Route } from "../../../seidr-router/dist/index.js";
-import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
-import { inClient } from "../util/environment/in-client.js";
-import { hydrate } from "./hydrate/hydrate.js";
-import { renderToString } from "./render-to-string.js";
+import type { Route } from "../types.js";
+import { Link } from "./link.js";
+import { Router } from "./router.js";
 
 describe("Multi-section SSR and Hydration with Router", () => {
   type NavItem = { href: string; textContent: string };

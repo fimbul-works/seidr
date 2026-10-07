@@ -326,3 +326,41 @@ import { Safe } from '@fimbul-works/seidr';
 
 Safe(ComplexWidget, ErrorFallback);
 ```
+
+---
+
+### 7. Routing (`<Routes>` / `createBrowserRouter`) ➔ `Router()` with Reactive Route Tables
+
+In React routing libraries (React Router, TanStack Router), routes are configured statically at initialization. Adding or modifying routes dynamically at runtime typically requires re-mounting the entire router tree or rebuilding route config objects from scratch, tearing down layout state.
+
+In Seidr (`@fimbul-works/seidr-router`), `Router()` accepts either a static `Route[]` or a reactive `Value<Route[]>`. When passed a `Value`, the route table can be mutated dynamically at runtime:
+
+```typescript
+// --- React: Statically fixed routes ---
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/public" element={<Public />} />
+</Routes>
+
+// --- Seidr: Dynamic, mutable route table ---
+import { createValue } from '@fimbul-works/seidr';
+import { Router, type Route } from '@fimbul-works/seidr-router';
+
+// Route table is a callable Value observable
+const routes = createValue<Route[]>([
+  { path: '/', component: HomePage, exact: true },
+  { path: '/public', component: PublicPage },
+]);
+
+// Dynamically unlock or mutate routes at runtime:
+export const unlockSecretChamber = () => {
+  routes((current) => [
+    ...current,
+    { path: '/easter-egg', component: SecretChamberPage },
+  ]);
+};
+
+// Router reconciles matches reactively without tearing down active layouts:
+export const App = () => Router(routes);
+```
+

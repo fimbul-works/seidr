@@ -4,9 +4,10 @@
 
 Seidr is organized into a lightweight core library and specialized sub-exports to keep bundle sizes minimal.
 
-- **Core API** (`@fimbul-works/seidr`): Reactive state, components, lifecycle hooks, router, DOM utilities, and environment helpers.
+- **Core API** (`@fimbul-works/seidr`): Reactive state, components, lifecycle hooks, DOM utilities, and environment helpers.
 - **HTML Elements** (`@fimbul-works/seidr/html`): Predefined element creators for standard HTML tags.
 - **SSR API** (`@fimbul-works/seidr/ssr`): Server-side rendering, request context isolation, and hydration serializers.
+- **Official Router** (`@fimbul-works/seidr-router`): Client and SSR declarative routing, nested routers, and navigation hooks.
 - **Build Tools** (`@fimbul-works/seidr-build-tools`): Vite and Rolldown plugins for compile-time dead-code elimination.
 - **Testing Utilities** (`@fimbul-works/seidr/testing`): Dual-mode (Client + SSR) test runners and HTML assertion helpers.
 
@@ -61,13 +62,13 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`Suspense()`](Suspense.md#suspense) — Asynchronous boundary managing Promise resolution and loading states.
   - [`lazy()`](Lazy.md#lazy) — Asynchronous code-splitting utility for dynamically imported component modules.
 
-## [Router API](Router.md) (`@fimbul-works/seidr`)
+## [Router API](Router.md) (`@fimbul-works/seidr-router`)
 - [`Router()`](Router.md#router) — Declarative router component supporting nested routing and SSR hydration.
 - [`Link()`](Router.md#link) — Declarative navigation link component preventing full reloads.
 - Hooks:
   - [`useNavigate()`](Router.md#usenavigate) — Programmatic navigation hook.
   - [`usePathname()`](Router.md#usepathname) — Reactive current pathname hook.
-  - [`useRouteParams()`](Router.md#userouteparams--userouterparams) / `useRouterParams()` — Reactive route parameters hook.
+  - [`useRouteParams()`](Router.md#userouteparams) — Reactive route parameters hook.
   - [`useSearchParams()`](Router.md#usesearchparams) — Reactive URL search query parameters hook.
 - Utilities:
   - [`interceptLinks()`](Router.md#interceptlinks) — Intercept clicks on anchor tags and navigate with the Seidr router.
@@ -103,6 +104,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - Environment Controls: `enableClientMode()`, `enableSSRMode()`, `setupAppState()`, `mockLocation()`.
 
 ## [Official Addons](addons.md) (`@fimbul-works/seidr-*`)
+- [`@fimbul-works/seidr-router`](Router.md) — Declarative routing, nested routing, URL params, and history management.
 - [`@fimbul-works/seidr-random`](addons.md#seidr-random-package) — Deterministic pseudo-random number generation.
 
 ---

@@ -6,7 +6,6 @@ import { $ } from "../element/create-element.js";
 import { onMounted } from "../hooks/on-mounted.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
 import { createValue } from "../observable/value.js";
-import { initRouter, Router } from "../../../seidr-router/dist/index.js";
 import { renderToString } from "../ssr/render-to-string.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
 import type { CleanupFunction } from "../types.js";
@@ -215,29 +214,6 @@ describeDualMode("lazy() Component", ({ getDocument }) => {
 
     await new Promise((r) => setTimeout(r, 20));
     expect(container.textContent).toBe("Recovered");
-  });
-
-  it("should integrate seamlessly with Router for route code-splitting", async () => {
-    initRouter("/home");
-
-    const HomeComp = createComponent(() => $("h1", { textContent: "Home Page" }));
-    const LazyAboutComp = lazy(() => Promise.resolve({ default: () => $("h1", { textContent: "About Page" }) }), {
-      fallback: () => $("div", "Loading Route..."),
-    });
-
-    const routes = [
-      { path: "/home", component: HomeComp },
-      { path: "/about", component: LazyAboutComp },
-    ];
-
-    unmount = mount(() => Router(routes), container);
-    expect(container.textContent).toBe("Home Page");
-
-    // Navigate to /about
-    initRouter("/about");
-    await new Promise((r) => setTimeout(r, 20));
-
-    expect(container.textContent).toBe("About Page");
   });
 
   it("should integrate with Suspense component using preload", async () => {

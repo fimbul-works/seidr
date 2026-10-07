@@ -104,7 +104,7 @@ yarn add @fimbul-works/seidr
 
 | Entry Point | Description |
 |---|---|
-| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`, `useRef`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), routing (`Router`, `Route`, `Link`), and AppState. |
+| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`, `useRef`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), and AppState. |
 | `@fimbul-works/seidr/html` | Predefined reactive DOM element creators (`$div`, `$span`, `$button`, `$input`, `$a`, `$ul`, `$li`, `$table`, etc.). |
 | `@fimbul-works/seidr/ssr` | Server-Side Rendering (`renderToString`), hydration (`hydrate`), and SSR context utilities. |
 | `@fimbul-works/seidr/testing` | Dual-mode test runners (`describeDualMode`, `itHasParity`) and testing environment utilities (`setupDom`). |
@@ -377,13 +377,14 @@ const ToggleView = () => {
 
 **Learn more:** [`Show`](docs/Show.md) | [`List`](docs/List.md) | [`Switch`](docs/Switch.md) | [`Safe`](docs/Safe.md) | [`Suspense`](docs/Suspense.md) | [`Lazy`](docs/Lazy.md)
 
-### Routing
+### Routing (`@fimbul-works/seidr-router`)
 
-Seidr includes a built-in, lightweight router that supports nested routes, dynamic parameters, history navigation, and SSR hydration out of the box:
+Routing is provided via the official addon [`@fimbul-works/seidr-router`](docs/Router.md). It supports nested routes, dynamic parameters, history navigation, declarative links, and SSR hydration out of the box:
 
 ```typescript
-import { createComponent, Link, Route, Router } from '@fimbul-works/seidr';
+import { createComponent } from '@fimbul-works/seidr';
 import { $div, $h1, $nav, $p } from '@fimbul-works/seidr/html';
+import { Link, type Route, Router } from '@fimbul-works/seidr-router';
 
 const App = createComponent(() => {
   return $div({}, [
@@ -392,9 +393,9 @@ const App = createComponent(() => {
       Link({ to: '/about', textContent: 'About' })
     ]),
     Router([
-      Route('/', () => $h1({ textContent: 'Welcome Home' })),
-      Route('/about', () => $p({ textContent: 'About Seidr' })),
-      Route('*', () => $p({ textContent: '404 - Page Not Found' }))
+      { path: '/', component: () => $h1({ textContent: 'Welcome Home' }), exact: true },
+      { path: '/about', component: () => $p({ textContent: 'About Seidr' }) },
+      { path: '*', component: () => $p({ textContent: '404 - Page Not Found' }) }
     ])
   ]);
 });

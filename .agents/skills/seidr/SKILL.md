@@ -34,7 +34,7 @@ Seidr runs isomorphically with deterministic SSR hydration.
 
 | React Pattern | Seidr Equivalent | Architectural Difference |
 | :--- | :--- | :--- |
-| `useState(init)` | `createValue(init)` | Callable getter/setter: `val()` to read, `val(x)` to update. Does not re-run component. |
+| `useState(init)` | `createValue(init)` | Decorated callable getter-setter: `val()` to read, `val(x)` or `val((prev) => x)` to update. Values are functions, NOT objects! Does not re-run component. |
 | `useMemo(() => x, [deps])` | `val.as(fn)` or `mergeValues(fn)` | Fine-grained derived computation updating subscribers only on value changes. |
 | `useEffect(fn, [deps])` | `val.watch(fn)` or `val.bind(fn)` | `.watch()` runs on change; `.bind()` runs immediately + on change. Both return an **unsubscribe handle** to pass to `onUnmounted(unwatch)`. Handlers can also return a **per-update teardown function** run before the next invocation. |
 | `useCallback(fn, [deps])` | Plain function `const fn = () => ...` | Component body runs once; callbacks never need caching to retain identity. |
@@ -44,6 +44,7 @@ Seidr runs isomorphically with deterministic SSR hydration.
 | `{cond ? <A /> : <B />}` | `Show(condVal, () => A(), () => B())` | Reactive conditional branch returning a reactive `Value<SeidrChild>`. |
 | `{items.map(item => ...)}` | `List(itemsVal, keyFn, itemFactory)` | Keyed reconciliation; `itemFactory` receives `itemVal: Value<T>` for in-place item updates. |
 | `JSX` / Elements | `$tag(props, children)` or `$()` | Direct DOM element builders from `@fimbul-works/seidr/html`. |
+| Routing (`<Routes>` / `createBrowserRouter`) | `Router(routes)` (`@fimbul-works/seidr-router`) | Accepts static `Route[]` or reactive `Value<Route[]>`. Route tables can be mutated at runtime without tearing down or remounting the router. |
 
 ---
 
@@ -107,11 +108,21 @@ Before finalizing any ported component or feature, verify each check:
 ## Monorepo Architecture & Addon Packages
 
 Seidr is organized as a Turborepo monorepo with pnpm workspaces:
-- **Core Library**: `@fimbul-works/seidr` (lives in root / `packages/core`).
-- **Official Addons & Ports**: Live in `packages/<addon-name>` (e.g. `packages/primitives`, `packages/router`).
+- **Core Library**: `@fimbul-works/seidr` (lives in `packages/seidr`).
+- **Official Addons**: Live in `packages/seidr-<name>`:
+  - `@fimbul-works/seidr-router`: Declarative router supporting reactive route tables (`Value<Route[]>`).
+  - `@fimbul-works/seidr-random`: Deterministic SplitMix32 PRNG with SSR hydration consistency.
+  - `@fimbul-works/seidr-build-tools`: Vite & Rolldown transform plugins.
+
+### Unique Feature: Reactive Route Tables (`Value<Route[]>`)
+Unlike other UI frameworks where route trees are statically frozen at startup, Seidr's router accepts `Value<Route[]>`:
+- Route tables can be mutated dynamically at runtime by invoking the callable Value setter (`routes((prev) => [...prev, newRoute])` or `routes([...])`).
+- The router reactively reconciles active matches without unmounting unaffected layout components or resetting router state.
+- Enables progressive disclosure, easter eggs, dynamic role/auth transitions, and runtime micro-frontend route injection.
+
 
 ### Scaffolding a Ported Addon Package:
-1. Create directory `packages/<name>/` with a standard `package.json`:
+1. Create directory `packages/seidr-<name>/` with a standard `package.json`:
    ```json
    {
      "name": "@fimbul-works/seidr-<name>",

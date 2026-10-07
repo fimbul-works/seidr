@@ -222,8 +222,8 @@ Seidr provides specialized built-in components and control-flow utilities:
 - [`Safe()`](Safe.md) — Error boundary component with isolated cleanup and fallback UI.
 - [`Suspense()`](Suspense.md) — Asynchronous boundary managing Promise resolution and loading/error states.
 - [`lazy()`](Lazy.md) — Asynchronous code-splitting utility for dynamically imported component modules.
-- [`Router()`](Router.md) — Declarative routing system with route matching, nested routers, and SSR state hydration.
-- [`Link()`](Router.md#link) — Declarative navigation link preventing full-page reloads.
+- [`Router()`](Router.md) (`@fimbul-works/seidr-router`) — Declarative routing system with route matching, nested routers, and SSR state hydration.
+- [`Link()`](Router.md#link) (`@fimbul-works/seidr-router`) — Declarative navigation link preventing full-page reloads.
 
 ---
 

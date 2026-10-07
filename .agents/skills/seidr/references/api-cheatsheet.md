@@ -7,13 +7,14 @@ Ground-truth API reference for Seidr. Consult this document before writing code 
 ## 1. Reactive State (`@fimbul-works/seidr`)
 
 ### `createValue<T>(initialValue: T, options?: ValueOptions): Value<T>`
-Creates a callable reactive signal.
+Creates a callable reactive getter-setter function.
 - **Reading**: `val()`
-- **Writing**: `val(newVal)` or `val((prev) => nextVal)`
+- **Writing**: `val(newVal)` or `val((prev) => nextVal)` (callable invocation, NOT an object method like `.set()`)
 - **Options**:
   - `id?: string` — Singleton ID inside current `AppState`; participates in SSR hydration.
   - `isEqual?: (a: any, b: any) => boolean` — Defaults to `Object.is`. Pass `() => false` for pure event signal behavior.
   - `hydrate?: boolean` — Defaults to `true`.
+
 
 ### Methods on `Value<T>`:
 - `.as<D>(transformFn: (val: T) => D, options?: ValueOptions): Value<D>`
@@ -119,9 +120,19 @@ onUnmounted(unwatch); // 2. Unsubscribe handle (stops watching on component unmo
 
 ---
 
-## 5. Router API (`@fimbul-works/seidr` / `@fimbul-works/seidr/router`)
+## 5. Router API (`@fimbul-works/seidr-router`)
 
-- `Router(options: RouterOptions): SeidrComponent`
+- `Router(routes: Route[] | Value<Route[]>, options?: RouterOptions): SeidrComponent`
+  Declarative router supporting nested routing, exact matching, and reactive route tables (`Value<Route[]>`) that can be mutated at runtime without unmounting.
+  ```typescript
+  // Runtime route table mutation (progressive disclosure, easter eggs, role gating)
+  const routes = createValue<Route[]>([
+    { path: '/', component: Home, exact: true },
+    { path: '/public', component: PublicPage }
+  ]);
+  const unlockSecret = () => routes((prev) => [...prev, { path: '/secret', component: SecretPage }]);
+  const app = Router(routes);
+  ```
 - `Link(props: LinkProps, children?): HTMLElement`
 - `interceptLinks(container?: HTMLElement): void`
 - Hooks:
