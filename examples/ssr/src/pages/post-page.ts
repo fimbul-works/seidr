@@ -3,9 +3,7 @@ import {
   createValue,
   inClient,
   inServer,
-  interceptLinks,
   isServer,
-  Link,
   List,
   onMounted,
   onUnmounted,
@@ -14,10 +12,10 @@ import {
   type SuspenseState,
   Switch,
   useRef,
-  useRouteParams,
   type Value,
 } from "@fimbul-works/seidr";
 import { $article, $div, $h1, $span } from "@fimbul-works/seidr/html";
+import { interceptLinks, Link, useRouteParams } from "@fimbul-works/seidr-router";
 import { getPost } from "../blog-api.js";
 import { DateView } from "../components/date.js";
 import { LoadingSpinner } from "../components/loading-spinner.js";

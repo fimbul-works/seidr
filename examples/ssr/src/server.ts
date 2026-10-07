@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import path from "node:path";
 import express from "express";
 import type { ViteDevServer } from "vite";
 import { setupApiRoutes } from "./routes/api.js";
@@ -9,7 +10,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const base = process.env.BASE || "/";
 
 // Cached production assets
-const templateHtml = isProduction ? await fs.readFile("./examples/ssr/index.html", "utf-8") : "";
+const templateHtml = isProduction ? await fs.readFile(path.resolve(import.meta.dirname, "../index.html"), "utf-8") : "";
 
 // Create http server
 const app = express();
@@ -24,7 +25,7 @@ let vite: ViteDevServer;
 if (!isProduction) {
   const { createServer } = await import("vite");
   vite = await createServer({
-    configFile: "./vite.ssr.config.ts",
+    configFile: path.resolve(import.meta.dirname, "../vite.config.ts"),
     server: { middlewareMode: true },
     appType: "custom",
     base,
@@ -32,7 +33,7 @@ if (!isProduction) {
   app.use(vite.middlewares);
 } else {
   const sirv = (await import("sirv")).default;
-  app.use(base, sirv("./examples/ssr/dist", { extensions: [] }));
+  app.use(base, sirv(path.resolve(import.meta.dirname, "../dist"), { extensions: [] }));
 }
 
 app.get(/.*/, async (req, res) => {
@@ -51,9 +52,9 @@ app.get(/.*/, async (req, res) => {
 
     if (!isProduction) {
       // Always read fresh template in development
-      template = await fs.readFile("./examples/ssr/index.html", "utf-8");
+      template = await fs.readFile(path.resolve(import.meta.dirname, "../index.html"), "utf-8");
       template = await vite.transformIndexHtml(url, template);
-      render = (await vite.ssrLoadModule("./examples/ssr/entry-server.ts")).render;
+      render = (await vite.ssrLoadModule(path.resolve(import.meta.dirname, "entry-server.ts"))).render;
     } else {
       template = templateHtml;
       render = (await import("./entry-server.js" as any)).render;

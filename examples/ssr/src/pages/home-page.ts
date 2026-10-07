@@ -4,7 +4,6 @@ import {
   inClient,
   inServer,
   isServer,
-  Link,
   List,
   Suspense,
   Switch,
@@ -12,6 +11,7 @@ import {
 } from "@fimbul-works/seidr";
 import { $div, $footer, $h1, $h2, $li, $main, $p, $span, $ul } from "@fimbul-works/seidr/html";
 import { random } from "@fimbul-works/seidr-random";
+import { Link } from "@fimbul-works/seidr-router";
 import { getPosts } from "../blog-api.js";
 import { DateView } from "../components/date.js";
 import { LoadingSpinner } from "../components/loading-spinner.js";

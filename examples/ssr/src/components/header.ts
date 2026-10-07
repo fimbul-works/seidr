@@ -1,5 +1,6 @@
-import { createComponent, Link } from "@fimbul-works/seidr";
+import { createComponent } from "@fimbul-works/seidr";
 import { $a, $div, $img, $nav, $span } from "@fimbul-works/seidr/html";
+import { Link } from "@fimbul-works/seidr-router";
 
 /**
  * Page header component.

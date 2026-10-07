@@ -1,5 +1,6 @@
-import { createComponent, Link } from "@fimbul-works/seidr";
+import { createComponent } from "@fimbul-works/seidr";
 import { $div, $h1, $p } from "@fimbul-works/seidr/html";
+import { Link } from "@fimbul-works/seidr-router";
 
 /**
  * 404 Not Found page component.

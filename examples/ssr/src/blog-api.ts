@@ -5,16 +5,9 @@ import { marked } from "marked";
 
 import type { BlogPost } from "./types.js";
 
-function getContentDir(pathModule: any) {
-  return pathModule.resolve(
-    typeof __dirname !== "undefined"
-      ? pathModule.join(__dirname, "blog-content")
-      : pathModule.join(pathModule.dirname(new URL(import.meta.url).pathname), "blog-content"),
-  );
-}
+const contentDir = path.resolve(import.meta.dirname, "../blog-content");
 
 export async function getPosts(): Promise<BlogPost[]> {
-  const contentDir = getContentDir(path);
   const files = await fs.readdir(contentDir);
   const posts = await Promise.all(
     files
@@ -52,7 +45,6 @@ export async function getPosts(): Promise<BlogPost[]> {
 
 export async function getPost(slug: string): Promise<BlogPost | null> {
   try {
-    const contentDir = getContentDir(path);
     const filePath = path.join(contentDir, `${slug}.md`);
     const md = await fs.readFile(filePath, "utf-8");
     const {
