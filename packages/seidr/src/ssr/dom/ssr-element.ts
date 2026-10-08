@@ -1,4 +1,4 @@
-import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants";
+import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants.js";
 import { isComment } from "../../dom/type-guards.js";
 import type { ReactiveCSSStyleDeclaration } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";

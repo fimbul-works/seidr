@@ -1,8 +1,10 @@
 import { getAppState, setAppStateID } from "../../app-state/app-state.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
+import { setRegisterValueForSSR } from "../../observable/register-value-for-ssr.js";
 import type { Value } from "../../observable/value.js";
 import { registerStateStrategy } from "../register-state-strategy.js";
+import { registerValueForSSR } from "../register-value-for-ssr.js";
 import type { HydrationData } from "../types.js";
 import { unpackHydrationState } from "../util/state-tuple.js";
 import type { HydrationDataRegistry } from "./types.js";
@@ -32,6 +34,7 @@ export function initHydrationData(hydrationData: HydrationData): void {
 
   // Register data strategy
   registerStateStrategy();
+  setRegisterValueForSSR(registerValueForSSR);
 
   const rawState = hydrationData.data?.[DATA_KEY_STATE];
   const stateMap: Map<string, any> = Array.isArray(rawState)

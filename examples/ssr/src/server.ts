@@ -10,7 +10,7 @@ const isProduction = process.env.NODE_ENV === "production";
 const base = process.env.BASE || "/";
 
 // Cached production assets
-const templateHtml = isProduction ? await fs.readFile(path.resolve(import.meta.dirname, "../index.html"), "utf-8") : "";
+const templateHtml = isProduction ? await fs.readFile(path.resolve(import.meta.dirname, "../dist/index.html"), "utf-8") : "";
 
 // Create http server
 const app = express();

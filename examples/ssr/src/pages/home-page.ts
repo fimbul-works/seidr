@@ -45,11 +45,11 @@ const PostCard = createComponent((post: Value<BlogPost>) => {
  * Home page component.
  */
 export const HomePage = createComponent(() => {
-  const title = createValue<string>("", { id: "title" });
-  const tagline = createValue<string>("", { id: "tagline" });
+  const title = createValue<string>("Seiðr, Actually", { id: "hero.title" });
+  const tagline = createValue<string>("It's not witchcraft if the tests pass.", { id: "hero.tagline" });
 
   inServer(() => {
-    // Only server sets the title and tagline, saving precious kilobytes!
+    // Only server sets a random title and tagline, saving precious kilobytes!
     const r1 = Math.floor(random() * Number.MAX_SAFE_INTEGER);
     const r2 = Math.floor(random() * Number.MAX_SAFE_INTEGER);
     const [titleStr, taglines] = TAGLINES[r1 % TAGLINES.length];
