@@ -1,7 +1,7 @@
 {
   "extends": "@repo/typescript-config/vite.json",
   "compilerOptions": {
-    "types": ["node", "vite/client", "@fimbul-works/loiske/client"]
+    "types": ["node", "vite/client"]
   },
   "include": ["**/*.ts", "**/*.tsx"]
 }
