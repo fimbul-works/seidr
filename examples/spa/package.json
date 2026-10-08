@@ -16,6 +16,7 @@
     "@fimbul-works/seidr-router": "workspace:*"
   },
   "devDependencies": {
+    "@example/particles": "workspace:*",
     "@fimbul-works/seidr-build-tools": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "tsx": "^4.23.15",

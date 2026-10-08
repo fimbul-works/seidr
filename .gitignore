@@ -10,3 +10,4 @@ bundles/
 bundle-sizes/
 examples/ssr/data/
 coverage/
+public/particles.js

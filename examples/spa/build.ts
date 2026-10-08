@@ -1,6 +1,5 @@
 import { readdir, rm, stat } from "node:fs/promises";
 import { resolve } from "node:path";
-import { loiskeVitePlugin } from "@fimbul-works/loiske/build";
 import { seidrVitePlugin } from "@fimbul-works/seidr-build-tools/vite";
 import { build } from "vite";
 
@@ -118,35 +117,6 @@ await build({
   },
   esbuild: {
     drop: ["console", "debugger"],
-  },
-});
-
-// Build Loiske particle shader as an isolated standalone chunk
-console.log("\nBuilding particle shader chunk...");
-await build({
-  configFile: false,
-  root: rootDir,
-  publicDir: false,
-  plugins: [loiskeVitePlugin({ compress: true, stripTransforms: true })],
-  build: {
-    outDir,
-    emptyOutDir: false,
-    minify: true,
-    sourcemap: false,
-    target: "chrome107",
-    modulePreload: { polyfill: false },
-    rollupOptions: {
-      input: resolve(rootDir, "particles.ts"),
-      output: {
-        format: "es",
-        entryFileNames: "particles.js",
-        codeSplitting: false,
-      },
-      treeshake: true,
-    },
-  },
-  esbuild: {
-    drop: ["debugger"],
   },
 });
 

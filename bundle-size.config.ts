@@ -18,11 +18,12 @@ const config: BundleSizeOptions = {
     },
     {
       name: "Loiske Particle Shader",
-      include: "examples/spa/dist/particles.js",
+      include: "public/particles.js",
     },
     {
       name: "SSR Examples",
       include: "examples/ssr/dist/**/*.js",
+      exclude: "examples/ssr/dist/particles.js",
     },
   ],
   json: "bundle-sizes/@date-@time.json",

@@ -1,0 +1,18 @@
+{
+  "name": "@example/particles",
+  "description": "Loiske particle shader background for Seidr examples",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "tsx build.ts",
+    "check-types": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@fimbul-works/loiske": "link:../../../loiske",
+    "@repo/typescript-config": "workspace:*",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "vite": "^8.3.2"
+  }
+}
