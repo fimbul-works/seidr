@@ -17,7 +17,7 @@ const config: BundleSizeOptions = {
       exclude: "examples/spa/dist/particles.js",
     },
     {
-      name: "Particle Shader",
+      name: "Loiske Particle Shader",
       include: "examples/spa/dist/particles.js",
     },
     {

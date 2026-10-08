@@ -131,7 +131,7 @@ await build({
   build: {
     outDir,
     emptyOutDir: false,
-    minify: false,
+    minify: true,
     sourcemap: false,
     target: "chrome107",
     modulePreload: { polyfill: false },

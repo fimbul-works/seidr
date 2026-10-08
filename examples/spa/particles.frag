@@ -1,55 +1,41 @@
-float noise(vec2 co) {
-  return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
+float ball(vec2 p, float fx, float fy, float ax, float ay, float s) {
+  float t = 420.0 + iTime * 0.01;
+  vec2 r = vec2(p.x + cos(t * fx) * ax, p.y + sin(t * fy) * ay);	
+  return s / length(r);
 }
 
 void main() {
-  vec2 fragCoord = gl_FragCoord.xy;
-  vec2 uv = fragCoord.xy / iResolution.xy;
-    
-  float u_brightness = 0.8;
-  float u_blobiness = 0.8;
-  float u_particles = 240.0;
-  float u_limit = 100.0;
-  float u_energy = 0.1;
+  vec2 uv = gl_FragCoord.xy / iResolution.xy;
+  vec2 p = -1.0 + 2.0 * uv + vec2(0, 0.75);
+  p.x	*= iResolution.x / iResolution.y;
 
-  vec2 position = (fragCoord.xy / iResolution.xy);
-  float t = iTime * u_energy;
-    
-  float a = 0.0;
-  float b = 0.0;
-  float c = 0.0;
+  vec3 color1 = vec3(0.400, 0.467, 0.733); // #6677bb
+  vec3 color2 = vec3(0.467, 0.267, 0.600); // #774499
+  vec2 center = vec2(1.0, 0.0);
+  float dist = length(uv - center);
+  dist *= dist;
+  int num = 69;
 
-  vec2 pos;
-  vec2 center = vec2(0.5, 0.5 * (iResolution.y / iResolution.x));
+  float brightness = 2.0;
+  float alpha = 0.0;
+  float a = 1.0;
+  float b = 3.0;
+  float c = 0.1;
+  float d = 0.1;
+  float limit = 1.0 / float(num) * 2.0;
+  float size = limit * 0.005;
 
-  float na, nb, nc, nd, d;
-  float limit = u_particles / u_limit;
-  float step = 1.0 / u_particles;
-  float n = 0.0;
-
-  for (float i = 0.0; i <= 1.0; i += 0.025) {
-    if (i <= limit) {
-      vec2 np = vec2(n, 0);
-        
-      na = noise(np * 1.1);
-      nb = noise(np * 2.8);
-      nc = noise(np * 0.7);
-      nd = noise(np * 3.2);
-
-      pos = center;
-      pos.x += sin(t * na) * cos(t * nb) * tan(t * na * 0.15) * 0.3;
-      pos.y += tan(t * nc) * sin(t * nd) * 0.1;
-        
-      d = pow(1.6 * na / length(pos - position), u_blobiness);
-        
-      if (i < limit * 0.3333) a += d;
-      else if (i < limit * 0.5) b += d;
-      else c += d;
-
-      n += step;
-    }
+  for (int i = 0; i < num; i++) {
+  	alpha += ball(p, a, b, c, d, float(i + 1) * size);
+    a += limit;
+    b = tan(a * 4.);
+    c += 0.1;
+    d = tan(c * 4.);
   }
+  alpha = clamp(alpha, 0.0, 1.0);
 
-  vec3 col = vec3(a * 25.5, 0.0, a * b) * 0.0001 * u_brightness;
-  fragColor = vec4(col, 1.0);
+  vec3 col = mix(color1, color2, 1.0 - uv.y) * alpha * brightness;
+
+  fragColor = vec4(col, alpha);
 }
+
