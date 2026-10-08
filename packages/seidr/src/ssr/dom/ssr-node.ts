@@ -61,7 +61,11 @@ export abstract class SSRNode<T extends SupportedNodeTypes, D extends SSRDocumen
 
   get isConnected(): boolean {
     if (this.nodeType === TYPE_DOCUMENT) return true;
-    return !!this.ownerDocument;
+    let node: Node | null = this;
+    while (node?.parentNode) {
+      node = node.parentNode;
+    }
+    return node?.nodeType === TYPE_DOCUMENT;
   }
 
   get parentElement(): HTMLElement | null {

@@ -46,6 +46,7 @@ export async function renderToString(
         const comp: SeidrComponent = isComponent(factory) ? factory : wrapComponent(factory, "Root")();
 
         const container = getDocument().createElement("div");
+        getDocument().body.appendChild(container);
         appendChild(container, comp);
 
         // Await all promises registered during SSR
@@ -56,6 +57,7 @@ export async function renderToString(
         const hydrationData = activeScope.captureHydrationData();
 
         comp.unmount();
+        container.remove();
         appState.destroy();
         activeScope.clear();
 

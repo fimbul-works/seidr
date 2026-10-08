@@ -89,7 +89,12 @@ export const createReactiveValueNodes = (
     }
 
     // Insert new nodes before endMarker
-    normalizeChildNodes(newVal).forEach((node) => parentNode.insertBefore(node, endMarker));
+    normalizeChildNodes(newVal).forEach((node) => {
+      parentNode.insertBefore(node, endMarker);
+      if (parentNode.isConnected) {
+        mountConnectedComponents(node);
+      }
+    });
 
     if (isComponent(newVal) && parentNode.isConnected) {
       newVal.mount();
@@ -117,6 +122,37 @@ export const createReactiveValueNodes = (
 
   const initialNodes = normalizeChildNodes(unwrapValue(value));
   return [startMarker, ...initialNodes, endMarker];
+};
+
+/**
+ * Recursively mounts any unmounted components within a DOM subtree.
+ *
+ * @param {Node} node - Root node to traverse
+ */
+export const mountConnectedComponents = (node: Node) => {
+  const appState = getAppState();
+  const stack: Node[] = [node];
+
+  while (stack.length > 0) {
+    const current = stack.pop()!;
+    const comp = appState.nodeIndex.get(current as ChildNode);
+
+    if (comp && !comp.isMounted) {
+      // Find top-most unmounted component ancestor to preserve top-down lifecycle
+      let rootComp = comp;
+      while (rootComp.parent && !rootComp.parent.isMounted) {
+        rootComp = rootComp.parent;
+      }
+      rootComp.mount();
+    }
+
+    const childNodes = current.childNodes;
+    if (childNodes && childNodes.length > 0) {
+      for (let i = childNodes.length - 1; i >= 0; i--) {
+        stack.push(childNodes[i]);
+      }
+    }
+  }
 };
 
 /**
@@ -194,6 +230,10 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
     // Avoid hierarchy request error if childNode is already a parent of target
     if (!isHTMLElement(childNode) || !childNode.contains(parent)) {
       parent.appendChild(childNode);
+
+      if (parent.isConnected) {
+        mountConnectedComponents(childNode);
+      }
     }
   }
 };

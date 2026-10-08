@@ -115,6 +115,7 @@ export function createComponent<P = void>(
       },
       parent: parentComponent,
       mount() {
+        if (isMounted) return;
         isMounted = true;
 
         // Trigger onMounted callbacks after a small delay on client-side

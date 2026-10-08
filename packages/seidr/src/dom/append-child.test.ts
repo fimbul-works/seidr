@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../constants";
 import { $ } from "../element";
+import { onMounted } from "../hooks";
 import { createValue } from "../observable";
 import { describeDualMode } from "../test-setup";
 import { appendChild } from "./append-child";
@@ -194,6 +195,87 @@ describeDualMode("appendChild", ({ getDocument }) => {
     appendChild(parent, undefined);
     appendChild(parent, "   ");
     expect(parent.childNodes.length).toBe(0);
+  });
+
+  describe("Deferred Component Mounting", () => {
+    it("should trigger onMounted when a DOM element with a child component is appended after-the-fact", () => {
+      const mountedSpy = vi.fn();
+      const Child = createComponent(() => {
+        onMounted(mountedSpy);
+        return $("span", { textContent: "Child content" });
+      }, "Child");
+
+      // DOM element created with a child component while disconnected
+      const el = $("div", Child());
+
+      expect(mountedSpy).not.toHaveBeenCalled();
+
+      // Only appended to a connected node after-the-fact
+      appendChild(getDocument().body, el);
+
+      expect(mountedSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should trigger onMounted on deeply nested child components inside an element appended after-the-fact", () => {
+      const mountedSpy = vi.fn();
+      const Child = createComponent(() => {
+        onMounted(mountedSpy);
+        return $("span", { textContent: "Deep child" });
+      }, "DeepChild");
+
+      const el = $("div", $("section", $("article", Child())));
+
+      expect(mountedSpy).not.toHaveBeenCalled();
+
+      appendChild(getDocument().body, el);
+
+      expect(mountedSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it("should trigger onMounted on multiple child components in a disconnected element", () => {
+      const mountedSpy1 = vi.fn();
+      const mountedSpy2 = vi.fn();
+
+      const Child1 = createComponent(() => {
+        onMounted(mountedSpy1);
+        return $("p", { textContent: "Child 1" });
+      }, "Child1");
+
+      const Child2 = createComponent(() => {
+        onMounted(mountedSpy2);
+        return $("p", { textContent: "Child 2" });
+      }, "Child2");
+
+      const el = $("div", [Child1(), Child2()]);
+
+      expect(mountedSpy1).not.toHaveBeenCalled();
+      expect(mountedSpy2).not.toHaveBeenCalled();
+
+      appendChild(getDocument().body, el);
+
+      expect(mountedSpy1).toHaveBeenCalledTimes(1);
+      expect(mountedSpy2).toHaveBeenCalledTimes(1);
+    });
+
+    it("should trigger onMounted when a reactive Value switches to an element with a child component", () => {
+      const mountedSpy = vi.fn();
+      const Child = createComponent(() => {
+        onMounted(mountedSpy);
+        return $("span", { textContent: "Dynamic child" });
+      }, "DynamicChild");
+
+      const obs = createValue<HTMLElement | null>(null);
+      const container = $("div");
+      appendChild(getDocument().body, container);
+      appendChild(container, obs);
+
+      expect(mountedSpy).not.toHaveBeenCalled();
+
+      // Switch to disconnected element containing child component
+      obs($("div", Child()));
+
+      expect(mountedSpy).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("Hydration & Safety", () => {
