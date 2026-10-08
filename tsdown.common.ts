@@ -1,4 +1,4 @@
-import { type UserConfig } from "tsdown";
+import type { UserConfig } from "tsdown";
 
 export const commonConfig: UserConfig = {
   platform: "browser",
