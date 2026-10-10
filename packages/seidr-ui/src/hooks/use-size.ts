@@ -16,6 +16,10 @@ export interface Size {
  * @template {HTMLElement} T The type of element to observe.
  * @param {Ref<T>} ref - Ref to observe.
  * @returns {Value<Size | null>} A value that holds the size of the element.
+ * @throws {SeidrError} If the ref is invalid or if the element is not in the DOM.
+ *
+ * Ported from https://github.com/radix-ui/primitives/
+ * MIT License, Copyright (c) WorkOS.
  */
 export function useSize<T extends HTMLElement>(ref: Ref<T>): Value<Size | null> {
   if (!isRef(ref)) {

@@ -21,6 +21,9 @@ const observedElements = new Map<Measurable, ObservedData>();
 /**
  * Runs the observation loop.
  * @internal
+ *
+ * Ported from https://github.com/radix-ui/primitives/blob/main/packages/core/rect/src/observe-element-rect.ts
+ * MIT License, Copyright (c) WorkOS.
  */
 function runLoop() {
   const changedRectsData: Array<ObservedData> = [];
@@ -53,6 +56,9 @@ function runLoop() {
  * @param rect1 - First rect
  * @param rect2 - Second rect
  * @returns true if rects are equal in values
+ *
+ * Ported from https://github.com/radix-ui/primitives/blob/main/packages/core/rect/src/observe-element-rect.ts
+ * MIT License, Copyright (c) WorkOS.
  */
 function rectEquals(rect1?: DOMRect | Partial<DOMRect> | null, rect2?: DOMRect | Partial<DOMRect> | null): boolean {
   if (!rect1 || !rect2) {
@@ -76,6 +82,9 @@ function rectEquals(rect1?: DOMRect | Partial<DOMRect> | null, rect2?: DOMRect |
  * @param elementToObserve - The element whose rect to observe.
  * @param callback - The callback called when the rect changes.
  * @returns A cleanup function to unobserve.
+ *
+ * Ported from https://github.com/radix-ui/primitives/blob/main/packages/core/rect/src/observe-element-rect.ts
+ * MIT License, Copyright (c) WorkOS.
  */
 function observeElementRect(elementToObserve: Measurable, callback: RectCallbackFn): () => void {
   const observedData = observedElements.get(elementToObserve);
@@ -126,6 +135,10 @@ function observeElementRect(elementToObserve: Measurable, callback: RectCallback
  * @template {Measurable} T The type of measurable element to observe.
  * @param {Ref<T>} ref - Ref to observe.
  * @returns {Value<DOMRect | null>} A value that holds the rect of the element.
+ * @throws {SeidrError} If the ref is invalid or if the element is not in the DOM.
+ *
+ * Ported from https://github.com/radix-ui/primitives/blob/main/packages/react/use-rect/src/use-rect.tsx
+ * MIT License, Copyright (c) WorkOS.
  */
 export function useRect<T extends Measurable>(ref: Ref<T>): Value<DOMRect | null> {
   if (!isRef(ref)) {

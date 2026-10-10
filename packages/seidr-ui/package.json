@@ -47,6 +47,7 @@
     "@fimbul-works/seidr-build-tools": "workspace:*",
     "@repo/biome-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
-    "@repo/vitest-config": "workspace:*"
+    "@repo/vitest-config": "workspace:*",
+    "vitest-axe": "^0.1.0"
   }
 }
