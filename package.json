@@ -27,23 +27,17 @@
     "check-types": "turbo run check-types",
     "sizes": "npx bundle-size"
   },
-  "dependencies": {
-    "@fimbul-works/futhark": "^1.1.0",
-    "@fimbul-works/hash": "^1.2.1"
-  },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@fimbul-works/bundle-size": "^2.0.0",
     "@types/jsdom": "^30.0.0",
     "@types/node": "^26.6.5",
     "jsdom": "^30.1.2",
-    "magic-string": "^1.4.3",
-    "oxc-parser": "^0.153.0",
     "rimraf": "^6.1.3",
     "rolldown": "^1.2.13",
     "tsdown": "^0.23.0",
     "tsx": "^4.23.15",
-    "turbo": "2.10.12",
+    "turbo": "2.11.7",
     "typescript": "^6.0.3",
     "unrun": "^0.3.1",
     "vite": "^8.3.4",
