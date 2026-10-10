@@ -1,5 +1,5 @@
 import { BOOL_ATTRIBUTES } from "../constants.js";
-import { onUnmounted } from "../hooks/index.js";
+import { onMounted, onUnmounted } from "../hooks/index.js";
 import { isRef, isValue } from "../observable/type-guards.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { SeidrError } from "../types.js";
@@ -33,7 +33,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
       throw new SeidrError("Invalid ref");
     }
 
-    value(el);
+    onMounted(() => value(el));
     onUnmounted(() => value(null));
     return;
   }
