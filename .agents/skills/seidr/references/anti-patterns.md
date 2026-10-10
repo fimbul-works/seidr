@@ -248,3 +248,38 @@ const unwatch = val.watch((v) => {
 // Pass the unsubscribe handle so listening stops when component is unmounted
 onUnmounted(unwatch);
 ```
+
+---
+
+## 10. Testing Component Re-Renders / Render Counts
+
+In React, developers frequently track render counts (`let renderCount = 0; ... expect(renderCount).toBe(1)`) to verify that `React.memo`, `useMemo`, or hook dependencies prevent re-rendering.
+
+### ❌ Anti-Pattern: Porting Re-Render Assertions to Seidr Tests
+```typescript
+// BAD: Testing whether a Seidr component re-renders when state changes
+it("updates fine-grained DOM bindings reactively without component re-render", () => {
+  let renderCount = 0;
+  const Comp = createComponent(() => {
+    renderCount++;
+    const text = size.as((s) => (s ? `${s.width}x${s.height}` : "none"));
+    return $div({}, [$div({ ref, id: "box" }), $div({ id: "output" }, text)]);
+  });
+  mount(Comp, container);
+  expect(renderCount).toBe(1);
+
+  // Asserting renderCount again after an update is completely redundant!
+  state(newValue);
+  expect(renderCount).toBe(1); // ❌ UNNECESSARY & CONTAMINATED
+});
+```
+
+### ✅ Idiomatic Seidr: Test Only the Behavioral Contract
+In Seidr, component factories **always execute exactly once** by definition. There is no re-render loop in the framework.
+- Asserting `renderCount === 1` does not test your component or hook—it only restates how Seidr fundamentally works.
+- When porting tests from React, **discard all re-render assertions**. Focus solely on testing:
+  1. Reactive `Value` updates and derived computations.
+  2. Direct DOM bindings (attributes, classes, text).
+  3. Keyboard and click event handlers.
+  4. Proper cleanup on element or component unmount.
+

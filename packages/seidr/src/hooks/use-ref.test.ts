@@ -5,7 +5,6 @@ import { isHTMLElement } from "../dom/type-guards";
 import { $canvas } from "../elements/canvas";
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 import { SeidrError } from "../types";
-import { onMounted } from "./on-mounted";
 import { useRef } from "./use-ref";
 
 describeDualMode("useRef hook", ({ getDocument }) => {
@@ -15,9 +14,7 @@ describeDualMode("useRef hook", ({ getDocument }) => {
     const CanvasContainer = createComponent(() => {
       const canvasRef = useRef<HTMLCanvasElement>();
 
-      onMounted(() => {
-        canvas = canvasRef();
-      });
+      canvasRef.bind((v) => (canvas = v));
 
       return $canvas({ id: "hero-canvas", ref: canvasRef });
     }, "CanvasContainer");

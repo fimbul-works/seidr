@@ -17,6 +17,7 @@ A Seidr component factory function **runs exactly once** to instantiate reactive
 - **There is no re-render loop.** Component bodies do *not* re-execute when state or props change.
 - **DOM updates are fine-grained.** Callable `Value<T>` observables wire directly to DOM attributes, text nodes, and child branches.
 - **Closures do not become stale.** Functions defined inside the component factory capture persistent references, eliminating the need for `useCallback` or dependency arrays.
+- **Never test for component re-renders.** Because components always execute exactly once by architectural definition, tests checking whether a component re-rendered (or tracking `renderCount`) are redundant and represent React mental model contamination. Discard re-render assertions when porting React tests.
 
 ### 2. Map Intent, Never Translate Mechanically
 React models are conditioned to replicate React's component tree and hook architecture. **Do not produce "React wearing a fake moustache."**
@@ -88,7 +89,7 @@ When porting a React library or addon (such as Radix UI, Formik, or React Beauti
 11. **Validate SSR Safety**:
     Check that the component can be imported and executed in a Node.js SSR context without throwing `window is not defined`. Guard browser-only logic with `inClient()` (never `inBrowser`).
 12. **Add Tests & Verify in Monorepo**:
-    Write unit tests verifying both initial rendering and reactive updates. Run tests with the exact workspace filter command.
+    Write unit tests verifying initial rendering, reactive updates, and lifecycle cleanup. Focus strictly on observable behavioral contracts (DOM attributes, text, events). **Do NOT write tests asserting whether components re-render or tracking render counts**; components always render only once. Run tests with the exact workspace filter command.
 
 ---
 
@@ -98,6 +99,7 @@ Before finalizing any ported component or feature, verify each check:
 
 - [ ] **No Hook Recreations**: Did you avoid writing helper functions that mimic React hooks (`useToggle`, `usePrevious`, `useEffectOnce`)?
 - [ ] **No Stale Re-Render Assumptions**: Are props read inside reactive closures (`.as()`, `mergeValues()`, event listeners) rather than assuming the component factory re-runs with new props?
+- [ ] **No Render-Count or Re-Render Tests**: Did you avoid testing for component re-renders or asserting `renderCount`? (Seidr components always execute only once; testing for re-renders is a React mental model trap).
 - [ ] **No Context Soup or Singleton Leaks**: Did you avoid putting per-instance compound state into app-level singletons or `getAppState()`?
 - [ ] **No Unused Imports**: Did you remove React-specific types (`ReactNode`, `FC`, `SyntheticEvent`)?
 - [ ] **Clean DOM Binding**: Are reactive values passed directly into element props (`$button({ disabled: isDisabled })`) rather than manually toggling DOM attributes with imperative queries?

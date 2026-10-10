@@ -37,6 +37,7 @@ export const Counter = createComponent(() => {
 1. **No Stale Closures**: Handler functions always close over persistent variable references. You will never need `useCallback` or dependency arrays.
 2. **No Re-render Overhead**: Updating state modifies only the specific DOM attribute or text node subscribed to that `Value`. The surrounding component is never re-run.
 3. **Props Are Captured at Construction**: If you pass a plain value (e.g. `title: "Hello"`), reading `props.title` inside the factory only reads the value passed at construction time. If a prop can change over time, it must be reactive (see Section 3).
+4. **Never Test for Re-renders**: In React, tests frequently assert whether a component does or does not re-render (e.g., tracking `renderCount` to verify memoization). In Seidr, this is completely unnecessary: the component factory is architecturally guaranteed to run only once. Testing render counts or asserting "without component re-render" is a category error and a sign of React mental model contamination.
 
 ---
 

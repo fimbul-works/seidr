@@ -8,7 +8,7 @@ This guide defines the architectural standards for creating accessible, unstyled
 
 Radix UI primitives are defined by their **behavioral contract**, not their React component tree.
 - **Contract to Preserve**: WAI-ARIA compliance, keyboard navigation (Escape, Enter, Space, Arrow roving), focus management, click-outside detection, and controlled/uncontrolled state support.
-- **Structure to Discard**: React Context providers, `forwardRef`, `cloneElement`, custom hook dependency arrays, and synthetic events.
+- **Structure to Discard**: React Context providers, `forwardRef`, `cloneElement`, custom hook dependency arrays, synthetic events, and render-count/re-render test assertions (Seidr components always execute once; never test for re-renders).
 
 ---
 

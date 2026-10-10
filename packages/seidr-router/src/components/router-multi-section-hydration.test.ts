@@ -4,7 +4,6 @@ import {
   hydrate,
   inClient,
   List,
-  onMounted,
   onUnmounted,
   useRef,
   type Value,
@@ -56,10 +55,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
     const canvasRef = useRef<HTMLCanvasElement>();
 
     inClient(() => {
-      onMounted(() => {
-        // Canvas initialized
-        canvas = canvasRef();
-      });
+      canvasRef.bind((v) => (canvas = v));
       onUnmounted(() => {});
     });
 

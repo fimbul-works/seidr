@@ -364,3 +364,18 @@ export const unlockSecretChamber = () => {
 export const App = () => Router(routes);
 ```
 
+---
+
+### 8. Testing Patterns: Translating React Tests to Seidr Tests
+
+When porting component tests from React (e.g. `@testing-library/react` tests in Radix UI):
+
+| React Testing Pattern | Seidr Equivalent | Key Difference |
+| :--- | :--- | :--- |
+| `expect(renderCount).toBe(1)` / checking re-render counts | **DISCARD COMPLETELY** | **Never test for re-renders.** Seidr component bodies execute *once* by architectural definition. Testing whether a component re-rendered is a React-specific mental model artifact. |
+| `rerender(<Comp value={newVal} />)` | `value(newVal)` or `ref(newEl)` | Values are callable getter-setters. Update observables directly rather than simulating a VDOM tree re-render. |
+| `render(<Harness />)` | `mount(Comp, container)` or direct hook testing | Seidr uses standard DOM elements. Inspect nodes directly with JSDOM queries (`container.querySelector(...)`). |
+| `act(() => ...)` | Standard synchronous calls or `vi.waitFor(...)` | Fine-grained updates are synchronous; async operations (e.g., `requestAnimationFrame`) use standard timers or `vi.waitFor`. |
+| Context wrappers (`<Provider>`) | Pass options/props directly or coordinator factory | No Context trees needed. Components receive observables directly. |
+
+
