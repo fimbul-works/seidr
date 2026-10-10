@@ -1,3 +1,4 @@
+import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
 import type { Ref } from "../hooks/use-ref.js";
 import type { Value } from "../observable/value.js";
@@ -8,10 +9,10 @@ import type { Value } from "../observable/value.js";
  * Only scalar types (string, number, boolean) can be reactively bound to
  * DOM element properties. Complex objects and arrays require manual binding.
  */
-type Scalar = string | number | boolean;
+export type Scalar = string | number | boolean;
 
 /**
- * Advanced TypeScript utility to check if two types are exactly equal.
+ * TypeScript utility to check if two types are exactly equal.
  *
  * Used internally to distinguish between readonly and writable properties
  * on HTML elements for reactive binding purposes.
@@ -21,7 +22,8 @@ type Scalar = string | number | boolean;
  * @template A - Type to return if equal (defaults to X)
  * @template B - Type to return if not equal (defaults to never)
  */
-type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+export type IfEquals<X, Y, A = X, B = never> =
+  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
 
 /**
  * Extracts only the writable (non-readonly) keys from a type.
@@ -42,20 +44,13 @@ export type WritableKeys<T> = {
  * @template S - The string to check
  * @returns true if the string is in camelCase, false otherwise
  */
-type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
+export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
   ? false
   : S extends `${infer First}${string}`
     ? First extends Lowercase<First>
       ? true
       : false
     : false;
-
-/**
- * Removes the `style` property from a type.
- *
- * @template T - The type to remove the `style` property from
- */
-type NoStyle<T> = Omit<T, "style">;
 
 /**
  * Union type representing either a scalar value or a reactive Value observable.
@@ -86,7 +81,7 @@ export type ReactiveProps<
   K extends keyof HTMLElementTagNameMap,
   T extends HTMLElementTagNameMap[K] = HTMLElementTagNameMap[K],
 > = {
-  [K in WritableKeys<NoStyle<T>>]?: ReactiveValue<T[K]>;
+  [K in WritableKeys<Omit<T, "style">>]?: ReactiveValue<T[K]>;
 };
 
 /**
@@ -110,8 +105,8 @@ export type ReactiveARIAKebabCase = {
 /**
  * Type definition for reactive CSS style properties.
  */
-export type ReactiveCSSStyleDeclaration = Partial<{
-  [K in keyof CSSStyleDeclaration]-?: ReactiveValue<CSSStyleDeclaration[K]>;
+export type ReactiveStyleDeclaration = Partial<{
+  [K in keyof CSS.Properties<string | number>]-?: ReactiveValue<CSS.Properties<string | number>[K]>;
 }>;
 
 /**
@@ -141,13 +136,16 @@ export type SeidrElementProps<K extends keyof HTMLElementTagNameMap = keyof HTML
     ReactiveARIAKebabCase &
     ReactiveDataKebabCase &
     ReactiveDataCamelCase
-> & { style?: ReactiveCSSStyleDeclaration | string | Value<string>; ref?: Ref<HTMLElementTagNameMap[K]> };
+> & { style?: ReactiveStyleDeclaration | ReactiveValue<string>; ref?: Ref<HTMLElementTagNameMap[K]> };
 
 /**
  * Union type representing allowed nodes for Seidr elements.
  */
 export type SeidrNode = SeidrComponent | Element | Text | Comment;
 
+/**
+ * Union type representing allowed child nodes for Seidr Components.
+ */
 export type SeidrChild =
   | SeidrNode
   | Value<any>

@@ -1,6 +1,6 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants.js";
 import { isComment } from "../../dom/type-guards.js";
-import type { ReactiveCSSStyleDeclaration } from "../../element/types.js";
+import type { ReactiveStyleDeclaration } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
 import { isFn, isObj, isStr } from "../../util/type-guards.js";
@@ -135,7 +135,7 @@ export class SSRElement<
     return this._styleProxy;
   }
 
-  set style(val: string | ReactiveCSSStyleDeclaration) {
+  set style(val: string | ReactiveStyleDeclaration) {
     if (isStr(val)) {
       this._styleProxy.cssText = val;
     } else if (isObj(val)) {

@@ -22,7 +22,7 @@ const parentsStack: Set<Value>[] = [];
  * @param {T} prevValue - Previous data value
  * @returns {CleanupFunction | unknown} - Optional cleanup function or any value (which is ignored)
  */
-export type ValueChangeHandler<T> = (value: T, prevValue?: T) => CleanupFunction | unknown;
+export type ValueChangeHandler<T> = (value: T, prevValue: T) => CleanupFunction | unknown;
 
 /**
  * Value interface, implementing a getter-setter pattern.
@@ -212,7 +212,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
 
   let currentValue = initialValue as T;
 
-  const runHandler = (listener: ValueChangeHandler<T>, value: T, prevValue?: T) => {
+  const runHandler = (listener: ValueChangeHandler<T>, value: T, prevValue: T) => {
     const cleanup = handlerCleanups.get(listener);
     if (isFn(cleanup)) {
       handlerCleanups.delete(listener);

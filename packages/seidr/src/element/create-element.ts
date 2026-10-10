@@ -119,6 +119,5 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     return decorateElement(element);
   }
 
-  // Client side
   return decorateElement(getDocument().createElement(tagName));
 }
