@@ -8,42 +8,42 @@ import { isServer } from "../util/environment/is-server.js";
 import { isArray, isNullish, isObj, isStr } from "../util/type-guards.js";
 import { assignProps } from "./assign-props.js";
 import { isValidSeidrChild } from "./type-guards.js";
-import type { SeidrChild, SeidrElementProps } from "./types.js";
+import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
  * Creates an HTML element with automatic reactive binding capabilities.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {SeidrChild | SeidrChild[]} [children] - Child elements when omitting props
- * @returns {HTMLElementTagNameMap[K]} A Seidr-enhanced HTML element
+ * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
-export function $<K extends keyof HTMLElementTagNameMap>(
+export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
   children?: SeidrChild | SeidrChild[],
-): HTMLElementTagNameMap[K];
+): SeidrElementTagNameMap[K];
 /**
  * Creates an HTML element with automatic reactive binding capabilities.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
+ * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {SeidrElementProps<K> | null} [props] - Element properties supporting reactive bindings
  * @param {SeidrChild | SeidrChild[]} [children] - Child elements
- * @returns {HTMLElementTagNameMap[K]} A Seidr-enhanced HTML element
+ * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
-export function $<K extends keyof HTMLElementTagNameMap>(
+export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
   props?: SeidrElementProps<K> | null,
   children?: SeidrChild | SeidrChild[],
-): HTMLElementTagNameMap[K];
+): SeidrElementTagNameMap[K];
 
-export function $<K extends keyof HTMLElementTagNameMap>(
+export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
   propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
-): HTMLElementTagNameMap[K] {
+): SeidrElementTagNameMap[K] {
   let props: SeidrElementProps<K> | null | undefined;
   let resolvedChildren: SeidrChild | SeidrChild[] | undefined;
 
@@ -60,11 +60,8 @@ export function $<K extends keyof HTMLElementTagNameMap>(
 
   /**
    * Apply properties and children to an element.
-   *
-   * @param {HTMLElementTagNameMap[K]} el - The element to decorate
-   * @returns {HTMLElementTagNameMap[K]} The decorated element
    */
-  const decorateElement = (el: HTMLElementTagNameMap[K]): HTMLElementTagNameMap[K] => {
+  const decorateElement = (el: SeidrElementTagNameMap[K]): SeidrElementTagNameMap[K] => {
     if (isServer()) {
       const scope = getComponentScope();
       scope?.trackChild?.(el);
@@ -92,24 +89,24 @@ export function $<K extends keyof HTMLElementTagNameMap>(
 
   // Core bundle and SSR create elements directly
   if (process.env.SEIDR_DISABLE_SSR || isServer()) {
-    return decorateElement(getDocument().createElement(tagName));
+    return decorateElement(getDocument().createElement(tagName) as SeidrElementTagNameMap[K]);
   }
 
   // Hydration
-  let element: HTMLElementTagNameMap[K];
+  let element: SeidrElementTagNameMap[K];
 
   const hydrationContext = getHydrationContext();
   if (isHydrating() && hydrationContext) {
     if (hydrationContext.isMismatched()) {
       console.warn(`[Hydration] Mismatched element found: ${tagName}`);
-      element = getDocument().createElement(tagName);
+      element = getDocument().createElement(tagName) as SeidrElementTagNameMap[K];
     } else {
-      element = hydrationContext.claim(tagName) as HTMLElementTagNameMap[K];
+      element = hydrationContext.claim<SeidrElementTagNameMap[K]>(tagName);
     }
 
-    if (!element || (element as HydrationMismatchNode).isHydrationMismatch) {
+    if (!element || (element as unknown as HydrationMismatchNode).isHydrationMismatch) {
       const oldNode = element;
-      element = getDocument().createElement(tagName);
+      element = getDocument().createElement(tagName) as SeidrElementTagNameMap[K];
       if (oldNode?.parentNode) {
         console.warn(`[Hydration] Replacing mismatched element ${oldNode.nodeName} with ${element.tagName}.`);
         oldNode.parentNode.replaceChild(element, oldNode);
@@ -119,5 +116,5 @@ export function $<K extends keyof HTMLElementTagNameMap>(
     return decorateElement(element);
   }
 
-  return decorateElement(getDocument().createElement(tagName));
+  return decorateElement(getDocument().createElement(tagName) as SeidrElementTagNameMap[K]);
 }

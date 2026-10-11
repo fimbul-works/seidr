@@ -1,6 +1,6 @@
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants.js";
 import { isComment } from "../../dom/type-guards.js";
-import type { ReactiveStyleDeclaration } from "../../element/types.js";
+import type { ReactiveStyleDeclaration, SeidrElementTagNameMap } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
 import { isFn, isObj, isStr } from "../../util/type-guards.js";
@@ -13,7 +13,7 @@ import { SSRTextNode } from "./ssr-text-node.js";
 const INTERNAL_ATTRIBUTES = new Set(["innerHTML", "outerHTML", "textContent", "classList", "style", "dataset"]);
 
 export class SSRElement<
-  K extends keyof HTMLElementTagNameMap | string = keyof HTMLElementTagNameMap | string,
+  K extends keyof SeidrElementTagNameMap | string = keyof SeidrElementTagNameMap | string,
 > extends SSRParentNode<NodeTypeElement, SSRDocument> {
   readonly nodeType = TYPE_ELEMENT;
   public readonly tagName: K;

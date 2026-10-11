@@ -1,4 +1,5 @@
 import { TYPE_DOCUMENT } from "../../constants.js";
+import type { SeidrElementTagNameMap } from "../../element/types.js";
 import type { NodeTypeDocument } from "../../types.js";
 import { SSRComment } from "./ssr-comment.js";
 import { SSRElement } from "./ssr-element.js";
@@ -58,12 +59,12 @@ export class SSRDocument extends SSRParentNode<NodeTypeDocument, null> implement
     return new SSRComment(data, this).mockComment;
   }
 
-  createElement<K extends keyof HTMLElementTagNameMap | string>(
+  createElement<K extends keyof SeidrElementTagNameMap | string>(
     tagName: K,
-  ): K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : HTMLElement {
-    return new SSRElement(tagName, this).mockElement as unknown as K extends keyof HTMLElementTagNameMap
-      ? HTMLElementTagNameMap[K]
-      : HTMLElement;
+  ): K extends keyof SeidrElementTagNameMap ? SeidrElementTagNameMap[K] : Element {
+    return new SSRElement(tagName, this).mockElement as unknown as K extends keyof SeidrElementTagNameMap
+      ? SeidrElementTagNameMap[K]
+      : Element;
   }
 
   getElementById(id: string): HTMLElement | null {

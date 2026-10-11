@@ -6,20 +6,20 @@ import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
 import { isNullish, isObj, isStr } from "../util/type-guards.js";
-import type { PropName, SeidrElementProps } from "./types.js";
+import type { PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
  * Assigns a property to an element, handling reactive Value bindings.
  *
- * @template {keyof HTMLElementTagNameMap} K - The HTML tag name from HTMLElementTagNameMap
- * @template {string & PropName<K> & keyof E} P - The property name
- * @param {E} el - The HTMLElement to assign properties to
- * @param {P} prop - The property name to assign
- * @param {E[P]} value - The property value (scalar or Seidr)
- * @throws {SeidrError} if `prop` is a `ref` but the `value` is not a Seidr instance
+ * @template {keyof SeidrElementTagNameMap} K - Element tag name type
+ * @template {string & PropName<K> & keyof E} P - Property name type
+ * @param {E} el - Element to assign properties to
+ * @param {P} prop - Property name to assign
+ * @param {E[P]} value - Property value (scalar or Seidr)
+ * @throws {SeidrError} if `prop` is a `ref` but the `value` is not a valid Ref instance
  */
-export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends SeidrElementProps<K> & string>(
-  el: HTMLElementTagNameMap[K],
+export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends SeidrElementProps<K> & string>(
+  el: SeidrElementTagNameMap[K],
   prop: P | string,
   value: any,
 ): void => {
@@ -81,7 +81,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
 
   const isBoolProp = BOOL_ATTRIBUTES.has(prop.toLowerCase());
 
-  const applyValue = (target: HTMLElementTagNameMap[K], val: any) => {
+  const applyValue = (target: SeidrElementTagNameMap[K], val: any) => {
     if (useAttribute || !(effectiveProp in target) || isBoolProp) {
       isNullish(val) || (isBoolProp && !val)
         ? target.removeAttribute(effectiveProp)
@@ -89,7 +89,7 @@ export const assignProp = <K extends keyof HTMLElementTagNameMap, P extends Seid
     }
 
     if (!(useAttribute || !(effectiveProp in target))) {
-      target[effectiveProp as keyof HTMLElementTagNameMap[K]] = val;
+      target[effectiveProp as keyof SeidrElementTagNameMap[K]] = val;
     }
   };
 

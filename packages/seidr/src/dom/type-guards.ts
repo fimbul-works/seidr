@@ -1,4 +1,5 @@
 import { TYPE_COMMENT_NODE, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../constants.js";
+import type { SeidrElementTagNameMap } from "../element/types.js";
 import { isObj } from "../util/type-guards.js";
 
 /**
@@ -24,9 +25,9 @@ export const isDOMNode = (v: any): v is Node => isObj<Node>(v) && "nodeType" in 
  * @param {any} v - Value to check
  * @returns {v is HTMLElement} `true` if the value is an HTMLElement or its server-side equivalent, `false` otherwise
  */
-export const isHTMLElement = <K extends keyof HTMLElementTagNameMap | string>(
+export const isHTMLElement = <K extends keyof SeidrElementTagNameMap | string>(
   v: any,
-): v is K extends keyof HTMLElementTagNameMap ? HTMLElementTagNameMap[K] : HTMLElement =>
+): v is K extends keyof SeidrElementTagNameMap ? SeidrElementTagNameMap[K] : HTMLElement =>
   isDOMNode(v) && v.nodeType === TYPE_ELEMENT;
 
 /**
