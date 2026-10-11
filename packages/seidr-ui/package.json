@@ -48,6 +48,6 @@
     "@repo/biome-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@repo/vitest-config": "workspace:*",
-    "vitest-axe": "^0.1.0"
+    "vitest-axe": "^1.0.0-pre.5"
   }
 }

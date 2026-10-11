@@ -11,3 +11,6 @@ bundle-sizes/
 examples/ssr/data/
 coverage/
 public/particles.js
+
+# Temporary
+packages/seidr-ui/radix-ui-primitives/

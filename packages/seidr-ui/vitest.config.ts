@@ -5,7 +5,8 @@ export default mergeConfig(
   seidrConfig,
   defineConfig({
     test: {
-      setupFiles: ["../seidr/src/test-setup/setup.ts"],
+      setupFiles: ["../seidr/src/test-setup/setup.ts", "./src/test-setup/index.ts"],
+      exclude: ["./radix-ui-primitives/**/*.*"],
     },
   }),
 );

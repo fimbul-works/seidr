@@ -1,4 +1,4 @@
-import type { ReactiveValue } from "@fimbul-works/seidr";
+import { assignProps, type ReactiveValue } from "@fimbul-works/seidr";
 import { VisuallyHidden } from "./visually-hidden.js";
 
 /**
@@ -12,12 +12,9 @@ import { VisuallyHidden } from "./visually-hidden.js";
  * MIT License, Copyright (c) WorkOS
  */
 export function AccessibleIcon(icon: SVGElement, label: ReactiveValue<string>): [SVGElement, HTMLSpanElement] {
-  return [
-    Object.assign(icon, {
-      // accessibility
-      "aria-hidden": "true",
-      focusable: "false", // See: https://allyjs.io/tutorials/focusing-in-svg.html#making-svg-elements-focusable
-    }),
-    VisuallyHidden(label),
-  ];
+  assignProps<"svg">(icon as any, {
+    ariaHidden: "true",
+    focusable: "false",
+  });
+  return [icon, VisuallyHidden(label)];
 }
