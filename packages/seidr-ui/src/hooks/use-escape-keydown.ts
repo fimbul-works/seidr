@@ -46,8 +46,7 @@ export function useEscapeKeydown(
 
   if (
     !isNullish(unwrapValue(ownerDocument)) &&
-    !isFn(unwrapValue(ownerDocument)?.addEventListener) &&
-    !isFn(unwrapValue(ownerDocument)?.removeEventListener)
+    (!isFn(unwrapValue(ownerDocument)?.addEventListener) || !isFn(unwrapValue(ownerDocument)?.removeEventListener))
   ) {
     throw new SeidrError("Invalid ownerDocument");
   }
