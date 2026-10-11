@@ -12,6 +12,23 @@ import { SSRTextNode } from "./ssr-text-node.js";
 
 const INTERNAL_ATTRIBUTES = new Set(["innerHTML", "outerHTML", "textContent", "classList", "style", "dataset"]);
 
+export const SELF_CLOSING = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+]);
+
 export class SSRElement<
   K extends keyof SeidrElementTagNameMap | string = keyof SeidrElementTagNameMap | string,
 > extends SSRParentNode<NodeTypeElement, SSRDocument> {
@@ -255,24 +272,7 @@ export class SSRElement<
 
     const attrStr = attrs ? ` ${attrs}` : "";
 
-    const selfClosing = [
-      "area",
-      "base",
-      "br",
-      "col",
-      "embed",
-      "hr",
-      "img",
-      "input",
-      "link",
-      "meta",
-      "param",
-      "source",
-      "track",
-      "wbr",
-    ];
-
-    if (selfClosing.includes(this.lowerTagName)) {
+    if (SELF_CLOSING.has(this.lowerTagName)) {
       return `<${this.lowerTagName}${attrStr} />`;
     }
 

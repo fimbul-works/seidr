@@ -1,3 +1,4 @@
+export * from "./html-parser.js";
 export * from "./ssr-character-data.js";
 export * from "./ssr-child-node.js";
 export * from "./ssr-comment.js";

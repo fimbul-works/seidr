@@ -67,7 +67,8 @@
   },
   "dependencies": {
     "@fimbul-works/futhark": "^1.1.0",
-    "@fimbul-works/hash": "^1.2.1"
+    "@fimbul-works/hash": "^1.2.1",
+    "htmlparser2": "^12.0.0"
   },
   "devDependencies": {
     "@fimbul-works/seidr-build-tools": "workspace:*",
