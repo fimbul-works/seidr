@@ -37,10 +37,10 @@ Seidr runs isomorphically with deterministic SSR hydration.
 | :--- | :--- | :--- |
 | `useState(init)` | `createValue(init)` | Decorated callable getter-setter: `val()` to read, `val(x)` or `val((prev) => x)` to update. Values are functions, NOT objects! Does not re-run component. |
 | `useMemo(() => x, [deps])` | `val.as(fn)` or `mergeValues(fn)` | Fine-grained derived computation updating subscribers only on value changes. |
-| `useEffect(fn, [deps])` | `val.watch(fn)` or `val.bind(fn)` | `.watch()` runs on change; `.bind()` runs immediately + on change. Both return an **unsubscribe handle** to pass to `onUnmounted(unwatch)`. Handlers can also return a **per-update teardown function** run before the next invocation. |
+| `useEffect(fn, [deps])` | `useEffect(fn, [val1, val2])`, or `val.watch(fn)` / `val.bind(fn)` | `useEffect()` runs on client mount and re-runs on observable changes. Both `.watch()` and `.bind()` return unsubscribe handles and support per-update teardowns. |
 | `useCallback(fn, [deps])` | Plain function `const fn = () => ...` | Component body runs once; callbacks never need caching to retain identity. |
-| `useRef(init)` | `useRef<T>()` | Decorated `Value<T \| null>` with `hydrate: false`. Assigned via `{ ref: myRef }`, inspected in `onMounted`. |
-| `useContext(Ctx)` | Coordinator factory closure, or `getAppState()` (app-wide only) | **Per-instance compound components (Dialog, Tabs, Accordion) MUST use coordinator factory closures or instance props.** Global singletons/`getAppState()` are ONLY for app-wide state (theme, auth); never put per-instance state in singletons! |
+| `useRef(init)` | `useRef<T>()`, `composeRefs(...refs)` | Decorated `Value<T \| null>` with `hydrate: false`. Assigned via `{ ref: myRef }`. Compose multiple with `composeRefs()`. |
+| `useContext(Ctx)` | Coordinator factory closure, or `getAppState()` / `AppData` | **Local compound components use coordinator factory closures.** Shared or SSR-hydrated multi-instance state uses `AppData` (`appState.getData<Map<id, State>>(KEY)`). |
 | Component Lifecycles | `onMounted(cb)` / `onUnmounted(cb)` | Node or component-level attachment hooks with automatic cleanup. |
 | `{cond ? <A /> : <B />}` | `Show(condVal, () => A(), () => B())` | Reactive conditional branch returning a reactive `Value<SeidrChild>`. |
 | `{items.map(item => ...)}` | `List(itemsVal, keyFn, itemFactory)` | Keyed reconciliation; `itemFactory` receives `itemVal: Value<T>` for in-place item updates. |

@@ -121,29 +121,149 @@ Always bind reactive states directly to ARIA properties:
 
 ---
 
-## 5. Cross-Tree State (Global Services Only)
+## 5. Cross-Tree & Multi-Instance State (`AppData`)
 
-When true global services or top-level managers need to communicate across separate subtrees (e.g., a global toast alert queue or global modal manager), use `getAppState()`:
+When components need to store state that crosses SSR/hydration boundaries or communicates across subtrees:
+- **Global Services**: Store a single `Value` or registry in `getAppState()` (e.g. global toasts).
+- **Multi-Instance Compound Components**: When compound components require state in `AppData`, store a `Map<string, InstanceState>` keyed by an instance ID (following the `seidr-random` pattern):
 
 ```typescript
 import { getAppState } from '@fimbul-works/seidr';
 
-const TOAST_KEY = 'seidr-ui.toasts';
+const TABS_KEY = 'seidr-ui.tabs';
 const appState = getAppState();
 
-if (!appState.hasData(TOAST_KEY)) {
-  appState.setData(TOAST_KEY, createValue([]));
+// Retrieve or initialize the instance map
+let tabsRegistry = appState.getData<Map<string, TabsState>>(TABS_KEY);
+if (!tabsRegistry) {
+  tabsRegistry = new Map<string, TabsState>();
+  appState.setData(TABS_KEY, tabsRegistry);
 }
-const toastRegistry = appState.getData<Value<ToastItem[]>>(TOAST_KEY);
+
+// Key by unique instance ID
+tabsRegistry.set(instanceId, instanceState);
 ```
 
-> [!CAUTION]
-> **Per-Instance State Rule**:
-> NEVER use `getAppState()` or `createValue({ id })` for individual compound components (accordions, tabs, dialogs). Doing so causes instance state collisions if more than one instance exists on a page. Per-instance state belongs strictly inside coordinator factory closures.
+For purely local compound instances that do not require SSR hydration serialization, a local **Coordinator Factory closure** remains the most lightweight approach.
 
 ---
 
-## 6. Radix DOM Utilities & Known Gaps
+## 6. Concrete Porting Examples: Radix to Seidr
+
+Instead of copying React hooks 1-to-1, implement the observable behavioral contract using Seidr's fine-grained reactive primitives:
+
+### Element Dimension Observation (`useSize`)
+Ports `@radix-ui/react-use-size`:
+- Integrates `ResizeObserver` inside `ref.bind` callback.
+- Debounces via `requestAnimationFrame`.
+- Cleans up observer when element changes or unmounts by returning a teardown function from `bind`.
+
+```typescript
+export function useSize<T extends HTMLElement>(ref: Ref<T>): Value<Size | null> {
+  const size = createValue<Size | null>(null, {
+    isEqual: (a, b) => (a && b ? a.width === b.width && a.height === b.height : a === b),
+    hydrate: false,
+  });
+
+  inClient(() => {
+    ref.bind((element) => {
+      if (!element) {
+        size(null);
+        return;
+      }
+      size({ width: element.offsetWidth, height: element.offsetHeight });
+
+      let rAF = 0;
+      const observer = new ResizeObserver(([entry]) => {
+        if (!entry) return;
+        window.cancelAnimationFrame(rAF);
+        rAF = window.requestAnimationFrame(() => {
+          size({ width: element.offsetWidth, height: element.offsetHeight });
+        });
+      });
+
+      observer.observe(element, { box: 'border-box' });
+      return () => {
+        window.cancelAnimationFrame(rAF);
+        observer.disconnect();
+      };
+    });
+  });
+
+  return size.as((s) => s);
+}
+```
+
+### Previous Value Tracking (`usePrevious`)
+Ports `@radix-ui/react-use-previous`:
+- Subscribes to changes via `value.watch((newValue, prevValue) => previous(prevValue))`.
+- Automatically tears down the watcher when unmounted.
+
+```typescript
+export function usePrevious<T>(value: Value<T>): Value<T> {
+  const previous = createValue<T>(value());
+  const unwatch = value.watch((_newValue, prevValue) => previous(prevValue));
+  try {
+    onUnmounted(unwatch);
+  } catch {
+    // Outside component hierarchy fallback
+  }
+  return previous.as((v) => v);
+}
+```
+
+### General-Purpose Reactive Effects (`useEffect`)
+Maps React's `useEffect` to Seidr's client lifecycle and derived Values:
+- Runs in `inClient` after DOM mounting via `onMounted`.
+- Maps explicit observable dependencies `(Value | Ref)[]` into a derived `Value` to automatically trigger updates.
+- Chains per-update cleanups and unmount teardowns.
+
+```typescript
+export function useEffect(effect: () => CleanupFunction | void, deps: (Value<any> | Ref<any>)[]): void {
+  const component = getComponentScope();
+  let unbind: CleanupFunction | undefined;
+  let derived: Value<any[]> | undefined;
+
+  component?.onUnmounted(() => {
+    unbind?.();
+    derived?.destroy();
+  });
+
+  component?.onMounted(() => {
+    inClient(() => {
+      if (deps.length === 0) {
+        unbind = effect() ?? undefined;
+        return;
+      }
+      derived = mergeValues(() => deps.map((d) => d()), { hydrate: false });
+      unbind = derived.bind(() => effect());
+    });
+  });
+}
+```
+
+### Composing Multiple Refs (`composeRefs`)
+Maps React's ref combiner to a composite `Ref<T>`:
+- Returns a new `Ref<T>` that fans out sets to all underlying refs.
+
+```typescript
+export function composeRefs<T = any>(...refs: (Ref<T> | null | undefined)[]): Ref<T> {
+  const validRefs = refs.filter(isRef);
+  const composite = useRef<T>();
+  composite.watch((element) => {
+    validRefs.forEach((r) => r(element));
+  });
+  return composite;
+}
+```
+
+### Leaf Accessible Elements (`VisuallyHidden` & `AccessibleIcon`)
+- `VisuallyHidden`: Directly wraps an HTML `<span>` with clip-path styles using `$` from `@fimbul-works/seidr`.
+- `AccessibleIcon`: Applies `aria-hidden: "true"` to an SVG element using `assignProps` and appends a visually hidden label.
+
+---
+
+## 7. Radix DOM Utilities & Known Gaps
 
 ### DOM Helpers:
 When porting Radix DOM utilities:
