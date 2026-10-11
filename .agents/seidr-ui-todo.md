@@ -15,8 +15,8 @@ All 59 packages from Radix UI are analyzed below and partitioned into sequential
 | Category | Count | Status / Notes |
 | :--- | :---: | :--- |
 | **Total Analyzed Packages** | **59** | Complete Radix UI React primitives suite |
-| **Already Implemented (in `seidr` core & `seidr-ui`)** | **9** | `accessible-icon`, `visually-hidden`, `use-previous`, `use-rect`, `use-size`, `compose-refs`, `use-layout-effect` (`useEffect`), `use-escape-keydown`, `direction` |
-| **Phase 1: Pure Foundational (No Slot, No Primitive, No Portal)** | **15** | **8 remaining** (7 already implemented: `use-layout-effect`, `use-previous`, `use-rect`, `use-size`, `compose-refs`, `use-escape-keydown`, `direction`) |
+| **Already Implemented (in `seidr` core & `seidr-ui`)** | **10** | `accessible-icon`, `visually-hidden`, `use-previous`, `use-rect`, `use-size`, `compose-refs`, `use-layout-effect` (`useEffect`), `use-escape-keydown`, `direction`, `focus-guards` |
+| **Phase 1: Pure Foundational (No Slot, No Primitive, No Portal)** | **15** | **7 remaining** (8 already implemented: `use-layout-effect`, `use-previous`, `use-rect`, `use-size`, `compose-refs`, `use-escape-keydown`, `direction`, `focus-guards`) |
 | **Phase 2: Requires Primitive / Slot (No Portal)** | **29** | **27 remaining** (2 already implemented in `seidr-ui`: `visually-hidden`, `accessible-icon`) |
 | **Phase 3: Blocked by Portal Primitives** | **14** | Overlays requiring `document.body` detachment (Dialog, Popover, Menu, Select, Toast, etc.) |
 | **Phase 4: Umbrella Barrel Package** | **1** | `radix-ui` (re-exports all primitives) |
@@ -77,8 +77,7 @@ These packages have zero dependency on `primitive`, `slot`, or `portal`:
 
 - [x] direction
   - Description: Provides and detects text reading direction (LTR vs RTL) for bidirectional layout adaptation.
-  - Complexity: Low (~48 LOC). Implemented in packages/seidr-ui/src/direction.ts and packages/seidr-ui/src/hooks/use-direction.ts using a global singleton Value (`{ id: "direction" }`), stack-based scoped DirectionProvider restoration, reactive localDir overrides, and full unit tests.
-
+  - Complexity: Low (~48 LOC). Implemented in packages/seidr-ui/src/hooks/use-direction.ts.
 - [x] use-size
   - Description: Tracks element width and height dimensions using ResizeObserver with reactive value updates.
   - Complexity: Low (~80 LOC). Implemented in packages/seidr-ui/src/hooks/use-size.ts using ResizeObserver and Value observables.
@@ -89,9 +88,9 @@ These packages have zero dependency on `primitive`, `slot`, or `portal`:
   - Description: Composes multiple ref objects or callback functions into a single unified ref callback.
   - Complexity: Low (~63 LOC). Implemented in Seidr core (packages/seidr/src/hooks/compose-refs.ts). Returns a composite Ref that synchronizes value changes across all underlying refs.
 
-- [ ] focus-guards
+- [x] focus-guards
   - Description: Inserts hidden boundary sentinel DOM elements with tabindex=0 to constrain focus within active modals/dialogs.
-  - Complexity: Low (~86 LOC). Inserts hidden boundary sentinel DOM elements with tabindex=0 before and after modals to trap focus.
+  - Complexity: Low (~86 LOC). Implemented in packages/seidr-ui/src/hooks/use-focus-guards.ts using shared AppState reference counting, DOM edge assertion, and onMounted/onUnmounted lifecycle hooks.
 
 - [ ] presence
   - Description: Manages mounting and unmounting of DOM nodes while synchronizing enter/exit CSS animations and transitions.
