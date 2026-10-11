@@ -101,6 +101,7 @@ Before finalizing any ported component or feature, verify each check:
 - [ ] **No Stale Re-Render Assumptions**: Are props read inside reactive closures (`.as()`, `mergeValues()`, event listeners) rather than assuming the component factory re-runs with new props?
 - [ ] **No Render-Count or Re-Render Tests**: Did you avoid testing for component re-renders or asserting `renderCount`? (Seidr components always execute only once; testing for re-renders is a React mental model trap).
 - [ ] **No Context Soup or Singleton Leaks**: Did you avoid putting per-instance compound state into app-level singletons or `getAppState()`?
+- [ ] **No Fake Context Providers**: Did you avoid recreating `<Provider>` components for global/cascading state? Use direct component-level setup hooks (e.g. `setGlobalDirection()`) with stack management and `onUnmounted` cleanup instead.
 - [ ] **No Unused Imports**: Did you remove React-specific types (`ReactNode`, `FC`, `SyntheticEvent`)?
 - [ ] **Clean DOM Binding**: Are reactive values passed directly into element props (`$button({ disabled: isDisabled })`) rather than manually toggling DOM attributes with imperative queries?
 - [ ] **Accessible & Headless**: Are keyboard controls, `aria-*` attributes, and `role` attributes preserved?

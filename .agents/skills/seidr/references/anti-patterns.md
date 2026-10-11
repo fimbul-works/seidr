@@ -175,6 +175,45 @@ export const createDialog = (options = {}) => {
 ```
 This is pure, simple, and has zero Context overhead!
 
+### ❌ Anti-Pattern: Recreating Context `<Provider>` Components ("Context Debacle")
+In React, global or subtree cascading values (e.g. `DirectionContext`, `ThemeContext`) wrap elements with `<DirectionProvider dir="rtl">{children}</DirectionProvider>`.
+When porting to Seidr, models often invent or recreate fake `<DirectionProvider>` components that take `props.children`, attempting to emulate React VDOM tree scoping. This leads to massive boilerplate: tracking entries with IDs, overloaded function signatures (`props` vs `children` vs child callbacks), and turning 30 lines of code into 230+ lines of bloated bundle weight!
+
+**Seidr has NO VDOM and NO Context tree.** Do NOT invent fake `<Provider>` wrapper components.
+
+### ✅ Idiomatic Seidr: Component-Level Hooks with Stack-Backed Globals
+Instead of an artificial provider wrapper component:
+1. Provide a direct hook or setter (e.g. `setGlobalDirection(dir)`) that components invoke during their single-pass setup.
+2. If subtree or stack scoping is needed, the hook pushes to an `AppState` stack and automatically registers an `onUnmounted` teardown callback to pop itself.
+3. Consumers use a direct hook (e.g. `useDirection(localDir)`) returning a reactive `Value`.
+4. Keep the implementation minimal, functional, and small by utilizing Seidr utilities like `unwrapValue()`.
+
+```typescript
+// GOOD: Minimal, functional hook without any <Provider> component wrapper
+export function setGlobalDirection(dir: Direction | Value<Direction>): CleanupFunction {
+  const unwrapped = unwrapValue(dir);
+  const stack = getDirectionStack();
+  const entry = { dir: unwrapped };
+  stack.push(entry);
+  globalDir(unwrapped);
+
+  const cleanup = () => {
+    const idx = stack.indexOf(entry);
+    if (idx > -1) stack.splice(idx, 1);
+    globalDir(stack[stack.length - 1]?.dir ?? "ltr");
+  };
+
+  onUnmounted(cleanup);
+  return cleanup;
+}
+
+// In component setup:
+const Modal = createComponent(() => {
+  setGlobalDirection("rtl"); // Pushes to stack on setup, automatically pops on unmount!
+  return $div({}, "Modal Content");
+});
+```
+
 ---
 
 ## 7. `withStorage()` Overriding Hydrated State in SSR
