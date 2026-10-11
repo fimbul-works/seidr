@@ -1,4 +1,7 @@
-import { createValue, isValue, onUnmounted, SeidrError, type Value } from "@fimbul-works/seidr";
+import { isValue } from "../observable/type-guards.js";
+import { createValue, type Value } from "../observable/value.js";
+import { SeidrError } from "../types.js";
+import { onUnmounted } from "./on-unmounted.js";
 
 /**
  * Creates a `Value<T>` that holds the previous value of a given `Value<T>`.
@@ -14,6 +17,11 @@ export function usePrevious<T>(value: Value<T>): Value<T> {
   }
 
   const previous = createValue<T>(value());
-  onUnmounted(value.watch((_newValue, prevValue) => previous(prevValue)));
+  const unwatch = value.watch((_newValue, prevValue) => previous(prevValue));
+  try {
+    onUnmounted(unwatch);
+  } catch {
+    // onUnmounted throws when called outside of component hierarchy
+  }
   return previous.as((v) => v);
 }
