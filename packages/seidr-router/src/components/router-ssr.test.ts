@@ -7,7 +7,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { DATA_KEY_ROUTER } from "../constants.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
-import { clearRouterState } from "../test/index.js";
+import { clearRouterState } from "../test-setup/index.js";
 import { Router } from "./router.js";
 
 describe("Router SSR", () => {

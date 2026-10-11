@@ -3,9 +3,9 @@ import { $div } from "@fimbul-works/seidr/html";
 import { clearTestAppState } from "@fimbul-works/seidr/testing";
 import { beforeEach, describe, expect, it } from "vitest";
 import { Router } from "../components/router.js";
+import { clearRouterState } from "../test-setup/index.js";
 import { useNavigate } from "./use-navigate.js";
 import { usePathname } from "./use-pathname.js";
-import { clearRouterState } from "../test/index.js";
 
 describe("usePathname", () => {
   let container: HTMLElement;

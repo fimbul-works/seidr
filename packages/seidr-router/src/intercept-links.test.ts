@@ -8,7 +8,7 @@ import { getRouterState } from "./get-router-state.js";
 import { useRouteParams } from "./hooks/use-route-params.js";
 import { initRouter } from "./init-router.js";
 import { interceptLinks } from "./intercept-links.js";
-import { clearRouterState } from "./test/index.js";
+import { clearRouterState } from "./test-setup/index.js";
 
 describeDualMode("interceptLinks", ({ getDocument, isSSR }) => {
   let container: HTMLElement;

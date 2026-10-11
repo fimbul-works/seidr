@@ -4,7 +4,7 @@ import { clearTestAppState, describeDualMode } from "@fimbul-works/seidr/testing
 import { afterEach, beforeEach, expect, it } from "vitest";
 import { usePathname } from "../hooks/use-pathname.js";
 import { useRouteParams } from "../hooks/use-route-params.js";
-import { clearRouterState } from "../test/index.js";
+import { clearRouterState } from "../test-setup/index.js";
 import { Link } from "./link.js";
 import { Router } from "./router.js";
 

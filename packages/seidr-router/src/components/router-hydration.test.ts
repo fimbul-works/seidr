@@ -13,7 +13,7 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { DATA_KEY_ROUTER } from "../constants.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { usePathname } from "../hooks/use-pathname.js";
-import { clearRouterState } from "../test/index.js";
+import { clearRouterState } from "../test-setup/index.js";
 import { Link } from "./link.js";
 import { Router } from "./router.js";
 

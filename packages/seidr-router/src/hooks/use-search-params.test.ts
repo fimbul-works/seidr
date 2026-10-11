@@ -4,7 +4,7 @@ import { clearTestAppState, describeDualMode } from "@fimbul-works/seidr/testing
 import { beforeEach, expect, it } from "vitest";
 import { Router } from "../components/router.js";
 import { getRouterState } from "../get-router-state.js";
-import { clearRouterState } from "../test/index.js";
+import { clearRouterState } from "../test-setup/index.js";
 import { useNavigate } from "./use-navigate.js";
 import { useSearchParams } from "./use-search-params.js";
 
