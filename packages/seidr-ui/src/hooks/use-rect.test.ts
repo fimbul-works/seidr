@@ -1,4 +1,4 @@
-import { createComponent, mount, SeidrError, useRef } from "@fimbul-works/seidr";
+import { createComponent, createRef, mount, SeidrError } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearObservedElements, useRect } from "./use-rect.js";
@@ -45,7 +45,7 @@ describe("useRect", () => {
   });
 
   it("returns null when the ref element is null", () => {
-    const ref = useRef<HTMLElement>();
+    const ref = createRef<HTMLElement>();
     const rect = useRect(ref);
 
     expect(rect()).toBeNull();
@@ -55,7 +55,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 10, left: 20, width: 100, height: 50 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -67,7 +67,7 @@ describe("useRect", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     const Comp = createComponent(() => {
@@ -88,7 +88,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 0, left: 0, width: 50, height: 50 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -106,7 +106,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 10, left: 10, width: 100, height: 100 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -133,7 +133,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 0, left: 0, width: 60, height: 60 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -153,7 +153,7 @@ describe("useRect", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     const Comp = createComponent(() => {
@@ -177,7 +177,7 @@ describe("useRect", () => {
     const el2 = document.createElement("div");
     setElementRect(el2, { top: 20, left: 20, width: 90, height: 90 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(el1);

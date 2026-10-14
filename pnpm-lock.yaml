@@ -315,8 +315,8 @@ importers:
   packages/seidr:
     dependencies:
       '@fimbul-works/futhark':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^2.0.0
+        version: 2.0.0
       '@fimbul-works/hash':
         specifier: ^1.2.1
         version: 1.2.1
@@ -729,8 +729,8 @@ packages:
       esbuild:
         optional: true
 
-  '@fimbul-works/futhark@1.1.0':
-    resolution: {integrity: sha512-97UAp30FMLg7HY+2H9CWgx+kpZs5k3l+xFc/N9yt/7PSIvMb8EgeckcQVWnfDUB54mtDcXmruWwfOrkX9Tb4Dw==}
+  '@fimbul-works/futhark@2.0.0':
+    resolution: {integrity: sha512-N4PMvrFx6kciPJ8dVaSmVhvaOaqQqmvhhZG1B3S4r9kMOXntWFQ0fVMXTNrQAXSXnb5/RGvQjzunmWKQFB26pg==}
 
   '@fimbul-works/hash@1.2.1':
     resolution: {integrity: sha512-RQz3rIpn4UBGhjK2kjSByVlJUxR1NPc9gfAM3gQDxgSU8GKHMVATNfF8TKnOU9uuVMe4YUcE5iESVKPcIFC4DA==}
@@ -2515,7 +2515,7 @@ snapshots:
     optionalDependencies:
       esbuild: 0.28.2
 
-  '@fimbul-works/futhark@1.1.0': {}
+  '@fimbul-works/futhark@2.0.0': {}
 
   '@fimbul-works/hash@1.2.1': {}
 

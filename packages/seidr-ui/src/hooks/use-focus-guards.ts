@@ -1,6 +1,6 @@
-import { assignProps, getAppState, useEffect } from "@fimbul-works/seidr";
+import { $, getAppState, getDocument, useEffect } from "@fimbul-works/seidr";
 
-const FOCUS_GUARDS_KEY = "seidr-ui.focus-guards:state";
+const FOCUS_GUARDS_KEY = "seidr-ui.focus-guards";
 
 interface FocusGuardsState {
   count: number;
@@ -16,8 +16,7 @@ const getFocusGuardsState = (): FocusGuardsState =>
  * @returns {HTMLSpanElement} Focus guard element.
  */
 export function createFocusGuard(): HTMLSpanElement {
-  const element = document.createElement("span");
-  assignProps(element, {
+  return $("span", {
     tabIndex: 0,
     style: {
       outline: "none",
@@ -27,7 +26,6 @@ export function createFocusGuard(): HTMLSpanElement {
     },
     dataSeidrFocusGuard: "",
   });
-  return element;
 }
 
 /**
@@ -41,20 +39,20 @@ export function createFocusGuard(): HTMLSpanElement {
  * MIT License, Copyright (c) WorkOS.
  */
 export function useFocusGuards(): void {
-  const state = getFocusGuardsState();
-
   useEffect(() => {
+    const state = getFocusGuardsState();
     if (!state.guards) {
       state.guards = { start: createFocusGuard(), end: createFocusGuard() };
     }
     const { start, end } = state.guards;
+    const body = getDocument().body;
 
     // Only mutate the DOM when the edge invariant is actually broken.
-    if (document.body.firstElementChild !== start) {
-      document.body.insertAdjacentElement("afterbegin", start);
+    if (body.firstElementChild !== start) {
+      body.insertAdjacentElement("afterbegin", start);
     }
-    if (document.body.lastElementChild !== end) {
-      document.body.insertAdjacentElement("beforeend", end);
+    if (body.lastElementChild !== end) {
+      body.insertAdjacentElement("beforeend", end);
     }
     state.count++;
 

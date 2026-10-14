@@ -1,7 +1,6 @@
 import {
   type CleanupFunction,
   getAppState,
-  getComponentScope,
   isNullish,
   onUnmounted,
   SeidrError,
@@ -40,7 +39,7 @@ const getDirectionStack = (): StackEntry[] => getAppState().getData<StackEntry[]
  * from the top of the stack.
  *
  * @param {Direction | Value<Direction | undefined | null>} [dir] - Optional direction override.
- * @returns {Value<Direction>} Reactive direction Value.
+ * @returns {Value<string>} Reactive direction Value.
  * @throws {SeidrError} If an invalid non-nullish direction is provided.
  *
  * Ported from https://github.com/radix-ui/primitives/blob/main/packages/react/direction/src/direction.tsx
@@ -66,11 +65,7 @@ export function useDirection(dir?: Direction | Value<Direction> | null): Value<s
     if (idx > -1) stack.splice(idx, 1);
   };
 
-  if (process.env.VITEST) {
-    getComponentScope()?.onUnmounted(popStack);
-  } else {
-    onUnmounted(popStack);
-  }
+  onUnmounted(popStack);
 
   return entry;
 }

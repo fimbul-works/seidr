@@ -6,7 +6,7 @@ export default mergeConfig(
   defineConfig({
     test: {
       setupFiles: ["../seidr/src/test-setup/setup.ts", "./src/test-setup/index.ts"],
-      exclude: ["./radix-ui-primitives/**/*.*"],
+      exclude: ["./kobalte-packages/**/*.*"],
     },
   }),
 );

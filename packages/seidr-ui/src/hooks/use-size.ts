@@ -1,4 +1,15 @@
-import { createValue, inClient, isRef, type Ref, SeidrError, type Value } from "@fimbul-works/seidr";
+import {
+  createValue,
+  inClient,
+  isArray,
+  isNum,
+  isRef,
+  isValue,
+  onUnmounted,
+  type Ref,
+  SeidrError,
+  type Value,
+} from "@fimbul-works/seidr";
 
 /**
  * The size of an element.
@@ -11,74 +22,71 @@ export interface Size {
 }
 
 /**
- * Creates a `Value<Size | null>` that holds the size of an element.
- *
- * @template {HTMLElement} T The type of element to observe.
- * @param {Ref<T>} ref - Ref to observe.
- * @returns {Value<Size | null>} A value that holds the size of the element.
- * @throws {SeidrError} If the ref is invalid or if the element is not in the DOM.
- *
- * Ported from https://github.com/radix-ui/primitives/
- * MIT License, Copyright (c) WorkOS.
+ * Reactive width and height values.
  */
-export function useSize<T extends HTMLElement>(ref: Ref<T>): Value<Size | null> {
-  if (!isRef(ref)) {
+export type SizeValue = {
+  /** The width of the element. */
+  width: Value<number>;
+  /** The height of the element. */
+  height: Value<number>;
+};
+
+/**
+ * Creates reactive `width` and `height` Values tracking the dimensions of an element.
+ *
+ * Direct ResizeObserver observation without rAF loops.
+ * Cleanups are wired directly to `onUnmounted` and `ref.bind` teardowns.
+ *
+ * Ported from Kobalte's createSize primitive.
+ */
+export function useSize<T extends HTMLElement>(ref: Ref<T> | Value<T | null | undefined>): SizeValue {
+  if (!isRef(ref) && !isValue(ref)) {
     throw new SeidrError("Invalid ref");
   }
 
   const size = createValue<Size | null>(null, {
-    // Only trigger updates if the size actually changed
     isEqual: (a, b) => (a && b ? a.width === b.width && a.height === b.height : a === b),
     hydrate: false,
   });
 
   inClient(() => {
-    ref.bind((element) => {
-      if (element) {
-        // Provide size as early as possible
-        size({ width: element.offsetWidth, height: element.offsetHeight });
-
-        let rAF = 0;
-
-        const resizeObserver = new ResizeObserver((entries) => {
-          if (!Array.isArray(entries)) {
-            return;
-          }
-
-          // Since we only observe the one element, we don't need to loop over the array
-          if (!entries.length) {
-            return;
-          }
-
-          const entry = entries[0]!;
-
-          window.cancelAnimationFrame(rAF);
-          rAF = window.requestAnimationFrame(() => {
-            if ("borderBoxSize" in entry) {
-              const borderSizeEntry = entry.borderBoxSize;
-              // Iron out differences between browsers
-              const borderSize = Array.isArray(borderSizeEntry) ? borderSizeEntry[0] : borderSizeEntry;
-              size({ width: borderSize.inlineSize, height: borderSize.blockSize });
-            } else {
-              // For browsers that don't support `borderBoxSize`, calculate it ourselves to get the correct border box
-              size({ width: element.offsetWidth, height: element.offsetHeight });
-            }
-          });
-        });
-
-        resizeObserver.observe(element, { box: "border-box" });
-
-        return () => {
-          window.cancelAnimationFrame(rAF);
-          resizeObserver.disconnect();
-        };
-      } else {
-        // We only want to reset to `null` when the element becomes `null`, not if it changes to another element.
-        size(null);
+    const syncSize = (element: HTMLElement, entry?: ResizeObserverEntry) => {
+      if (entry && "borderBoxSize" in entry && entry.borderBoxSize) {
+        const borderBox = entry.borderBoxSize;
+        const box = isArray(borderBox) ? borderBox[0] : (borderBox as unknown as ResizeObserverSize);
+        if (box && isNum(box.inlineSize) && isNum(box.blockSize)) {
+          size({ width: box.inlineSize, height: box.blockSize });
+          return;
+        }
       }
-    });
+      size({ width: element.offsetWidth, height: element.offsetHeight });
+    };
+
+    onUnmounted(
+      ref.bind((element) => {
+        if (!element) {
+          size(null);
+          return;
+        }
+
+        syncSize(element);
+
+        const observer = new ResizeObserver((entries) => {
+          if (!isArray(entries)) return;
+          for (const entry of entries) {
+            if (entry.target && entry.target !== element) continue;
+            syncSize(element, entry);
+          }
+        });
+        observer.observe(element, { box: "border-box" });
+
+        return () => observer.disconnect();
+      }),
+    );
   });
 
-  // Return as derived state
-  return size.as((s) => s);
+  return {
+    width: size.as((s) => s?.width ?? 0),
+    height: size.as((s) => s?.height ?? 0),
+  };
 }

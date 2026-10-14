@@ -1,4 +1,4 @@
-import { createComponent, mount, SeidrError, useRef } from "@fimbul-works/seidr";
+import { createComponent, createRef, mount, SeidrError } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { useSize } from "./use-size.js";
@@ -96,11 +96,12 @@ describe("useSize", () => {
     expect(() => useSize(document.createElement("div") as any)).toThrow(SeidrError);
   });
 
-  it("returns null when the ref element is null", () => {
-    const ref = useRef<HTMLElement>();
+  it("returns zero dimensions when the ref element is null", () => {
+    const ref = createRef<HTMLElement>();
     const size = useSize(ref);
 
-    expect(size()).toBeNull();
+    expect(size.width()).toBe(0);
+    expect(size.height()).toBe(0);
     expect(MockResizeObserver.instances).toHaveLength(0);
   });
 
@@ -108,42 +109,44 @@ describe("useSize", () => {
     mockOffsetWidth = 120;
     mockOffsetHeight = 40;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
 
     const element = document.createElement("div");
     ref(element);
 
     // Available immediately, before any observer callback fires
-    expect(size()).toEqual({ width: 120, height: 40 });
+    expect(size.width()).toBe(120);
+    expect(size.height()).toBe(40);
   });
 
   it("provides the size synchronously from offset dimensions on component mount", () => {
     mockOffsetWidth = 120;
     mockOffsetHeight = 40;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
 
     const container = document.createElement("div");
     document.body.appendChild(container);
 
     const Comp = createComponent(() => {
-      const output = size.as((s) => (s ? `${s.width}x${s.height}` : "none"));
+      const output = size.width.as((w) => `${w}x${size.height()}`);
       return $div({}, [$div({ ref, id: "box" }), $div({ id: "output" }, output)]);
     });
 
     const unmount = mount(Comp, container);
 
     expect(container.querySelector("#output")?.textContent).toBe("120x40");
-    expect(size()).toEqual({ width: 120, height: 40 });
+    expect(size.width()).toBe(120);
+    expect(size.height()).toBe(40);
 
     unmount();
     container.remove();
   });
 
   it("observes the element using the `border-box` box model", () => {
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     useSize(ref);
 
     const element = document.createElement("div");
@@ -155,32 +158,38 @@ describe("useSize", () => {
   });
 
   it("updates the size from `borderBoxSize` reported as an array", async () => {
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
 
     MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 200, blockSize: 100 }] }]);
 
-    await vi.waitFor(() => expect(size()).toEqual({ width: 200, height: 100 }));
+    await vi.waitFor(() => {
+      expect(size.width()).toBe(200);
+      expect(size.height()).toBe(100);
+    });
   });
 
   it("updates the size from `borderBoxSize` reported as a plain object", async () => {
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
 
     MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 320, blockSize: 240 } }]);
 
-    await vi.waitFor(() => expect(size()).toEqual({ width: 320, height: 240 }));
+    await vi.waitFor(() => {
+      expect(size.width()).toBe(320);
+      expect(size.height()).toBe(240);
+    });
   });
 
   it("falls back to offset dimensions when `borderBoxSize` is unavailable", async () => {
     mockOffsetWidth = 55;
     mockOffsetHeight = 66;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
@@ -188,19 +197,23 @@ describe("useSize", () => {
     // No `borderBoxSize` key; fallback reads `offsetWidth`/`offsetHeight`.
     MockResizeObserver.latest.emit([{}]);
 
-    await vi.waitFor(() => expect(size()).toEqual({ width: 55, height: 66 }));
+    await vi.waitFor(() => {
+      expect(size.width()).toBe(55);
+      expect(size.height()).toBe(66);
+    });
   });
 
   it("ignores empty or non-array observer payloads", async () => {
     mockOffsetWidth = 10;
     mockOffsetHeight = 20;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
 
-    expect(size()).toEqual({ width: 10, height: 20 });
+    expect(size.width()).toBe(10);
+    expect(size.height()).toBe(20);
 
     MockResizeObserver.latest.emit([]);
     MockResizeObserver.latest.callback(
@@ -208,31 +221,32 @@ describe("useSize", () => {
       MockResizeObserver.latest as unknown as ResizeObserver,
     );
 
-    // Allow scheduled frames to run
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-    expect(size()).toEqual({ width: 10, height: 20 });
+    expect(size.width()).toBe(10);
+    expect(size.height()).toBe(20);
   });
 
-  it("resets the size to `null` when the element becomes `null`", () => {
+  it("resets the size to 0 when the element becomes `null`", () => {
     mockOffsetWidth = 80;
     mockOffsetHeight = 30;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
 
-    expect(size()).toEqual({ width: 80, height: 30 });
+    expect(size.width()).toBe(80);
+    expect(size.height()).toBe(30);
 
     ref(null);
-    expect(size()).toBeNull();
+    expect(size.width()).toBe(0);
+    expect(size.height()).toBe(0);
   });
 
-  it("resets the size to `null` and cleans up when a component unmounts", () => {
+  it("resets the size to 0 and cleans up when a component unmounts", () => {
     mockOffsetWidth = 80;
     mockOffsetHeight = 30;
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
 
     const container = document.createElement("div");
@@ -241,15 +255,17 @@ describe("useSize", () => {
     const Comp = createComponent(() => $div({ ref }));
     const unmount = mount(Comp, container);
 
-    expect(size()).toEqual({ width: 80, height: 30 });
+    expect(size.width()).toBe(80);
+    expect(size.height()).toBe(30);
 
     unmount();
-    expect(size()).toBeNull();
+    expect(size.width()).toBe(0);
+    expect(size.height()).toBe(0);
     container.remove();
   });
 
   it("switches observation seamlessly when ref changes to another element", () => {
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
 
     mockOffsetWidth = 50;
@@ -257,7 +273,8 @@ describe("useSize", () => {
     const el1 = document.createElement("div");
     ref(el1);
 
-    expect(size()).toEqual({ width: 50, height: 50 });
+    expect(size.width()).toBe(50);
+    expect(size.height()).toBe(50);
     const observer1 = MockResizeObserver.latest;
     expect(observer1.observed.has(el1)).toBe(true);
 
@@ -269,102 +286,59 @@ describe("useSize", () => {
     // Old element observer is disconnected
     expect(observer1.observed.has(el1)).toBe(false);
     // Size immediately matches the new element
-    expect(size()).toEqual({ width: 100, height: 100 });
+    expect(size.width()).toBe(100);
+    expect(size.height()).toBe(100);
     // New observer observing el2
     const observer2 = MockResizeObserver.latest;
     expect(observer2.observed.has(el2)).toBe(true);
   });
 
   it("does not notify subscribers when size dimensions are unchanged (isEqual deduplication)", async () => {
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const size = useSize(ref);
     const element = document.createElement("div");
     ref(element);
 
     const listener = vi.fn();
-    size.watch(listener);
+    size.width.watch(listener);
 
     // Emit same size as current (0x0)
     MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 0, blockSize: 0 }] }]);
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
     expect(listener).not.toHaveBeenCalled();
 
     // Emit new size
     MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 100, blockSize: 200 }] }]);
     await vi.waitFor(() => expect(listener).toHaveBeenCalledTimes(1));
-    expect(listener).toHaveBeenCalledWith({ width: 100, height: 200 }, { width: 0, height: 0 });
+    expect(listener).toHaveBeenCalledWith(100, 0);
 
     // Emit duplicate size
     MockResizeObserver.latest.emit([{ borderBoxSize: [{ inlineSize: 100, blockSize: 200 }] }]);
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
     expect(listener).toHaveBeenCalledTimes(1);
   });
 
-  describe("requestAnimationFrame batching", () => {
-    it("defers observer-driven updates to the next animation frame", async () => {
+  describe("direct synchronous updates and accessors", () => {
+    it("updates size immediately on observer emission without rAF delay", () => {
       mockOffsetWidth = 10;
       mockOffsetHeight = 10;
 
-      const ref = useRef<HTMLDivElement>();
+      const ref = createRef<HTMLDivElement>();
       const size = useSize(ref);
       const element = document.createElement("div");
       ref(element);
 
-      expect(size()).toEqual({ width: 10, height: 10 });
+      expect(size.width()).toBe(10);
+      expect(size.height()).toBe(10);
 
       MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 300, blockSize: 300 } }]);
 
-      // Synchronously, size has not changed yet
-      expect(size()).toEqual({ width: 10, height: 10 });
-      await vi.waitFor(() => expect(size()).toEqual({ width: 300, height: 300 }));
+      // Synchronously updated
+      expect(size.width()).toBe(300);
+      expect(size.height()).toBe(300);
     });
 
-    it("coalesces rapid observations, cancelling previously scheduled frames", async () => {
-      const ref = useRef<HTMLDivElement>();
+    it("un-observes and resets on component unmount", () => {
+      const ref = createRef<HTMLDivElement>();
       const size = useSize(ref);
-      const element = document.createElement("div");
-      ref(element);
-
-      const rafSpy = vi.spyOn(window, "requestAnimationFrame");
-      const cancelSpy = vi.spyOn(window, "cancelAnimationFrame");
-
-      MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 1, blockSize: 1 } }]);
-      MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 2, blockSize: 2 } }]);
-      MockResizeObserver.latest.emit([{ borderBoxSize: { inlineSize: 3, blockSize: 3 } }]);
-
-      const scheduledIds = rafSpy.mock.results.map((result) => result.value as number);
-      expect(scheduledIds).toHaveLength(3);
-      expect(cancelSpy).toHaveBeenCalledWith(scheduledIds[0]);
-      expect(cancelSpy).toHaveBeenCalledWith(scheduledIds[1]);
-
-      await vi.waitFor(() => expect(size()).toEqual({ width: 3, height: 3 }));
-    });
-
-    it("cancels a pending frame and un-observes on unmount / cleanup", () => {
-      const rafSpy = vi.spyOn(window, "requestAnimationFrame");
-      const cancelSpy = vi.spyOn(window, "cancelAnimationFrame");
-
-      const ref = useRef<HTMLDivElement>();
-      useSize(ref);
-      const element = document.createElement("div");
-      ref(element);
-
-      const observer = MockResizeObserver.latest;
-      observer.emit([{ borderBoxSize: { inlineSize: 500, blockSize: 500 } }]);
-      const scheduledId = rafSpy.mock.results.at(-1)!.value as number;
-
-      ref(null);
-
-      expect(cancelSpy).toHaveBeenCalledWith(scheduledId);
-      expect(observer.observed.has(element)).toBe(false);
-    });
-
-    it("cancels a pending frame and un-observes on component unmount", () => {
-      const rafSpy = vi.spyOn(window, "requestAnimationFrame");
-      const cancelSpy = vi.spyOn(window, "cancelAnimationFrame");
-
-      const ref = useRef<HTMLDivElement>();
-      useSize(ref);
 
       const container = document.createElement("div");
       document.body.appendChild(container);
@@ -372,32 +346,14 @@ describe("useSize", () => {
       const unmount = mount(Comp, container);
 
       const observer = MockResizeObserver.latest;
-      observer.emit([{ borderBoxSize: { inlineSize: 500, blockSize: 500 } }]);
-      const scheduledId = rafSpy.mock.results.at(-1)!.value as number;
+      expect(observer.observed.size).toBe(1);
 
       unmount();
 
-      expect(cancelSpy).toHaveBeenCalledWith(scheduledId);
       expect(observer.observed.size).toBe(0);
+      expect(size.width()).toBe(0);
+      expect(size.height()).toBe(0);
       container.remove();
-    });
-
-    it("does not warn or error when unmounted before a pending frame runs", async () => {
-      const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-
-      const ref = useRef<HTMLDivElement>();
-      const size = useSize(ref);
-      const element = document.createElement("div");
-      ref(element);
-
-      const observer = MockResizeObserver.latest;
-      observer.emit([{ borderBoxSize: { inlineSize: 999, blockSize: 999 } }]);
-
-      ref(null);
-
-      await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-      expect(consoleError).not.toHaveBeenCalled();
-      expect(size()).toBeNull();
     });
   });
 });
