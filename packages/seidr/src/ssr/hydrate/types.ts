@@ -1,5 +1,5 @@
 import type { SeidrComponent } from "../../component/types.js";
-import type { Value } from "../../observable/value.js";
+import type { Value } from "../../observable/types.js";
 import { SeidrError } from "../../types.js";
 import type { ComponentTreeNode } from "../structure/types.js";
 import type { HydrationData } from "../types.js";

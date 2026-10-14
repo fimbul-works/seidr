@@ -1,19 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { List } from "../../components/list.js";
+import { getDocument } from "../../dom/get-document.js";
 import { $ } from "../../element/index.js";
 import { $article, $div, $h1, $h2, $main } from "../../elements/index.js";
-import { createValue, type Value } from "../../observable/value.js";
+import type { Value } from "../../observable/types.js";
+import { createValue } from "../../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { inServer } from "../../util/environment/in-server.js";
 import { renderToString } from "../render-to-string.js";
 import { hydrate } from "./hydrate.js";
-import { getDocument } from "../../dom/get-document.js";
 
 describe("Hydration List", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
-  let unmount: CleanupFunction | undefined;
+  let unmount!: CleanupFunction;
 
   beforeEach(() => {
     container = getDocument().createElement("div");

@@ -1,7 +1,6 @@
 import { BOOL_ATTRIBUTES } from "../constants.js";
 import { onMounted, onUnmounted } from "../hooks/index.js";
 import { isRef, isValue } from "../observable/type-guards.js";
-import { unwrapValue } from "../observable/unwrap-value.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
@@ -61,7 +60,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
 
   if (prop === "style") {
     if (isValue(value)) {
-      onUnmounted(value.bind((style) => (el.style = unwrapValue(style))));
+      onUnmounted(value.bind((style) => (el.style = style)));
     } else if (isStr(value)) {
       el.style = value;
     } else if (isObj(value)) {
@@ -70,7 +69,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
           styleProp = camelToKebab(styleProp);
         }
         if (isValue(styleValue)) {
-          onUnmounted(styleValue.bind((val) => (el.style[styleProp as any] = unwrapValue(val))));
+          onUnmounted(styleValue.bind((val) => (el.style[styleProp as any] = val)));
         } else {
           el.style[styleProp as any] = styleValue;
         }
@@ -94,7 +93,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
   };
 
   if (isValue(value)) {
-    onUnmounted(value.bind((val) => applyValue(el, unwrapValue(val))));
+    onUnmounted(value.bind((val) => applyValue(el, val)));
   } else {
     applyValue(el, value);
   }

@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { Suspense, type SuspenseState } from "../../components/suspense.js";
 import { $ } from "../../element/index.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
-import { createValue, type Value } from "../../observable/value.js";
+import type { Value } from "../../observable/types.js";
+import { createValue } from "../../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { renderToString } from "../render-to-string.js";
@@ -11,7 +12,7 @@ import { hydrate } from "./hydrate.js";
 describe("Hydration Tuple Encoding & Deduplication", () => {
   let container: HTMLElement;
   let cleanupMode: CleanupFunction;
-  let unmount: CleanupFunction | undefined;
+  let unmount!: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();
@@ -29,8 +30,8 @@ describe("Hydration Tuple Encoding & Deduplication", () => {
       { id: 2, title: "Item 2" },
     ];
 
-    let clientVal1: Value<any> | undefined;
-    let clientVal2: Value<any> | undefined;
+    let clientVal1!: Value<any>;
+    let clientVal2!: Value<any>;
 
     function App() {
       const val1 = createValue(sharedData, { id: "store-items" });
@@ -117,8 +118,8 @@ describe("Hydration Tuple Encoding & Deduplication", () => {
       { slug: "post-2", title: "Second Post" },
     ];
 
-    let userPostsValue: Value<any> | undefined;
-    let suspenseValue: Value<any> | undefined;
+    let userPostsValue!: Value<any>;
+    let suspenseValue!: Value<any>;
 
     function BlogAppWithStore() {
       const posts = createValue<typeof rawPosts>([], { id: "posts" });

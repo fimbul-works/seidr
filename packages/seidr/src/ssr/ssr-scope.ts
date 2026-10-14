@@ -4,7 +4,7 @@ import type { AppState } from "../app-state/types.js";
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { registerStateStrategy } from "./register-state-strategy.js";
 import { buildStructureMap } from "./structure/build-structure-map.js";

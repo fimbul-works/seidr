@@ -4,7 +4,8 @@ import { createComponent } from "../component/create-component.js";
 import { $div } from "../elements/div.js";
 import { $p } from "../elements/p.js";
 import { $span } from "../elements/span.js";
-import { createValue, type Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
+import { createValue } from "../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../test-setup/index.js";
 import { hydrate } from "./hydrate/hydrate.js";
 import { defaultHydrationSerializer, getHydrationSerializer, setHydrationSerializer } from "./hydration-serializer.js";
@@ -44,9 +45,9 @@ describe("HydrationSerializer", () => {
   });
 
   describe("SSR and Hydration with SuperJSON", () => {
-    let capturedDateValue: Value<Date> | undefined;
-    let capturedSetValue: Value<Set<string>> | undefined;
-    let capturedMapValue: Value<Map<string, string>> | undefined;
+    let capturedDateValue!: Value<Date> | undefined;
+    let capturedSetValue!: Value<Set<string>> | undefined;
+    let capturedMapValue!: Value<Map<string, string>> | undefined;
 
     const ComplexComponent = createComponent(() => {
       const dateVal = createValue(new Date("2026-09-26T12:00:00.000Z"), { id: "test-date" });

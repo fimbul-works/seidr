@@ -1,4 +1,4 @@
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 
 /**
  * Interface for two-way binding helper object.

@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import { createComponent } from "../component/create-component.js";
 import { mount } from "../dom/mount.js";
 import { $div } from "../elements/div.js";
+import { createRef } from "../observable/ref.js";
 import { createValue } from "../observable/value.js";
 import { SeidrError } from "../types.js";
 import { useEffect } from "./use-effect.js";
-import { useRef } from "./use-ref.js";
 
 describe("useEffect", () => {
   it("throws SeidrError when callback is not a function", () => {
@@ -114,7 +114,7 @@ describe("useEffect", () => {
   });
 
   it("re-runs effect when observed Ref dependency changes", () => {
-    const elementRef = useRef<HTMLElement>();
+    const elementRef = createRef<HTMLElement>();
     const runs: (HTMLElement | null)[] = [];
 
     const Comp = createComponent(() => {

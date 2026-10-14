@@ -3,7 +3,7 @@ import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { isStr } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
-import type { Value } from "./value.js";
+import type { Value } from "./types.js";
 
 /**
  * Error callback type for withStorage error handling.
@@ -31,7 +31,7 @@ export type StorageErrorHandler = (error: SeidrError, operation: "read" | "write
  * By default, `withStorage` throws on errors. Wrap components using withStorage in a
  * `<Safe>` boundary to handle errors gracefully:
  *
- * @template {T extends Value<any>} T - The observable Value instance type
+ * @template T - The observable Value instance type
  *
  * @param {string} key - The storage key to use for persisting the observable value
  * @param {T} observable - The observable to bind to storage
@@ -40,7 +40,7 @@ export type StorageErrorHandler = (error: SeidrError, operation: "read" | "write
  * @returns {T} The same Value instance, now with storage synchronization enabled
  * @throws {SeidrError} If storage read/write fails and no onError handler is provided
  */
-export const withStorage = <T extends Value<any>>(
+export const withStorage = <T extends Value>(
   key: string,
   value: T,
   storage: Storage = isClient() ? localStorage : new MemoryStorage(),

@@ -100,15 +100,6 @@ pnpm install @fimbul-works/seidr
 yarn add @fimbul-works/seidr
 ```
 
-### Package Exports
-
-| Entry Point | Description |
-|---|---|
-| `@fimbul-works/seidr` | Core reactive primitives (`createValue`, `mergeValues`, `wrapValueObject`), component lifecycle (`createComponent`, `mount`, `onMounted`, `onUnmounted`, `useRef`), built-in control flow (`Show`, `List`, `Switch`, `Safe`, `Suspense`, `Lazy`), and AppState. |
-| `@fimbul-works/seidr/html` | Predefined reactive DOM element creators (`$div`, `$span`, `$button`, `$input`, `$a`, `$ul`, `$li`, `$table`, etc.). |
-| `@fimbul-works/seidr/ssr` | Server-Side Rendering (`renderToString`), hydration (`hydrate`), and SSR context utilities. |
-| `@fimbul-works/seidr/testing` | Dual-mode test runners (`describeDualMode`, `itHasParity`) and testing environment utilities (`setupDom`). |
-
 ## Quick Start
 
 ```typescript
@@ -156,7 +147,7 @@ Before diving into the details, it helps to understand Seidr's mental model. Thi
 - No virtual DOM diffing or full-tree reconciliation
 
 **3. Lifecycle & Cleanup**
-- Dedicated lifecycle and element reference hooks (`onMounted`, `onUnmounted`, `useRef`)
+- Dedicated lifecycle and element reference hooks (`onMounted`, `onUnmounted`)
 - Components track their bindings and clean up automatically
 - Guaranteed memory safety when components are unmounted
 

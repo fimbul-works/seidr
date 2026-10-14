@@ -1,22 +1,22 @@
-import { isRef, isValue } from "../observable/type-guards.js";
-import { mergeValues, type Value } from "../observable/value.js";
+import { isObservable } from "../observable/type-guards.js";
+import type { Observable, Value } from "../observable/types.js";
+import { mergeValues } from "../observable/value.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { isArray, isFn } from "../util/type-guards.js";
 import { onMounted } from "./on-mounted.js";
 import { onUnmounted } from "./on-unmounted.js";
-import type { Ref } from "./use-ref.js";
 
 export type EffectCallback = () => CleanupFunction | void;
-export type EffectDependency = Value<any> | Ref<any>;
+export type EffectDependency = Observable;
 
 /**
  * Registers an effect that executes when the component is mounted on the client,
- * and re-runs whenever any of the observed dependency Values or Refs change.
+ * and re-runs whenever any of the observed dependencies change.
  *
  * @param {EffectCallback} effect - Callback function to execute. Can optionally return a cleanup function.
- * @param {EffectDependency[]} deps - Array of Value or Ref dependencies to observe.
- * @throws {SeidrError} If effect is not a function, deps is not an array, or any dependency is not a Value or Ref.
+ * @param {EffectDependency[]} deps - Array of Observable dependencies.
+ * @throws {SeidrError} If effect is not a function, deps is not an array, or any dependency is not an Observable.
  */
 export function useEffect(effect: EffectCallback, deps: EffectDependency[]): void {
   // Run only on client
@@ -33,14 +33,14 @@ export function useEffect(effect: EffectCallback, deps: EffectDependency[]): voi
     }
 
     for (const dep of deps) {
-      if (!isValue(dep) && !isRef(dep)) {
-        throw new SeidrError("useEffect dependencies must be Value or Ref instances");
+      if (!isObservable(dep)) {
+        throw new SeidrError("useEffect dependencies must be observable");
       }
     }
   }
 
-  let unbind: CleanupFunction | undefined;
-  let derived: Value<any[]> | undefined;
+  let unbind!: CleanupFunction;
+  let derived!: Value<any[]>;
 
   onMounted(() => {
     if (deps.length === 0) {

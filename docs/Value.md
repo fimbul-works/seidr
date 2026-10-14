@@ -451,18 +451,18 @@ The same adapter can be used with other libraries that expect mutable object pro
 
 ---
 
-### `useRef()`
+### `createRef()`
 
 Creates a specialized `Ref<T>` observable holding a DOM element reference (or `null`). A `Ref` is a decorated `Value` tailored for DOM element bindings via the `ref` prop, with SSR hydration disabled.
 
 ```typescript
-import { useRef } from '@fimbul-works/seidr';
+import { createRef } from '@fimbul-works/seidr';
 
-const inputRef = useRef<HTMLInputElement>();
+const inputRef = createRef<HTMLInputElement>();
 console.log(inputRef()); // null initially
 ```
 
-For full details on using `useRef` with elements, the `ref` prop, and lifecycle timing with `onMounted()`, see **[DOM Elements: Element References (`useRef`)](DOM.md#element-references-useref)**.
+For full details on using `createRef` with elements, the `ref` prop, and lifecycle timing with `onMounted()`, see **[DOM Elements: Element References (`createRef`)](DOM.md#element-references-useref)**.
 
 ---
 
@@ -487,7 +487,7 @@ console.log(isValue(42));    // false
 
 ### `isRef()`
 
-Type guard checking if a value is a Seidr `Ref` observable created by `useRef()`.
+Type guard checking if a value is a Seidr `Ref` observable created by `createRef()`.
 
 **Parameters:**
 - `v: any` — Value to test.
@@ -495,9 +495,9 @@ Type guard checking if a value is a Seidr `Ref` observable created by `useRef()`
 **Returns:** `boolean` (type narrows to `v is Ref<T>`).
 
 ```typescript
-import { isRef, useRef } from '@fimbul-works/seidr';
+import { isRef, createRef } from '@fimbul-works/seidr';
 
-const ref = useRef<HTMLDivElement>();
+const ref = createRef<HTMLDivElement>();
 console.log(isRef(ref)); // true
 console.log(isRef({}));  // false
 ```

@@ -1,6 +1,6 @@
 import { DATA_KEY_STATE } from "../../observable/constants.js";
+import type { Value } from "../../observable/types.js";
 import { unwrapValue } from "../../observable/unwrap-value.js";
-import type { Value } from "../../observable/value.js";
 import { isNullish } from "../../util/type-guards.js";
 import { getHydrationData, isHydrating } from "./storage.js";
 

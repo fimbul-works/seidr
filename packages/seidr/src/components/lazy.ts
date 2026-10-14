@@ -89,8 +89,8 @@ export interface LazyComponentFactory<P = void> extends SeidrComponentFactory<P>
  */
 export function lazy<P = void>(loader: LazyComponentLoader<P>, options: LazyOptions = {}): LazyComponentFactory<P> {
   const componentName = options.name || "LazyComponent";
-  let resolvedComponent: SeidrComponentFactoryOrFunction<P> | undefined;
-  let cachedPromise: Promise<SeidrComponentFactoryOrFunction<P>> | undefined;
+  let resolvedComponent!: SeidrComponentFactoryOrFunction<P>;
+  let cachedPromise!: Promise<SeidrComponentFactoryOrFunction<P>> | undefined;
 
   /**
    * Loads and caches the component module.

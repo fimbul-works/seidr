@@ -1,5 +1,6 @@
 import { isValue } from "./type-guards.js";
-import { createValue, type Value, type ValueOptions } from "./value.js";
+import type { Value, ValueOptions } from "./types.js";
+import { createValue } from "./value.js";
 
 /**
  * Convenience helper to wrap an observable Value.

@@ -2,7 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { List } from "../../components/list.js";
 import { $ } from "../../element/index.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
-import { createValue, type Value } from "../../observable/value.js";
+import type { Value } from "../../observable/types.js";
+import { createValue } from "../../observable/value.js";
 import { enableClientMode, enableSSRMode } from "../../test-setup/index.js";
 import type { CleanupFunction } from "../../types.js";
 import { renderToString } from "../render-to-string.js";
@@ -11,7 +12,7 @@ import { hydrate } from "./hydrate.js";
 describe("Hydration Integration", () => {
   let container: HTMLElement;
   let cleanupMode: CleanupFunction;
-  let unmount: CleanupFunction | undefined;
+  let unmount!: CleanupFunction;
 
   beforeEach(() => {
     cleanupMode = enableSSRMode();

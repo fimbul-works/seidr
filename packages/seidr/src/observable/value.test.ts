@@ -1,9 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
 import { TYPE_PROP } from "../constants.js";
 import { describeDualMode } from "../test-setup/dual-mode.js";
-import { createValue, mergeValues, TYPE_VALUE } from "./value.js";
+import { TYPE_VALUE } from "./constants.js";
+import { createValue, mergeValues } from "./value.js";
 
-describeDualMode("Value", () => {
+describeDualMode("Reactive value", () => {
   describe("createValue", () => {
     describe("basic functionality", () => {
       it("should initialize with the provided value", () => {

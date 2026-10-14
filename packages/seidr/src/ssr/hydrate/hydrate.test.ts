@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/app-state.js";
 import { createComponent } from "../../component/index.js";
+import { mount } from "../../dom/mount.js";
 import { isComment } from "../../dom/type-guards.js";
 import { $ } from "../../element/index.js";
 import { $div, $main, $nav } from "../../elements/index.js";
@@ -12,12 +13,11 @@ import { renderToString } from "../render-to-string.js";
 import { setSSRScope } from "../ssr-scope.js";
 import type { HydrationData } from "../types.js";
 import { clearHydrationData, hydrate, initHydrationData, isHydrating } from "./index.js";
-import { mount } from "../../dom/mount.js";
 
 describe("Hydration", () => {
   let container: HTMLElement;
   let cleanupClientMode: CleanupFunction;
-  let unmount: CleanupFunction | undefined;
+  let unmount: CleanupFunction;
 
   beforeEach(() => {
     container = document.createElement("div");
@@ -150,7 +150,7 @@ describe("Hydration", () => {
     const derived = name.as((s) => s.toUpperCase());
     const disabled = createValue(false);
 
-    let button: HTMLButtonElement | undefined = undefined;
+    let button!: HTMLButtonElement;
     const cleanup = mount(() => {
       button = $("button", {
         textContent: derived,

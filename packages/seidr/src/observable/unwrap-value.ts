@@ -1,5 +1,5 @@
 import { isValue } from "./type-guards.js";
-import type { Value } from "./value.js";
+import type { Value } from "./types.js";
 
 /**
  * Extracts the inner type from a Value, or leaves the type as-is if not a Value.
@@ -15,6 +15,6 @@ export type Unwrapped<T> = T extends Value<infer U> ? U : T;
  */
 export function unwrapValue<T>(v: T | Value<T>): T;
 export function unwrapValue<T>(v: T): Unwrapped<T>;
-export function unwrapValue(v: any): any {
+export function unwrapValue<T>(v: T): T {
   return isValue(v) ? v() : v;
 }

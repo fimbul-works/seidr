@@ -1,5 +1,6 @@
 import { isValue } from "../observable/type-guards.js";
-import { createValue, type Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
+import { createValue } from "../observable/value.js";
 import { SeidrError } from "../types.js";
 import { onUnmounted } from "./on-unmounted.js";
 
@@ -12,16 +13,11 @@ import { onUnmounted } from "./on-unmounted.js";
  * @throws {SeidrError} If the value is invalid.
  */
 export function usePrevious<T>(value: Value<T>): Value<T> {
-  if (!isValue(value)) {
+  if (!isValue(value) && process.env.NODE_ENV !== "production") {
     throw new SeidrError("Invalid value");
   }
 
   const previous = createValue<T>(value());
-  const unwatch = value.watch((_newValue, prevValue) => previous(prevValue));
-  try {
-    onUnmounted(unwatch);
-  } catch {
-    // onUnmounted throws when called outside of component hierarchy
-  }
-  return previous.as((v) => v);
+  onUnmounted(value.watch((_newValue, prevValue) => previous(prevValue)));
+  return previous;
 }

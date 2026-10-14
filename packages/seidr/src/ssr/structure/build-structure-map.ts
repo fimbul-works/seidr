@@ -25,12 +25,12 @@ function collectRootNodes(comp: SeidrComponent): Node[] {
  * @returns {StructureMapTuple[]} An array of tuples representing the structure of the component
  */
 export function buildStructureMap(component: SeidrComponent): StructureMapTuple[] {
-  const createdIndex = component.createdIndex as (ChildNode | SeidrComponent)[] | undefined;
+  const createdIndex = component.createdIndex;
   if (!createdIndex || createdIndex.length === 0) {
     return [];
   }
 
-  const childCreatedIndex = (component.childCreatedIndex as Map<Node | SeidrComponent, string>) || new Map();
+  const childCreatedIndex = component.childCreatedIndex ?? new Map<Node | SeidrComponent, string>();
 
   // Collect child component root nodes
   const rootNodeSets = new Map<SeidrComponent, Set<Node>>();

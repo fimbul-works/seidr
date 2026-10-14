@@ -1,17 +1,17 @@
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { isNullish } from "../util/type-guards.js";
 import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
  * Creates a new application state instance.
- * @param {number} ctxId - The context ID
+ * @param {number} ctxID - The context ID
  * @returns {AppState} The application state instance
  */
-export const createAppState = (ctxId: number): AppState => ({
-  ctxID: ctxId,
+export const createAppState = (ctxID: number): AppState => ({
+  ctxID,
   uniqID: 0,
   components: new Set<SeidrComponent>(),
   nodeIndex: new WeakMap<ChildNode, SeidrComponent>(),
@@ -38,7 +38,7 @@ export const createAppState = (ctxId: number): AppState => ({
     this.strategies.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined {
-    return this.strategies.get(key) as DataStrategy<T> | undefined;
+    return this.strategies.get(key);
   },
   destroy(): void {
     // Clean up components

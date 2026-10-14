@@ -308,12 +308,12 @@ export const App = () => Router(rootRoutes);
 Client-side utility that scans an element (or `document.body`) for anchor tags (`<a>`) and intercepts eligible link clicks to navigate with the Seidr router instead of causing a full-page reload. Ideal for dynamic content such as Markdown-rendered HTML.
 
 ```typescript
-import { onMounted, useRef } from '@fimbul-works/seidr';
+import { onMounted, createRef } from '@fimbul-works/seidr';
 import { $div } from '@fimbul-works/seidr/html';
 import { interceptLinks } from '@fimbul-works/seidr-router';
 
 const InterceptedLinksExample = () => {
-  const containerRef = useRef<HTMLDivElement>();
+  const containerRef = createRef<HTMLDivElement>();
 
   onMounted(() => interceptLinks(containerRef()));
 

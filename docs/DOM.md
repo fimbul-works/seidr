@@ -115,11 +115,11 @@ const counter = $div({ className: 'counter-container' }, [
 
 ---
 
-## Element References (`useRef`)
+## Element References (`createRef`)
 
-The `useRef()` hook provides a streamlined way to capture and interact with underlying DOM element instances. It enables imperative access to DOM nodes created via [`$()`](#--create-dom-elements) or predefined element creators when declarative bindings are insufficient (e.g., drawing on `<canvas>`, managing focus on `<input>`, or integrating third-party imperative DOM libraries).
+The `createRef()` hook provides a streamlined way to capture and interact with underlying DOM element instances. It enables imperative access to DOM nodes created via [`$()`](#--create-dom-elements) or predefined element creators when declarative bindings are insufficient (e.g., drawing on `<canvas>`, managing focus on `<input>`, or integrating third-party imperative DOM libraries).
 
-### `useRef()`
+### `createRef()`
 
 Creates a typed `Ref<T>` reference object. Holds references to DOM elements, objects, arrays, or primitive values.
 
@@ -132,11 +132,11 @@ Creates a typed `Ref<T>` reference object. Holds references to DOM elements, obj
 **Returns:** `Ref<T>` — A decorated [`Value<T | null>`](Value.md) observable.
 
 ```typescript
-import { createComponent, onMounted, useRef } from '@fimbul-works/seidr';
+import { createComponent, onMounted, createRef } from '@fimbul-works/seidr';
 import { $button, $canvas, $div } from '@fimbul-works/seidr/html';
 
 const CanvasViewer = createComponent(() => {
-  const canvasRef = useRef<HTMLCanvasElement>();
+  const canvasRef = createRef<HTMLCanvasElement>();
 
   // The element reference is reliably available inside onMounted
   onMounted(() => {
@@ -169,7 +169,7 @@ const CanvasViewer = createComponent(() => {
 Pass the `Ref` instance into the `ref` prop of any element created with [`$()`](#--create-dom-elements) or HTML helper functions:
 
 ```typescript
-const inputRef = useRef<HTMLInputElement>();
+const inputRef = createRef<HTMLInputElement>();
 const input = $('input', { type: 'text', ref: inputRef });
 ```
 

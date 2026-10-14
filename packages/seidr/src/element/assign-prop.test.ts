@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createComponent, type SeidrComponent } from "../component";
 import { setComponentScope } from "../component/component-scope";
 import { mount } from "../dom/mount";
-import { useRef } from "../hooks";
+import { createRef } from "../observable/ref";
 import { createValue } from "../observable/value";
 import { describeDualMode } from "../test-setup/dual-mode";
 import { SeidrError } from "../types";
@@ -40,7 +40,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
       let ref: any;
 
       const unmount = mount(() => {
-        ref = useRef();
+        ref = createRef();
         return $("div", { ref });
       }, getDocument().body);
 

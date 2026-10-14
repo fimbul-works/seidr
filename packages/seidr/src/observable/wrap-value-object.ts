@@ -1,4 +1,4 @@
-import type { Value } from "./value.js";
+import type { Value } from "./types.js";
 
 /**
  * Generic getter-setter interface.

@@ -2,7 +2,7 @@ import { getAppState, setAppStateID } from "../../app-state/app-state.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
 import { setRegisterValueForSSR } from "../../observable/register-value-for-ssr.js";
-import type { Value } from "../../observable/value.js";
+import type { Value } from "../../observable/types.js";
 import { registerStateStrategy } from "../register-state-strategy.js";
 import { registerValueForSSR } from "../register-value-for-ssr.js";
 import type { HydrationData } from "../types.js";

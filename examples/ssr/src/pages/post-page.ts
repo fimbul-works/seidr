@@ -1,5 +1,6 @@
 import {
   createComponent,
+  createRef,
   createValue,
   inClient,
   inServer,
@@ -11,7 +12,6 @@ import {
   Suspense,
   type SuspenseState,
   Switch,
-  useRef,
   type Value,
 } from "@fimbul-works/seidr";
 import { $article, $div, $h1, $span } from "@fimbul-works/seidr/html";
@@ -33,7 +33,7 @@ export const PostContainer = createComponent((post: Value<BlogPost | null>) => {
   return Show(
     post.as((post) => !!post),
     createComponent(() => {
-      const markdownBodyRef = useRef<HTMLDivElement>();
+      const markdownBodyRef = createRef<HTMLDivElement>();
       const tags = post.as((post) => post!.tags ?? ["Article"]);
 
       onMounted(() => interceptLinks(markdownBodyRef()!));

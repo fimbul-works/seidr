@@ -4,173 +4,10 @@ import { TYPE_PROP } from "../constants.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isFn, isNullish } from "../util/type-guards.js";
-import { DATA_KEY_STATE } from "./constants.js";
+import { isFn } from "../util/type-guards.js";
+import { DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
-
-/** Value observable type string. */
-export const TYPE_VALUE = "value";
-
-// Registry to track values that are invoked
-const parentsStack: Set<Value>[] = [];
-
-/**
- * Type for event handlers that are called when an observable's value changes.
- *
- * @template T - The data type for the event
- * @param {T} value - Data to handle
- * @param {T} prevValue - Previous data value
- * @returns {CleanupFunction | unknown} - Optional cleanup function or any value (which is ignored)
- */
-export type ValueChangeHandler<T> = (value: T, prevValue: T) => CleanupFunction | unknown;
-
-/**
- * Value interface, implementing a getter-setter pattern.
- * Notifies listeners when that value changes.
- * Allows immediate binding to a target.
- *
- * @template T - The type of the value emitted by the value
- */
-export interface Value<T = any> {
-  readonly [TYPE_PROP]: typeof TYPE_VALUE;
-
-  /**
-   * Unique identifier.
-   */
-  readonly id: string;
-
-  /**
-   * Whether this value is derived from other values.
-   */
-  readonly isDerived: boolean;
-
-  /**
-   * Whether to hydrate this value from server-side data.
-   */
-  readonly hydrate: boolean;
-
-  /**
-   * Returns the current value.
-   */
-  (): T;
-
-  /**
-   * Sets a new value.
-   *
-   * @param newValue The new value, or a function that transforms the previous value into the new value.
-   * @returns The previous value.
-   */
-  (newValue: T | ((prevValue: T) => T)): T;
-
-  /**
-   * Registers a callback that is invoked whenever the observable value changes.
-   *
-   * @param handler Receives the new value and the previous value.
-   * @returns A function that unregisters the callback.
-   */
-  watch(handler: ValueChangeHandler<T>): CleanupFunction;
-
-  /**
-   * Registers a callback that is invoked immediately,
-   * and whenever the observable value changes.
-   *
-   * @param handler Receives the new value and the previous value.
-   * @returns A function that unregisters the callback.
-   */
-  bind(handler: ValueChangeHandler<T>): CleanupFunction;
-
-  /**
-   * Removes all registered watchers.
-   *
-   * After calling this method, no further watcher callbacks will be invoked
-   * unless new watchers are registered.
-   */
-  destroy(): void;
-
-  /**
-   * Creates a derived Value that automatically transforms this observable's value.
-   *
-   * @template D - The type of the transformed/derived value
-   * @param transformFn Function that transforms the source value to the derived value
-   * @param options Options for the new derived Seidr
-   * @returns A new Seidr instance containing the transformed value
-   */
-  as<D>(transformFn: (value: T) => D, options?: ValueOptions): Value<D>;
-
-  /**
-   * Register a cleanup function that is called when the observable is destroyed.
-   *
-   * @param fn The cleanup function to register.
-   * @internal
-   */
-  cleanup(fn: CleanupFunction): void;
-
-  /**
-   * Returns the number of active observers.
-   *
-   * @internal
-   */
-  readonly observerCount: number;
-
-  /**
-   * Returns the parent values that this value derives from.
-   *
-   * @internal
-   */
-  readonly parents: Value[];
-}
-
-/**
- * Options for creating a value.
- */
-export interface ValueOptions {
-  /**
-   * Unique identifier for this observable.
-   */
-  id?: string;
-
-  /**
-   * Function to check value equality.
-   *
-   * By default, uses `Object.is` for comparison which means:
-   * - `NaN === NaN` (true)
-   * - `-0 !== +0` (true, they are different)
-   * - Object references are compared by identity
-   *
-   * To create a "signal" that always notifies (even when the value hasn't changed),
-   * use `isEqual: () => false`:
-   *
-   * @example
-   * ```ts
-   * import { createValue } from "@fimbul-works/seidr";
-   *
-   * const signal = createValue(0, { isEqual: () => false });
-   * signal.watch((val) => console.log("Always notifies:", val));
-   * signal(0); // Notifies even though value is the same
-   * ```
-   *
-   * @param a Current value for comparison.
-   * @param b New value for comparison.
-   * @returns `true` if values are equal, `false` otherwise.
-   * @default Object.is
-   */
-  isEqual?: (a: any, b: any) => boolean;
-
-  /**
-   * Parent values for derived values.
-   *
-   * @default []
-   * @internal
-   */
-  parents?: Value[];
-
-  /**
-   * Whether to hydrate this observable from server-side data.
-   *
-   * @default true
-   */
-  hydrate?: boolean;
-}
+import type { Observable, Value, ValueChangeHandler, ValueOptions } from "./types.js";
 
 /**
  * Creates an observable Value,
@@ -185,8 +22,8 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   const { id = getNextValueId(), isEqual: eq = Object.is, parents: p = [], hydrate = true } = options;
 
   // Register in AppState if available
-  let appState: AppState | undefined;
-  let states: Map<string, Value> | undefined;
+  let appState!: AppState;
+  let states!: Map<string, Value>;
 
   try {
     appState = getAppState();
@@ -325,7 +162,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   defineGetProp(fn, "observerCount", () => handlers.size);
 
   // Register instance in AppState
-  if (!isNullish(appState!) && !isNullish(states!)) {
+  if (appState && states) {
     states.set(id, fn);
     appState.setData(DATA_KEY_STATE, states);
   }
@@ -338,6 +175,9 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   return fn;
 }
 
+// Registry to track values that are invoked during a merge
+const parentsStack: Set<Observable>[] = [];
+
 /**
  * Creates a derived value by a merging function.
  *
@@ -346,7 +186,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
  * @param {ValueOptions} [options={}] - The initial value (default: `{}`)
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
-export function mergeValues<T>(mergeFn: () => T, options: Omit<ValueOptions, "hydrate"> = {}): Value<T> {
+export function mergeValues<T>(mergeFn: () => T, options: Omit<ValueOptions, "id" | "hydrate"> = {}): Value<T> {
   parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();

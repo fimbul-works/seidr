@@ -44,18 +44,20 @@ export function $<K extends keyof SeidrElementTagNameMap>(
   propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[K] {
-  let props: SeidrElementProps<K> | null | undefined;
-  let resolvedChildren: SeidrChild | SeidrChild[] | undefined;
+  const doc = getDocument();
+
+  let props!: SeidrElementProps<K> | null;
+  let resolvedChildren!: SeidrChild | SeidrChild[] | null;
 
   if (!isNullish(children)) {
     props = propsOrChildren as SeidrElementProps<K> | null;
     resolvedChildren = children;
   } else if (!isValidSeidrChild(propsOrChildren)) {
-    props = propsOrChildren as SeidrElementProps<K>;
-    resolvedChildren = undefined;
+    props = propsOrChildren;
+    resolvedChildren = null;
   } else {
-    props = undefined;
-    resolvedChildren = propsOrChildren as SeidrChild | SeidrChild[] | undefined;
+    props = null;
+    resolvedChildren = propsOrChildren;
   }
 
   /**
@@ -87,26 +89,26 @@ export function $<K extends keyof SeidrElementTagNameMap>(
     return el;
   };
 
-  // Core bundle and SSR create elements directly
+  // Create elements directly when hydration is not an issue
   if (process.env.SEIDR_DISABLE_SSR || isServer()) {
-    return decorateElement(getDocument().createElement(tagName) as SeidrElementTagNameMap[K]);
+    return decorateElement(doc.createElement(tagName) as SeidrElementTagNameMap[K]);
   }
 
-  // Hydration
-  let element: SeidrElementTagNameMap[K];
-
+  // Handle hydration
   const hydrationContext = getHydrationContext();
   if (isHydrating() && hydrationContext) {
+    let element: SeidrElementTagNameMap[K];
+
     if (hydrationContext.isMismatched()) {
       console.warn(`[Hydration] Mismatched element found: ${tagName}`);
-      element = getDocument().createElement(tagName) as SeidrElementTagNameMap[K];
+      element = doc.createElement(tagName) as SeidrElementTagNameMap[K];
     } else {
       element = hydrationContext.claim<SeidrElementTagNameMap[K]>(tagName);
     }
 
     if (!element || (element as unknown as HydrationMismatchNode).isHydrationMismatch) {
       const oldNode = element;
-      element = getDocument().createElement(tagName) as SeidrElementTagNameMap[K];
+      element = doc.createElement(tagName) as SeidrElementTagNameMap[K];
       if (oldNode?.parentNode) {
         console.warn(`[Hydration] Replacing mismatched element ${oldNode.nodeName} with ${element.tagName}.`);
         oldNode.parentNode.replaceChild(element, oldNode);
@@ -116,5 +118,5 @@ export function $<K extends keyof SeidrElementTagNameMap>(
     return decorateElement(element);
   }
 
-  return decorateElement(getDocument().createElement(tagName) as SeidrElementTagNameMap[K]);
+  return decorateElement(doc.createElement(tagName) as SeidrElementTagNameMap[K]);
 }

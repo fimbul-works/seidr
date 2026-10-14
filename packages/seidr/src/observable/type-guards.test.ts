@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { TYPE_PROP } from "../constants.js";
+import { TYPE_VALUE } from "./constants.js";
 import { isValue } from "./type-guards.js";
-import { createValue, mergeValues, TYPE_VALUE, type Value } from "./value.js";
+import type { Value } from "./types.js";
+import { createValue, mergeValues } from "./value.js";
 import { wrapValue } from "./wrap-value.js";
 
 describe("isValue", () => {
@@ -55,7 +57,7 @@ describe("isValue", () => {
 
     it("should return false for plain functions without TYPE_PROP", () => {
       expect(isValue(() => {})).toBe(false);
-      expect(isValue(function () {})).toBe(false);
+      expect(isValue(() => {})).toBe(false);
       expect(isValue(async () => {})).toBe(false);
       expect(isValue(function* () {})).toBe(false);
       expect(isValue(class {})).toBe(false);
@@ -90,7 +92,7 @@ describe("isValue", () => {
 
     it("should return false for standard built-in objects and instances", () => {
       expect(isValue(new Date())).toBe(false);
-      expect(isValue(new RegExp("abc"))).toBe(false);
+      expect(isValue(/abc/)).toBe(false);
       expect(isValue(new Map())).toBe(false);
       expect(isValue(new Set())).toBe(false);
       expect(isValue(new Error("fail"))).toBe(false);

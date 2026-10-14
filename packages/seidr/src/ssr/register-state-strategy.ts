@@ -1,7 +1,7 @@
 import { getAppState } from "../app-state/app-state.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
+import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
-import type { Value } from "../observable/value.js";
 import { createValue } from "../observable/value.js";
 import { packHydrationState, unpackHydrationState } from "./util/state-tuple.js";
 

@@ -3,7 +3,7 @@ import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
 import type { SeidrComponentFactoryOrFunction } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { mergeValues } from "../observable/value.js";
 
 /**

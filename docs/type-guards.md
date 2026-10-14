@@ -134,12 +134,12 @@ console.log(isValue(() => {})); // false
 
 ### `isRef()`
 
-Checks if a value is a Seidr [`Ref`](DOM.md#element-references-useref) element reference observable created via `useRef()`.
+Checks if a value is a Seidr [`Ref`](DOM.md#element-references-useref) element reference observable created via `createRef()`.
 
 ```typescript
-import { isRef, useRef } from '@fimbul-works/seidr';
+import { isRef, createRef } from '@fimbul-works/seidr';
 
-const ref = useRef<HTMLCanvasElement>();
+const ref = createRef<HTMLCanvasElement>();
 
 console.log(isRef(ref));    // true
 console.log(isRef(null));   // false

@@ -6,7 +6,7 @@ import { getMarkerComments } from "../component/util/get-marker-comments.js";
 import { normalizeChildNodes } from "../dom/append-child.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
 import { wrapComponent } from "../index.core.js";
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 
 /**

@@ -1,4 +1,4 @@
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { hydrateValueState } from "./hydrate/hydrate-value-state.js";
 
@@ -14,7 +14,7 @@ export const registerValueForSSR = (value: Value): void => {
 
   // Registr parents first
   for (const parent of value.parents) {
-    registerValueForSSR(parent);
+    registerValueForSSR(parent as Value);
   }
 
   // Don't register derived values or values that are not set to hydrate

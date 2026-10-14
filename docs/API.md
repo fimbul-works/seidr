@@ -25,7 +25,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - [`wrapValue()`](Value.md#wrapvalue) — Wrap a raw value in a Value observable if not already reactive.
 - [`unwrapValue()`](Value.md#unwrapvalue) — Safely extract the raw value from a Value observable.
 - [`wrapValueObject()`](Value.md#wrapvalueobject) — Wrap a Value in an OOP object accessor with getter/setter properties.
-- [`useRef()`](DOM.md#element-references-useref) — Create a specialized Ref observable for DOM element references.
+- [`createRef()`](DOM.md#element-references-useref) — Create a specialized Ref observable for DOM element references.
 - [`isValue()`](Value.md#isvalue) — Check if a value is a Seidr Value observable.
 - [`isRef()`](Value.md#isref) — Check if a value is a Seidr Ref observable.
 
@@ -33,7 +33,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - **Core Utilities** (`@fimbul-works/seidr`)
   - [`$()`](DOM.md#--create-dom-elements) — Create a DOM element with reactive attributes and child bindings.
   - [`$factory()`](DOM.md#factory) — Create a reusable custom element creator.
-  - [`useRef()`](DOM.md#element-references-useref) — Create a reactive DOM element reference hook.
+  - [`createRef()`](DOM.md#element-references-useref) — Create a reactive DOM element reference hook.
   - [`$text()`](DOM.md#text) — Create a DOM Text node.
   - [`$comment()`](DOM.md#comment) — Create a DOM Comment.
   - [`getDocument()`](DOM.md#getdocument) — Retrieve the active DOM Document instance.

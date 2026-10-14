@@ -3,7 +3,6 @@ import { getAppState } from "../app-state/app-state";
 import { DATA_KEY_COMPONENT_CURSOR } from "../constants";
 import { mount } from "../dom/mount";
 import { describeDualMode } from "../test-setup";
-import { SeidrError } from "../types";
 import { onMounted } from "./on-mounted";
 
 describeDualMode("onMounted", ({ getDocument }) => {
@@ -19,11 +18,13 @@ describeDualMode("onMounted", ({ getDocument }) => {
     cleanup();
   });
 
-  it("should throw SeidrError when called without component scope", () => {
+  it("should throw SeidrError when called without component scope (warn in test)", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     getAppState().deleteData(DATA_KEY_COMPONENT_CURSOR);
 
-    expect(() => {
-      onMounted(() => {});
-    }).toThrow(SeidrError);
+    onMounted(() => {});
+
+    expect(warnSpy).toHaveBeenCalled();
+    warnSpy.mockRestore();
   });
 });

@@ -208,8 +208,6 @@ export function createComponent<P = void>(
       const result = factory(props);
       const nodes = (isArray(result) ? result : [result]).filter(Boolean).flatMap(childToNodes);
       setComponentNodes(currentComponent, nodes);
-    } catch (error) {
-      throw error;
     } finally {
       setComponentScope(parentComponent);
       if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {

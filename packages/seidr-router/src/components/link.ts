@@ -102,7 +102,7 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap = "a"> {
   /** Class name to apply when the link is inactive */
   inactiveClass?: string | Value<string>;
   /** Whether the route match must be exact */
-  exact?: boolean | Value<boolean>;
+  exact?: boolean;
 }
 
 /**
@@ -127,7 +127,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 ): HTMLElementTagNameMap[K] => {
   initRouter();
   const navigate = useNavigate();
-  const href = wrapValue(to, { hydrate: false }).as((t) => t);
+  const href = wrapValue(to, { hydrate: false });
   const url = getRouterState().url;
   const nearest = getNearestRouter();
   const localPath = nearest?.pathname;
@@ -147,24 +147,15 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 
   // Determine link active status
   const hasDynamicClass = activeClassName !== undefined || inactiveClassName !== undefined;
-  const classNameParents: Value<any>[] = [href, url];
-  if (localPath) classNameParents.push(localPath);
-  if (isValue(activeClassName)) classNameParents.push(activeClassName);
-  if (isValue(inactiveClassName)) classNameParents.push(inactiveClassName);
-  if (isValue(rawClassName)) classNameParents.push(rawClassName);
-  if (isValue(exact)) classNameParents.push(exact);
+  const classNameParents: Value[] = [href, url, localPath, activeClassName, inactiveClassName, rawClassName].filter(
+    isValue,
+  );
 
   // Determine className based on active/inactive states
   const className = hasDynamicClass
     ? mergeValues(
         () => {
-          const active = isLinkActive(
-            href(),
-            unwrapValue(url()),
-            localPath ? unwrapValue(localPath()) : undefined,
-            ancestorPrefix || undefined,
-            unwrapValue(exact),
-          );
+          const active = isLinkActive(href(), url(), localPath?.(), ancestorPrefix, exact);
 
           const classes: string[] = [];
           const base = unwrapValue(rawClassName);
@@ -182,7 +173,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 
           return classes.length > 0 ? classes.join(" ") : undefined;
         },
-        { parents: classNameParents, hydrate: false },
+        { parents: classNameParents },
       )
     : rawClassName;
 

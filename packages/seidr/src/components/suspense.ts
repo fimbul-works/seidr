@@ -2,8 +2,9 @@ import { createComponent } from "../component/create-component.js";
 import { isLazyComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
+import { unwrapValue } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
-import type { Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
@@ -79,11 +80,7 @@ export const Suspense = <T>(
       }
     };
 
-    const initial = isLazyComponent(promiseOrValue)
-      ? promiseOrValue.preload()
-      : isValue<Promise<T>>(promiseOrValue)
-        ? promiseOrValue()
-        : promiseOrValue;
+    const initial = isLazyComponent(promiseOrValue) ? promiseOrValue.preload() : unwrapValue(promiseOrValue);
 
     if (initial instanceof Promise) {
       if (isServer()) {
@@ -99,15 +96,16 @@ export const Suspense = <T>(
     }
 
     if (isValue<Promise<T>>(promiseOrValue)) {
-      const cleanup = promiseOrValue.watch((prom) => {
-        if (prom instanceof Promise) {
-          if (isServer()) {
-            getSSRScope()?.addPromise(prom);
+      onUnmounted(
+        promiseOrValue.watch((prom) => {
+          if (prom instanceof Promise) {
+            if (isServer()) {
+              getSSRScope()?.addPromise(prom);
+            }
+            handlePromise(prom);
           }
-          handlePromise(prom);
-        }
-      });
-      onUnmounted(cleanup);
+        }),
+      );
     }
 
     return factory({ state, value, error });

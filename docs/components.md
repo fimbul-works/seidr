@@ -126,8 +126,8 @@ const CanvasComponent = createComponent(() => {
 
 > **TIP**
 >
-> **Working with DOM References (`useRef`)**:
-> If you need direct access to child DOM elements (such as measuring an element, focusing an input, or drawing to a `<canvas>`), use the [`useRef()`](DOM.md#element-references-useref) hook. Because elements are only guaranteed to be attached to the active document after mounting, inspect and manipulate your element refs inside `onMounted()`.
+> **Working with DOM References (`createRef`)**:
+> If you need direct access to child DOM elements (such as measuring an element, focusing an input, or drawing to a `<canvas>`), use the [`createRef()`](DOM.md#element-references-useref) hook. Because elements are only guaranteed to be attached to the active document after mounting, inspect and manipulate your element refs inside `onMounted()`.
 
 ---
 

@@ -1,11 +1,11 @@
 import {
   createComponent,
+  createRef,
   createValue,
   hydrate,
   inClient,
   List,
   onUnmounted,
-  useRef,
   type Value,
 } from "@fimbul-works/seidr";
 import { $a, $canvas, $div, $h1, $nav, $p, $section, $span, $ul } from "@fimbul-works/seidr/html";
@@ -52,7 +52,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
   let canvas: HTMLCanvasElement | null = null;
 
   const HeroCanvas = () => {
-    const canvasRef = useRef<HTMLCanvasElement>();
+    const canvasRef = createRef<HTMLCanvasElement>();
 
     inClient(() => {
       canvasRef.bind((v) => (canvas = v));

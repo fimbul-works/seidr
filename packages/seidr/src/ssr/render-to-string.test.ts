@@ -69,7 +69,7 @@ describe("renderToString", () => {
     const TestComponent = createComponent(() => {
       firstName = createValue("John");
       lastName = createValue("Doe");
-      const fullName = mergeValues(() => `${firstName()} ${lastName()}`, { parents: [firstName, lastName] });
+      const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
       return $("div", {}, [$("h1", { textContent: fullName })]);
     });
 
@@ -87,7 +87,7 @@ describe("renderToString", () => {
     const TestComponent = createComponent(() => {
       const a = createValue(2);
       const b = createValue(3);
-      const sum = mergeValues(() => a() + b(), { parents: [a, b] });
+      const sum = mergeValues(() => a() + b(), [a, b]);
 
       return $("div", { textContent: sum.as((s) => `Sum: ${s}`) });
     });

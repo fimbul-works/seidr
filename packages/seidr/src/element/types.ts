@@ -1,7 +1,6 @@
 import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
-import type { Ref } from "../hooks/use-ref.js";
-import type { Value } from "../observable/value.js";
+import type { Ref, Value } from "../observable/types.js";
 
 /**
  * Used to represent DOM API's where users can either pass
@@ -385,7 +384,7 @@ export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${st
  * @template T - The underlying scalar type
  */
 export type ReactiveValue<T> = [T] extends [Scalar]
-  ? T | Value<string> | Value<string | null> | Value<number> | Value<number | null> | Value<boolean> | true
+  ? T | Value<T> | Value<string> | Value<string | null> | Value<number> | Value<number | null> | Value<boolean> | true
   : [T] extends [infer A]
     ? T | Value<A> | null
     : T;
@@ -469,16 +468,7 @@ export type SeidrNode = SeidrComponent | Element | Text | Comment;
 /**
  * Union type representing allowed child nodes for Seidr Components.
  */
-export type SeidrChild =
-  | SeidrNode
-  | Value<any>
-  | ChildNode
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | SeidrChild[];
+export type SeidrChild = SeidrNode | Value | ChildNode | string | number | boolean | null | undefined | SeidrChild[];
 
 /**
  * Namee of a property
