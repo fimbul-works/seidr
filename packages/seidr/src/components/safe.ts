@@ -23,7 +23,7 @@ export const Safe = (
     try {
       return factory();
     } catch (err) {
-      if (process.env.NODE_ENV === "development" || process.env.VITEST) {
+      if (process.env.NODE_ENV !== "production" || process.env.VITEST) {
         console.error(`Error in component ${name}`, err);
       }
       return errorBoundary(wrapError(err));

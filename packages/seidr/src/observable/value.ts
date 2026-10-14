@@ -346,7 +346,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
  * @param {ValueOptions} [options={}] - The initial value (default: `{}`)
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
-export function mergeValues<T>(mergeFn: () => T, options: ValueOptions = {}): Value<T> {
+export function mergeValues<T>(mergeFn: () => T, options: Omit<ValueOptions, "hydrate"> = {}): Value<T> {
   parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();

@@ -163,7 +163,7 @@ export const mountConnectedComponents = (node: Node) => {
  */
 export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[] | null | undefined) => {
   if (child === parent) {
-    if (process.env.NODE_ENV === "development")
+    if (process.env.NODE_ENV !== "production")
       console.log(`Parent and child are the same, skipping append child. ${parent}`);
     return;
   }
@@ -214,7 +214,7 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
         try {
           onUnmounted(cleanup);
         } catch (error) {
-          if (process.env.NODE_ENV === "development") {
+          if (process.env.NODE_ENV !== "production") {
             console.error(error);
           }
         }

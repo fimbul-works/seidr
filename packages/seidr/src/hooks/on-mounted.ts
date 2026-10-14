@@ -16,15 +16,18 @@ export const onMountedFns = new Map<Node, Array<OnMountedFunction>>();
  */
 export function onMounted(callback: OnMountedFunction) {
   if (!isFn(callback)) {
-    if (process.env.NODE_ENV === "development") {
-      console.trace("onMounted callback is not a function");
+    if (process.env.NODE_ENV !== "production") {
+      throw new SeidrError("onMounted callback is not a function");
     }
     return;
   }
 
   const component = getComponentScope();
   if (!component) {
-    throw new SeidrError("onMounted called outside of component");
+    if (process.env.NODE_ENV !== "production") {
+      throw new SeidrError("onMounted called outside of component");
+    }
+    return;
   }
   component.onMounted(callback);
 }

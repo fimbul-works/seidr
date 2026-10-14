@@ -10,15 +10,18 @@ import { isFn } from "../util/type-guards.js";
  */
 export function onUnmounted(callback: CleanupFunction) {
   if (!isFn(callback)) {
-    if (process.env.NODE_ENV === "development") {
-      console.trace("onUnmounted callback is not a function");
+    if (process.env.NODE_ENV !== "production") {
+      throw new SeidrError("onUnmounted callback is not a function");
     }
     return;
   }
 
   const component = getComponentScope();
   if (!component) {
-    throw new SeidrError("onUnmounted called outside of component");
+    if (process.env.NODE_ENV !== "production") {
+      throw new SeidrError("onUnmounted called outside of component");
+    }
+    return;
   }
   component.onUnmounted(callback);
 }

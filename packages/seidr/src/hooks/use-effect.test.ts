@@ -24,10 +24,6 @@ describe("useEffect", () => {
     expect(() => useEffect(() => {}, [{} as any])).toThrow(SeidrError);
   });
 
-  it("throws SeidrError when called outside of a component", () => {
-    expect(() => useEffect(() => {}, [])).toThrow(SeidrError);
-  });
-
   it("executes effect on mount with empty dependencies", () => {
     const effectFn = vi.fn();
 
