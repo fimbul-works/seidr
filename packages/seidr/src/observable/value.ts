@@ -7,7 +7,14 @@ import { isServer } from "../util/environment/is-server.js";
 import { isFn } from "../util/type-guards.js";
 import { DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
-import type { Observable, Value, ValueChangeHandler, ValueOptions } from "./types.js";
+import type {
+  DerivedValue,
+  DerivedValueOptions,
+  Observable,
+  Value,
+  ValueChangeHandler,
+  ValueOptions,
+} from "./types.js";
 
 /**
  * Creates an observable Value,
@@ -153,7 +160,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     cleanups.clear();
   });
 
-  defineValueProp(fn, "as", <D>(transformFn: (value: T) => D, options: ValueOptions = {}) =>
+  defineValueProp(fn, "as", <D>(transformFn: (value: T) => D, options: DerivedValueOptions = {}) =>
     mergeValues(() => transformFn(fn()), options),
   );
 
@@ -183,20 +190,20 @@ const parentsStack: Set<Observable>[] = [];
  *
  * @template T - The type of the value stored and emitted
  * @param {() => T} [mergeFn] - The function that returns the derived value
- * @param {ValueOptions} [options={}] - The initial value (default: `{}`)
+ * @param {ValueOpDerivedValueOptionstions} [options={}] - The initial value (default: `{}`)
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
-export function mergeValues<T>(mergeFn: () => T, options: Omit<ValueOptions, "id" | "hydrate"> = {}): Value<T> {
+export function mergeValues<T>(mergeFn: () => T, options: DerivedValueOptions = {}): DerivedValue<T> {
   parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();
     const parents = Array.from(parentsStack.at(-1)!);
     if (parentsStack.length === 0) {
-      throw new SeidrError("Merged Value must have at least one parent");
+      throw new SeidrError("Derived Value must have at least one parent");
     }
     const derived = createValue<T>(initialValue, { ...options, parents: parents });
     parents.forEach((parent) => derived.cleanup(parent.watch(() => derived(mergeFn()) as void)));
-    return derived;
+    return derived as DerivedValue<T>;
   } finally {
     parentsStack.pop();
   }

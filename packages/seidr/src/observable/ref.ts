@@ -1,4 +1,5 @@
 import { TYPE_PROP } from "../constants.js";
+import { onUnmounted } from "../hooks/on-unmounted.js";
 import { SeidrError } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
 import { TYPE_REF } from "./constants.js";
@@ -35,9 +36,7 @@ export function createRef<T = any, R = T extends undefined | null ? never : Ref<
   const ref = defineValueProp(fn as Ref<T>, TYPE_PROP, TYPE_REF, false);
 
   // Copy Value properties to Ref handle
-  (["watch", "bind", "destroy"] as (keyof Ref)[]).forEach((prop) => {
-    defineValueProp(ref, prop, value[prop]);
-  });
+  (["watch", "bind", "destroy"] as (keyof Ref)[]).forEach((prop) => defineValueProp(ref, prop, value[prop]));
 
   return ref as R;
 }
@@ -59,7 +58,7 @@ export function composeRefs<T = any>(...refs: (Ref<T> | null | undefined)[]): Re
   const composite = createRef<T>(initialValue);
 
   // Propagate updates on the composite ref to all constituent refs
-  composite.bind((newValue) => validRefs.forEach((r) => r(newValue)));
+  onUnmounted(composite.bind((newValue) => validRefs.forEach((r) => r(newValue))));
 
   return composite;
 }
