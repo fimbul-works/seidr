@@ -118,7 +118,7 @@ export interface Value<T = any> extends Observable<T> {
    * @param options Options for the new derived value
    * @returns A new observable value containing the transformed value
    */
-  as<D>(transformFn: (value: T) => D, options?: DerivedValueOptions): Value<D>;
+  as<D>(transformFn: (value: T) => D, options?: DerivedValueOptions): DerivedValue<D>;
 
   /**
    * Register a cleanup function that is called when the observable is destroyed.
