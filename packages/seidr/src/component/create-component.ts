@@ -99,7 +99,7 @@ export function createComponent<P = void>(
       addChild: (child: SeidrComponent) => {
         children.add(child);
         child.parent = currentComponent;
-        if (isMounted) {
+        if (isMounted && (child.nodes.length === 0 || child.nodes.some((n) => n.isConnected))) {
           child.mount();
         }
         if (isServer()) {
@@ -117,10 +117,10 @@ export function createComponent<P = void>(
       mount() {
         if (isMounted) return;
         isMounted = true;
+        appState.components.add(currentComponent);
 
-        // Trigger onMounted callbacks after a small delay on client-side
+        // Trigger onMounted callbacks on client-side
         componentMountedFns.forEach((fn) => fn());
-        componentMountedFns.length = 0;
 
         children.forEach((child) => child.mount());
       },
@@ -143,10 +143,8 @@ export function createComponent<P = void>(
         currentComponent.parent?.removeChild(currentComponent);
 
         componentUnmountedFns.forEach((fn) => fn());
-        componentUnmountedFns.length = 0;
 
         children.forEach((c) => c.unmount());
-        children.clear();
 
         unsetComponentNodes(currentComponent);
         isMounted = false;
