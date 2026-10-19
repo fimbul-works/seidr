@@ -5,8 +5,9 @@ import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { isFn } from "../util/type-guards.js";
-import { DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
+import { DATA_KEY_PARENT_OBSERVABLE_STACK, DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
+import { isObservable } from "./type-guards.js";
 import type {
   DerivedValue,
   DerivedValueOptions,
@@ -15,6 +16,8 @@ import type {
   ValueChangeHandler,
   ValueOptions,
 } from "./types.js";
+
+const getParentObservableStack = () => getAppState().getData<Set<Observable>[]>(DATA_KEY_PARENT_OBSERVABLE_STACK, []);
 
 /**
  * Creates an observable Value,
@@ -77,8 +80,9 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   // Access to arguments requires a standard function
   function valueGetSetter(newValue?: T | ((prevValue: T) => T)): T {
     if (!arguments.length) {
-      if (parentsStack.length) {
-        parentsStack.at(-1)!.add(valueGetSetter as Value);
+      const stack = getParentObservableStack();
+      if (stack.length) {
+        stack.at(-1)!.add(valueGetSetter as Value);
       }
 
       return currentValue;
@@ -182,9 +186,6 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   return fn;
 }
 
-// Registry to track values that are invoked during a merge
-const parentsStack: Set<Observable>[] = [];
-
 /**
  * Creates a derived value by a merging function.
  *
@@ -194,6 +195,7 @@ const parentsStack: Set<Observable>[] = [];
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
 export function mergeValues<T>(mergeFn: () => T, options: DerivedValueOptions = {}): DerivedValue<T> {
+  const parentsStack = getParentObservableStack();
   parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();

@@ -124,7 +124,7 @@ export function createComponent<P = void>(
 
         children.forEach((child) => child.mount());
       },
-      onMounted: (fn: OnMountedFunction) => componentMountedFns.push(fn),
+      onMounted: (fn: OnMountedFunction) => componentMountedFns.unshift(fn),
       onUnmounted: (fn: CleanupFunction) => componentUnmountedFns.push(fn),
       unmount(): void {
         if (isServer()) {
