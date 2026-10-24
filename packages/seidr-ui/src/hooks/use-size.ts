@@ -60,27 +60,25 @@ export function useSize<T extends HTMLElement>(ref: Ref<T>): SizeValue {
       size({ width: element.offsetWidth, height: element.offsetHeight });
     };
 
-    onUnmounted(
-      ref.bind((element) => {
-        if (!element) {
-          size(null);
-          return;
+    ref.bind((element) => {
+      if (!element) {
+        size(null);
+        return;
+      }
+
+      syncSize(element);
+
+      const observer = new ResizeObserver((entries) => {
+        if (!isArr(entries)) return;
+        for (const entry of entries) {
+          if (entry.target && entry.target !== element) continue;
+          syncSize(element, entry);
         }
+      });
+      observer.observe(element, { box: "border-box" });
 
-        syncSize(element);
-
-        const observer = new ResizeObserver((entries) => {
-          if (!isArr(entries)) return;
-          for (const entry of entries) {
-            if (entry.target && entry.target !== element) continue;
-            syncSize(element, entry);
-          }
-        });
-        observer.observe(element, { box: "border-box" });
-
-        return () => observer.disconnect();
-      }),
-    );
+      return () => observer.disconnect();
+    });
   });
 
   return {

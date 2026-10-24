@@ -1,9 +1,10 @@
 import { Parser } from "htmlparser2";
 import { setDocumentProvider } from "../../dom/get-document.js";
 import { getSSRDocument } from "../../dom/get-document.ssr.js";
+import { $comment } from "../../dom/node/comment.js";
+import { $text } from "../../dom/node/text.js";
 import { $ } from "../../element/create-element.js";
 import type { SeidrElementTagNameMap } from "../../element/types.js";
-import { $comment, $text } from "../../index.core.js";
 import { SELF_CLOSING } from "./ssr-element.js";
 
 export type HTMLNode =

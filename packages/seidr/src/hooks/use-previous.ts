@@ -2,7 +2,6 @@ import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 import { SeidrError } from "../types.js";
-import { onUnmounted } from "./on-unmounted.js";
 
 /**
  * Creates a `Value<T>` that holds the previous value of a given `Value<T>`.
@@ -18,6 +17,6 @@ export function usePrevious<T>(value: Value<T>): Value<T> {
   }
 
   const previous = createValue<T>(value());
-  onUnmounted(value.watch((_newValue, prevValue) => previous(prevValue)));
+  value.watch((_newValue, prevValue) => previous(prevValue));
   return previous;
 }

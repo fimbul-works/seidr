@@ -220,11 +220,9 @@ export function useTransition(
 
   inClient(() => {
     if (isValue(shouldMount)) {
-      onUnmounted(
-        shouldMount.watch((next) => {
-          handleStateChange(Boolean(next));
-        }),
-      );
+      shouldMount.watch((next) => {
+        handleStateChange(Boolean(next));
+      });
     }
   });
 

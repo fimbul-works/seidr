@@ -237,22 +237,18 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(ref: Ref<T>, 
     attachTrap();
   };
 
-  onUnmounted(
-    ref.bind((container) => {
-      if (container) {
-        setupScope(container);
-      } else {
-        detachTrap();
-      }
-    }),
-  );
+  ref.bind((container) => {
+    if (container) {
+      setupScope(container);
+    } else {
+      detachTrap();
+    }
+  });
 
   if (isValue(props.trapFocus)) {
-    onUnmounted(
-      props.trapFocus.watch(() => {
-        attachTrap();
-      }),
-    );
+    props.trapFocus.watch(() => {
+      attachTrap();
+    });
   }
 
   onUnmounted(() => {

@@ -1,5 +1,4 @@
 import { TYPE_PROP } from "../constants.js";
-import { onUnmounted } from "../hooks/on-unmounted.js";
 import { SeidrError } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
 import { TYPE_REF } from "./constants.js";
@@ -58,7 +57,7 @@ export function composeRefs<T = any>(...refs: (Ref<T> | null | undefined)[]): Re
   const composite = createRef<T>(initialValue);
 
   // Propagate updates on the composite ref to all constituent refs
-  onUnmounted(composite.bind((newValue) => validRefs.forEach((r) => r(newValue))));
+  composite.bind((newValue) => validRefs.forEach((r) => r(newValue)));
 
   return composite;
 }

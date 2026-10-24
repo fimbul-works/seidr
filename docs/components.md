@@ -135,7 +135,7 @@ const CanvasComponent = createComponent(() => {
 
 Registers a cleanup function executed when the component (or a specific target DOM node) is removed from the DOM and destroyed.
 
-Use `onUnmounted` to cancel timers, detach event listeners, close WebSockets, or clean up subscriptions:
+Use `onUnmounted` to cancel timers, detach native event listeners, close WebSockets, or clean up custom non-reactive resources:
 
 ```typescript
 import { createComponent, createValue, onUnmounted } from '@fimbul-works/seidr';
@@ -148,19 +148,20 @@ const Timer = createComponent(() => {
     seconds((s) => s + 1);
   }, 1000);
 
-  // Register cleanup
+  // Register cleanup for non-reactive resources (intervals, websockets, manual event listeners)
   onUnmounted(() => {
     clearInterval(intervalId);
   });
 
-  // Reactive subscription cleanup
-  onUnmounted(
-    seconds.watch((sec) => console.log('Tick:', sec))
-  );
+  // Reactive subscriptions automatically clean up on unmount without needing onUnmounted:
+  seconds.watch((sec) => console.log('Tick:', sec));
 
   return $div({ textContent: seconds.as((s) => `Active for ${s}s`) });
 }, 'Timer');
 ```
+
+> [!NOTE]
+> `Value.watch()` and `Value.bind()` automatically register their teardown with the current component scope's `onUnmounted` hook when invoked inside a component. Explicit `onUnmounted()` calls are only required for non-Value resources (such as `setInterval`, native DOM listeners, or external socket connections). Outside of a component scope (e.g. in test suites), subscriptions remain active indefinitely until manually cancelled using their returned cleanup function.
 
 **Parameters:**
 - `callback: CleanupFunction` — Cleanup callback (`() => void`).

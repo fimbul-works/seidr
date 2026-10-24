@@ -60,7 +60,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
 
   if (prop === "style") {
     if (isValue(value)) {
-      onUnmounted(value.bind((style) => (el.style = style)));
+      value.bind((style) => (el.style = style));
     } else if (isStr(value)) {
       el.style = value;
     } else if (isObj(value)) {
@@ -69,7 +69,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
           styleProp = camelToKebab(styleProp);
         }
         if (isValue(styleValue)) {
-          onUnmounted(styleValue.bind((val) => (el.style[styleProp as any] = val)));
+          styleValue.bind((val) => (el.style[styleProp as any] = val));
         } else {
           el.style[styleProp as any] = styleValue;
         }
@@ -93,7 +93,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
   };
 
   if (isValue(value)) {
-    onUnmounted(value.bind((val) => applyValue(el, val)));
+    value.bind((val) => applyValue(el, val));
   } else {
     applyValue(el, value);
   }

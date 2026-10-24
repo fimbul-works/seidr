@@ -1,6 +1,6 @@
 import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
-import type { DerivedValue, ObservableValue, Ref, Value } from "../observable/types.js";
+import type { ObservableValue, Ref } from "../observable/types.js";
 
 /**
  * Used to represent DOM API's where users can either pass
@@ -453,12 +453,14 @@ export type ReactiveDataCamelCase = {
  * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  */
 export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof SeidrElementTagNameMap> = Partial<
-  ReactiveProps<K, SeidrElementTagNameMap[K]> &
-    ReactiveARIAMixin &
-    ReactiveARIAKebabCase &
-    ReactiveDataKebabCase &
-    ReactiveDataCamelCase
-> & { style?: ReactiveStyleDeclaration | ReactiveValue<string>; ref?: Ref<SeidrElementTagNameMap[K]> };
+  ReactiveProps<K, SeidrElementTagNameMap[K]>
+> & {
+  style?: ReactiveStyleDeclaration | ReactiveValue<string>;
+  ref?: Ref<SeidrElementTagNameMap[K]>;
+  [key: `data-${string}`]: ReactiveValue<string> | undefined;
+  [key: `data${string}`]: ReactiveValue<string> | undefined;
+  [key: `aria-${string}`]: ReactiveValue<string> | undefined;
+};
 
 /**
  * Union type representing allowed nodes for Seidr elements.
@@ -470,8 +472,7 @@ export type SeidrNode = SeidrComponent | Element | Text | Comment;
  */
 export type SeidrChild =
   | SeidrNode
-  | Value
-  | DerivedValue
+  | ObservableValue
   | ChildNode
   | string
   | number

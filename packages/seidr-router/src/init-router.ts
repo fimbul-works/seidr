@@ -1,5 +1,5 @@
 import { isNullish, isObj, isStr } from "@fimbul-works/hvat";
-import { createValue, getAppState, getComponentScope, isClient, isValue, SeidrError } from "@fimbul-works/seidr";
+import { createValue, getAppState, isClient, isValue, SeidrError } from "@fimbul-works/seidr";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_ROUTER, DUMMY_BASE_URL, VALUE_ID_ROUTER_URL } from "./constants.js";
 import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
@@ -69,13 +69,7 @@ export const initRouter = (
   }
 
   // Observe URL changes and notify listeners
-  const cleanup = url.watch((newUrl) => popstateListeners.forEach((fn) => fn(newUrl.pathname + newUrl.search)));
-
-  // Cleanup on unmount if in component scope
-  const currentScope = getComponentScope();
-  if (currentScope) {
-    currentScope.onUnmounted(cleanup);
-  }
+  url.watch((newUrl) => popstateListeners.forEach((fn) => fn(newUrl.pathname + newUrl.search)));
 
   // Define data strategy for hydration
   if (!process.env.SEIDR_DISABLE_SSR) {

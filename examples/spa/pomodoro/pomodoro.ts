@@ -1,4 +1,4 @@
-import { createValue, mount, onUnmounted } from "@fimbul-works/seidr";
+import { createValue, mount } from "@fimbul-works/seidr";
 import { $button, $div, $h2 } from "@fimbul-works/seidr/html";
 
 const BEEP_SOUND =
@@ -53,15 +53,13 @@ const PomodoroTimer = () => {
     audio.play().catch(() => {});
   };
 
-  onUnmounted(
-    isRunning.watch((running) => {
-      if (running) {
-        interval = setInterval(tick, 1000);
-      } else {
-        if (interval) clearInterval(interval);
-      }
-    }),
-  );
+  isRunning.watch((running) => {
+    if (running) {
+      interval = setInterval(tick, 1000);
+    } else {
+      if (interval) clearInterval(interval);
+    }
+  });
 
   const toggleTimer = () => {
     isRunning((v) => !v);

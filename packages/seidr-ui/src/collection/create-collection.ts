@@ -45,7 +45,7 @@ export function createCollection<T = any>(
   });
 
   if (isValue<T[]>(props.dataSource)) {
-    onUnmounted(props.dataSource.watch((data) => collection(build(data))));
+    props.dataSource.watch((data) => collection(build(data)));
   }
 
   return collection;

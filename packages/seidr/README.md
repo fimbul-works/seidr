@@ -285,18 +285,23 @@ const message = count.as((n) => (n > 5 ? 'Many!' : `Count: ${n}`));
 
 #### Watching & Side Effects
 
-Subscribe to changes with `.watch()` or `.bind()`. Handlers can return an optional cleanup function that executes automatically before the next change or when unsubscribed:
+Subscribe to changes with `.watch()` or `.bind()`. When called within a component, subscriptions automatically register with the current component scope and clean up on unmount—manual cleanup via `onUnmounted()` is not needed.
+
+Outside of a component scope (e.g. in tests or global state), subscriptions live indefinitely until explicitly cancelled via the returned cleanup function.
+
+Handlers can also return an optional cleanup function that executes automatically before the next change or when unsubscribed:
 
 ```typescript
 const isTracking = createValue(false);
 
-const unbind = isTracking.bind((active) => {
+// Inside a component, this subscription cleans up automatically when unmounted:
+isTracking.bind((active) => {
   if (!active) return;
 
   const onMouseMove = (e: MouseEvent) => console.log(e.clientX, e.clientY);
   window.addEventListener('mousemove', onMouseMove);
 
-  // Return a teardown function (runs on next change or when unbinding)
+  // Return a teardown function (runs on next change or when unbinding/unmounting)
   return () => window.removeEventListener('mousemove', onMouseMove);
 });
 ```

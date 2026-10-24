@@ -1,6 +1,7 @@
 import { isFn } from "@fimbul-works/hvat";
 import { getAppState, getNextValueId } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { TYPE_PROP } from "../constants.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
@@ -133,16 +134,21 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
       registerValueForSSR?.(fn);
     }
     handlers.add(handler);
-    return () => cleanupHandler(handler);
+    const cleanup = () => cleanupHandler(handler);
+    getComponentScope()?.onUnmounted(cleanup); // Clean up automatically when component unmounts
+    return cleanup;
   });
 
   defineValueProp(fn, "bind", (handler: ValueChangeHandler<T>): CleanupFunction => {
     if (!process.env.SEIDR_DISABLE_SSR) {
       registerValueForSSR?.(fn);
     }
+
     handlers.add(handler);
     runHandler(handler, currentValue, currentValue);
-    return () => cleanupHandler(handler);
+    const cleanup = () => cleanupHandler(handler);
+    getComponentScope()?.onUnmounted(cleanup); // Clean up automatically when component unmounts
+    return cleanup;
   });
 
   defineValueProp(fn, "cleanup", (cleanupFn: CleanupFunction) => cleanups.add(cleanupFn));
@@ -167,7 +173,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     mergeValues(() => transformFn(fn()), options),
   );
 
-  defineGetProp(fn, "parents", () => parents.slice());
+  defineGetProp(fn, "parents", () => parents?.slice() ?? []);
 
   defineGetProp(fn, "observerCount", () => handlers.size);
 

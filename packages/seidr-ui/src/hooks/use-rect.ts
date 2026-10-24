@@ -151,19 +151,17 @@ export function useRect<T extends Measurable>(ref: Ref<T>): Value<DOMRect | null
   });
 
   inClient(() => {
-    onUnmounted(
-      ref.bind((element) => {
-        if (element) {
-          // Provide rect as early as possible
-          rect(element.getBoundingClientRect());
+    ref.bind((element) => {
+      if (element) {
+        // Provide rect as early as possible
+        rect(element.getBoundingClientRect());
 
-          return observeElementRect(element, rect);
-        } else {
-          // We only want to reset to `null` when the element becomes `null`, not if it changes to another element.
-          rect(null);
-        }
-      }),
-    );
+        return observeElementRect(element, rect);
+      } else {
+        // We only want to reset to `null` when the element becomes `null`, not if it changes to another element.
+        rect(null);
+      }
+    });
   });
 
   return rect;

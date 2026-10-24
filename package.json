@@ -17,14 +17,14 @@
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "test": "npx vitest",
-    "build": "turbo run build",
-    "build:all": "pnpm run build && pnpm run sizes",
-    "types": "turbo run types",
+    "build": "NODE_OPTIONS='--max-old-space-size=8192' turbo run build",
+    "build:all": "NODE_OPTIONS='--max-old-space-size=8192' pnpm run build && pnpm run sizes",
+    "types": "NODE_OPTIONS='--max-old-space-size=8192' turbo run types",
     "publish": "pnpm run build && pnpm run types && pnpm run release:only",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "biome format --write",
-    "check-types": "turbo run check-types",
+    "check-types": "NODE_OPTIONS='--max-old-space-size=8192' turbo run check-types",
     "sizes": "npx bundle-size"
   },
   "dependencies": {

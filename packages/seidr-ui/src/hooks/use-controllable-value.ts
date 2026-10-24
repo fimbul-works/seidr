@@ -24,7 +24,7 @@ export function useControllableValue<T>(props: UseControllableValueProps<T>): Va
   });
 
   if (isFn(props.onChange)) {
-    onUnmounted(state.watch((val) => props.onChange?.(val)));
+    state.watch((val) => props.onChange?.(val));
   }
 
   return state;

@@ -24,7 +24,11 @@ export interface Observable<T = any> {
   /**
    * Registers a callback that is invoked whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   watch(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -33,7 +37,11 @@ export interface Observable<T = any> {
    * Registers a callback that is invoked immediately,
    * and whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   bind(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -88,7 +96,11 @@ export interface Value<T = any> extends Observable<T> {
   /**
    * Registers a callback that is invoked whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   watch(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -97,7 +109,11 @@ export interface Value<T = any> extends Observable<T> {
    * Registers a callback that is invoked immediately,
    * and whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   bind(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -209,7 +225,11 @@ export interface DerivedValue<T = any> extends Observable<T> {
   /**
    * Registers a callback that is invoked whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   watch(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -218,7 +238,11 @@ export interface DerivedValue<T = any> extends Observable<T> {
    * Registers a callback that is invoked immediately,
    * and whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   bind(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -261,7 +285,7 @@ export interface DerivedValue<T = any> extends Observable<T> {
    *
    * @internal
    */
-  readonly parents?: Observable[];
+  readonly parents: Observable[];
 }
 
 /**
@@ -272,7 +296,7 @@ export type DerivedValueOptions = Omit<ValueOptions, "id" | "hydrate">;
 /**
  * A observable value can be a Value or a DerivedValue.
  */
-export type ObservableValue<T> = Value<T> | DerivedValue<T>;
+export type ObservableValue<T = any> = Value<T> | DerivedValue<T>;
 
 /**
  * Ref object.

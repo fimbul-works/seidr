@@ -28,5 +28,5 @@ export function useTagName<T extends HTMLElement = HTMLElement>(
   }
 
   fallback = wrapValue(fallback, { hydrate: false });
-  return mergeValues(() => ref()?.tagName ?? fallback(), { parents: [ref, fallback] });
+  return mergeValues(() => ref()?.tagName?.toLowerCase() ?? fallback(), { parents: [ref, fallback] });
 }

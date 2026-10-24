@@ -11,7 +11,7 @@
     "moduleDetection": "force",
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "strict": true,
     "target": "ESNext"
   },

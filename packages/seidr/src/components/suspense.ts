@@ -3,9 +3,9 @@ import { createComponent } from "../component/create-component.js";
 import { isLazyComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
-import { unwrapValue } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
+import { unwrapValue } from "../observable/unwrap-value.js";
 import { createValue } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
@@ -96,16 +96,14 @@ export const Suspense = <T>(
     }
 
     if (isValue<Promise<T>>(promiseOrValue)) {
-      onUnmounted(
-        promiseOrValue.watch((prom) => {
-          if (prom instanceof Promise) {
-            if (isServer()) {
-              getSSRScope()?.addPromise(prom);
-            }
-            handlePromise(prom);
+      promiseOrValue.watch((prom) => {
+        if (prom instanceof Promise) {
+          if (isServer()) {
+            getSSRScope()?.addPromise(prom);
           }
-        }),
-      );
+          handlePromise(prom);
+        }
+      });
     }
 
     return factory({ state, value, error });

@@ -93,7 +93,7 @@ export function useColorMode(options: UseColorModeOptions = {}): UseColorModeRes
     }
   }
 
-  onUnmounted(mode.bind(updateResolved));
+  mode.bind(updateResolved);
 
   return {
     mode,
