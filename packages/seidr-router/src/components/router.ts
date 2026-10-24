@@ -185,6 +185,9 @@ export const Router = (
           parent.insertBefore(node, endMarker);
         }
         routerComponent.addChild(nextComp);
+        if (parent.isConnected && !nextComp.isMounted) {
+          nextComp.mount();
+        }
       }
 
       routerComponent.nodes = [startMarker, ...(nextComp ? nextComp.nodes : []), endMarker];

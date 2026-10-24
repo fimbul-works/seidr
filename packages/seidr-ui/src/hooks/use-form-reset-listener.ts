@@ -1,8 +1,4 @@
-import {
-  type Ref,
-  useEffect,
-  type Value,
-} from "@fimbul-works/seidr";
+import { type Ref, useEffect } from "@fimbul-works/seidr";
 
 function isFormElement(
   element: HTMLElement,
@@ -20,10 +16,7 @@ function getClosestForm(element: HTMLElement): HTMLFormElement | null {
  *
  * Ported from Kobalte's createFormResetListener primitive.
  */
-export function useFormResetListener(
-  element: Ref<HTMLElement> | Value<HTMLElement | null | undefined>,
-  handler: () => void,
-): void {
+export function useFormResetListener(element: Ref<HTMLElement>, handler: () => void): void {
   useEffect(() => {
     const el = element();
     if (!el) return;
@@ -33,8 +26,6 @@ export function useFormResetListener(
 
     form.addEventListener("reset", handler, { passive: true });
 
-    return () => {
-      form.removeEventListener("reset", handler);
-    };
+    return () => form.removeEventListener("reset", handler);
   }, [element]);
 }

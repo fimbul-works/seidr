@@ -1,4 +1,5 @@
-import { isFn, onUnmounted, type Value, wrapValue } from "@fimbul-works/seidr";
+import { isFn } from "@fimbul-works/hvat";
+import { onUnmounted, type Value, wrapValue } from "@fimbul-works/seidr";
 
 export interface UseControllableValueProps<T> {
   /** The value to be used, in controlled mode. */

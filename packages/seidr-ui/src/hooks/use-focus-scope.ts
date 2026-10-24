@@ -1,7 +1,7 @@
 import {
   $,
+  createValue,
   getAppState,
-  getDocument,
   isRef,
   isServer,
   isValue,
@@ -12,6 +12,9 @@ import {
   type Value,
 } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { getOwnerDocument } from "../utils/dom.js";
+import { focusWithoutScrolling } from "../utils/focus-without-scrolling.js";
+import { getAllTabbableIn } from "../utils/tabbable.js";
 
 export const AUTOFOCUS_ON_MOUNT_EVENT = "focusScope.autoFocusOnMount";
 export const AUTOFOCUS_ON_UNMOUNT_EVENT = "focusScope.autoFocusOnUnmount";
@@ -72,74 +75,12 @@ const getFocusScopeStack = (): FocusScopeStackState =>
     },
   });
 
-const focusableSelectors = [
-  "input:not([type='hidden']):not([disabled])",
-  "select:not([disabled])",
-  "textarea:not([disabled])",
-  "button:not([disabled])",
-  "a[href]",
-  "area[href]",
-  "[tabindex]:not([disabled])",
-  "iframe",
-  "object",
-  "embed",
-  "audio[controls]",
-  "video[controls]",
-  "[contenteditable]:not([contenteditable='false'])",
-];
-
-const FOCUSABLE_ELEMENT_SELECTOR = `${focusableSelectors.join(":not([hidden]),")}:not([hidden])`;
-
-/**
- * Checks if an element is focusable.
- * @param element The element to check.
- * @returns True if the element is focusable, false otherwise.
- */
-export function isFocusable(element: Element): element is HTMLElement {
-  if (!element.matches(FOCUSABLE_ELEMENT_SELECTOR)) return false;
-  const htmlEl = element as HTMLElement;
-  return htmlEl.style.display !== "none" && htmlEl.style.visibility !== "hidden";
-}
-
-/**
- * Checks if an element is tabbable.
- * @param element The element to check.
- * @returns True if the element is tabbable, false otherwise.
- */
-export function isTabbable(element: Element): element is HTMLElement {
-  if (!isFocusable(element)) return false;
-  const tabIndex = element.getAttribute("tabindex");
-  return tabIndex === null || parseInt(tabIndex, 10) >= 0;
-}
-
-/**
- * Gets all tabbable elements in a container.
- * @param container The container to get tabbable elements from.
- * @returns An array of tabbable elements.
- */
-export function getAllTabbableIn(container: HTMLElement): HTMLElement[] {
-  const elements = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_ELEMENT_SELECTOR));
-  return elements.filter((el) => isTabbable(el) && !el.hasAttribute("data-focus-trap"));
-}
-
-/**
- * Focuses an element without scrolling.
- * @param element The element to focus.
- */
-export function focusWithoutScrolling(element: HTMLElement | null | undefined): void {
-  if (!element) return;
-  element.focus({ preventScroll: true });
-}
-
 /**
  * Traps tab focus within an active container and manages autofocus on mount/unmount.
  *
  * Ported from Kobalte's createFocusScope primitive.
  */
-export function useFocusScope<T extends HTMLElement = HTMLElement>(
-  ref: Ref<T>,
-  props: UseFocusScopeProps = {},
-): void {
+export function useFocusScope<T extends HTMLElement = HTMLElement>(ref: Ref<T>, props: UseFocusScopeProps = {}): void {
   if (!isRef(ref)) {
     throw new SeidrError("Invalid Ref");
   }
@@ -148,26 +89,26 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
     return;
   }
 
-  let isPaused = false;
+  const isPaused = createValue(false);
 
   const focusScope: FocusScopeAPI = {
     pause() {
-      isPaused = true;
+      isPaused(true);
     },
     resume() {
-      isPaused = false;
+      isPaused(false);
     },
   };
 
   let lastFocusedElement: HTMLElement | null = null;
 
-  const getDoc = (): Document => ref()?.ownerDocument ?? getDocument();
+  const getDoc = (): Document => getOwnerDocument(ref());
 
   const getTrapFocus = (): boolean => !!unwrapValue(props.trapFocus);
 
   const tabbables = () => {
     const container = ref();
-    return container ? getAllTabbableIn(container) : [];
+    return container ? getAllTabbableIn(container, true).filter((el) => !el.hasAttribute("data-focus-trap")) : [];
   };
 
   const firstTabbable = () => {
@@ -180,6 +121,10 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
     return items.length > 0 ? items[items.length - 1] : null;
   };
 
+  let startSentinel: HTMLElement | null = null;
+  let endSentinel: HTMLElement | null = null;
+  let previouslyFocusedElement: HTMLElement | null = null;
+
   const createSentinel = () => {
     return $("span", {
       "data-focus-trap": "",
@@ -187,10 +132,6 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
       style: VISUALLY_HIDDEN_STYLES,
     });
   };
-
-  let startSentinel: HTMLElement | null = null;
-  let endSentinel: HTMLElement | null = null;
-  let previouslyFocusedElement: HTMLElement | null = null;
 
   const removeSentinels = () => {
     if (startSentinel) {
@@ -215,7 +156,7 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
   };
 
   const onDocFocusIn = (event: FocusEvent) => {
-    if (!getTrapFocus() || isPaused) return;
+    if (!getTrapFocus() || isPaused()) return;
 
     const container = ref();
     const target = event.target as HTMLElement | null;
@@ -231,7 +172,7 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
   };
 
   const onDocFocusOut = (event: FocusEvent) => {
-    if (!getTrapFocus() || isPaused) return;
+    if (!getTrapFocus() || isPaused()) return;
 
     const container = ref();
     const relatedTarget = event.relatedTarget as HTMLElement | null;
@@ -249,7 +190,7 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(
     removeSentinels();
 
     const container = ref();
-    if (!container || !getTrapFocus() || isPaused) return;
+    if (!container || !getTrapFocus() || isPaused()) return;
 
     startSentinel = createSentinel();
     endSentinel = createSentinel();

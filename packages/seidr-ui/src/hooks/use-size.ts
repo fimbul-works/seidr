@@ -1,14 +1,12 @@
+import { isArr, isNum } from "@fimbul-works/hvat";
 import {
   createValue,
+  type DerivedValue,
   inClient,
-  isArray,
-  isNum,
   isRef,
-  isValue,
   onUnmounted,
   type Ref,
   SeidrError,
-  type Value,
 } from "@fimbul-works/seidr";
 
 /**
@@ -26,9 +24,9 @@ export interface Size {
  */
 export type SizeValue = {
   /** The width of the element. */
-  width: Value<number>;
+  width: DerivedValue<number>;
   /** The height of the element. */
-  height: Value<number>;
+  height: DerivedValue<number>;
 };
 
 /**
@@ -39,8 +37,8 @@ export type SizeValue = {
  *
  * Ported from Kobalte's createSize primitive.
  */
-export function useSize<T extends HTMLElement>(ref: Ref<T> | Value<T | null | undefined>): SizeValue {
-  if (!isRef(ref) && !isValue(ref)) {
+export function useSize<T extends HTMLElement>(ref: Ref<T>): SizeValue {
+  if (!isRef(ref)) {
     throw new SeidrError("Invalid ref");
   }
 
@@ -53,7 +51,7 @@ export function useSize<T extends HTMLElement>(ref: Ref<T> | Value<T | null | un
     const syncSize = (element: HTMLElement, entry?: ResizeObserverEntry) => {
       if (entry && "borderBoxSize" in entry && entry.borderBoxSize) {
         const borderBox = entry.borderBoxSize;
-        const box = isArray(borderBox) ? borderBox[0] : (borderBox as unknown as ResizeObserverSize);
+        const box = isArr(borderBox) ? borderBox[0] : (borderBox as unknown as ResizeObserverSize);
         if (box && isNum(box.inlineSize) && isNum(box.blockSize)) {
           size({ width: box.inlineSize, height: box.blockSize });
           return;
@@ -72,7 +70,7 @@ export function useSize<T extends HTMLElement>(ref: Ref<T> | Value<T | null | un
         syncSize(element);
 
         const observer = new ResizeObserver((entries) => {
-          if (!isArray(entries)) return;
+          if (!isArr(entries)) return;
           for (const entry of entries) {
             if (entry.target && entry.target !== element) continue;
             syncSize(element, entry);

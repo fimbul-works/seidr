@@ -11,7 +11,9 @@
  * Credits to the Kobalte team:
  * https://github.com/kobaltedev/kobalte/blob/main/packages/core/src/primitives/create-collection/create-collection.ts
  */
-import { createValue, isArray, isValue, onUnmounted, unwrapValue, type Value } from "@fimbul-works/seidr";
+
+import { isArr } from "@fimbul-works/hvat";
+import { createValue, isValue, onUnmounted, unwrapValue, type Value } from "@fimbul-works/seidr";
 import type { Collection, CollectionBase, CollectionNode } from "./types.js";
 import { buildNodes } from "./utils.js";
 
@@ -34,7 +36,7 @@ export function createCollection<T = any>(
     props.factory(
       buildNodes({
         ...props,
-        dataSource: isArray(data) ? data : [],
+        dataSource: isArr(data) ? data : [],
       }),
     );
 

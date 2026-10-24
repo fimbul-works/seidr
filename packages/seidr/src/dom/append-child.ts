@@ -1,3 +1,4 @@
+import { isArr, isBool, isNullish, isNum, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { isComponent } from "../component/type-guards.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
@@ -7,7 +8,6 @@ import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
-import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { $text } from "./node/text.js";
 import { isComment, isDOMNode, isHTMLElement, isTextNode } from "./type-guards.js";
 
@@ -22,7 +22,7 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
     return [];
   }
 
-  if (isArray(val)) {
+  if (isArr(val)) {
     return val.flatMap((item) => normalizeChildNodes(item));
   }
 
@@ -186,7 +186,7 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
   }
 
   // Append array of nodes
-  if (isArray(child)) {
+  if (isArr(child)) {
     return child.forEach((c) => appendChild(parent, c));
   }
 

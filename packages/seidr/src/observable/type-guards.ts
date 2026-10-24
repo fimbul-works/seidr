@@ -1,5 +1,5 @@
+import { isFn } from "@fimbul-works/hvat";
 import { TYPE_PROP } from "../constants.js";
-import { isFn } from "../util/type-guards.js";
 import { TYPE_REF, TYPE_VALUE } from "./constants.js";
 import type { Observable, Ref, Value } from "./types.js";
 

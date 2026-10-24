@@ -261,13 +261,18 @@ export interface DerivedValue<T = any> extends Observable<T> {
    *
    * @internal
    */
-  readonly parents: Observable[];
+  readonly parents?: Observable[];
 }
 
 /**
  * Options for creating a derived Value, excluding parent and hydration settings.
  */
 export type DerivedValueOptions = Omit<ValueOptions, "id" | "hydrate">;
+
+/**
+ * A observable value can be a Value or a DerivedValue.
+ */
+export type ObservableValue<T> = Value<T> | DerivedValue<T>;
 
 /**
  * Ref object.

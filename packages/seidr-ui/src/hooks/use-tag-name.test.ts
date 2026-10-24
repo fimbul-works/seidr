@@ -47,7 +47,7 @@ describe("useTagName", () => {
 
   it("supports reactive Value for fallback", () => {
     const ref = createRef<HTMLElement>();
-    const fallback = createValue("section");
+    const fallback = createValue<string | undefined>("section");
     const tagName = useTagName(ref, fallback);
 
     expect(tagName()).toBe("section");

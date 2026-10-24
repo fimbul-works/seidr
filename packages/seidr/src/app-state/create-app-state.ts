@@ -1,8 +1,8 @@
+import { isNullish } from "@fimbul-works/hvat";
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
-import { isNullish } from "../util/type-guards.js";
 import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**

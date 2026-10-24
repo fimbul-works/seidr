@@ -1,6 +1,6 @@
+import { isObj } from "@fimbul-works/hvat";
 import { TYPE_COMMENT_NODE, TYPE_ELEMENT, TYPE_TEXT_NODE } from "../constants.js";
 import type { SeidrElementTagNameMap } from "../element/types.js";
-import { isObj } from "../util/type-guards.js";
 
 /**
  * Check if a value is a Comment node.

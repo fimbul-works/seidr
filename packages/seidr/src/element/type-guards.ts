@@ -1,7 +1,7 @@
+import { isArr, isObj } from "@fimbul-works/hvat";
 import { isComponent } from "../component/type-guards.js";
 import { isDOMNode } from "../dom/type-guards.js";
 import { isValue } from "../observable/type-guards.js";
-import { isArray, isObj } from "../util/type-guards.js";
 import type { SeidrChild } from "./types.js";
 
 /**
@@ -11,4 +11,4 @@ import type { SeidrChild } from "./types.js";
  * @returns {v is SeidrChild | SeidrChild[]} `true` if the value is a valid Seidr child, `false` otherwise
  */
 export const isValidSeidrChild = (v: any): v is SeidrChild | SeidrChild[] =>
-  !isObj(v) || isArray(v) || isDOMNode(v) || isComponent(v) || isValue(v);
+  !isObj(v) || isArr(v) || isDOMNode(v) || isComponent(v) || isValue(v);

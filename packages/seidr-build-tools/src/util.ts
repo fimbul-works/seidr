@@ -4,11 +4,6 @@ import type MagicString from "magic-string";
 const replaceFromCache = new Map<string, RegExp>();
 
 /**
- * Checks if a value is an object.
- */
-export const isObj = (val: unknown): val is object => typeof val === "object" && val !== null;
-
-/**
  * Gets the regular expression for a given string pattern, compiling it if necessary.
  *
  * @param {string} from - The string to replace

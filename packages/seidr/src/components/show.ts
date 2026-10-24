@@ -2,7 +2,7 @@ import { getComponentScope, setComponentScope } from "../component/component-sco
 import type { SeidrComponentFactory, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
-import type { Value } from "../observable/types.js";
+import type { DerivedValue, Value } from "../observable/types.js";
 
 /**
  * Conditionally renders content based on a reactive condition Value.
@@ -18,7 +18,7 @@ export const Show = (
   whenTrue: SeidrComponentFactoryOrFunction,
   whenFalse?: SeidrComponentFactoryOrFunction,
   name: string = "Show",
-): Value<SeidrChild> => {
+): DerivedValue<SeidrChild> => {
   const scope = getComponentScope();
   const trueFactory = wrapComponent(whenTrue, name);
   const falseFactory = whenFalse ? wrapComponent(whenFalse, `${name}Fallback`) : undefined;

@@ -1,3 +1,4 @@
+import { isArr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
@@ -54,7 +55,7 @@ export const List = <T, K extends string | number>(
     const [startMarker, endMarker] = getMarkerComments(listComponent)!;
 
     const update = (newItems?: T[] | readonly T[]) => {
-      if (!Array.isArray(newItems)) {
+      if (!isArr(newItems)) {
         return;
       }
 

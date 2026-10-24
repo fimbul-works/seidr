@@ -1,6 +1,6 @@
+import { isArr, isObj } from "@fimbul-works/hvat";
 import type MagicString from "magic-string";
 import { type CallExpression, type Node, parseSync } from "oxc-parser";
-import { isObj } from "./util.js";
 
 /**
  * Depth-first generator over all CallExpression nodes in an AST.
@@ -27,7 +27,7 @@ function* walkCallExpressions(node: Node, parent?: Node): Generator<{ call: Call
   // Walk AST recursively
   for (const key of Object.keys(node)) {
     const child = node[key as keyof typeof node];
-    if (Array.isArray(child)) {
+    if (isArr(child)) {
       for (const item of child) {
         if (item && isObj(item) && "type" in item) {
           yield* walkCallExpressions(item, node);

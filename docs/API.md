@@ -78,7 +78,6 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
   - [`SeidrError`](utils.md#seidrerror) — Standard Seidr runtime assertion error class.
 - [Type Guards](type-guards.md):
-  - Primitives: [`isArray`](type-guards.md#isarray), [`isBool`](type-guards.md#isbool), [`isFn`](type-guards.md#isfn), [`isNum`](type-guards.md#isnum), [`isObj`](type-guards.md#isobj), [`isStr`](type-guards.md#isstr), [`isNullish`](type-guards.md#isnullish).
   - Reactive State: [`isValue`](type-guards.md#isvalue), [`isRef`](type-guards.md#isref).
   - Components: [`isComponent`](type-guards.md#iscomponent), [`isComponentFactory`](type-guards.md#iscomponentfactory), [`isLazyComponent`](type-guards.md#islazycomponent).
   - DOM: [`isDOMNode`](type-guards.md#isdomnode), [`isHTMLElement`](type-guards.md#ishtmlelement), [`isComment`](type-guards.md#iscomment), [`isTextNode`](type-guards.md#istextnode).

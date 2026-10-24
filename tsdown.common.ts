@@ -17,7 +17,7 @@ export const commonConfig: UserConfig = {
     },
   },
   deps: {
-    alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash"],
+    alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash", "@fimbul-works/hvat"],
   },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),

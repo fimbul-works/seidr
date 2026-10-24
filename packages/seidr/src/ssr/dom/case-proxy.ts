@@ -1,8 +1,8 @@
+import { isNullish, isStr } from "@fimbul-works/hvat";
 import type { ReactiveValue } from "../../element/types.js";
 import { unwrapValue } from "../../observable/unwrap-value.js";
 import { SeidrError } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
-import { isNullish, isStr } from "../../util/type-guards.js";
 import { kebabToCamel } from "../util/string.js";
 
 /**

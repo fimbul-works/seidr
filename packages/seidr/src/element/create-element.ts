@@ -1,3 +1,4 @@
+import { isArr, isNullish, isObj, isStr } from "@fimbul-works/hvat";
 import { getComponentScope } from "../component/component-scope.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument } from "../dom/get-document.js";
@@ -5,7 +6,6 @@ import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isArray, isNullish, isObj, isStr } from "../util/type-guards.js";
 import { assignProps } from "./assign-props.js";
 import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
@@ -73,7 +73,7 @@ export function $<K extends keyof SeidrElementTagNameMap>(
       assignProps(el, props);
     }
 
-    if (isArray(resolvedChildren)) {
+    if (isArr(resolvedChildren)) {
       resolvedChildren.forEach((child) => {
         if (isStr(child) && child === "") {
           return;

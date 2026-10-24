@@ -1,7 +1,7 @@
+import { isFn } from "@fimbul-works/hvat";
 import { getComponentScope } from "../component/component-scope.js";
 import type { OnMountedFunction } from "../component/types.js";
 import { SeidrError } from "../types.js";
-import { isFn } from "../util/type-guards.js";
 
 /**
  * Map of nodes to their onMounted callbacks.

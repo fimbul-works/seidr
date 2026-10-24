@@ -1,31 +1,29 @@
+import { isArr } from "@fimbul-works/hvat";
 import {
   type CleanupFunction,
   type EffectDependency,
   getAppState,
   getDocument,
-  isArray,
+  isHTMLElement,
   isRef,
   isServer,
   isValue,
   type Ref,
-  useEffect,
   unwrapValue,
+  useEffect,
   type Value,
 } from "@fimbul-works/seidr";
 
 const DATA_TOP_LAYER_ATTR = "data-kb-top-layer";
 
-export type HideOutsideTarget =
-  | Element
-  | Ref<Element | null | undefined>
-  | Value<Element | Element[] | null | undefined>;
+export type HideOutsideTarget = Element | Ref<Element>;
 
 export interface UseHideOutsideProps {
   /** The elements or ref(s) that should remain visible (not hidden). */
   targets: HideOutsideTarget | HideOutsideTarget[];
 
   /** Nothing will be hidden above this element. Defaults to document.body. */
-  root?: HTMLElement | Ref<HTMLElement | null | undefined> | Value<HTMLElement | null | undefined>;
+  root?: HTMLElement | Ref<HTMLElement>;
 
   /** Whether the hide outside behavior is disabled or not. */
   isDisabled?: boolean | Value<boolean>;
@@ -74,9 +72,7 @@ export function ariaHideOutside(targets: Element[], root?: HTMLElement): Cleanup
     const acceptNode = (node: Element) => {
       if (
         visibleNodes.has(node) ||
-        (node.parentElement &&
-          hiddenNodes.has(node.parentElement) &&
-          node.parentElement.getAttribute("role") !== "row")
+        (node.parentElement && hiddenNodes.has(node.parentElement) && node.parentElement.getAttribute("role") !== "row")
       ) {
         return NodeFilter.FILTER_REJECT;
       }
@@ -197,21 +193,20 @@ export function ariaHideOutside(targets: Element[], root?: HTMLElement): Cleanup
 }
 
 function extractElements(target: HideOutsideTarget | HideOutsideTarget[]): Element[] {
-  const items = isArray(target) ? target : [target];
+  const items = isArr(target) ? target : [target];
   const elements: Element[] = [];
 
   for (const item of items) {
-    if (!item) continue;
-    if (isRef(item) || isValue(item)) {
+    if (isRef(item)) {
       const val = item();
-      if (isArray(val)) {
+      if (isArr(val)) {
         for (const el of val) {
-          if (el instanceof Element) elements.push(el);
+          if (isHTMLElement(el)) elements.push(el);
         }
-      } else if (val instanceof Element) {
+      } else if (isHTMLElement(val)) {
         elements.push(val);
       }
-    } else if (item instanceof Element) {
+    } else if (isHTMLElement(item)) {
       elements.push(item);
     }
   }
@@ -219,15 +214,12 @@ function extractElements(target: HideOutsideTarget | HideOutsideTarget[]): Eleme
   return elements;
 }
 
-function extractRoot(
-  root?: HTMLElement | Ref<HTMLElement | null | undefined> | Value<HTMLElement | null | undefined>,
-): HTMLElement | undefined {
-  if (!root) return undefined;
-  if (isRef(root) || isValue(root)) {
+function extractRoot(root?: HTMLElement | Ref<HTMLElement>): HTMLElement | undefined {
+  if (isRef(root)) {
     const val = root();
-    return val instanceof HTMLElement ? val : undefined;
+    return isHTMLElement(val) ? val : undefined;
   }
-  return root instanceof HTMLElement ? root : undefined;
+  return isHTMLElement(root) ? root : undefined;
 }
 
 /**
@@ -241,7 +233,7 @@ export function useHideOutside(props: UseHideOutsideProps): void {
   if (isValue(props.isDisabled)) deps.push(props.isDisabled);
   if (isRef(props.root) || isValue(props.root)) deps.push(props.root as EffectDependency);
 
-  const items = isArray(props.targets) ? props.targets : [props.targets];
+  const items = isArr(props.targets) ? props.targets : [props.targets];
   for (const item of items) {
     if (isRef(item) || isValue(item)) {
       deps.push(item as EffectDependency);
@@ -257,4 +249,3 @@ export function useHideOutside(props: UseHideOutsideProps): void {
     return ariaHideOutside(targets, extractRoot(props.root));
   }, deps);
 }
-

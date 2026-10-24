@@ -1,4 +1,4 @@
-import { createValue, getDocument, isServer, onUnmounted, type Value } from "@fimbul-works/seidr";
+import { createValue, type DerivedValue, getDocument, isServer, onUnmounted, type Value } from "@fimbul-works/seidr";
 
 export type ColorMode = "light" | "dark" | "system";
 
@@ -18,7 +18,7 @@ export interface UseColorModeResult {
   mode: Value<ColorMode>;
 
   /** The actual active theme: 'light' or 'dark'. */
-  resolvedMode: Value<"light" | "dark">;
+  resolvedMode: DerivedValue<"light" | "dark">;
 }
 
 const DEFAULT_STORAGE_KEY = "seidr-color-mode";

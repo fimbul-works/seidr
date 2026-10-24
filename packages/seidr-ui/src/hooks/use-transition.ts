@@ -1,4 +1,13 @@
-import { createValue, inClient, isServer, isValue, onUnmounted, unwrapValue, type Value } from "@fimbul-works/seidr";
+import {
+  createValue,
+  inClient,
+  isServer,
+  isValue,
+  type Observable,
+  onUnmounted,
+  unwrapValue,
+  type Value,
+} from "@fimbul-works/seidr";
 
 export interface TransitionStyles {
   /** Styles for mounted state. */
@@ -59,7 +68,7 @@ export interface UseTransitionOptions {
 
 export interface UseTransitionResult {
   /** Whether the element should be kept in the DOM. */
-  keepMounted: Value<boolean>;
+  keepMounted: Observable<boolean>;
 
   /** The transition style to apply on the element. */
   style: Value<Record<string, string | number>>;

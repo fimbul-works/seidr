@@ -1,9 +1,9 @@
+import { isArr, isFn } from "@fimbul-works/hvat";
 import { isObservable } from "../observable/type-guards.js";
-import type { Observable, Value } from "../observable/types.js";
+import type { DerivedValue, Observable } from "../observable/types.js";
 import { mergeValues } from "../observable/value.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isArray, isFn } from "../util/type-guards.js";
 import { onMounted } from "./on-mounted.js";
 import { onUnmounted } from "./on-unmounted.js";
 
@@ -28,7 +28,7 @@ export function useEffect(effect: EffectCallback, deps: EffectDependency[]): voi
       throw new SeidrError("useEffect callback must be a function");
     }
 
-    if (!isArray(deps)) {
+    if (!isArr(deps)) {
       throw new SeidrError("useEffect dependencies must be an array");
     }
 
@@ -40,7 +40,7 @@ export function useEffect(effect: EffectCallback, deps: EffectDependency[]): voi
   }
 
   let unbind!: CleanupFunction;
-  let derived!: Value<any[]>;
+  let derived!: DerivedValue<any[]>;
 
   onMounted(() => {
     if (deps.length === 0) {

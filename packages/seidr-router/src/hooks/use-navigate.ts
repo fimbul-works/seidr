@@ -1,4 +1,5 @@
-import { isClient, isNum, SeidrError } from "@fimbul-works/seidr";
+import { isNum } from "@fimbul-works/hvat";
+import { isClient, SeidrError } from "@fimbul-works/seidr";
 import { getRouterState } from "../get-router-state.js";
 
 /**

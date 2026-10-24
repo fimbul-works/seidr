@@ -42,6 +42,8 @@ export function getOwnerDocument(element?: Node | null): Document {
   return element?.ownerDocument ?? getDocument();
 }
 
+export const isFrame = (element: Element): element is HTMLIFrameElement => element.tagName === "IFRAME";
+
 /**
  * Get the active element in the DOM.
  * @param node The node to get the active element of.
@@ -57,8 +59,6 @@ export function getActiveElement(node?: Node | null, activeDescendant = false): 
     // inside of an iframe
     return null;
   }
-
-  const isFrame = (element: Element): element is HTMLIFrameElement => element.tagName === "IFRAME";
 
   if (isFrame(activeElement) && activeElement.contentDocument) {
     return getActiveElement(activeElement.contentDocument.body, activeDescendant);

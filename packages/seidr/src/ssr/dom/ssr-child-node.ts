@@ -1,4 +1,4 @@
-import { isStr } from "../../util/type-guards.js";
+import { isStr } from "@fimbul-works/hvat";
 import type { SSRDocument } from "./ssr-document.js";
 import { SSRNode } from "./ssr-node.js";
 import type { SupportedNodeTypes } from "./types.js";

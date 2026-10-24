@@ -27,6 +27,9 @@
     "check-types": "turbo run check-types",
     "sizes": "npx bundle-size"
   },
+  "dependencies": {
+    "@fimbul-works/hvat": "^1.1.2"
+  },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",
     "@fimbul-works/bundle-size": "^2.0.0",

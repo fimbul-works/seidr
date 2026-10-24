@@ -5,7 +5,7 @@
  * Credits to the Kobalte team:
  * https://github.com/kobaltedev/kobalte/blob/main/packages/core/src/primitives/create-collection/utils.ts
  */
-import { isNullish, isNum, isStr } from "@fimbul-works/seidr";
+import { isNullish, isNum, isStr } from "@fimbul-works/hvat";
 import type { CreateCollectionParams } from "./create-collection.js";
 import type { CollectionNode } from "./types.js";
 

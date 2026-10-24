@@ -11,7 +11,7 @@
  * Credits to the Kobalte team:
  * https://github.com/kobaltedev/kobalte/blob/main/packages/core/src/primitives/create-collection/get-item-count.ts
  */
-import { isNum } from "@fimbul-works/seidr";
+import { isNum } from "@fimbul-works/hvat";
 import type { CollectionNode } from "./types";
 
 const cache = new WeakMap<Iterable<unknown>, number>();

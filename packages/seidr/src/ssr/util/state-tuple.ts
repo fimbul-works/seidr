@@ -1,3 +1,5 @@
+import { isArr } from "@fimbul-works/hvat";
+
 /**
  * Hydration state tuple format:
  * [UniqueValue, ...referencingValueIDs]
@@ -47,7 +49,7 @@ export function packHydrationState(values: Map<string, any>): HydrationStatePayl
     indexMap.set(val, idx);
     idSets.set(idx, valueId ? new Set([valueId]) : new Set());
 
-    if (Array.isArray(val)) {
+    if (isArr(val)) {
       // 1. Reserve slot in payload so idx matches payload[idx]
       const tuple: HydrationStateTuple = valueId ? [[], valueId] : [[]];
       payload.push(tuple);
@@ -86,7 +88,7 @@ export function unpackHydrationState(payload: HydrationStatePayload): Map<string
   const restoredValues = new Map<number, any>();
   const clientMap = new Map<string, any>();
 
-  if (!Array.isArray(payload)) {
+  if (!isArr(payload)) {
     return clientMap;
   }
 
@@ -96,7 +98,7 @@ export function unpackHydrationState(payload: HydrationStatePayload): Map<string
     const rawVal = tuple[0];
 
     // Allocate an empty array for array slots, or take the literal value
-    const instance = Array.isArray(rawVal) ? [] : rawVal;
+    const instance = isArr(rawVal) ? [] : rawVal;
     restoredValues.set(i, instance);
 
     for (let j = 1; j < tuple.length; j++) {
@@ -107,7 +109,7 @@ export function unpackHydrationState(payload: HydrationStatePayload): Map<string
   // PASS 2: Populate array elements by dereferencing indices
   for (let i = 0; i < payload.length; i++) {
     const rawVal = payload[i][0];
-    if (Array.isArray(rawVal)) {
+    if (isArr<number[]>(rawVal)) {
       const targetArray = restoredValues.get(i);
       for (let k = 0; k < rawVal.length; k++) {
         targetArray.push(restoredValues.get(rawVal[k]));

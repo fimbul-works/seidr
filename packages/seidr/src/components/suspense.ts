@@ -1,3 +1,4 @@
+import { isNullish } from "@fimbul-works/hvat";
 import { createComponent } from "../component/create-component.js";
 import { isLazyComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
@@ -9,7 +10,6 @@ import { createValue } from "../observable/value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isNullish } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
 import type { LazyComponentFactory } from "./lazy.js";
 

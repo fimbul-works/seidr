@@ -1,5 +1,5 @@
 import type { CleanupFunction, SeidrComponentFactoryPureFunction } from "@fimbul-works/seidr";
-import { createComponent, createValue, lazy, mount, onUnmounted } from "@fimbul-works/seidr";
+import { createComponent, createValue, lazy, mount, onMounted, onUnmounted } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it } from "vitest";
@@ -266,4 +266,56 @@ describeDualMode("Router Component", ({ getDocument }) => {
 
     expect(container.textContent).toBe("About Page");
   });
+
+  it("should mount and trigger onMounted with connected DOM elements when navigating away and back", () => {
+    let mountCount = 0;
+    let unmountCount = 0;
+    let isConnectedOnMount: boolean | undefined;
+
+    const PageA = createComponent(() => {
+      onMounted(() => {
+        mountCount++;
+        const el = document.getElementById("canvas-a");
+        isConnectedOnMount = el?.isConnected;
+      });
+      onUnmounted(() => {
+        unmountCount++;
+      });
+      return $div({ id: "canvas-a", textContent: "Page A" });
+    }, "PageA");
+
+    const PageB = createComponent(() => $div({ id: "page-b", textContent: "Page B" }), "PageB");
+
+    const App = createComponent(
+      () =>
+        Router([
+          { path: "/", component: PageA, exact: true },
+          { path: "/b", component: PageB },
+        ]),
+      "App",
+    );
+
+    const navigate = useNavigate();
+    unmount = mount(App, container);
+
+    expect(mountCount).toBe(1);
+    expect(isConnectedOnMount).toBe(true);
+    expect(unmountCount).toBe(0);
+
+    // Navigate to /b
+    navigate("/b");
+    expect(container.querySelector("#page-b")).toBeTruthy();
+    expect(container.querySelector("#canvas-a")).toBeFalsy();
+    expect(unmountCount).toBe(1);
+
+    // Reset indicator
+    isConnectedOnMount = undefined;
+
+    // Navigate back to /
+    navigate("/");
+    expect(container.querySelector("#canvas-a")).toBeTruthy();
+    expect(mountCount).toBe(2);
+    expect(isConnectedOnMount).toBe(true);
+  });
 });
+

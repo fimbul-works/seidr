@@ -1,4 +1,5 @@
-import { $, isObj, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
+import { isObj } from "@fimbul-works/hvat";
+import { $, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "./constants";
 
 /**

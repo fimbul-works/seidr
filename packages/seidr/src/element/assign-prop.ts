@@ -1,10 +1,10 @@
+import { isNullish, isObj, isStr } from "@fimbul-works/hvat";
 import { BOOL_ATTRIBUTES } from "../constants.js";
 import { onMounted, onUnmounted } from "../hooks/index.js";
 import { isRef, isValue } from "../observable/type-guards.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
-import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import type { PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**

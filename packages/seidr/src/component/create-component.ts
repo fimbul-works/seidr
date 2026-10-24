@@ -1,4 +1,5 @@
 import { fastMix } from "@fimbul-works/hash";
+import { isArray, isBool, isNullish, isNum, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
 import { createReactiveValueNodes } from "../dom/append-child.js";
@@ -12,7 +13,6 @@ import type { CleanupFunction } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
-import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { getComponentScope, setComponentScope } from "./component-scope.js";
 import { isComponent } from "./type-guards.js";
 import type {

@@ -1,15 +1,13 @@
+import { isFn, isStr } from "@fimbul-works/hvat";
 import {
   type EffectDependency,
   getDocument,
-  isFn,
-  isStr,
   isValue,
   type Ref,
   unwrapValue,
   useEffect,
   type Value,
 } from "@fimbul-works/seidr";
-
 export const DATA_TOP_LAYER_ATTR = "data-kb-top-layer";
 
 type EventDetails<T> = {
@@ -23,7 +21,7 @@ export type InteractOutsideEvent = PointerDownOutsideEvent | FocusOutsideEvent;
 
 export interface UseInteractOutsideProps {
   /** Whether the interact outside events should be listened or not. */
-  isDisabled?: boolean | Value<boolean>;
+  isDisabled?: Value<boolean>;
 
   /**
    * When user interacts with the argument element outside the ref,
@@ -183,7 +181,7 @@ export function useInteractOutside<T extends Element = HTMLElement>(
     target.dispatchEvent(focusOutsideEvent);
   };
 
-  const deps: EffectDependency[] = [ref as EffectDependency];
+  const deps: EffectDependency[] = [ref];
   if (isValue(isDisabled)) deps.push(isDisabled);
 
   useEffect(() => {

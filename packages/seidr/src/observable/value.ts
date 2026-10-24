@@ -1,13 +1,12 @@
+import { isFn } from "@fimbul-works/hvat";
 import { getAppState, getNextValueId } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
 import { TYPE_PROP } from "../constants.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isFn } from "../util/type-guards.js";
 import { DATA_KEY_PARENT_OBSERVABLE_STACK, DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
-import { isObservable } from "./type-guards.js";
 import type {
   DerivedValue,
   DerivedValueOptions,

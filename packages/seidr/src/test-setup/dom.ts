@@ -1,6 +1,6 @@
+import { isArr, isFn, isNullish, isObj } from "@fimbul-works/hvat";
 import { expect } from "vitest";
 import { escapeHTML } from "../ssr/util/escape-string.js";
-import { isArray, isFn, isNullish, isObj } from "../util/type-guards.js";
 
 /**
  * Renders a node or component to its HTML string representation.
@@ -45,7 +45,7 @@ export function renderToHtml(node: any, depth = 0): string {
   }
 
   // Handle arrays (SSR)
-  if (isArray(node)) {
+  if (isArr(node)) {
     return node.map((n: any) => renderToHtml(n, depth + 1)).join("");
   }
 

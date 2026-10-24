@@ -1,4 +1,4 @@
-import type { SeidrComponent, SeidrComponentFactoryOrFunction, Value } from "@fimbul-works/seidr";
+import type { DerivedValue, SeidrComponent, SeidrComponentFactoryOrFunction, Value } from "@fimbul-works/seidr";
 
 /**
  * `window.onpopstate` listener type for router URL changes.
@@ -64,12 +64,12 @@ export interface RouterInterface {
   /**
    * Current pathname observable.
    */
-  pathname: Value<string>;
+  pathname: DerivedValue<string>;
 
   /**
    * Current search parameters observable.
    */
-  searchParams: Value<Record<string, string>>;
+  searchParams: DerivedValue<Record<string, string>>;
 
   /**
    * Current route parameters observable.
@@ -86,7 +86,7 @@ export interface RouterTreeNode {
   /** Route definition */
   route?: Route;
   /** Current path */
-  pathname: Value<string>;
+  pathname: DerivedValue<string>;
   /** Router instance */
   router: RouterInterface;
   /** Current parameters */
