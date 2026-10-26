@@ -1,81 +1,111 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  createValue,
   isValidSeidrChild,
+  Show,
+  type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   type Value,
 } from "@fimbul-works/seidr";
-import { type ImageContextValue, imageContext } from "./image-context.js";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
-import type { ImageLoadingStatus } from "./types.js";
+import { useImage, type UseImageOptions, type UseImageResult } from "./use-image.js";
 
-export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> {
+export interface ImageInstance extends UseImageResult {
+  /**
+   * Pre-bound Image.Root container.
+   */
+  Root: <T extends keyof SeidrElementTagNameMap = "span">(
+    propsOrChildren?: ImageRootProps<T> | SeidrChild | SeidrChild[] | null,
+    children?: SeidrChild | SeidrChild[],
+  ) => SeidrElementTagNameMap[T];
+
+  /**
+   * Pre-bound Image.Img element.
+   */
+  Img: <T extends keyof SeidrElementTagNameMap = "img">(
+    propsOrChildren?: ImageImgProps<T> | SeidrChild | SeidrChild[] | null,
+    children?: SeidrChild | SeidrChild[],
+  ) => Value<SeidrElementTagNameMap[T] | null>;
+
+  /**
+   * Pre-bound Image.Fallback container.
+   */
+  Fallback: <T extends keyof SeidrElementTagNameMap = "span">(
+    propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[] | null,
+    children?: SeidrChild | SeidrChild[],
+  ) => Value<SeidrElementTagNameMap[T] | null>;
+}
+
+/**
+ * Creates an image state instance with pre-bound compound element helpers.
+ */
+export function createImage(options: UseImageOptions = {}): ImageInstance {
+  const instance = useImage(options);
+
+  return {
+    ...instance,
+    Root: (propsOrChildren, children) => {
+      let props: any;
+      let content: any;
+      if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
+        props = propsOrChildren ?? {};
+        content = children;
+      } else {
+        props = {};
+        content = propsOrChildren;
+      }
+      return ImageRoot({ instance, ...props }, content);
+    },
+    Img: (propsOrChildren, children) => {
+      let props: any;
+      let content: any;
+      if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
+        props = propsOrChildren ?? {};
+        content = children;
+      } else {
+        props = {};
+        content = propsOrChildren;
+      }
+      return ImageImg({ instance, ...props }, content);
+    },
+    Fallback: (propsOrChildren, children) => {
+      let props: any;
+      let content: any;
+      if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
+        props = propsOrChildren ?? {};
+        content = children;
+      } else {
+        props = {};
+        content = propsOrChildren;
+      }
+      return ImageFallback({ instance, ...props }, content);
+    },
+  };
+}
+
+export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span">
+  extends UseImageOptions {
   /**
    * The HTML element tag name to render.
    * @default "span"
    */
   as?: T;
+
   /**
-   * The delay (in ms) before displaying the image fallback.
+   * Explicit ImageInstance or UseImageResult providing reactive state.
    */
-  fallbackDelay?: number;
-  /**
-   * A callback providing information about the loading status of the image.
-   */
-  onLoadingStatusChange?: (status: ImageLoadingStatus) => void;
+  instance?: UseImageResult;
 }
 
 export type ImageRootProps<T extends keyof SeidrElementTagNameMap = "span"> = ImageRootOptions<T> &
   SeidrElementProps<T>;
 
 /**
- * Scoped API provided to child render functions or returned by createImage().
+ * Image.Root is the container element for an image and its fallback.
  */
-export interface ImageScopedApi extends ImageContextValue {
-  Img: <K extends keyof SeidrElementTagNameMap = "img">(
-    propsOrChildren?: ImageImgProps<K> | SeidrChild | SeidrChild[] | null,
-    children?: SeidrChild | SeidrChild[],
-  ) => Value<SeidrElementTagNameMap[K] | null>;
-  Fallback: <K extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren?: ImageFallbackProps<K> | SeidrChild | SeidrChild[] | null,
-    children?: SeidrChild | SeidrChild[],
-  ) => Value<SeidrElementTagNameMap[K] | null>;
-}
-
-/**
- * Creates an image state instance with scoped components.
- */
-export function createImage({ fallbackDelay, onLoadingStatusChange }: ImageRootOptions = {}): ImageScopedApi {
-  const status = createValue<ImageLoadingStatus>("idle");
-  const ctx: ImageContextValue = {
-    fallbackDelay,
-    status,
-    onLoadingStatusChange,
-  };
-
-  const scopedApi: ImageScopedApi = {
-    ...ctx,
-    Img: ((props?: any, children?: any) => ImageImg(props, children, ctx)) as any,
-    Fallback: ((props?: any, children?: any) => ImageFallback(props, children, ctx)) as any,
-  };
-
-  return scopedApi;
-}
-
-/**
- * Image container element with fallback handling.
- */
-export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  render: (api: ImageScopedApi) => SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  props: ImageRootProps<T> | null | undefined,
-  render: (api: ImageScopedApi) => SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
 export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
@@ -84,47 +114,141 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?:
-    | ImageRootProps<T>
-    | ((api: ImageScopedApi) => SeidrChild | SeidrChild[])
-    | SeidrChild
-    | SeidrChild[]
-    | null,
-  children?: ((api: ImageScopedApi) => SeidrChild | SeidrChild[]) | SeidrChild | SeidrChild[],
+  propsOrChildren?: ImageRootProps<T> | SeidrChild | SeidrChild[] | null,
+  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   let props: ImageRootProps<T>;
-  let content: ((api: ImageScopedApi) => SeidrChild | SeidrChild[]) | SeidrChild | SeidrChild[] | undefined;
+  let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
     props = (propsOrChildren as ImageRootProps<T>) ?? ({} as ImageRootProps<T>);
     content = children;
   } else {
     props = {} as ImageRootProps<T>;
-    content = propsOrChildren as any;
+    content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
-  const { as = "span" as T, fallbackDelay, onLoadingStatusChange, ...rest } = props;
+  const {
+    as = "span" as T,
+    instance,
+    src,
+    fallbackDelay,
+    crossOrigin,
+    referrerPolicy,
+    onLoadingStatusChange,
+    ...rest
+  } = props;
 
-  const scopedApi = createImage({ fallbackDelay, onLoadingStatusChange });
+  const state =
+    instance ??
+    (src || !isUndef(fallbackDelay) || onLoadingStatusChange
+      ? useImage({ src, fallbackDelay, crossOrigin, referrerPolicy, onLoadingStatusChange })
+      : undefined);
 
-  let resolvedChildren: SeidrChild | SeidrChild[] | undefined;
-  if (typeof content === "function") {
-    resolvedChildren = imageContext.runWith(scopedApi, () => {
-      return (content as (api: ImageScopedApi) => SeidrChild | SeidrChild[])(scopedApi);
-    });
-  } else {
-    resolvedChildren = content;
-  }
-
-  const elementProps = {
+  const elementProps: Record<string, any> = {
     ...rest,
-    "data-status": scopedApi.status,
+    "data-status": state ? state.status : "idle",
   };
 
-  return $(as, elementProps as any, resolvedChildren) as SeidrElementTagNameMap[T];
+  return $(as, elementProps as any, content) as SeidrElementTagNameMap[T];
 }
 
-export const Image = Object.assign(ImageRoot, {
+export interface UnifiedImageOptions<T extends keyof SeidrElementTagNameMap = "span">
+  extends UseImageOptions {
+  /**
+   * The HTML element tag name for the root container.
+   * @default "span"
+   */
+  as?: T;
+
+  /**
+   * Accessible alternative text description.
+   */
+  alt?: ReactiveValue<string>;
+
+  /**
+   * Content to display while the image is loading or on error.
+   */
+  fallback?: SeidrChild | SeidrChild[];
+
+  /**
+   * Tag name for the fallback container.
+   * @default "span"
+   */
+  fallbackAs?: keyof SeidrElementTagNameMap;
+
+  /**
+   * Props to apply to the fallback element.
+   */
+  fallbackProps?: SeidrElementProps<any>;
+
+  /**
+   * Props to apply to the <img> element.
+   */
+  imgProps?: SeidrElementProps<"img">;
+}
+
+export type UnifiedImageProps<T extends keyof SeidrElementTagNameMap = "span"> = UnifiedImageOptions<T> &
+  Omit<SeidrElementProps<T>, "src" | "alt" | "crossOrigin" | "referrerPolicy">;
+
+/**
+ * Unified Image component rendering an accessible image with fallback.
+ */
+export function ImageComponent<T extends keyof SeidrElementTagNameMap = "span">(
+  props: UnifiedImageProps<T>,
+): SeidrElementTagNameMap[T] {
+  const {
+    as = "span" as T,
+    src,
+    alt,
+    fallback,
+    fallbackAs = "span",
+    fallbackProps,
+    imgProps,
+    fallbackDelay,
+    crossOrigin,
+    referrerPolicy,
+    onLoadingStatusChange,
+    ...rest
+  } = props;
+
+  const img = useImage({
+    src,
+    fallbackDelay,
+    crossOrigin,
+    referrerPolicy,
+    onLoadingStatusChange,
+  });
+
+  const children: SeidrChild[] = [];
+
+  if (!isUndef(fallback)) {
+    children.push(
+      Show(img.canRenderFallback, () =>
+        $(fallbackAs, { className: "image-fallback", ...fallbackProps }, fallback),
+      ),
+    );
+  }
+
+  if (!isUndef(src)) {
+    const finalImgProps: SeidrElementProps<"img"> = {
+      src: src as any,
+      alt,
+      crossOrigin,
+      referrerPolicy,
+      className: "image-img",
+      ...imgProps,
+    };
+    children.push(Show(img.isLoaded, () => $("img", finalImgProps)));
+  }
+
+  return $(as, { "data-status": img.status, ...rest } as any, children) as SeidrElementTagNameMap[T];
+}
+
+/**
+ * Image namespace offering both a unified component and compound element factories.
+ */
+export const Image = Object.assign(ImageComponent, {
   Root: ImageRoot,
   Img: ImageImg,
   Fallback: ImageFallback,

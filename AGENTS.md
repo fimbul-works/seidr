@@ -18,30 +18,77 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 
 ---
 
-## Core Reactive & Architectural Invariants in Seidr
+## Top Foundational Rules & Architectural Invariants in Seidr
 
-### 2. State & Controllable Values (`Value<T>` vs React/Solid State)
-- In Seidr, `Value<T>` is a dual getter/setter function (`val()` to read, `val(newVal)` to write).
-- `useControllableValue` / `useControllableBooleanValue` in Seidr only provides an optional default value fallback and registers `state.watch(onChange)`. It is **not** a complex controlled-state state machine.
-- **Guarded State Contract**:
-  - When a hook or component needs to enforce guard conditions (e.g. `isDisabled`, `isReadOnly`):
-    - Name internal mutable state `state: Value<T>`.
-    - **DO NOT** expose the raw mutable `state` directly if external calls or bindings could bypass the guard conditions.
-    - Expose the state property (e.g. `isSelected`) as a **derived read-only value** (e.g. `state.as(v => v)` or derived getter).
-    - Provide an explicit updater function (e.g. `setIsSelected(val)`, `toggle()`) that checks the block status (`isBlocked = isReadOnly || isDisabled`) and only mutates `state` if unblocked.
+### Rule 1: Single-Pass Component Execution (No Re-Render Loops)
+- **The Invariant**: Components in Seidr are initialization factories that execute **exactly once** (`createComponent()`). There is NO virtual DOM, NO component re-render cycle, and NO hook re-execution loop.
+- **Why It Matters**: Variables, closures, and DOM elements created in a component body exist permanently for the life of that component instance. State changes do not re-run the component factory; they update DOM nodes directly via fine-grained reactive listeners.
+- **Reference Docs**: [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#createcomponent), [docs/presence-and-transitions.md](file:///home/claus/code/TypeScript/seidr/docs/presence-and-transitions.md#4-current-state-of-seidr-core)
 
-### 3. FORBID Functions-as-Children / Render Props Mixed with `SeidrChild`
-- In React/SolidJS, passing a function as `children` (`children(state)`) is common.
-- **IN SEIDR, NEVER ACCEPT A FUNCTION AS `children` OR MIX RENDER FUNCTIONS WITH `SeidrChild` / `props`**:
-  - In Seidr, `Value<T>` is a function! Reactive child getters `() => SeidrChild` are also functions and are valid `SeidrChild` elements.
-  - Checking `typeof children === "function"` or allowing `((state) => SeidrChild) | SeidrChild` misclassifies reactive child getters and `Value<T>` as render props, breaking reactive runtime updates.
-  - Component children must strictly be `SeidrChild | SeidrChild[]`. Avoid JSX function-as-child patterns.
+### Rule 2: `Value<T>` is a Callable Dual Getter-Setter Function
+- **The Invariant**: In Seidr, reactive state is a single callable function: `val()` reads the current value, and `val(newVal)` or `val(prev => next)` mutates it.
+- **The Function-Children Trap**: Because `Value<T>` *is a function*, using `typeof x === "function"` or typing `children?: SeidrChild | ((state) => SeidrChild)` creates severe bugs by misclassifying reactive values and reactive child getters (`() => SeidrChild`) as render props.
+- **Use Type Guards**: Use `isValue(x)` from `@fimbul-works/seidr` to verify reactive values.
+- **FORBID Mixed Render Props**: Never accept a function as `children` or mix render-props with standard `SeidrChild | SeidrChild[]`. If a custom render function is strictly required, use a separate named prop with a distinct type (e.g. `RenderContent`).
+- **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#createvalue), [docs/type-guards.md](file:///home/claus/code/TypeScript/seidr/docs/type-guards.md#isvalue)
 
-### 4. Behavior First — Eliminate Unnecessary Context Stacks
-- Avoid replicating complex Solid/React context hierarchies or heavy scoped API factories unless absolutely required by multi-element coordination that cannot be achieved cleanly with props.
-- Keep components minimal and direct:
-  - *Example (`Image`)*:
-    - Main internal state: `Value<ImageLoadingStatus>` initialized to `'idle'`.
-    - Fallback: Renders while image has not finished loading. If no `fallbackDelay`, render immediately (handles SSR out of the box). If `fallbackDelay`, set a timer inside `inClient()`, and clean it up in `onUnmounted()`. Wrap fallback children in Seidr's `Show`.
-    - Img: Resets status on `src` change depending on whether URL exists; updates status on `onload` / `onerror`.
-- Hook cleanups must be wired directly using `onUnmounted(() => ...)`.
+### Rule 3: Automatic Component Scope Cleanup vs. Manual Unwatch
+- **The Invariant**: When `.watch()` or `.bind()` is called *inside* an active component factory, Seidr automatically registers its teardown with that component's `onUnmounted` lifecycle.
+- **When `onUnmounted` is Required**: Only call explicit `onUnmounted(() => ...)` for non-reactive external resources (native `window.addEventListener`, `setInterval`, `ResizeObserver`, WebSocket connections).
+- **Outside Components (Tests/Global)**: Subscriptions live indefinitely until manually stopped by calling the returned `unwatch()` / `unbind()` or calling `.destroy()` on the `Value`.
+- **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-scope-cleanup-vs-manual-unwatch), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onunmounted)
+
+### Rule 4: Fine-Grained Reactive DOM Data-Binding via `$()` and HTML Helpers
+- **The Invariant**: Passing a `Value<T>` directly as an attribute property (e.g. `disabled: isDisabled`, `className: clsValue`) or child into `$()` / `$button()` / `$div()` binds reactively to that exact attribute or text node.
+- **Why It Matters**: Updates bypass parent and sibling elements completely. There is no diffing overhead; only the targeted DOM attribute or text node mutates.
+- **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#--create-dom-elements), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-dom-data-binding)
+
+### Rule 5: Derivations (`.as()`) vs Multi-Source (`mergeValues`) & The Conditional Branch Trap
+- **The Invariant**: Use `source.as(v => transform(v))` for single-source derivations. Use `mergeValues(() => a() + b())` for multi-source derivations.
+- **The Conditional Trap**: `mergeValues` only auto-discovers dependencies read on its **initial execution**. If it contains conditional branches (`if (cond()) x() else y()`), observables in untaken branches will *not* be tracked. In such cases, you **must** supply explicit parents: `mergeValues(fn, { parents: [cond, x, y] })`.
+- **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#mergevalues)
+
+### Rule 6: Control Flow (`Show`, `Switch`, `List`) Returns Reactive Derived Values
+- **The Invariant**: `Show(condition, whenTrue, whenFalse)` and `Switch(value, branches, fallback)` are not compiler macros; they return a derived `Value<SeidrChild>` (implemented via `condition.as(...)`).
+- **Composition**: They can be embedded directly in child arrays: `$div([ Show(isOpen, () => $p('Open')) ])`.
+- **List Fine-Grained Reactivity**: `List(items, getKey, (itemVal, key) => ...)` provides an `itemVal: Value<T>` to each item factory. Mutating an item in place updates only that item's DOM bindings without re-rendering the list.
+- **Reference Docs**: [docs/Show.md](file:///home/claus/code/TypeScript/seidr/docs/Show.md), [docs/Switch.md](file:///home/claus/code/TypeScript/seidr/docs/Switch.md), [docs/List.md](file:///home/claus/code/TypeScript/seidr/docs/List.md)
+
+### Rule 7: Element References (`createRef`) & Document Attachment Timing
+- **The Invariant**: `createRef<T>()` creates a decorated `Value<T | null>` with SSR hydration disabled. Pass it to the `ref` prop: `$input({ ref: inputRef })`.
+- **Attachment Timing**: While Seidr sets the ref on element creation and resets it to `null` on unmount, the node is **only guaranteed to be attached to the document DOM tree inside `onMounted()`**. Measuring layout geometry (`getBoundingClientRect`), focusing elements, or initializing canvas contexts must be done inside `onMounted()`.
+- **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#element-references-createref), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onmounted)
+
+### Rule 8: Guarded State Pattern (Encapsulated State vs Derived Read-Only)
+- **The Invariant**: When state transitions can be blocked (e.g. `isDisabled`, `isReadOnly`), never expose the raw mutable `state: Value<T>` directly to consumers.
+- **Pattern**:
+  1. Internal mutable state: `const state = createValue(initial)`.
+  2. Exposed value: derived read-only `state.as(v => v)`.
+  3. Exposed updater: explicit function `setIsSelected(val)` or `toggle()` checking `isBlocked = isReadOnly || isDisabled` before calling `state(val)`.
+- **Note on `useControllableValue`**: In Seidr, this hook only provides default value fallbacks and an `onChange` watcher—it does not manage complex controlled state transitions, and is often unnecessary.
+- **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as)
+
+### Rule 9: Dual-Mode Environment Boundaries (`isClient`, `inClient`, `inServer`)
+- **The Invariant**: Seidr components run isomorphically on both server (SSR) and client.
+- **Environment Isolation**:
+  - `inClient(() => ...)` runs exclusively in the browser. Wrap all browser-only globals (`window`, `document`, timers, `localStorage`, `ResizeObserver`) here.
+  - `inServer(async () => ...)` runs exclusively during SSR. `renderToString()` automatically awaits returned Promises before emitting static HTML.
+- **SSR Fallbacks**: Immediate fallbacks cover SSR out of the box; delayed fallbacks setup their timers inside `inClient()`.
+- **Reference Docs**: [docs/SSR.md](file:///home/claus/code/TypeScript/seidr/docs/SSR.md#isclient-inclient-isserver-inserver)
+
+### Rule 10: Deterministic IDs & Context Management (`AppState`)
+- **The Invariant**: `createValue(init, { id: '...' })` acts as a **singleton** within the active `AppState`. Calling `createValue` with an existing `id` returns the existing instance rather than creating a new one.
+- **SSR Lock-Step Hydration**: Values created inside components automatically get deterministic sequence IDs (`1-1`, `1-2`) based on the component's hierarchical ID.
+- **Global Values**: Creating Values outside of components during SSR without explicit IDs warns in development because it risks hydration mismatches.
+- **Reference Docs**: [docs/AppState.md](file:///home/claus/code/TypeScript/seidr/docs/AppState.md), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#valueoptions), [docs/SSR.md](file:///home/claus/code/TypeScript/seidr/docs/SSR.md#architecture-lock-step-hydration)
+
+### Rule 11: Synchronous Unmount Engine & Exit Animations
+- **The Invariant**: Seidr's reactive node remover synchronously tears down components and removes DOM nodes when a condition becomes falsy.
+- **Do NOT Replicate React `usePresence`**: Multi-pass presence hooks that abuse re-renders are fundamentally incompatible with Seidr's single-pass model.
+- **Idiomatic Approach**: For animated reveals and hides, prefer modern CSS transitions with `@starting-style` and `transition-behavior: allow-discrete` (toggling `hidden` and `data-state`), or a dedicated reactive coordinator component (`AnimatedShow`).
+- **Reference Docs**: [docs/presence-and-transitions.md](file:///home/claus/code/TypeScript/seidr/docs/presence-and-transitions.md#5-architectural-approaches-for-seidr)
+
+### Rule 12: Minimal Architecture (No Unneeded Context Stacks)
+- **The Invariant**: Avoid replicating ANY external framework features or complex context hierarchies unless it is a core, unavoidable requirement.
+- Coordinate directly via props, derived values, or minimal element factories.
+- **Reference Docs**: [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md)

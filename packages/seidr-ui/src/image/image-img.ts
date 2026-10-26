@@ -1,18 +1,15 @@
-import { isStr, isUndef } from "@fimbul-works/hvat";
+import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  inClient,
-  isServer,
   isValidSeidrChild,
-  isValue,
-  onUnmounted,
+  Show,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   type Value,
 } from "@fimbul-works/seidr";
-import { type ImageContextValue, useImageContext } from "./image-context.js";
+import { useImage, type UseImageResult } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
   /**
@@ -20,18 +17,32 @@ export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img">
    * @default "img"
    */
   as?: T;
+
+  /**
+   * Bound Image instance providing reactive loading status.
+   */
+  instance?: UseImageResult;
+
+  /**
+   * Direct reactive condition controlling whether the image element is mounted.
+   */
+  isLoaded?: Value<boolean>;
+
   /**
    * The image URL to load.
    */
-  src?: ReactiveValue<string>;
+  src?: ReactiveValue<string | undefined | null>;
+
   /**
    * Accessible alternative text description.
    */
   alt?: ReactiveValue<string>;
+
   /**
    * CORS settings attribute.
    */
   crossOrigin?: "anonymous" | "use-credentials" | "";
+
   /**
    * Referrer policy attribute.
    */
@@ -50,12 +61,10 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   props?: ImageImgProps<T> | null,
   children?: SeidrChild | SeidrChild[],
-  explicitContext?: ImageContextValue,
 ): Value<SeidrElementTagNameMap[T] | null>;
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   propsOrChildren?: ImageImgProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
-  explicitContext?: ImageContextValue,
 ): Value<SeidrElementTagNameMap[T] | null> {
   let props: ImageImgProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
@@ -68,70 +77,23 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
-  const { as = "img" as T, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
+  const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 
-  const context = explicitContext ?? useImageContext();
+  // Use explicit instance/condition or initialize standalone hook if src was provided
+  const imgState = instance ?? (!isLoaded && src ? useImage({ src, crossOrigin, referrerPolicy }) : undefined);
+  const condition = isLoaded ?? imgState?.isLoaded;
 
-  let active = true;
-
-  const updateStatus = (nextUrl: string | undefined) => {
-    if (!nextUrl) {
-      context.status("error");
-      context.onLoadingStatusChange?.("error");
-      return;
-    }
-
-    context.status("loading");
-    context.onLoadingStatusChange?.("loading");
-
-    if (isServer()) return;
-
-    const image = new window.Image();
-    if (!isUndef(crossOrigin)) image.crossOrigin = crossOrigin;
-    if (!isUndef(referrerPolicy)) image.referrerPolicy = referrerPolicy;
-
-    image.onload = () => {
-      if (!active) return;
-      context.status("loaded");
-      context.onLoadingStatusChange?.("loaded");
-    };
-
-    image.onerror = () => {
-      if (!active) return;
-      context.status("error");
-      context.onLoadingStatusChange?.("error");
-    };
-
-    image.src = nextUrl;
-  };
-
-  const resolveUrl = (val: unknown): string | undefined => (isStr(val) ? val : undefined);
-
-  inClient(() => {
-    if (isValue(src)) {
-      updateStatus(resolveUrl(src()));
-      const unbind = src.watch((nextUrl) => {
-        if (active) updateStatus(resolveUrl(nextUrl));
-      });
-      onUnmounted(() => {
-        active = false;
-        unbind();
-      });
-    } else {
-      updateStatus(resolveUrl(src));
-      onUnmounted(() => {
-        active = false;
-      });
-    }
-  });
-
-  const elementProps: Record<string, any> = {
-    ...rest,
-  };
+  const elementProps: Record<string, any> = { ...rest };
   if (!isUndef(src)) elementProps.src = src;
   if (!isUndef(alt)) elementProps.alt = alt;
   if (!isUndef(crossOrigin)) elementProps.crossOrigin = crossOrigin;
   if (!isUndef(referrerPolicy)) elementProps.referrerPolicy = referrerPolicy;
 
-  return context.status.as((s) => (s === "loaded" ? ($(as, elementProps as any, content) as any) : null));
+  const renderEl = () => $(as, elementProps as any, content) as SeidrElementTagNameMap[T];
+
+  if (condition) {
+    return Show(condition, renderEl) as Value<SeidrElementTagNameMap[T] | null>;
+  }
+
+  return $(as, elementProps as any, content) as any;
 }

@@ -1,17 +1,14 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  createValue,
-  inClient,
   isValidSeidrChild,
-  mergeValues,
-  onUnmounted,
+  Show,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   type Value,
 } from "@fimbul-works/seidr";
-import { type ImageContextValue, useImageContext } from "./image-context.js";
+import type { UseImageResult } from "./use-image.js";
 
 export interface ImageFallbackOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   /**
@@ -19,17 +16,23 @@ export interface ImageFallbackOptions<T extends keyof SeidrElementTagNameMap = "
    * @default "span"
    */
   as?: T;
+
   /**
-   * Delay in milliseconds before rendering fallback, overriding root fallbackDelay.
+   * Bound Image instance or state providing reactive loading status.
    */
-  delayMs?: number;
+  instance?: UseImageResult;
+
+  /**
+   * Direct reactive condition controlling whether the fallback should render.
+   */
+  canRender?: Value<boolean>;
 }
 
-export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> = ImageFallbackOptions<T> &
-  SeidrElementProps<T>;
+export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> =
+  ImageFallbackOptions<T> & SeidrElementProps<T>;
 
 /**
- * Image.Fallback renders when the image hasn't loaded (whilst loading or on error).
+ * Image.Fallback renders content when the image hasn't loaded (whilst loading or on error).
  */
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
@@ -37,12 +40,10 @@ export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   props?: ImageFallbackProps<T> | null,
   children?: SeidrChild | SeidrChild[],
-  explicitContext?: ImageContextValue,
 ): Value<SeidrElementTagNameMap[T] | null>;
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
-  explicitContext?: ImageContextValue,
 ): Value<SeidrElementTagNameMap[T] | null> {
   let props: ImageFallbackProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
@@ -55,23 +56,15 @@ export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
-  const { as = "span" as T, delayMs, ...rest } = props;
+  const { as = "span" as T, instance, canRender, ...rest } = props;
 
-  const context = explicitContext ?? useImageContext();
-  const delay = delayMs ?? context.fallbackDelay;
+  const renderEl = () => $(as, rest as any, content) as SeidrElementTagNameMap[T];
+  const condition = canRender ?? instance?.canRenderFallback;
 
-  const canRender = createValue(isUndef(delay) || delay <= 0);
+  if (condition) {
+    return Show(condition, renderEl) as Value<SeidrElementTagNameMap[T] | null>;
+  }
 
-  inClient(() => {
-    if (!isUndef(delay) && delay > 0) {
-      const timer = window.setTimeout(() => canRender(true), delay);
-      onUnmounted(() => window.clearTimeout(timer));
-    }
-  });
-
-  const isVisible = mergeValues(() => canRender() && context.status() !== "loaded", {
-    parents: [canRender, context.status],
-  });
-
-  return isVisible.as((visible) => (visible ? ($(as, rest as any, content) as any) : null));
+  // Fallback if rendered without a bound state: immediate render wrapped in a Value
+  return $(as, rest as any, content) as any;
 }

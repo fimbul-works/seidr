@@ -46,54 +46,63 @@ export const ImageShowcase = createComponent(() => {
         ),
       ]),
       $div({ style: { display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "center" } }, [
-        // Standard avatar (scoped API)
-        Image(
-          { className: "avatar-demo" },
-          (img) => [
-            img.Img({ src: avatarUrl, alt: "User portrait", className: "avatar-img" }),
-            img.Fallback({ className: "avatar-fallback" }, "CN"),
-          ],
-        ),
+        // Standard avatar (unified component)
+        Image({
+          src: avatarUrl,
+          alt: "User portrait",
+          fallback: "CN",
+          className: "avatar",
+          fallbackProps: { className: "avatar-fallback" },
+          imgProps: { className: "avatar-img" },
+        }),
         // Large avatar with custom fallback
-        Image(
-          { className: "avatar-demo large" },
-          (img) => [
-            img.Img({ src: avatarUrl, alt: "User portrait large", className: "avatar-img" }),
-            img.Fallback({ className: "avatar-fallback" }, "Claus"),
-          ],
-        ),
+        Image({
+          src: avatarUrl,
+          alt: "User portrait large",
+          fallback: "Claus",
+          className: "avatar large",
+          fallbackProps: { className: "avatar-fallback" },
+          imgProps: { className: "avatar-img" },
+        }),
         // Avatar with delayMs on fallback
-        Image(
-          { className: "avatar-demo small", fallbackDelay: 300 },
-          (img) => [
-            img.Img({ src: avatarUrl, alt: "Small avatar", className: "avatar-img" }),
-            img.Fallback({ className: "avatar-fallback muted" }, "FW"),
-          ],
-        ),
+        Image({
+          src: avatarUrl,
+          alt: "Small avatar",
+          fallback: "FW",
+          fallbackDelay: 300,
+          className: "avatar small",
+          fallbackProps: { className: "avatar-fallback muted" },
+          imgProps: { className: "avatar-img" },
+        }),
         // Broken image with permanent fallback
-        Image(
-          { className: "avatar-demo" },
-          (img) => [
-            img.Img({ src: "https://invalid-avatar-url.fake/none.png", alt: "Broken avatar", className: "avatar-img" }),
-            img.Fallback({ className: "avatar-fallback" }, "⚠️"),
-          ],
-        ),
+        Image({
+          src: "https://invalid-avatar-url.fake/none.png",
+          alt: "Broken avatar",
+          fallback: "⚠️",
+          className: "avatar",
+          fallbackProps: { className: "avatar-fallback" },
+          imgProps: { className: "avatar-img" },
+        }),
       ]),
     ]),
     // Code Documentation
     CodeBlock(
       `import { Image } from "@fimbul-works/seidr-ui";
 
-// Scoped callback pattern
-Image({ className: "avatar" }, (img) => [
-  img.Img({ src: avatarUrl, alt: "User portrait", className: "avatar-img" }),
-  img.Fallback({ className: "avatar-fallback" }, "CN")
-]);
+// 1. Unified component (simplest & most common)
+Image({
+  src: avatarUrl,
+  alt: "User portrait",
+  fallback: "CN",
+  fallbackDelay: 300,
+  className: "avatar",
+});
 
-// Context stack pattern with fallbackDelay
-Image.Root({ fallbackDelay: 300 }, () => [
-  Image.Img({ src: "/avatar.png", alt: "User" }),
-  Image.Fallback("CN")
+// 2. Compound instance workflow (for custom markup)
+const avatar = Image.create({ src: avatarUrl });
+avatar.Root({ className: "avatar" }, [
+  avatar.Fallback({ className: "avatar-fallback" }, "CN"),
+  avatar.Img({ alt: "User portrait", className: "avatar-img" }),
 ]);`,
     ),
   ]);

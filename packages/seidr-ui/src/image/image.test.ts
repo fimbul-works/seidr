@@ -1,25 +1,38 @@
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import { createImage, Image, ImageFallback, ImageImg, ImageRoot } from "./index.js";
+import {
+  createImage,
+  Image,
+  ImageFallback,
+  ImageImg,
+  ImageRoot,
+  useImage,
+} from "./index.js";
 
 const FALLBACK_TEXT = "AB";
 const IMAGE_ALT_TEXT = "Fake Image";
 const DELAY = 50;
 
 describeDualMode("Image", ({ getDocument, isSSR }) => {
-  it("should render root element with default span tag and status data attribute", () => {
-    const root = ImageRoot((img) => [img.Fallback(FALLBACK_TEXT)]);
+  it("should render unified Image component with default span tag and status data attribute", () => {
+    const root = Image({
+      fallback: FALLBACK_TEXT,
+    });
     expect(root.tagName.toLowerCase()).toBe("span");
     expect(root.getAttribute("data-status")).toBe("idle");
+    expect(root.textContent).toContain(FALLBACK_TEXT);
   });
 
-  it("should support custom tag for Image.Root", () => {
-    const root = Image.Root({ as: "div" }, (img) => [img.Fallback(FALLBACK_TEXT)]);
+  it("should support custom tag for unified Image", () => {
+    const root = Image({
+      as: "div",
+      fallback: FALLBACK_TEXT,
+    });
     expect(root.tagName.toLowerCase()).toBe("div");
   });
 
-  it("should support Image.Root and Image namespace aliases", () => {
+  it("should support Image namespace aliases", () => {
     expect(Image.Root).toBe(ImageRoot);
     expect(Image.Img).toBe(ImageImg);
     expect(Image.Fallback).toBe(ImageFallback);
@@ -27,17 +40,21 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
   });
 
   it("should render fallback initially and not the image", () => {
-    const root = Image.Root((img) => [img.Fallback(FALLBACK_TEXT), img.Img({ src: "/test.jpg", alt: IMAGE_ALT_TEXT })]);
+    const root = Image({
+      src: "/test.jpg",
+      alt: IMAGE_ALT_TEXT,
+      fallback: FALLBACK_TEXT,
+    });
 
     expect(root.textContent).toContain(FALLBACK_TEXT);
     expect(root.querySelector("img")).toBeNull();
   });
 
   it("should work with createImage instance factory", () => {
-    const imgInstance = createImage();
-    const root = Image.Root([
+    const imgInstance = createImage({ src: "/test.jpg" });
+    const root = imgInstance.Root([
       imgInstance.Fallback(FALLBACK_TEXT),
-      imgInstance.Img({ src: "/test.jpg", alt: IMAGE_ALT_TEXT }),
+      imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
     ]);
 
     expect(root.textContent).toContain(FALLBACK_TEXT);
@@ -70,12 +87,12 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         };
 
         const statusChanges: string[] = [];
-        const root = Image.Root(
-          {
-            onLoadingStatusChange: (status) => statusChanges.push(status),
-          },
-          (img) => [img.Fallback(FALLBACK_TEXT), img.Img({ src: "/test.jpg", alt: IMAGE_ALT_TEXT })],
-        );
+        const root = Image({
+          src: "/test.jpg",
+          alt: IMAGE_ALT_TEXT,
+          fallback: FALLBACK_TEXT,
+          onLoadingStatusChange: (status) => statusChanges.push(status),
+        });
 
         const doc = getDocument();
         doc.body.appendChild(root);
@@ -112,10 +129,11 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
           }
         };
 
-        const root = Image.Root((img) => [
-          img.Fallback(FALLBACK_TEXT),
-          img.Img({ src: "/missing.jpg", alt: IMAGE_ALT_TEXT }),
-        ]);
+        const root = Image({
+          src: "/missing.jpg",
+          alt: IMAGE_ALT_TEXT,
+          fallback: FALLBACK_TEXT,
+        });
 
         const doc = getDocument();
         doc.body.appendChild(root);
@@ -130,7 +148,10 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
       });
 
       it("should delay fallback rendering when fallbackDelay is set", async () => {
-        const root = Image.Root({ fallbackDelay: DELAY }, (img) => [img.Fallback(FALLBACK_TEXT)]);
+        const root = Image({
+          fallbackDelay: DELAY,
+          fallback: FALLBACK_TEXT,
+        });
 
         const doc = getDocument();
         doc.body.appendChild(root);
@@ -147,8 +168,44 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         doc.body.removeChild(root);
       });
 
+      it("should support createImage compound workflow in the browser", async () => {
+        (window.Image as any) = class MockImage {
+          onload: () => void = () => {};
+          onerror: () => void = () => {};
+          src = "";
+
+          constructor() {
+            setTimeout(() => {
+              this.onload();
+            }, DELAY);
+          }
+        };
+
+        const imgInstance = createImage({ src: "/compound-test.jpg" });
+        const root = imgInstance.Root([
+          imgInstance.Fallback(FALLBACK_TEXT),
+          imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
+        ]);
+
+        const doc = getDocument();
+        doc.body.appendChild(root);
+
+        expect(root.textContent).toContain(FALLBACK_TEXT);
+        expect(root.querySelector("img")).toBeNull();
+
+        await new Promise((resolve) => setTimeout(resolve, DELAY + 20));
+
+        expect(root.querySelector("img")).not.toBeNull();
+        expect(root.textContent).not.toContain(FALLBACK_TEXT);
+
+        doc.body.removeChild(root);
+      });
+
       it("should pass axe accessibility checks", async () => {
-        const root = Image.Root((img) => [img.Fallback({ ariaLabel: "Claus Nuoskanen" }, FALLBACK_TEXT)]);
+        const root = Image({
+          fallback: FALLBACK_TEXT,
+          fallbackProps: { "aria-label": "Claus Nuoskanen" },
+        });
 
         const doc = getDocument();
         doc.body.appendChild(root);
