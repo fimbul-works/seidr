@@ -1,9 +1,10 @@
-import { isStr } from "@fimbul-works/hvat";
-import { MemoryStorage } from "../test-setup/memory-storage.js";
+import { isFn, isStr } from "@fimbul-works/hvat";
+import { isHydrating } from "../ssr/hydrate/storage.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { wrapError } from "../util/wrap-error.js";
 import type { Value } from "./types.js";
+import type { Unwrapped } from "./unwrap-value.js";
 
 /**
  * Error callback type for withStorage error handling.
@@ -12,6 +13,28 @@ import type { Value } from "./types.js";
  * @param {"read" | "write"} operation - The type of storage operation that failed (`"read"` or `"write"`)
  */
 export type StorageErrorHandler = (error: SeidrError, operation: "read" | "write") => void;
+
+/**
+ * Callback function to execute when the value being restored to has been hydrated after SSR.
+ * @template T - The observable Value instance type
+ * @param {Value<T>} value - The observable Value instance
+ * @param {T} storageValue - The value read from storage
+ */
+export type OnHydratedValueHandler<T> = (value: Value<T>, storageValue: T) => void;
+
+/**
+ * Options for the `withStorage` function.
+ *
+ * @template T - The observable Value instance type
+ */
+export interface WithStorageOptions<T = any> {
+  /** The storage API to use (default: `localStorage`) */
+  storage?: Storage;
+  /** Optional error handler to handle errors instead of being thrown */
+  onError?: StorageErrorHandler;
+  /** Callback function to execute when the value being restored to has been hydrated after SSR */
+  onHydrated?: OnHydratedValueHandler<T>;
+}
 
 /**
  * Synchronizes a Value observable with browser storage (localStorage or sessionStorage).
@@ -40,22 +63,28 @@ export type StorageErrorHandler = (error: SeidrError, operation: "read" | "write
  * @returns {T} The same Value instance, now with storage synchronization enabled
  * @throws {SeidrError} If storage read/write fails and no onError handler is provided
  */
-export const withStorage = <T extends Value>(
+export const withStorage = <T extends Value, V = Unwrapped<T>>(
   key: string,
   value: T,
-  storage: Storage = isClient() ? localStorage : new MemoryStorage(),
-  onError?: StorageErrorHandler,
+  options: WithStorageOptions<V> = {},
 ): T => {
   // Server-side rendering: storage APIs don't exist, so return Value unchanged
   if (!isClient()) {
     return value;
   }
+  const { storage = window.localStorage, onError, onHydrated } = options;
 
   // Load initial value from storage
   try {
     const initial = storage.getItem(key);
     if (isStr(initial)) {
-      value(JSON.parse(initial));
+      const storedValue = JSON.parse(initial);
+      // Check to see if the value being stored is hydrateable, and if the user has provided an onHydrated handler
+      if (!process.env.SEIDR_DISABLE_SSR && isHydrating() && value.hydrate && isFn(onHydrated)) {
+        onHydrated(value, storedValue);
+      } else {
+        value(storedValue);
+      }
     }
   } catch (error) {
     const err = wrapError(error);
