@@ -2,16 +2,16 @@ import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
   isValidSeidrChild,
-  Show,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  Show,
   type Value,
 } from "@fimbul-works/seidr";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
-import { useImage, type UseImageOptions, type UseImageResult } from "./use-image.js";
+import { type UseImageOptions, type UseImageResult, useImage } from "./use-image.js";
 
 export interface ImageInstance extends UseImageResult {
   /**
@@ -86,8 +86,7 @@ export function createImage(options: UseImageOptions = {}): ImageInstance {
   };
 }
 
-export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span">
-  extends UseImageOptions {
+export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
   /**
    * The HTML element tag name to render.
    * @default "span"
@@ -153,8 +152,7 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   return $(as, elementProps as any, content) as SeidrElementTagNameMap[T];
 }
 
-export interface UnifiedImageOptions<T extends keyof SeidrElementTagNameMap = "span">
-  extends UseImageOptions {
+export interface UnifiedImageOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
   /**
    * The HTML element tag name for the root container.
    * @default "span"
@@ -224,9 +222,7 @@ export function ImageComponent<T extends keyof SeidrElementTagNameMap = "span">(
 
   if (!isUndef(fallback)) {
     children.push(
-      Show(img.canRenderFallback, () =>
-        $(fallbackAs, { className: "image-fallback", ...fallbackProps }, fallback),
-      ),
+      Show(img.canRenderFallback, () => $(fallbackAs, { className: "image-fallback", ...fallbackProps }, fallback)),
     );
   }
 

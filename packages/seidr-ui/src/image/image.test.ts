@@ -1,14 +1,7 @@
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import {
-  createImage,
-  Image,
-  ImageFallback,
-  ImageImg,
-  ImageRoot,
-  useImage,
-} from "./index.js";
+import { createImage, Image, ImageFallback, ImageImg, ImageRoot } from "./index.js";
 
 const FALLBACK_TEXT = "AB";
 const IMAGE_ALT_TEXT = "Fake Image";
@@ -52,10 +45,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
 
   it("should work with createImage instance factory", () => {
     const imgInstance = createImage({ src: "/test.jpg" });
-    const root = imgInstance.Root([
-      imgInstance.Fallback(FALLBACK_TEXT),
-      imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
-    ]);
+    const root = imgInstance.Root([imgInstance.Fallback(FALLBACK_TEXT), imgInstance.Img({ alt: IMAGE_ALT_TEXT })]);
 
     expect(root.textContent).toContain(FALLBACK_TEXT);
     expect(root.querySelector("img")).toBeNull();
@@ -182,10 +172,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         };
 
         const imgInstance = createImage({ src: "/compound-test.jpg" });
-        const root = imgInstance.Root([
-          imgInstance.Fallback(FALLBACK_TEXT),
-          imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
-        ]);
+        const root = imgInstance.Root([imgInstance.Fallback(FALLBACK_TEXT), imgInstance.Img({ alt: IMAGE_ALT_TEXT })]);
 
         const doc = getDocument();
         doc.body.appendChild(root);

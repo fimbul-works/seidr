@@ -2,10 +2,10 @@ import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
   isValidSeidrChild,
-  Show,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  Show,
   type Value,
 } from "@fimbul-works/seidr";
 import type { UseImageResult } from "./use-image.js";
@@ -28,8 +28,8 @@ export interface ImageFallbackOptions<T extends keyof SeidrElementTagNameMap = "
   canRender?: Value<boolean>;
 }
 
-export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  ImageFallbackOptions<T> & SeidrElementProps<T>;
+export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> = ImageFallbackOptions<T> &
+  SeidrElementProps<T>;
 
 /**
  * Image.Fallback renders content when the image hasn't loaded (whilst loading or on error).

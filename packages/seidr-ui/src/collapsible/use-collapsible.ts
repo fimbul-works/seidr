@@ -1,12 +1,6 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
-import {
-  createValue,
-  isValue,
-  unwrapValue,
-  type CleanupFunction,
-  type Value,
-} from "@fimbul-works/seidr";
-import type { CollapsibleDataSet, UseCollapsibleResult } from "./collapsible-context.js";
+import { type CleanupFunction, createValue, isValue, unwrapValue, type Value } from "@fimbul-works/seidr";
+import type { CollapsibleDataSet, UseCollapsibleResult } from "./types.js";
 
 let idCounter = 0;
 
@@ -41,14 +35,7 @@ export interface UseCollapsibleOptions {
  * for an interactive disclosure / collapsible widget.
  */
 export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsibleResult {
-  const {
-    open,
-    defaultOpen,
-    onOpenChange,
-    disabled,
-    forceMount = false,
-    id: providedId,
-  } = options;
+  const { open, defaultOpen, onOpenChange, disabled, forceMount = false, id: providedId } = options;
 
   const id = providedId ?? createCollapsibleId();
   const contentId = createValue<string>(`${id}-content`);

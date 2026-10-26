@@ -2,7 +2,7 @@ import { createComponent, createValue, mount } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { Collapsible, createCollapsible } from "./index.js";
+import { Collapsible } from "./index.js";
 
 const TRIGGER_TEXT = "Toggle Trigger";
 const CONTENT_TEXT = "Collapsible Content Area";
@@ -66,10 +66,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
   it("should support pre-bound instance factory Collapsible.create", () => {
     const root = setup(() => {
       const col = Collapsible.create({ defaultOpen: true });
-      return col.Root([
-        col.Trigger(TRIGGER_TEXT),
-        col.Content(CONTENT_TEXT),
-      ]);
+      return col.Root([col.Trigger(TRIGGER_TEXT), col.Content(CONTENT_TEXT)]);
     });
 
     const trigger = root.querySelector("button")!;

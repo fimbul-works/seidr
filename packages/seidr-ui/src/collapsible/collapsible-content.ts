@@ -3,14 +3,14 @@ import {
   $,
   isValidSeidrChild,
   onUnmounted,
-  SeidrError,
-  Show,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
+  Show,
   type Value,
 } from "@fimbul-works/seidr";
-import { collapsibleContext, type UseCollapsibleResult } from "./collapsible-context.js";
+import type { UseCollapsibleResult } from "./types.js";
 
 export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   /**
@@ -30,8 +30,8 @@ export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMa
   forceMount?: boolean;
 }
 
-export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  CollapsibleContentOptions<T> & SeidrElementProps<T>;
+export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "div"> = CollapsibleContentOptions<T> &
+  SeidrElementProps<T>;
 
 /**
  * Contains the content to be rendered when the collapsible is expanded.
@@ -58,18 +58,12 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
-  const {
-    as = "div" as T,
-    instance,
-    forceMount: propsForceMount,
-    id: customId,
-    ...rest
-  } = props as any;
+  const { as = "div" as T, instance, forceMount: propsForceMount, id: customId, ...rest } = props as any;
 
-  const col = instance ?? collapsibleContext.get();
+  const col = instance;
   if (!col) {
     throw new SeidrError(
-      "[seidr-ui]: CollapsibleContent requires an instance prop or must be used within a Collapsible.create() / Collapsible context.",
+      "[seidr-ui]: CollapsibleContent requires an instance prop or must be created via Collapsible.create() / Collapsible.",
     );
   }
 
@@ -99,6 +93,11 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
 
   return Show(
     col.isOpen,
-    () => $(as as keyof SeidrElementTagNameMap, elementProps as SeidrElementProps<any>, content) as SeidrElementTagNameMap[T],
+    () =>
+      $(
+        as as keyof SeidrElementTagNameMap,
+        elementProps as SeidrElementProps<any>,
+        content,
+      ) as SeidrElementTagNameMap[T],
   ) as Value<SeidrElementTagNameMap[T] | null>;
 }

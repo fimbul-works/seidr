@@ -2,14 +2,14 @@ import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
   isValidSeidrChild,
-  Show,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  Show,
   type Value,
 } from "@fimbul-works/seidr";
-import { useImage, type UseImageResult } from "./use-image.js";
+import { type UseImageResult, useImage } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
   /**

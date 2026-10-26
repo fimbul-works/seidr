@@ -7,10 +7,10 @@ import {
   type SeidrElementTagNameMap,
   type Value,
 } from "@fimbul-works/seidr";
-import { collapsibleContext, type UseCollapsibleResult } from "./collapsible-context.js";
 import { CollapsibleContent, type CollapsibleContentProps } from "./collapsible-content.js";
 import { CollapsibleTrigger, type CollapsibleTriggerProps } from "./collapsible-trigger.js";
-import { useCollapsible, type UseCollapsibleOptions } from "./use-collapsible.js";
+import type { UseCollapsibleResult } from "./types.js";
+import { type UseCollapsibleOptions, useCollapsible } from "./use-collapsible.js";
 
 export interface CollapsibleInstance extends UseCollapsibleResult {
   /**
@@ -42,7 +42,6 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
  * Creates a collapsible state instance with pre-bound compound element helpers.
  */
 export function createCollapsible(options: UseCollapsibleOptions = {}): CollapsibleInstance {
-  
   const instance = useCollapsible(options);
 
   return {
@@ -86,8 +85,7 @@ export function createCollapsible(options: UseCollapsibleOptions = {}): Collapsi
   };
 }
 
-export interface CollapsibleRootOptions<T extends keyof SeidrElementTagNameMap = "div">
-  extends UseCollapsibleOptions {
+export interface CollapsibleRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseCollapsibleOptions {
   /**
    * The HTML element tag name to render.
    * @default "div"
@@ -100,8 +98,8 @@ export interface CollapsibleRootOptions<T extends keyof SeidrElementTagNameMap =
   instance?: UseCollapsibleResult;
 }
 
-export type CollapsibleRootProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  CollapsibleRootOptions<T> & SeidrElementProps<T>;
+export type CollapsibleRootProps<T extends keyof SeidrElementTagNameMap = "div"> = CollapsibleRootOptions<T> &
+  SeidrElementProps<T>;
 
 /**
  * CollapsibleRoot is the top-level container for a collapsible disclosure widget.
@@ -170,7 +168,10 @@ export interface CollapsibleProps<
   /** Tag for root container. Default "div". */
   as?: TRoot;
   /** Props for root container. */
-  rootProps?: Omit<CollapsibleRootProps<TRoot>, "open" | "defaultOpen" | "onOpenChange" | "disabled" | "forceMount" | "id">;
+  rootProps?: Omit<
+    CollapsibleRootProps<TRoot>,
+    "open" | "defaultOpen" | "onOpenChange" | "disabled" | "forceMount" | "id"
+  >;
   /** Content for trigger. */
   trigger?: SeidrChild | SeidrChild[];
   /** Props for trigger button. */
@@ -213,13 +214,10 @@ function CollapsibleUnified<
     id,
   });
 
-  return col.Root(
-    { as, ...rootProps } as any,
-    [
-      col.Trigger(triggerProps as any, trigger),
-      col.Content(contentProps as any, children),
-    ],
-  );
+  return col.Root({ as, ...rootProps } as any, [
+    col.Trigger(triggerProps as any, trigger),
+    col.Content(contentProps as any, children),
+  ]);
 }
 
 export const Collapsible = Object.assign(CollapsibleUnified, {

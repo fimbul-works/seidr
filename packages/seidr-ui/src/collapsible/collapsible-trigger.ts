@@ -3,21 +3,20 @@ import {
   isValidSeidrChild,
   isValue,
   mergeValues,
-  SeidrError,
   type SeidrChild,
   type SeidrElementTagNameMap,
+  SeidrError,
 } from "@fimbul-works/seidr";
-import { ButtonRoot, type ButtonOptions, type ButtnProps } from "../button.js";
-import { collapsibleContext, type UseCollapsibleResult } from "./collapsible-context.js";
+import { type ButtnProps, type ButtonOptions, ButtonRoot } from "../button.js";
+import type { UseCollapsibleResult } from "./types.js";
 
-export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button">
-  extends ButtonOptions<T> {
+export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
   /** Explicit instance providing reactive state. */
   instance?: UseCollapsibleResult;
 }
 
-export type CollapsibleTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> =
-  CollapsibleTriggerOptions<T> & Omit<ButtnProps<T>, "aria-expanded" | "aria-controls">;
+export type CollapsibleTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> = CollapsibleTriggerOptions<T> &
+  Omit<ButtnProps<T>, "aria-expanded" | "aria-controls">;
 
 /**
  * The button that expands/collapses the collapsible content.
@@ -47,10 +46,10 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
 
   const { instance, disabled, onclick: userOnClick, ...rest } = props as any;
 
-  const col = instance ?? collapsibleContext.get();
+  const col = instance;
   if (!col) {
     throw new SeidrError(
-      "[seidr-ui]: CollapsibleTrigger requires an instance prop or must be used within a Collapsible.create() / Collapsible context.",
+      "[seidr-ui]: CollapsibleTrigger requires an instance prop or must be created via Collapsible.create() / Collapsible.",
     );
   }
 
@@ -67,10 +66,9 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
     col.toggle();
   };
 
-  const ariaControls = mergeValues(
-    () => (col.isOpen() ? col.contentId() : undefined),
-    { parents: [col.isOpen, col.contentId] },
-  );
+  const ariaControls = mergeValues(() => (col.isOpen() ? col.contentId() : undefined), {
+    parents: [col.isOpen, col.contentId],
+  });
 
   return ButtonRoot(
     {

@@ -1,5 +1,4 @@
 import type { CleanupFunction, Value } from "@fimbul-works/seidr";
-import { createContext } from "../utils/create-context.js";
 
 export interface CollapsibleDataSet {
   "data-expanded": Value<string | undefined>;
@@ -41,5 +40,3 @@ export interface UseCollapsibleResult {
   /** Reactive data-* attributes for Root, Trigger, and Content. */
   dataset: CollapsibleDataSet;
 }
-
-export const collapsibleContext = createContext<UseCollapsibleResult>("Collapsible");
