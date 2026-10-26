@@ -9,7 +9,7 @@
     "check-types": "tsc --noEmit"
   },
   "devDependencies": {
-    "@fimbul-works/loiske": "link:../../../loiske",
+    "@fimbul-works/loiske": "link:../../../loiske/packages/loiske",
     "@repo/typescript-config": "workspace:*",
     "tsx": "^4.23.15",
     "typescript": "^6.0.3",

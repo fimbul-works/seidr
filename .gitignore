@@ -13,4 +13,4 @@ coverage/
 public/particles.js
 
 # Temporary
-packages/seidr-ui/radix-ui-primitives/
+packages/seidr-ui/kobalte-packages/

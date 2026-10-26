@@ -1,4 +1,4 @@
-import type { Value } from "@fimbul-works/seidr";
+import type { DerivedValue } from "@fimbul-works/seidr";
 import { browserRouter } from "../browser-router.js";
 import { getRouterState } from "../get-router-state.js";
 import { initRouter } from "../init-router.js";
@@ -6,9 +6,9 @@ import { initRouter } from "../init-router.js";
 /**
  * Returns the current search parameters as a derived Value and a setter function.
  *
- * @returns {[Value<Record<string, string>>, (name: string, value: string) => void]} Tuple of [params, setParam]
+ * @returns {[DerivedValue<Record<string, string>>, (name: string, value: string) => void]} Tuple of [params, setParam]
  */
-export const useSearchParams = (): [Value<Record<string, string>>, (name: string, value: string) => void] => {
+export const useSearchParams = (): [DerivedValue<Record<string, string>>, (name: string, value: string) => void] => {
   initRouter();
 
   const routerState = getRouterState();
@@ -20,5 +20,5 @@ export const useSearchParams = (): [Value<Record<string, string>>, (name: string
     router.push(url.pathname + url.search + url.hash);
   };
 
-  return [router.searchParams.as((params) => params), setParam];
+  return [router.searchParams.as((params: Record<string, string>) => params), setParam];
 };

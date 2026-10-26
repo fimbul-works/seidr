@@ -1,4 +1,4 @@
-import { isStr } from "../../util/type-guards.js";
+import { isStr } from "@fimbul-works/hvat";
 import type { ServerNode } from "./types.js";
 
 /**

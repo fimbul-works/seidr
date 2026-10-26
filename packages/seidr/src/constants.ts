@@ -40,9 +40,6 @@ export const TAG_COMPONENT_PREFIX = "$";
 /** Component scope data key. */
 export const DATA_KEY_COMPONENT_SCOPE = "seidr.component.scope";
 
-/** Mutation observer data key. */
-export const DATA_KEY_MUTATION_OBSERVERS = "seidr.mutation.observers";
-
 /** Current component cursor data key. */
 export const DATA_KEY_COMPONENT_CURSOR = "seidr.component.cursor";
 
@@ -59,7 +56,7 @@ export const DATA_KEY_DOCUMENT = "seidr.document";
  * Data key for whether the current state is for SSR.
  * @internal Used for testing.
  */
-export const DATA_KEY_IS_SSR = "seidr.isSSR";
+export const DATA_KEY_IS_SSR = "seidr.ssr.active";
 
 /** SSR scope data key. */
 export const DATA_KEY_SSR_SCOPE = "seidr.ssr.scope";

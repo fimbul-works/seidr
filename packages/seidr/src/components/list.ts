@@ -1,3 +1,4 @@
+import { isArr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
@@ -5,7 +6,7 @@ import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../compone
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
 import { normalizeChildNodes } from "../dom/append-child.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
-import { wrapComponent } from "../index.core.js";
+import { wrapComponent } from "../component/wrap-component.js";
 import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 
@@ -54,7 +55,7 @@ export const List = <T, K extends string | number>(
     const [startMarker, endMarker] = getMarkerComments(listComponent)!;
 
     const update = (newItems?: T[] | readonly T[]) => {
-      if (!Array.isArray(newItems)) {
+      if (!isArr(newItems)) {
         return;
       }
 

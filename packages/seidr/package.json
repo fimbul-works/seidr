@@ -60,7 +60,7 @@
   "scripts": {
     "build": "pnpm build:clean && pnpm build:lib && pnpm build:bundles",
     "build:clean": "rimraf dist/ bundles/",
-    "build:lib": "tsc",
+    "build:lib": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
     "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
     "test": "vitest run",
     "prepublishOnly": "pnpm clean:dist && pnpm build"

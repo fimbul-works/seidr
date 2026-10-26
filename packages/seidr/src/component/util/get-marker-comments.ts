@@ -1,9 +1,9 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
+import { isObj, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../../app-state/app-state.js";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants.js";
 import { getDocument } from "../../dom/get-document.js";
 import { isComment } from "../../dom/type-guards.js";
-import { isObj, isStr } from "../../util/type-guards.js";
 import type { SeidrComponent } from "../types.js";
 
 /**

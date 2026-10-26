@@ -24,7 +24,11 @@ export interface Observable<T = any> {
   /**
    * Registers a callback that is invoked whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   watch(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -33,7 +37,11 @@ export interface Observable<T = any> {
    * Registers a callback that is invoked immediately,
    * and whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   bind(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -88,7 +96,11 @@ export interface Value<T = any> extends Observable<T> {
   /**
    * Registers a callback that is invoked whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   watch(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -97,7 +109,11 @@ export interface Value<T = any> extends Observable<T> {
    * Registers a callback that is invoked immediately,
    * and whenever the value changes.
    *
-   * @param handler Receives the new value and the previous value.
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
    * @returns A function that unregisters the callback.
    */
   bind(handler: ValueChangeHandler<T>): CleanupFunction;
@@ -118,7 +134,7 @@ export interface Value<T = any> extends Observable<T> {
    * @param options Options for the new derived value
    * @returns A new observable value containing the transformed value
    */
-  as<D>(transformFn: (value: T) => D, options?: ValueOptions): Value<D>;
+  as<D>(transformFn: (value: T) => D, options?: DerivedValueOptions): DerivedValue<D>;
 
   /**
    * Register a cleanup function that is called when the observable is destroyed.
@@ -177,6 +193,110 @@ export interface ValueOptions {
    */
   hydrate?: boolean;
 }
+
+/**
+ * A derived Value interface.
+ *
+ * @template T - The type of the value emitted by the value
+ */
+export interface DerivedValue<T = any> extends Observable<T> {
+  readonly [TYPE_PROP]: typeof TYPE_VALUE;
+
+  /**
+   * Unique identifier.
+   */
+  readonly id: string;
+
+  /**
+   * Whether this value is derived from other values.
+   */
+  readonly isDerived: true;
+
+  /**
+   * Whether to hydrate this value from server-side data.
+   */
+  readonly hydrate: false;
+
+  /**
+   * Returns the current value.
+   */
+  (): T;
+
+  /**
+   * Registers a callback that is invoked whenever the value changes.
+   *
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
+   * @returns A function that unregisters the callback.
+   */
+  watch(handler: ValueChangeHandler<T>): CleanupFunction;
+
+  /**
+   * Registers a callback that is invoked immediately,
+   * and whenever the value changes.
+   *
+   * When called within an active component scope, the subscription automatically
+   * registers with that component and is cleaned up on unmount. Outside of a component
+   * scope (e.g. in tests), it remains active until the returned cleanup function is invoked.
+   *
+   * @param handler Receives the new value and the previous value. Can optionally return a cleanup function.
+   * @returns A function that unregisters the callback.
+   */
+  bind(handler: ValueChangeHandler<T>): CleanupFunction;
+
+  /**
+   * Removes all registered callbacks.
+   *
+   * After calling this method, no further callbacks will be invoked
+   * unless new callbacks are registered.
+   */
+  destroy(): void;
+
+  /**
+   * Creates a derived Value that automatically transforms this observable's value.
+   *
+   * @template D - The type of the transformed/derived value
+   * @param transformFn Function that transforms the source value to the derived value
+   * @param options Options for the new derived value
+   * @returns A new observable value containing the transformed value
+   */
+  as<D>(transformFn: (value: T) => D, options?: DerivedValueOptions): DerivedValue<D>;
+
+  /**
+   * Register a cleanup function that is called when the observable is destroyed.
+   *
+   * @param fn The cleanup function to register.
+   * @internal
+   */
+  cleanup(fn: CleanupFunction): void;
+
+  /**
+   * Returns the number of active observers.
+   *
+   * @internal
+   */
+  readonly observerCount: number;
+
+  /**
+   * Returns the parent values that this value derives from.
+   *
+   * @internal
+   */
+  readonly parents: Observable[];
+}
+
+/**
+ * Options for creating a derived Value, excluding parent and hydration settings.
+ */
+export type DerivedValueOptions = Omit<ValueOptions, "id" | "hydrate">;
+
+/**
+ * A observable value can be a Value or a DerivedValue.
+ */
+export type ObservableValue<T = any> = Value<T> | DerivedValue<T>;
 
 /**
  * Ref object.

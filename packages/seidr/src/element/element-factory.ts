@@ -1,4 +1,4 @@
-import { isNullish } from "../util/type-guards.js";
+import { isNullish } from "@fimbul-works/hvat";
 import { $ } from "./create-element.js";
 import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";

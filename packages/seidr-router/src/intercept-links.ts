@@ -1,4 +1,5 @@
-import { $queryAll, getDocument, isHTMLElement, isNullish, isServer } from "@fimbul-works/seidr";
+import { isNullish } from "@fimbul-works/hvat";
+import { $queryAll, getDocument, isHTMLElement, isServer } from "@fimbul-works/seidr";
 import { getRouterState } from "./get-router-state.js";
 import { useNavigate } from "./hooks/use-navigate.js";
 

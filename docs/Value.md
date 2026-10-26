@@ -61,7 +61,7 @@ const count = createValue(0, {
 
   **Deterministic IDs in SSR:**
   - **Inside Components**: Values created within a component automatically receive an ID derived from the component's ID and its creation sequence (e.g. `1-1`, `1-2`), ensuring deterministic hydration matches.
-  - **Outside Components**: Values created globally receive sequential IDs managed by [`AppState`](AppState.md).
+  - **Outside Components**: Values created globally receive sequential IDs managed by [`AppState`](AppState.md). During SSR, generating a Value ID outside of component scope emits a warning in development/test environments because it can lead to non-deterministic IDs and hydration mismatches.
 
 - `isDerived: boolean` — Readonly boolean indicating if this value is derived from one or more parent values.
 
@@ -117,18 +117,26 @@ Registers a change handler callback that is invoked whenever the value changes.
 
 **Returns:** `CleanupFunction` (`() => void`) to unregister the handler and run any active cleanup.
 
+#### Automatic Scope Cleanup vs. Manual Unwatch
+
+- **Inside Components**: When `.watch()` is called inside an active component scope (e.g. within a component factory during setup/render), it automatically registers its teardown with that component's `onUnmounted` hook. When the component unmounts from the DOM, the watcher and its active cleanup function are executed and detached automatically. Explicit `onUnmounted(value.watch(...))` calls are unnecessary.
+- **Outside Components**: When `.watch()` is called outside of any component scope (such as in test suites or global singleton state), the subscription lives indefinitely until manually stopped by invoking the returned unsubscribe function (`unwatch()`) or when `.destroy()` is called on the `Value`.
+
 #### Cleanup Function Lifecycle
 
 Handlers can return an optional cleanup function (similar to React's `useEffect` teardown). When returned:
 1. **Before subsequent runs**: If the value changes again, the previously returned cleanup runs immediately before the handler is invoked with the new value.
-2. **On unwatch**: When the returned unsubscribe function (`unwatch()`) is invoked, the active cleanup function runs immediately.
-3. **On `.destroy()`**: If the `Value` is destroyed, any active cleanup function is executed.
+2. **On unmount**: When the enclosing component unmounts, the subscription and any active cleanup function run automatically.
+3. **On unwatch**: When the returned unsubscribe function (`unwatch()`) is invoked, the active cleanup function runs immediately.
+4. **On `.destroy()`**: If the `Value` is destroyed, any active cleanup function is executed.
 
 #### Basic Usage
 
 ```typescript
 const count = createValue(0);
 
+// Inside a component: cleanup is handled automatically on unmount.
+// Outside a component: use the returned unwatch function to unsubscribe.
 const unwatch = count.watch((newVal, prevVal) => {
   console.log(`Changed from ${prevVal} to ${newVal}`);
 });
@@ -136,7 +144,7 @@ const unwatch = count.watch((newVal, prevVal) => {
 count(1); // Logs: "Changed from 0 to 1"
 count(2); // Logs: "Changed from 1 to 2"
 
-// Stop watching
+// Stop watching manually (if outside component scope or stopping early)
 unwatch();
 ```
 
@@ -145,13 +153,13 @@ unwatch();
 ```typescript
 const userId = createValue('user-1');
 
-const unwatch = userId.watch((id) => {
+userId.watch((id) => {
   const controller = new AbortController();
   fetch(`/api/users/${id}`, { signal: controller.signal })
     .then((res) => res.json())
     .then((data) => console.log('User data:', data));
 
-  // Cleanup runs before next user ID change or when unwatching
+  // Cleanup runs before next user ID change, when unwatching, or on component unmount
   return () => controller.abort();
 });
 ```
@@ -167,17 +175,24 @@ Registers a change handler callback that is invoked **immediately** with the cur
 
 **Returns:** `CleanupFunction` (`() => void`) to unregister the handler and run any active cleanup.
 
+#### Automatic Scope Cleanup vs. Manual Unbind
+
+- **Inside Components**: When `.bind()` is called inside an active component scope, the subscription automatically registers with that component's `onUnmounted` hook. When the component unmounts, the binding and any returned teardown function are automatically executed and detached.
+- **Outside Components**: When called outside of a component scope (such as in tests), the binding remains active indefinitely until explicitly cancelled by calling the returned unbind function (`unbind()`) or when `.destroy()` is called on the `Value`.
+
 #### Immediate Execution & Teardown Lifecycle
 
 Unlike `.watch()`, `.bind()` executes the handler immediately upon registration with `(currentValue, currentValue)`.
 - If the handler returns a cleanup function, it is captured from the initial call.
-- The cleanup function automatically runs before subsequent updates, when calling the unbind function, or when `.destroy()` is called on the `Value`.
+- The cleanup function automatically runs before subsequent updates, when the component unmounts, when calling the unbind function, or when `.destroy()` is called on the `Value`.
 
 #### Basic Usage
 
 ```typescript
 const count = createValue(10);
 
+// Inside a component: auto-cleans on unmount
+// Outside a component: call returned unbind() when done
 const unbind = count.bind((value) => {
   console.log(`Current value: ${value}`);
 });
@@ -185,7 +200,7 @@ const unbind = count.bind((value) => {
 
 count(20); // Logs: "Current value: 20"
 
-unbind();
+unbind(); // Manual unsubscribe
 ```
 
 #### Managing External Subscriptions
@@ -195,7 +210,8 @@ unbind();
 ```typescript
 const isTracking = createValue(false);
 
-const unbind = isTracking.bind((active) => {
+// Inside a component, this automatically tears down when unmounted:
+isTracking.bind((active) => {
   if (!active) return;
 
   const onMouseMove = (e: MouseEvent) => {
@@ -204,14 +220,12 @@ const unbind = isTracking.bind((active) => {
 
   window.addEventListener('mousemove', onMouseMove);
 
-  // Automatically cleans up before active changes or when unbound
+  // Automatically cleans up before active changes or when component unmounts
   return () => window.removeEventListener('mousemove', onMouseMove);
 });
 
 isTracking(true);  // Attaches event listener
 isTracking(false); // Cleans up event listener
-
-unbind();          // Removes handler and runs active cleanup
 ```
 
 ---

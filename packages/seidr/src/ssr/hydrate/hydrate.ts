@@ -1,7 +1,7 @@
+import { isNullish } from "@fimbul-works/hvat";
 import type { SeidrComponentFactoryOrFunction } from "../../component/types.js";
 import { mount } from "../../dom/mount.js";
 import { type CleanupFunction, SeidrError } from "../../types.js";
-import { isNullish } from "../../util/type-guards.js";
 import { getHydrationSerializer } from "../hydration-serializer.js";
 import type { HydrationData } from "../types.js";
 import { clearHydrationContext, initHydrationContext } from "./hydration-context.js";

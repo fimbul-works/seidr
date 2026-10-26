@@ -1,6 +1,6 @@
 import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
-import type { Ref, Value } from "../observable/types.js";
+import type { ObservableValue, Ref } from "../observable/types.js";
 
 /**
  * Used to represent DOM API's where users can either pass
@@ -384,9 +384,9 @@ export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${st
  * @template T - The underlying scalar type
  */
 export type ReactiveValue<T> = [T] extends [Scalar]
-  ? T | Value<T> | Value<string> | Value<string | null> | Value<number> | Value<number | null> | Value<boolean> | true
+  ? T | ObservableValue<T> | ObservableValue<string> | ObservableValue<number> | ObservableValue<boolean> | true
   : [T] extends [infer A]
-    ? T | Value<A> | null
+    ? T | ObservableValue<A> | null
     : T;
 
 /**
@@ -453,12 +453,14 @@ export type ReactiveDataCamelCase = {
  * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  */
 export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof SeidrElementTagNameMap> = Partial<
-  ReactiveProps<K, SeidrElementTagNameMap[K]> &
-    ReactiveARIAMixin &
-    ReactiveARIAKebabCase &
-    ReactiveDataKebabCase &
-    ReactiveDataCamelCase
-> & { style?: ReactiveStyleDeclaration | ReactiveValue<string>; ref?: Ref<SeidrElementTagNameMap[K]> };
+  ReactiveProps<K, SeidrElementTagNameMap[K]>
+> & {
+  style?: ReactiveStyleDeclaration | ReactiveValue<string>;
+  ref?: Ref<SeidrElementTagNameMap[K]>;
+  [key: `data-${string}`]: ReactiveValue<string> | undefined;
+  [key: `data${string}`]: ReactiveValue<string> | undefined;
+  [key: `aria-${string}`]: ReactiveValue<string> | undefined;
+};
 
 /**
  * Union type representing allowed nodes for Seidr elements.
@@ -468,7 +470,16 @@ export type SeidrNode = SeidrComponent | Element | Text | Comment;
 /**
  * Union type representing allowed child nodes for Seidr Components.
  */
-export type SeidrChild = SeidrNode | Value | ChildNode | string | number | boolean | null | undefined | SeidrChild[];
+export type SeidrChild =
+  | SeidrNode
+  | ObservableValue
+  | ChildNode
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | SeidrChild[];
 
 /**
  * Namee of a property

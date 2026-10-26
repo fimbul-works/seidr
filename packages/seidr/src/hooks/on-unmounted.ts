@@ -1,6 +1,6 @@
+import { isFn } from "@fimbul-works/hvat";
 import { getComponentScope } from "../component/component-scope.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
-import { isFn } from "../util/type-guards.js";
 
 /**
  * Register a component lifecycle hook that is called when the component is unmounted.

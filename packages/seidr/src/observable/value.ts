@@ -1,13 +1,23 @@
+import { isFn } from "@fimbul-works/hvat";
 import { getAppState, getNextValueId } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
+import { getComponentScope } from "../component/component-scope.js";
 import { TYPE_PROP } from "../constants.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isFn } from "../util/type-guards.js";
-import { DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
+import { DATA_KEY_PARENT_OBSERVABLE_STACK, DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
-import type { Observable, Value, ValueChangeHandler, ValueOptions } from "./types.js";
+import type {
+  DerivedValue,
+  DerivedValueOptions,
+  Observable,
+  Value,
+  ValueChangeHandler,
+  ValueOptions,
+} from "./types.js";
+
+const getParentObservableStack = () => getAppState().getData<Set<Observable>[]>(DATA_KEY_PARENT_OBSERVABLE_STACK, []);
 
 /**
  * Creates an observable Value,
@@ -70,8 +80,9 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   // Access to arguments requires a standard function
   function valueGetSetter(newValue?: T | ((prevValue: T) => T)): T {
     if (!arguments.length) {
-      if (parentsStack.length) {
-        parentsStack.at(-1)!.add(valueGetSetter as Value);
+      const stack = getParentObservableStack();
+      if (stack.length) {
+        stack.at(-1)!.add(valueGetSetter as Value);
       }
 
       return currentValue;
@@ -123,16 +134,21 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
       registerValueForSSR?.(fn);
     }
     handlers.add(handler);
-    return () => cleanupHandler(handler);
+    const cleanup = () => cleanupHandler(handler);
+    getComponentScope()?.onUnmounted(cleanup); // Clean up automatically when component unmounts
+    return cleanup;
   });
 
   defineValueProp(fn, "bind", (handler: ValueChangeHandler<T>): CleanupFunction => {
     if (!process.env.SEIDR_DISABLE_SSR) {
       registerValueForSSR?.(fn);
     }
+
     handlers.add(handler);
     runHandler(handler, currentValue, currentValue);
-    return () => cleanupHandler(handler);
+    const cleanup = () => cleanupHandler(handler);
+    getComponentScope()?.onUnmounted(cleanup); // Clean up automatically when component unmounts
+    return cleanup;
   });
 
   defineValueProp(fn, "cleanup", (cleanupFn: CleanupFunction) => cleanups.add(cleanupFn));
@@ -153,11 +169,11 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     cleanups.clear();
   });
 
-  defineValueProp(fn, "as", <D>(transformFn: (value: T) => D, options: ValueOptions = {}) =>
+  defineValueProp(fn, "as", <D>(transformFn: (value: T) => D, options: DerivedValueOptions = {}) =>
     mergeValues(() => transformFn(fn()), options),
   );
 
-  defineGetProp(fn, "parents", () => parents.slice());
+  defineGetProp(fn, "parents", () => parents?.slice() ?? []);
 
   defineGetProp(fn, "observerCount", () => handlers.size);
 
@@ -175,28 +191,26 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
   return fn;
 }
 
-// Registry to track values that are invoked during a merge
-const parentsStack: Set<Observable>[] = [];
-
 /**
  * Creates a derived value by a merging function.
  *
  * @template T - The type of the value stored and emitted
  * @param {() => T} [mergeFn] - The function that returns the derived value
- * @param {ValueOptions} [options={}] - The initial value (default: `{}`)
+ * @param {ValueOpDerivedValueOptionstions} [options={}] - The initial value (default: `{}`)
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
-export function mergeValues<T>(mergeFn: () => T, options: Omit<ValueOptions, "id" | "hydrate"> = {}): Value<T> {
+export function mergeValues<T>(mergeFn: () => T, options: DerivedValueOptions = {}): DerivedValue<T> {
+  const parentsStack = getParentObservableStack();
   parentsStack.push(new Set(options.parents ?? []));
   try {
     const initialValue = mergeFn();
     const parents = Array.from(parentsStack.at(-1)!);
     if (parentsStack.length === 0) {
-      throw new SeidrError("Merged Value must have at least one parent");
+      throw new SeidrError("Derived Value must have at least one parent");
     }
     const derived = createValue<T>(initialValue, { ...options, parents: parents });
     parents.forEach((parent) => derived.cleanup(parent.watch(() => derived(mergeFn()) as void)));
-    return derived;
+    return derived as DerivedValue<T>;
   } finally {
     parentsStack.pop();
   }

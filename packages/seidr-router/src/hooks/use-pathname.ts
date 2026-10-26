@@ -1,4 +1,4 @@
-import type { Value } from "@fimbul-works/seidr";
+import type { DerivedValue } from "@fimbul-works/seidr";
 import { browserRouter } from "../browser-router.js";
 import { initRouter } from "../init-router.js";
 import { getNearestRouter } from "../router-tree/get-nearest-router.js";
@@ -7,9 +7,9 @@ import { getNearestRouter } from "../router-tree/get-nearest-router.js";
  * Returns the current path as a derived Value.
  * This cannot be changed directly by the user.
  *
- * @returns {Value<string>} Derived Value of the current path
+ * @returns {DerivedValue<string>} Derived Value of the current path
  */
-export const usePathname = (): Value<string> => {
+export const usePathname = (): DerivedValue<string> => {
   initRouter();
   return (getNearestRouter()?.pathname || browserRouter().pathname).as((pathname) => pathname);
 };

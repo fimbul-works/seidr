@@ -1,3 +1,4 @@
+import { isFn, isObj } from "@fimbul-works/hvat";
 import { getComponentScope, setComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
 import type {
@@ -11,7 +12,6 @@ import { onUnmounted } from "../hooks/on-unmounted.js";
 import { createValue } from "../observable/value.js";
 import { getSSRScope } from "../ssr/ssr-scope.js";
 import { isServer } from "../util/environment/is-server.js";
-import { isFn, isObj } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
 
 /**

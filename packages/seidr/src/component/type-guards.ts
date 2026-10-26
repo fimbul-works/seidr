@@ -1,3 +1,4 @@
+import { isFn, isObj } from "@fimbul-works/hvat";
 import type { LazyComponentFactory } from "../components/lazy.js";
 import {
   SEIDR_COMPONENT_END_PREFIX,
@@ -7,7 +8,6 @@ import {
   TYPE_PROP,
 } from "../constants.js";
 import { isComment } from "../dom/type-guards.js";
-import { isFn, isObj } from "../util/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactory } from "./types.js";
 
 /**

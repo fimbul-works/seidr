@@ -1,10 +1,10 @@
+import { isNull, isNullish, isObj, isStr } from "@fimbul-works/hvat";
 import { BOOL_ATTRIBUTES } from "../constants.js";
-import { onMounted, onUnmounted } from "../hooks/index.js";
+import { onUnmounted } from "../hooks/index.js";
 import { isRef, isValue } from "../observable/type-guards.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
-import { isNullish, isObj, isStr } from "../util/type-guards.js";
 import type { PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -32,7 +32,12 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
       throw new SeidrError("Invalid ref");
     }
 
-    onMounted(() => value(el));
+    if (process.env.NODE_ENV !== "production") {
+      if (!isNull(value())) {
+        throw new SeidrError("Ref is already bound to an element");
+      }
+    }
+    value(el);
     onUnmounted(() => value(null));
     return;
   }
@@ -60,7 +65,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
 
   if (prop === "style") {
     if (isValue(value)) {
-      onUnmounted(value.bind((style) => (el.style = style)));
+      value.bind((style) => (el.style = style));
     } else if (isStr(value)) {
       el.style = value;
     } else if (isObj(value)) {
@@ -69,7 +74,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
           styleProp = camelToKebab(styleProp);
         }
         if (isValue(styleValue)) {
-          onUnmounted(styleValue.bind((val) => (el.style[styleProp as any] = val)));
+          styleValue.bind((val) => (el.style[styleProp as any] = val));
         } else {
           el.style[styleProp as any] = styleValue;
         }
@@ -93,7 +98,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
   };
 
   if (isValue(value)) {
-    onUnmounted(value.bind((val) => applyValue(el, val)));
+    value.bind((val) => applyValue(el, val));
   } else {
     applyValue(el, value);
   }

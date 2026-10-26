@@ -1,7 +1,7 @@
+import { isStr } from "@fimbul-works/hvat";
 import { MemoryStorage } from "../test-setup/memory-storage.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
-import { isStr } from "../util/type-guards.js";
 import { wrapError } from "../util/wrap-error.js";
 import type { Value } from "./types.js";
 

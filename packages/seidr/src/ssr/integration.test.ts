@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { isHTMLElement } from "../dom/type-guards.js";
 import { $ } from "../element/create-element.js";
+import { getDocument, mount } from "../index.core.js";
 import { createValue, mergeValues } from "../observable/value.js";
 import { enableSSRMode } from "../test-setup/index.js";
-import { createComponent, getDocument, mount } from "../index.core.js";
 import { SSRElement } from "./dom/ssr-element.js";
-import { isHTMLElement } from "../dom/type-guards.js";
 import { renderToString } from "./render-to-string.js";
 
 describe("SSR Integration Tests", () => {

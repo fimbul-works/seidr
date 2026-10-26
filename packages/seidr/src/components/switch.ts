@@ -1,9 +1,9 @@
 import { getComponentScope, setComponentScope } from "../component/component-scope.js";
+import type { SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
-import type { SeidrComponentFactoryOrFunction } from "../index.core.js";
 import { isValue } from "../observable/type-guards.js";
-import type { Value } from "../observable/types.js";
+import type { DerivedValue, Value } from "../observable/types.js";
 import { mergeValues } from "../observable/value.js";
 
 /**
@@ -29,7 +29,7 @@ export const Switch = <K extends string | number, B extends SwitchBranches<K> = 
   branches: B | Value<B>,
   fallback?: SeidrComponentFactoryOrFunction,
   name: string = "Switch",
-): Value<SeidrChild> => {
+): DerivedValue<SeidrChild> => {
   const scope = getComponentScope();
 
   const getBranch = (key: K, currentBranches: B): SeidrChild => {

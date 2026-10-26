@@ -1,6 +1,6 @@
 import { createComponent } from "../component/create-component.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
-import { wrapError } from "../index.core.js";
+import { wrapError } from "../util/wrap-error.js";
 
 /**
  * Creates a component with error boundary protection.

@@ -35,9 +35,7 @@ export function createRef<T = any, R = T extends undefined | null ? never : Ref<
   const ref = defineValueProp(fn as Ref<T>, TYPE_PROP, TYPE_REF, false);
 
   // Copy Value properties to Ref handle
-  (["watch", "bind", "destroy"] as (keyof Ref)[]).forEach((prop) => {
-    defineValueProp(ref, prop, value[prop]);
-  });
+  (["watch", "bind", "destroy"] as (keyof Ref)[]).forEach((prop) => defineValueProp(ref, prop, value[prop]));
 
   return ref as R;
 }

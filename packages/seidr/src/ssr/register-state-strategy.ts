@@ -1,9 +1,10 @@
+import { isArr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { createValue } from "../observable/value.js";
-import { packHydrationState, unpackHydrationState } from "./util/state-tuple.js";
+import { type HydrationStatePayload, packHydrationState, unpackHydrationState } from "./util/state-tuple.js";
 
 /**
  * Registers the default Value state hydration strategy.
@@ -33,7 +34,7 @@ export const registerStateStrategy = (): void => {
     (capturedState: any) => {
       const values = appState.getData<Map<string, Value>>(DATA_KEY_STATE) ?? new Map<string, Value>();
 
-      const stateMap: Map<string, any> = Array.isArray(capturedState)
+      const stateMap: Map<string, any> = isArr<HydrationStatePayload>(capturedState)
         ? unpackHydrationState(capturedState)
         : new Map(Object.entries(capturedState ?? {}));
 

@@ -1,3 +1,4 @@
+import { isArr, isBool, isNullish, isNum, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/app-state.js";
 import { isComponent } from "../component/type-guards.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
@@ -7,9 +8,8 @@ import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
-import { isArray, isBool, isNullish, isNum, isStr } from "../util/type-guards.js";
 import { $text } from "./node/text.js";
-import { isDOMNode, isHTMLElement, isTextNode } from "./type-guards.js";
+import { isComment, isDOMNode, isHTMLElement, isTextNode } from "./type-guards.js";
 
 /**
  * Normalizes any child or Value output into an array of DOM ChildNodes.
@@ -22,7 +22,7 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
     return [];
   }
 
-  if (isArray(val)) {
+  if (isArr(val)) {
     return val.flatMap((item) => normalizeChildNodes(item));
   }
 
@@ -130,11 +130,19 @@ export const createReactiveValueNodes = (
  * @param {Node} node - Root node to traverse
  */
 export const mountConnectedComponents = (node: Node) => {
+  if (isComment(node)) {
+    return;
+  }
+
   const appState = getAppState();
   const stack: Node[] = [node];
 
   while (stack.length > 0) {
     const current = stack.pop()!;
+    if (isComment(current)) {
+      continue;
+    }
+
     const comp = appState.nodeIndex.get(current as ChildNode);
 
     if (comp && !comp.isMounted) {
@@ -143,7 +151,9 @@ export const mountConnectedComponents = (node: Node) => {
       while (rootComp.parent && !rootComp.parent.isMounted) {
         rootComp = rootComp.parent;
       }
-      rootComp.mount();
+      if (rootComp.nodes.every((n) => n.isConnected)) {
+        rootComp.mount();
+      }
     }
 
     const childNodes = current.childNodes;
@@ -176,7 +186,7 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
   }
 
   // Append array of nodes
-  if (isArray(child)) {
+  if (isArr(child)) {
     return child.forEach((c) => appendChild(parent, c));
   }
 
