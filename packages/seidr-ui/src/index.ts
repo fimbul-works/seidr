@@ -3,6 +3,7 @@ export * from "./alert/index.js";
 export * from "./badge/index.js";
 export * from "./button/index.js";
 export * from "./collection/index.js";
+export * from "./collapsible/index.js";
 export * from "./hooks/index.js";
 export * from "./image/index.js";
 export * from "./separator/index.js";

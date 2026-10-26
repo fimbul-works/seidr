@@ -1,0 +1,71 @@
+.collapsible-demo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.collapsible-box {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: var(--bg-surface, #ffffff);
+}
+
+.collapsible-trigger-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-color, #1e293b);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease;
+}
+
+.collapsible-trigger-btn:hover {
+  background: var(--bg-hover, #f8fafc);
+}
+
+.collapsible-trigger-btn[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.collapsible-chevron {
+  font-size: 0.8rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.collapsible-trigger-btn[data-expanded] .collapsible-chevron {
+  transform: rotate(180deg);
+}
+
+.collapsible-panel {
+  padding: 0 1rem 1rem 1rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted, #64748b);
+  border-top: 1px solid var(--border-color, #f1f5f9);
+}
+
+/* Smooth CSS discrete transition with allow-discrete */
+.collapsible-panel-animated {
+  padding: 0 1rem 1rem 1rem;
+  font-size: 0.9rem;
+  color: var(--text-muted, #64748b);
+  transition: opacity 0.2s ease, transform 0.2s ease, display 0.2s allow-discrete;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.collapsible-panel-animated[data-closed] {
+  opacity: 0;
+  transform: translateY(-4px);
+}

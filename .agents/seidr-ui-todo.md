@@ -185,7 +185,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `button`, `useDisclosureState`, `useRegisterId`, `useTransition`.
 - **Complexity**: Low to Moderate (~375 LOC).
 - **Tasks**:
-  - [ ] Implement `Collapsible.Root`, `Collapsible.Trigger`, `Collapsible.Content`.
+  - [x] Implement `Collapsible.Root`, `Collapsible.Trigger`, `Collapsible.Content`.
 
 ### 12. `toggle-button`
 - **Location**: `kobalte-packages/core/src/toggle-button`
