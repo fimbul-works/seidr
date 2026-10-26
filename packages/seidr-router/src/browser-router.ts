@@ -1,5 +1,5 @@
 import { createValue, getAppState } from "@fimbul-works/seidr";
-import { DATA_KEY_BROWSER_ROUTER } from "./constants.js";
+import { DATA_KEY_BROWSER_ROUTER, NO_HYDRATE } from "./constants.js";
 import { getRouterState } from "./get-router-state.js";
 import { history } from "./history.js";
 import type { RouterInterface } from "./types.js";
@@ -23,7 +23,7 @@ export function browserRouter(): RouterInterface {
     go: (delta: number) => hist.go(delta),
     pathname: url.as((u) => u.pathname),
     searchParams: url.as((u) => Object.fromEntries(u.searchParams)),
-    routeParams: createValue<Record<string, string>>({}, { hydrate: false }),
+    routeParams: createValue<Record<string, string>>({}, NO_HYDRATE),
   };
 
   appState.setData(DATA_KEY_BROWSER_ROUTER, router);

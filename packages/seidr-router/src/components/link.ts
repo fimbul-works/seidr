@@ -1,5 +1,6 @@
 import type { SeidrChild, SeidrElementProps } from "@fimbul-works/seidr";
 import { $, isValue, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
+import { NO_HYDRATE } from "../constants.js";
 import { getRouterState } from "../get-router-state.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { initRouter } from "../init-router.js";
@@ -127,7 +128,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 ): HTMLElementTagNameMap[K] => {
   initRouter();
   const navigate = useNavigate();
-  const href = wrapValue(to, { hydrate: false });
+  const href = wrapValue(to, NO_HYDRATE);
   const url = getRouterState().url;
   const nearest = getNearestRouter();
   const localPath = nearest?.pathname;

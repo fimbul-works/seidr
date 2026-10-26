@@ -1,7 +1,7 @@
 import { isNullish, isObj, isStr } from "@fimbul-works/hvat";
 import { createValue, getAppState, isClient, isValue, SeidrError } from "@fimbul-works/seidr";
 import { browserRouter } from "./browser-router.js";
-import { DATA_KEY_ROUTER, DUMMY_BASE_URL, VALUE_ID_ROUTER_URL } from "./constants.js";
+import { DATA_KEY_ROUTER, DUMMY_BASE_URL, NO_HYDRATE, VALUE_ID_ROUTER_URL } from "./constants.js";
 import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
 
 /**
@@ -57,7 +57,7 @@ export const initRouter = (
     initialUrl = isClient() ? window.location.href : "/";
   }
 
-  const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, hydrate: false });
+  const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, ...NO_HYDRATE });
   const popstateListeners = new Set<PopstateListener>();
 
   // Define event handlers for URL changes

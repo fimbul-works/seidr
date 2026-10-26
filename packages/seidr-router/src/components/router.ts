@@ -10,6 +10,7 @@ import {
   wrapValue,
 } from "@fimbul-works/seidr";
 import { browserRouter } from "../browser-router.js";
+import { NO_HYDRATE } from "../constants.js";
 import { getRouterState } from "../get-router-state.js";
 import { initRouter } from "../init-router.js";
 import { matchRoute } from "../match-route.js";
@@ -76,7 +77,7 @@ export const Router = (
       return "/";
     });
 
-    const currentParams = createValue<Record<string, string>>({}, { hydrate: false });
+    const currentParams = createValue<Record<string, string>>({}, NO_HYDRATE);
     let currentRouteIndex = -1;
     let currentMatchedPath = "";
     //let currentRoute: Route | undefined;
