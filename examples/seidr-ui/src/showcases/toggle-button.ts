@@ -25,14 +25,13 @@ export const ToggleButtonShowcase = createComponent(() => {
     // Live Preview
     $div({ className: "preview-box" }, [
       $div({ style: { display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" } }, [
-        // Sound Mute Toggle (uncontrolled with render function child)
-        ToggleButton(
-          {
-            className: "toggle-btn",
-            defaultPressed: false,
-          },
-          ({ pressed }) => pressed.as((p: boolean) => (p ? "🔊 Sound On" : "🔇 Sound Muted")),
-        ),
+        // Sound Mute Toggle (uncontrolled with renderContent prop)
+        ToggleButton({
+          className: "toggle-btn",
+          defaultPressed: false,
+          renderContent: ({ pressed }) =>
+            pressed.as((p: boolean) => (p ? "🔊 Sound On" : "🔇 Sound Muted")),
+        }),
         // Star/Bookmark Toggle (controlled)
         ToggleButton(
           {
@@ -57,16 +56,16 @@ export const ToggleButtonShowcase = createComponent(() => {
   CodeBlock(
       `import { ToggleButton } from "@fimbul-works/seidr-ui";
 
-// Uncontrolled with render function child
-ToggleButton(
-  { defaultPressed: false },
-  ({ pressed }) => pressed.as(p => p ? "🔊 Sound On" : "🔇 Sound Muted")
-);
+// 1. Uncontrolled with renderContent prop
+ToggleButton({
+  defaultPressed: false,
+  renderContent: ({ pressed }) => pressed.as(p => p ? "🔊 Sound On" : "🔇 Sound Muted"),
+});
 
-// Controlled pressed state
+// 2. Controlled pressed state (reactive child derivation)
 ToggleButton(
   { pressed: isStarred, onChange: (val) => isStarred(val) },
-  "⭐ Star"
+  isStarred.as(s => s ? "⭐ Starred" : "☆ Star")
 );`,
     ),
   ]);

@@ -38,11 +38,12 @@ describeDualMode("ToggleButton", ({ getDocument, isSSR }) => {
     expect(container.hasAttribute("data-pressed")).toBe(true);
   });
 
-  it("should support render function child with reactive state", () => {
+  it("should support renderContent prop with reactive state", () => {
     const App = createComponent(() =>
-      ToggleButton({ defaultPressed: true }, ({ pressed }: { pressed: any }) =>
-        pressed.as((p: boolean) => (p ? "Muted" : "Unmuted")),
-      ),
+      ToggleButton({
+        defaultPressed: true,
+        renderContent: ({ pressed }) => pressed.as((p: boolean) => (p ? "Muted" : "Unmuted")),
+      }),
     );
 
     const target = getDocument().createElement("div");
@@ -52,6 +53,18 @@ describeDualMode("ToggleButton", ({ getDocument, isSSR }) => {
     const btn = target.querySelector("button")!;
     expect(btn.getAttribute("aria-pressed")).toBe("true");
     expect(btn.textContent).toBe("Muted");
+  });
+
+  it("should allow passing a reactive derived Value directly as children without collision", () => {
+    const isStarred = createValue(true);
+    container = ToggleButton(
+      { pressed: isStarred, onChange: (v) => isStarred(v) },
+      isStarred.as((s) => (s ? "⭐ Starred" : "☆ Star")),
+    );
+    getDocument().body.appendChild(container);
+
+    expect(container.textContent).toBe("⭐ Starred");
+    expect(container.getAttribute("aria-pressed")).toBe("true");
   });
 
   if (!isSSR) {

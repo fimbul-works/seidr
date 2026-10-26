@@ -1,17 +1,16 @@
-import { isFn, isUndef } from "@fimbul-works/hvat";
+import { isUndef } from "@fimbul-works/hvat";
 import { isValidSeidrChild, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
 import { ButtonRoot, type ButtonRootOptions, type ButtonRootProps } from "../button/button-root.js";
-import { useToggleState } from "../hooks/use-toggle-state.js";
+import { useToggleState, type UseToggleStateResult } from "../hooks/use-toggle-state.js";
 
 export interface ToggleButtonRootState {
-  /** The reactive pressed state Value. */
+  /** The reactive pressed state Value (derived read-only). */
   pressed: Value<boolean>;
+  /** Direct access to the underlying toggle state instance. */
+  state: UseToggleStateResult;
 }
 
-export type ToggleButtonChildren =
-  | SeidrChild
-  | SeidrChild[]
-  | ((state: ToggleButtonRootState) => SeidrChild | SeidrChild[]);
+export type ToggleButtonRenderContent = (state: ToggleButtonRootState) => SeidrChild | SeidrChild[];
 
 export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button">
   extends ButtonRootOptions<T> {
@@ -23,6 +22,12 @@ export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap 
 
   /** Event handler called when the pressed state of the toggle button changes. */
   onChange?: (pressed: boolean) => void;
+
+  /**
+   * Optional render function to dynamically construct button content based on internal state.
+   * Kept as a separate named prop to prevent collisions with standard SeidrChild functions.
+   */
+  renderContent?: ToggleButtonRenderContent;
 }
 
 export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "button"> = ToggleButtonRootOptions<T> &
@@ -33,13 +38,6 @@ export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "butt
  * Based on the WAI-ARIA Button Pattern (aria-pressed).
  */
 export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  render: (state: ToggleButtonRootState) => SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  props: ToggleButtonRootProps<T> | null | undefined,
-  render: (state: ToggleButtonRootState) => SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
@@ -47,21 +45,29 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ToggleButtonRootProps<T> | ToggleButtonChildren | null,
-  children?: ToggleButtonChildren,
+  propsOrChildren?: ToggleButtonRootProps<T> | SeidrChild | SeidrChild[] | null,
+  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   let props: ToggleButtonRootProps<T>;
-  let content: ToggleButtonChildren | undefined;
+  let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
     props = (propsOrChildren as ToggleButtonRootProps<T>) ?? ({} as ToggleButtonRootProps<T>);
     content = children;
   } else {
     props = {} as ToggleButtonRootProps<T>;
-    content = propsOrChildren as ToggleButtonChildren;
+    content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
-  const { pressed, defaultPressed, onChange, disabled, onclick: userOnClick, ...rest } = props as any;
+  const {
+    pressed,
+    defaultPressed,
+    onChange,
+    disabled,
+    renderContent,
+    onclick: userOnClick,
+    ...rest
+  } = props as any;
 
   const state = useToggleState({
     isSelected: pressed,
@@ -77,9 +83,9 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
     state.toggle();
   };
 
-  const resolvedChildren = isFn(content)
-    ? content({ pressed: isPressed })
-    : (content as SeidrChild | SeidrChild[] | undefined);
+  const resolvedChildren = renderContent
+    ? renderContent({ pressed: isPressed, state })
+    : content;
 
   return ButtonRoot<T>(
     {
