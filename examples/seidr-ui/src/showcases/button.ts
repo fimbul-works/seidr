@@ -1,12 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Button } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
 import "./button.css";
@@ -22,7 +15,7 @@ export const ButtonShowcase = createComponent(() => {
     ]),
     $p(
       { className: "card-desc" },
-      'Accessible button primitive supporting native <button> or custom elements with keyboard triggers (Space / Enter).',
+      "Accessible button primitive supporting native <button> or custom elements with keyboard triggers (Space / Enter).",
     ),
     // Live Preview
     $div({ className: "preview-box" }, [
@@ -75,7 +68,6 @@ export const ButtonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Button } from "@fimbul-works/seidr-ui";
 
@@ -89,4 +81,4 @@ Button({ as: "div", className: "btn" }, "Div Button");
 Button({ disabled: isBusy }, "Submitting...");`,
     ),
   ]);
-}, "ButtonDemo");
+}, "ButtonShowcase");

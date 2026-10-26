@@ -10,7 +10,7 @@ import {
 
 export type Orientation = "horizontal" | "vertical";
 
-export interface SeparatorRootOptions<T extends keyof SeidrElementTagNameMap = "hr"> {
+export interface SeparatorOptions<T extends keyof SeidrElementTagNameMap = "hr"> {
   /**
    * The HTML element tag name to render.
    * @default "hr"
@@ -28,31 +28,31 @@ export interface SeparatorRootOptions<T extends keyof SeidrElementTagNameMap = "
   role?: ReactiveValue<string>;
 }
 
-export type SeparatorRootProps<T extends keyof SeidrElementTagNameMap = "hr"> = SeparatorRootOptions<T> &
+export type SeparatorProps<T extends keyof SeidrElementTagNameMap = "hr"> = SeparatorOptions<T> &
   Omit<SeidrElementProps<T>, "role">;
 
 /**
  * A separator visually or semantically separates content.
  */
-export function SeparatorRoot<T extends keyof SeidrElementTagNameMap = "hr">(
+export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function SeparatorRoot<T extends keyof SeidrElementTagNameMap = "hr">(
-  props?: SeparatorRootProps<T> | null,
+export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
+  props?: SeparatorProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function SeparatorRoot<T extends keyof SeidrElementTagNameMap = "hr">(
-  propsOrChildren?: SeparatorRootProps<T> | SeidrChild | SeidrChild[] | null,
+export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
+  propsOrChildren?: SeparatorProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: SeparatorRootProps<T>;
+  let props: SeparatorProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as SeparatorRootProps<T>) ?? ({} as SeparatorRootProps<T>);
+    props = (propsOrChildren as SeparatorProps<T>) ?? ({} as SeparatorProps<T>);
     content = children;
   } else {
-    props = {} as SeparatorRootProps<T>;
+    props = {} as SeparatorProps<T>;
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
@@ -70,7 +70,3 @@ export function SeparatorRoot<T extends keyof SeidrElementTagNameMap = "hr">(
     content,
   ) as SeidrElementTagNameMap[T];
 }
-
-export const Separator = Object.assign(SeparatorRoot, {
-  Root: SeparatorRoot,
-});

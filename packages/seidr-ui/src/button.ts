@@ -21,7 +21,7 @@ export function isNativeButton(tagName: string, type?: string): boolean {
   return false;
 }
 
-export interface ButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button"> {
+export interface ButtonOptions<T extends keyof SeidrElementTagNameMap = "button"> {
   /**
    * The HTML element tag name to render.
    * @default "button"
@@ -38,7 +38,7 @@ export interface ButtonRootOptions<T extends keyof SeidrElementTagNameMap = "but
   type?: ReactiveValue<string>;
 }
 
-export type ButtonRootProps<T extends keyof SeidrElementTagNameMap = "button"> = ButtonRootOptions<T> &
+export type ButtnProps<T extends keyof SeidrElementTagNameMap = "button"> = ButtonOptions<T> &
   Omit<SeidrElementProps<T>, "disabled" | "type">;
 
 /**
@@ -50,21 +50,21 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  props?: ButtonRootProps<T> | null,
+  props?: ButtnProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ButtonRootProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: ButtnProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: ButtonRootProps<T>;
+  let props: ButtnProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as ButtonRootProps<T>) ?? ({} as ButtonRootProps<T>);
+    props = (propsOrChildren as ButtnProps<T>) ?? ({} as ButtnProps<T>);
     content = children;
   } else {
-    props = {} as ButtonRootProps<T>;
+    props = {} as ButtnProps<T>;
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 

@@ -1,13 +1,5 @@
 import { createComponent, createRef, mount } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h1,
-  $header,
-  $main,
-  $p,
-  $link,
-} from "@fimbul-works/seidr/html";
+import { $button, $div, $h1, $header, $link, $main, $p } from "@fimbul-works/seidr/html";
 import { useColorMode } from "@fimbul-works/seidr-ui";
 import { examples } from "./showcases/index.js";
 
@@ -27,10 +19,7 @@ const App = createComponent(() => {
     $header({ className: "header" }, [
       $div({ className: "header-title-group" }, [
         $h1("Seidr UI"),
-        $p(
-          { className: "header-subtitle" },
-          "Headless, accessible UI primitives for Seidr applications",
-        ),
+        $p({ className: "header-subtitle" }, "Headless, accessible UI primitives for Seidr applications"),
       ]),
       $div({ className: "header-actions" }, [
         $button(
@@ -52,7 +41,7 @@ const App = createComponent(() => {
       ref: linkRef,
       href: resolvedMode.as(
         (mode) =>
-          `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/styles/github${mode === 'dark' ? '-dark' : ''}.min.css`,
+          `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.12.0/styles/github${mode === "dark" ? "-dark" : ""}.min.css`,
       ),
       rel: "stylesheet",
     }),

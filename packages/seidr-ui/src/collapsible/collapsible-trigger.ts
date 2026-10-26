@@ -7,17 +7,17 @@ import {
   type SeidrChild,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
-import { ButtonRoot, type ButtonRootOptions, type ButtonRootProps } from "../button/button-root.js";
+import { ButtonRoot, type ButtonOptions, type ButtnProps } from "../button.js";
 import { collapsibleContext, type UseCollapsibleResult } from "./collapsible-context.js";
 
 export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button">
-  extends ButtonRootOptions<T> {
+  extends ButtonOptions<T> {
   /** Explicit instance providing reactive state. */
   instance?: UseCollapsibleResult;
 }
 
 export type CollapsibleTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> =
-  CollapsibleTriggerOptions<T> & Omit<ButtonRootProps<T>, "aria-expanded" | "aria-controls">;
+  CollapsibleTriggerOptions<T> & Omit<ButtnProps<T>, "aria-expanded" | "aria-controls">;
 
 /**
  * The button that expands/collapses the collapsible content.

@@ -8,7 +8,7 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
-export interface SkeletonRootOptions<T extends keyof SeidrElementTagNameMap = "div"> {
+export interface SkeletonOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   /**
    * The HTML element tag name to render.
    * @default "div"
@@ -50,31 +50,31 @@ export interface SkeletonRootOptions<T extends keyof SeidrElementTagNameMap = "d
   role?: ReactiveValue<string>;
 }
 
-export type SkeletonRootProps<T extends keyof SeidrElementTagNameMap = "div"> = SkeletonRootOptions<T> &
+export type SkeletProps<T extends keyof SeidrElementTagNameMap = "div"> = SkeletonOptions<T> &
   Omit<SeidrElementProps<T>, "role" | "animate">;
 
 /**
  * Skeleton is a placeholder for content while data is loading.
  */
-export function SkeletonRoot<T extends keyof SeidrElementTagNameMap = "div">(
+export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function SkeletonRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: SkeletonRootProps<T> | null,
+export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
+  props?: SkeletProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function SkeletonRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SkeletonRootProps<T> | SeidrChild | SeidrChild[] | null,
+export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
+  propsOrChildren?: SkeletProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: SkeletonRootProps<T>;
+  let props: SkeletProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as SkeletonRootProps<T>) ?? ({} as SkeletonRootProps<T>);
+    props = (propsOrChildren as SkeletProps<T>) ?? ({} as SkeletProps<T>);
     content = children;
   } else {
-    props = {} as SkeletonRootProps<T>;
+    props = {} as SkeletProps<T>;
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
@@ -124,7 +124,3 @@ export function SkeletonRoot<T extends keyof SeidrElementTagNameMap = "div">(
     content,
   ) as SeidrElementTagNameMap[T];
 }
-
-export const Skeleton = Object.assign(SkeletonRoot, {
-  Root: SkeletonRoot,
-});

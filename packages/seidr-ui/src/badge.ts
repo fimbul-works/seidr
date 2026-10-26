@@ -8,7 +8,7 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
-export interface BadgeRootOptions<T extends keyof SeidrElementTagNameMap = "span"> {
+export interface BadgeOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   /**
    * The HTML element tag name to render.
    * @default "span"
@@ -29,31 +29,31 @@ export interface BadgeRootOptions<T extends keyof SeidrElementTagNameMap = "span
   role?: ReactiveValue<string>;
 }
 
-export type BadgeRootProps<T extends keyof SeidrElementTagNameMap = "span"> = BadgeRootOptions<T> &
+export type BadgeProps<T extends keyof SeidrElementTagNameMap = "span"> = BadgeOptions<T> &
   Omit<SeidrElementProps<T>, "role">;
 
 /**
  * Badge generates a small badge element, useful for status, counts, or categories.
  */
-export function BadgeRoot<T extends keyof SeidrElementTagNameMap = "span">(
+export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function BadgeRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: BadgeRootProps<T> | null,
+export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
+  props?: BadgeProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function BadgeRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: BadgeRootProps<T> | SeidrChild | SeidrChild[] | null,
+export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
+  propsOrChildren?: BadgeProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: BadgeRootProps<T>;
+  let props: BadgeProps<T>;
   let content: SeidrChild | SeidrChild[] | undefined;
 
   if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as BadgeRootProps<T>) ?? ({} as BadgeRootProps<T>);
+    props = (propsOrChildren as BadgeProps<T>) ?? ({} as BadgeProps<T>);
     content = children;
   } else {
-    props = {} as BadgeRootProps<T>;
+    props = {} as BadgeProps<T>;
     content = propsOrChildren as SeidrChild | SeidrChild[];
   }
 
@@ -70,7 +70,3 @@ export function BadgeRoot<T extends keyof SeidrElementTagNameMap = "span">(
     content,
   ) as SeidrElementTagNameMap[T];
 }
-
-export const Badge = Object.assign(BadgeRoot, {
-  Root: BadgeRoot,
-});

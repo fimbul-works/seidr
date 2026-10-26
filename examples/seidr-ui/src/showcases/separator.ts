@@ -1,14 +1,8 @@
 import { createComponent } from "@fimbul-works/seidr";
-import {
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Separator } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
-import "./separator.css"
+import "./separator.css";
 
 export const SeparatorShowcase = createComponent(() => {
   return $section({ className: "card" }, [
@@ -35,7 +29,6 @@ export const SeparatorShowcase = createComponent(() => {
         ]),
       ]),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Separator } from "@fimbul-works/seidr-ui";
 
@@ -46,4 +39,4 @@ Separator();
 Separator({ as: "div", orientation: "vertical" });`,
     ),
   ]);
-}, "SeparatorDemo");
+}, "SeparatorShowcase");

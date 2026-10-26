@@ -1,15 +1,8 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Image } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
-import "./image.css"
+import "./image.css";
 
 export const ImageShowcase = createComponent(() => {
   const isBrokenAvatar = createValue(false);
@@ -26,7 +19,7 @@ export const ImageShowcase = createComponent(() => {
     ]),
     $p(
       { className: "card-desc" },
-      'Accessible image container with loading status tracking and automatic fallback support (onload / onerror).',
+      "Accessible image container with loading status tracking and automatic fallback support (onload / onerror).",
     ),
     // Live Preview
     $div({ className: "preview-box" }, [
@@ -40,9 +33,7 @@ export const ImageShowcase = createComponent(() => {
         ),
         $span(
           { style: { fontSize: "0.85rem", color: "var(--fg-muted)" } },
-          isBrokenAvatar.as((b) =>
-            b ? "Status: Fallback rendered (error)" : "Status: Image loaded",
-          ),
+          isBrokenAvatar.as((b) => (b ? "Status: Fallback rendered (error)" : "Status: Image loaded")),
         ),
       ]),
       $div({ style: { display: "flex", gap: "1.5rem", flexWrap: "wrap", alignItems: "center" } }, [
@@ -85,11 +76,9 @@ export const ImageShowcase = createComponent(() => {
         }),
       ]),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Image } from "@fimbul-works/seidr-ui";
 
-// 1. Unified component (simplest & most common)
 Image({
   src: avatarUrl,
   alt: "User portrait",
@@ -106,4 +95,4 @@ avatar.Root({ className: "avatar" }, [
 ]);`,
     ),
   ]);
-}, "ImageDemo");
+}, "ImageShowcase");

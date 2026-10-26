@@ -1,11 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Collapsible } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./collapsible.css";
@@ -32,10 +26,7 @@ export const CollapsibleShowcase = createComponent(() => {
         // 1. Unified Collapsible Component (uncontrolled)
         $div({ className: "collapsible-box" }, [
           Collapsible({
-            trigger: [
-              $span("What is Seidr?"),
-              $span({ className: "collapsible-chevron" }, "▼"),
-            ],
+            trigger: [$span("What is Seidr?"), $span({ className: "collapsible-chevron" }, "▼")],
             triggerProps: { className: "collapsible-trigger-btn" },
             contentProps: { className: "collapsible-panel" },
             children: $p(
@@ -47,13 +38,10 @@ export const CollapsibleShowcase = createComponent(() => {
         // 2. Pre-bound Instance Factory (Collapsible.create) with defaultOpen: true
         $div({ className: "collapsible-box" }, [
           colInstance.Root([
-            colInstance.Trigger(
-              { className: "collapsible-trigger-btn" },
-              [
-                $span("Pre-bound Instance Pattern (Collapsible.create)"),
-                $span({ className: "collapsible-chevron" }, "▼"),
-              ],
-            ),
+            colInstance.Trigger({ className: "collapsible-trigger-btn" }, [
+              $span("Pre-bound Instance Pattern (Collapsible.create)"),
+              $span({ className: "collapsible-chevron" }, "▼"),
+            ]),
             colInstance.Content(
               { className: "collapsible-panel" },
               $p(
@@ -85,10 +73,7 @@ export const CollapsibleShowcase = createComponent(() => {
         $div({ className: "collapsible-box" }, [
           Collapsible({
             disabled: true,
-            trigger: [
-              $span("🔒 Locked Disclosure (Disabled)"),
-              $span({ className: "collapsible-chevron" }, "▼"),
-            ],
+            trigger: [$span("🔒 Locked Disclosure (Disabled)"), $span({ className: "collapsible-chevron" }, "▼")],
             triggerProps: { className: "collapsible-trigger-btn" },
             children: $p("Cannot be toggled when disabled."),
           }),
@@ -96,7 +81,6 @@ export const CollapsibleShowcase = createComponent(() => {
       ]),
     ]),
 
-    // Code Documentation
     CodeBlock(
       `import { Collapsible } from "@fimbul-works/seidr-ui";
 
@@ -123,4 +107,4 @@ Collapsible({
 });`,
     ),
   ]);
-});
+}, "CollapsibleShowcase");

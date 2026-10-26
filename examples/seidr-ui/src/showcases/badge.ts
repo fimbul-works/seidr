@@ -1,14 +1,8 @@
 import { createComponent } from "@fimbul-works/seidr";
-import {
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Badge } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
-import "./badge.css"
+import "./badge.css";
 
 export const BadgeShowcase = createComponent(() => {
   return $section({ className: "card" }, [
@@ -29,7 +23,6 @@ export const BadgeShowcase = createComponent(() => {
         Badge({ as: "div", className: "badge" }, "Custom Div Tag"),
       ]),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Badge } from "@fimbul-works/seidr-ui";
 
@@ -40,4 +33,4 @@ Badge({ className: "badge success" }, "Active");
 Badge({ textValue: "3 unread messages" }, "3");`,
     ),
   ]);
-}, "BadgeDemo");
+}, "BadgeShowcase");

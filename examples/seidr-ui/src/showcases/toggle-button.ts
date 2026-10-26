@@ -1,11 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { ToggleButton } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
 import "./toggle-button.css";
@@ -20,7 +14,7 @@ export const ToggleButtonShowcase = createComponent(() => {
     ]),
     $p(
       { className: "card-desc" },
-      'Two-state button that toggles an active selection on or off, backed by aria-pressed and data-pressed.',
+      "Two-state button that toggles an active selection on or off, backed by aria-pressed and data-pressed.",
     ),
     // Live Preview
     $div({ className: "preview-box" }, [
@@ -29,8 +23,7 @@ export const ToggleButtonShowcase = createComponent(() => {
         ToggleButton({
           className: "toggle-btn",
           defaultPressed: false,
-          renderContent: ({ pressed }) =>
-            pressed.as((p: boolean) => (p ? "🔊 Sound On" : "🔇 Sound Muted")),
+          renderContent: ({ pressed }) => pressed.as((p: boolean) => (p ? "🔊 Sound On" : "🔇 Sound Muted")),
         }),
         // Star/Bookmark Toggle (controlled)
         ToggleButton(
@@ -52,8 +45,7 @@ export const ToggleButtonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    // Code Documentation
-  CodeBlock(
+    CodeBlock(
       `import { ToggleButton } from "@fimbul-works/seidr-ui";
 
 // 1. Uncontrolled with renderContent prop
@@ -69,4 +61,4 @@ ToggleButton(
 );`,
     ),
   ]);
-}, "ToggleButtonDemo");
+}, "ToggleButtonShowcase");

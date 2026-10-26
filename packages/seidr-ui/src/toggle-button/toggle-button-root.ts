@@ -1,6 +1,6 @@
 import { isUndef } from "@fimbul-works/hvat";
 import { isValidSeidrChild, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
-import { ButtonRoot, type ButtonRootOptions, type ButtonRootProps } from "../button/button-root.js";
+import { ButtonRoot, type ButtonOptions, type ButtnProps } from "../button.js";
 import { useToggleState, type UseToggleStateResult } from "../hooks/use-toggle-state.js";
 
 export interface ToggleButtonRootState {
@@ -13,7 +13,7 @@ export interface ToggleButtonRootState {
 export type ToggleButtonRenderContent = (state: ToggleButtonRootState) => SeidrChild | SeidrChild[];
 
 export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button">
-  extends ButtonRootOptions<T> {
+  extends ButtonOptions<T> {
   /** The controlled pressed state of the toggle button. */
   pressed?: boolean | Value<boolean>;
 
@@ -31,7 +31,7 @@ export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap 
 }
 
 export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "button"> = ToggleButtonRootOptions<T> &
-  Omit<ButtonRootProps<T>, "aria-pressed" | "data-pressed">;
+  Omit<ButtnProps<T>, "aria-pressed" | "data-pressed">;
 
 /**
  * ToggleButton is a two-state button that allows users to toggle a selection on or off.

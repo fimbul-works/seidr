@@ -1,12 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h2,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Alert } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
 import "./alert.css";
@@ -60,7 +53,6 @@ export const AlertShowcase = createComponent(() => {
         }),
       ),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Alert } from "@fimbul-works/seidr-ui";
 
@@ -71,4 +63,4 @@ Alert("Scheduled maintenance at midnight");
 Alert({ className: "alert warning" }, "Storage almost full");`,
     ),
   ]);
-}, "AlertDemo");
+}, "lerttShocase");

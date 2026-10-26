@@ -1,13 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h2,
-  $h3,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Skeleton } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
 import "./skeleton.css";
@@ -21,10 +13,7 @@ export const SkeletonShowcase = createComponent(() => {
       $h2({ className: "card-title" }, "Skeleton"),
       $span({ className: "card-badge" }, "Atom"),
     ]),
-    $p(
-      { className: "card-desc" },
-      "Animated placeholder while content is loading with aria-busy and data attributes.",
-    ),
+    $p({ className: "card-desc" }, "Animated placeholder while content is loading with aria-busy and data attributes."),
     // Live Preview
     $div({ className: "preview-box" }, [
       $div({ className: "controls-row" }, [
@@ -96,7 +85,6 @@ export const SkeletonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    // Code Documentation
     CodeBlock(
       `import { Skeleton } from "@fimbul-works/seidr-ui";
 
@@ -107,4 +95,4 @@ Skeleton({ circle: true, height: 48 });
 Skeleton({ width: "60%", height: 18, radius: 4 });`,
     ),
   ]);
-}, "SkeletonDemo");
+}, "SkeletonShowcase");

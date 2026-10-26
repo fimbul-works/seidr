@@ -1,6 +1,6 @@
 {
   "extends": "@repo/typescript-config/seidr.json",
-  "include": ["src"],
+  "include": ["src"], 
   "exclude": ["**/*.test.ts", "node_modules"],
   "compilerOptions": {
     "rootDir": "src",
