@@ -1,5 +1,9 @@
-export * from "./collection/index.js";
+export * from "./alert.js";
+export * from "./badge.js";
+export * from "./button.js";
 export * from "./collapsible/index.js";
+export * from "./collection/index.js";
+export * from "./form-control/index.js";
 export * from "./hooks/index.js";
 export * from "./image/index.js";
 export * from "./separator.js";
@@ -7,6 +11,3 @@ export * from "./skeleton.js";
 export * from "./toggle-button/index.js";
 export * from "./utils/index.js";
 export * from "./visually-hidden.js";
-export * from "./alert.js";
-export * from "./badge.js";
-export * from "./button.js";

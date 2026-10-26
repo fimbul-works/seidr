@@ -77,7 +77,7 @@ export const SkeletonShowcase = createComponent(() => {
                     width: "40%",
                     height: 14,
                     radius: 4,
-                    className: "skeleton-demo",
+                    className: "skeleton",
                     animate: isSkeletonAnimated(),
                   }),
                 ]),

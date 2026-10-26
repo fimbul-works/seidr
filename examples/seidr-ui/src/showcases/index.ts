@@ -3,6 +3,7 @@ import { AlertShowcase } from "./alert.js";
 import { BadgeShowcase } from "./badge.js";
 import { ButtonShowcase } from "./button.js";
 import { CollapsibleShowcase } from "./collapsible.js";
+import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
@@ -12,6 +13,7 @@ export * from "./alert.js";
 export * from "./badge.js";
 export * from "./button.js";
 export * from "./collapsible.js";
+export * from "./form-control.js";
 export * from "./image.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
@@ -30,6 +32,7 @@ export const examples: ComponentExample[] = [
   { id: "badge", title: "Badge", badge: "Atom", category: "Atom", component: BadgeShowcase },
   { id: "button", title: "Button", badge: "Atom", category: "Atom", component: ButtonShowcase },
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
+  { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },

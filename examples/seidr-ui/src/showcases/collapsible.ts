@@ -22,7 +22,7 @@ export const CollapsibleShowcase = createComponent(() => {
 
     // Live Preview
     $div({ className: "preview-box" }, [
-      $div({ className: "collapsible-demo" }, [
+      $div({ className: "collapsible-showcase" }, [
         // 1. Unified Collapsible Component (uncontrolled)
         $div({ className: "collapsible-box" }, [
           Collapsible({
