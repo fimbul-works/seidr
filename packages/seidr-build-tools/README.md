@@ -1,6 +1,8 @@
 # @fimbul-works/seidr-build-tools
 
-Official build plugins and transform utilities for Seidr (Vite, Rolldown).
+Official unified build plugins and transform utilities for Seidr powered by [unplugin](https://github.com/unplugin/unplugin).
+
+Supports **Vite**, **Webpack**, **Rollup**, **Rolldown**, **Esbuild**, **Rspack**, and **Babel** out of the box with isomorphic dead-code elimination, `inClient`/`inServer` branch pruning, and orphaned import stripping.
 
 ## Installation
 
@@ -8,7 +10,11 @@ Official build plugins and transform utilities for Seidr (Vite, Rolldown).
 pnpm add -D @fimbul-works/seidr-build-tools
 ```
 
-## Vite Plugin Usage
+---
+
+## Bundler Usage
+
+### Vite
 
 ```ts
 // vite.config.ts
@@ -16,11 +22,33 @@ import { defineConfig } from 'vite';
 import { seidrVitePlugin } from '@fimbul-works/seidr-build-tools/vite';
 
 export default defineConfig({
-  plugins: [seidrVitePlugin({ disableSSR: false })],
+  plugins: [seidrVitePlugin({ target: 'browser', disableSSR: false })],
 });
 ```
 
-## Rolldown Plugin Usage
+### Webpack
+
+```ts
+// webpack.config.js
+import { seidrWebpackPlugin } from '@fimbul-works/seidr-build-tools/webpack';
+
+export default {
+  plugins: [seidrWebpackPlugin({ target: 'browser' })],
+};
+```
+
+### Rollup
+
+```ts
+// rollup.config.js
+import { seidrRollupPlugin } from '@fimbul-works/seidr-build-tools/rollup';
+
+export default {
+  plugins: [seidrRollupPlugin({ target: 'browser' })],
+};
+```
+
+### Rolldown / tsdown
 
 ```ts
 // rolldown.config.ts / tsdown.config.ts
@@ -29,4 +57,71 @@ import { seidrRolldownPlugin } from '@fimbul-works/seidr-build-tools/rolldown';
 export default {
   plugins: [seidrRolldownPlugin({ target: 'browser' })],
 };
+```
+
+### Esbuild
+
+```ts
+// build.js
+import esbuild from 'esbuild';
+import { seidrEsbuildPlugin } from '@fimbul-works/seidr-build-tools/esbuild';
+
+await esbuild.build({
+  entryPoints: ['src/index.ts'],
+  bundle: true,
+  outfile: 'dist/bundle.js',
+  plugins: [seidrEsbuildPlugin({ target: 'browser' })],
+});
+```
+
+### Rspack
+
+```ts
+// rspack.config.js
+import { seidrRspackPlugin } from '@fimbul-works/seidr-build-tools/rspack';
+
+export default {
+  plugins: [seidrRspackPlugin({ target: 'browser' })],
+};
+```
+
+### Babel
+
+```json
+{
+  "plugins": [
+    ["@fimbul-works/seidr-build-tools/babel", { "target": "browser" }]
+  ]
+}
+```
+
+---
+
+## Configuration Options
+
+```ts
+export interface SeidrBuildPluginOptions {
+  /**
+   * Target environment for code stripping and AST pruning.
+   * @default "browser"
+   */
+  target?: "browser" | "ssr";
+
+  /**
+   * Disable server-side rendering support.
+   * When true, strips all SSR tracking and hydration code for maximum client-only size optimization.
+   * @default false
+   */
+  disableSSR?: boolean;
+
+  /**
+   * Include filter pattern for modules to transform.
+   */
+  include?: string | RegExp | Array<string | RegExp>;
+
+  /**
+   * Exclude filter pattern for modules to exclude from transformation.
+   */
+  exclude?: string | RegExp | Array<string | RegExp>;
+}
 ```

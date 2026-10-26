@@ -1,0 +1,7 @@
+{
+  "extends": "@repo/typescript-config/seidr.json",
+  "include": ["src", "scripts", "test"],
+  "compilerOptions": {
+    "outDir": "dist"
+  }
+}

@@ -1,3 +1,4 @@
+import { isArr, isObj } from "@fimbul-works/hvat";
 import type MagicString from "magic-string";
 import {
   type BindingIdentifier,
@@ -9,7 +10,6 @@ import {
   type TSIndexSignatureName,
   type TSThisParameter,
 } from "oxc-parser";
-import { isObj } from "./util.js";
 
 type IdentifierNode =
   | IdentifierName
@@ -45,7 +45,7 @@ function* walkIdentifiers(node: Node): Generator<IdentifierNode> {
   // Walk AST recursively
   for (const key of Object.keys(node)) {
     const child = node[key as keyof typeof node];
-    if (Array.isArray(child)) {
+    if (isArr(child)) {
       for (const item of child) {
         if (isObj(item) && "type" in item) {
           yield* walkIdentifiers(item);
@@ -101,8 +101,9 @@ function removeSpecifierWithComma(
  * @param {string} id - Source identifier
  */
 export function removeOrphanedImports(ms: MagicString, id: string): void {
+  const cleanId = id.split("?")[0].split("#")[0];
   const code = ms.toString();
-  const { program, errors } = parseSync(id, code);
+  const { program, errors } = parseSync(cleanId, code);
 
   // Let parse failures surface naturally through normal bundler error handling
   if (errors.length > 0) {

@@ -1,6 +1,6 @@
+import { isArr, isObj } from "@fimbul-works/hvat";
 import type MagicString from "magic-string";
 import { type CallExpression, type Node, parseSync } from "oxc-parser";
-import { isObj } from "./util.js";
 
 /**
  * Depth-first generator over all CallExpression nodes in an AST.
@@ -27,7 +27,7 @@ function* walkCallExpressions(node: Node, parent?: Node): Generator<{ call: Call
   // Walk AST recursively
   for (const key of Object.keys(node)) {
     const child = node[key as keyof typeof node];
-    if (Array.isArray(child)) {
+    if (isArr(child)) {
       for (const item of child) {
         if (item && isObj(item) && "type" in item) {
           yield* walkCallExpressions(item, node);
@@ -47,7 +47,8 @@ function* walkCallExpressions(node: Node, parent?: Node): Generator<{ call: Call
  * @param {boolean} isClient - Target environment is client-side
  */
 export function transformInEnvironment(ms: MagicString, id: string, isClient: boolean): void {
-  const { program, errors } = parseSync(id, ms.toString());
+  const cleanId = id.split("?")[0].split("#")[0];
+  const { program, errors } = parseSync(cleanId, ms.toString());
 
   // Let parse failures surface naturally through normal bundler error handling
   if (errors.length > 0) {
