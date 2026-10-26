@@ -1,3 +1,4 @@
+import { isUndef } from "@fimbul-works/hvat";
 import type { SeidrChild, SeidrElementProps } from "@fimbul-works/seidr";
 import { $, isValue, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
 import { NO_HYDRATE } from "../constants.js";
@@ -91,7 +92,7 @@ export const isLinkActive = (
 /**
  * Link component props.
  */
-export interface LinkProps<K extends keyof HTMLElementTagNameMap = "a"> {
+export interface LinkOptions<K extends keyof HTMLElementTagNameMap = "a"> {
   /** The route to navigate to */
   to: Value<string> | string;
   /** Optional HTML tag name (default: "a") */
@@ -104,13 +105,29 @@ export interface LinkProps<K extends keyof HTMLElementTagNameMap = "a"> {
   inactiveClass?: string | Value<string>;
   /** Whether the route match must be exact */
   exact?: boolean;
+  /** The aria-current attribute value to apply when active (default: "page"). Set to false to disable. */
+  ariaCurrent?:
+    | "page"
+    | "step"
+    | "location"
+    | "date"
+    | "time"
+    | "true"
+    | "false"
+    | boolean
+    | Value<string | boolean | undefined | null>;
+  /** Whether the link is disabled */
+  disabled?: boolean | Value<boolean>;
 }
+
+export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions<K> &
+  Omit<SeidrElementProps<K>, "to" | "ariaCurrent">;
 
 /**
  * Link element factory.
  *
  * @template K - Key from the HTMLElementTagNameMap interface
- * @param {LinkProps<K> & SeidrElementProps<K>} props - Link props with reactive bindings
+ * @param {LinkProps<K>} props - Link props with reactive bindings
  * @param {SeidrChild | SeidrChild[]} [children] - Optional child nodes
  * @returns {HTMLElementTagNameMap[K]} Element that wraps an anchor element
  */
@@ -122,8 +139,10 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     activeClass: activeClassName,
     inactiveClass: inactiveClassName,
     exact,
+    ariaCurrent,
+    disabled,
     ...restProps
-  }: LinkProps<K> & SeidrElementProps<K>,
+  }: LinkProps<K>,
   children?: SeidrChild | SeidrChild[],
 ): HTMLElementTagNameMap[K] => {
   initRouter();
@@ -178,17 +197,86 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
       )
     : rawClassName;
 
-  return $(
-    tagName as K,
-    {
-      href,
-      className,
-      ...restProps,
-      onclick: (e: Event) => {
-        e.preventDefault();
-        navigate(unwrapValue(href));
-      },
-    } as SeidrElementProps<K>,
-    children,
-  );
+  // Determine aria-current when active
+  const shouldTrackAriaCurrent = !isUndef(ariaCurrent) ? ariaCurrent !== false : !isUndef(activeClassName);
+
+  const ariaCurrentParents: Value[] = [href, url, localPath, isValue(ariaCurrent) ? ariaCurrent : null].filter(isValue);
+
+  const resolvedAriaCurrent = shouldTrackAriaCurrent
+    ? mergeValues(
+        () => {
+          const active = isLinkActive(href(), url(), localPath?.(), ancestorPrefix, exact);
+          if (!active) {
+            return undefined;
+          }
+          const val = unwrapValue(ariaCurrent);
+          return val === true || val === undefined ? "page" : (val as string);
+        },
+        { parents: ariaCurrentParents },
+      )
+    : undefined;
+
+  // Disabled state
+  const isDisabled = isValue(disabled) ? disabled : undefined;
+  const isCurrentlyDisabled = () => (isDisabled ? !!isDisabled() : !!disabled);
+
+  const ariaDisabled = isDisabled ? isDisabled.as((d) => (d ? "true" : undefined)) : disabled ? "true" : undefined;
+
+  const dataDisabled = isDisabled ? isDisabled.as((d) => (d ? "" : undefined)) : disabled ? "" : undefined;
+
+  const isCustomElement = (tagName as string) !== "a";
+  const role = isCustomElement ? ((restProps as any).role ?? "link") : (restProps as any).role;
+  const tabIndex = isCustomElement
+    ? ((restProps as any).tabIndex ??
+      (isDisabled ? isDisabled.as((d) => (d ? undefined : 0)) : disabled ? undefined : 0))
+    : (restProps as any).tabIndex;
+
+  const onclick = (e: Event) => {
+    e.preventDefault();
+    if (isCurrentlyDisabled()) {
+      return;
+    }
+    navigate(unwrapValue(href));
+    (restProps as any).onclick?.(e);
+  };
+
+  const onkeydown = isCustomElement
+    ? (e: KeyboardEvent) => {
+        if (e.key === "Enter" && !isCurrentlyDisabled()) {
+          e.preventDefault();
+          navigate(unwrapValue(href));
+        }
+        (restProps as any).onkeydown?.(e);
+      }
+    : (restProps as any).onkeydown;
+
+  const elementProps: any = {
+    className,
+    ...restProps,
+    onclick,
+  };
+
+  if (!isCustomElement && !disabled) {
+    elementProps.href = href;
+  }
+  if (role !== undefined) {
+    elementProps.role = role;
+  }
+  if (tabIndex !== undefined) {
+    elementProps.tabIndex = tabIndex;
+  }
+  if (resolvedAriaCurrent !== undefined) {
+    elementProps.ariaCurrent = resolvedAriaCurrent;
+  }
+  if (ariaDisabled !== undefined) {
+    elementProps.ariaDisabled = ariaDisabled;
+  }
+  if (dataDisabled !== undefined) {
+    elementProps.dataDisabled = dataDisabled;
+  }
+  if (onkeydown !== undefined) {
+    elementProps.onkeydown = onkeydown;
+  }
+
+  return $(tagName as K, elementProps as SeidrElementProps<K>, children);
 };

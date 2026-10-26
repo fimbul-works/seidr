@@ -404,4 +404,93 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       expect(isLinkActive("/docs", url)).toBe(true);
     });
   });
+
+  describe("accessibility features", () => {
+    it("should set aria-current='page' when link is active and has activeClass or ariaCurrent", () => {
+      initRouter("/profile");
+      const App = createComponent(
+        () => Link({ to: "/profile", activeClass: "active" }, [$span({ textContent: "Profile" })]),
+        "App",
+      );
+
+      unmount = mount(App, container);
+      const anchor = container.querySelector("a");
+      expect(anchor?.getAttribute("aria-current")).toBe("page");
+    });
+
+    it("should omit aria-current when link is inactive", () => {
+      initRouter("/home");
+      const App = createComponent(
+        () => Link({ to: "/profile" }, [$span({ textContent: "Profile" })]),
+        "App",
+      );
+
+      unmount = mount(App, container);
+      const anchor = container.querySelector("a");
+      expect(anchor?.getAttribute("aria-current")).toBeNull();
+    });
+
+    it("should support custom ariaCurrent value or disabling it", () => {
+      initRouter("/step-2");
+      const App = createComponent(
+        () =>
+          $div({}, [
+            Link({ to: "/step-2", ariaCurrent: "step" }, "Step 2"),
+            Link({ to: "/step-2", ariaCurrent: false }, "No Current"),
+          ]),
+        "App",
+      );
+
+      unmount = mount(App, container);
+      const links = container.querySelectorAll("a");
+      expect(links[0].getAttribute("aria-current")).toBe("step");
+      expect(links[1].getAttribute("aria-current")).toBeNull();
+    });
+
+    it("should handle disabled state and prevent navigation", () => {
+      initRouter("/home");
+      const App = createComponent(
+        () => Link({ to: "/dashboard", disabled: true }, [$span({ textContent: "Dashboard" })]),
+        "App",
+      );
+
+      unmount = mount(App, container);
+      const anchor = container.querySelector("a")!;
+      expect(anchor.getAttribute("aria-disabled")).toBe("true");
+      expect(anchor.hasAttribute("data-disabled")).toBe(true);
+      expect(anchor.getAttribute("href")).toBeNull();
+
+      if (!isSSR) {
+        anchor.dispatchEvent(new Event("click", { bubbles: true, cancelable: true }));
+        expect(navigateMock).not.toHaveBeenCalled();
+      }
+    });
+
+    it("should support non-anchor elements with role='link' and keyboard activation", () => {
+      initRouter("/home");
+      const App = createComponent(
+        () =>
+          Link(
+            { to: "/settings", tagName: "div" },
+            [$span({ textContent: "Settings" })],
+          ),
+        "App",
+      );
+
+      unmount = mount(App, container);
+      const div = container.querySelector("[role='link']") as HTMLDivElement;
+      expect(div).toBeTruthy();
+      expect(div.tagName.toLowerCase()).toBe("div");
+      expect(div.getAttribute("role")).toBe("link");
+      expect(div.tabIndex).toBe(0);
+      expect(div.getAttribute("href")).toBeNull();
+
+      if (!isSSR) {
+        const enterEvent = new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true });
+        div.dispatchEvent(enterEvent);
+        expect(navigateMock).toHaveBeenCalledWith("/settings");
+      }
+    });
+  });
 });
+

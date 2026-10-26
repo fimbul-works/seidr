@@ -35,8 +35,14 @@ export const interceptLinks = (root: Element = getDocument().body): void => {
   }
 
   for (const link of anchors) {
-    // Skip if link has a "target" or "download" attributes, or an existing onclick handler
-    if (link.hasAttribute("target") || link.hasAttribute("download") || !isNullish(link.onclick)) {
+    // Skip if link has target/download, is disabled, or has an existing onclick handler
+    if (
+      link.hasAttribute("target") ||
+      link.hasAttribute("download") ||
+      link.getAttribute("aria-disabled") === "true" ||
+      link.hasAttribute("disabled") ||
+      !isNullish(link.onclick)
+    ) {
       continue;
     }
 

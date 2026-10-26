@@ -26,7 +26,7 @@ describe("useToggleState", () => {
     expect(state.isSelected()).toBe(false);
     expect(isSelected()).toBe(false);
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith(false);
+    expect(onChange).toHaveBeenCalledWith(false, true);
   });
 
   it("updates selected state with setIsSelected", () => {

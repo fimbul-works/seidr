@@ -1,5 +1,5 @@
 import { isFn } from "@fimbul-works/hvat";
-import { onUnmounted, type Value, wrapValue } from "@fimbul-works/seidr";
+import { type Value, wrapValue } from "@fimbul-works/seidr";
 
 export interface UseControllableValueProps<T> {
   /** The value to be used, in controlled mode. */
@@ -18,13 +18,13 @@ export interface UseControllableValueProps<T> {
  * Calling `val()` reads the current value.
  * Calling `val(next)` or `val((prev) => next)` updates it and invokes `onChange`.
  */
-export function useControllableValue<T>(props: UseControllableValueProps<T>): Value<T> {
-  const state = wrapValue<T>((props.value ?? props.defaultValue) as T | Value<T>, {
+export function useControllableValue<T>({ value, defaultValue, onChange }: UseControllableValueProps<T>): Value<T> {
+  const state = wrapValue<T>((value ?? defaultValue) as T | Value<T>, {
     hydrate: false,
   });
 
-  if (isFn(props.onChange)) {
-    state.watch((val) => props.onChange?.(val));
+  if (isFn(onChange)) {
+    state.watch(onChange);
   }
 
   return state;

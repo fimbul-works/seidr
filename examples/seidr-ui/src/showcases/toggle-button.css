@@ -1,0 +1,34 @@
+/* Component Styles: ToggleButton */
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  background: var(--bg-card);
+  color: var(--fg-muted);
+  border: 1px solid var(--border);
+}
+
+.toggle-btn:hover:not([data-disabled]) {
+  background: var(--bg-card-hover);
+  color: var(--fg);
+}
+
+.toggle-btn[data-pressed] {
+  background: var(--accent);
+  color: #ffffff;
+  border-color: var(--accent-light);
+  box-shadow: 0 4px 14px var(--accent-glow);
+}
+
+.toggle-btn[data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

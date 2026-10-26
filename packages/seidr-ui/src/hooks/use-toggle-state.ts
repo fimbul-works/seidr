@@ -34,25 +34,31 @@ export interface UseToggleStateResult {
  *
  * Ported from Kobalte's createToggleState primitive.
  */
-export function useToggleState(props: UseToggleStateProps = {}): UseToggleStateResult {
-  const isSelected = useControllableBooleanValue({
-    value: props.isSelected,
-    defaultValue: unwrapValue(props.defaultIsSelected) ?? false,
-    onChange: props.onSelectedChange,
+export function useToggleState({
+  isSelected,
+  defaultIsSelected,
+  isDisabled,
+  isReadOnly,
+  onSelectedChange,
+}: UseToggleStateProps = {}): UseToggleStateResult {
+  const state = useControllableBooleanValue({
+    value: isSelected,
+    defaultValue: unwrapValue(defaultIsSelected),
+    onChange: onSelectedChange,
   });
 
-  const isBlocked = () => !!(unwrapValue(props.isReadOnly) || unwrapValue(props.isDisabled));
+  const isBlocked = () => !!(unwrapValue(isReadOnly) || unwrapValue(isDisabled));
 
   return {
-    isSelected,
+    isSelected: state.as((v) => v),
     setIsSelected(value: boolean) {
       if (!isBlocked()) {
-        isSelected(value);
+        state(value);
       }
     },
     toggle() {
       if (!isBlocked()) {
-        isSelected((prev) => !prev);
+        state((prev) => !prev);
       }
     },
   };

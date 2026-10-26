@@ -21,7 +21,7 @@ describe("useControllableValue", () => {
     value("updated");
     expect(value()).toBe("updated");
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith("updated");
+    expect(onChange).toHaveBeenCalledWith("updated", "initial");
 
     // Setting same value does not re-trigger onChange (createValue deduplicates)
     value("updated");
@@ -37,7 +37,7 @@ describe("useControllableValue", () => {
 
     value((prev) => prev + 5);
     expect(value()).toBe(15);
-    expect(onChange).toHaveBeenCalledWith(15);
+    expect(onChange).toHaveBeenCalledWith(15, 10);
   });
 
   it("handles controlled mode with reactive Value", () => {
@@ -52,12 +52,12 @@ describe("useControllableValue", () => {
 
     controlled("beta");
     expect(value()).toBe("beta");
-    expect(onChange).toHaveBeenCalledWith("beta");
+    expect(onChange).toHaveBeenCalledWith("beta", "alpha");
 
     value("gamma");
     expect(value()).toBe("gamma");
     expect(controlled()).toBe("gamma");
-    expect(onChange).toHaveBeenCalledWith("gamma");
+    expect(onChange).toHaveBeenCalledWith("gamma", "beta");
   });
 
   it("supports useControllableBooleanValue", () => {

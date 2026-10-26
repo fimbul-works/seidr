@@ -8,18 +8,42 @@ Kobalte is SolidJS's headless UI foundation (used by Solid's port of `shadcn/ui`
 
 ## Strategy & Workflow Rules
 
+### 🚨 HARD RULE: Kobalte Porting & Component Protocol
+Before implementing or modifying ANYTHING for `seidr-ui`:
+1. **Study Kobalte ONLY for INTENDED BEHAVIOR**:
+   - Understand the behavioral contract (interactions, accessibility/WAI-ARIA roles, attributes, keyboard handling, states).
+   - **Ignore SolidJS/React implementation details** (signals, JSX fragments, context trees, accessors, synthetic wrappers, render props).
+2. **Explain to the USER Before Writing Code**:
+   - Detail the intended behavior.
+   - Summarize how SolidJS did it for context.
+   - Discuss the proposed idiomatic Seidr approach.
+3. **DO NOT start implementing until explicit permission is given by the user!**
+
+### 📐 Seidr Architectural Invariants
+- **Guarded State Contract (`Value<T>`)**:
+  - `Value<T>` is a dual getter/setter function.
+  - `useControllableValue` / `useControllableBooleanValue` only wires default values and `onChange` callbacks.
+  - When enforcing guards (e.g., `isDisabled`, `isReadOnly`), keep mutable internal state private (`state: Value<T>`). Expose the value as a derived read-only value (`state.as(v => v)`), and provide explicit setter functions (`setIsSelected`, `toggle`) that verify `isBlocked` before mutating `state`.
+- **NO Functions-as-Children / NO Render Props Mixed with `SeidrChild`**:
+  - In Seidr, `Value<T>` and reactive child getters `() => SeidrChild` are functions, and both are valid `SeidrChild`ren.
+  - Never accept a function as `children` or mix `render` functions with `SeidrChild` / `props` (e.g. `children?: SeidrChild | ((state) => SeidrChild)` or checking `typeof content === 'function'`).
+  - Content must strictly be `SeidrChild | SeidrChild[]`.
+- **Behavior-First / Minimal Architecture (No Unneeded Context Stacks)**:
+  - Do not replicate framework context hierarchies when simple state or props suffice (e.g., `Image` only needs `Value<ImageLoadingStatus>`, an immediate fallback for SSR / timer for delay via `inClient()`, and `Show`).
+- **Seidr Lifecycle Cleanup Pattern**:
+  - SolidJS hooks use internal `onCleanup()`. In Seidr, all hooks must call `onUnmounted(() => ...)` directly inside the hook to clean up observers and listeners.
+
 1. **Phase 1: Hooks Only & Clean Simplicity**:
    - Implement only the reactive hooks from `primitives`.
    - **Simplify our existing ported hooks** (`use-size`, `use-escape-keydown`, etc.): strip away the React-induced "this may change at runtime" workarounds (`requestAnimationFrame` loops, synthetic event captures, etc.).
-   - **Seidr Lifecycle Cleanup Pattern**: SolidJS hooks use internal `onCleanup()`. In Seidr, our hooks will call `onUnmounted(() => ...)` directly inside the hook to clean up observers and listeners. We do not need hooks to return manual cleanup functions unless explicitly required by caller semantics.
    - **Omit `i18n` and `live-announcer`**: The app targets English; bidirectional layout checks are already served by `use-direction.ts`, and live announcer is non-essential overhead for headless accessibility core.
    - **Minimal `useColorMode`**: A simple hook exposing a `Value<'light' | 'dark' | 'system'>` that toggles a class on `document.documentElement`. CSS handles the rest.
-   - **Postpone heavy `Polymorphic`**: In Seidr, component factories simply pass element props to the target element builder (`$button`, `$div`, etc.). We will plan any polymorphic typing naturally when we encounter components needing it.
+   - **Postpone heavy `Polymorphic`**: In Seidr, component factories simply pass element props to the target element builder (`$button`, `$div`, etc.).
 2. **Phase 2: Simple UI Atoms**:
-   - Quick element factories (`$div`, `$button`) and light wrappers.
+   - Quick element factories (`$div`, `$button`) and light wrappers following the Behavior-First protocol.
 3. **Phase 3: Complex Non-Portal Widgets (One at a Time with Discussion)**:
    - Implemented **one at a time**.
-   - Before writing code for each widget, we will have a dedicated discussion on the cleanest idiomatic Seidr approach.
+   - Strictly follow the Behavior-First protocol with prior discussion and user sign-off.
 4. **Phase 4: Non-Portal Specialized Form Fields**:
    - Standalone specialized inputs (`file-field`, `time-field`, `rating`).
 5. **Phase 5: Overlay Components & Portal Architecture**:
@@ -114,7 +138,7 @@ Fast element factories and simple wrappers.
 - **Description**: Avatar / image container with loading fallback (`onload` / `onerror`).
 - **Complexity**: Low (~210 LOC).
 - **Tasks**:
-  - [ ] Implement `Image.Root`, `Image.Img`, `Image.Fallback`.
+  - [x] Implement `Image.Root`, `Image.Img`, `Image.Fallback`.
 
 ### 6. `skeleton`
 - **Location**: `kobalte-packages/core/src/skeleton`
@@ -137,15 +161,14 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useTagName`.
 - **Complexity**: Low (~114 LOC).
 - **Tasks**:
-  - [ ] Implement `Button.Root`.
+  - [x] Implement `Button.Root`.
 
 ### 9. `link`
 - **Location**: `kobalte-packages/core/src/link`
 - **Description**: Accessible link with keyboard activation and disabled state for non-anchor elements.
-- **Dependencies**: `useTagName`.
-- **Complexity**: Low (~96 LOC).
+- **Dependencies**: Integrated directly into `@fimbul-works/seidr-router`'s `Link`.
 - **Tasks**:
-  - [ ] Implement `Link.Root`.
+  - [x] Add accessibility features to `Link` in `seidr-router`.
 
 ### 10. `form-control`
 - **Location**: `kobalte-packages/core/src/form-control`
@@ -170,7 +193,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `button`, `useToggleState`.
 - **Complexity**: Low (~124 LOC).
 - **Tasks**:
-  - [ ] Implement `ToggleButton.Root`.
+  - [x] Implement `ToggleButton.Root`.
 
 ---
 

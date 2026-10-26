@@ -26,7 +26,7 @@ describe("useDisclosureState", () => {
     expect(state.isOpen()).toBe(false);
     expect(controlled()).toBe(false);
     expect(onChange).toHaveBeenCalledTimes(1);
-    expect(onChange).toHaveBeenCalledWith(false);
+    expect(onChange).toHaveBeenCalledWith(false, true);
   });
 
   it("sets isOpen state with setIsOpen", () => {
