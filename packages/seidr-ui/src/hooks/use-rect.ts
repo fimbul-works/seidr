@@ -1,4 +1,4 @@
-import { createValue, inClient, isRef, type Ref, SeidrError, type Value } from "@fimbul-works/seidr";
+import { createValue, inClient, isRef, onUnmounted, type Ref, SeidrError, type Value } from "@fimbul-works/seidr";
 
 /**
  * An object with a getBoundingClientRect method.
@@ -146,7 +146,6 @@ export function useRect<T extends Measurable>(ref: Ref<T>): Value<DOMRect | null
   }
 
   const rect = createValue<DOMRect | null>(null, {
-    // Only trigger updates if the rect actually changed
     isEqual: rectEquals,
     hydrate: false,
   });
@@ -165,8 +164,7 @@ export function useRect<T extends Measurable>(ref: Ref<T>): Value<DOMRect | null
     });
   });
 
-  // Return as derived state
-  return rect.as((r) => r);
+  return rect;
 }
 
 /**

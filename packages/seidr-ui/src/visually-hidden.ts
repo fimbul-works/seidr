@@ -1,22 +1,6 @@
-import { $, isObj, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
-
-/**
- * Lifted from https://github.com/radix-ui/primitives/blob/main/packages/react/visually-hidden/src/visually-hidden.tsx
- * MIT License, Copyright (c) WorkOS.
- */
-const VISUALLY_HIDDEN_STYLES = {
-  // See: https://github.com/twbs/bootstrap/blob/main/scss/mixins/_visually-hidden.scss
-  position: "absolute",
-  border: 0,
-  width: 1,
-  height: 1,
-  padding: 0,
-  margin: -1,
-  overflow: "hidden",
-  clip: "rect(0, 0, 0, 0)",
-  whiteSpace: "nowrap",
-  wordWrap: "normal",
-} as const;
+import { isObj } from "@fimbul-works/hvat";
+import { $, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
+import { VISUALLY_HIDDEN_STYLES } from "./constants";
 
 /**
  * Creates a visually hidden span element.

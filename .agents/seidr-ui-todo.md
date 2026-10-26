@@ -100,14 +100,14 @@ Fast element factories and simple wrappers.
 - **Description**: Accessible alert container with `role="alert"`.
 - **Complexity**: Trivial (~80 LOC).
 - **Tasks**:
-  - [ ] Implement `Alert.Root`.
+  - [x] Implement `Alert.Root`.
 
 ### 4. `badge`
 - **Location**: `kobalte-packages/core/src/badge`
 - **Description**: Lightweight badge element wrapper.
 - **Complexity**: Trivial (~57 LOC).
 - **Tasks**:
-  - [ ] Implement `Badge.Root`.
+  - [x] Implement `Badge.Root`.
 
 ### 5. `image`
 - **Location**: `kobalte-packages/core/src/image`
@@ -121,7 +121,7 @@ Fast element factories and simple wrappers.
 - **Description**: Animated placeholder for loading content (`aria-busy="true"`).
 - **Complexity**: Trivial (~77 LOC).
 - **Tasks**:
-  - [ ] Implement `Skeleton.Root`.
+  - [x] Implement `Skeleton.Root`.
 
 ### 7. `separator`
 - **Location**: `kobalte-packages/core/src/separator`
@@ -129,7 +129,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useTagName`.
 - **Complexity**: Trivial (~95 LOC).
 - **Tasks**:
-  - [ ] Implement `Separator.Root`.
+  - [x] Implement `Separator.Root`.
 
 ### 8. `button`
 - **Location**: `kobalte-packages/core/src/button`

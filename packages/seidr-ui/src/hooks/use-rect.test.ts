@@ -1,4 +1,4 @@
-import { createComponent, mount, SeidrError, useRef } from "@fimbul-works/seidr";
+import { createComponent, createRef, mount, SeidrError } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearObservedElements, useRect } from "./use-rect.js";
@@ -45,7 +45,7 @@ describe("useRect", () => {
   });
 
   it("returns null when the ref element is null", () => {
-    const ref = useRef<HTMLElement>();
+    const ref = createRef<HTMLElement>();
     const rect = useRect(ref);
 
     expect(rect()).toBeNull();
@@ -55,7 +55,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 10, left: 20, width: 100, height: 50 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -67,28 +67,33 @@ describe("useRect", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
-    const Comp = createComponent(() => {
-      const el = $div({ ref, id: "target" });
-      setElementRect(el, { top: 5, left: 15, width: 200, height: 80 });
-      return el;
-    });
+    const orig = HTMLDivElement.prototype.getBoundingClientRect;
+    HTMLDivElement.prototype.getBoundingClientRect = () => createMockRect({ top: 5, left: 15, width: 200, height: 80 });
 
-    const unmount = mount(Comp, container);
+    try {
+      const Comp = createComponent(() => {
+        return $div({ ref, id: "target" });
+      });
 
-    expect(rect()).toEqual(createMockRect({ top: 5, left: 15, width: 200, height: 80 }));
+      const unmount = mount(Comp, container);
 
-    unmount();
-    container.remove();
+      expect(rect()).toEqual(createMockRect({ top: 5, left: 15, width: 200, height: 80 }));
+
+      unmount();
+    } finally {
+      HTMLDivElement.prototype.getBoundingClientRect = orig;
+      container.remove();
+    }
   });
 
   it("updates rect on animation frame when element dimensions or position change", async () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 0, left: 0, width: 50, height: 50 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -106,7 +111,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 10, left: 10, width: 100, height: 100 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -133,7 +138,7 @@ describe("useRect", () => {
     const element = document.createElement("div");
     setElementRect(element, { top: 0, left: 0, width: 60, height: 60 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(element);
@@ -153,21 +158,26 @@ describe("useRect", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
-    const Comp = createComponent(() => {
-      const el = $div({ ref });
-      setElementRect(el, { top: 0, left: 0, width: 100, height: 100 });
-      return el;
-    });
+    const orig = HTMLDivElement.prototype.getBoundingClientRect;
+    HTMLDivElement.prototype.getBoundingClientRect = () => createMockRect({ top: 0, left: 0, width: 100, height: 100 });
 
-    const unmount = mount(Comp, container);
-    expect(rect()).toEqual(createMockRect({ top: 0, left: 0, width: 100, height: 100 }));
+    try {
+      const Comp = createComponent(() => {
+        return $div({ ref });
+      });
 
-    unmount();
-    expect(rect()).toBeNull();
-    container.remove();
+      const unmount = mount(Comp, container);
+      expect(rect()).toEqual(createMockRect({ top: 0, left: 0, width: 100, height: 100 }));
+
+      unmount();
+      expect(rect()).toBeNull();
+    } finally {
+      HTMLDivElement.prototype.getBoundingClientRect = orig;
+      container.remove();
+    }
   });
 
   it("switches observation seamlessly when ref changes to a different element", async () => {
@@ -177,7 +187,7 @@ describe("useRect", () => {
     const el2 = document.createElement("div");
     setElementRect(el2, { top: 20, left: 20, width: 90, height: 90 });
 
-    const ref = useRef<HTMLDivElement>();
+    const ref = createRef<HTMLDivElement>();
     const rect = useRect(ref);
 
     ref(el1);

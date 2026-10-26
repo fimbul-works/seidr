@@ -1,4 +1,4 @@
-import { createComponent, mount, SeidrError } from "@fimbul-works/seidr";
+import { createComponent, mount } from "@fimbul-works/seidr";
 import { $div } from "@fimbul-works/seidr/html";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -152,8 +152,10 @@ describe("useFocusGuards (client)", () => {
     unmount2();
   });
 
-  it("throws SeidrError when called outside of component scope", () => {
-    expect(() => useFocusGuards()).toThrow(SeidrError);
+  it("warns when called outside of component scope", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    expect(() => useFocusGuards()).not.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith("onMounted called outside of component");
   });
 });
 

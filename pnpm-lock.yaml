@@ -286,6 +286,28 @@ importers:
         specifier: ^8.3.2
         version: 8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.15)
 
+  examples/seidr-ui:
+    dependencies:
+      '@fimbul-works/seidr':
+        specifier: workspace:*
+        version: link:../../packages/seidr
+      '@fimbul-works/seidr-ui':
+        specifier: workspace:*
+        version: link:../../packages/seidr-ui
+    devDependencies:
+      '@fimbul-works/seidr-build-tools':
+        specifier: workspace:*
+        version: link:../../packages/seidr-build-tools
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vite:
+        specifier: ^8.3.2
+        version: 8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.15)
+
   examples/spa:
     dependencies:
       '@fimbul-works/seidr':
