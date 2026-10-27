@@ -1,6 +1,7 @@
 export * from "./alert.js";
 export * from "./badge.js";
 export * from "./button.js";
+export * from "./checkbox/index.js";
 export * from "./collapsible/index.js";
 export * from "./collection/index.js";
 export * from "./form-control/index.js";

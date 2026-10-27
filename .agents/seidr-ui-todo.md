@@ -176,8 +176,8 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useRegisterId`.
 - **Complexity**: Low to Moderate (~457 LOC). Essential backbone for all inputs!
 - **Tasks**:
-  - [ ] Implement `createFormControl` coordinator.
-  - [ ] Implement `FormControl.Label`, `FormControl.Description`, `FormControl.ErrorMessage`.
+  - [x] Implement `createFormControl` coordinator.
+  - [x] Implement `FormControl.Label`, `FormControl.Description`, `FormControl.ErrorMessage`.
 
 ### 11. `collapsible`
 - **Location**: `kobalte-packages/core/src/collapsible`
