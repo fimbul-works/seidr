@@ -4,7 +4,7 @@ import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getRouterState } from "../get-router-state.js";
 import { initRouter } from "../init-router.js";
-import { isLinkActive, Link } from "./link.js";
+import { Link } from "./link.js";
 import { Router } from "./router.js";
 
 // Mock useNavigate
@@ -33,7 +33,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
   });
 
   it("should render an anchor tag with correct href", () => {
-    const App = createComponent(() => Link({ to: "/users" }, [$span({ textContent: "Users" })]), "App");
+    const App = createComponent(() => Link({ href: "/users" }, [$span({ textContent: "Users" })]), "App");
 
     unmount = mount(App, container);
 
@@ -45,7 +45,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
 
   if (!isSSR) {
     it("should call navigate on click", () => {
-      const App = createComponent(() => Link({ to: "/profile" }, [$span({ textContent: "Profile" })]), "App");
+      const App = createComponent(() => Link({ href: "/profile" }, [$span({ textContent: "Profile" })]), "App");
 
       unmount = mount(App, container);
       const anchor = container.querySelector("a");
@@ -58,7 +58,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
 
     it("should handle reactive 'to' prop", () => {
       const path = createValue("/initial");
-      const App = createComponent(() => Link({ to: path }, [$span({ textContent: "Dynamic" })]), "App");
+      const App = createComponent(() => Link({ href: path }, [$span({ textContent: "Dynamic" })]), "App");
 
       unmount = mount(App, container);
       const anchor = container.querySelector("a");
@@ -81,7 +81,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/profile",
+              href: "/profile",
               className: "nav-link",
               activeClass: "active",
               inactiveClass: "inactive",
@@ -102,7 +102,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/profile",
+              href: "/profile",
               className: "nav-link",
               activeClass: "active",
               inactiveClass: "inactive",
@@ -123,7 +123,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/profile",
+              href: "/profile",
               activeClass: "active",
             },
             [$span({ textContent: "Profile" })],
@@ -142,7 +142,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/profile",
+              href: "/profile",
               activeClass: "active",
             },
             [$span({ textContent: "Profile" })],
@@ -163,7 +163,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/profile",
+              href: "/profile",
               className: "tab",
               activeClass: "tab-active",
               inactiveClass: "tab-inactive",
@@ -194,7 +194,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: targetPath,
+              href: targetPath,
               activeClass: "active",
               inactiveClass: "inactive",
             },
@@ -221,7 +221,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
         () =>
           Link(
             {
-              to: "/dashboard",
+              href: "/dashboard",
               activeClass: activeCls,
               inactiveClass: inactiveCls,
             },
@@ -251,12 +251,12 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       const App = createComponent(
         () =>
           $div({}, [
-            Link({ to: "/items?filter=active", activeClass: "active", inactiveClass: "inactive" }, "Active"),
-            Link({ to: "/items?filter=completed", activeClass: "active", inactiveClass: "inactive" }, "Completed"),
+            Link({ href: "/items?filter=active", activeClass: "active", inactiveClass: "inactive" }, "Active"),
+            Link({ href: "/items?filter=completed", activeClass: "active", inactiveClass: "inactive" }, "Completed"),
             // Default link without query parameters matches the path
-            Link({ to: "/items", activeClass: "active" }, "All"),
+            Link({ href: "/items", activeClass: "active" }, "All"),
             // Exact link without query parameters requires exact query match (no search params)
-            Link({ to: "/items", exact: true, activeClass: "active", inactiveClass: "inactive" }, "Strict All"),
+            Link({ href: "/items", exact: true, activeClass: "active", inactiveClass: "inactive" }, "Strict All"),
           ]),
         "App",
       );
@@ -290,9 +290,9 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       const App = createComponent(
         () =>
           $div({}, [
-            Link({ to: "/users/42", activeClass: "active", inactiveClass: "inactive" }, "User 42"),
-            Link({ to: "/users/99", activeClass: "active", inactiveClass: "inactive" }, "User 99"),
-            Link({ to: "/users/:id", activeClass: "active", inactiveClass: "inactive" }, "Any User"),
+            Link({ href: "/users/42", activeClass: "active", inactiveClass: "inactive" }, "User 42"),
+            Link({ href: "/users/99", activeClass: "active", inactiveClass: "inactive" }, "User 99"),
+            Link({ href: "/users/:id", activeClass: "active", inactiveClass: "inactive" }, "Any User"),
           ]),
         "App",
       );
@@ -315,8 +315,8 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       const App = createComponent(
         () =>
           $div({}, [
-            Link({ to: "/admin", exact: false, activeClass: "active", inactiveClass: "inactive" }, "Admin Area"),
-            Link({ to: "/admin", exact: true, activeClass: "active", inactiveClass: "inactive" }, "Admin Root"),
+            Link({ href: "/admin", exact: false, activeClass: "active", inactiveClass: "inactive" }, "Admin Area"),
+            Link({ href: "/admin", exact: true, activeClass: "active", inactiveClass: "inactive" }, "Admin Root"),
           ]),
         "App",
       );
@@ -334,10 +334,10 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       const UserSettings = createComponent(
         () =>
           $div({}, [
-            Link({ to: "/dashboard", activeClass: "active" }, "Local Dashboard"),
-            Link({ to: "/app/dashboard", activeClass: "active" }, "Full Dashboard"),
-            Link({ to: "dashboard", activeClass: "active" }, "Relative Dashboard"),
-            Link({ to: "/profile", activeClass: "active", inactiveClass: "inactive" }, "Local Profile"),
+            Link({ href: "/dashboard", activeClass: "active" }, "Local Dashboard"),
+            Link({ href: "/app/dashboard", activeClass: "active" }, "Full Dashboard"),
+            Link({ href: "dashboard", activeClass: "active" }, "Relative Dashboard"),
+            Link({ href: "/profile", activeClass: "active", inactiveClass: "inactive" }, "Local Profile"),
           ]),
         "UserSettings",
       );
@@ -359,57 +359,11 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
     });
   });
 
-  describe("isLinkActive utility", () => {
-    it("should match simple pathname exactly", () => {
-      const url = new URL("http://localhost/about");
-      expect(isLinkActive("/about", url)).toBe(true);
-      expect(isLinkActive("/contact", url)).toBe(false);
-      expect(isLinkActive("/", url)).toBe(false);
-    });
-
-    it("should match root path '/' only on root", () => {
-      expect(isLinkActive("/", new URL("http://localhost/"))).toBe(true);
-      expect(isLinkActive("/", new URL("http://localhost/about"))).toBe(false);
-    });
-
-    it("should match query parameters regardless of parameter ordering", () => {
-      const url = new URL("http://localhost/search?b=2&a=1");
-      expect(isLinkActive("/search?a=1&b=2", url)).toBe(true);
-      expect(isLinkActive("/search?a=1&b=3", url)).toBe(false);
-    });
-
-    it("should match query parameter subsets when not exact", () => {
-      const url = new URL("http://localhost/search?q=foo&page=2");
-      expect(isLinkActive("/search?q=foo", url)).toBe(true);
-      expect(isLinkActive("/search?q=foo", url, undefined, undefined, true)).toBe(false);
-    });
-
-    it("should match route parameters with patterns and values", () => {
-      const url = new URL("http://localhost/posts/react-guide");
-      expect(isLinkActive("/posts/react-guide", url)).toBe(true);
-      expect(isLinkActive("/posts/:slug", url)).toBe(true);
-      expect(isLinkActive("/posts/vue-guide", url)).toBe(false);
-    });
-
-    it("should match wildcards", () => {
-      const url = new URL("http://localhost/docs/api/endpoints/users");
-      expect(isLinkActive("/docs/*", url)).toBe(true);
-    });
-
-    it("should match URL hashes when specified in 'to'", () => {
-      const url = new URL("http://localhost/docs#section-1");
-      expect(isLinkActive("/docs#section-1", url)).toBe(true);
-      expect(isLinkActive("/docs#section-2", url)).toBe(false);
-      // Link without hash matches regardless of current hash
-      expect(isLinkActive("/docs", url)).toBe(true);
-    });
-  });
-
   describe("accessibility features", () => {
     it("should set aria-current='page' when link is active and has activeClass or ariaCurrent", () => {
       initRouter("/profile");
       const App = createComponent(
-        () => Link({ to: "/profile", activeClass: "active" }, [$span({ textContent: "Profile" })]),
+        () => Link({ href: "/profile", activeClass: "active" }, [$span({ textContent: "Profile" })]),
         "App",
       );
 
@@ -420,10 +374,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
 
     it("should omit aria-current when link is inactive", () => {
       initRouter("/home");
-      const App = createComponent(
-        () => Link({ to: "/profile" }, [$span({ textContent: "Profile" })]),
-        "App",
-      );
+      const App = createComponent(() => Link({ href: "/profile" }, [$span({ textContent: "Profile" })]), "App");
 
       unmount = mount(App, container);
       const anchor = container.querySelector("a");
@@ -435,8 +386,8 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
       const App = createComponent(
         () =>
           $div({}, [
-            Link({ to: "/step-2", ariaCurrent: "step" }, "Step 2"),
-            Link({ to: "/step-2", ariaCurrent: false }, "No Current"),
+            Link({ href: "/step-2", ariaCurrent: "step" }, "Step 2"),
+            Link({ href: "/step-2", ariaCurrent: false }, "No Current"),
           ]),
         "App",
       );
@@ -450,7 +401,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
     it("should handle disabled state and prevent navigation", () => {
       initRouter("/home");
       const App = createComponent(
-        () => Link({ to: "/dashboard", disabled: true }, [$span({ textContent: "Dashboard" })]),
+        () => Link({ href: "/dashboard", disabled: true }, [$span({ textContent: "Dashboard" })]),
         "App",
       );
 
@@ -469,11 +420,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
     it("should support non-anchor elements with role='link' and keyboard activation", () => {
       initRouter("/home");
       const App = createComponent(
-        () =>
-          Link(
-            { to: "/settings", tagName: "div" },
-            [$span({ textContent: "Settings" })],
-          ),
+        () => Link({ href: "/settings", tagName: "div" }, [$span({ textContent: "Settings" })]),
         "App",
       );
 
@@ -493,4 +440,3 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
     });
   });
 });
-

@@ -5,96 +5,16 @@ import { NO_HYDRATE } from "../constants.js";
 import { getRouterState } from "../get-router-state.js";
 import { useNavigate } from "../hooks/use-navigate.js";
 import { initRouter } from "../init-router.js";
-import { parseRouteParams } from "../parse-route-params.js";
 import { getNearestRouter } from "../router-tree/get-nearest-router.js";
 import type { RouterTreeNode } from "../types.js";
-
-/**
- * Checks whether a destination route is active given the current URL and optional local pathname.
- *
- * @param {string} to - Target link path or URL
- * @param {URL} currentUrl - Current active URL
- * @param {string} localPathname - Optional local pathname in nested routers
- * @param {string} ancestorPrefix - Optional prefix matched by ancestor routers
- * @param {boolean} exact - Whether the match must be exact
- * @returns {boolean} True if the link is active
- */
-export const isLinkActive = (
-  to: string,
-  currentUrl: URL,
-  localPathname?: string,
-  ancestorPrefix?: string,
-  exact?: boolean,
-): boolean => {
-  const currentPath = currentUrl?.pathname.replace(/\/+$/, "") || "/";
-
-  // Parse `to` into path, search, and hash
-  const [toPathAndQuery, toHashRaw] = to.split("#");
-  const [toPathRaw, toSearchRaw] = toPathAndQuery.split("?");
-  const toPath = toPathRaw.replace(/\/+$/, "") || "/";
-
-  // 1. Check Hash
-  if (toHashRaw !== undefined) {
-    const expectedHash = toHashRaw ? `#${toHashRaw}` : "";
-    if (currentUrl.hash !== expectedHash) {
-      return false;
-    }
-  }
-
-  // 2. Check Query Parameters
-  const toParams = new URLSearchParams(toSearchRaw || "");
-  const currentParams = currentUrl.searchParams;
-
-  if (toSearchRaw !== undefined) {
-    // If query parameters were specified in `to`, all must match currentUrl
-    for (const [key, value] of toParams.entries()) {
-      if (currentParams.get(key) !== value) {
-        return false;
-      }
-    }
-    // If exact matching is requested, ensure no extra query parameters exist
-    if (exact === true) {
-      for (const [key] of currentParams.entries()) {
-        if (!toParams.has(key)) {
-          return false;
-        }
-      }
-    }
-  } else if (exact === true && currentUrl.search !== "") {
-    // When exact === true is explicitly requested and no query params were specified,
-    // currentUrl must have no query params
-    return false;
-  }
-
-  // 3. Check Pathname
-  const isExactPath = exact !== false;
-
-  // Root path "/" should only match "/" unless it explicitly has a wildcard
-  if (toPath === "/" && !toPathRaw.includes("*")) {
-    return currentPath === "/" || localPathname === "/";
-  }
-
-  const matchCurrent = parseRouteParams(toPath, currentPath, isExactPath) !== false;
-  const matchLocal = localPathname
-    ? parseRouteParams(toPath, localPathname.replace(/\/+$/, "") || "/", isExactPath) !== false
-    : false;
-
-  let matchPrefix = false;
-  if (ancestorPrefix && currentPath.startsWith(ancestorPrefix)) {
-    const remaining = currentPath.slice(ancestorPrefix.length) || "/";
-    const normalizedRemaining = remaining.startsWith("/") ? remaining : `/${remaining}`;
-    matchPrefix = parseRouteParams(toPath, normalizedRemaining, isExactPath) !== false;
-  }
-
-  return matchCurrent || matchLocal || matchPrefix;
-};
+import { isLinkActive } from "../util/is-link-active.js";
 
 /**
  * Link component props.
  */
 export interface LinkOptions<K extends keyof HTMLElementTagNameMap = "a"> {
-  /** The route to navigate to */
-  to: Value<string> | string;
+  /** The URL to navigate to */
+  href: Value<string> | string;
   /** Optional HTML tag name (default: "a") */
   tagName?: K;
   /** Class name to apply to the element */
@@ -133,7 +53,7 @@ export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions
  */
 export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   {
-    to,
+    href,
     tagName = "a" as K,
     className: rawClassName,
     activeClass: activeClassName,
@@ -147,7 +67,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 ): HTMLElementTagNameMap[K] => {
   initRouter();
   const navigate = useNavigate();
-  const href = wrapValue(to, NO_HYDRATE);
+  href = wrapValue(href, NO_HYDRATE);
   const url = getRouterState().url;
   const nearest = getNearestRouter();
   const localPath = nearest?.pathname;

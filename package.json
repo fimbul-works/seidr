@@ -28,7 +28,7 @@
     "sizes": "npx bundle-size"
   },
   "dependencies": {
-    "@fimbul-works/hvat": "^1.1.2"
+    "@fimbul-works/hvat": "^1.3.2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.5.15",

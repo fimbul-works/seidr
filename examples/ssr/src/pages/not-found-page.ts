@@ -10,7 +10,7 @@ export const NotFoundPage = createComponent(
     $div({ className: "error not-found-card" }, [
       $h1({ className: "error-title" }, "Page Not Found"),
       $p({ className: "error-message" }, "The requested path could not be resolved."),
-      Link({ to: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
+      Link({ href: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
     ]),
   "NotFoundPage",
 );

@@ -25,8 +25,8 @@ describe("Hydration List", () => {
     cleanupClientMode?.();
   });
 
-  const Link = (props: { to: string; textContent: string }) =>
-    $("a", { href: props.to, textContent: props.textContent, className: "link" });
+  const Link = (props: { href: string; textContent: string }) =>
+    $("a", { href: props.href, textContent: props.textContent, className: "link" });
 
   const getExcerpt = (blog: any) => `${blog.content.split(". ").at(0)}...`;
 
@@ -47,11 +47,11 @@ describe("Hydration List", () => {
 
     const BlogPreview = (blogVal: Value<any>) => {
       const blog = blogVal();
-      const to = `/blog/${blog.slug}`;
+      const href = `/blog/${blog.slug}`;
       return $article(null, [
         $h2({ textContent: blog.title }),
         $div({ innerHTML: `<p>${blog.content}</p>` }),
-        Link({ to, textContent: "Read more..." }),
+        Link({ href, textContent: "Read more..." }),
       ]);
     };
 

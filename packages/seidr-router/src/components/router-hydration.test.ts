@@ -12,7 +12,6 @@ import {
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { DATA_KEY_ROUTER } from "../constants.js";
 import { useNavigate } from "../hooks/use-navigate.js";
-import { usePathname } from "../hooks/use-pathname.js";
 import { clearRouterState } from "../test-setup/index.js";
 import { Link } from "./link.js";
 import { Router } from "./router.js";
@@ -38,21 +37,19 @@ describe("Router Hydration", () => {
     return $section({ className: "not-found-page" }, [
       $h1(null, "Not Found"),
       $p(null, "The page you are looking for does not exist"),
-      Link({ to: "/" }, "Back to home"),
+      Link({ href: "/" }, "Back to home"),
     ]);
   }, "NotFoundPage");
 
   const Navigation = createComponent(() => {
-    const pathname = usePathname();
     const links = [
-      { to: "/", textContent: "Home" },
-      { to: "/about", textContent: "About" },
+      { href: "/", textContent: "Home" },
+      { href: "/about", textContent: "About" },
     ];
     return links.map((link) =>
       Link({
-        to: link.to,
-        textContent: link.textContent,
-        className: pathname.as<string>((l) => (l === link.to ? "active" : "")),
+        ...link,
+        activeClass: "active",
       }),
     );
   }, "Navigation");
@@ -163,9 +160,9 @@ describe("Router Hydration", () => {
     const Header = createComponent(
       () =>
         $nav({ className: "navbar" }, [
-          Link({ to: "/", className: "brand" }, "Seidr Blog"),
+          Link({ href: "/", className: "brand" }, "Seidr Blog"),
           $div({ className: "links" }, [
-            Link({ to: "/" }, "Home"),
+            Link({ href: "/" }, "Home"),
             $a({ href: "https://github.com/fimbul-works/seidr", target: "_blank" }, "GitHub"),
           ]),
         ]),
@@ -175,10 +172,10 @@ describe("Router Hydration", () => {
     const PostCard = createComponent(
       (post: Value<BlogPost>) =>
         $li({ className: "post-card" }, [
-          $h2({}, [Link({ to: `/post/${post().slug}` }, post().title)]),
+          $h2({}, [Link({ href: `/post/${post().slug}` }, post().title)]),
           $div({ className: "meta" }, new Date(post().date).toLocaleDateString()),
           $div({ className: "excerpt", innerHTML: post().excerpt }),
-          Link({ to: `/post/${post().slug}`, className: "read-more" }, "Read more →"),
+          Link({ href: `/post/${post().slug}`, className: "read-more" }, "Read more →"),
         ]),
       "PostCard",
     );

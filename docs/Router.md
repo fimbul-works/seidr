@@ -106,12 +106,12 @@ import { $span } from '@fimbul-works/seidr/html';
 import { Link } from '@fimbul-works/seidr-router';
 
 // Basic Link
-const homeLink = Link({ to: '/' }, 'Home');
+const homeLink = Link({ href: '/' }, 'Home');
 
 // Link with reactive destination and custom child elements
 const userLink = Link(
   {
-    to: userId.as((id) => `/users/${id}`),
+    href: userId.as((id) => `/users/${id}`),
     className: 'nav-link'
   },
   [
@@ -120,12 +120,12 @@ const userLink = Link(
 );
 
 // Custom element tag (e.g. button styled as a link)
-const buttonLink = Link({ to: '/dashboard', tagName: 'button' }, 'Go to Dashboard');
+const buttonLink = Link({ href: '/dashboard', tagName: 'button' }, 'Go to Dashboard');
 ```
 
 #### Parameters:
 - `props: LinkProps<K> & SeidrElementProps<K>`:
-  - `to: string | Value<string>` — The destination route pathname or URL.
+  - `href: string | Value<string>` — The destination route pathname or URL.
   - `tagName?: K` (default: `"a"`) — HTML element tag to create.
   - `activeClass?: string | Value<string>` — CSS class to apply when the link is active.
   - `inactiveClass?: string | Value<string>` — CSS class to apply when the link is inactive.

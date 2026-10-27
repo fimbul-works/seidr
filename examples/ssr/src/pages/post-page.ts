@@ -25,7 +25,7 @@ const PostNotFound = createComponent(() => {
   return $div({ className: "error not-found-card" }, [
     $h1({ className: "error-title" }, "Post Not Found"),
     $div({ className: "error-message" }, "The requested post does not exist or has been relocated."),
-    Link({ to: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
+    Link({ href: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
   ]);
 }, "PostNotFound");
 
@@ -40,7 +40,7 @@ export const PostContainer = createComponent((post: Value<BlogPost | null>) => {
 
       return $article({ className: "post-page" }, [
         $div({ className: "meta" }, [
-          Link({ to: "/", className: "back-link", activeClass: "active" }, [
+          Link({ href: "/", className: "back-link", activeClass: "active" }, [
             $span({ className: "long" }, "← Back to Articles"),
             $span({ className: "short" }, "← Back"),
           ]),

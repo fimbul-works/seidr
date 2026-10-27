@@ -3,5 +3,3 @@ packages:
   - "packages/*"
 allowBuilds:
   esbuild: false
-minimumReleaseAgeExclude:
-  - "@fimbul-works/hvat@1.1.2"

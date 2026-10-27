@@ -38,7 +38,7 @@ const UserProfile = () => {
 
 const NotFound = () => $div([
   $p({ textContent: 'Page not found' }),
-  Link({ to: '/' }, 'Return Home')
+  Link({ href: '/' }, 'Return Home')
 ]);
 
 const routes: Route[] = [

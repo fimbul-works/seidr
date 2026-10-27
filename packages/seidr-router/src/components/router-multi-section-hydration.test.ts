@@ -32,7 +32,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
     );
 
     return $nav({ className: "home-navigation" }, [
-      Link({ to: "/", className: "nav-brand" }, ["FIMBUL", $span({ className: "accent" }, "WORKS")]),
+      Link({ href: "/", className: "nav-brand" }, ["FIMBUL", $span({ className: "accent" }, "WORKS")]),
       $ul(
         { className: "nav-links" },
         List(
@@ -41,7 +41,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
           (link: Value<NavItem>) =>
             Link({
               tagName: "a",
-              to: link.as((l) => l.href),
+              href: link.as((l) => l.href),
               textContent: link.as((l) => l.textContent),
             }),
         ),

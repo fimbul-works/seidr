@@ -1,5 +1,5 @@
 import { isNullish } from "@fimbul-works/hvat";
-import { $queryAll, getDocument, isHTMLElement, isServer } from "@fimbul-works/seidr";
+import { $queryAll, getDocument, isElementNode, isServer } from "@fimbul-works/seidr";
 import { getRouterState } from "./get-router-state.js";
 import { useNavigate } from "./hooks/use-navigate.js";
 
@@ -30,7 +30,7 @@ export const interceptLinks = (root: Element = getDocument().body): void => {
   const currentUrl = routerState.url();
 
   const anchors: HTMLAnchorElement[] = $queryAll<HTMLAnchorElement>("a", root);
-  if (isHTMLElement<"a">(root) && root.tagName?.toLowerCase() === "a") {
+  if (isElementNode<"a">(root) && root.tagName?.toLowerCase() === "a") {
     anchors.push(root);
   }
 

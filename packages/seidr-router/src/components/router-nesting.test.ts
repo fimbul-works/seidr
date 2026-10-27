@@ -111,8 +111,8 @@ describeDualMode("Router Nesting", ({ getDocument }) => {
 
     const UserDashboard = () =>
       $div({}, [
-        Link({ to: "/settings", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Settings"),
-        Link({ to: "/profile", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Profile"),
+        Link({ href: "/settings", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Settings"),
+        Link({ href: "/profile", activeClass: "tab-active", inactiveClass: "tab-inactive" }, "Profile"),
         Router([
           { path: "/settings", component: SettingsPage },
           { path: "/profile", component: ProfilePage },
