@@ -4,6 +4,37 @@ import type { ObservableValue, Ref } from "../observable/types.js";
 import type { SVGAttributes } from "./types.svg.js";
 
 /**
+ * Check if two types are exactly equal.
+ *
+ * @template X - First type to compare
+ * @template Y - Second type to compare
+ * @template A - Type to return if equal (defaults to X)
+ * @template B - Type to return if not equal (defaults to never)
+ */
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
+
+/**
+ * Extracts only the writable (non-readonly) keys from a type.
+ *
+ * @template T - The type to extract writable keys from
+ */
+type WritableKeys<T> = {
+  [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
+}[keyof T];
+
+/**
+ * Converts the given string from camel-case to kebab-case.
+ *
+ * @template S - The string to convert.
+ * @returns The kebab-case version of the string.
+ */
+type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
+  ? U extends Uncapitalize<U>
+    ? `${Uncapitalize<T>}${CamelToKebab<U>}`
+    : `${Uncapitalize<T>}-${CamelToKebab<U>}`
+  : "";
+
+/**
  * Tag name map for HTML elements in Seidr.
  *
  * This type is used to define the types of the HTML elements that can be created.
@@ -13,75 +44,14 @@ export type SeidrElementTagNameMap = HTMLElementTagNameMap & {
 };
 
 /**
- * Accepted types for reactive binding to HTML element attributes.
- *
- * Only scalar types (string, number, boolean) can be reactively bound to
- * DOM element properties. Complex objects and arrays require manual binding.
- */
-export type Scalar = string | number | boolean;
-
-/**
- * TypeScript utility to check if two types are exactly equal.
- *
- * Used internally to distinguish between readonly and writable properties
- * on HTML elements for reactive binding purposes.
- *
- * @template X - First type to compare
- * @template Y - Second type to compare
- * @template A - Type to return if equal (defaults to X)
- * @template B - Type to return if not equal (defaults to never)
- */
-export type IfEquals<X, Y, A = X, B = never> =
-  (<T>() => T extends X ? 1 : 2) extends <T>() => T extends Y ? 1 : 2 ? A : B;
-
-/**
- * Extracts only the writable (non-readonly) keys from a type.
- *
- * This utility is essential for reactive props because we can only bind
- * to writable DOM element properties. Readonly properties like `id`
- * on some elements or read-only attributes are excluded.
- *
- * @template T - The type to extract writable keys from
- */
-export type WritableKeys<T> = {
-  [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
-}[keyof T];
-
-/**
- * Checks if a string is in camelCase.
- *
- * @template S - The string to check
- * @returns true if the string is in camelCase, false otherwise
- */
-export type IsCamelCase<S extends string> = S extends `${string}${"-" | "_"}${string}`
-  ? false
-  : S extends `${infer First}${string}`
-    ? First extends Lowercase<First>
-      ? true
-      : false
-    : false;
-
-/**
  * Union type representing either a scalar value or a reactive Value observable.
- *
- * This type enables automatic reactive binding - if a property receives a Value
- * observable instance, it will be reactively bound; if it receives a plain value, it will
- * be assigned once.
  *
  * @template T - The underlying scalar type
  */
-export type ReactiveValue<T> = [T] extends [Scalar]
-  ? T | ObservableValue<T> | ObservableValue<string> | ObservableValue<number> | ObservableValue<boolean> | true
-  : [T] extends [infer A]
-    ? T | ObservableValue<A> | null
-    : T;
+export type ReactiveValue<T> = [T] extends [infer A] ? T | ObservableValue<A> : T;
 
 /**
  * Type definition for reactive HTML element properties.
- *
- * Maps all writable scalar properties of an HTML element to accept either
- * the original type or a Value observable of that type. This enables automatic
- * reactive binding without additional API calls.
  *
  * @template K - The tag name from SeidrElementTagNameMap
  * @template T - The corresponding HTML element type
@@ -94,24 +64,6 @@ export type ReactiveProps<
 };
 
 /**
- * Type definition for reactive ARIA attributes.
- *
- * Maps all writable scalar properties of an HTML element to accept either
- * the original type or a Value observable of that type. This enables automatic
- * reactive binding without additional API calls.
- */
-export type ReactiveARIAMixin = {
-  [K in keyof ARIAMixin]-?: ReactiveValue<ARIAMixin[K]>;
-};
-
-/**
- * Type definition for reactive aria-* attributes.
- */
-export type ReactiveARIAKebabCase = {
-  [K in `aria-${string}`]?: ReactiveValue<string>;
-};
-
-/**
  * Type definition for reactive CSS style properties.
  */
 export type ReactiveStyleDeclaration = Partial<{
@@ -119,32 +71,15 @@ export type ReactiveStyleDeclaration = Partial<{
 }>;
 
 /**
- * Type definition for reactive data-* attributes.
- */
-export type ReactiveDataKebabCase = {
-  [K in `data-${string}`]?: ReactiveValue<string>;
-};
-
-/**
- * Reactive camelCase props type.
- * It uses a "Template Literal Index Signature" to allow any
- * valid-looking camelCase key dynamically.
- */
-export type ReactiveDataCamelCase = {
-  [K in `data${string}`]: IsCamelCase<K> extends true ? ReactiveValue<string> : never;
-};
-
-/**
  * Props for Seidr HTML elements.
  *
- * @template {keyof SeidrElementTagNameMap} K - Element tag name type
+ * @template K - Element tag name type
  */
 export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof SeidrElementTagNameMap> = Partial<
   ReactiveProps<K, SeidrElementTagNameMap[K]>
 > & {
   style?: ReactiveStyleDeclaration | ReactiveValue<string>;
   ref?: Ref<SeidrElementTagNameMap[K]>;
-  [key: `data-${string}`]: ReactiveValue<string> | undefined;
   [key: `data${string}`]: ReactiveValue<string> | undefined;
   [key: `aria-${string}`]: ReactiveValue<string> | undefined;
 };
@@ -174,11 +109,9 @@ export type SeidrChild =
 export type PropName<K extends keyof SeidrElementTagNameMap = any> =
   | keyof HTMLElement
   | keyof SeidrElementTagNameMap[K]
-  | `data${string}`
-  | `data-${string}`
-  | `aria${string}`
-  | `aria-${string}`
   | keyof ARIAMixin
+  | CamelToKebab<keyof ARIAMixin>
+  | `data${string}`
   | "class"
   | "for"
   | "ref"

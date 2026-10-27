@@ -112,7 +112,7 @@ export function initHydrationContext(container: Element): HydrationContext {
   for (const componentId of Object.keys(components)) {
     const node = componentNodeMap.get(componentId);
     if (!node) {
-      console.warn(`[Hydration] Component ${componentId} not found in tree!`);
+      console.warn(`[seidr:hydration] Component ${componentId} not found in tree!`);
       continue;
     }
 
@@ -259,7 +259,7 @@ export function initHydrationContext(container: Element): HydrationContext {
       }
 
       if (mismatch) {
-        console.warn(`[Hydration] Mismatch at ${componentId}[${cursor}]: expected ${tag}, got: ${actualTag}.`);
+        console.warn(`[seidr:hydration] Mismatch at ${componentId}[${cursor}]: expected ${tag}, got: ${actualTag}.`);
         if (currentComponentNode) {
           currentComponentNode.isMismatched = true;
         }

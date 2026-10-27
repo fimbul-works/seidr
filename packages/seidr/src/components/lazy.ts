@@ -162,7 +162,7 @@ export function lazy<P = void>(loader: LazyComponentLoader<P>, options: LazyOpti
             currentChild(options.onError(error));
           } else {
             if (process.env.NODE_ENV !== "production" || process.env.VITEST) {
-              console.error(`[Seidr] Failed to load lazy component "${componentName}":`, error);
+              console.error(`[seidr] Failed to load lazy component "${componentName}":`, error);
             }
           }
         });

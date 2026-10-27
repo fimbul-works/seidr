@@ -19,7 +19,7 @@ export function onUnmounted(callback: CleanupFunction) {
   const component = getComponentScope();
   if (!component) {
     if (process.env.VITEST) {
-      console.warn("onMounted called outside of component");
+      console.warn("[seidr:error] onUnmounted called outside of component");
       return;
     }
     if (process.env.NODE_ENV !== "production") {

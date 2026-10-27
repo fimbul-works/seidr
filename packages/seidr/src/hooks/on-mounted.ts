@@ -25,7 +25,7 @@ export function onMounted(callback: OnMountedFunction) {
   const component = getComponentScope();
   if (!component) {
     if (process.env.VITEST) {
-      console.warn("onMounted called outside of component");
+      console.warn("[seidr:error] onMounted called outside of component");
       return;
     }
     if (process.env.NODE_ENV !== "production") {

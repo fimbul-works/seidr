@@ -31,7 +31,9 @@ export const $comment = (text: string): Comment => {
           return doc.createComment(text);
         }
         if (node.textContent !== String(text)) {
-          console.warn(`[Hydration] Comment mismatch: expected "${String(text)}" but found "${node.textContent}".`);
+          console.warn(
+            `[seidr:hydration] Comment mismatch: expected "${String(text)}" but found "${node.textContent}".`,
+          );
           node.textContent = String(text);
         }
         return node;

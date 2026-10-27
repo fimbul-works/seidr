@@ -46,9 +46,13 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
     }
   } catch {
     if (isServer()) {
-      console.warn(
-        `Value created with ID "${id}" but no AppState found. You should not create Values outside of the component tree in SSR, due to cross-request contamination.`,
-      );
+      if (process.env.VITEST) {
+        console.warn(
+          `[seidr:error] Value created with ID "${id}" but no AppState found. You should not create Values outside of the component tree in SSR, due to cross-request contamination.`,
+        );
+      } else {
+        throw new SeidrError("Cannot create value outside of the component tree in SSR");
+      }
     }
   }
 

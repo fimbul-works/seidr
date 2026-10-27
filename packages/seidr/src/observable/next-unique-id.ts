@@ -17,7 +17,7 @@ export function nextUniqueId() {
 
   if (isServer()) {
     if (process.env.VITEST) {
-      console.warn("nextUniqueId called outside of component scope");
+      console.warn("[seidr:error] nextUniqueId called outside of component scope");
     } else {
       throw new SeidrError("nextUniqueId called outside of component scope");
     }

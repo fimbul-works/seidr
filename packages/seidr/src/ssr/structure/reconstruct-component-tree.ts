@@ -78,7 +78,7 @@ export const reconstructComponentTree = (
           if (isElementNode(domNode)) {
             if (tag !== domNode.tagName.toLowerCase()) {
               console.warn(
-                `[Hydration] Tag mismatch at index ${creationIndex}: expected ${tag}, got ${domNode.tagName.toLowerCase()}`,
+                `[seidr:hydration] Tag mismatch at index ${creationIndex}: expected ${tag}, got ${domNode.tagName.toLowerCase()}`,
                 node,
                 domNode,
               );

@@ -28,7 +28,7 @@ export const $text = (text: unknown): Text => {
       const node = ctx.claim<Text>(TAG_TEXT);
       if (node) {
         if (node.textContent !== String(text)) {
-          console.warn(`[Hydration] Text mismatch: expected "${String(text)}" but found "${node.textContent}".`);
+          console.warn(`[seidr:hydration] Text mismatch: expected "${String(text)}" but found "${node.textContent}".`);
           node.textContent = String(text);
         }
         return node;

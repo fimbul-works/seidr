@@ -1,6 +1,5 @@
-import { isNullish } from "@fimbul-works/hvat";
+import { resolvePropsAndChildren } from "../util/resolve-props-and-children.js";
 import { $ } from "./create-element.js";
-import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -35,7 +34,7 @@ export const $factory =
   (
     propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[] | null,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[K] =>
-    !isNullish(children) || !isValidSeidrChild(propsOrChildren)
-      ? $(tagName, { ...defaultProps, ...((propsOrChildren as SeidrElementProps<K>) ?? {}) }, children)
-      : $(tagName, defaultProps, propsOrChildren);
+  ): SeidrElementTagNameMap[K] => {
+    const [props, resolvedChildren] = resolvePropsAndChildren(propsOrChildren, children, defaultProps);
+    return $(tagName, props, resolvedChildren);
+  };

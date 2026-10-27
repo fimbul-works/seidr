@@ -1,4 +1,4 @@
-import { isArr, isNullish, isObj, isStr } from "@fimbul-works/hvat";
+import { isArr, isStr } from "@fimbul-works/hvat";
 import { getComponentScope } from "../component/component-scope.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument } from "../dom/get-document.js";
@@ -6,8 +6,8 @@ import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isServer } from "../util/environment/is-server.js";
+import { resolvePropsAndChildren } from "../util/resolve-props-and-children.js";
 import { assignProps } from "./assign-props.js";
-import { isValidSeidrChild } from "./type-guards.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -46,19 +46,7 @@ export function $<K extends keyof SeidrElementTagNameMap>(
 ): SeidrElementTagNameMap[K] {
   const doc = getDocument();
 
-  let props!: SeidrElementProps<K> | null;
-  let resolvedChildren!: SeidrChild | SeidrChild[] | null;
-
-  if (!isNullish(children)) {
-    props = propsOrChildren as SeidrElementProps<K> | null;
-    resolvedChildren = children;
-  } else if (!isValidSeidrChild(propsOrChildren)) {
-    props = propsOrChildren;
-    resolvedChildren = null;
-  } else {
-    props = null;
-    resolvedChildren = propsOrChildren;
-  }
+  const [props, resolvedChildren] = resolvePropsAndChildren<SeidrElementProps<K>>(propsOrChildren, children);
 
   /**
    * Apply properties and children to an element.
@@ -69,9 +57,7 @@ export function $<K extends keyof SeidrElementTagNameMap>(
       scope?.trackChild?.(el);
     }
 
-    if (isObj(props)) {
-      assignProps(el, props);
-    }
+    assignProps(el, props);
 
     if (isArr(resolvedChildren)) {
       resolvedChildren.forEach((child) => {
@@ -80,10 +66,8 @@ export function $<K extends keyof SeidrElementTagNameMap>(
         }
         appendChild(el, child);
       });
-    } else if (!isNullish(resolvedChildren)) {
-      if (!(isStr(resolvedChildren) && resolvedChildren === "")) {
-        appendChild(el, resolvedChildren);
-      }
+    } else if (!(isStr(resolvedChildren) && resolvedChildren === "")) {
+      appendChild(el, resolvedChildren);
     }
 
     return el;
@@ -100,7 +84,7 @@ export function $<K extends keyof SeidrElementTagNameMap>(
     let element: SeidrElementTagNameMap[K];
 
     if (hydrationContext.isMismatched()) {
-      console.warn(`[Hydration] Mismatched element found: ${tagName}`);
+      console.warn(`[seidr:hydration] Mismatched element found: ${tagName}`);
       element = doc.createElement(tagName) as SeidrElementTagNameMap[K];
     } else {
       element = hydrationContext.claim<SeidrElementTagNameMap[K]>(tagName);
@@ -110,7 +94,7 @@ export function $<K extends keyof SeidrElementTagNameMap>(
       const oldNode = element;
       element = doc.createElement(tagName) as SeidrElementTagNameMap[K];
       if (oldNode?.parentNode) {
-        console.warn(`[Hydration] Replacing mismatched element ${oldNode.nodeName} with ${element.tagName}.`);
+        console.warn(`[seidr:hydration] Replacing mismatched element ${oldNode.nodeName} with ${element.tagName}.`);
         oldNode.parentNode.replaceChild(element, oldNode);
       }
     }
