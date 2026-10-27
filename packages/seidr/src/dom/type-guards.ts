@@ -8,7 +8,7 @@ import type { SeidrElementTagNameMap } from "../element/types.js";
  * @param {any} v - Value to check
  * @returns {v is Comment} `true` if the value is a Comment, `false` otherwise
  */
-export const isComment = (v: any): v is Comment => isDOMNode(v) && v.nodeType === TYPE_COMMENT_NODE;
+export const isCommentNode = (v: any): v is Comment => isDOMNode(v) && v.nodeType === TYPE_COMMENT_NODE;
 
 /**
  * Check if a value is a DOM node.
@@ -19,15 +19,15 @@ export const isComment = (v: any): v is Comment => isDOMNode(v) && v.nodeType ==
 export const isDOMNode = (v: any): v is Node => isObj<Node>(v) && "nodeType" in v;
 
 /**
- * Check if a value is an HTMLElement (safely works in Node.js/SSR environments).
+ * Check if a value is an Element (safely works in Node.js/SSR environments).
  *
- * @template K - The tag name of the HTMLElement
+ * @template K - The tag name of the Element
  * @param {any} v - Value to check
- * @returns {v is HTMLElement} `true` if the value is an HTMLElement or its server-side equivalent, `false` otherwise
+ * @returns {v is Element} `true` if the value is an Element or its server-side equivalent, `false` otherwise
  */
-export const isHTMLElement = <K extends keyof SeidrElementTagNameMap | string>(
+export const isElementNode = <K extends keyof SeidrElementTagNameMap | string>(
   v: any,
-): v is K extends keyof SeidrElementTagNameMap ? SeidrElementTagNameMap[K] : HTMLElement =>
+): v is K extends keyof SeidrElementTagNameMap ? SeidrElementTagNameMap[K] : Element =>
   isDOMNode(v) && v.nodeType === TYPE_ELEMENT;
 
 /**

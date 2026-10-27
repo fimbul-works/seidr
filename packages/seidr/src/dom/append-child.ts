@@ -9,7 +9,7 @@ import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { $text } from "./node/text.js";
-import { isComment, isDOMNode, isHTMLElement, isTextNode } from "./type-guards.js";
+import { isCommentNode, isDOMNode, isElementNode, isTextNode } from "./type-guards.js";
 
 /**
  * Normalizes any child or Value output into an array of DOM ChildNodes.
@@ -130,7 +130,7 @@ export const createReactiveValueNodes = (
  * @param {Node} node - Root node to traverse
  */
 export const mountConnectedComponents = (node: Node) => {
-  if (isComment(node)) {
+  if (isCommentNode(node)) {
     return;
   }
 
@@ -139,7 +139,7 @@ export const mountConnectedComponents = (node: Node) => {
 
   while (stack.length > 0) {
     const current = stack.pop()!;
-    if (isComment(current)) {
+    if (isCommentNode(current)) {
       continue;
     }
 
@@ -238,7 +238,7 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
     const childNode = isDOMNode(child) ? child : $text(child);
 
     // Avoid hierarchy request error if childNode is already a parent of target
-    if (!isHTMLElement(childNode) || !childNode.contains(parent)) {
+    if (!isElementNode(childNode) || !childNode.contains(parent)) {
       parent.appendChild(childNode);
 
       if (parent.isConnected) {

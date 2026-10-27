@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { describeDualMode } from "../test-setup";
-import { isComment, isDOMNode, isHTMLElement, isTextNode } from "./type-guards";
+import { isCommentNode, isDOMNode, isElementNode, isTextNode } from "./type-guards";
 
 describeDualMode("DOM Nodes", ({ getDocument }) => {
-  describe("isComment", () => {
+  describe("isCommentNode", () => {
     it("should return true for comments", () => {
-      expect(isComment(getDocument().createComment("comment"))).toBe(true);
+      expect(isCommentNode(getDocument().createComment("comment"))).toBe(true);
     });
 
     it("should return false for non-comments", () => {
-      expect(isComment(getDocument().createTextNode("text"))).toBe(false);
+      expect(isCommentNode(getDocument().createTextNode("text"))).toBe(false);
     });
   });
 
@@ -27,13 +27,13 @@ describeDualMode("DOM Nodes", ({ getDocument }) => {
     });
   });
 
-  describe("isHTMLElement", () => {
+  describe("isElementNode", () => {
     it("should return true for HTMLElements", () => {
-      expect(isHTMLElement(getDocument().createElement("div"))).toBe(true);
+      expect(isElementNode(getDocument().createElement("div"))).toBe(true);
     });
 
     it("should return false for non-HTMLElements", () => {
-      expect(isHTMLElement(getDocument().createTextNode("text"))).toBe(false);
+      expect(isElementNode(getDocument().createTextNode("text"))).toBe(false);
     });
   });
 

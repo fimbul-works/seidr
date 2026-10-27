@@ -9,7 +9,7 @@ import {
   TAG_COMPONENT_PREFIX,
   TAG_TEXT,
 } from "../../constants.js";
-import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isCommentNode, isElementNode, isTextNode } from "../../dom/type-guards.js";
 import { SeidrError } from "../../types.js";
 import { reconstructComponentTree } from "../structure/reconstruct-component-tree.js";
 import type { ComponentTreeNode, StructureMapTuple } from "../structure/types.js";
@@ -60,7 +60,7 @@ export function initHydrationContext(container: Element): HydrationContext {
     const node = allNodes[i];
     if (
       isMarkerComment(node) ||
-      (isHTMLElement(node) && node.getAttribute(ROOT_ATTRIBUTE) === String(hydrationData.ctxID))
+      (isElementNode(node) && node.getAttribute(ROOT_ATTRIBUTE) === String(hydrationData.ctxID))
     ) {
       if (firstIdx === -1) firstIdx = i;
       lastIdx = i;
@@ -244,11 +244,11 @@ export function initHydrationContext(container: Element): HydrationContext {
           actualTag = node.nodeName;
         }
       } else if (tag === TAG_COMMENT) {
-        if (!isComment(node)) {
+        if (!isCommentNode(node)) {
           mismatch = true;
           actualTag = node.nodeName;
         }
-      } else if (isHTMLElement(node)) {
+      } else if (isElementNode(node)) {
         if (node.tagName.toLowerCase() !== tag.toLowerCase()) {
           mismatch = true;
           actualTag = node.tagName;

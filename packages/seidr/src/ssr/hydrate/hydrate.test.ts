@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/app-state.js";
 import { createComponent } from "../../component/index.js";
 import { mount } from "../../dom/mount.js";
-import { isComment } from "../../dom/type-guards.js";
+import { isCommentNode } from "../../dom/type-guards.js";
 import { $ } from "../../element/index.js";
 import { $div, $main, $nav } from "../../elements/index.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
@@ -243,7 +243,7 @@ describe("Hydration", () => {
     expect(container.textContent).toContain("Main Content");
 
     const childNodes = Array.from(container.childNodes);
-    const comments = childNodes.filter((n) => isComment(n));
+    const comments = childNodes.filter((n) => isCommentNode(n));
 
     // We should have exactly 2 markers for App
     expect(comments.length).toBe(2);

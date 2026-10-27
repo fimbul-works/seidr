@@ -1,7 +1,7 @@
 import { getAppState } from "../../app-state/app-state.js";
 import { isMarkerComment } from "../../component/type-guards.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
-import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isCommentNode, isElementNode, isTextNode } from "../../dom/type-guards.js";
 import type { ComponentTreeNode, StructureMapTuple } from "./types.js";
 
 /**
@@ -75,7 +75,7 @@ export const reconstructComponentTree = (
         node.domNode = domNode;
         if (domNode) {
           // Check for mismatch
-          if (isHTMLElement(domNode)) {
+          if (isElementNode(domNode)) {
             if (tag !== domNode.tagName.toLowerCase()) {
               console.warn(
                 `[Hydration] Tag mismatch at index ${creationIndex}: expected ${tag}, got ${domNode.tagName.toLowerCase()}`,
@@ -88,7 +88,7 @@ export const reconstructComponentTree = (
             if (tag !== TAG_TEXT) {
               node.isMismatched = true;
             }
-          } else if (isComment(domNode)) {
+          } else if (isCommentNode(domNode)) {
             if (tag !== TAG_COMMENT) {
               node.isMismatched = true;
             }

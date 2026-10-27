@@ -1,6 +1,6 @@
 import { isFn, isObj, isStr } from "@fimbul-works/hvat";
 import { BOOL_ATTRIBUTES, TYPE_ELEMENT } from "../../constants.js";
-import { isComment } from "../../dom/type-guards.js";
+import { isCommentNode } from "../../dom/type-guards.js";
 import type { ReactiveStyleDeclaration, SeidrElementTagNameMap } from "../../element/types.js";
 import type { NodeTypeElement } from "../../types.js";
 import { camelToKebab } from "../../util/string.js";
@@ -171,7 +171,7 @@ export class SSRElement<
   get textContent(): string {
     const children = this.childNodes as unknown as SSRNodeList;
     return children.nodes
-      .filter((node) => !isComment(node))
+      .filter((node) => !isCommentNode(node))
       .map((node) => node.textContent ?? "")
       .join("");
   }

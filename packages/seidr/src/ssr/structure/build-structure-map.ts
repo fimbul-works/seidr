@@ -2,7 +2,7 @@ import { encodeBase62 } from "@fimbul-works/futhark";
 import { isComponent, isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
-import { isComment, isHTMLElement, isTextNode } from "../../dom/type-guards.js";
+import { isCommentNode, isElementNode, isTextNode } from "../../dom/type-guards.js";
 import { SeidrError } from "../../types.js";
 import type { StructureMapTuple } from "./types.js";
 
@@ -61,7 +61,7 @@ export function buildStructureMap(component: SeidrComponent): StructureMapTuple[
     indexMap.set(child, index++);
 
     // Check if child element is parent of any child component
-    if (isHTMLElement(child)) {
+    if (isElementNode(child)) {
       const childComponent = rootNodeToComponent.get(child);
       if (childComponent) {
         // Record component boundary
@@ -83,7 +83,7 @@ export function buildStructureMap(component: SeidrComponent): StructureMapTuple[
       const compIdStr =
         process.env.NODE_ENV === "production" ? encodeBase62(child.id) : `${child.name}-${encodeBase62(child.id)}`;
       tuples.push([`${TAG_COMPONENT_PREFIX}${compIdStr}`]);
-    } else if (isHTMLElement(child)) {
+    } else if (isElementNode(child)) {
       const tuple: StructureMapTuple = [child.tagName.toLowerCase()];
       if (child.childNodes && child.childNodes.length > 0) {
         const seenChildComponents = new Set<SeidrComponent>();
@@ -115,7 +115,7 @@ export function buildStructureMap(component: SeidrComponent): StructureMapTuple[
       tuples.push(tuple);
     } else if (isTextNode(child)) {
       tuples.push([TAG_TEXT]);
-    } else if (isComment(child)) {
+    } else if (isCommentNode(child)) {
       if (isMarkerComment(child)) {
         return;
       }

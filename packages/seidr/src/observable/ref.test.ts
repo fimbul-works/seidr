@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createComponent } from "../component/create-component";
 import { mount } from "../dom";
-import { isHTMLElement } from "../dom/type-guards";
+import { isElementNode } from "../dom/type-guards";
 import { $canvas } from "../elements/canvas";
 import { describeDualMode, itHasParity } from "../test-setup/dual-mode";
 import { SeidrError } from "../types";
@@ -23,7 +23,7 @@ describeDualMode("Ref handler", ({ getDocument }) => {
 
       const unmount = mount(CanvasContainer, getDocument().body);
 
-      expect(isHTMLElement(canvas)).toBeTruthy();
+      expect(isElementNode(canvas)).toBeTruthy();
       expect(canvas!.tagName).toBe("CANVAS");
 
       unmount();

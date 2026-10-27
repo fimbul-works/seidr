@@ -1,6 +1,6 @@
 import { expect } from "vitest";
 import { $text } from "../dom";
-import { isHTMLElement } from "../dom/type-guards";
+import { isElementNode } from "../dom/type-guards";
 import { describeDualMode, itHasParity } from "../test-setup";
 import { $ } from "./create-element";
 
@@ -9,7 +9,7 @@ describeDualMode("$ (createElement)", () => {
     const div = $("div");
 
     expect(div.tagName).toBe("DIV");
-    expect(isHTMLElement(div)).toBe(true);
+    expect(isElementNode(div)).toBe(true);
 
     return div;
   });

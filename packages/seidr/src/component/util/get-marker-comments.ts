@@ -3,7 +3,7 @@ import { isObj, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../../app-state/app-state.js";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants.js";
 import { getDocument } from "../../dom/get-document.js";
-import { isComment } from "../../dom/type-guards.js";
+import { isCommentNode } from "../../dom/type-guards.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
@@ -40,8 +40,8 @@ export const getMarkerComments = (
     const firstNode = nodes.at(0);
     const lastNode = nodes.at(-1);
 
-    const startComment = isComment(firstNode) && firstNode.textContent === startText ? firstNode : null;
-    const endComment = isComment(lastNode) && lastNode.textContent === endText ? lastNode : null;
+    const startComment = isCommentNode(firstNode) && firstNode.textContent === startText ? firstNode : null;
+    const endComment = isCommentNode(lastNode) && lastNode.textContent === endText ? lastNode : null;
 
     if (startComment && endComment) {
       const markers: [Comment, Comment] = [startComment, endComment];

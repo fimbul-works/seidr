@@ -7,7 +7,7 @@ import {
   TYPE_COMPONENT_FACTORY,
   TYPE_PROP,
 } from "../constants.js";
-import { isComment } from "../dom/type-guards.js";
+import { isCommentNode } from "../dom/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactory } from "./types.js";
 
 /**
@@ -50,7 +50,7 @@ const hasWord = (node: CharacterData) => /[A-Za-z0-9]+/.test(node.textContent);
  * @returns {boolean} `true` if the value is a start marker comment, `false` otherwise
  */
 export const isStartMarkerComment = (v: any): boolean =>
-  isComment(v) && v.textContent.startsWith(SEIDR_COMPONENT_START_PREFIX) && hasWord(v);
+  isCommentNode(v) && v.textContent.startsWith(SEIDR_COMPONENT_START_PREFIX) && hasWord(v);
 
 /**
  * Check if a value is a Seidr component boundary end marker comment.
@@ -59,7 +59,7 @@ export const isStartMarkerComment = (v: any): boolean =>
  * @returns {boolean} `true` if the value is an end marker comment, `false` otherwise
  */
 export const isEndMarkerComment = (v: any): boolean =>
-  isComment(v) && v.textContent.startsWith(SEIDR_COMPONENT_END_PREFIX) && hasWord(v);
+  isCommentNode(v) && v.textContent.startsWith(SEIDR_COMPONENT_END_PREFIX) && hasWord(v);
 
 /**
  * Check if a value is a Seidr component boundary marker comment.

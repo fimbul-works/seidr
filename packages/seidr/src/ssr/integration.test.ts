@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { isHTMLElement } from "../dom/type-guards.js";
+import { isElementNode } from "../dom/type-guards.js";
 import { $ } from "../element/create-element.js";
 import { getDocument, mount } from "../index.core.js";
 import { createValue, mergeValues } from "../observable/value.js";
@@ -24,7 +24,7 @@ describe("SSR Integration Tests", () => {
     it("should create ServerHTMLElement instead of DOM element", () => {
       const div = $("div", { className: "test" });
 
-      expect(isHTMLElement(div)).toBeTruthy();
+      expect(isElementNode(div)).toBeTruthy();
       expect(div).toBeInstanceOf(SSRElement);
       expect(div.tagName).toBe("DIV");
     });
