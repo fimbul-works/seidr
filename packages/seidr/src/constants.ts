@@ -37,12 +37,6 @@ export const TAG_TEXT = "#text";
 /** Component tag prefix. */
 export const TAG_COMPONENT_PREFIX = "$";
 
-/** Component scope data key. */
-export const DATA_KEY_COMPONENT_SCOPE = "seidr.component.scope";
-
-/** Current component cursor data key. */
-export const DATA_KEY_COMPONENT_CURSOR = "seidr.component.cursor";
-
 /** Hydration data key. */
 export const DATA_KEY_HYDRATION_DATA = "seidr.hydration.data";
 

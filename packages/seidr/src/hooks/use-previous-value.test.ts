@@ -1,27 +1,27 @@
 import { describe, expect, it } from "vitest";
 import { $div } from "../elements/div.js";
 import { createComponent, createValue, mount, SeidrError } from "../index.js";
-import { usePrevious } from "./use-previous.js";
+import { usePreviousValue } from "./use-previous-value.js";
 
-describe("usePrevious", () => {
+describe("usePreviousValue", () => {
   it("throws SeidrError when argument is not a valid Value", () => {
-    expect(() => usePrevious(null as any)).toThrow(SeidrError);
-    expect(() => usePrevious(undefined as any)).toThrow(SeidrError);
-    expect(() => usePrevious(123 as any)).toThrow(SeidrError);
-    expect(() => usePrevious("test" as any)).toThrow(SeidrError);
-    expect(() => usePrevious({} as any)).toThrow(SeidrError);
+    expect(() => usePreviousValue(null as any)).toThrow(SeidrError);
+    expect(() => usePreviousValue(undefined as any)).toThrow(SeidrError);
+    expect(() => usePreviousValue(123 as any)).toThrow(SeidrError);
+    expect(() => usePreviousValue("test" as any)).toThrow(SeidrError);
+    expect(() => usePreviousValue({} as any)).toThrow(SeidrError);
   });
 
   it("returns initial value of the given value", () => {
     const count = createValue(10);
-    const prev = usePrevious(count);
+    const prev = usePreviousValue(count);
 
     expect(prev()).toBe(10);
   });
 
   it("updates to previous value when the observable value changes", () => {
     const count = createValue(0);
-    const prev = usePrevious(count);
+    const prev = usePreviousValue(count);
 
     expect(prev()).toBe(0);
 
@@ -40,7 +40,7 @@ describe("usePrevious", () => {
 
   it("works with string values", () => {
     const text = createValue("initial");
-    const prev = usePrevious(text);
+    const prev = usePreviousValue(text);
 
     expect(prev()).toBe("initial");
 
@@ -56,7 +56,7 @@ describe("usePrevious", () => {
     let prevVal: any;
 
     const TestComponent = createComponent(() => {
-      const prev = usePrevious(count);
+      const prev = usePreviousValue(count);
       prevVal = prev;
       return $div({}, "Test");
     });

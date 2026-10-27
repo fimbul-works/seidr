@@ -1,4 +1,4 @@
-import { isNullish } from "@fimbul-works/hvat";
+import { isUndef } from "@fimbul-works/hvat";
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
@@ -12,7 +12,6 @@ import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./typ
  */
 export const createAppState = (ctxID: number): AppState => ({
   ctxID,
-  uniqID: 0,
   components: new Set<SeidrComponent>(),
   nodeIndex: new WeakMap<ChildNode, SeidrComponent>(),
   markers: new Map<string, [Comment, Comment]>(),
@@ -22,7 +21,7 @@ export const createAppState = (ctxID: number): AppState => ({
     return this.data.has(key);
   },
   getData<T>(key: string, defaultValue?: T): typeof defaultValue extends undefined ? T | undefined : T {
-    if (!this.data.has(key) && !isNullish(defaultValue)) {
+    if (!this.data.has(key) && !isUndef(defaultValue)) {
       this.data.set(key, defaultValue);
       return defaultValue;
     }
@@ -35,15 +34,18 @@ export const createAppState = (ctxID: number): AppState => ({
     return this.data.delete(key);
   },
   defineDataStrategy<T, I>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<I>): void {
+    if (process.env.SEIDR_DISABLE_SSR) return;
     this.strategies.set(key, [captureFn, restoreFn]);
   },
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined {
+    if (process.env.SEIDR_DISABLE_SSR) return;
     return this.strategies.get(key);
   },
   destroy(): void {
+    if (process.env.SEIDR_DISABLE_SSR) return;
+
     // Clean up components
     this.components.clear();
-    this.uniqID = 0;
 
     // Clean up data
     this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());

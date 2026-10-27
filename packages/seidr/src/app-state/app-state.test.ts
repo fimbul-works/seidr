@@ -1,14 +1,10 @@
-import { encodeBase62 } from "@fimbul-works/futhark";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createComponent } from "../component/create-component";
-import { setComponentScope } from "../component/component-scope";
-import { $ } from "../element";
 import { createValue } from "../observable";
-import { enableClientMode, enableSSRMode } from "../test-setup";
+import { describeDualMode, enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { getAppState, getNextValueId, setAppStateID } from "./app-state";
+import { getAppState, setAppStateID } from "./app-state";
 
-describe("AppState Infrastructure", () => {
+describeDualMode("AppState Infrastructure", () => {
   let restore: CleanupFunction;
 
   beforeEach(() => {
@@ -20,14 +16,12 @@ describe("AppState Infrastructure", () => {
   });
 
   describe("setAppStateID", () => {
-    it("should update ctxID and reset counter", () => {
+    it("should update ctxID", () => {
       const state = getAppState();
-      state.uniqID = 42;
 
       setAppStateID(100);
 
       expect(state.ctxID).toBe(100);
-      expect(state.uniqID).toBe(0);
     });
 
     it("should clear all data including observable instances", () => {
@@ -64,55 +58,6 @@ describe("AppState Infrastructure", () => {
       expect(container.contains(start)).toBe(false);
       expect(container.contains(end)).toBe(false);
       expect(state.markers.size).toBe(0);
-    });
-  });
-
-  describe("getNextValueId", () => {
-    it("should generate deterministic IDs within component scope", () => {
-      const TestComp = createComponent(() => {
-        const id1 = getNextValueId();
-        const id2 = getNextValueId();
-        return $("div", { id: id1, className: id2 });
-      }, "Test");
-
-      const comp1 = TestComp();
-      const el1 = comp1.nodes[0] as HTMLElement;
-
-      // ID format is: [ComponentIDBase62]-[CounterBase62]
-      expect(el1.id).toBe(`${encodeBase62(comp1.id)}.1`);
-      expect(el1.className).toBe(`${encodeBase62(comp1.id)}.2`);
-
-      const comp2 = TestComp();
-      const el2 = comp2.nodes[0] as HTMLElement;
-      expect(el2.id).toBe(`${encodeBase62(comp2.id)}.1`);
-    });
-
-    it("should fallback to AppState counter when outside of scope", () => {
-      setComponentScope(null);
-      const state = getAppState();
-      state.uniqID = 10;
-
-      const id = getNextValueId();
-      // 10 in base62 is 'a'
-      expect(id).toBe("a");
-      expect(state.uniqID).toBe(11);
-    });
-
-    it("should warn on server when outside of scope", () => {
-      const cleanup = enableSSRMode();
-      const consoleSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
-
-      try {
-        setComponentScope(null);
-        getNextValueId();
-
-        expect(consoleSpy).toHaveBeenCalledWith(
-          expect.stringContaining("Generating Value ID outside of component scope"),
-        );
-      } finally {
-        cleanup();
-        consoleSpy.mockRestore();
-      }
     });
   });
 });

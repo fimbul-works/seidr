@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, vi } from "vitest";
 import { getAppState } from "../app-state/app-state.js";
+import { DATA_KEY_COMPONENT_CURSOR } from "../component/component-scope.js";
 import type { OnMountedFunction, SeidrComponent } from "../component/types.js";
-import { DATA_KEY_COMPONENT_CURSOR, DATA_KEY_COMPONENT_SCOPE, TYPE_COMPONENT, TYPE_PROP } from "../constants.js";
+import { TYPE_COMPONENT, TYPE_PROP } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import type { CleanupFunction } from "../types.js";
 
@@ -45,7 +46,6 @@ export function mockComponentScope(node?: HTMLElement) {
 
   beforeEach(() => {
     valueIdCounter = 0;
-    getAppState().setData(DATA_KEY_COMPONENT_SCOPE, mockComponent);
     getAppState().setData(DATA_KEY_COMPONENT_CURSOR, mockComponent);
     getAppState().deleteData(DATA_KEY_STATE);
     vi.clearAllMocks();
@@ -56,7 +56,6 @@ export function mockComponentScope(node?: HTMLElement) {
 
   afterEach(() => {
     mockComponent.unmount();
-    getAppState().deleteData(DATA_KEY_COMPONENT_SCOPE);
     getAppState().deleteData(DATA_KEY_COMPONENT_CURSOR);
     getAppState().deleteData(DATA_KEY_STATE);
   });

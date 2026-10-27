@@ -30,29 +30,23 @@ export const random = (): number => {
     }
   }
 
-  // Initialize RNG state
-  let rngState = appState.getData<Map<number, number>>(DATA_KEY_RANDOM);
-  if (!rngState) {
-    rngState = new Map<number, number>();
-    appState.setData(DATA_KEY_RANDOM, rngState);
-  }
-
   // Get unique RNG ID
+  const state = appState.getData<Map<number, number>>(DATA_KEY_RANDOM, new Map());
   let rngId = appState.ctxID;
   try {
     rngId = getComponentScope()?.id ?? rngId;
-    onUnmounted(() => rngState.delete(rngId));
+    onUnmounted(() => state.delete(rngId));
   } catch {
     // getComponentScope() throws outside component hierarchy — use fallback rngId
   }
 
   // Seed RNG state
-  if (!rngState.has(rngId)) {
-    rngState.set(rngId, Math.imul(appState.ctxID ^ LCG_M, rngId) >>> 0);
+  if (!state.has(rngId)) {
+    state.set(rngId, Math.imul(appState.ctxID ^ LCG_M, rngId) >>> 0);
   }
 
   // Generate next number using the stored state
-  let s = rngState.get(rngId)!;
+  let s = state.get(rngId)!;
   s = (s + 0x9e3779b9) | 0;
 
   let t = Math.imul(s ^ (s >>> 16), 0x21f0aaad);
@@ -60,7 +54,7 @@ export const random = (): number => {
   t ^= t >>> 15;
 
   // Save component RNG state
-  rngState.set(rngId, s >>> 0);
+  state.set(rngId, s >>> 0);
 
   return (t >>> 0) * FRAC;
 };

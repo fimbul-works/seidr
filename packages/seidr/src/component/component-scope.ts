@@ -1,6 +1,8 @@
 import { getAppState } from "../app-state/app-state.js";
-import { DATA_KEY_COMPONENT_CURSOR } from "../constants.js";
 import type { SeidrComponent } from "./types.js";
+
+/** Current component cursor data key. */
+export const DATA_KEY_COMPONENT_CURSOR = "seidr.component.cursor";
 
 /**
  * Sets the active component.

@@ -2,6 +2,7 @@ import { setAppStateProvider } from "../app-state/app-state.js";
 import { contextLocalStorage } from "../app-state/app-state.ssr.js";
 import { createAppState } from "../app-state/create-app-state.js";
 import type { AppState } from "../app-state/types.js";
+import { resetIdCounters } from "../hooks/use-id.js";
 
 // Set up a simple browser app state that returns a valid state object
 export const testAppState: AppState = createAppState(0);
@@ -47,9 +48,5 @@ export function setupAppState() {
  * Used in tests to ensure consistent IDs.
  */
 export const resetNextId = (): void => {
-  try {
-    getAppState().uniqID = 0;
-  } catch (_e) {
-    // Ignore if no app state is available
-  }
+  resetIdCounters();
 };

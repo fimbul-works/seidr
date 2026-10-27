@@ -7,9 +7,6 @@ export interface AppState {
   /** Application state ID is used to differentiate state between requests */
   ctxID: number;
 
-  /** Counter for generating unique IDs */
-  uniqID: number;
-
   /** Main component registry */
   components: Set<SeidrComponent>;
 

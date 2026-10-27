@@ -6,7 +6,7 @@ import { setRegisterValueForSSR } from "../../observable/register-value-for-ssr.
 import type { Value } from "../../observable/types.js";
 import { registerStateStrategy } from "../register-state-strategy.js";
 import { registerValueForSSR } from "../register-value-for-ssr.js";
-import type { HydrationData, HydrationStatePayload } from "../types.js";
+import type { HydrationData, HydrationStateTuple } from "../types.js";
 import { unpackHydrationState } from "../util/state-tuple.js";
 import type { HydrationDataRegistry } from "./types.js";
 
@@ -38,7 +38,7 @@ export function initHydrationData(hydrationData: HydrationData): void {
   setRegisterValueForSSR(registerValueForSSR);
 
   const rawState = hydrationData.data?.[DATA_KEY_STATE];
-  const stateMap: Map<string, any> = isArr<HydrationStatePayload>(rawState)
+  const stateMap: Map<string, any> = isArr<HydrationStateTuple>(rawState)
     ? unpackHydrationState(rawState)
     : new Map(Object.entries(rawState ?? {}));
 

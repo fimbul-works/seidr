@@ -10,11 +10,6 @@ import { isArr } from "@fimbul-works/hvat";
 export type HydrationStateTuple = [value: any, ...valueIds: string[]];
 
 /**
- * The complete hydration state payload for DATA_KEY_STATE.
- */
-export type HydrationStatePayload = HydrationStateTuple[];
-
-/**
  * Packs reactive Value state into a deduplicated tuple array.
  *
  * Arrays have their elements recursively registered into the unique values table,
@@ -25,10 +20,10 @@ export type HydrationStatePayload = HydrationStateTuple[];
  * and all referencing Value IDs are appended to that single tuple.
  *
  * @param {Map<string, any>} values - Map of Value.ID to unwrapped value
- * @returns {HydrationStatePayload} Deduplicated tuple payload
+ * @returns {HydrationStateTuple[]} Deduplicated tuple payload
  */
-export function packHydrationState(values: Map<string, any>): HydrationStatePayload {
-  const payload: HydrationStatePayload = [];
+export function packHydrationState(values: Map<string, any>): HydrationStateTuple[] {
+  const payload: HydrationStateTuple[] = [];
   const indexMap = new Map<any, number>();
   const idSets = new Map<number, Set<string>>();
 
@@ -81,10 +76,10 @@ export function packHydrationState(values: Map<string, any>): HydrationStatePayl
  * Uses a two-pass algorithm (allocate containers, then populate contents)
  * to resolve all array indices and preserve circular references and object identity.
  *
- * @param {HydrationStatePayload} payload - The tuple payload to unpack
+ * @param {HydrationStateTuple[]} payload - The tuple payload to unpack
  * @returns {Map<string, any>} Map of Value.ID to restored value instance
  */
-export function unpackHydrationState(payload: HydrationStatePayload): Map<string, any> {
+export function unpackHydrationState(payload: HydrationStateTuple[]): Map<string, any> {
   const restoredValues = new Map<number, any>();
   const clientMap = new Map<string, any>();
 
@@ -109,7 +104,7 @@ export function unpackHydrationState(payload: HydrationStatePayload): Map<string
   // PASS 2: Populate array elements by dereferencing indices
   for (let i = 0; i < payload.length; i++) {
     const rawVal = payload[i][0];
-    if (isArr<number[]>(rawVal)) {
+    if (isArr<number>(rawVal)) {
       const targetArray = restoredValues.get(i);
       for (let k = 0; k < rawVal.length; k++) {
         targetArray.push(restoredValues.get(rawVal[k]));

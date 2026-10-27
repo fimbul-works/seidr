@@ -11,7 +11,7 @@ import { SeidrError } from "../types.js";
  * @returns {Value<T>} A value that holds the previous value of the given value.
  * @throws {SeidrError} If the value is invalid.
  */
-export function usePrevious<T>(value: Value<T>): Value<T> {
+export function usePreviousValue<T>(value: Value<T>): Value<T> {
   if (!isValue(value) && process.env.NODE_ENV !== "production") {
     throw new SeidrError("Invalid value");
   }

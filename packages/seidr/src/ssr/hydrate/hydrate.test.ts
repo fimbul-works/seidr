@@ -75,7 +75,7 @@ describe("Hydration", () => {
   it("should register Value instances in creation order", () => {
     const data: HydrationData = {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { "0": 100, "1": 200 } },
+      data: { [DATA_KEY_STATE]: { "1": 100, "2": 200 } },
       components: {},
     };
 
@@ -93,7 +93,7 @@ describe("Hydration", () => {
   it("should only hydrate root observables", () => {
     const data: HydrationData = {
       ctxID: 0,
-      data: { [DATA_KEY_STATE]: { "0": "root" } },
+      data: { [DATA_KEY_STATE]: { "1": "root" } },
       components: {},
     };
 
@@ -111,8 +111,8 @@ describe("Hydration", () => {
       ctxID: 0,
       data: {
         [DATA_KEY_STATE]: {
-          "0": "John",
-          "1": "Doe",
+          "1": "John",
+          "2": "Doe",
         },
       },
       components: {},
@@ -139,8 +139,8 @@ describe("Hydration", () => {
       ctxID: 0,
       data: {
         [DATA_KEY_STATE]: {
-          "0": "hydrated-name",
-          "2": true,
+          "1": "hydrated-name",
+          "3": true,
         },
       },
       components: {},

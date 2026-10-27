@@ -1,5 +1,5 @@
 import { isFn } from "@fimbul-works/hvat";
-import { getAppState, getNextValueId } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/app-state.js";
 import type { AppState } from "../app-state/types.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { TYPE_PROP } from "../constants.js";
@@ -7,6 +7,7 @@ import { type CleanupFunction, SeidrError } from "../types.js";
 import { defineGetProp, defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { DATA_KEY_PARENT_OBSERVABLE_STACK, DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
+import { nextUniqueId } from "./next-unique-id.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
 import type {
   DerivedValue,
@@ -29,7 +30,7 @@ const getParentObservableStack = () => getAppState().getData<Set<Observable>[]>(
  * @returns {Value<T>} A callable function object that can be used to get or set the value and watch for changes
  */
 export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Value<T> {
-  const { id = getNextValueId(), isEqual: eq = Object.is, parents: p = [], hydrate = true } = options;
+  const { id = nextUniqueId(), isEqual: eq = Object.is, parents: p = [], hydrate = true } = options;
 
   // Register in AppState if available
   let appState!: AppState;

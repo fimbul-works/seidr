@@ -6,7 +6,6 @@ describe("createAppState", () => {
   it("should initialize with default values", () => {
     const state = createAppState(1);
     expect(state.ctxID).toBe(1);
-    expect(state.uniqID).toBe(0);
     expect(state.data).toBeInstanceOf(Map);
     expect(state.strategies).toBeInstanceOf(Map);
     expect(state.markers).toBeInstanceOf(Map);
