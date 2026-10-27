@@ -1,0 +1,94 @@
+import type { SeidrChild } from "@fimbul-works/seidr";
+import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
+import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
+import type { FormControlLabelProps } from "../form-control/form-control-label.js";
+import { createSwitch } from "./create-switch";
+import { SwitchControl, type SwitchControlProps } from "./switch-control.js";
+import { SwitchDescription } from "./switch-description.js";
+import { SwitchErrorMessage } from "./switch-error-message.js";
+import { SwitchInput, type SwitchInputProps } from "./switch-input.js";
+import { SwitchLabel } from "./switch-label.js";
+import { SwitchRoot } from "./switch-root.js";
+import { SwitchThumb, type SwitchThumbProps } from "./switch-thumb.js";
+import type { UseSwitchOptions } from "./types.js";
+
+export interface SwitchProps extends UseSwitchOptions {
+  /** Optional class name for the root container. */
+  className?: string;
+
+  /** Accessible label text or element. */
+  label?: SeidrChild | SeidrChild[];
+
+  /** Optional description text or element. */
+  description?: SeidrChild | SeidrChild[];
+
+  /** Optional error message text or element. */
+  errorMessage?: SeidrChild | SeidrChild[];
+
+  /** Optional custom thumb element or content. */
+  thumb?: SeidrChild | SeidrChild[];
+
+  /** Props passed to Switch.Root. */
+  rootProps?: Record<string, any>;
+
+  /** Props passed to Switch.Input. */
+  inputProps?: SwitchInputProps;
+
+  /** Props passed to Switch.Control. */
+  controlProps?: SwitchControlProps<any>;
+
+  /** Props passed to Switch.Thumb. */
+  thumbProps?: SwitchThumbProps<any>;
+
+  /** Props passed to Switch.Label. */
+  labelProps?: FormControlLabelProps<any>;
+
+  /** Props passed to Switch.Description. */
+  descriptionProps?: FormControlDescriptionProps<any>;
+
+  /** Props passed to Switch.ErrorMessage. */
+  errorMessageProps?: FormControlErrorMessageProps<any>;
+}
+
+/**
+ * Unified all-in-one Switch factory function.
+ * Creates an accessible switch with full WAI-ARIA and form-control integration in one call.
+ */
+function SwitchComponent(options: SwitchProps = {}) {
+  const {
+    className,
+    label,
+    description,
+    errorMessage,
+    thumb,
+    rootProps = {},
+    inputProps = {},
+    controlProps = {},
+    thumbProps = {},
+    labelProps = {},
+    descriptionProps = {},
+    errorMessageProps = {},
+    ...switchOptions
+  } = options;
+
+  const sw = createSwitch(switchOptions);
+
+  return sw.Root({ className, ...rootProps }, [
+    sw.Input(inputProps),
+    sw.Control(controlProps, [sw.Thumb(thumbProps, thumb)]),
+    label ? sw.Label(labelProps, label) : null,
+    description ? sw.Description(descriptionProps, description) : null,
+    errorMessage ? sw.ErrorMessage(errorMessageProps, errorMessage) : null,
+  ]);
+}
+
+export const Switch = Object.assign(SwitchComponent, {
+  create: createSwitch,
+  Root: SwitchRoot,
+  Input: SwitchInput,
+  Control: SwitchControl,
+  Thumb: SwitchThumb,
+  Label: SwitchLabel,
+  Description: SwitchDescription,
+  ErrorMessage: SwitchErrorMessage,
+});

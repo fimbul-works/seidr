@@ -1,8 +1,8 @@
-import { isNum, isObj, isUndef } from "@fimbul-works/hvat";
+import { isNum, isObj } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -67,16 +67,7 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   propsOrChildren?: SkeletProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: SkeletProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as SkeletProps<T>) ?? ({} as SkeletProps<T>);
-    content = children;
-  } else {
-    props = {} as SkeletProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<SkeletProps<T>>(propsOrChildren, children);
 
   const {
     as = "div" as T,

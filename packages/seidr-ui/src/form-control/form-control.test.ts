@@ -131,10 +131,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
   it("should not set htmlFor on Label when as is not label", () => {
     const root = setup(() => {
       const form = FormControl.create({ id: "custom-label-form" });
-      return form.Root([
-        form.Label({ as: "span" }, LABEL_TEXT),
-        $input(form.fieldProps),
-      ]);
+      return form.Root([form.Label({ as: "span" }, LABEL_TEXT), $input(form.fieldProps)]);
     });
 
     const spanLabel = root.querySelector("span")!;

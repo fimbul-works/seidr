@@ -1,9 +1,5 @@
 import type { Ref, SeidrChild, SeidrElementTagNameMap, Value } from "@fimbul-works/seidr";
-import type {
-  FormControlDataSet,
-  UseFormControlOptions,
-  UseFormControlResult,
-} from "../form-control/types.js";
+import type { FormControlDataSet, UseFormControlOptions, UseFormControlResult } from "../form-control/types.js";
 
 export interface CheckboxDataSet {
   "data-checked": Value<string | undefined>;

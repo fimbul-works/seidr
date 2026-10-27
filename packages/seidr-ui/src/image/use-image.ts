@@ -94,8 +94,7 @@ export function useImage({
   inClient(() => {
     let active = true;
 
-    const resolveUrl = (v: unknown): string | undefined =>
-      isStr(v) && v.trim().length > 0 ? v : undefined;
+    const resolveUrl = (v: unknown): string | undefined => (isStr(v) && v.trim().length > 0 ? v : undefined);
 
     const loadImage = (rawUrl: unknown) => {
       const url = resolveUrl(rawUrl);
@@ -140,10 +139,9 @@ export function useImage({
     }
   });
 
-  const canRenderFallback = mergeValues(
-    () => delayPassed() && status() !== "loaded",
-    { parents: [delayPassed, status] },
-  );
+  const canRenderFallback = mergeValues(() => delayPassed() && status() !== "loaded", {
+    parents: [delayPassed, status],
+  });
 
   return {
     status: status.as((s) => s),

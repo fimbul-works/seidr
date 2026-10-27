@@ -1,7 +1,10 @@
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import { createImage, Image, ImageFallback, ImageImg, ImageRoot } from "./index.js";
+import { ImageFallback } from "./image-fallback.js";
+import { ImageImg } from "./image-img.js";
+import { ImageRoot } from "./image-root.js";
+import { createImage, Image } from "./index.js";
 
 const FALLBACK_TEXT = "AB";
 const IMAGE_ALT_TEXT = "Fake Image";

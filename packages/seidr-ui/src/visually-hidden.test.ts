@@ -27,5 +27,12 @@ describeDualMode("VisuallyHidden", ({ getDocument, isSSR }) => {
 
   it("should have a label", () => {
     expect(label).toBeTruthy();
+    expect(label.textContent).toBe("Label");
+  });
+
+  it("supports props object with children", () => {
+    const el = VisuallyHidden({ id: "custom-hidden" }, "Hidden text");
+    expect(el.id).toBe("custom-hidden");
+    expect(el.textContent).toBe("Hidden text");
   });
 });

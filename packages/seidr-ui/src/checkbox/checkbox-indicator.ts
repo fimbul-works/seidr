@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   mergeValues,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -32,8 +31,8 @@ export interface CheckboxIndicatorOptions<T extends keyof SeidrElementTagNameMap
   forceMount?: boolean;
 }
 
-export type CheckboxIndicatorProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  CheckboxIndicatorOptions<T> & SeidrElementProps<T>;
+export type CheckboxIndicatorProps<T extends keyof SeidrElementTagNameMap = "div"> = CheckboxIndicatorOptions<T> &
+  SeidrElementProps<T>;
 
 /**
  * The visual indicator rendered when the checkbox is in a checked or indeterminate state.
@@ -49,24 +48,9 @@ export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div"
   propsOrChildren?: CheckboxIndicatorProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
-  let props: CheckboxIndicatorProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
+  const [props, content] = resolvePropsAndChildren<CheckboxIndicatorProps<T>>(propsOrChildren, children);
 
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as CheckboxIndicatorProps<T>) ?? ({} as CheckboxIndicatorProps<T>);
-    content = children;
-  } else {
-    props = {} as CheckboxIndicatorProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
-
-  const {
-    as = "div" as T,
-    instance,
-    forceMount = false,
-    id,
-    ...rest
-  } = props as any;
+  const { as = "div" as T, instance, forceMount = false, id, ...rest } = props as any;
 
   if (!instance) {
     throw new SeidrError(
@@ -88,10 +72,9 @@ export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div"
     ) as SeidrElementTagNameMap[T];
   }
 
-  const isVisible = mergeValues(
-    () => instance.checked() || instance.indeterminate(),
-    { parents: [instance.checked, instance.indeterminate] },
-  );
+  const isVisible = mergeValues(() => instance.checked() || instance.indeterminate(), {
+    parents: [instance.checked, instance.indeterminate],
+  });
 
   return Show(
     isVisible,

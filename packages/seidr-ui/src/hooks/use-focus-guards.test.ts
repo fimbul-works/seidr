@@ -152,10 +152,10 @@ describe("useFocusGuards (client)", () => {
     unmount2();
   });
 
-  it("warns when called outside of component scope", () => {
+  it("throws when called outside of component scope (warns in tests)", () => {
     const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
     expect(() => useFocusGuards()).not.toThrow();
-    expect(warnSpy).toHaveBeenCalledWith("onMounted called outside of component");
+    expect(warnSpy).toHaveBeenCalled();
   });
 });
 

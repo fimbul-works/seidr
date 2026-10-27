@@ -9,6 +9,7 @@ export * from "./hooks/index.js";
 export * from "./image/index.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
+export * from "./switch/index.js";
 export * from "./toggle-button/index.js";
 export * from "./utils/index.js";
 export * from "./visually-hidden.js";

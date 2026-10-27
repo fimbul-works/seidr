@@ -1,3 +1,4 @@
+export * from "../image/use-image.js";
 export * from "./use-color-mode.js";
 export * from "./use-controllable-value.js";
 export * from "./use-direction.js";
@@ -8,7 +9,6 @@ export * from "./use-focus-guards.js";
 export * from "./use-focus-scope.js";
 export * from "./use-form-reset-listener.js";
 export * from "./use-hide-outside.js";
-export * from "../image/use-image.js";
 export * from "./use-interact-outside.js";
 export * from "./use-rect.js";
 export * from "./use-register-id.js";

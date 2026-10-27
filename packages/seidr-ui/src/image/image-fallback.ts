@@ -1,7 +1,6 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -45,16 +44,7 @@ export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): Value<SeidrElementTagNameMap[T] | null> {
-  let props: ImageFallbackProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as ImageFallbackProps<T>) ?? ({} as ImageFallbackProps<T>);
-    content = children;
-  } else {
-    props = {} as ImageFallbackProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<ImageFallbackProps<T>>(propsOrChildren, children);
 
   const { as = "span" as T, instance, canRender, ...rest } = props;
 

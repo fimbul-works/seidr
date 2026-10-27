@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -39,16 +38,7 @@ export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
   propsOrChildren?: AlertProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: AlertProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as AlertProps<T>) ?? ({} as AlertProps<T>);
-    content = children;
-  } else {
-    props = {} as AlertProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<AlertProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, role = "alert", ...rest } = props;
   return $(

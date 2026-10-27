@@ -1,7 +1,6 @@
-import { isUndef } from "@fimbul-works/hvat";
-import { isValidSeidrChild, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
-import { ButtonRoot, type ButtonOptions, type ButtnProps } from "../button.js";
-import { useToggleState, type UseToggleStateResult } from "../hooks/use-toggle-state.js";
+import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
+import { type ButtonOptions, type ButtonProps, ButtonRoot } from "../button.js";
+import { type UseToggleStateResult, useToggleState } from "../hooks/use-toggle-state.js";
 
 export interface ToggleButtonRootState {
   /** The reactive pressed state Value (derived read-only). */
@@ -12,8 +11,7 @@ export interface ToggleButtonRootState {
 
 export type ToggleButtonRenderContent = (state: ToggleButtonRootState) => SeidrChild | SeidrChild[];
 
-export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button">
-  extends ButtonOptions<T> {
+export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
   /** The controlled pressed state of the toggle button. */
   pressed?: boolean | Value<boolean>;
 
@@ -31,7 +29,7 @@ export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap 
 }
 
 export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "button"> = ToggleButtonRootOptions<T> &
-  Omit<ButtnProps<T>, "aria-pressed" | "data-pressed">;
+  Omit<ButtonProps<T>, "aria-pressed" | "data-pressed">;
 
 /**
  * ToggleButton is a two-state button that allows users to toggle a selection on or off.
@@ -48,26 +46,8 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
   propsOrChildren?: ToggleButtonRootProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: ToggleButtonRootProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as ToggleButtonRootProps<T>) ?? ({} as ToggleButtonRootProps<T>);
-    content = children;
-  } else {
-    props = {} as ToggleButtonRootProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
-
-  const {
-    pressed,
-    defaultPressed,
-    onChange,
-    disabled,
-    renderContent,
-    onclick: userOnClick,
-    ...rest
-  } = props as any;
+  const [props, content] = resolvePropsAndChildren<ToggleButtonRootProps<T>>(propsOrChildren, children);
+  const { pressed, defaultPressed, onChange, disabled, renderContent, onclick: userOnClick, ...rest } = props as any;
 
   const state = useToggleState({
     isSelected: pressed,
@@ -83,9 +63,7 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
     state.toggle();
   };
 
-  const resolvedChildren = renderContent
-    ? renderContent({ pressed: isPressed, state })
-    : content;
+  const resolvedChildren = renderContent ? renderContent({ pressed: isPressed, state }) : content;
 
   return ButtonRoot<T>(
     {

@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   onUnmounted,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -49,16 +48,7 @@ export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap =
   propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
-  let props: FormControlErrorMessageProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as FormControlErrorMessageProps<T>) ?? ({} as FormControlErrorMessageProps<T>);
-    content = children;
-  } else {
-    props = {} as FormControlErrorMessageProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<FormControlErrorMessageProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, instance, id: customId, forceMount = false, ...rest } = props as any;
 

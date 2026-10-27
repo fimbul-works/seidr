@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   onUnmounted,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -40,16 +39,7 @@ export function FormControlDescription<T extends keyof SeidrElementTagNameMap = 
   propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: FormControlDescriptionProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as FormControlDescriptionProps<T>) ?? ({} as FormControlDescriptionProps<T>);
-    content = children;
-  } else {
-    props = {} as FormControlDescriptionProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<FormControlDescriptionProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, instance, id: customId, ...rest } = props as any;
 

@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
   inClient,
-  isValidSeidrChild,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -41,16 +40,7 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: CheckboxControlProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as CheckboxControlProps<T>) ?? ({} as CheckboxControlProps<T>);
-    content = children;
-  } else {
-    props = {} as CheckboxControlProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<CheckboxControlProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, instance, id, onclick, onkeydown, ...rest } = props as any;
 

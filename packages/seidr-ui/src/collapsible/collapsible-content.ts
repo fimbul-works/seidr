@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   onUnmounted,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -47,16 +46,7 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
   propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
-  let props: CollapsibleContentProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as CollapsibleContentProps<T>) ?? ({} as CollapsibleContentProps<T>);
-    content = children;
-  } else {
-    props = {} as CollapsibleContentProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<CollapsibleContentProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, instance, forceMount: propsForceMount, id: customId, ...rest } = props as any;
 

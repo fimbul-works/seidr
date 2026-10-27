@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -45,16 +44,7 @@ export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   propsOrChildren?: SeparatorProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: SeparatorProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as SeparatorProps<T>) ?? ({} as SeparatorProps<T>);
-    content = children;
-  } else {
-    props = {} as SeparatorProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<SeparatorProps<T>>(propsOrChildren, children);
 
   const { as = "hr" as T, orientation = "horizontal", role, ...rest } = props;
   const isHr = as === "hr";

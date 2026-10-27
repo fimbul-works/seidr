@@ -4,10 +4,10 @@ import {
   type EffectDependency,
   getAppState,
   getDocument,
-  isHTMLElement,
+  isElementNode,
+  isObservable,
   isRef,
   isServer,
-  isValue,
   type Ref,
   unwrapValue,
   useEffect,
@@ -23,7 +23,7 @@ export interface UseHideOutsideProps {
   targets: HideOutsideTarget | HideOutsideTarget[];
 
   /** Nothing will be hidden above this element. Defaults to document.body. */
-  root?: HTMLElement | Ref<HTMLElement>;
+  root?: Element | Ref<Element>;
 
   /** Whether the hide outside behavior is disabled or not. */
   isDisabled?: boolean | Value<boolean>;
@@ -47,7 +47,7 @@ const getObserverStack = (): Array<ObserverWrapper> =>
  * Hides all elements in the DOM outside the given targets from screen readers using `aria-hidden`,
  * and returns a function to revert these changes.
  */
-export function ariaHideOutside(targets: Element[], root?: HTMLElement): CleanupFunction {
+export function ariaHideOutside(targets: Element[], root?: Element): CleanupFunction {
   if (isServer()) {
     return () => {};
   }
@@ -192,60 +192,51 @@ export function ariaHideOutside(targets: Element[], root?: HTMLElement): Cleanup
   };
 }
 
-function extractElements(target: HideOutsideTarget | HideOutsideTarget[]): Element[] {
-  const items = isArr(target) ? target : [target];
-  const elements: Element[] = [];
-
-  for (const item of items) {
+function extractElements(targets: HideOutsideTarget[]): Element[] {
+  const walk = (item: HideOutsideTarget): Element[] => {
     if (isRef(item)) {
       const val = item();
-      if (isArr(val)) {
-        for (const el of val) {
-          if (isHTMLElement(el)) elements.push(el);
-        }
-      } else if (isHTMLElement(val)) {
-        elements.push(val);
+      if (isArr<HideOutsideTarget>(val)) {
+        return extractElements(val);
+      } else {
+        return walk(val);
       }
-    } else if (isHTMLElement(item)) {
-      elements.push(item);
     }
-  }
-
-  return elements;
+    return isElementNode(item) ? [item] : [];
+  };
+  return targets.flatMap(walk);
 }
 
-function extractRoot(root?: HTMLElement | Ref<HTMLElement>): HTMLElement | undefined {
+const extractRoot = (root?: Element | Ref<Element>): Element | undefined => {
   if (isRef(root)) {
     const val = root();
-    return isHTMLElement(val) ? val : undefined;
+    return isElementNode(val) ? val : undefined;
   }
-  return isHTMLElement(root) ? root : undefined;
-}
+  return isElementNode(root) ? root : undefined;
+};
 
 /**
  * Hides all elements in the DOM outside the given targets from screen readers using aria-hidden.
  * Reverts changes automatically on unmount.
  *
  * Ported from Kobalte's createHideOutside primitive.
+ *
+ * @param props - The properties for the hook.
  */
-export function useHideOutside(props: UseHideOutsideProps): void {
-  const deps: EffectDependency[] = [];
-  if (isValue(props.isDisabled)) deps.push(props.isDisabled);
-  if (isRef(props.root) || isValue(props.root)) deps.push(props.root as EffectDependency);
-
-  const items = isArr(props.targets) ? props.targets : [props.targets];
-  for (const item of items) {
-    if (isRef(item) || isValue(item)) {
-      deps.push(item as EffectDependency);
-    }
-  }
+export function useHideOutside({ isDisabled, root, targets }: UseHideOutsideProps): void {
+  const items = isArr(targets) ? targets : [targets];
+  const deps = [isDisabled, root, items].filter(isObservable) as EffectDependency[];
 
   useEffect(() => {
-    if (unwrapValue(props.isDisabled)) return;
+    if (unwrapValue(isDisabled)) {
+      return;
+    }
 
-    const targets = extractElements(props.targets);
-    if (targets.length === 0) return;
+    const targets = extractElements(items);
+    if (targets.length === 0) {
+      return;
+    }
 
-    return ariaHideOutside(targets, extractRoot(props.root));
+    return ariaHideOutside(targets, extractRoot(root));
   }, deps);
 }

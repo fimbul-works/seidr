@@ -1,7 +1,12 @@
-import { type CleanupFunction, createValue, getAppState, isValue, mergeValues, type Value } from "@fimbul-works/seidr";
+import { type CleanupFunction, createValue, isValue, mergeValues, useId, type Value } from "@fimbul-works/seidr";
 import type { FormControlDataSet, UseFormControlOptions, UseFormControlResult, ValidationState } from "./types.js";
 
-export const createFormControlId = (prefix = "form-control"): string => `${prefix}-${++getAppState().uniqID}`;
+/**
+ * Creates a unique ID for a form control.
+ * @param prefix - The prefix to use for the ID.
+ * @returns A unique ID for a form control.
+ */
+export const createFormControlId = (prefix = "form-control"): string => useId(prefix);
 
 /**
  * Headless hook that provides state management, accessibility coordination,

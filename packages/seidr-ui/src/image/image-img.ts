@@ -1,8 +1,8 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -66,16 +66,7 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   propsOrChildren?: ImageImgProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): Value<SeidrElementTagNameMap[T] | null> {
-  let props: ImageImgProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as ImageImgProps<T>) ?? ({} as ImageImgProps<T>);
-    content = children;
-  } else {
-    props = {} as ImageImgProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<ImageImgProps<T>>(propsOrChildren, children);
 
   const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 

@@ -1,31 +1,15 @@
-import {
-  createRef,
-  createValue,
-  inClient,
-  onMounted,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createRef, createValue, inClient, onMounted, useId, wrapValue } from "@fimbul-works/seidr";
 import { useFormControl } from "../form-control/use-form-control.js";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import { useToggleState } from "../hooks/use-toggle-state.js";
-import type {
-  CheckboxCombinedDataSet,
-  CheckboxDataSet,
-  UseCheckboxOptions,
-  UseCheckboxResult,
-} from "./types.js";
-
-let checkboxIdCounter = 0;
-
-export const createCheckboxId = (prefix = "checkbox"): string =>
-  `${prefix}-${++checkboxIdCounter}`;
+import type { CheckboxCombinedDataSet, CheckboxDataSet, UseCheckboxOptions, UseCheckboxResult } from "./types.js";
 
 /**
  * Headless hook providing reactive state, accessibility bindings, and form integration
  * for an accessible Checkbox component.
  */
 export function useCheckbox(options: UseCheckboxOptions = {}): UseCheckboxResult {
-  const id = options.id ?? createCheckboxId();
+  const id = options.id ?? useId("checkbox");
 
   const formControl = useFormControl({
     id,

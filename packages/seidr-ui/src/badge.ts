@@ -1,8 +1,7 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -46,16 +45,7 @@ export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   propsOrChildren?: BadgeProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: BadgeProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as BadgeProps<T>) ?? ({} as BadgeProps<T>);
-    content = children;
-  } else {
-    props = {} as BadgeProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<BadgeProps<T>>(propsOrChildren, children);
 
   const { as = "span" as T, role = "status", textValue, ariaLabel, ...rest } = props;
   const resolvedAriaLabel = ariaLabel ?? textValue;

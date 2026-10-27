@@ -1,13 +1,13 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
 import {
-  isValidSeidrChild,
   isValue,
   mergeValues,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
-import { type ButtnProps, type ButtonOptions, ButtonRoot } from "../button.js";
+import { type ButtonOptions, type ButtonProps, ButtonRoot } from "../button.js";
 import type { UseCollapsibleResult } from "./types.js";
 
 export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
@@ -16,7 +16,7 @@ export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMa
 }
 
 export type CollapsibleTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> = CollapsibleTriggerOptions<T> &
-  Omit<ButtnProps<T>, "aria-expanded" | "aria-controls">;
+  Omit<ButtonProps<T>, "aria-expanded" | "aria-controls">;
 
 /**
  * The button that expands/collapses the collapsible content.
@@ -33,16 +33,7 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
   propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: CollapsibleTriggerProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as CollapsibleTriggerProps<T>) ?? ({} as CollapsibleTriggerProps<T>);
-    content = children;
-  } else {
-    props = {} as CollapsibleTriggerProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<CollapsibleTriggerProps<T>>(propsOrChildren, children);
 
   const { instance, disabled, onclick: userOnClick, ...rest } = props as any;
 

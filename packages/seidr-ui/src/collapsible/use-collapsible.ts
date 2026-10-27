@@ -1,10 +1,6 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
-import { type CleanupFunction, createValue, isValue, unwrapValue, type Value } from "@fimbul-works/seidr";
+import { type CleanupFunction, createValue, isValue, unwrapValue, useId, type Value } from "@fimbul-works/seidr";
 import type { CollapsibleDataSet, UseCollapsibleResult } from "./types.js";
-
-let idCounter = 0;
-
-export const createCollapsibleId = (prefix = "collapsible"): string => `${prefix}-${++idCounter}`;
 
 export interface UseCollapsibleOptions {
   /** The controlled open state of the collapsible. */
@@ -37,7 +33,7 @@ export interface UseCollapsibleOptions {
 export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsibleResult {
   const { open, defaultOpen, onOpenChange, disabled, forceMount = false, id: providedId } = options;
 
-  const id = providedId ?? createCollapsibleId();
+  const id = providedId ?? useId("collapsible");
   const contentId = createValue<string>(`${id}-content`);
 
   const registerContentId = (newId: string): CleanupFunction => {

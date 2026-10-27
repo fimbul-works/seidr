@@ -1,9 +1,8 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  isValidSeidrChild,
   isValue,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -38,7 +37,7 @@ export interface ButtonOptions<T extends keyof SeidrElementTagNameMap = "button"
   type?: ReactiveValue<string>;
 }
 
-export type ButtnProps<T extends keyof SeidrElementTagNameMap = "button"> = ButtonOptions<T> &
+export type ButtonProps<T extends keyof SeidrElementTagNameMap = "button"> = ButtonOptions<T> &
   Omit<SeidrElementProps<T>, "disabled" | "type">;
 
 /**
@@ -50,23 +49,14 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  props?: ButtnProps<T> | null,
+  props?: ButtonProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ButtnProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: ButtonProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  let props: ButtnProps<T>;
-  let content: SeidrChild | SeidrChild[] | undefined;
-
-  if (!isUndef(children) || !isValidSeidrChild(propsOrChildren)) {
-    props = (propsOrChildren as ButtnProps<T>) ?? ({} as ButtnProps<T>);
-    content = children;
-  } else {
-    props = {} as ButtnProps<T>;
-    content = propsOrChildren as SeidrChild | SeidrChild[];
-  }
+  const [props, content] = resolvePropsAndChildren<ButtonProps<T>>(propsOrChildren, children);
 
   const {
     as = "button" as T,
@@ -149,11 +139,7 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
     };
   }
 
-  return $(
-    as as any,
-    elementProps as any,
-    content,
-  ) as SeidrElementTagNameMap[T];
+  return $(as as any, elementProps as any, content) as SeidrElementTagNameMap[T];
 }
 
 export const Button = Object.assign(ButtonRoot, {
