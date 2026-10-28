@@ -324,7 +324,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `collapsible`, `list`, `selection`.
 - **Complexity**: Moderate (~460 LOC). Cleanly composes `collapsible` + `list`.
 - **Tasks**:
-  - [ ] Implement all Accordion parts.
+  - [x] Implement all Accordion parts.
 
 ### 28. `breadcrumbs`
 - **Location**: `kobalte-packages/core/src/breadcrumbs`

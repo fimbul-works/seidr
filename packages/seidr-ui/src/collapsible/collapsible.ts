@@ -5,6 +5,7 @@ import { type CollapsibleTriggerProps } from "./collapsible-trigger.js";
 import { createCollapsible } from "./create-collapsible.js";
 import type { UseCollapsibleOptions } from "./use-collapsible.js";
 import { createComponent } from "@fimbul-works/seidr";
+import { CollapsibleAnimationOptions } from "./types.js";
 
 export interface CollapsibleProps<
   TRoot extends keyof SeidrElementTagNameMap = "div",
@@ -24,6 +25,8 @@ export interface CollapsibleProps<
   triggerProps?: CollapsibleTriggerProps<TTrigger>;
   /** Content for the collapsible panel. */
   children?: SeidrChild | SeidrChild[];
+  /** Animation configuration using Flaedi. */
+  animation?: boolean | CollapsibleAnimationOptions;
   /** Props for content panel. */
   contentProps?: CollapsibleContentProps<TContent>;
 }
@@ -48,6 +51,7 @@ export const Collapsible = createComponent(<
     trigger,
     triggerProps = {},
     children,
+    animation,
     contentProps = {},
   } = props;
 
@@ -62,6 +66,6 @@ export const Collapsible = createComponent(<
 
   return col.Root({ as, ...rootProps } as CollapsibleRootProps<TRoot>, [
     col.Trigger(triggerProps, trigger),
-    col.Content(contentProps, children),
+    col.Content({ animation, ...contentProps }, children),
   ]);
 }, "Collapsible")

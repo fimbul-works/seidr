@@ -35,9 +35,9 @@ export const CollapsibleShowcase = createComponent(() => {
           }),
         ]),
 
-        // 2. Pre-bound Instance Factory (Collapsible.create) with defaultOpen: true
+        // 2. Pre-bound Instance Factory (createCollapsible) with defaultOpen: true
         $div({ className: "collapsible-box" }, [
-          colInstance.Root([
+          colInstance.Root({}, [
             colInstance.Trigger({ className: "collapsible-trigger-btn" }, [
               $span("Pre-bound Instance Pattern (Collapsible.create)"),
               $span({ className: "collapsible-chevron" }, "▼"),
@@ -91,11 +91,11 @@ Collapsible({
 });
 
 // 2. Pre-bound Instance Factory
-const col = Collapsible.create({ defaultOpen: true });
+const col = createCollapsible({ defaultOpen: true });
 
-col.Root([
-  col.Trigger("Toggle Section"),
-  col.Content($p("Collapsible details here...")),
+col.Root({}, [
+  col.Trigger({}, "Toggle Section"),
+  col.Content({}, $p("Collapsible details here...")),
 ]);
 
 // 3. Force-mounted with CSS transitions

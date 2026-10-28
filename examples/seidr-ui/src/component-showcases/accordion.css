@@ -1,0 +1,152 @@
+.accordion-showcase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.accordion-example-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accordion-example-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-color, #1e293b);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.accordion-example-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted, #64748b);
+  margin-top: -0.25rem;
+}
+
+/* Accordion Root */
+[data-component="accordion"][data-part="root"] {
+  border: 1px solid var(--border-color, #e2e8f0);
+  border-radius: 0.625rem;
+  background: var(--bg-surface, #ffffff);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Accordion Item */
+[data-component="accordion"][data-part="item"] {
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+}
+
+[data-component="accordion"][data-part="item"]:last-child {
+  border-bottom: none;
+}
+
+/* Accordion Header */
+[data-component="accordion"][data-part="header"] {
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+/* Accordion Trigger Button */
+[data-component="accordion"][data-part="trigger"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.25rem;
+  background: transparent;
+  border: none;
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-color, #1e293b);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+  user-select: none;
+}
+
+[data-component="accordion"][data-part="trigger"]:hover:not([disabled]) {
+  background-color: var(--bg-hover, rgba(0, 0, 0, 0.03));
+}
+
+[data-component="accordion"][data-part="trigger"]:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: -2px;
+}
+
+[data-component="accordion"][data-part="trigger"][disabled],
+[data-component="accordion"][data-part="trigger"][data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* Chevron indicator */
+.accordion-chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-component="accordion"][data-part="trigger"][data-expanded] .accordion-chevron {
+  transform: rotate(180deg);
+  color: var(--primary, #3b82f6);
+}
+
+/* Accordion Content Panel with Flaedi JS tweens */
+[data-component="accordion"][data-part="content"] {
+  box-sizing: border-box;
+  padding: 0 1.25rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--text-muted, #64748b);
+  overflow: hidden;
+}
+
+[data-component="accordion"][data-part="content"] > *:last-child,
+[data-component="accordion"][data-part="content"] p {
+  margin: 0;
+  padding-bottom: 1.25rem;
+}
+
+/* Optional CSS-only Keyframe Animations (when animation: false is passed) */
+[data-component="accordion"][data-part="content"][data-css-anim][data-expanded] {
+  animation: seidrAccordionSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-component="accordion"][data-part="content"][data-css-anim][data-closed] {
+  animation: seidrAccordionSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes seidrAccordionSlideDown {
+  from {
+    height: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+  to {
+    height: var(--seidr-accordion-content-height);
+    padding-bottom: 1.25rem;
+    opacity: 1;
+  }
+}
+
+@keyframes seidrAccordionSlideUp {
+  from {
+    height: var(--seidr-accordion-content-height);
+    padding-bottom: 1.25rem;
+    opacity: 1;
+  }
+  to {
+    height: 0;
+    padding-bottom: 0;
+    opacity: 0;
+  }
+}

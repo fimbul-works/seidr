@@ -108,6 +108,8 @@ export function Button<T extends keyof SeidrElementTagNameMap = "button">(
             type,
             disabled,
             dataDisabled: isDisabledValue ? isDisabledValue.as((d) => (d ? "" : undefined)) : disabled ? "" : undefined,
+            onkeydown: userOnKeyDown,
+            onkeyup: userOnKeyUp,
           }
         : {
             role: role ?? "button",

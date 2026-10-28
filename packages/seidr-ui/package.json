@@ -39,6 +39,9 @@
     "test": "vitest run",
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
+  "dependencies": {
+    "@fimbul-works/flaedi": "^1.0.1"
+  },
   "peerDependencies": {
     "@fimbul-works/seidr": "^1.0.0"
   },

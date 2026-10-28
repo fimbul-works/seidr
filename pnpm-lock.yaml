@@ -288,6 +288,9 @@ importers:
 
   examples/seidr-ui:
     dependencies:
+      '@fimbul-works/flaedi':
+        specifier: ^1.0.1
+        version: 1.0.1
       '@fimbul-works/seidr':
         specifier: workspace:*
         version: link:../../packages/seidr
@@ -510,6 +513,10 @@ importers:
         version: link:../vitest-config
 
   packages/seidr-ui:
+    dependencies:
+      '@fimbul-works/flaedi':
+        specifier: ^1.0.1
+        version: 1.0.1
     devDependencies:
       '@fimbul-works/seidr':
         specifier: workspace:*
@@ -1119,6 +1126,9 @@ packages:
     peerDependenciesMeta:
       esbuild:
         optional: true
+
+  '@fimbul-works/flaedi@1.0.1':
+    resolution: {integrity: sha512-UCsI2wsIqbpZeMTGxSJ/M2tcc5e7Sake5nSMgnudFBDhc5+8+Ap45vkggcOCKqM/XceQkKwdaiSh5SUE/kN9fQ==}
 
   '@fimbul-works/futhark@2.0.0':
     resolution: {integrity: sha512-N4PMvrFx6kciPJ8dVaSmVhvaOaqQqmvhhZG1B3S4r9kMOXntWFQ0fVMXTNrQAXSXnb5/RGvQjzunmWKQFB26pg==}
@@ -3640,6 +3650,8 @@ snapshots:
       terser: 5.51.2
     optionalDependencies:
       esbuild: 0.28.2
+
+  '@fimbul-works/flaedi@1.0.1': {}
 
   '@fimbul-works/futhark@2.0.0': {}
 

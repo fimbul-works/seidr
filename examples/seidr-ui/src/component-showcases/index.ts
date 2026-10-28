@@ -1,4 +1,5 @@
 import type { SeidrComponentFactory } from "@fimbul-works/seidr";
+import { AccordionShowcase } from "./accordion.js";
 import { AlertShowcase } from "./alert.js";
 import { BadgeShowcase } from "./badge.js";
 import { ButtonShowcase } from "./button.js";
@@ -12,6 +13,7 @@ import { SkeletonShowcase } from "./skeleton.js";
 import { SwitchShowcase } from "./switch.js";
 import { ToggleButtonShowcase } from "./toggle-button.js";
 
+export * from "./accordion.js";
 export * from "./alert.js";
 export * from "./badge.js";
 export * from "./button.js";
@@ -34,6 +36,7 @@ export interface ComponentShowcase {
 }
 
 export const componentShowcases: ComponentShowcase[] = [
+  { id: "accordion", title: "Accordion", badge: "Widget", category: "Widget", component: AccordionShowcase },
   { id: "alert", title: "Alert", badge: "Atom", category: "Atom", component: AlertShowcase },
   { id: "badge", title: "Badge", badge: "Atom", category: "Atom", component: BadgeShowcase },
   { id: "button", title: "Button", badge: "Atom", category: "Atom", component: ButtonShowcase },

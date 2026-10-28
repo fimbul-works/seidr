@@ -71,6 +71,21 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
         if (isServer()) {
           styleProp = camelToKebab(styleProp);
         }
+        if (styleProp.startsWith("--")) {
+          const setCustomProp = (val: any) => {
+            if (isNullish(val) || val === "") {
+              el.style.removeProperty(styleProp);
+            } else {
+              el.style.setProperty(styleProp, String(val));
+            }
+          };
+          if (isValue(styleValue)) {
+            styleValue.bind(setCustomProp);
+          } else {
+            setCustomProp(styleValue);
+          }
+          continue;
+        }
         if (isValue(styleValue)) {
           styleValue.bind((val) => ((el.style as CSSProperties)[styleProp as keyof CSSProperties] = val));
         } else {

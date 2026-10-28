@@ -16,7 +16,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
     target?.remove();
   });
 
-  const setup = (factory: () => HTMLElement) => {
+  const setup = (factory: () => any) => {
     target = getDocument().createElement("div");
     getDocument().body.appendChild(target);
     const App = createComponent(factory);
@@ -214,6 +214,30 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
       trigger.click();
       expect(content.hasAttribute("hidden")).toBe(true);
       expect(content.hasAttribute("data-closed")).toBe(true);
+    });
+
+    it("should accept custom animation options and animation: false", () => {
+      const root1 = setup(() =>
+        Collapsible({
+          animation: false,
+          defaultOpen: true,
+          trigger: TRIGGER_TEXT,
+          children: CONTENT_TEXT,
+        }),
+      );
+      const content1 = root1.querySelector("[data-expanded]")!;
+      expect(content1).not.toBeNull();
+
+      const root2 = setup(() =>
+        Collapsible({
+          animation: { duration: 400 },
+          defaultOpen: true,
+          trigger: TRIGGER_TEXT,
+          children: CONTENT_TEXT,
+        }),
+      );
+      const content2 = root2.querySelector("[data-expanded]")!;
+      expect(content2).not.toBeNull();
     });
 
     it("should pass axe accessibility checks", async () => {

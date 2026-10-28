@@ -6,6 +6,20 @@ export interface CollapsibleDataSet {
   "data-disabled": ObservableValue<string | undefined>;
 }
 
+export interface CollapsibleAnimationOptions {
+  /**
+   * Duration of the animation in milliseconds.
+   * @default 250
+   */
+  duration?: number;
+
+  /**
+   * Easing interpolation function (t: 0..1 => value: 0..1).
+   * @default easeInOutCubic
+   */
+  easing?: (t: number) => number;
+}
+
 export interface UseCollapsibleResult {
   /** The derived read-only open state. */
   isOpen: DerivedValue<boolean>;

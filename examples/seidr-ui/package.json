@@ -13,7 +13,8 @@
   "dependencies": {
     "@fimbul-works/seidr": "workspace:*",
     "@fimbul-works/seidr-ui": "workspace:*",
-    "@fimbul-works/seidr-router": "workspace:*"
+    "@fimbul-works/seidr-router": "workspace:*",
+    "@fimbul-works/flaedi": "^1.0.1"
   },
   "devDependencies": {
     "@fimbul-works/seidr-build-tools": "workspace:*",
