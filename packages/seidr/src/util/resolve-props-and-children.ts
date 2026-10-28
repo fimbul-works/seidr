@@ -18,13 +18,13 @@ export type ResolvedPropsAndChildren<P> = [props: P, children: SeidrChild | Seid
  * - Default props: Merges `defaultProps` underneath user props
  *
  * @template P - The props object type
- * @param {P | SeidrChild | SeidrChild[] | null | undefined} propsOrChildren - Either props or children
+ * @param {P | SeidrChild | SeidrChild[] | undefined} propsOrChildren - Either props or children
  * @param {SeidrChild | SeidrChild[] | undefined} [children] - Optional children when props are passed as first argument
  * @param {Partial<P>} [defaultProps] - Optional default props to merge
  * @returns {ResolvedPropsAndChildren<P>} Tuple of [props, children]
  */
 export function resolvePropsAndChildren<P extends object = Record<string, any>>(
-  propsOrChildren?: P | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: P | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
   defaultProps?: Partial<P>,
 ): ResolvedPropsAndChildren<P> {

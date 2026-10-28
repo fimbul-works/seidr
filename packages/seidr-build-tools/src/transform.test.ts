@@ -63,9 +63,7 @@ export function testComponent() {
   });
 
   it("should throw error when target is ssr and disableSSR is true", () => {
-    expect(() => transformSource("test.ts", sampleCode, "ssr", true)).toThrowError(
-      "Cannot build for SSR with SSR disabled",
-    );
+    expect(() => transformSource("test.ts", sampleCode, "ssr", true)).toThrow("Cannot build for SSR with SSR disabled");
   });
 
   it("should export all framework unplugin adapters", () => {

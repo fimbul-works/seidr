@@ -2,28 +2,28 @@ import { getComponentScope, setComponentScope } from "../component/component-sco
 import type { SeidrComponentFactory, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
-import type { DerivedValue, Value } from "../observable/types.js";
+import type { DerivedValue, ObservableValue } from "../observable/types.js";
 
 /**
  * Conditionally renders content based on a reactive condition Value.
  *
- * @param {Value} condition - Reactive condition observable
+ * @param {ObservableValue} condition - Reactive condition observable
  * @param {SeidrComponentFactoryOrFunction} whenTrue - Factory called when condition is truthy
  * @param {SeidrComponentFactoryOrFunction} [whenFalse] - Optional fallback factory called when condition is falsy
  * @param {string} [name="Show"] - Optional name for debugging (default: "Show")
- * @returns {Value<SeidrChild>} A derived reactive Value returning the active branch
+ * @returns {DerivedValue<SeidrChild | null>} A derived reactive Value returning the active branch
  */
 export const Show = (
-  condition: Value,
+  condition: ObservableValue,
   whenTrue: SeidrComponentFactoryOrFunction,
   whenFalse?: SeidrComponentFactoryOrFunction,
   name: string = "Show",
-): DerivedValue<SeidrChild> => {
+): DerivedValue<SeidrChild | null> => {
   const scope = getComponentScope();
   const trueFactory = wrapComponent(whenTrue, name);
   const falseFactory = whenFalse ? wrapComponent(whenFalse, `${name}Fallback`) : undefined;
 
-  const renderBranch = (factory?: SeidrComponentFactory): SeidrChild => {
+  const renderBranch = (factory?: SeidrComponentFactory): SeidrChild | null => {
     if (!factory) return null;
     const prevScope = getComponentScope();
     if (scope) {

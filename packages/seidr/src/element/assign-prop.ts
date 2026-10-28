@@ -5,7 +5,7 @@ import { isRef, isValue } from "../observable/type-guards.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
-import type { PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
+import type { CSSProperties, PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
  * Assigns a property to an element, handling reactive Value bindings.
@@ -74,9 +74,9 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
           styleProp = camelToKebab(styleProp);
         }
         if (isValue(styleValue)) {
-          styleValue.bind((val) => (el.style[styleProp as any] = val));
+          styleValue.bind((val) => ((el.style as CSSProperties)[styleProp as keyof CSSProperties] = val));
         } else {
-          el.style[styleProp as any] = styleValue;
+          (el.style as CSSProperties)[styleProp as keyof CSSProperties] = styleValue;
         }
       }
     }
@@ -86,10 +86,16 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
   const isBoolProp = BOOL_ATTRIBUTES.has(prop.toLowerCase());
 
   const applyValue = (target: SeidrElementTagNameMap[K], val: any) => {
+    if (isNullish(val) || (isBoolProp && !val)) {
+      target.removeAttribute(effectiveProp);
+      if (isBoolProp && effectiveProp in target) {
+        target[effectiveProp as keyof SeidrElementTagNameMap[K]] = false as any;
+      }
+      return;
+    }
+
     if (useAttribute || !(effectiveProp in target) || isBoolProp) {
-      isNullish(val) || (isBoolProp && !val)
-        ? target.removeAttribute(effectiveProp)
-        : target.setAttribute(effectiveProp, isBoolProp ? "" : val);
+      target.setAttribute(effectiveProp, isBoolProp ? "" : val);
     }
 
     if (!(useAttribute || !(effectiveProp in target))) {

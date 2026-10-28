@@ -29,7 +29,7 @@ describeDualMode("interceptLinks", ({ getDocument, isSSR }) => {
   });
 
   it("should throw an error if router is not initialized", () => {
-    expect(() => interceptLinks(container)).toThrowError(SeidrError);
+    expect(() => interceptLinks(container)).toThrow(SeidrError);
     expect(() => interceptLinks(container)).toThrow(ERROR_ROUTER_NOT_INITIALIZED);
   });
 

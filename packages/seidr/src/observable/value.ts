@@ -9,6 +9,7 @@ import { isServer } from "../util/environment/is-server.js";
 import { DATA_KEY_PARENT_OBSERVABLE_STACK, DATA_KEY_STATE, TYPE_VALUE } from "./constants.js";
 import { nextUniqueId } from "./next-unique-id.js";
 import { registerValueForSSR } from "./register-value-for-ssr.js";
+import { isObservable } from "./type-guards.js";
 import type {
   DerivedValue,
   DerivedValueOptions,
@@ -206,7 +207,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
  */
 export function mergeValues<T>(mergeFn: () => T, options: DerivedValueOptions = {}): DerivedValue<T> {
   const parentsStack = getParentObservableStack();
-  parentsStack.push(new Set(options.parents ?? []));
+  parentsStack.push(new Set((options.parents ?? []).filter(isObservable)));
   try {
     const initialValue = mergeFn();
     const parents = Array.from(parentsStack.at(-1)!);

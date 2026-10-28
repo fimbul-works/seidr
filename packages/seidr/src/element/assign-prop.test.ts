@@ -140,7 +140,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
   });
 
   describe("Style Assignment (prop === 'style')", () => {
-    it("should handle style as a static string", () => {
+    it("should handle style as a static string (deprecate)", () => {
       const el = getDocument().createElement("div");
 
       assignProp(el, "style", "color: red; font-size: 16px;");
@@ -148,7 +148,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
       expect(el.style.fontSize).toBe("16px");
     });
 
-    it("should handle style as a reactive Value<string>", () => {
+    it("should handle style as a reactive Value<string> (deprecate)", () => {
       const el = getDocument().createElement("div");
       const styleText = createValue("color: red;");
 
@@ -213,7 +213,7 @@ describeDualMode("assignProp", ({ getDocument }) => {
     });
   });
 
-  describe("Boolean Attributes (BOOL_ATTRIBUTES)", () => {
+  describe("Boolean Attributes", () => {
     it("should set empty string attribute for truthy boolean values", () => {
       const button = getDocument().createElement("button");
       const input = getDocument().createElement("input");

@@ -3,7 +3,7 @@ import type { SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
-import type { DerivedValue, Value } from "../observable/types.js";
+import type { DerivedValue, ObservableValue } from "../observable/types.js";
 import { mergeValues } from "../observable/value.js";
 
 /**
@@ -18,18 +18,18 @@ export type SwitchBranches<K extends string | number> =
  *
  * @template {string | number} K - The key type
  * @template {SwitchBranches<K>} B - The branches type
- * @param {Value<K>} value - Reactive value to switch on
- * @param {B | Value<B>} branches - Map or Record of case factories (or reactive Value of branches)
+ * @param {ObservableValue<K>} value - Reactive value to switch on
+ * @param {B | ObservableValue<B>} branches - Map or Record of case factories (or reactive Value of branches)
  * @param {SeidrComponentFactoryOrFunction} [fallback] - Optional fallback factory function
  * @param {string} [name="Switch"] - Optional name for debugging (default: "Switch")
- * @returns {Value<SeidrChild>} A derived Value returning the matched branch
+ * @returns {DerivedValue<SeidrChild | null>} A derived Value returning the matched branch
  */
 export const Switch = <K extends string | number, B extends SwitchBranches<K> = SwitchBranches<K>>(
-  value: Value<K>,
-  branches: B | Value<B>,
+  value: ObservableValue<K>,
+  branches: B | ObservableValue<B>,
   fallback?: SeidrComponentFactoryOrFunction,
   name: string = "Switch",
-): DerivedValue<SeidrChild> => {
+): DerivedValue<SeidrChild | null> => {
   const scope = getComponentScope();
 
   const getBranch = (key: K, currentBranches: B): SeidrChild => {

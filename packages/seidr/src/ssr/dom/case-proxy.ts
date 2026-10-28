@@ -199,7 +199,7 @@ export function createCaseProxy<
 
       // Apply new values
       Object.entries(parsed).forEach(([k, v]) => {
-        storage[k as keyof S] = v;
+        (storage as any)[k] = v;
       });
 
       // We don't call onUpdate for every key here as it might be expensive

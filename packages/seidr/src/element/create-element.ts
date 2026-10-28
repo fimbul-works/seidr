@@ -29,19 +29,19 @@ export function $<K extends keyof SeidrElementTagNameMap>(
  * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  *
  * @param {K} tagName - The HTML tag name to create
- * @param {SeidrElementProps<K> | null} [props] - Element properties supporting reactive bindings
+ * @param {SeidrElementProps<K>} props - Element properties supporting reactive bindings
  * @param {SeidrChild | SeidrChild[]} [children] - Child elements
  * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
 export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
-  props?: SeidrElementProps<K> | null,
+  props: SeidrElementProps<K>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[K];
 
 export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
-  propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[K] {
   const doc = getDocument();

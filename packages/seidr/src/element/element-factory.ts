@@ -7,7 +7,7 @@ import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./ty
  */
 export interface SeidrElementFactory<K extends keyof SeidrElementTagNameMap> {
   (children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
-  (props?: SeidrElementProps<K> | null, children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
+  (props: SeidrElementProps<K>, children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
 }
 
 /**
@@ -32,7 +32,7 @@ export const $factory =
     defaultProps: SeidrElementProps<K> = {},
   ): SeidrElementFactory<K> =>
   (
-    propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[K] => {
     const [props, resolvedChildren] = resolvePropsAndChildren(propsOrChildren, children, defaultProps);

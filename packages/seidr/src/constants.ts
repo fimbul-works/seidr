@@ -67,6 +67,7 @@ export const BOOL_ATTRIBUTES = new Set([
   "default",
   "defer",
   "disabled",
+  "focusable",
   "formnovalidate",
   "hidden",
   "ismap",

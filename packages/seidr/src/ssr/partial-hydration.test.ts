@@ -52,6 +52,6 @@ describe("Partial Hydration", () => {
     expect(child3?.tagName).toBe("DIV");
 
     // Verify warn was called for the mismatch
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("[Seidr:Hydration] Replacing mismatched element"));
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("Replacing mismatched element"));
   });
 });

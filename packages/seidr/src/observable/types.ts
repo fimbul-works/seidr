@@ -181,10 +181,13 @@ export interface ValueOptions {
   /**
    * Parent values for derived values.
    *
+   * While the parents type-signature is just `unknown[]`, this array is
+   * filtered by the `mergeValues` function to only include actual `ObservableValue` instances.
+   *
    * @default []
    * @internal
    */
-  parents?: Observable[];
+  parents?: unknown[];
 
   /**
    * Whether to hydrate this observable from server-side data.

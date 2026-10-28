@@ -1,7 +1,8 @@
 import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
-import type { ObservableValue, Ref } from "../observable/types.js";
-import type { SVGAttributes } from "./types.svg.js";
+import type { ObservableValue, Ref, Value } from "../observable/types.js";
+
+// import type { SVGAttributes } from "./types.svg.js";
 
 /**
  * Check if two types are exactly equal.
@@ -39,16 +40,31 @@ type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
  *
  * This type is used to define the types of the HTML elements that can be created.
  */
-export type SeidrElementTagNameMap = HTMLElementTagNameMap & {
-  [K in keyof SVGElementTagNameMap]: SVGAttributes & SVGElement;
-};
+export type SeidrElementTagNameMap = HTMLElementTagNameMap;
+
+// export type SeidrElementTagNameMap = HTMLElementTagNameMap & {
+//   [K in keyof SVGElementTagNameMap]: SVGAttributes & SVGElement;
+// };
 
 /**
  * Union type representing either a scalar value or a reactive Value observable.
  *
- * @template T - The underlying scalar type
+ * @template T - The underlying type
  */
-export type ReactiveValue<T> = [T] extends [infer A] ? T | ObservableValue<A> : T;
+export type ReactiveValue<T> = [T] extends [boolean]
+  ? boolean | ObservableValue<boolean>
+  : [T] extends [infer A]
+    ? A | ObservableValue<A>
+    : T | ObservableValue<T | null | undefined>;
+
+/**
+ * Type definition for reactive ARIA mixin properties.
+ */
+export type ReactiveARIAMixin = Partial<
+  { [K in keyof ARIAMixin]-?: ReactiveValue<ARIAMixin[K]> } & {
+    [key: `aria-${string}`]: ReactiveValue<string | undefined> | ObservableValue<string | undefined> | undefined;
+  }
+>;
 
 /**
  * Type definition for reactive HTML element properties.
@@ -60,14 +76,19 @@ export type ReactiveProps<
   K extends keyof SeidrElementTagNameMap,
   T extends SeidrElementTagNameMap[K] = SeidrElementTagNameMap[K],
 > = {
-  [K in WritableKeys<Omit<T, "style">>]?: ReactiveValue<T[K]>;
+  [K in WritableKeys<Omit<T, "style">>]?: ReactiveValue<T[K]> | ObservableValue<T[K] | undefined>;
 };
+
+/**
+ * Type definition for CSS properties (omitting length).
+ */
+export type CSSProperties = CSS.Properties<string | number>;
 
 /**
  * Type definition for reactive CSS style properties.
  */
 export type ReactiveStyleDeclaration = Partial<{
-  [K in keyof CSS.Properties<string | number>]-?: ReactiveValue<CSS.Properties<string | number>[K]>;
+  [K in keyof CSSProperties]-?: ReactiveValue<CSSProperties[K]>;
 }>;
 
 /**
@@ -76,12 +97,38 @@ export type ReactiveStyleDeclaration = Partial<{
  * @template K - Element tag name type
  */
 export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof SeidrElementTagNameMap> = Partial<
-  ReactiveProps<K, SeidrElementTagNameMap[K]>
+  ReactiveProps<K, SeidrElementTagNameMap[K]> & GlobalEventHandlers
 > & {
-  style?: ReactiveStyleDeclaration | ReactiveValue<string>;
+  /**
+   * ID attribute.
+   */
+  id?: ReactiveValue<string> | ObservableValue<string | undefined>;
+
+  /**
+   * Ref handle.
+   */
   ref?: Ref<SeidrElementTagNameMap[K]>;
-  [key: `data${string}`]: ReactiveValue<string> | undefined;
-  [key: `aria-${string}`]: ReactiveValue<string> | undefined;
+
+  /**
+   * Used to force mounting when more control is needed (e.g. for CSS transitions).
+   * When true or reactive truthy, the element is always rendered.
+   */
+  forceMount?: Value<boolean>;
+
+  /**
+   * Reactive styles.
+   */
+  style?: ReactiveStyleDeclaration;
+
+  /**
+   * Reactive data attributes.
+   */
+  [key: `data${string}`]: ReactiveValue<string> | ObservableValue<string | undefined> | undefined;
+
+  /**
+   * Reactive aria attributes.
+   */
+  [key: `aria-${string}`]: ReactiveValue<string> | ObservableValue<string | undefined> | undefined;
 };
 
 /**
