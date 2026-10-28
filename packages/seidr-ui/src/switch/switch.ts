@@ -1,14 +1,11 @@
 import type { SeidrChild } from "@fimbul-works/seidr";
-import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
-import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
-import type { FormControlLabelProps } from "../form-control/form-control-label.js";
 import { createSwitch } from "./create-switch";
 import { SwitchControl, type SwitchControlProps } from "./switch-control.js";
-import { SwitchDescription } from "./switch-description.js";
-import { SwitchErrorMessage } from "./switch-error-message.js";
+import { SwitchDescription, type SwitchDescriptionProps } from "./switch-description.js";
+import { SwitchErrorMessage, type SwitchErrorMessageProps } from "./switch-error-message.js";
 import { SwitchInput, type SwitchInputProps } from "./switch-input.js";
-import { SwitchLabel } from "./switch-label.js";
-import { SwitchRoot } from "./switch-root.js";
+import { SwitchLabel, type SwitchLabelProps } from "./switch-label.js";
+import { SwitchRoot, type SwitchRootProps } from "./switch-root.js";
 import { SwitchThumb, type SwitchThumbProps } from "./switch-thumb.js";
 import type { UseSwitchOptions } from "./types.js";
 
@@ -29,7 +26,7 @@ export interface SwitchProps extends UseSwitchOptions {
   thumb?: SeidrChild | SeidrChild[];
 
   /** Props passed to Switch.Root. */
-  rootProps?: Record<string, any>;
+  rootProps?: SwitchRootProps<any>;
 
   /** Props passed to Switch.Input. */
   inputProps?: SwitchInputProps;
@@ -41,13 +38,13 @@ export interface SwitchProps extends UseSwitchOptions {
   thumbProps?: SwitchThumbProps<any>;
 
   /** Props passed to Switch.Label. */
-  labelProps?: FormControlLabelProps<any>;
+  labelProps?: SwitchLabelProps<any>;
 
   /** Props passed to Switch.Description. */
-  descriptionProps?: FormControlDescriptionProps<any>;
+  descriptionProps?: SwitchDescriptionProps<any>;
 
   /** Props passed to Switch.ErrorMessage. */
-  errorMessageProps?: FormControlErrorMessageProps<any>;
+  errorMessageProps?: SwitchErrorMessageProps<any>;
 }
 
 /**
@@ -73,7 +70,7 @@ function SwitchComponent(options: SwitchProps = {}) {
 
   const sw = createSwitch(switchOptions);
 
-  return sw.Root({ className, ...rootProps }, [
+  return sw.Root({ className, ...rootProps } as SwitchRootProps, [
     sw.Input(inputProps),
     sw.Control(controlProps, [sw.Thumb(thumbProps, thumb)]),
     label ? sw.Label(labelProps, label) : null,

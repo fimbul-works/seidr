@@ -1,14 +1,11 @@
 import type { SeidrChild } from "@fimbul-works/seidr";
-import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
-import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
-import type { FormControlLabelProps } from "../form-control/form-control-label.js";
 import { CheckboxControl, type CheckboxControlProps } from "./checkbox-control.js";
-import { CheckboxDescription } from "./checkbox-description.js";
-import { CheckboxErrorMessage } from "./checkbox-error-message.js";
+import { CheckboxDescription, type CheckboxDescriptionProps } from "./checkbox-description.js";
+import { CheckboxErrorMessage, type CheckboxErrorMessageProps } from "./checkbox-error-message.js";
 import { CheckboxIndicator, type CheckboxIndicatorProps } from "./checkbox-indicator.js";
 import { CheckboxInput, type CheckboxInputProps } from "./checkbox-input.js";
-import { CheckboxLabel } from "./checkbox-label.js";
-import { CheckboxRoot } from "./checkbox-root.js";
+import { CheckboxLabel, type CheckboxLabelProps } from "./checkbox-label.js";
+import { CheckboxRoot, type CheckboxRootProps } from "./checkbox-root.js";
 import { createCheckbox } from "./create-checkbox.js";
 import type { UseCheckboxOptions } from "./types.js";
 
@@ -29,7 +26,7 @@ export interface CheckboxProps extends UseCheckboxOptions {
   indicator?: SeidrChild | SeidrChild[];
 
   /** Props passed to Checkbox.Root. */
-  rootProps?: Record<string, any>;
+  rootProps?: CheckboxRootProps<any>;
 
   /** Props passed to Checkbox.Input. */
   inputProps?: CheckboxInputProps;
@@ -41,13 +38,13 @@ export interface CheckboxProps extends UseCheckboxOptions {
   indicatorProps?: CheckboxIndicatorProps<any>;
 
   /** Props passed to Checkbox.Label. */
-  labelProps?: FormControlLabelProps<any>;
+  labelProps?: CheckboxLabelProps<any>;
 
   /** Props passed to Checkbox.Description. */
-  descriptionProps?: FormControlDescriptionProps<any>;
+  descriptionProps?: CheckboxDescriptionProps<any>;
 
   /** Props passed to Checkbox.ErrorMessage. */
-  errorMessageProps?: FormControlErrorMessageProps<any>;
+  errorMessageProps?: CheckboxErrorMessageProps<any>;
 }
 
 /**
@@ -72,7 +69,7 @@ function CheckboxComponent(options: CheckboxProps = {}) {
 
   const cb = createCheckbox(checkboxOptions);
 
-  return cb.Root({ className, ...rootProps }, [
+  return cb.Root({ className, ...rootProps } as CheckboxRootProps, [
     cb.Input(inputProps),
     cb.Control(controlProps, [cb.Indicator(indicatorProps, indicator ?? "✓")]),
     label ? cb.Label(labelProps, label) : null,

@@ -26,7 +26,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
       const cb = Checkbox.create();
       return cb.Root([
         cb.Input(),
-        cb.Control([cb.Indicator({ forceMount: true }, "✓")]),
+        cb.Control([cb.Indicator({ forceMount: createValue(true) }, "✓")]),
         cb.Label("Subscribe to newsletter"),
       ]);
     });
@@ -55,7 +55,11 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
   it("should support custom ids", () => {
     const root = setup(() => {
       const cb = Checkbox.create({ id: "my-custom-cb" });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator({ forceMount: true }, "✓")]), cb.Label("Custom Checkbox")]);
+      return cb.Root([
+        cb.Input(),
+        cb.Control([cb.Indicator({ forceMount: createValue(true) }, "✓")]),
+        cb.Label("Custom Checkbox"),
+      ]);
     });
 
     const group = root.querySelector("#my-custom-cb");
@@ -286,6 +290,33 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const isChecked = isSSR ? input.hasAttribute("checked") : input.checked;
     expect(isChecked).toBe(true);
     expect(label.textContent).toBe("I agree to the Terms of Service");
+  });
+
+  it("should support reactive forceMount on CheckboxIndicator", () => {
+    let setForceMount!: (val: boolean) => void;
+
+    const root = setup(() => {
+      const forceMount = createValue(false);
+      setForceMount = (val) => forceMount(val);
+
+      const cb = Checkbox.create({ defaultChecked: false });
+      return cb.Root([
+        cb.Input(),
+        cb.Control([cb.Indicator({ forceMount, id: "cb-indicator" })]),
+        cb.Label("Subscribe"),
+      ]);
+    });
+
+    // Checkbox is unchecked and forceMount is false -> indicator is not in DOM
+    expect(root.querySelector("#cb-indicator")).toBeNull();
+
+    if (!isSSR) {
+      setForceMount(true);
+      expect(root.querySelector("#cb-indicator")).not.toBeNull();
+
+      setForceMount(false);
+      expect(root.querySelector("#cb-indicator")).toBeNull();
+    }
   });
 
   if (!isSSR) {

@@ -57,10 +57,12 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
       ? useImage({ src, fallbackDelay, crossOrigin, referrerPolicy, onLoadingStatusChange })
       : undefined);
 
-  const elementProps: Record<string, any> = {
-    ...rest,
-    "data-status": state ? state.status : "idle",
-  };
-
-  return $(as, elementProps as any, content) as SeidrElementTagNameMap[T];
+  return $(
+    as,
+    {
+      ...rest,
+      "data-status": state ? state.status : "idle",
+    } as SeidrElementProps<T>,
+    content,
+  );
 }

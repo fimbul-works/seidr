@@ -1,12 +1,12 @@
 import { isStr, isUndef } from "@fimbul-works/hvat";
 import {
   createValue,
+  type DerivedValue,
   inClient,
   isValue,
   mergeValues,
   onUnmounted,
   type ReactiveValue,
-  type Value,
 } from "@fimbul-works/seidr";
 import type { ImageLoadingStatus } from "./types.js";
 
@@ -39,24 +39,24 @@ export interface UseImageOptions {
 
 export interface UseImageResult {
   /**
-   * The reactive loading status of the image. Derived read-only Value.
+   * The reactive loading status of the image.
    */
-  status: Value<ImageLoadingStatus>;
+  status: DerivedValue<ImageLoadingStatus>;
 
   /**
    * Whether the image has finished loading successfully.
    */
-  isLoaded: Value<boolean>;
+  isLoaded: DerivedValue<boolean>;
 
   /**
    * Whether loading the image resulted in an error (or src was empty).
    */
-  isError: Value<boolean>;
+  isError: DerivedValue<boolean>;
 
   /**
    * Whether the fallback should be rendered (status !== "loaded" and delay has passed).
    */
-  canRenderFallback: Value<boolean>;
+  canRenderFallback: DerivedValue<boolean>;
 }
 
 /**
@@ -77,8 +77,8 @@ export function useImage({
     onLoadingStatusChange?.(next);
   };
 
-  // Manage fallback delay timer in the client
   inClient(() => {
+    // Manage fallback delay timer in the client
     if (!isUndef(fallbackDelay) && fallbackDelay > 0) {
       const timer = window.setTimeout(() => {
         delayPassed(true);
@@ -88,10 +88,8 @@ export function useImage({
         window.clearTimeout(timer);
       });
     }
-  });
 
-  // Browser image loading lifecycle
-  inClient(() => {
+    // Browser image loading lifecycle
     let active = true;
 
     const resolveUrl = (v: unknown): string | undefined => (isStr(v) && v.trim().length > 0 ? v : undefined);

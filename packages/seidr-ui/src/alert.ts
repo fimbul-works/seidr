@@ -31,19 +31,15 @@ export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: AlertProps<T> | null,
+  props: AlertProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: AlertProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: AlertProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<AlertProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, role = "alert", ...rest } = props;
-  return $(
-    as as keyof SeidrElementTagNameMap,
-    { role, ...rest } as SeidrElementProps<any>,
-    content,
-  ) as SeidrElementTagNameMap[T];
+  return $(as as T, { role, ...rest } as SeidrElementProps<T>, content) as SeidrElementTagNameMap[T];
 }

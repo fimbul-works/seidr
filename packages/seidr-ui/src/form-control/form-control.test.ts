@@ -89,7 +89,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
       FormControl({
         id: "invalid-field",
         name: "test",
-        validationState: "invalid",
+        validationState: createValue<ValidationState | undefined>("invalid"),
         label: LABEL_TEXT,
         field: $input({ type: "text", id: "invalid-field-input" }),
         description: DESC_TEXT,
@@ -112,13 +112,13 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
     const root = setup(() => {
       const form = FormControl.create({
         id: "force-mount-form",
-        validationState: "valid",
+        validationState: createValue<ValidationState | undefined>("valid"),
       });
 
       return form.Root([
         form.Label(LABEL_TEXT),
         $input({ ...form.fieldProps }),
-        form.ErrorMessage({ forceMount: true }, ERROR_TEXT),
+        form.ErrorMessage({ forceMount: createValue(true) }, ERROR_TEXT),
       ]);
     });
 

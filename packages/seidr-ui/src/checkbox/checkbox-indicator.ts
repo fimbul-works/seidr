@@ -1,5 +1,6 @@
 import {
   $,
+  type DerivedValue,
   mergeValues,
   resolvePropsAndChildren,
   type SeidrChild,
@@ -7,7 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
   Show,
-  type Value,
+  unwrapValue,
 } from "@fimbul-works/seidr";
 import type { UseCheckboxResult } from "./types.js";
 
@@ -22,13 +23,6 @@ export interface CheckboxIndicatorOptions<T extends keyof SeidrElementTagNameMap
    * Explicit checkbox instance providing reactive state.
    */
   instance?: UseCheckboxResult;
-
-  /**
-   * Used to force mounting when more control is needed (e.g. for CSS transitions).
-   * When true, the element is always rendered and styled via data-checked / data-indeterminate.
-   * @default false
-   */
-  forceMount?: boolean;
 }
 
 export type CheckboxIndicatorProps<T extends keyof SeidrElementTagNameMap = "div"> = CheckboxIndicatorOptions<T> &
@@ -39,50 +33,34 @@ export type CheckboxIndicatorProps<T extends keyof SeidrElementTagNameMap = "div
  */
 export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: CheckboxIndicatorProps<T> | null,
+  props: CheckboxIndicatorProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxIndicatorProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CheckboxIndicatorProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const [props, content] = resolvePropsAndChildren<CheckboxIndicatorProps<T>>(propsOrChildren, children);
 
-  const { as = "div" as T, instance, forceMount = false, id, ...rest } = props as any;
+  const { as = "div" as T, instance: cb, forceMount, id, ...rest } = props;
 
-  if (!instance) {
-    throw new SeidrError(
-      "[seidr-ui]: CheckboxIndicator requires an instance prop or must be created via Checkbox.create() / Checkbox.",
-    );
+  if (!cb) {
+    throw new SeidrError("CheckboxIndicator requires an instance prop");
   }
 
   const elementProps = {
-    id: id ?? `${instance.id}-indicator`,
-    ...instance.dataset,
+    id: id ?? cb.id.as((base) => `${base}-indicator`),
+    ...cb.dataset,
     ...rest,
   };
 
-  if (forceMount) {
-    return $(
-      as as keyof SeidrElementTagNameMap,
-      elementProps as SeidrElementProps<any>,
-      content,
-    ) as SeidrElementTagNameMap[T];
-  }
-
-  const isVisible = mergeValues(() => instance.checked() || instance.indeterminate(), {
-    parents: [instance.checked, instance.indeterminate],
+  const isVisible = mergeValues(() => Boolean(unwrapValue(forceMount) || cb.checked() || cb.indeterminate()), {
+    parents: [forceMount, cb.checked, cb.indeterminate],
   });
 
-  return Show(
-    isVisible,
-    () =>
-      $(
-        as as keyof SeidrElementTagNameMap,
-        elementProps as SeidrElementProps<any>,
-        content,
-      ) as SeidrElementTagNameMap[T],
-  ) as Value<SeidrElementTagNameMap[T] | null>;
+  return Show(isVisible, () => $(as as T, elementProps as SeidrElementProps<T>, content)) as DerivedValue<
+    SeidrElementTagNameMap[T] | null
+  >;
 }

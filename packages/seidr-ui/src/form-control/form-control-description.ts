@@ -32,34 +32,30 @@ export function FormControlDescription<T extends keyof SeidrElementTagNameMap = 
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: FormControlDescriptionProps<T> | null,
+  props: FormControlDescriptionProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<FormControlDescriptionProps<T>>(propsOrChildren, children);
+  const { as = "div" as T, instance: form, id: customId, ...rest } = props;
 
-  const { as = "div" as T, instance, id: customId, ...rest } = props as any;
-
-  const form = instance;
   if (!form) {
-    throw new SeidrError(
-      "[seidr-ui]: FormControlDescription requires an instance prop or must be created via FormControl.create() / FormControl.",
-    );
+    throw new SeidrError("FormControlDescription requires an instance prop");
   }
 
-  const resolvedId = customId ?? form.descriptionId() ?? `${form.id}-description`;
-  onUnmounted(form.registerDescription(resolvedId));
+  const descriptionId = customId ?? form.id.as((base) => `${base}-description`);
+  onUnmounted(form.registerDescription(descriptionId));
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
-      id: resolvedId,
+      id: descriptionId,
       ...form.dataset,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

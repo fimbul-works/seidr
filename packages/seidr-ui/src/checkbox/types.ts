@@ -1,16 +1,30 @@
-import type { Ref, SeidrChild, SeidrElementTagNameMap, Value } from "@fimbul-works/seidr";
+import type {
+  DerivedValue,
+  ObservableValue,
+  ReactiveValue,
+  Ref,
+  SeidrChild,
+  SeidrElementProps,
+  SeidrElementTagNameMap,
+} from "@fimbul-works/seidr";
+import type { FormControlLabelProps } from "../form-control/form-control-label.js";
 import type { FormControlDataSet, UseFormControlOptions, UseFormControlResult } from "../form-control/types.js";
+import type { CheckboxControlProps } from "./checkbox-control.js";
+import type { CheckboxDescriptionProps } from "./checkbox-description.js";
+import type { CheckboxErrorMessageProps } from "./checkbox-error-message.js";
+import type { CheckboxIndicatorProps } from "./checkbox-indicator.js";
+import type { CheckboxRootProps } from "./checkbox-root.js";
 
 export interface CheckboxDataSet {
-  "data-checked": Value<string | undefined>;
-  "data-indeterminate": Value<string | undefined>;
+  "data-checked": ObservableValue<string | undefined>;
+  "data-indeterminate": ObservableValue<string | undefined>;
 }
 
 export type CheckboxCombinedDataSet = CheckboxDataSet & FormControlDataSet;
 
 export interface UseCheckboxOptions extends UseFormControlOptions {
   /** The controlled checked state of the checkbox. */
-  checked?: boolean | Value<boolean>;
+  checked?: ReactiveValue<boolean>;
 
   /** The default checked state when initially rendered (uncontrolled). */
   defaultChecked?: boolean;
@@ -22,27 +36,27 @@ export interface UseCheckboxOptions extends UseFormControlOptions {
    * Whether the checkbox is in an indeterminate state.
    * Indeterminism is presentational: clicking toggles checked state while indicator remains active.
    */
-  indeterminate?: boolean | Value<boolean>;
+  indeterminate?: ReactiveValue<boolean>;
 
   /**
    * The value of the checkbox submitted with an HTML form.
    * Defaults to "on".
    */
-  value?: string | Value<string>;
+  value?: ReactiveValue<string>;
 }
 
 export interface UseCheckboxResult {
   /** The unique base identifier for the checkbox. */
-  id: string;
+  id: DerivedValue<string>;
 
   /** The form submission value (defaults to "on"). */
-  value: Value<string>;
+  value: DerivedValue<string>;
 
   /** The reactive checked boolean state. */
-  checked: Value<boolean>;
+  checked: DerivedValue<boolean>;
 
   /** The reactive indeterminate boolean state. */
-  indeterminate: Value<boolean>;
+  indeterminate: ObservableValue<boolean>;
 
   /** Returns whether the checkbox is currently checked. */
   isChecked: () => boolean;
@@ -51,7 +65,7 @@ export interface UseCheckboxResult {
   isIndeterminate: () => boolean;
 
   /** Whether the checkbox or hidden input currently has focus. */
-  isFocused: Value<boolean>;
+  isFocused: ObservableValue<boolean>;
 
   /** Toggles the checked state (respecting disabled and read-only guards). */
   toggle: () => void;
@@ -75,46 +89,46 @@ export interface UseCheckboxResult {
   dataset: CheckboxCombinedDataSet;
 
   /** Pre-composed props ready to spread on the native input. */
-  fieldProps: Record<string, any>;
+  fieldProps: SeidrElementProps<"input">;
 }
 
 export interface CheckboxInstance extends UseCheckboxResult {
   /** Pre-bound Checkbox.Root container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: any,
+    propsOrChildren?: CheckboxRootProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Input element. */
-  Input: (props?: any) => HTMLInputElement;
+  Input: (props?: SeidrElementProps<"input">) => HTMLInputElement;
 
   /** Pre-bound Checkbox.Control visual box. */
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: any,
+    propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Indicator checkmark. */
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: any,
+    propsOrChildren?: CheckboxIndicatorProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
-  ) => SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+  ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 
   /** Pre-bound Checkbox.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
-    propsOrChildren?: any,
+    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: any,
+    propsOrChildren?: CheckboxDescriptionProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: any,
+    propsOrChildren?: CheckboxErrorMessageProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
-  ) => SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+  ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 }

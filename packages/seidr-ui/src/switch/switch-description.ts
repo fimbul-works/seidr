@@ -1,6 +1,10 @@
-import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseSwitchResult } from "./types.js";
+
+export type SwitchDescriptionProps<T extends keyof SeidrElementTagNameMap> = FormControlDescriptionProps<T> & {
+  instance?: UseSwitchResult;
+};
 
 /**
  * SwitchDescription standalone component.
@@ -9,15 +13,22 @@ export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div"
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: (FormControlDescriptionProps<T> & { instance?: UseSwitchResult }) | null,
+  props: SwitchDescriptionProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: any,
+  propsOrChildren?: SwitchDescriptionProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-  const { instance, ...rest } = props;
-  const form = instance?.formControl ?? instance;
-  return FormControlDescription({ instance: form, ...(instance ? instance.dataset : {}), ...rest }, content);
+  const { instance: sw, ...rest } = props;
+
+  if (!sw) {
+    throw new SeidrError("SwitchDescription requires an instance prop");
+  }
+
+  return FormControlDescription(
+    { instance: sw.formControl, ...sw.dataset, ...rest } as FormControlDescriptionProps<T>,
+    content,
+  );
 }

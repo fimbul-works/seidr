@@ -33,18 +33,17 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: SwitchControlProps<T> | null,
+  props: SwitchControlProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchControlProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SwitchControlProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SwitchControlProps<T>>(propsOrChildren, children);
+  const { as = "div" as T, instance: sw, id, onclick, onkeydown, ...rest } = props;
 
-  const { as = "div" as T, instance, id, onclick, onkeydown, ...rest } = props as any;
-
-  if (!instance) {
+  if (!sw) {
     throw new SeidrError(
       "[seidr-ui]: SwitchControl requires an instance prop or must be created via Switch.create() / Switch.",
     );
@@ -54,9 +53,9 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
     (onclick as any)?.(e);
     if (e.defaultPrevented) return;
 
-    instance.toggle();
+    sw.toggle();
     inClient(() => {
-      instance.inputRef()?.focus({ preventScroll: true });
+      sw.inputRef()?.focus({ preventScroll: true });
     });
   };
 
@@ -66,23 +65,23 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
 
     if (e.key === " ") {
       e.preventDefault();
-      instance.toggle();
+      sw.toggle();
       inClient(() => {
-        instance.inputRef()?.focus({ preventScroll: true });
+        sw.inputRef()?.focus({ preventScroll: true });
       });
     }
   };
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
-      id: id ?? `${instance.id}-control`,
-      ref: instance.controlRef,
-      ...instance.dataset,
+      id: id ?? sw.id.as((base) => `${base}-control`),
+      ref: sw.controlRef,
+      ...sw.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

@@ -80,30 +80,28 @@ export function FormControlFactory<
   const childrenToRender: SeidrChild[] = [];
 
   if (!isUndef(label)) {
-    childrenToRender.push(form.Label(labelProps as any, label));
-  }
-  if (!isUndef(field)) {
-    if (Array.isArray(field)) {
-      childrenToRender.push(...field);
-    } else {
-      childrenToRender.push(field);
-    }
-  }
-  if (!isUndef(description)) {
-    childrenToRender.push(form.Description(descriptionProps as any, description));
-  }
-  if (!isUndef(errorMessage)) {
-    childrenToRender.push(form.ErrorMessage(errorMessageProps as any, errorMessage));
-  }
-  if (!isUndef(children)) {
-    if (Array.isArray(children)) {
-      childrenToRender.push(...children);
-    } else {
-      childrenToRender.push(children);
-    }
+    childrenToRender.push(form.Label(labelProps as FormControlLabelProps<TLabel>, label));
   }
 
-  return form.Root({ as, ...rootProps } as any, childrenToRender);
+  if (!isUndef(field)) {
+    childrenToRender.push(field);
+  }
+
+  if (!isUndef(description)) {
+    childrenToRender.push(form.Description(descriptionProps as FormControlDescriptionProps<TDescription>, description));
+  }
+
+  if (!isUndef(errorMessage)) {
+    childrenToRender.push(
+      form.ErrorMessage(errorMessageProps as FormControlErrorMessageProps<TErrorMessage>, errorMessage),
+    );
+  }
+
+  if (!isUndef(children)) {
+    childrenToRender.push(children);
+  }
+
+  return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
 }
 
 export const FormControl = Object.assign(FormControlFactory, {

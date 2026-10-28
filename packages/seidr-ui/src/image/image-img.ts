@@ -1,17 +1,24 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
+  type DerivedValue,
   type ReactiveValue,
   resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
   Show,
-  type Value,
+  wrapValue,
 } from "@fimbul-works/seidr";
 import { type UseImageResult, useImage } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
+  /**
+   * The image URL to load.
+   */
+  src: ReactiveValue<string | undefined | null>;
+
   /**
    * The HTML element tag name to render.
    * @default "img"
@@ -26,12 +33,7 @@ export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img">
   /**
    * Direct reactive condition controlling whether the image element is mounted.
    */
-  isLoaded?: Value<boolean>;
-
-  /**
-   * The image URL to load.
-   */
-  src?: ReactiveValue<string | undefined | null>;
+  isLoaded?: DerivedValue<boolean>;
 
   /**
    * Accessible alternative text description.
@@ -57,34 +59,34 @@ export type ImageImgProps<T extends keyof SeidrElementTagNameMap = "img"> = Imag
  */
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   props?: ImageImgProps<T> | null,
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   propsOrChildren?: ImageImgProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null> {
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const [props, content] = resolvePropsAndChildren<ImageImgProps<T>>(propsOrChildren, children);
 
   const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 
+  if (!instance && !isLoaded && !src) {
+    throw new SeidrError("ImageImg requires an instance, isLoaded, or src prop");
+  }
+
   // Use explicit instance/condition or initialize standalone hook if src was provided
   const imgState = instance ?? (!isLoaded && src ? useImage({ src, crossOrigin, referrerPolicy }) : undefined);
-  const condition = isLoaded ?? imgState?.isLoaded;
+  const condition = wrapValue(isLoaded ?? imgState!.isLoaded);
 
-  const elementProps: Record<string, any> = { ...rest };
+  const elementProps = { ...rest } as ImageImgProps;
   if (!isUndef(src)) elementProps.src = src;
   if (!isUndef(alt)) elementProps.alt = alt;
   if (!isUndef(crossOrigin)) elementProps.crossOrigin = crossOrigin;
   if (!isUndef(referrerPolicy)) elementProps.referrerPolicy = referrerPolicy;
 
-  const renderEl = () => $(as, elementProps as any, content) as SeidrElementTagNameMap[T];
+  const renderEl = () => $(as, elementProps as SeidrElementProps<T>, content);
 
-  if (condition) {
-    return Show(condition, renderEl) as Value<SeidrElementTagNameMap[T] | null>;
-  }
-
-  return $(as, elementProps as any, content) as any;
+  return Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

@@ -1,4 +1,4 @@
-import type { Value } from "@fimbul-works/seidr";
+import type { ObservableValue } from "@fimbul-works/seidr";
 
 export interface CollectionNode<T = any> {
   /** The type of item this node represents. */
@@ -57,7 +57,7 @@ export interface Collection<T = CollectionNode> extends Iterable<T> {
 
 export interface CollectionBase<T = any> {
   /** The source data to be managed by the collection. */
-  dataSource: T[] | Value<T[]>;
+  dataSource: T[] | ObservableValue<T[]>;
 
   /** Property name or getter function to use as the key of an item. */
   getKey?: string | ((data: T) => string);

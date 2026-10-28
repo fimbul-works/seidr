@@ -32,31 +32,28 @@ export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: SwitchThumbProps<T> | null,
+  props: SwitchThumbProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchThumbProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SwitchThumbProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SwitchThumbProps<T>>(propsOrChildren, children);
+  const { as = "div" as T, instance: sw, id, ...rest } = props;
 
-  const { as = "div" as T, instance, id, ...rest } = props as any;
-
-  if (!instance) {
-    throw new SeidrError(
-      "[seidr-ui]: SwitchThumb requires an instance prop or must be created via Switch.create() / Switch.",
-    );
+  if (!sw) {
+    throw new SeidrError("SwitchThumb requires an instance prop");
   }
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
-      id: id ?? `${instance.id}-thumb`,
-      ref: instance.thumbRef,
-      ...instance.dataset,
+      id: id ?? sw.id.as((base) => `${base}-thumb`),
+      ref: sw.thumbRef,
+      ...sw.dataset,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

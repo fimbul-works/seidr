@@ -1,96 +1,102 @@
-import type { CleanupFunction, Value } from "@fimbul-works/seidr";
+import type {
+  CleanupFunction,
+  DerivedValue,
+  ObservableValue,
+  ReactiveValue,
+  SeidrElementProps,
+} from "@fimbul-works/seidr";
 
 export type ValidationState = "valid" | "invalid";
 
 export interface FormControlDataSet {
-  "data-valid": Value<string | undefined>;
-  "data-invalid": Value<string | undefined>;
-  "data-required": Value<string | undefined>;
-  "data-disabled": Value<string | undefined>;
-  "data-readonly": Value<string | undefined>;
+  "data-valid": ObservableValue<string | undefined>;
+  "data-invalid": ObservableValue<string | undefined>;
+  "data-required": ObservableValue<string | undefined>;
+  "data-disabled": ObservableValue<string | undefined>;
+  "data-readonly": ObservableValue<string | undefined>;
 }
 
 export interface UseFormControlOptions {
   /** Base identifier for the form control. Defaults to auto-generated ID. */
-  id?: string;
+  id?: ReactiveValue<string>;
 
-  /** Name of the form control submitted with form. Defaults to id. */
-  name?: string | Value<string>;
+  /** Name of the form control submitted with form. Defaults to undefined. */
+  name?: ReactiveValue<string>;
 
   /** Validation state: "valid" | "invalid" | undefined. */
-  validationState?: ValidationState | Value<ValidationState | undefined>;
+  validationState?: ObservableValue<ValidationState | undefined> | ObservableValue<ValidationState>;
 
   /** Whether the field is required. */
-  required?: boolean | Value<boolean>;
+  required?: ReactiveValue<boolean>;
 
   /** Whether the field is disabled. */
-  disabled?: boolean | Value<boolean>;
+  disabled?: ReactiveValue<boolean>;
 
   /** Whether the field is read-only. */
-  readOnly?: boolean | Value<boolean>;
+  readOnly?: ReactiveValue<boolean>;
 
   /** Optional explicit field identifier. */
-  fieldId?: string;
+  fieldId?: ReactiveValue<string>;
 }
 
 export interface UseFormControlResult {
   /** Base identifier for the form control. */
-  id: string;
+  id: DerivedValue<string>;
 
-  /** The form control name. */
-  name: Value<string>;
+  /** The form control name (or undefined). */
+  name: DerivedValue<string | undefined>;
 
   /** The current validation state ("valid" | "invalid" | undefined). */
-  validationState: Value<ValidationState | undefined>;
+  validationState: ObservableValue<ValidationState | undefined>;
 
   /** Whether the form control is currently invalid. */
-  isInvalid: Value<boolean>;
+  isInvalid: ObservableValue<boolean>;
 
   /** Whether the form control is currently valid. */
-  isValid: Value<boolean>;
+  isValid: ObservableValue<boolean>;
 
   /** Whether the form control is required. */
-  isRequired: Value<boolean>;
+  isRequired: ObservableValue<boolean>;
 
   /** Whether the form control is disabled. */
-  isDisabled: Value<boolean>;
+  isDisabled: ObservableValue<boolean>;
 
   /** Whether the form control is read-only. */
-  isReadOnly: Value<boolean>;
+  isReadOnly: ObservableValue<boolean>;
 
   /** The reactive field element ID. */
-  fieldId: Value<string>;
+  fieldId: DerivedValue<string>;
 
   /** The reactive label element ID. */
-  labelId: Value<string | undefined>;
+  labelId: DerivedValue<string | undefined>;
 
   /** The reactive description element ID. */
-  descriptionId: Value<string | undefined>;
+  descriptionId: DerivedValue<string | undefined>;
 
   /** The reactive error message element ID. */
-  errorMessageId: Value<string | undefined>;
+  errorMessageId: DerivedValue<string | undefined>;
 
   /** Registers or overrides the label ID. Returns a cleanup function. */
-  registerLabel: (id: string) => CleanupFunction;
+  registerLabel: (id: ReactiveValue<string> | ObservableValue<string | undefined>) => CleanupFunction;
 
   /** Registers or overrides the field ID. Returns a cleanup function. */
-  registerField: (id: string) => CleanupFunction;
+  registerField: (id: ReactiveValue<string> | ObservableValue<string | undefined>) => CleanupFunction;
 
   /** Registers or overrides the description ID. Returns a cleanup function. */
-  registerDescription: (id: string) => CleanupFunction;
+  registerDescription: (id: ReactiveValue<string> | ObservableValue<string | undefined>) => CleanupFunction;
 
   /** Registers or overrides the error message ID. Returns a cleanup function. */
-  registerErrorMessage: (id: string) => CleanupFunction;
+  registerErrorMessage: (id: ReactiveValue<string> | ObservableValue<string | undefined>) => CleanupFunction;
 
   /** Space-separated reactive aria-labelledby string. */
-  ariaLabelledBy: Value<string | undefined>;
+  ariaLabelledBy: ObservableValue<string | undefined>;
 
   /** Space-separated reactive aria-describedby string (auto-incorporates error message when invalid). */
-  ariaDescribedBy: Value<string | undefined>;
+  ariaDescribedBy: ObservableValue<string | undefined>;
 
   /** Reactive data-* attributes for Root, Label, Description, ErrorMessage, and Field. */
   dataset: FormControlDataSet;
 
   /** Pre-composed reactive props ready to spread onto any native input or custom form field. */
-  fieldProps: Record<string, any>;
+  fieldProps: SeidrElementProps<"input">;
 }

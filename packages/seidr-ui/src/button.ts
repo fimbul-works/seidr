@@ -26,10 +26,23 @@ export interface ButtonOptions<T extends keyof SeidrElementTagNameMap = "button"
    * @default "button"
    */
   as?: T;
+
+  /**
+   * The role of the button.
+   * @default "button"
+   */
+  role?: string;
+
+  /**
+   * The tab index of the button.
+   */
+  tabIndex?: ReactiveValue<number>;
+
   /**
    * Whether the button is disabled.
    */
   disabled?: ReactiveValue<boolean>;
+
   /**
    * The type attribute when rendered as a button or input.
    * @default "button"
@@ -49,11 +62,11 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  props?: ButtonProps<T> | null,
+  props: ButtonProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ButtonProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: ButtonProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<ButtonProps<T>>(propsOrChildren, children);
@@ -68,7 +81,7 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
     onkeydown: userOnKeyDown,
     onkeyup: userOnKeyUp,
     ...rest
-  } = props as any;
+  } = props;
 
   const isDisabledValue = isValue(disabled) ? disabled : undefined;
   const isCurrentlyDisabled = () => (isDisabledValue ? !!isDisabledValue() : !!disabled);
@@ -82,64 +95,60 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
       e.stopImmediatePropagation();
       return;
     }
-    userOnClick?.(e as any);
+    (userOnClick as any)?.(e as any);
   };
 
-  const elementProps: Record<string, any> = {
+  const elementProps = {
     ...rest,
     onclick,
-  };
-
-  if (native) {
-    elementProps.type = type;
-    elementProps.disabled = disabled;
-    elementProps.dataDisabled = isDisabledValue
-      ? isDisabledValue.as((d) => (d ? "" : undefined))
-      : disabled
-        ? ""
-        : undefined;
-  } else {
-    elementProps.role = role ?? "button";
-    const resolvedTabIndex =
-      tabIndex ?? (isDisabledValue ? isDisabledValue.as((d) => (d ? undefined : 0)) : disabled ? undefined : 0);
-    if (resolvedTabIndex !== undefined) {
-      elementProps.tabIndex = resolvedTabIndex;
-    }
-    elementProps.ariaDisabled = isDisabledValue
-      ? isDisabledValue.as((d) => (d ? "true" : undefined))
-      : disabled
-        ? "true"
-        : undefined;
-    elementProps.dataDisabled = isDisabledValue
-      ? isDisabledValue.as((d) => (d ? "" : undefined))
-      : disabled
-        ? ""
-        : undefined;
-
-    elementProps.onkeydown = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        if (!isCurrentlyDisabled()) {
-          e.preventDefault();
-          (e.currentTarget as HTMLElement).click();
+    ...(native
+      ? {
+          type,
+          disabled,
+          dataDisabled: isDisabledValue
+            ? isDisabledValue.as((d) => (d ? "" : undefined))
+            : disabled
+              ? ""
+              : undefined,
         }
-      } else if (e.key === " ") {
-        e.preventDefault();
-      }
-      userOnKeyDown?.(e as any);
-    };
+      : {
+          role: role ?? "button",
+          tabIndex:
+            tabIndex ?? (isDisabledValue ? isDisabledValue.as((d) => (d ? undefined : 0)) : disabled ? undefined : 0),
+          ariaDisabled: isDisabledValue
+            ? isDisabledValue.as((d) => (d ? "true" : undefined))
+            : disabled
+              ? "true"
+              : undefined,
+          dataDisabled: isDisabledValue
+            ? isDisabledValue.as((d) => (d ? "" : undefined))
+            : disabled
+              ? ""
+              : undefined,
+          onkeydown: (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+              if (!isCurrentlyDisabled()) {
+                e.preventDefault();
+                (e.currentTarget as HTMLElement).click();
+              }
+            } else if (e.key === " ") {
+              e.preventDefault();
+            }
+            (userOnKeyDown as any)?.(e as any);
+          },
+          onkeyup: (e: KeyboardEvent) => {
+            if (e.key === " ") {
+              e.preventDefault();
+              if (!isCurrentlyDisabled()) {
+                (e.currentTarget as HTMLElement).click();
+              }
+            }
+            (userOnKeyUp as any)?.(e as any);
+          },
+        }),
+  } as SeidrElementProps<T>;
 
-    elementProps.onkeyup = (e: KeyboardEvent) => {
-      if (e.key === " ") {
-        e.preventDefault();
-        if (!isCurrentlyDisabled()) {
-          (e.currentTarget as HTMLElement).click();
-        }
-      }
-      userOnKeyUp?.(e as any);
-    };
-  }
-
-  return $(as as any, elementProps as any, content) as SeidrElementTagNameMap[T];
+  return $(as as T, elementProps, content);
 }
 
 export const Button = Object.assign(ButtonRoot, {

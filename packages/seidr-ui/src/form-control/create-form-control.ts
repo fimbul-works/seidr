@@ -1,4 +1,9 @@
-import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
+import {
+  type DerivedValue,
+  resolvePropsAndChildren,
+  type SeidrChild,
+  type SeidrElementTagNameMap,
+} from "@fimbul-works/seidr";
 import { FormControlDescription, type FormControlDescriptionProps } from "./form-control-description.js";
 import { FormControlErrorMessage, type FormControlErrorMessageProps } from "./form-control-error-message.js";
 import { FormControlLabel, type FormControlLabelProps } from "./form-control-label.js";
@@ -11,7 +16,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlRootProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: FormControlRootProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -19,7 +24,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Label element.
    */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
-    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -27,7 +32,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Description element.
    */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -35,9 +40,9 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.ErrorMessage element.
    */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
-  ) => SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+  ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
 /**

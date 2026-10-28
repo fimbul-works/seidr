@@ -37,11 +37,11 @@ export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
-  props?: SeparatorProps<T> | null,
+  props: SeparatorProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
-  propsOrChildren?: SeparatorProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SeparatorProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SeparatorProps<T>>(propsOrChildren, children);
@@ -50,13 +50,13 @@ export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   const isHr = as === "hr";
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       role: role ?? (!isHr ? "separator" : undefined),
       ariaOrientation: orientation === "vertical" ? "vertical" : undefined,
       dataOrientation: orientation,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

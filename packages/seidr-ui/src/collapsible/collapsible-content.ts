@@ -1,5 +1,7 @@
 import {
   $,
+  type DerivedValue,
+  mergeValues,
   onUnmounted,
   resolvePropsAndChildren,
   type SeidrChild,
@@ -7,7 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
   Show,
-  type Value,
+  unwrapValue,
 } from "@fimbul-works/seidr";
 import type { UseCollapsibleResult } from "./types.js";
 
@@ -22,11 +24,6 @@ export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMa
    * Explicit instance providing reactive state.
    */
   instance?: UseCollapsibleResult;
-
-  /**
-   * Keep mounted in the DOM when closed. Falls back to instance.forceMount.
-   */
-  forceMount?: boolean;
 }
 
 export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "div"> = CollapsibleContentOptions<T> &
@@ -37,18 +34,18 @@ export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "di
  */
 export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: CollapsibleContentProps<T> | null,
+  props: CollapsibleContentProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const [props, content] = resolvePropsAndChildren<CollapsibleContentProps<T>>(propsOrChildren, children);
 
-  const { as = "div" as T, instance, forceMount: propsForceMount, id: customId, ...rest } = props as any;
+  const { as = "div" as T, instance, forceMount, id: customId, ...rest } = props as any;
 
   const col = instance;
   if (!col) {
@@ -62,7 +59,6 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
   }
 
   const resolvedContentId = customId ?? col.contentId();
-  const shouldForceMount = propsForceMount ?? col.forceMount;
 
   const elementProps = {
     id: resolvedContentId,
@@ -70,24 +66,18 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
     ...rest,
   };
 
-  if (shouldForceMount) {
-    return $(
-      as as keyof SeidrElementTagNameMap,
+  const condition = mergeValues(() => Boolean(unwrapValue(forceMount ?? col.forceMount) || col.isOpen()), {
+    parents: [forceMount, col.forceMount, col.isOpen],
+  });
+
+  return Show(condition, () =>
+    $(
+      as as T,
       {
         hidden: col.isOpen.as((v: boolean) => !v),
         ...elementProps,
-      } as SeidrElementProps<any>,
+      } as SeidrElementProps<T>,
       content,
-    ) as SeidrElementTagNameMap[T];
-  }
-
-  return Show(
-    col.isOpen,
-    () =>
-      $(
-        as as keyof SeidrElementTagNameMap,
-        elementProps as SeidrElementProps<any>,
-        content,
-      ) as SeidrElementTagNameMap[T],
-  ) as Value<SeidrElementTagNameMap[T] | null>;
+    ),
+  ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

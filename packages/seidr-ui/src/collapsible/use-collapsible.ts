@@ -1,10 +1,19 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
-import { type CleanupFunction, createValue, isValue, unwrapValue, useId, type Value } from "@fimbul-works/seidr";
+import {
+  type CleanupFunction,
+  createValue,
+  isValue,
+  type ObservableValue,
+  type ReactiveValue,
+  unwrapValue,
+  useId,
+  type Value,
+} from "@fimbul-works/seidr";
 import type { CollapsibleDataSet, UseCollapsibleResult } from "./types.js";
 
 export interface UseCollapsibleOptions {
   /** The controlled open state of the collapsible. */
-  open?: boolean | Value<boolean>;
+  open?: boolean | ObservableValue<boolean>;
 
   /** The default open state when initially rendered (uncontrolled). */
   defaultOpen?: boolean;
@@ -13,14 +22,12 @@ export interface UseCollapsibleOptions {
   onOpenChange?: (isOpen: boolean) => void;
 
   /** Whether the collapsible is disabled. */
-  disabled?: boolean | Value<boolean>;
+  disabled?: ReactiveValue<boolean>;
 
   /**
-   * Used to force mounting the collapsible content when more control is needed
-   * (e.g. for CSS animations or SEO).
-   * @default false
+   * Used to force mounting the collapsible content when more control is needed.
    */
-  forceMount?: boolean;
+  forceMount?: ObservableValue<boolean>;
 
   /** Unique base identifier for the collapsible. */
   id?: string;
@@ -31,7 +38,7 @@ export interface UseCollapsibleOptions {
  * for an interactive disclosure / collapsible widget.
  */
 export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsibleResult {
-  const { open, defaultOpen, onOpenChange, disabled, forceMount = false, id: providedId } = options;
+  const { open, defaultOpen, onOpenChange, disabled, forceMount, id: providedId } = options;
 
   const id = providedId ?? useId("collapsible");
   const contentId = createValue<string>(`${id}-content`);
@@ -47,24 +54,17 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
   const isControlledValue = isValue(open);
   const isControlledStatic = isControlled && !isControlledValue;
 
-  let state: Value<boolean>;
-  if (isControlledValue) {
-    state = open;
-    if (isFn(onOpenChange)) {
-      state.watch((val) => onOpenChange(val));
-    }
-  } else if (isControlledStatic) {
-    state = createValue(Boolean(open));
-  } else {
-    state = createValue(Boolean(defaultOpen ?? false));
-    if (isFn(onOpenChange)) {
-      state.watch((val) => onOpenChange(val));
-    }
+  const state: Value<boolean> = isControlledValue
+    ? open
+    : isControlledStatic
+      ? createValue(Boolean(open))
+      : createValue(Boolean(defaultOpen ?? false));
+
+  if (isFn(onOpenChange)) {
+    state.watch((val) => onOpenChange(val));
   }
 
-  const isDisabled = isValue(disabled)
-    ? (disabled.as((d) => Boolean(d)) as Value<boolean>)
-    : createValue(Boolean(disabled));
+  const isDisabled = isValue(disabled) ? disabled.as((d) => Boolean(d)) : createValue(Boolean(disabled));
 
   const isBlocked = () => Boolean(unwrapValue(disabled));
 

@@ -4,9 +4,9 @@ import {
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
 } from "@fimbul-works/seidr";
 import type { UseCheckboxOptions, UseCheckboxResult } from "./types.js";
-import { useCheckbox } from "./use-checkbox.js";
 
 export interface CheckboxRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseCheckboxOptions {
   /**
@@ -31,11 +31,11 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: CheckboxRootProps<T> | null,
+  props: CheckboxRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxRootProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CheckboxRootProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<CheckboxRootProps<T>>(propsOrChildren, children);
@@ -56,23 +56,13 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
     readOnly,
     onpointerdown,
     ...rest
-  } = props as any;
+  } = props;
 
-  const cb =
-    instance ??
-    useCheckbox({
-      id,
-      name,
-      checked,
-      defaultChecked,
-      onChange,
-      indeterminate,
-      value,
-      validationState,
-      required,
-      disabled,
-      readOnly,
-    });
+  if (!instance) {
+    throw new SeidrError("CheckboxRoot requires an instance prop");
+  }
+
+  const cb = instance;
 
   const handlePointerDown = (e: PointerEvent) => {
     (onpointerdown as any)?.(e);
@@ -85,7 +75,7 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       role: "group",
       id: cb.id,

@@ -1,4 +1,9 @@
-import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
+import {
+  type DerivedValue,
+  resolvePropsAndChildren,
+  type SeidrChild,
+  type SeidrElementTagNameMap,
+} from "@fimbul-works/seidr";
 import { CollapsibleContent, type CollapsibleContentProps } from "./collapsible-content.js";
 import { CollapsibleRoot, type CollapsibleRootProps } from "./collapsible-root.js";
 import { CollapsibleTrigger, type CollapsibleTriggerProps } from "./collapsible-trigger.js";
@@ -10,7 +15,7 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -18,7 +23,7 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Trigger element.
    */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
-    propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -26,9 +31,9 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Content element.
    */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[] | null,
+    propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
-  ) => SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+  ) => SeidrElementTagNameMap[T] | DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
 /**

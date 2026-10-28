@@ -1,4 +1,4 @@
-import { createRef, createValue, useId, wrapValue } from "@fimbul-works/seidr";
+import { createRef, createValue, type SeidrElementProps, useId, wrapValue } from "@fimbul-works/seidr";
 import { useFormControl } from "../form-control/use-form-control.js";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import { useToggleState } from "../hooks/use-toggle-state.js";
@@ -9,16 +9,16 @@ import type { SwitchCombinedDataSet, SwitchDataSet, UseSwitchOptions, UseSwitchR
  * for an accessible Switch component.
  */
 export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
-  const id = options.id ?? useId("switch");
+  const baseId = wrapValue(options.id ?? useId("switch"));
 
   const formControl = useFormControl({
-    id,
+    id: baseId,
     name: options.name,
     validationState: options.validationState,
     required: options.required,
     disabled: options.disabled,
     readOnly: options.readOnly,
-    fieldId: `${id}-input`,
+    fieldId: options.fieldId ?? baseId.as((i) => `${i}-input`),
   });
 
   const value = wrapValue(options.value ?? "on");
@@ -51,7 +51,7 @@ export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
     ...switchDataset,
   };
 
-  const fieldProps: Record<string, any> = {
+  const fieldProps: SeidrElementProps<"input"> = {
     ...formControl.fieldProps,
     type: "checkbox",
     role: "switch",
@@ -62,8 +62,8 @@ export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
   };
 
   return {
-    id,
-    value,
+    id: formControl.id,
+    value: value.as((v) => v),
     checked: toggleState.isSelected,
     isChecked: () => toggleState.isSelected(),
     isFocused,

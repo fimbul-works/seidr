@@ -32,24 +32,48 @@ Before writing ANY code in `packages/seidr-ui`:
 
 ---
 
-## 2. Seidr State & Controllable Value Invariants
+## 2. Seidr Reactive Typing Hierarchy & Controllable Values
 
-- **`Value<T>` is a dual getter/setter FUNCTION**:
-  - `const val = createValue(initial)`: reading is `val()`, updating is `val(newVal)`.
-- **`useControllableValue` / `useControllableBooleanValue`**:
-  - This hook simply accepts an optional default value and registers `state.watch(onChange)`.
-  - It does NOT provide automatic controlled/uncontrolled state switching or guard checks.
-  - It  is likely nott needed!
+- **Seidr Reactive Typing Tiers**:
+  - `Value<T>`: Callable dual getter/setter function for mutable state (`val()` reads, `val(newVal)` mutates).
+  - `DerivedValue<T>`: Read-only derived reactive value (`.as()`, `mergeValues()`, `Show()`).
+  - `ObservableValue<T>`: Union `Value<T> | DerivedValue<T>` for any reactive observable.
+  - `ReactiveValue<T>`: `T | ObservableValue<T>` (scalar or observable).
+- **Conversion Utilities**:
+  - `wrapValue(x)`: Normalizes scalar or observable to an observable.
+  - `unwrapValue(x)`: Extracts the underlying scalar from an observable or scalar.
+- **Immediate vs Delayed Observers (`bind` vs `watch`)**:
+  - `watch(cb)`: Runs *only* on subsequent state mutations.
+  - `bind(cb)`: Runs *immediately* on registration, and on every subsequent mutation.
+- **Avoid Casting with `as Value`**: Use `DerivedValue<T>` or `ObservableValue<T>`.
 - **Guarded State Contract**:
   - When state updates can be blocked (e.g. `isDisabled`, `isReadOnly`):
-    - Rename internal mutable state to `state: Value<T>`.
+    - Keep internal mutable state private: `state: Value<T>`.
     - **Never** expose `state` directly if external callers could mutate it.
-    - Expose the value as a derived read-only value: `state.as(v => v)`.
+    - Expose the value as a derived read-only value: `state.as(v => v)` (`DerivedValue<T>`).
     - Provide explicit update functions (e.g. `setIsSelected(val)`, `toggle()`) that check `isBlocked` before updating `state`.
 
 ---
 
-## 3. Forbid Functions-as-Children / Mixed Render Props
+## 3. Control Flow & Show Invariant
+
+- **The Show Pattern**:
+  - Always wrap the condition: `wrapValue(condition)`.
+  - Always return `Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>`.
+  - Never branch with `if (condition) return Show(...) else return $(...)`.
+- **Dynamic Collections (`List`)**:
+  - When collections of items are dynamic, use `List` or `ReactiveValue<T[]>` so updates are fine-grained rather than re-creating the entire list.
+
+---
+
+## 4. Subcomponent Integrity & Fail-Fast with `SeidrError`
+
+- If a sub-component requires an `instance` coordinator and none is provided, throw a `SeidrError` immediately.
+- Do not fall back to an uncoordinated local state unless explicitly designed for standalone operation.
+
+---
+
+## 5. Forbid Functions-as-Children / Mixed Render Props
 
 - **The Problem**:
   - In Seidr, `Value<T>` and reactive child getters (`() => SeidrChild`) are functions. Both are valid `SeidrChild` nodes.
@@ -58,11 +82,11 @@ Before writing ANY code in `packages/seidr-ui`:
   - Never allow functions as `children`.
   - Content must strictly accept `SeidrChild | SeidrChild[]`.
   - Avoid JSX render-prop patterns or mixing them with component children.
-  - If render-function is required for some reason, they must NEVER be mixed with normal children/props!
-  - Consider using a custom `RenderContent` type for such cases (and add it to `src/types.ts`).
+  - If a render-function is required for a specific prop, use a separate named prop (e.g. `RenderContent`).
 
+---
 
-## 4. Minimal Architecture (No Unneeded Context Stacks)
+## 6. Minimal Architecture (No Unneeded Context Stacks)
 
 - Avoid replicating ANY  external framework fetures or bbehavior unless it is a core feature of Seidr!
   - Coordinate via props or simple state values.

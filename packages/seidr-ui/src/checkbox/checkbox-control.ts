@@ -33,30 +33,28 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: CheckboxControlProps<T> | null,
+  props: CheckboxControlProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<CheckboxControlProps<T>>(propsOrChildren, children);
 
-  const { as = "div" as T, instance, id, onclick, onkeydown, ...rest } = props as any;
+  const { as = "div" as T, instance: cb, id, onclick, onkeydown, ...rest } = props;
 
-  if (!instance) {
-    throw new SeidrError(
-      "[seidr-ui]: CheckboxControl requires an instance prop or must be created via Checkbox.create() / Checkbox.",
-    );
+  if (!cb) {
+    throw new SeidrError("CheckboxControl requires an instance prop");
   }
 
   const handleClick = (e: MouseEvent) => {
     (onclick as any)?.(e);
     if (e.defaultPrevented) return;
 
-    instance.toggle();
+    cb.toggle();
     inClient(() => {
-      instance.inputRef()?.focus({ preventScroll: true });
+      cb.inputRef()?.focus({ preventScroll: true });
     });
   };
 
@@ -66,23 +64,23 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
 
     if (e.key === " ") {
       e.preventDefault();
-      instance.toggle();
+      cb.toggle();
       inClient(() => {
-        instance.inputRef()?.focus({ preventScroll: true });
+        cb.inputRef()?.focus({ preventScroll: true });
       });
     }
   };
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
-      id: id ?? `${instance.id}-control`,
-      ref: instance.controlRef,
-      ...instance.dataset,
+      id: id ?? cb.id.as((base) => `${base}-control`),
+      ref: cb.controlRef,
+      ...cb.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

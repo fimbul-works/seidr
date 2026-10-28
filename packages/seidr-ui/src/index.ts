@@ -7,6 +7,7 @@ export * from "./collection/index.js";
 export * from "./form-control/index.js";
 export * from "./hooks/index.js";
 export * from "./image/index.js";
+export * from "./radio-group/index.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./switch/index.js";

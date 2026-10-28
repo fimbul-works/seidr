@@ -38,11 +38,11 @@ export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: BadgeProps<T> | null,
+  props: BadgeProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: BadgeProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: BadgeProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BadgeProps<T>>(propsOrChildren, children);
@@ -51,12 +51,12 @@ export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   const resolvedAriaLabel = ariaLabel ?? textValue;
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       role,
       ...(resolvedAriaLabel !== undefined ? { ariaLabel: resolvedAriaLabel } : {}),
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
   ) as SeidrElementTagNameMap[T];
 }

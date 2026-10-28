@@ -31,11 +31,11 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: CollapsibleRootProps<T> | null,
+  props: CollapsibleRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<CollapsibleRootProps<T>>(propsOrChildren, children);
@@ -64,12 +64,12 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
     });
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       id: col.id,
       ...col.dataset,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

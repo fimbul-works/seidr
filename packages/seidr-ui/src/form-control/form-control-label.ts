@@ -1,6 +1,7 @@
 import {
   $,
   onUnmounted,
+  type ReactiveValue,
   resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
@@ -20,6 +21,11 @@ export interface FormControlLabelOptions<T extends keyof SeidrElementTagNameMap 
    * Explicit instance providing reactive state.
    */
   instance?: UseFormControlResult;
+
+  /**
+   * The id of the form control that this label is associated with.
+   */
+  htmlFor?: ReactiveValue<string>;
 }
 
 export type FormControlLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = FormControlLabelOptions<T> &
@@ -41,29 +47,26 @@ export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<FormControlLabelProps<T>>(propsOrChildren, children);
 
-  const { as = "label" as T, instance, id: customId, htmlFor, ...rest } = props as any;
+  const { as = "label" as T, instance: form, id: customId, htmlFor, ...rest } = props;
 
-  const form = instance;
   if (!form) {
-    throw new SeidrError(
-      "[seidr-ui]: FormControlLabel requires an instance prop or must be created via FormControl.create() / FormControl.",
-    );
+    throw new SeidrError("FormControlLabel requires an instance prop");
   }
 
-  const resolvedId = customId ?? form.labelId() ?? `${form.id}-label`;
-  onUnmounted(form.registerLabel(resolvedId));
+  const id = customId ?? form.id.as((base) => `${base}-label`);
+  onUnmounted(form.registerLabel(id));
 
   const isNativeLabel = as === "label";
   const effectiveHtmlFor = isNativeLabel ? (htmlFor ?? form.fieldId) : undefined;
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
-      id: resolvedId,
+      id,
       htmlFor: effectiveHtmlFor,
       ...form.dataset,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

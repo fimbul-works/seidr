@@ -1,5 +1,7 @@
 import {
   $,
+  type DerivedValue,
+  mergeValues,
   onUnmounted,
   resolvePropsAndChildren,
   type SeidrChild,
@@ -7,7 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
   Show,
-  type Value,
+  unwrapValue,
 } from "@fimbul-works/seidr";
 import type { UseFormControlResult } from "./types.js";
 
@@ -22,13 +24,6 @@ export interface FormControlErrorMessageOptions<T extends keyof SeidrElementTagN
    * Explicit instance providing reactive state.
    */
   instance?: UseFormControlResult;
-
-  /**
-   * Used to force mounting the error message element when more control is needed
-   * (e.g. for CSS animations or discrete transitions).
-   * @default false
-   */
-  forceMount?: boolean;
 }
 
 export type FormControlErrorMessageProps<T extends keyof SeidrElementTagNameMap = "div"> =
@@ -39,53 +34,44 @@ export type FormControlErrorMessageProps<T extends keyof SeidrElementTagNameMap 
  */
 export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: FormControlErrorMessageProps<T> | null,
+  props: FormControlErrorMessageProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const [props, content] = resolvePropsAndChildren<FormControlErrorMessageProps<T>>(propsOrChildren, children);
 
-  const { as = "div" as T, instance, id: customId, forceMount = false, ...rest } = props as any;
+  const { as = "div" as T, instance: form, id: customId, forceMount, ...rest } = props;
 
-  const form = instance;
   if (!form) {
-    throw new SeidrError(
-      "[seidr-ui]: FormControlErrorMessage requires an instance prop or must be created via FormControl.create() / FormControl.",
-    );
+    throw new SeidrError("FormControlErrorMessage requires an instance prop");
   }
 
-  const resolvedId = customId ?? form.errorMessageId() ?? `${form.id}-error-message`;
-  onUnmounted(form.registerErrorMessage(resolvedId));
+  const errorMessageId = customId ?? form.id.as((base) => `${base}-error-message`);
+  onUnmounted(form.registerErrorMessage(errorMessageId));
+
+  const condition = mergeValues(() => Boolean(unwrapValue(forceMount) || form.isInvalid()), {
+    parents: [forceMount, form.isInvalid],
+  });
 
   const elementProps = {
-    id: resolvedId,
+    id: errorMessageId,
     ...form.dataset,
     ...rest,
-  };
+  } as SeidrElementProps<T>;
 
-  if (forceMount) {
-    return $(
-      as as keyof SeidrElementTagNameMap,
+  return Show(condition, () =>
+    $(
+      as as T,
       {
         hidden: form.isInvalid.as((inv: boolean) => !inv),
         ...elementProps,
-      } as SeidrElementProps<any>,
+      } as SeidrElementProps<T>,
       content,
-    ) as SeidrElementTagNameMap[T];
-  }
-
-  return Show(
-    form.isInvalid,
-    () =>
-      $(
-        as as keyof SeidrElementTagNameMap,
-        elementProps as SeidrElementProps<any>,
-        content,
-      ) as SeidrElementTagNameMap[T],
-  ) as Value<SeidrElementTagNameMap[T] | null>;
+    ),
+  ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

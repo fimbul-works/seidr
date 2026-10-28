@@ -26,11 +26,11 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "button">(
-  props?: CollapsibleTriggerProps<T> | null,
+  props: CollapsibleTriggerProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<CollapsibleTriggerProps<T>>(propsOrChildren, children);

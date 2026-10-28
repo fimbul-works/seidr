@@ -25,8 +25,19 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Why It Matters**: Variables, closures, and DOM elements created in a component body exist permanently for the life of that component instance. State changes do not re-run the component factory; they update DOM nodes directly via fine-grained reactive listeners.
 - **Reference Docs**: [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#createcomponent), [docs/presence-and-transitions.md](file:///home/claus/code/TypeScript/seidr/docs/presence-and-transitions.md#4-current-state-of-seidr-core)
 
-### Rule 2: `Value<T>` is a Callable Dual Getter-Setter Function
-- **The Invariant**: In Seidr, reactive state is a single callable function: `val()` reads the current value, and `val(newVal)` or `val(prev => next)` mutates it.
+### Rule 2: Seidr Reactive Typing Hierarchy (`Value`, `DerivedValue`, `ObservableValue`, `ReactiveValue`)
+- **The Invariant**: Reactive state in Seidr consists of distinct typing tiers:
+  - `Value<T>`: Callable dual getter-setter function for mutable state (`val()` reads, `val(newVal)` and `val(prevVal => newVal)` mutates).
+  - `DerivedValue<T>`: Read-only reactive value produced by derivations (`source.as(...)`, `mergeValues(...)`, `Show(...)`).
+  - `ObservableValue<T>`: Union `Value<T> | DerivedValue<T>` for any reactive observable.
+  - `ReactiveValue<T>`: `T | ObservableValue<T>` representing either a raw unwrapped scalar or an observable.
+- **Conversion Utilities**:
+  - `wrapValue(x)`: Normalizes `ReactiveValue<T>` into an `ObservableValue<T>` (creates a `Value<T>` if given a raw scalar, or preserves existing observables).
+  - `unwrapValue(x)`: Extracts the underlying scalar `T` whether `x` is raw or observable.
+- **Immediate vs Delayed Observers (`bind` vs `watch`)**:
+  - `.watch(callback)`: Executes *only* on subsequent state mutations.
+  - `.bind(callback)`: Executes *immediately* upon registration with the current value, and then on every subsequent mutation.
+- **Avoid Casting with `as Value`**: Never cast derived values as mutable `Value<T>` or `as any`. Use `DerivedValue<T>` or `ObservableValue<T>`.
 - **The Function-Children Trap**: Because `Value<T>` *is a function*, using `typeof x === "function"` or typing `children?: SeidrChild | ((state) => SeidrChild)` creates severe bugs by misclassifying reactive values and reactive child getters (`() => SeidrChild`) as render props.
 - **Use Type Guards**: Use `isValue(x)` from `@fimbul-works/seidr` to verify reactive values.
 - **FORBID Mixed Render Props**: Never accept a function as `children` or mix render-props with standard `SeidrChild | SeidrChild[]`. If a custom render function is strictly required, use a separate named prop with a distinct type (e.g. `RenderContent`).
@@ -39,7 +50,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-scope-cleanup-vs-manual-unwatch), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onunmounted)
 
 ### Rule 4: Fine-Grained Reactive DOM Data-Binding via `$()` and HTML Helpers
-- **The Invariant**: Passing a `Value<T>` directly as an attribute property (e.g. `disabled: isDisabled`, `className: clsValue`) or child into `$()` / `$button()` / `$div()` binds reactively to that exact attribute or text node.
+- **The Invariant**: Passing an `ObservableValue<T>` directly as an attribute property (e.g. `disabled: isDisabled`, `className: clsValue`) or child into `$()` / `$button()` / `$div()` binds reactively to that exact attribute or text node.
 - **Why It Matters**: Updates bypass parent and sibling elements completely. There is no diffing overhead; only the targeted DOM attribute or text node mutates.
 - **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#--create-dom-elements), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-dom-data-binding)
 
@@ -48,23 +59,24 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **The Conditional Trap**: `mergeValues` only auto-discovers dependencies read on its **initial execution**. If it contains conditional branches (`if (cond()) x() else y()`), observables in untaken branches will *not* be tracked. In such cases, you **must** supply explicit parents: `mergeValues(fn, { parents: [cond, x, y] })`.
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#mergevalues)
 
-### Rule 6: Control Flow (`Show`, `Switch`, `List`) Returns Reactive Derived Values
-- **The Invariant**: `Show(condition, whenTrue, whenFalse)` and `Switch(value, branches, fallback)` are not compiler macros; they return a derived `Value<SeidrChild>` (implemented via `condition.as(...)`).
+### Rule 6: Control Flow (`Show`, `Switch`, `List`) Returns Derived Reactive Values
+- **The Invariant**: `Show(condition, whenTrue, whenFalse)` and `Switch(value, branches, fallback)` are not compiler macros; they return a `DerivedValue<SeidrChild | null>`.
+- **The Show Pattern**: Always wrap conditions into an observable (`wrapValue(condition)`) and return `Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>`. Never branch with `if (condition) return Show(...) else return $(...)`.
 - **Composition**: They can be embedded directly in child arrays: `$div([ Show(isOpen, () => $p('Open')) ])`.
-- **List Fine-Grained Reactivity**: `List(items, getKey, (itemVal, key) => ...)` provides an `itemVal: Value<T>` to each item factory. Mutating an item in place updates only that item's DOM bindings without re-rendering the list.
+- **List Fine-Grained Reactivity**: `List(items, getKey, (itemVal, key) => ...)` provides an `itemVal: ObservableValue<T>` to each item factory. Mutating an item in place updates only that item's DOM bindings without re-rendering the list. When item collections can change dynamically, use `List` or `ReactiveValue<T[]>`.
 - **Reference Docs**: [docs/Show.md](file:///home/claus/code/TypeScript/seidr/docs/Show.md), [docs/Switch.md](file:///home/claus/code/TypeScript/seidr/docs/Switch.md), [docs/List.md](file:///home/claus/code/TypeScript/seidr/docs/List.md)
 
 ### Rule 7: Element References (`createRef`) & Document Attachment Timing
-- **The Invariant**: `createRef<T>()` creates a decorated `Value<T | null>` with SSR hydration disabled. Pass it to the `ref` prop: `$input({ ref: inputRef })`.
+- **The Invariant**: `createRef<T>()` creates a decorated `Ref<T>` with SSR hydration disabled. Pass it to the `ref` prop: `$input({ ref: inputRef })`.
 - **Attachment Timing**: While Seidr sets the ref on element creation and resets it to `null` on unmount, the node is **only guaranteed to be attached to the document DOM tree inside `onMounted()`**. Measuring layout geometry (`getBoundingClientRect`), focusing elements, or initializing canvas contexts must be done inside `onMounted()`.
 - **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#element-references-createref), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onmounted)
 
-### Rule 8: Guarded State Pattern (Encapsulated State vs Derived Read-Only)
-- **The Invariant**: When state transitions can be blocked (e.g. `isDisabled`, `isReadOnly`), never expose the raw mutable `state: Value<T>` directly to consumers.
-- **Pattern**:
+### Rule 8: Guarded State Pattern & Subcomponent Integrity
+- **Guarded State Invariant**: When state transitions can be blocked (e.g. `isDisabled`, `isReadOnly`), never expose the raw mutable `state: Value<T>` directly to consumers.
   1. Internal mutable state: `const state = createValue(initial)`.
-  2. Exposed value: derived read-only `state.as(v => v)`.
+  2. Exposed value: derived read-only `state.as(v => v)` (`DerivedValue<T>`).
   3. Exposed updater: explicit function `setIsSelected(val)` or `toggle()` checking `isBlocked = isReadOnly || isDisabled` before calling `state(val)`.
+- **Fail-Fast with `SeidrError`**: Sub-components that require an `instance` coordinator (e.g. `Image.Fallback`, `RadioGroup.ItemInput`, `Collapsible.Content`, `FormControl.ErrorMessage`) MUST throw a clear `SeidrError` if the required instance is missing, rather than silently continuing with broken state.
 - **Note on `useControllableValue`**: In Seidr, this hook only provides default value fallbacks and an `onChange` watcher—it does not manage complex controlled state transitions, and is often unnecessary.
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as)
 

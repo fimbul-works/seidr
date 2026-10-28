@@ -1,11 +1,14 @@
 import {
   $,
+  type DerivedValue,
+  type ObservableValue,
   resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
   Show,
-  type Value,
+  wrapValue,
 } from "@fimbul-works/seidr";
 import type { UseImageResult } from "./use-image.js";
 
@@ -24,7 +27,7 @@ export interface ImageFallbackOptions<T extends keyof SeidrElementTagNameMap = "
   /**
    * Direct reactive condition controlling whether the fallback should render.
    */
-  canRender?: Value<boolean>;
+  canRender?: ObservableValue<boolean>;
 }
 
 export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> = ImageFallbackOptions<T> &
@@ -35,26 +38,25 @@ export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> 
  */
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   props?: ImageFallbackProps<T> | null,
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null>;
+): DerivedValue<SeidrElementTagNameMap[T] | null>;
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
-): Value<SeidrElementTagNameMap[T] | null> {
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const [props, content] = resolvePropsAndChildren<ImageFallbackProps<T>>(propsOrChildren, children);
 
   const { as = "span" as T, instance, canRender, ...rest } = props;
 
-  const renderEl = () => $(as, rest as any, content) as SeidrElementTagNameMap[T];
-  const condition = canRender ?? instance?.canRenderFallback;
-
-  if (condition) {
-    return Show(condition, renderEl) as Value<SeidrElementTagNameMap[T] | null>;
+  if (!instance && !canRender) {
+    throw new SeidrError("ImageFallback requires an instance or canRender prop");
   }
 
-  // Fallback if rendered without a bound state: immediate render wrapped in a Value
-  return $(as, rest as any, content) as any;
+  const renderEl = () => $(as, rest as SeidrElementProps<T>, content);
+  const condition = wrapValue(canRender ?? instance!.canRenderFallback);
+
+  return Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

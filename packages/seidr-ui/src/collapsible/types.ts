@@ -1,26 +1,26 @@
-import type { CleanupFunction, Value } from "@fimbul-works/seidr";
+import type { CleanupFunction, DerivedValue, ObservableValue } from "@fimbul-works/seidr";
 
 export interface CollapsibleDataSet {
-  "data-expanded": Value<string | undefined>;
-  "data-closed": Value<string | undefined>;
-  "data-disabled": Value<string | undefined>;
+  "data-expanded": ObservableValue<string | undefined>;
+  "data-closed": ObservableValue<string | undefined>;
+  "data-disabled": ObservableValue<string | undefined>;
 }
 
 export interface UseCollapsibleResult {
   /** The derived read-only open state. */
-  isOpen: Value<boolean>;
+  isOpen: DerivedValue<boolean>;
 
   /** The derived read-only disabled state. */
-  isDisabled: Value<boolean>;
+  isDisabled: ObservableValue<boolean>;
 
   /** Whether the collapsible is force mounted in the DOM. */
-  forceMount: boolean;
+  forceMount?: ObservableValue<boolean>;
 
   /** The base ID of the collapsible. */
   id: string;
 
   /** The reactive content ID. */
-  contentId: Value<string>;
+  contentId: ObservableValue<string>;
 
   /** Registers or overrides the content element ID. */
   registerContentId: (id: string) => CleanupFunction;

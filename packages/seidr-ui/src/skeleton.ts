@@ -60,11 +60,11 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: SkeletProps<T> | null,
+  props: SkeletProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SkeletProps<T> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SkeletProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SkeletProps<T>>(propsOrChildren, children);
@@ -103,7 +103,7 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   const finalStyle = isObj(style) ? { ...skeletonStyles, ...style } : (style ?? skeletonStyles);
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       role,
       ariaBusy: visible ? "true" : undefined,
@@ -111,7 +111,7 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
       dataAnimate: animate ? "" : undefined,
       style: finalStyle,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

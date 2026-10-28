@@ -4,9 +4,9 @@ import {
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
 } from "@fimbul-works/seidr";
 import type { UseFormControlOptions, UseFormControlResult } from "./types.js";
-import { useFormControl } from "./use-form-control.js";
 
 export interface FormControlRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseFormControlOptions {
   /**
@@ -42,7 +42,7 @@ export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
 
   const {
     as = "div" as T,
-    instance,
+    instance: form,
     id,
     name,
     validationState,
@@ -51,27 +51,19 @@ export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
     readOnly,
     fieldId,
     ...rest
-  } = props as any;
+  } = props;
 
-  const form =
-    instance ??
-    useFormControl({
-      id,
-      name,
-      validationState,
-      required,
-      disabled,
-      readOnly,
-      fieldId,
-    });
+  if (!form) {
+    throw new SeidrError("FormControlRoot requires an instance prop");
+  }
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       id: form.id,
       ...form.dataset,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

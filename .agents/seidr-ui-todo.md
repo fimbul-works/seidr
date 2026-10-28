@@ -237,7 +237,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `form-control`, `useToggleState`, `useFormResetListener`, `useTransition`.
 - **Complexity**: Low to Moderate (~626 LOC).
 - **Tasks**:
-  - [ ] Implement Checkbox parts.
+  - [x] Implement Checkbox parts.
 
 ### 17. `switch`
 - **Location**: `kobalte-packages/core/src/switch`
@@ -245,15 +245,15 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `form-control`, `useToggleState`, `useFormResetListener`.
 - **Complexity**: Low (~567 LOC).
 - **Tasks**:
-  - [ ] Implement Switch parts.
+  - [x] Implement Switch parts.
 
 ### 18. `radio-group`
 - **Location**: `kobalte-packages/core/src/radio-group`
 - **Description**: Accessible radio group with roving keyboard focus and arrow navigation.
-- **Dependencies**: `form-control`, `useControllableValue`, `useTransition`.
+- **Dependencies**: `form-control`, `useControllableValue`.
 - **Complexity**: Moderate (~828 LOC).
 - **Tasks**:
-  - [ ] Implement RadioGroup parts.
+  - [x] Implement RadioGroup parts.
 
 ### 19. `segmented-control`
 - **Location**: `kobalte-packages/core/src/segmented-control`

@@ -10,12 +10,9 @@ import { VISUALLY_HIDDEN_STYLES } from "./constants.js";
  * @returns {HTMLSpanElement} A visually hidden span element.
  */
 export function VisuallyHidden(children?: SeidrChild | SeidrChild[]): HTMLSpanElement;
+export function VisuallyHidden(props: SeidrElementProps<"span">, children?: SeidrChild | SeidrChild[]): HTMLSpanElement;
 export function VisuallyHidden(
-  props?: SeidrElementProps<"span"> | null,
-  children?: SeidrChild | SeidrChild[],
-): HTMLSpanElement;
-export function VisuallyHidden(
-  propsOrChildren?: SeidrElementProps<"span"> | SeidrChild | SeidrChild[] | null,
+  propsOrChildren?: SeidrElementProps<"span"> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): HTMLSpanElement {
   const [props, content] = resolvePropsAndChildren<SeidrElementProps<"span">>(propsOrChildren, children);

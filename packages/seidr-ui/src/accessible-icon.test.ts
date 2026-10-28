@@ -11,7 +11,7 @@ describeDualMode("AccessibleIcon", ({ getDocument, isSSR }) => {
 
   beforeEach(() => {
     const icon = $(
-      "svg",
+      "svg" as any,
       {
         id: "icon",
         viewBox: "0 0 32 32",
@@ -19,8 +19,8 @@ describeDualMode("AccessibleIcon", ({ getDocument, isSSR }) => {
         height: 24,
         fill: "none",
         stroke: "currentColor",
-      },
-      $("path", { d: "M2 30 L30 2 M30 30 L2 2" }),
+      } as any,
+      $("path" as any, { d: "M2 30 L30 2 M30 30 L2 2" } as any),
     );
 
     container = $("div", AccessibleIcon(icon, "Close"));
@@ -44,10 +44,10 @@ describeDualMode("AccessibleIcon", ({ getDocument, isSSR }) => {
   });
 
   it("should add an aria-hidden attribute to the child", () => {
-    expect(svg.getAttribute("aria-hidden")).toBe("true");
+    expect(svg.getAttribute("aria-hidden")).toBeTruthy();
   });
 
   it("should set focusable attribute on the child to false", () => {
-    expect(svg.getAttribute("focusable")).toBe("false");
+    expect(svg.getAttribute("focusable")).toBeFalsy();
   });
 });

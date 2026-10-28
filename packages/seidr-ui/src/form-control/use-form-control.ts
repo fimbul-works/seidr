@@ -1,4 +1,15 @@
-import { type CleanupFunction, createValue, isValue, mergeValues, useId, type Value } from "@fimbul-works/seidr";
+import { isTruthy } from "@fimbul-works/hvat";
+import {
+  type CleanupFunction,
+  createValue,
+  mergeValues,
+  type ObservableValue,
+  type ReactiveValue,
+  type SeidrElementProps,
+  unwrapValue,
+  useId,
+  wrapValue,
+} from "@fimbul-works/seidr";
 import type { FormControlDataSet, UseFormControlOptions, UseFormControlResult, ValidationState } from "./types.js";
 
 /**
@@ -23,83 +34,76 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     fieldId: providedFieldId,
   } = options;
 
-  const id = providedId ?? createFormControlId();
+  const id = wrapValue(providedId ?? createFormControlId());
+  const name = wrapValue(providedName as string | undefined).as((v) => v);
 
-  const name = isValue(providedName)
-    ? (providedName.as((n) => n ?? id) as Value<string>)
-    : createValue<string>((providedName as string | undefined) ?? id);
-
-  const validationState = isValue(providedValidationState)
-    ? (providedValidationState as Value<ValidationState | undefined>)
-    : createValue<ValidationState | undefined>(providedValidationState as ValidationState | undefined);
-
+  const validationState = providedValidationState
+    ? providedValidationState.as<ValidationState | undefined>((s) => s)
+    : createValue<ValidationState | undefined>(undefined);
   const isInvalid = validationState.as((s) => s === "invalid");
   const isValid = validationState.as((s) => s === "valid");
 
-  const isRequired = isValue(required)
-    ? (required.as((r) => Boolean(r)) as Value<boolean>)
-    : createValue(Boolean(required));
+  const isRequired = wrapValue(required ?? false).as((r) => Boolean(r));
+  const isDisabled = wrapValue(disabled ?? false).as((d) => Boolean(d));
+  const isReadOnly = wrapValue(readOnly ?? false).as((ro) => Boolean(ro));
 
-  const isDisabled = isValue(disabled)
-    ? (disabled.as((d) => Boolean(d)) as Value<boolean>)
-    : createValue(Boolean(disabled));
+  const defaultFieldId = providedFieldId ?? id.as((bid) => `${bid}-field`);
+  const customFieldId = createValue<string | undefined>(undefined);
+  const fieldId = mergeValues(() => customFieldId() ?? unwrapValue(defaultFieldId), {
+    parents: [customFieldId, defaultFieldId],
+  });
 
-  const isReadOnly = isValue(readOnly)
-    ? (readOnly.as((ro) => Boolean(ro)) as Value<boolean>)
-    : createValue(Boolean(readOnly));
-
-  const fieldId = createValue<string>(providedFieldId ?? `${id}-field`);
   const labelId = createValue<string | undefined>(undefined);
   const descriptionId = createValue<string | undefined>(undefined);
   const errorMessageId = createValue<string | undefined>(undefined);
 
-  const registerLabel = (newId: string): CleanupFunction => {
-    labelId(newId);
-    return () => {
-      if (labelId() === newId) {
+  const registerLabel = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
+    const wrappedId = wrapValue(newId as any);
+    return wrappedId.bind((val) => {
+      labelId(val);
+      return () => {
         labelId(undefined);
-      }
-    };
+      };
+    });
   };
 
-  const registerField = (newId: string): CleanupFunction => {
-    fieldId(newId);
-    return () => {
-      if (fieldId() === newId) {
-        fieldId(providedFieldId ?? `${id}-field`);
-      }
-    };
+  const registerField = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
+    const wrappedId = wrapValue(newId as any);
+    return wrappedId.bind((val) => {
+      customFieldId(val);
+      return () => {
+        customFieldId(undefined);
+      };
+    });
   };
 
-  const registerDescription = (newId: string): CleanupFunction => {
-    descriptionId(newId);
-    return () => {
-      if (descriptionId() === newId) {
+  const registerDescription = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
+    const wrappedId = wrapValue(newId as any);
+    return wrappedId.bind((val) => {
+      descriptionId(val);
+      return () => {
         descriptionId(undefined);
-      }
-    };
+      };
+    });
   };
 
-  const registerErrorMessage = (newId: string): CleanupFunction => {
-    errorMessageId(newId);
-    return () => {
-      if (errorMessageId() === newId) {
+  const registerErrorMessage = (
+    newId: ReactiveValue<string> | ObservableValue<string | undefined>,
+  ): CleanupFunction => {
+    const wrappedId = wrapValue(newId as any);
+    return wrappedId.bind((val) => {
+      errorMessageId(val);
+      return () => {
         errorMessageId(undefined);
-      }
-    };
+      };
+    });
   };
 
   const ariaLabelledBy = labelId.as((lid) => lid ?? undefined);
 
   const ariaDescribedBy = mergeValues(
     () => {
-      const parts: string[] = [];
-      const descId = descriptionId();
-      if (descId) parts.push(descId);
-      if (isInvalid()) {
-        const errId = errorMessageId();
-        if (errId) parts.push(errId);
-      }
+      const parts = [descriptionId(), isInvalid() && errorMessageId()].filter(isTruthy);
       return parts.length > 0 ? parts.join(" ") : undefined;
     },
     { parents: [descriptionId, isInvalid, errorMessageId] },
@@ -113,7 +117,7 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     "data-readonly": isReadOnly.as((ro) => (ro ? "" : undefined)),
   };
 
-  const fieldProps: Record<string, any> = {
+  const fieldProps: SeidrElementProps<"input"> = {
     id: fieldId,
     name,
     required: isRequired,
@@ -129,7 +133,7 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   };
 
   return {
-    id,
+    id: id.as((id) => id),
     name,
     validationState,
     isInvalid,
@@ -138,9 +142,9 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     isDisabled,
     isReadOnly,
     fieldId,
-    labelId,
-    descriptionId,
-    errorMessageId,
+    labelId: labelId.as((id) => id),
+    descriptionId: descriptionId.as((id) => id),
+    errorMessageId: errorMessageId.as((id) => id),
     registerLabel,
     registerField,
     registerDescription,

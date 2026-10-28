@@ -1,9 +1,9 @@
 import { isFn } from "@fimbul-works/hvat";
-import { type Value, wrapValue } from "@fimbul-works/seidr";
+import { type ReactiveValue, type Value, wrapValue } from "@fimbul-works/seidr";
 
 export interface UseControllableValueProps<T> {
   /** The value to be used, in controlled mode. */
-  value?: T | Value<T>;
+  value?: ReactiveValue<T>;
 
   /** The default value to be used, in uncontrolled mode. */
   defaultValue?: T;

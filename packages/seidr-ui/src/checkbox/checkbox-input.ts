@@ -1,5 +1,5 @@
 import { isObj } from "@fimbul-works/hvat";
-import { $, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { $, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseCheckboxResult } from "./types.js";
 
@@ -15,17 +15,14 @@ export interface CheckboxInputProps extends SeidrElementProps<"input"> {
  * Ensures full WAI-ARIA and native HTML form submission compatibility.
  */
 export function CheckboxInput(props: CheckboxInputProps = {}): HTMLInputElement {
-  const { instance, style, onchange, onfocus, onblur, ...rest } = props;
+  const { instance: cb, id: customId, style, onchange, onfocus, onblur, ...rest } = props;
 
-  if (!instance) {
-    throw new SeidrError(
-      "[seidr-ui]: CheckboxInput requires an instance prop or must be created via Checkbox.create() / Checkbox.",
-    );
+  if (!cb) {
+    throw new SeidrError("CheckboxInput requires an instance prop");
   }
 
-  if (typeof rest.id === "string") {
-    instance.formControl.registerField(rest.id);
-  }
+  const fieldId = customId ?? cb.id.as((base) => `${base}-input`);
+  onUnmounted(cb.formControl.registerField(fieldId));
 
   const mergedStyle = isObj(style) ? { ...VISUALLY_HIDDEN_STYLES, ...style } : VISUALLY_HIDDEN_STYLES;
 
@@ -34,30 +31,31 @@ export function CheckboxInput(props: CheckboxInputProps = {}): HTMLInputElement 
     if (e.defaultPrevented) return;
 
     const target = e.target as HTMLInputElement;
-    instance.setChecked(target.checked);
+    cb.setChecked(target.checked);
 
     // Keep DOM input synchronized with guarded or controlled state
-    target.checked = instance.checked();
-    target.indeterminate = instance.indeterminate();
+    target.checked = cb.checked();
+    target.indeterminate = cb.indeterminate();
   };
 
   const handleFocus = (e: FocusEvent) => {
     (onfocus as any)?.(e);
-    instance.isFocused(true);
+    cb.isFocused(true);
   };
 
   const handleBlur = (e: FocusEvent) => {
     (onblur as any)?.(e);
-    instance.isFocused(false);
+    cb.isFocused(false);
   };
 
   return $("input", {
-    ...instance.fieldProps,
+    ...cb.fieldProps,
+    id: cb.formControl.fieldId,
     ...rest,
-    ref: instance.inputRef,
+    ref: cb.inputRef,
     style: mergedStyle,
     onchange: handleChange,
     onfocus: handleFocus,
     onblur: handleBlur,
-  });
+  } as SeidrElementProps<"input">);
 }

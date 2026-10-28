@@ -4,9 +4,9 @@ import {
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
 } from "@fimbul-works/seidr";
 import type { UseSwitchOptions, UseSwitchResult } from "./types.js";
-import { useSwitch } from "./use-switch.js";
 
 export interface SwitchRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseSwitchOptions {
   /**
@@ -39,10 +39,9 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SwitchRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "div" as T,
-    instance,
+    instance: sw,
     id,
     name,
     checked,
@@ -55,22 +54,11 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
     readOnly,
     onpointerdown,
     ...rest
-  } = props as any;
+  } = props;
 
-  const sw =
-    instance ??
-    useSwitch({
-      id,
-      name,
-      checked,
-      defaultChecked,
-      onChange,
-      value,
-      validationState,
-      required,
-      disabled,
-      readOnly,
-    });
+  if (!sw) {
+    throw new SeidrError("SwitchRoot requires an instance prop");
+  }
 
   const handlePointerDown = (e: PointerEvent) => {
     (onpointerdown as any)?.(e);
@@ -83,7 +71,7 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as keyof SeidrElementTagNameMap,
+    as as T,
     {
       role: "group",
       id: sw.id,
@@ -91,7 +79,7 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ...sw.dataset,
       onpointerdown: handlePointerDown,
       ...rest,
-    } as SeidrElementProps<any>,
+    } as SeidrElementProps<T>,
     content,
-  ) as SeidrElementTagNameMap[T];
+  );
 }

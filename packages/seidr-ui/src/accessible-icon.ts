@@ -12,9 +12,9 @@ import { VisuallyHidden } from "./visually-hidden.js";
  * MIT License, Copyright (c) WorkOS
  */
 export function AccessibleIcon(icon: SVGSVGElement, label: ReactiveValue<string>): [SVGSVGElement, HTMLSpanElement] {
-  assignProps<"svg">(icon as any, {
-    ariaHidden: "true",
-    focusable: "false",
+  assignProps<any>(icon as any, {
+    ariaHidden: true,
+    focusable: false,
   });
   return [icon, VisuallyHidden(label)];
 }

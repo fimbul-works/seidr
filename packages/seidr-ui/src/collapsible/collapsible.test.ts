@@ -80,7 +80,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
   it("should support forceMount keeping content in DOM with hidden attribute when closed", () => {
     const root = setup(() =>
       Collapsible({
-        forceMount: true,
+        forceMount: createValue(true),
         defaultOpen: false,
         trigger: TRIGGER_TEXT,
         children: CONTENT_TEXT,
@@ -196,7 +196,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
     it("should toggle hidden attribute when forceMount is used", () => {
       const root = setup(() =>
         Collapsible({
-          forceMount: true,
+          forceMount: createValue(true),
           defaultOpen: false,
           trigger: TRIGGER_TEXT,
           children: CONTENT_TEXT,

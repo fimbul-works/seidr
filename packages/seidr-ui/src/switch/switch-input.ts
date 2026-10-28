@@ -1,5 +1,5 @@
 import { isObj } from "@fimbul-works/hvat";
-import { $, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { $, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseSwitchResult } from "./types.js";
 
@@ -15,17 +15,14 @@ export interface SwitchInputProps extends SeidrElementProps<"input"> {
  * Ensures full WAI-ARIA switch compliance and HTML form submission compatibility.
  */
 export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
-  const { instance, style, onchange, onfocus, onblur, ...rest } = props;
+  const { instance: sw, id: customId, style, onchange, onfocus, onblur, ...rest } = props;
 
-  if (!instance) {
-    throw new SeidrError(
-      "[seidr-ui]: SwitchInput requires an instance prop or must be created via Switch.create() / Switch.",
-    );
+  if (!sw) {
+    throw new SeidrError("SwitchInput requires an instance prop");
   }
 
-  if (typeof rest.id === "string") {
-    instance.formControl.registerField(rest.id);
-  }
+  const fieldId = customId ?? sw.id.as((base) => `${base}-input`);
+  onUnmounted(sw.formControl.registerField(fieldId));
 
   const mergedStyle = isObj(style) ? { ...VISUALLY_HIDDEN_STYLES, ...style } : VISUALLY_HIDDEN_STYLES;
 
@@ -34,29 +31,30 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
     if (e.defaultPrevented) return;
 
     const target = e.target as HTMLInputElement;
-    instance.setChecked(target.checked);
+    sw.setChecked(target.checked);
 
     // Keep DOM input synchronized with guarded or controlled state
-    target.checked = instance.checked();
+    target.checked = sw.checked();
   };
 
   const handleFocus = (e: FocusEvent) => {
     (onfocus as any)?.(e);
-    instance.isFocused(true);
+    sw.isFocused(true);
   };
 
   const handleBlur = (e: FocusEvent) => {
     (onblur as any)?.(e);
-    instance.isFocused(false);
+    sw.isFocused(false);
   };
 
   return $("input", {
-    ...instance.fieldProps,
+    ...sw.fieldProps,
+    id: sw.formControl.fieldId,
     ...rest,
-    ref: instance.inputRef,
+    ref: sw.inputRef,
     style: mergedStyle,
     onchange: handleChange,
     onfocus: handleFocus,
     onblur: handleBlur,
-  });
+  } as SeidrElementProps<"input">);
 }
