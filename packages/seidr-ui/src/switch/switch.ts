@@ -1,5 +1,5 @@
-import type { SeidrChild } from "@fimbul-works/seidr";
-import { createSwitch } from "./create-switch";
+import { createComponent, type SeidrChild } from "@fimbul-works/seidr";
+import { createSwitch } from "./create-switch.js";
 import { type SwitchControlProps } from "./switch-control.js";
 import { type SwitchDescriptionProps } from "./switch-description.js";
 import { type SwitchErrorMessageProps } from "./switch-error-message.js";
@@ -48,10 +48,10 @@ export interface SwitchProps extends UseSwitchOptions {
 }
 
 /**
- * Unified all-in-one Switch factory function.
+ * Unified all-in-one Switch component.
  * Creates an accessible switch with full WAI-ARIA and form-control integration in one call.
  */
-export function Switch(options: SwitchProps = {}) {
+export const Switch = createComponent((props: SwitchProps = {}) => {
   const {
     className,
     label,
@@ -66,15 +66,16 @@ export function Switch(options: SwitchProps = {}) {
     descriptionProps = {},
     errorMessageProps = {},
     ...switchOptions
-  } = options;
+  } = props;
 
   const sw = createSwitch(switchOptions);
 
   return sw.Root({ className, ...rootProps } as SwitchRootProps, [
     sw.Input(inputProps),
-    sw.Control(controlProps, [sw.Thumb(thumbProps, thumb)]),
+    sw.Control(controlProps, sw.Thumb(thumbProps, thumb)),
     label ? sw.Label(labelProps, label) : null,
     description ? sw.Description(descriptionProps, description) : null,
     errorMessage ? sw.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
-}
+}, "Switch");
+

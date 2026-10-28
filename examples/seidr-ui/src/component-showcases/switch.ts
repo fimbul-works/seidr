@@ -1,6 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { Switch } from "@fimbul-works/seidr-ui";
+import { createSwitch, Switch } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./switch.css";
 
@@ -12,7 +12,7 @@ export const SwitchShowcase = createComponent(() => {
   const isMaintenance = createValue(false);
   const maintenanceValidation = isMaintenance.as((val) => (val ? "valid" : "invalid"));
 
-  const maintenanceSwitch = Switch.create({
+  const maintenanceSwitch = createSwitch({
     id: "maintenance-switch",
     checked: isMaintenance,
     onChange: (val: boolean) => isMaintenance(val),

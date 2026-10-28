@@ -9,7 +9,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
-import { type UseImageResult, useImage } from "./use-image.js";
+import { type UseImageResult } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
   /**
@@ -60,15 +60,17 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 
-  if (!instance && !isLoaded && !src) {
-    throw new SeidrError("ImageImg requires an instance, isLoaded, or src prop");
+  if (!instance) {
+    throw new SeidrError("ImageImg requires an instance prop");
   }
 
-  // Use explicit instance/condition or initialize standalone hook if src was provided
-  const imgState = instance ?? (!isLoaded && src ? useImage({ src, crossOrigin, referrerPolicy }) : undefined);
-  const condition = wrapValue(isLoaded ?? imgState!.isLoaded);
+  const condition = wrapValue(isLoaded ?? instance.isLoaded);
 
-  const elementProps = { ...rest } as ImageImgProps;
+  const elementProps = {
+    dataComponent: "image",
+    dataPart: "img",
+    ...rest,
+  } as ImageImgProps;
   if (!isUndef(src)) elementProps.src = src;
   if (!isUndef(alt)) elementProps.alt = alt;
   if (!isUndef(crossOrigin)) elementProps.crossOrigin = crossOrigin;

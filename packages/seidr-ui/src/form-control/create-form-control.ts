@@ -1,6 +1,5 @@
 import {
   type DerivedValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
@@ -16,7 +15,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlRootProps<T> | SeidrChild | SeidrChild[],
+    props?: FormControlRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -24,7 +23,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Label element.
    */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
-    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[],
+    props?: FormControlLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -32,7 +31,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.Description element.
    */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[],
+    props?: FormControlDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -40,7 +39,7 @@ export interface FormControlInstance extends UseFormControlResult {
    * Pre-bound FormControl.ErrorMessage element.
    */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[],
+    props?: FormControlErrorMessageProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
@@ -53,21 +52,9 @@ export function createFormControl(options: UseFormControlOptions = {}): FormCont
 
   return {
     ...instance,
-    Root: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return FormControlRoot({ instance, ...props }, content);
-    },
-    Label: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return FormControlLabel({ instance, ...props }, content);
-    },
-    Description: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return FormControlDescription({ instance, ...props }, content);
-    },
-    ErrorMessage: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return FormControlErrorMessage({ instance, ...props }, content);
-    },
+    Root: (props = {}, children) => FormControlRoot({ instance, ...props }, children),
+    Label: (props = {}, children) => FormControlLabel({ instance, ...instance.dataset, ...props }, children),
+    Description: (props = {}, children) => FormControlDescription({ instance, ...instance.dataset, ...props }, children),
+    ErrorMessage: (props = {}, children) => FormControlErrorMessage({ instance, ...instance.dataset, ...props }, children),
   };
 }

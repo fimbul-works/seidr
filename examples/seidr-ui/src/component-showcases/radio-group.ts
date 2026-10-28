@@ -1,6 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $p, $section, $span, $strong } from "@fimbul-works/seidr/html";
-import { RadioGroup, type RadioGroupItemDescriptor } from "@fimbul-works/seidr-ui";
+import { createRadioGroup, RadioGroup, type RadioGroupItemDescriptor } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./radio-group.css";
 
@@ -21,7 +21,7 @@ export const RadioGroupShowcase = createComponent(() => {
   const shippingMethod = createValue("");
   const shippingValidation = shippingMethod.as((val) => (val ? "valid" : "invalid"));
 
-  const shippingGroup = RadioGroup.create({
+  const shippingGroup = createRadioGroup({
     id: "shipping-radio-group",
     value: shippingMethod,
     disabled: isDisabled,

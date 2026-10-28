@@ -1,9 +1,10 @@
 import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
-import { CollapsibleContent, type CollapsibleContentProps } from "./collapsible-content.js";
-import { CollapsibleRoot, type CollapsibleRootProps } from "./collapsible-root.js";
-import { CollapsibleTrigger, type CollapsibleTriggerProps } from "./collapsible-trigger.js";
+import { type CollapsibleContentProps } from "./collapsible-content.js";
+import { type CollapsibleRootProps } from "./collapsible-root.js";
+import { type CollapsibleTriggerProps } from "./collapsible-trigger.js";
 import { createCollapsible } from "./create-collapsible.js";
 import type { UseCollapsibleOptions } from "./use-collapsible.js";
+import { createComponent } from "@fimbul-works/seidr";
 
 export interface CollapsibleProps<
   TRoot extends keyof SeidrElementTagNameMap = "div",
@@ -30,11 +31,11 @@ export interface CollapsibleProps<
 /**
  * Collapsible component.
  */
-export function Collapsible<
+export const Collapsible = createComponent(<
   TRoot extends keyof SeidrElementTagNameMap = "div",
   TTrigger extends keyof SeidrElementTagNameMap = "button",
   TContent extends keyof SeidrElementTagNameMap = "div",
->(props: CollapsibleProps<TRoot, TTrigger, TContent>): SeidrElementTagNameMap[TRoot] {
+>(props: CollapsibleProps<TRoot, TTrigger, TContent>): SeidrElementTagNameMap[TRoot] => {
   const {
     open,
     defaultOpen,
@@ -59,8 +60,8 @@ export function Collapsible<
     id,
   });
 
-  return col.Root({ as, ...rootProps } as any, [
-    col.Trigger(triggerProps as any, trigger),
-    col.Content(contentProps as any, children),
+  return col.Root({ as, ...rootProps } as CollapsibleRootProps<TRoot>, [
+    col.Trigger(triggerProps, trigger),
+    col.Content(contentProps, children),
   ]);
-}
+}, "Collapsible")

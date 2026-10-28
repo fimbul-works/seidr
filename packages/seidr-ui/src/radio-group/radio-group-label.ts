@@ -1,5 +1,4 @@
 import {
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,17 +27,9 @@ export type RadioGroupLabelProps<T extends keyof SeidrElementTagNameMap = "span"
  * The label that gives the user information on the radio group.
  */
 export function RadioGroupLabel<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupLabel<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: RadioGroupLabelProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupLabel<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: RadioGroupLabelProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupLabelProps<T>>(propsOrChildren, children);
   const { as = "span" as T, instance: rg, ...rest } = props;
 
   if (!rg) {
@@ -46,7 +37,7 @@ export function RadioGroupLabel<T extends keyof SeidrElementTagNameMap = "span">
   }
 
   return FormControlLabel(
-    { as, instance: rg.formControl, ...rg.dataset, ...rest } as FormControlLabelProps<T>,
-    content,
+    { as, instance: rg.formControl, ...rg.dataset, dataComponent: "radio-group", ...rest } as FormControlLabelProps<T>,
+    children,
   );
 }

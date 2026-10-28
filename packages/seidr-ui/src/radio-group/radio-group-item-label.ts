@@ -1,7 +1,6 @@
 import {
   $,
   type ReactiveValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -34,17 +33,9 @@ export type RadioGroupItemLabelProps<T extends keyof SeidrElementTagNameMap = "l
  * The accessible label associated with an individual radio option.
  */
 export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  props?: RadioGroupItemLabelProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  propsOrChildren?: RadioGroupItemLabelProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupItemLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupItemLabelProps<T>>(propsOrChildren, children);
   const { as = "label" as T, instance: item, id, htmlFor, ...rest } = props;
 
   if (!item) {
@@ -59,8 +50,10 @@ export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "la
       id: id ?? item.labelId,
       htmlFor: effectiveHtmlFor,
       ...item.dataset,
+      dataComponent: "radio-group",
+      dataPart: "item-label",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

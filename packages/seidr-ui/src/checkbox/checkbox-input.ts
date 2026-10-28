@@ -50,6 +50,8 @@ export function CheckboxInput(props: CheckboxInputProps = {}): HTMLInputElement 
   return $("input", {
     ...cb.fieldProps,
     id: cb.formControl.fieldId,
+    dataComponent: "checkbox",
+    dataPart: "input",
     ...rest,
     ref: cb.inputRef,
     style: mergedStyle,

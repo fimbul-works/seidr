@@ -20,7 +20,7 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
     throw new SeidrError("SwitchInput requires an instance prop");
   }
 
-  const fieldId = customId ?? sw.id.as((base) => `${base}-input`);
+  const fieldId = customId ?? sw.id.as((base: string) => `${base}-input`);
   onUnmounted(sw.formControl.registerField(fieldId));
 
   const mergedStyle = mergeStyleProps(VISUALLY_HIDDEN_STYLES, style);
@@ -49,6 +49,8 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
   return $("input", {
     ...sw.fieldProps,
     id: sw.formControl.fieldId,
+    dataComponent: "switch",
+    dataPart: "input",
     ...rest,
     ref: sw.inputRef,
     style: mergedStyle,

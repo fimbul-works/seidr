@@ -1,6 +1,6 @@
-import { isObj } from "@fimbul-works/hvat";
 import { $, resolvePropsAndChildren, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "./constants.js";
+import { mergeStyleProps } from "@fimbul-works/seidr";
 
 /**
  * Creates a visually hidden span element.
@@ -16,19 +16,14 @@ export function VisuallyHidden(
   children?: SeidrChild | SeidrChild[],
 ): HTMLSpanElement {
   const [props, content] = resolvePropsAndChildren<SeidrElementProps<"span">>(propsOrChildren, children);
-
   const { style, ...rest } = props;
 
   return $(
     "span",
     {
+      dataComponent: "visually-hidden",
       ...rest,
-      style: isObj(style)
-        ? {
-            ...VISUALLY_HIDDEN_STYLES,
-            ...style,
-          }
-        : VISUALLY_HIDDEN_STYLES,
+      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, style)
     },
     content,
   );

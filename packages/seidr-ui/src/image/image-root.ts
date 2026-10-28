@@ -1,13 +1,11 @@
-import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  SeidrError,
 } from "@fimbul-works/seidr";
-import { type UseImageOptions, type UseImageResult, useImage } from "./use-image.js";
-import { SeidrError } from "@fimbul-works/seidr";
+import { type UseImageOptions, type UseImageResult } from "./use-image.js";
 
 export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
   /**
@@ -29,18 +27,9 @@ export type ImageRootProps<T extends keyof SeidrElementTagNameMap = "span"> = Im
  * Image.Root is the container element for an image and its fallback.
  */
 export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: ImageRootProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: ImageRootProps<T> | SeidrChild | SeidrChild[] | null,
+  props: ImageRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<ImageRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "span" as T,
     instance: img,
@@ -59,9 +48,11 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   return $(
     as,
     {
-      ...rest,
+      dataComponent: "image",
+      dataPart: "root",
       "data-status": img.status,
+      ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

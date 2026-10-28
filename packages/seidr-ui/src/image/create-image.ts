@@ -1,6 +1,5 @@
 import {
   type DerivedValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
@@ -14,7 +13,7 @@ export interface ImageInstance extends UseImageResult {
    * Pre-bound Image.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren?: ImageRootProps<T> | SeidrChild | SeidrChild[],
+    props?: ImageRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -22,14 +21,14 @@ export interface ImageInstance extends UseImageResult {
    * Pre-bound Image.Img element.
    */
   Img: <T extends keyof SeidrElementTagNameMap = "img">(
-    props: ImageImgProps<T>,
+    props?: ImageImgProps<T>,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /**
    * Pre-bound Image.Fallback container.
    */
   Fallback: <T extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[],
+    props?: ImageFallbackProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
@@ -42,16 +41,8 @@ export function createImage(options: UseImageOptions = {}): ImageInstance {
 
   return {
     ...instance,
-    Root: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return ImageRoot({ instance, ...props }, content);
-    },
-    Img: (props) => {
-      return ImageImg({ instance, ...props });
-    },
-    Fallback: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return ImageFallback({ instance, ...props }, content);
-    },
+    Root: (props = {}, children) => ImageRoot({ instance, ...props }, children),
+    Img: (props = {} as ImageImgProps<any>) => ImageImg({ instance, ...props }),
+    Fallback: (props = {}, children) => ImageFallback({ instance, ...props }, children),
   };
 }

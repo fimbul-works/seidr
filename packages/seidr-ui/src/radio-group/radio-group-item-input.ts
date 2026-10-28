@@ -67,12 +67,14 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
 
   return $("input", {
     ...item.fieldProps,
-    ...rest,
+    dataComponent: "radio-group",
+    dataPart: "item-input",
     ref: item.inputRef,
     style: mergedStyle,
     onclick: handleClick,
     onchange: handleChange,
     onfocus: handleFocus,
     onblur: handleBlur,
+    ...rest,
   } as SeidrElementProps<"input">);
 }

@@ -1,13 +1,14 @@
 import type { SeidrChild } from "@fimbul-works/seidr";
-import { CheckboxControl, type CheckboxControlProps } from "./checkbox-control.js";
-import { CheckboxDescription, type CheckboxDescriptionProps } from "./checkbox-description.js";
-import { CheckboxErrorMessage, type CheckboxErrorMessageProps } from "./checkbox-error-message.js";
-import { CheckboxIndicator, type CheckboxIndicatorProps } from "./checkbox-indicator.js";
-import { CheckboxInput, type CheckboxInputProps } from "./checkbox-input.js";
-import { CheckboxLabel, type CheckboxLabelProps } from "./checkbox-label.js";
-import { CheckboxRoot, type CheckboxRootProps } from "./checkbox-root.js";
+import { type CheckboxControlProps } from "./checkbox-control.js";
+import { type CheckboxDescriptionProps } from "./checkbox-description.js";
+import { type CheckboxErrorMessageProps } from "./checkbox-error-message.js";
+import { type CheckboxIndicatorProps } from "./checkbox-indicator.js";
+import { type CheckboxInputProps } from "./checkbox-input.js";
+import { type CheckboxLabelProps } from "./checkbox-label.js";
+import { type CheckboxRootProps } from "./checkbox-root.js";
 import { createCheckbox } from "./create-checkbox.js";
 import type { UseCheckboxOptions } from "./types.js";
+import { createComponent } from "@fimbul-works/seidr";
 
 export interface CheckboxProps extends UseCheckboxOptions {
   /** Optional class name for the root container. */
@@ -50,7 +51,7 @@ export interface CheckboxProps extends UseCheckboxOptions {
 /**
  * Checkbox component.
  */
-export function Checkbox(options: CheckboxProps = {}) {
+export const Checkbox = createComponent((props: CheckboxProps = {}) => {
   const {
     className,
     label,
@@ -65,15 +66,15 @@ export function Checkbox(options: CheckboxProps = {}) {
     descriptionProps = {},
     errorMessageProps = {},
     ...checkboxOptions
-  } = options;
+  } = props;
 
   const cb = createCheckbox(checkboxOptions);
 
   return cb.Root({ className, ...rootProps } as CheckboxRootProps, [
     cb.Input(inputProps),
-    cb.Control(controlProps, [cb.Indicator(indicatorProps, indicator ?? "✓")]),
+    cb.Control(controlProps, cb.Indicator(indicatorProps, indicator ?? "✓")),
     label ? cb.Label(labelProps, label) : null,
     description ? cb.Description(descriptionProps, description) : null,
     errorMessage ? cb.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
-}
+}, "Checkbox")

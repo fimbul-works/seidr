@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,17 +27,9 @@ export type SwitchRootProps<T extends keyof SeidrElementTagNameMap = "div"> = Sw
  * SwitchRoot is the outer container for a switch widget (role="group").
  */
 export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: SwitchRootProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchRootProps<T> | SeidrChild | SeidrChild[] | null,
+  props: SwitchRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<SwitchRootProps<T>>(propsOrChildren, children);
   const {
     as = "div" as T,
     instance: sw,
@@ -78,8 +69,10 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ref: sw.rootRef,
       ...sw.dataset,
       onpointerdown: handlePointerDown,
+      dataComponent: "switch",
+      dataPart: "root",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

@@ -24,10 +24,10 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
   it("should generate default ids and aria attributes", () => {
     const root = setup(() => {
       const cb = createCheckbox();
-      return cb.Root([
-        cb.Input(),
-        cb.Control([cb.Indicator({ forceMount: createValue(true) }, "✓")]),
-        cb.Label("Subscribe to newsletter"),
+      return cb.Root({}, [
+        cb.Input({}),
+        cb.Control({}, [cb.Indicator({ forceMount: createValue(true) }, "✓")]),
+        cb.Label({}, "Subscribe to newsletter"),
       ]);
     });
 
@@ -55,10 +55,10 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
   it("should support custom ids", () => {
     const root = setup(() => {
       const cb = createCheckbox({ id: "my-custom-cb" });
-      return cb.Root([
-        cb.Input(),
-        cb.Control([cb.Indicator({ forceMount: createValue(true) }, "✓")]),
-        cb.Label("Custom Checkbox"),
+      return cb.Root({}, [
+        cb.Input({}, ),
+        cb.Control({}, [cb.Indicator({ forceMount: createValue(true) }, "✓")]),
+        cb.Label({}, "Custom Checkbox"),
       ]);
     });
 
@@ -81,7 +81,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
         name: "terms",
         value: "accepted",
       });
-      return cb.Root([cb.Input(), cb.Control(), cb.Label("Terms")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}), cb.Label({}, "Terms")]);
     });
 
     const input = root.querySelector("input") as HTMLInputElement;
@@ -93,8 +93,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
 
   it("should support defaultChecked: true", () => {
     const root = setup(() => {
-      const cb = createCheckbox({ defaultChecked: true });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Remember me")]);
+      return Checkbox({ defaultChecked: true, label: "Remember me" });
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -111,7 +110,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const cb = createCheckbox({ onChange });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Toggle me")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}), cb.Label({}, "Toggle me")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -139,7 +138,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const cb = createCheckbox({ onChange });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Space key toggle")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}, cb.Indicator({}, "✓")), cb.Label({}, "Space key toggle")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -163,7 +162,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
         checked,
         onChange,
       });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Controlled")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}), cb.Label({}, "Controlled")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -186,7 +185,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
   it("should support indeterminate state", () => {
     const root = setup(() => {
       const cb = createCheckbox({ indeterminate: true });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("-")]), cb.Label("Select all")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}, cb.Indicator({}, "-")), cb.Label({}, "Select all")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -205,7 +204,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const cb = createCheckbox({ disabled: true, onChange });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Disabled Option")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}), cb.Label({}, "Disabled Option")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -227,7 +226,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const cb = createCheckbox({ readOnly: true, onChange });
-      return cb.Root([cb.Input(), cb.Control([cb.Indicator("✓")]), cb.Label("Read Only Option")]);
+      return cb.Root({}, [cb.Input({}), cb.Control({}), cb.Label({}, "Read Only Option")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -252,11 +251,11 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
         id: "validated-cb",
         validationState,
       });
-      return cb.Root([
-        cb.Input(),
-        cb.Control([cb.Indicator("✓")]),
-        cb.Label("Must accept"),
-        cb.ErrorMessage("You must accept this check to continue"),
+      return cb.Root({}, [
+        cb.Input({}),
+        cb.Control({}),
+        cb.Label({}, "Must accept"),
+        cb.ErrorMessage({}, "You must accept this check to continue"),
       ]);
     });
 
@@ -300,10 +299,10 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
       setForceMount = (val) => forceMount(val);
 
       const cb = createCheckbox({ defaultChecked: false });
-      return cb.Root([
-        cb.Input(),
-        cb.Control([cb.Indicator({ forceMount, id: "cb-indicator" })]),
-        cb.Label("Subscribe"),
+      return cb.Root({}, [
+        cb.Input({}),
+        cb.Control({}, [cb.Indicator({ forceMount, id: "cb-indicator" })]),
+        cb.Label({}, "Subscribe"),
       ]);
     });
 

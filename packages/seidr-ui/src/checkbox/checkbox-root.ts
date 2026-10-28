@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,18 +27,9 @@ export type CheckboxRootProps<T extends keyof SeidrElementTagNameMap = "div"> = 
  * CheckboxRoot is the outer container for a checkbox widget (role="group").
  */
 export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxRootProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxRootProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<CheckboxRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "div" as T,
     instance,
@@ -82,8 +72,10 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ref: cb.rootRef,
       ...cb.dataset,
       onpointerdown: handlePointerDown,
+      dataComponent: "checkbox",
+      dataPart: "root",
       ...rest,
-    } as SeidrElementProps<any>,
-    content,
-  ) as SeidrElementTagNameMap[T];
+    } as SeidrElementProps<T>,
+    children,
+  );
 }

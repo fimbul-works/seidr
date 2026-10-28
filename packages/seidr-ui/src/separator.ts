@@ -45,16 +45,15 @@ export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SeparatorProps<T>>(propsOrChildren, children);
-
   const { as = "hr" as T, orientation = "horizontal", role, ...rest } = props;
-  const isHr = as === "hr";
 
   return $(
-    as as T,
+    as,
     {
-      role: role ?? (!isHr ? "separator" : undefined),
+      role: role ?? (as !== "hr" ? "separator" : undefined),
       ariaOrientation: orientation === "vertical" ? "vertical" : undefined,
       dataOrientation: orientation,
+      dataComponent: "separator",
       ...rest,
     } as SeidrElementProps<T>,
     content,

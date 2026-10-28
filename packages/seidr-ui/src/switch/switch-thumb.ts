@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -29,17 +28,9 @@ export type SwitchThumbProps<T extends keyof SeidrElementTagNameMap = "div"> = S
  * Remains mounted permanently and slides across the control track based on data-checked.
  */
 export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchThumbProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchThumbProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<SwitchThumbProps<T>>(propsOrChildren, children);
   const { as = "div" as T, instance: sw, id, ...rest } = props;
 
   if (!sw) {
@@ -49,11 +40,13 @@ export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
   return $(
     as as T,
     {
-      id: id ?? sw.id.as((base) => `${base}-thumb`),
+      id: id ?? sw.id.as((base: string) => `${base}-thumb`),
       ref: sw.thumbRef,
       ...sw.dataset,
+      dataComponent: "switch",
+      dataPart: "thumb",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

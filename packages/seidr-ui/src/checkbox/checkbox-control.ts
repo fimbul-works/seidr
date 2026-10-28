@@ -1,7 +1,6 @@
 import {
   $,
   inClient,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -30,18 +29,9 @@ export type CheckboxControlProps<T extends keyof SeidrElementTagNameMap = "div">
  * Interacting via click or Space key toggles state and focuses the hidden input.
  */
 export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxControlProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<CheckboxControlProps<T>>(propsOrChildren, children);
-
   const { as = "div" as T, instance: cb, id, onclick, onkeydown, ...rest } = props;
 
   if (!cb) {
@@ -79,8 +69,10 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
       ...cb.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
+      dataComponent: "checkbox",
+      dataPart: "control",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

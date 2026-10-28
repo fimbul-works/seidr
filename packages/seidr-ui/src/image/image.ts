@@ -10,6 +10,7 @@ import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
 import { ImageRoot, ImageRootProps } from "./image-root.js";
 import { type UseImageOptions, useImage } from "./use-image.js";
+import { createComponent } from "@fimbul-works/seidr";
 
 export interface ImageOptions<
   T extends keyof SeidrElementTagNameMap = "span",
@@ -55,9 +56,9 @@ export type ImageComponentProps<T extends keyof SeidrElementTagNameMap = "span">
 /**
  * Unified Image component rendering an accessible image with fallback.
  */
-export function Image<T extends keyof SeidrElementTagNameMap = "span">(
+export const Image = createComponent(<T extends keyof SeidrElementTagNameMap = "span">(
   props: ImageComponentProps<T>,
-): SeidrElementTagNameMap[T] {
+): SeidrElementTagNameMap[T] => {
   const {
     as = "span" as T,
     src,
@@ -91,4 +92,4 @@ export function Image<T extends keyof SeidrElementTagNameMap = "span">(
       !isUndef(src) && image.Img({ alt, ...imgProps }),
     ],
   );
-}
+}, "Image")

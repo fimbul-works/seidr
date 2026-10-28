@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,18 +27,9 @@ export type FormControlRootProps<T extends keyof SeidrElementTagNameMap = "div">
  * FormControlRoot is the top-level container for an accessible form control group.
  */
 export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: FormControlRootProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: FormControlRootProps<T> | SeidrChild | SeidrChild[] | null,
+  props: FormControlRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<FormControlRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "div" as T,
     instance: form,
@@ -58,12 +48,14 @@ export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
   }
 
   return $(
-    as as T,
+    as,
     {
       id: form.id,
+      dataComponent: "form-control",
+      dataPart: "root",
       ...form.dataset,
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

@@ -2,7 +2,7 @@ import { createComponent, createValue, mount } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { ToggleButton, ToggleButtonRoot } from "./toggle-button-root.js";
+import { ToggleButton } from "./toggle-button.js";
 
 describeDualMode("ToggleButton", ({ getDocument, isSSR }) => {
   let container: HTMLElement;
@@ -21,13 +21,6 @@ describeDualMode("ToggleButton", ({ getDocument, isSSR }) => {
     expect(container.getAttribute("aria-pressed")).toBe("false");
     expect(container.hasAttribute("data-pressed")).toBe(false);
     expect(container.textContent).toBe("Mute");
-  });
-
-  it("should support ToggleButton.Root namespace alias", () => {
-    container = ToggleButtonRoot("Toggle alias");
-    getDocument().body.appendChild(container);
-
-    expect(container.getAttribute("aria-pressed")).toBe("false");
   });
 
   it("should support defaultPressed: true", () => {

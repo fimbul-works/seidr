@@ -46,6 +46,13 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
     expect(input).not.toBeNull();
     expect(desc).toBeDefined();
 
+    expect(root.querySelector("#test-email")?.getAttribute("data-component")).toBe("form-control");
+    expect(root.querySelector("#test-email")?.getAttribute("data-part")).toBe("root");
+    expect(label.getAttribute("data-component")).toBe("form-control");
+    expect(label.getAttribute("data-part")).toBe("label");
+    expect(desc?.getAttribute("data-component")).toBe("form-control");
+    expect(desc?.getAttribute("data-part")).toBe("description");
+
     expect(label.getAttribute("for")).toBe(input.id);
     expect(label.id).toBe("test-email-label");
     expect(desc?.id).toBe("test-email-description");
@@ -63,10 +70,10 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
         required: true,
       });
 
-      return form.Root([
-        form.Label(LABEL_TEXT),
+      return form.Root({}, [
+        form.Label({}, LABEL_TEXT),
         $input({ type: "text", ...form.fieldProps }),
-        form.Description(DESC_TEXT),
+        form.Description({}, DESC_TEXT),
       ]);
     });
 
@@ -115,8 +122,8 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
         validationState: createValue<ValidationState | undefined>("valid"),
       });
 
-      return form.Root([
-        form.Label(LABEL_TEXT),
+      return form.Root({}, [
+        form.Label({}, LABEL_TEXT),
         $input({ ...form.fieldProps }),
         form.ErrorMessage({ forceMount: createValue(true) }, ERROR_TEXT),
       ]);
@@ -131,7 +138,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
   it("should not set htmlFor on Label when as is not label", () => {
     const root = setup(() => {
       const form = createFormControl({ id: "custom-label-form" });
-      return form.Root([form.Label({ as: "span" }, LABEL_TEXT), $input(form.fieldProps)]);
+      return form.Root({}, [form.Label({ as: "span" }, LABEL_TEXT), $input(form.fieldProps)]);
     });
 
     const spanLabel = root.querySelector("span")!;
@@ -149,11 +156,11 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
           validationState,
         });
 
-        return form.Root([
-          form.Label(LABEL_TEXT),
+        return form.Root({}, [
+          form.Label({}, LABEL_TEXT),
           $input(form.fieldProps),
-          form.Description(DESC_TEXT),
-          form.ErrorMessage(ERROR_TEXT),
+          form.Description({}, DESC_TEXT),
+          form.ErrorMessage({}, ERROR_TEXT),
         ]);
       });
 
@@ -188,11 +195,11 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
           required: true,
         });
 
-        return form.Root([
-          form.Label(LABEL_TEXT),
+        return form.Root({}, [
+          form.Label({}, LABEL_TEXT),
           $input({ type: "email", ...form.fieldProps }),
-          form.Description(DESC_TEXT),
-          form.ErrorMessage(ERROR_TEXT),
+          form.Description({}, DESC_TEXT),
+          form.ErrorMessage({}, ERROR_TEXT),
         ]);
       });
 

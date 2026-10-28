@@ -1,6 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $input, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { FormControl } from "@fimbul-works/seidr-ui";
+import { FormControl, createFormControl } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./form-control.css";
 
@@ -16,7 +16,7 @@ export const FormControlShowcase = createComponent(() => {
   });
 
   // Example 1: Pre-bound Instance Pattern (FormControl.create)
-  const emailForm = FormControl.create({
+  const emailForm = createFormControl({
     id: "showcase-email-control",
     name: "email",
     required: true,

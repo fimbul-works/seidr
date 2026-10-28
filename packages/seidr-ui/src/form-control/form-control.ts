@@ -1,11 +1,12 @@
 import { isUndef } from "@fimbul-works/hvat";
 import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { createFormControl } from "./create-form-control.js";
-import { FormControlDescription, type FormControlDescriptionProps } from "./form-control-description.js";
-import { FormControlErrorMessage, type FormControlErrorMessageProps } from "./form-control-error-message.js";
-import { FormControlLabel, type FormControlLabelProps } from "./form-control-label.js";
-import { FormControlRoot, type FormControlRootProps } from "./form-control-root.js";
+import type { FormControlDescriptionProps } from "./form-control-description.js";
+import type { FormControlErrorMessageProps } from "./form-control-error-message.js";
+import type { FormControlLabelProps } from "./form-control-label.js";
+import type { FormControlRootProps } from "./form-control-root.js";
 import type { UseFormControlOptions } from "./types.js";
+import { createComponent } from "@fimbul-works/seidr";
 
 export interface FormControlProps<
   TRoot extends keyof SeidrElementTagNameMap = "div",
@@ -41,12 +42,12 @@ export interface FormControlProps<
 /**
  * FormControl component.
  */
-export function FormControl<
+export const FormControl = createComponent(<
   TRoot extends keyof SeidrElementTagNameMap = "div",
   TLabel extends keyof SeidrElementTagNameMap = "label",
   TDescription extends keyof SeidrElementTagNameMap = "div",
   TErrorMessage extends keyof SeidrElementTagNameMap = "div",
->(props: FormControlProps<TRoot, TLabel, TDescription, TErrorMessage>): SeidrElementTagNameMap[TRoot] {
+>(props: FormControlProps<TRoot, TLabel, TDescription, TErrorMessage>): SeidrElementTagNameMap[TRoot] => {
   const {
     id,
     name,
@@ -102,4 +103,5 @@ export function FormControl<
   }
 
   return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
-}
+}, "FormControl")
+

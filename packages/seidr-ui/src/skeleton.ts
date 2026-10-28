@@ -1,4 +1,7 @@
-import { isNum, isObj } from "@fimbul-works/hvat";
+import { isNum } from "@fimbul-works/hvat";
+import { mergeValues } from "@fimbul-works/seidr";
+import { mergeStyleProps } from "@fimbul-works/seidr";
+import { wrapValue } from "@fimbul-works/seidr";
 import {
   $,
   type ReactiveValue,
@@ -18,31 +21,31 @@ export interface SkeletonOptions<T extends keyof SeidrElementTagNameMap = "div">
    * Whether the skeleton is visible.
    * @default true
    */
-  visible?: boolean;
+  visible?: ReactiveValue<boolean>;
   /**
    * Whether the skeleton should animate.
    * @default true
    */
-  animate?: boolean;
+  animate?: ReactiveValue<boolean>;
   /**
    * Width of the skeleton in pixels (if number) or CSS string (e.g. "50%").
    * Defaults to "100%".
    */
-  width?: number | string;
+  width?: ReactiveValue<number | string>;
   /**
    * Height of the skeleton in pixels (if number) or CSS string (e.g. "2rem").
    * Defaults to "auto".
    */
-  height?: number | string;
+  height?: ReactiveValue<number | string>;
   /**
    * Whether the skeleton should be circular (sets border-radius to 9999px and width to height).
    * @default false
    */
-  circle?: boolean;
+  circle?: ReactiveValue<boolean>;
   /**
    * Roundedness of the skeleton in pixels (if number) or CSS string.
    */
-  radius?: number | string;
+  radius?: ReactiveValue<number | string>;
   /**
    * ARIA role for the skeleton.
    * @default "group"
@@ -50,7 +53,7 @@ export interface SkeletonOptions<T extends keyof SeidrElementTagNameMap = "div">
   role?: ReactiveValue<string>;
 }
 
-export type SkeletProps<T extends keyof SeidrElementTagNameMap = "div"> = SkeletonOptions<T> &
+export type SkeletonProps<T extends keyof SeidrElementTagNameMap = "div"> = SkeletonOptions<T> &
   Omit<SeidrElementProps<T>, "role" | "animate">;
 
 /**
@@ -60,15 +63,14 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  props: SkeletProps<T>,
+  props: SkeletonProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SkeletProps<T> | SeidrChild | SeidrChild[],
+  propsOrChildren?: SkeletonProps<T> | SeidrChild | SeidrChild[],
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<SkeletProps<T>>(propsOrChildren, children);
-
+  const [props, content] = resolvePropsAndChildren<SkeletonProps<T>>(propsOrChildren, children);
   const {
     as = "div" as T,
     visible = true,
@@ -82,35 +84,60 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
     ...rest
   } = props;
 
-  const resolvedHeight = circle
-    ? isNum(height)
-      ? `${height}px`
-      : (height ?? (isNum(width) ? `${width}px` : (width ?? "auto")))
-    : isNum(height)
-      ? `${height}px`
-      : (height ?? "auto");
-
-  const resolvedWidth = circle ? resolvedHeight : isNum(width) ? `${width}px` : (width ?? "100%");
-
-  const resolvedRadius = circle ? "9999px" : isNum(radius) ? `${radius}px` : radius;
-
-  const skeletonStyles: Record<string, string | number | undefined> = {
-    width: resolvedWidth,
-    height: resolvedHeight,
-    borderRadius: resolvedRadius,
+  type Dimensions = {
+    c: boolean;
+    w?: number | string;
+    h?: number | string;
+    r?: number | string;
   };
 
-  const finalStyle = isObj(style) ? { ...skeletonStyles, ...style } : (style ?? skeletonStyles);
+  const wrappedVisible = wrapValue(visible ?? true)
+  const wrappedAnimate = wrapValue(animate ?? true)
+  const wrappedCircle = wrapValue(circle ?? false);
+  const wrappedWidth = wrapValue(width as string | number | undefined)
+  const wrappedHeight = wrapValue(height as string | number | undefined)
+  const wrappedRadius = wrapValue(radius as string | number | undefined)
+
+  const dimensions = mergeValues<Dimensions>(() => ({
+    c: wrappedCircle(),
+    w: wrappedWidth(),
+    h: wrappedHeight(),
+    r: wrappedRadius(),
+  }));
+
+  const resolvedHeight = dimensions.as(({ c, w, h }: Dimensions) => {
+    return isNum(h)
+      ? `${h}px`
+      : c
+        ? (h ?? (isNum(w) ? `${w}px` : (w ?? "auto")))
+        : (h ?? "auto");
+  });
+
+  const resolvedWidth = dimensions.as(({ c, w }: Dimensions) => {
+    return c ? resolvedHeight() : isNum(w) ? `${w}px` : (w ?? "100%");
+  });
+
+  const resolvedRadius = dimensions.as(({ c, r }: Dimensions) => {
+    return c ? "100%" : isNum(r) ? `${r}px` : r;
+  });
 
   return $(
-    as as T,
+    as,
     {
       role,
-      ariaBusy: visible ? "true" : undefined,
-      dataVisible: visible ? "" : undefined,
-      dataAnimate: animate ? "" : undefined,
-      style: finalStyle,
+      dataComponent: "skeleton",
       ...rest,
+      ariaBusy: wrappedVisible.as(visible => visible ? "true" : undefined),
+      dataVisible: wrappedVisible.as(visible => visible ? "" : undefined),
+      dataAnimate: wrappedAnimate.as(animate => animate ? "" : undefined),
+      style: mergeStyleProps(
+        {
+          width: resolvedWidth,
+          height: resolvedHeight,
+          borderRadius: resolvedRadius,
+        },
+        style,
+      ),
     } as SeidrElementProps<T>,
     content,
   );

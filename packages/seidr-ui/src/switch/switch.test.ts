@@ -25,7 +25,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should generate default ids and aria attributes", () => {
     const root = setup(() => {
       const sw = createSwitch();
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -39,6 +39,17 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     expect(control).not.toBeNull();
     expect(thumb).not.toBeNull();
     expect(label).not.toBeNull();
+
+    expect(group.getAttribute("data-component")).toBe("switch");
+    expect(group.getAttribute("data-part")).toBe("root");
+    expect(control.getAttribute("data-component")).toBe("switch");
+    expect(control.getAttribute("data-part")).toBe("control");
+    expect(thumb.getAttribute("data-component")).toBe("switch");
+    expect(thumb.getAttribute("data-part")).toBe("thumb");
+    expect(input.getAttribute("data-component")).toBe("switch");
+    expect(input.getAttribute("data-part")).toBe("input");
+    expect(label.getAttribute("data-component")).toBe("switch");
+    expect(label.getAttribute("data-part")).toBe("label");
 
     expect(input.id).toBe(`${group.id}-input`);
     expect(input.getAttribute("type")).toBe("checkbox");
@@ -56,7 +67,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should support custom ids", () => {
     const root = setup(() => {
       const sw = createSwitch({ id: "my-custom-sw" });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Custom Switch")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Custom Switch")]);
     });
 
     const group = root.querySelector("#my-custom-sw");
@@ -75,7 +86,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should support custom name and value", () => {
     const root = setup(() => {
       const sw = createSwitch({ name: "airplane-mode", value: "active" });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()])]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({}))]);
     });
 
     const input = root.querySelector("input") as HTMLInputElement;
@@ -88,7 +99,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should support defaultChecked: true", () => {
     const root = setup(() => {
       const sw = createSwitch({ defaultChecked: true });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -109,7 +120,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const sw = createSwitch({ onChange });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -150,7 +161,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const sw = createSwitch({ onChange });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -175,7 +186,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
       toggleVal = (v: boolean) => checkedVal(v);
 
       const sw = createSwitch({ checked: checkedVal });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Controlled Switch")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Controlled Switch")]);
     });
 
     const input = root.querySelector("input") as HTMLInputElement;
@@ -194,7 +205,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const sw = createSwitch({ disabled: true, onChange });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -218,7 +229,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const sw = createSwitch({ readOnly: true, onChange });
-      return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
+      return sw.Root({}, [sw.Input({}), sw.Control({}, sw.Thumb({})), sw.Label({}, "Airplane Mode")]);
     });
 
     const group = root.querySelector("[role='group']") as HTMLElement;
@@ -246,11 +257,11 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
       setValidation = (state) => valState(state);
 
       const sw = createSwitch({ validationState: valState });
-      return sw.Root([
-        sw.Input(),
-        sw.Control([sw.Thumb()]),
-        sw.Label("Activate Account"),
-        sw.ErrorMessage("Account activation must be enabled."),
+      return sw.Root({}, [
+        sw.Input({}),
+        sw.Control({}, sw.Thumb({})),
+        sw.Label({}, "Activate Account"),
+        sw.ErrorMessage({}, "Account activation must be enabled."),
       ]);
     });
 

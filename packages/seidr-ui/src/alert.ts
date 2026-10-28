@@ -41,5 +41,5 @@ export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
   const [props, content] = resolvePropsAndChildren<AlertProps<T>>(propsOrChildren, children);
 
   const { as = "div" as T, role = "alert", ...rest } = props;
-  return $(as as T, { role, ...rest } as SeidrElementProps<T>, content) as SeidrElementTagNameMap[T];
+  return $(as as T, { role, dataComponent: "alert", ...rest } as SeidrElementProps<T>, content) as SeidrElementTagNameMap[T];
 }

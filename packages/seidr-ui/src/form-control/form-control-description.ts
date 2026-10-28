@@ -1,7 +1,6 @@
 import {
   $,
   onUnmounted,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -29,17 +28,9 @@ export type FormControlDescriptionProps<T extends keyof SeidrElementTagNameMap =
  * The description that gives the user more information on the form control.
  */
 export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: FormControlDescriptionProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<FormControlDescriptionProps<T>>(propsOrChildren, children);
   const { as = "div" as T, instance: form, id: customId, ...rest } = props;
 
   if (!form) {
@@ -50,12 +41,14 @@ export function FormControlDescription<T extends keyof SeidrElementTagNameMap = 
   onUnmounted(form.registerDescription(descriptionId));
 
   return $(
-    as as T,
+    as,
     {
       id: descriptionId,
+      dataComponent: "form-control",
+      dataPart: "description",
       ...form.dataset,
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

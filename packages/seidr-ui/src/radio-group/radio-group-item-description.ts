@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,17 +27,9 @@ export type RadioGroupItemDescriptionProps<T extends keyof SeidrElementTagNameMa
  * Descriptive text associated with an individual radio option.
  */
 export function RadioGroupItemDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: RadioGroupItemDescriptionProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: RadioGroupItemDescriptionProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupItemDescriptionProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupItemDescriptionProps<T>>(propsOrChildren, children);
   const { as = "span" as T, instance: item, id, ...rest } = props;
 
   if (!item) {
@@ -50,8 +41,10 @@ export function RadioGroupItemDescription<T extends keyof SeidrElementTagNameMap
     {
       id: id ?? item.descriptionId,
       ...item.dataset,
+      dataComponent: "radio-group",
+      dataPart: "item-description",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

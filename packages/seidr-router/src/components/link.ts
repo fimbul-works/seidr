@@ -1,6 +1,6 @@
 import { isTruthy, isUndef } from "@fimbul-works/hvat";
 import type { Observable, ReactiveValue, SeidrChild, SeidrElementProps } from "@fimbul-works/seidr";
-import { $, isObservable, isValue, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
+import { $, isObservable, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
 import { NO_HYDRATE } from "../constants.js";
 import { getRouterState } from "../get-router-state.js";
 import { useNavigate } from "../hooks/use-navigate.js";
@@ -67,7 +67,7 @@ export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
 ): HTMLElementTagNameMap[T] => {
   initRouter();
 
-  href = wrapValue(href, NO_HYDRATE);
+  href = wrapValue(href);
 
   const state = getRouterState();
   const navigate = useNavigate();

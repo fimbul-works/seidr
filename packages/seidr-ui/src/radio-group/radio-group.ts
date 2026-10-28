@@ -5,6 +5,7 @@ import { RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
 import { RadioGroupLabelProps } from "./radio-group-label.js";
 import { type RadioGroupRootProps } from "./radio-group-root.js";
 import type { RadioGroupItemDescriptor, UseRadioGroupOptions } from "./types.js";
+import { createComponent } from "@fimbul-works/seidr";
 
 export interface RadioGroupProps extends UseRadioGroupOptions {
   /** Optional class name for the root container. */
@@ -40,7 +41,7 @@ export interface RadioGroupProps extends UseRadioGroupOptions {
  * Creates an accessible radio group with full WAI-ARIA and form-control integration in one call.
  * Supports static item arrays, reactive observable arrays (dynamic radio groups), or custom children.
  */
-export function RadioGroup(options: RadioGroupProps = {}, children?: SeidrChild | SeidrChild[]) {
+export const RadioGroup = createComponent((props: RadioGroupProps = {}, children?: SeidrChild | SeidrChild[]) => {
   const {
     className,
     label,
@@ -52,7 +53,7 @@ export function RadioGroup(options: RadioGroupProps = {}, children?: SeidrChild 
     descriptionProps = {},
     errorMessageProps = {},
     ...radioGroupOptions
-  } = options;
+  } = props;
 
   const rg = createRadioGroup(radioGroupOptions);
 
@@ -75,4 +76,4 @@ export function RadioGroup(options: RadioGroupProps = {}, children?: SeidrChild 
     errorMessage ? rg.ErrorMessage(errorMessageProps, errorMessage) : null,
     ...renderedItems,
   ]);
-}
+}, "RadioGroup")

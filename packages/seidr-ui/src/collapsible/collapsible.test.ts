@@ -66,7 +66,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
   it("should support pre-bound instance factory createCollapsible", () => {
     const root = setup(() => {
       const col = createCollapsible({ defaultOpen: true });
-      return col.Root([col.Trigger(TRIGGER_TEXT), col.Content(CONTENT_TEXT)]);
+      return col.Root({}, [col.Trigger({}, TRIGGER_TEXT), col.Content({}, CONTENT_TEXT)]);
     });
 
     const trigger = root.querySelector("button")!;
@@ -114,7 +114,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
       expect(trigger.hasAttribute("data-expanded")).toBe(true);
       expect(trigger.hasAttribute("data-closed")).toBe(false);
       expect(root.textContent).toContain(CONTENT_TEXT);
-      expect(onOpenChange).toHaveBeenCalledWith(true);
+      expect(onOpenChange).toHaveBeenCalledWith(true, false);
 
       // Close
       trigger.click();
@@ -122,7 +122,7 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
       expect(trigger.hasAttribute("data-closed")).toBe(true);
       expect(trigger.hasAttribute("data-expanded")).toBe(false);
       expect(root.textContent).not.toContain(CONTENT_TEXT);
-      expect(onOpenChange).toHaveBeenCalledWith(false);
+      expect(onOpenChange).toHaveBeenCalledWith(false, true);
     });
 
     it("should not open when disabled", () => {

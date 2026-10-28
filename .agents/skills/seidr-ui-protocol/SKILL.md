@@ -88,7 +88,37 @@ Before writing ANY code in `packages/seidr-ui`:
 
 ## 6. Minimal Architecture (No Unneeded Context Stacks)
 
-- Avoid replicating ANY  external framework fetures or bbehavior unless it is a core feature of Seidr!
+- Avoid replicating ANY external framework features or behavior unless it is a core feature of Seidr!
   - Coordinate via props or simple state values.
   - Image example: A single `Value<ImageLoadingStatus>`, immediate fallback for SSR / timer in `inClient()`, and clean up with `onUnmounted()`.
 - Observers and window/document listeners must always register cleanup via `onUnmounted(() => ...)`.
+
+---
+
+## 7. Strict Two-Tier Component Model & Semantic CSS Annotations (`dataComponent` & `dataPart`)
+
+When implementing or refactoring components:
+
+1. **Strictly Two Public Tiers (No Tier 3)**:
+   - Component packages export ONLY `<Component>`, `create<Component>`, and `types`.
+   - `use<Component>` hooks and subcomponent primitives are strictly internal implementation details, not exported or supported for consumer use.
+   - **Tier 1: All-in-One Component (`export const <Component> = createComponent(...)`)**:
+     - Compound components must be wrapped in `createComponent(fn, "<Component>")`.
+     - Direct element atoms (`Button`, `Alert`, `Badge`, `Separator`, `Skeleton`, `VisuallyHidden`) remain fast raw element factories.
+     - Accepts high-level convenience props (`label`, `description`, `errorMessage`, `indicator`, etc.) alongside sub-part prop bags (`rootProps`, `controlProps`, `inputProps`, etc.).
+     - Internally instantiates `create<Component>(...)` and renders the default composition tree.
+   - **Tier 2: Fine-Grained Coordinator (`create<Component>`)**:
+     - The single entry point for fine-grained DOM sculpting.
+     - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
+     - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)` without `resolvePropsAndChildren`.
+   - **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
+     - Standardized signature: `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+     - Receives `instance` passed by `create<Component>` (throws `SeidrError` if missing).
+
+2. **Semantic CSS Style System Annotations**:
+   - Every component element MUST provide `dataComponent: "<kebab-name>"` (`data-component="..."` in DOM).
+   - Every compound sub-element MUST provide `dataPart: "<kebab-part>"` (`data-part="..."` in DOM).
+   - For delegating sub-components (e.g. `CheckboxLabel` -> `FormControlLabel`):
+     - Forward `dataComponent: "checkbox"` so it overrides the underlying default `dataComponent: "form-control"` via props spreading, while preserving `dataPart: "label"`.
+
+

@@ -87,7 +87,7 @@ export interface UseSwitchResult {
 export interface SwitchInstance extends UseSwitchResult {
   /** Pre-bound Switch.Root container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: SwitchRootProps<T> | SeidrChild | SeidrChild[],
+    props: SwitchRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -96,31 +96,31 @@ export interface SwitchInstance extends UseSwitchResult {
 
   /** Pre-bound Switch.Control visual track element. */
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: SwitchControlProps<T> | SeidrChild | SeidrChild[],
+    props: SwitchControlProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Thumb sliding thumb element. */
   Thumb: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: SwitchThumbProps<T> | SeidrChild | SeidrChild[],
+    props: SwitchThumbProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
-    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[],
+    props: FormControlLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlDescriptionProps<T> | SeidrChild | SeidrChild[],
+    props: FormControlDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: FormControlErrorMessageProps<T> | SeidrChild | SeidrChild[],
+    props: FormControlErrorMessageProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

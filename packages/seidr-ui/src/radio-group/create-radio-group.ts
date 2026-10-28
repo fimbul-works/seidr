@@ -1,5 +1,5 @@
 import { isUndef } from "@fimbul-works/hvat";
-import { $, resolvePropsAndChildren, type SeidrChild } from "@fimbul-works/seidr";
+import { $, type SeidrChild } from "@fimbul-works/seidr";
 import { RadioGroupDescription, type RadioGroupDescriptionProps } from "./radio-group-description.js";
 import { RadioGroupErrorMessage, type RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
 import { RadioGroupItem, type RadioGroupItemProps } from "./radio-group-item.js";
@@ -28,47 +28,23 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
   const createItem = (itemOptions: UseRadioGroupItemOptions): RadioGroupItemInstance => {
     const itemInstance = useRadioGroupItem(instance, itemOptions);
 
-    const Root = (
-      propsOrChildren?: RadioGroupItemProps<any> | SeidrChild | SeidrChild[],
-      children?: SeidrChild | SeidrChild[],
-    ) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItem({ ...props, instance: itemInstance }, content);
-    };
+    const Root = (props: RadioGroupItemProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+      RadioGroupItem({ instance: itemInstance, ...props }, children);
 
-    const Input = (props: RadioGroupItemInputProps = {}) => RadioGroupItemInput({ ...props, instance: itemInstance });
+    const Input = (props: RadioGroupItemInputProps = {}) =>
+      RadioGroupItemInput({ instance: itemInstance, ...props });
 
-    const Control = (
-      propsOrChildren?: RadioGroupItemControlProps<any> | SeidrChild | SeidrChild[],
-      children?: SeidrChild | SeidrChild[],
-    ) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemControl({ ...props, instance: itemInstance }, content);
-    };
+    const Control = (props: RadioGroupItemControlProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+      RadioGroupItemControl({ instance: itemInstance, ...props }, children);
 
-    const Indicator = (
-      propsOrChildren?: RadioGroupItemIndicatorProps<any> | SeidrChild | SeidrChild[],
-      children?: SeidrChild | SeidrChild[],
-    ) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemIndicator({ ...props, instance: itemInstance }, content);
-    };
+    const Indicator = (props: RadioGroupItemIndicatorProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+      RadioGroupItemIndicator({ instance: itemInstance, ...props }, children);
 
-    const Label = (
-      propsOrChildren?: RadioGroupItemLabelProps<any> | SeidrChild | SeidrChild[],
-      children?: SeidrChild | SeidrChild[],
-    ) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemLabel({ ...props, instance: itemInstance }, content);
-    };
+    const Label = (props: RadioGroupItemLabelProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+      RadioGroupItemLabel({ instance: itemInstance, ...props }, children);
 
-    const Description = (
-      propsOrChildren?: RadioGroupItemDescriptionProps<any> | SeidrChild | SeidrChild[],
-      children?: SeidrChild | SeidrChild[],
-    ) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemDescription({ ...props, instance: itemInstance }, content);
-    };
+    const Description = (props: RadioGroupItemDescriptionProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+      RadioGroupItemDescription({ instance: itemInstance, ...props }, children);
 
     return {
       ...itemInstance,
@@ -90,22 +66,10 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
   return {
     ...instance,
     createItem,
-    Root: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupRoot({ ...props, instance } as RadioGroupRootProps<any>, content);
-    },
-    Label: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupLabel({ ...props, instance } as RadioGroupLabelProps<any>, content);
-    },
-    Description: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupDescription({ ...props, instance } as RadioGroupDescriptionProps<any>, content);
-    },
-    ErrorMessage: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupErrorMessage({ ...props, instance } as RadioGroupErrorMessageProps<any>, content);
-    },
+    Root: (props = {}, children) => RadioGroupRoot({ instance, ...props }, children),
+    Label: (props = {}, children) => RadioGroupLabel({ instance, ...instance.dataset, ...props }, children),
+    Description: (props = {}, children) => RadioGroupDescription({ instance, ...instance.dataset, ...props }, children),
+    ErrorMessage: (props = {}, children) => RadioGroupErrorMessage({ instance, ...instance.dataset, ...props }, children),
     Item: (itemOptionsOrProps, children?: SeidrChild | SeidrChild[]) => {
       const {
         value,
@@ -127,12 +91,12 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
       const itemInstance = useRadioGroupItem(instance, { value, disabled, id });
 
       if (!isUndef(children)) {
-        return RadioGroupItem({ ...(itemProps ?? {}), ...rootProps, instance: itemInstance }, children);
+        return RadioGroupItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, children);
       }
 
-      const labelEl = label ? RadioGroupItemLabel({ ...(labelProps ?? {}), instance: itemInstance }, label) : null;
+      const labelEl = label ? RadioGroupItemLabel({ instance: itemInstance, ...(labelProps ?? {}) }, label) : null;
       const descEl = description
-        ? RadioGroupItemDescription({ ...(descriptionProps ?? {}), instance: itemInstance }, description)
+        ? RadioGroupItemDescription({ instance: itemInstance, ...(descriptionProps ?? {}) }, description)
         : null;
 
       const textContent =
@@ -140,30 +104,18 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
           ? $("div", { ...(contentProps ?? {}) }, [labelEl, descEl])
           : (labelEl ?? descEl);
 
-      return RadioGroupItem({ ...(itemProps ?? {}), ...rootProps, instance: itemInstance }, [
-        RadioGroupItemInput({ ...(inputProps ?? {}), instance: itemInstance }),
-        RadioGroupItemControl({ ...(controlProps ?? {}), instance: itemInstance }, [
-          RadioGroupItemIndicator({ ...(indicatorProps ?? {}), instance: itemInstance }, indicator),
+      return RadioGroupItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
+        RadioGroupItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
+        RadioGroupItemControl({ instance: itemInstance, ...(controlProps ?? {}) }, [
+          RadioGroupItemIndicator({ instance: itemInstance, ...(indicatorProps ?? {}) }, indicator),
         ]),
         textContent,
       ]);
     },
     ItemInput: (props = {}) => RadioGroupItemInput(props),
-    ItemControl: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemControl(props, content);
-    },
-    ItemIndicator: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemIndicator(props, content);
-    },
-    ItemLabel: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemLabel(props, content);
-    },
-    ItemDescription: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return RadioGroupItemDescription(props, content);
-    },
+    ItemControl: (props = {}, children) => RadioGroupItemControl(props, children),
+    ItemIndicator: (props = {}, children) => RadioGroupItemIndicator(props, children),
+    ItemLabel: (props = {}, children) => RadioGroupItemLabel(props, children),
+    ItemDescription: (props = {}, children) => RadioGroupItemDescription(props, children),
   };
 }

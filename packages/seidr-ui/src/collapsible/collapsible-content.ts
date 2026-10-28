@@ -2,8 +2,6 @@ import {
   $,
   type DerivedValue,
   mergeValues,
-  onUnmounted,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -12,6 +10,8 @@ import {
   unwrapValue,
 } from "@fimbul-works/seidr";
 import type { UseCollapsibleResult } from "./types.js";
+import { wrapValue } from "@fimbul-works/seidr";
+import { ObservableValue } from "@fimbul-works/seidr";
 
 export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   /**
@@ -33,35 +33,23 @@ export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "di
  * Contains the content to be rendered when the collapsible is expanded.
  */
 export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: CollapsibleContentProps<T>,
   children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren<CollapsibleContentProps<T>>(propsOrChildren, children);
+  const { as = "div" as T, instance: col, forceMount, id: customId, ...rest } = props;
 
-  const { as = "div" as T, instance, forceMount, id: customId, ...rest } = props as any;
-
-  const col = instance;
   if (!col) {
     throw new SeidrError(
-      "[seidr-ui]: CollapsibleContent requires an instance prop or must be created via Collapsible.create() / Collapsible.",
+      "CollapsibleContent requires an instance prop",
     );
   }
 
-  if (customId) {
-    onUnmounted(col.registerContentId(customId));
-  }
-
-  const resolvedContentId = customId ?? col.contentId();
+  const wrappedId = wrapValue(customId as string)
+  const id = mergeValues(() => wrappedId() ?? col.contentId(), { parents: [wrappedId, col.contentId] })
+  id.bind(id => col.registerContentId(id))
 
   const elementProps = {
-    id: resolvedContentId,
+    id,
     ...col.dataset,
     ...rest,
   };
@@ -75,9 +63,11 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
       as as T,
       {
         hidden: col.isOpen.as((v: boolean) => !v),
+        dataComponent: "collapsible",
+        dataPart: "content",
         ...elementProps,
       } as SeidrElementProps<T>,
-      content,
+      children,
     ),
   ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

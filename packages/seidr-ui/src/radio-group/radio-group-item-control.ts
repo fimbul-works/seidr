@@ -1,7 +1,6 @@
 import {
   $,
   inClient,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -29,17 +28,9 @@ export type RadioGroupItemControlProps<T extends keyof SeidrElementTagNameMap = 
  * The visual container representing a radio button (clickable indicator box/circle).
  */
 export function RadioGroupItemControl<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemControl<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: RadioGroupItemControlProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItemControl<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: RadioGroupItemControlProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupItemControlProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupItemControlProps<T>>(propsOrChildren, children);
   const { as = "div" as T, instance: item, id, onclick, onkeydown, ...rest } = props;
 
   if (!item) {
@@ -72,13 +63,15 @@ export function RadioGroupItemControl<T extends keyof SeidrElementTagNameMap = "
   return $(
     as as T,
     {
-      id: id ?? item.id.as((base) => `${base}-control`),
+      id: id ?? item.id.as((base: string) => `${base}-control`),
       ...item.dataset,
       ref: item.controlRef,
       onclick: handleClick,
       onkeydown: handleKeyDown,
+      dataComponent: "radio-group",
+      dataPart: "item-control",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

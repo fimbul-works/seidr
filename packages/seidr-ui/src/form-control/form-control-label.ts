@@ -2,7 +2,6 @@ import {
   $,
   onUnmounted,
   type ReactiveValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -35,18 +34,9 @@ export type FormControlLabelProps<T extends keyof SeidrElementTagNameMap = "labe
  * The label that gives the user information on the form control.
  */
 export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  props?: FormControlLabelProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label">(
-  propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[] | null,
+  props: FormControlLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<FormControlLabelProps<T>>(propsOrChildren, children);
-
   const { as = "label" as T, instance: form, id: customId, htmlFor, ...rest } = props;
 
   if (!form) {
@@ -56,17 +46,18 @@ export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label
   const id = customId ?? form.id.as((base) => `${base}-label`);
   onUnmounted(form.registerLabel(id));
 
-  const isNativeLabel = as === "label";
-  const effectiveHtmlFor = isNativeLabel ? (htmlFor ?? form.fieldId) : undefined;
+  const effectiveHtmlFor = as === "label" ? (htmlFor ?? form.fieldId) : undefined;
 
   return $(
-    as as T,
+    as,
     {
       id,
       htmlFor: effectiveHtmlFor,
+      dataComponent: "form-control",
+      dataPart: "label",
       ...form.dataset,
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

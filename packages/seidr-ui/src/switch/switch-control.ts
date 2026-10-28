@@ -1,7 +1,6 @@
 import {
   $,
   inClient,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -30,23 +29,13 @@ export type SwitchControlProps<T extends keyof SeidrElementTagNameMap = "div"> =
  * Interacting via click or Space key toggles state and focuses the hidden input.
  */
 export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchControlProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchControlProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<SwitchControlProps<T>>(propsOrChildren, children);
   const { as = "div" as T, instance: sw, id, onclick, onkeydown, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError(
-      "[seidr-ui]: SwitchControl requires an instance prop or must be created via Switch.create() / Switch.",
-    );
+    throw new SeidrError("SwitchControl requires an instance prop");
   }
 
   const handleClick = (e: MouseEvent) => {
@@ -75,13 +64,15 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
   return $(
     as as T,
     {
-      id: id ?? sw.id.as((base) => `${base}-control`),
+      id: id ?? sw.id.as((base: string) => `${base}-control`),
       ref: sw.controlRef,
       ...sw.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
+      dataComponent: "switch",
+      dataPart: "control",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

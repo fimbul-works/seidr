@@ -1,6 +1,6 @@
 import { createComponent, createValue, mergeValues } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { Checkbox } from "@fimbul-works/seidr-ui";
+import { Checkbox, createCheckbox } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./checkbox.css";
 
@@ -27,7 +27,7 @@ export const CheckboxShowcase = createComponent(() => {
   const termsValidation = agreedToTerms.as((agreed) => (agreed ? "valid" : "invalid"));
 
   // Checkbox.create instance pattern for the terms agreement
-  const termsCheckbox = Checkbox.create({
+  const termsCheckbox = createCheckbox({
     id: "terms-checkbox",
     checked: agreedToTerms,
     onChange: (val: boolean) => agreedToTerms(val),
@@ -163,7 +163,7 @@ export const CheckboxShowcase = createComponent(() => {
     CodeBlock(
       `import { Checkbox } from "@fimbul-works/seidr-ui";
 
-// 1. All-in-one unified usage
+// All-in-one unified component
 Checkbox({
   label: "Subscribe to newsletter",
   description: "Get updates delivered directly to your inbox.",
@@ -171,8 +171,8 @@ Checkbox({
   indicator: "✓",
 });
 
-// 2. Pre-bound compound usage with reactive validation
-const cb = Checkbox.create({
+// Pre-bound compound usage with reactive validation
+const cb = createCheckbox({
   checked: isAgreed,
   onChange: (val) => isAgreed(val),
   required: true,

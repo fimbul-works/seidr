@@ -1,9 +1,8 @@
 import {
-  resolvePropsAndChildren,
+  type DerivedValue,
   type SeidrChild,
   type SeidrElementTagNameMap,
   SeidrError,
-  type Value,
 } from "@fimbul-works/seidr";
 import {
   FormControlErrorMessage,
@@ -15,20 +14,12 @@ export type SwitchErrorMessageProps<T extends keyof SeidrElementTagNameMap = "di
   FormControlErrorMessageProps<T> & { instance?: UseSwitchResult };
 
 /**
- * SwitchErrorMessage standalone component.
+ * SwitchErrorMessage component.
  */
-export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
 export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchErrorMessageProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null>;
-export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SwitchErrorMessageProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T] | Value<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
+): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { instance: sw, ...rest } = props;
 
   if (!sw) {
@@ -36,7 +27,12 @@ export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div
   }
 
   return FormControlErrorMessage(
-    { instance: sw.formControl, ...sw.dataset, ...rest } as FormControlErrorMessageProps<T>,
-    content,
+    {
+      instance: sw.formControl,
+      ...sw.dataset,
+      dataComponent: "switch",
+      ...rest,
+    } as FormControlErrorMessageProps<T>,
+    children,
   );
 }

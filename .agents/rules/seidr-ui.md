@@ -27,3 +27,26 @@ Before implementing, refactoring, or porting any component, primitive, or hook f
 4. **Minimal Architecture (No Unneeded Context Stacks)**:
    - Focus on DOM behavior rather than porting complex framework context hierarchies.
    - Clean up listeners and observers directly with `onUnmounted(() => ...)`.
+
+5. **Strict Two-Tier Component Model & Semantic Styling Annotations**:
+   - **Strictly Two Public Tiers Only (No Tier 3)**:
+     - Component packages export ONLY `<Component>`, `create<Component>`, and `types`.
+     - Underlying `use<Component>` hooks and subcomponent primitives are strictly **internal implementation details**—never exported or supported for standalone consumer instantiations.
+   - **Tier 1: All-in-One Component (`export const <Component> = createComponent(...)`)**:
+     - Compound components must be wrapped in `createComponent(fn, "<Component>")`.
+     - Single-element atoms (`Button`, `Alert`, `Badge`, `Separator`, `Skeleton`, `VisuallyHidden`) are direct element factories.
+     - Exposes high-level convenience props (`label`, `description`, `errorMessage`, `indicator`, etc.) and subcomponent prop bags (`rootProps`, `controlProps`, etc.).
+     - Internally instantiates `create<Component>(...)` and renders the standard composition.
+   - **Tier 2: Fine-Grained Coordinator (`create<Component>`)**:
+     - The single entry point for fine-grained DOM sculpting.
+     - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
+     - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)` without `resolvePropsAndChildren` overhead.
+   - **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
+     - Standardized signature: `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+     - Receives `instance` passed by `create<Component>` (throws `SeidrError` if missing).
+   - **Semantic CSS Style System Annotations (`dataComponent` & `dataPart`)**:
+     - Every element must specify `dataComponent: "<kebab-name>"` (e.g. `"button"`, `"checkbox"`, `"collapsible"`, `"form-control"`).
+     - Every compound sub-element must specify `dataPart: "<kebab-part>"` (e.g. `"root"`, `"control"`, `"indicator"`, `"thumb"`, `"trigger"`, `"content"`, `"label"`, `"description"`, `"error-message"`).
+     - Composed parts delegating to another primitive (e.g., `CheckboxLabel` -> `FormControlLabel`): pass `dataComponent: "checkbox"` so it overrides the delegate's default `dataComponent: "form-control"`, preserving `dataPart: "label"`.
+
+

@@ -1,6 +1,5 @@
 import {
   type DerivedValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -32,17 +31,9 @@ export type RadioGroupErrorMessageProps<T extends keyof SeidrElementTagNameMap =
  * The error message displayed when the radio group is in an invalid state.
  */
 export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: RadioGroupErrorMessageProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: RadioGroupErrorMessageProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupErrorMessageProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren<RadioGroupErrorMessageProps<T>>(propsOrChildren, children);
   const { as = "span" as T, instance: rg, ...rest } = props;
 
   if (!rg) {
@@ -50,7 +41,7 @@ export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = 
   }
 
   return FormControlErrorMessage(
-    { as, instance: rg.formControl, ...rg.dataset, ...rest } as FormControlErrorMessageProps<T>,
-    content,
+    { as, instance: rg.formControl, ...rg.dataset, dataComponent: "radio-group", ...rest } as FormControlErrorMessageProps<T>,
+    children,
   );
 }

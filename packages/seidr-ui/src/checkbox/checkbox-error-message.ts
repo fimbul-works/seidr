@@ -1,10 +1,4 @@
-import {
-  type DerivedValue,
-  resolvePropsAndChildren,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -20,17 +14,9 @@ export type CheckboxErrorMessageProps<T extends keyof SeidrElementTagNameMap = "
  * CheckboxErrorMessage standalone component.
  */
 export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxErrorMessageProps<T>,
   children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CheckboxErrorMessageProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
   const { instance: cb, ...rest } = props;
 
   if (!cb) {
@@ -38,7 +24,12 @@ export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "d
   }
 
   return FormControlErrorMessage(
-    { instance: cb.formControl, ...cb.dataset, ...rest } as FormControlErrorMessageProps<T>,
-    content,
+    {
+      instance: cb.formControl,
+      ...cb.dataset,
+      dataComponent: "checkbox",
+      ...rest,
+    } as FormControlErrorMessageProps<T>,
+    children,
   );
 }

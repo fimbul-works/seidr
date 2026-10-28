@@ -3,7 +3,6 @@ import {
   type DerivedValue,
   mergeValues,
   type ReactiveValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -40,17 +39,9 @@ export type RadioGroupItemIndicatorProps<T extends keyof SeidrElementTagNameMap 
  * The visual indicator rendered when the radio item is in a checked state.
  */
 export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: RadioGroupItemIndicatorProps<T>,
   children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: RadioGroupItemIndicatorProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren<RadioGroupItemIndicatorProps<T>>(propsOrChildren, children);
   const { as = "div" as T, instance: item, forceMount = false, id, ...rest } = props;
 
   if (!item) {
@@ -58,8 +49,10 @@ export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap =
   }
 
   const elementProps = {
-    id: id ?? item.id.as((base) => `${base}-indicator`),
+    id: id ?? item.id.as((base: string) => `${base}-indicator`),
     ...item.dataset,
+    dataComponent: "radio-group",
+    dataPart: "item-indicator",
     ...rest,
   };
 
@@ -67,7 +60,7 @@ export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap =
     parents: [forceMount, item.isSelected],
   });
 
-  return Show(condition, () => $(as as T, elementProps as SeidrElementProps<T>, content)) as DerivedValue<
+  return Show(condition, () => $(as as T, elementProps as SeidrElementProps<T>, children)) as DerivedValue<
     SeidrElementTagNameMap[T] | null
   >;
 }

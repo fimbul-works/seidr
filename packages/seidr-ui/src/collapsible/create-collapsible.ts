@@ -1,6 +1,5 @@
 import {
   type DerivedValue,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
@@ -15,7 +14,7 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[],
+    props?: CollapsibleRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -23,7 +22,7 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Trigger element.
    */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
-    propsOrChildren?: CollapsibleTriggerProps<T> | SeidrChild | SeidrChild[],
+    props?: CollapsibleTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -31,9 +30,9 @@ export interface CollapsibleInstance extends UseCollapsibleResult {
    * Pre-bound Collapsible.Content element.
    */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CollapsibleContentProps<T> | SeidrChild | SeidrChild[],
+    props?: CollapsibleContentProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => SeidrElementTagNameMap[T] | DerivedValue<SeidrElementTagNameMap[T] | null>;
+  ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
 /**
@@ -44,17 +43,8 @@ export function createCollapsible(options: UseCollapsibleOptions = {}): Collapsi
 
   return {
     ...instance,
-    Root: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return CollapsibleRoot({ instance, ...props }, content);
-    },
-    Trigger: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return CollapsibleTrigger({ instance, ...props }, content);
-    },
-    Content: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return CollapsibleContent({ instance, ...props }, content);
-    },
+    Root: (props = {}, children) => CollapsibleRoot({ instance, ...props }, children),
+    Trigger: (props = {} as CollapsibleTriggerProps<any>, children) => CollapsibleTrigger({ instance, ...props }, children),
+    Content: (props = {}, children) => CollapsibleContent({ instance, ...props }, children),
   };
 }

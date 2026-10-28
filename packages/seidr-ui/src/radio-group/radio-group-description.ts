@@ -1,5 +1,4 @@
 import {
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,17 +27,9 @@ export type RadioGroupDescriptionProps<T extends keyof SeidrElementTagNameMap = 
  * The description text or element giving additional information about the radio group.
  */
 export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  props?: RadioGroupDescriptionProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: RadioGroupDescriptionProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupDescriptionProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupDescriptionProps<T>>(propsOrChildren, children);
   const { as = "span" as T, instance: rg, ...rest } = props;
 
   if (!rg) {
@@ -46,7 +37,7 @@ export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "
   }
 
   return FormControlDescription(
-    { as, instance: rg.formControl, ...rg.dataset, ...rest } as FormControlDescriptionProps<T>,
-    content,
+    { as, instance: rg.formControl, ...rg.dataset, dataComponent: "radio-group", ...rest } as FormControlDescriptionProps<T>,
+    children,
   );
 }

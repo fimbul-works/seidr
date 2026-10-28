@@ -26,8 +26,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should generate default ids and WAI-ARIA attributes", () => {
     const root = setup(() => {
       const rg = createRadioGroup();
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -42,6 +42,15 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     expect(items.length).toBe(2);
     expect(inputs.length).toBe(2);
     expect(label).not.toBeNull();
+
+    expect(radiogroup.getAttribute("data-component")).toBe("radio-group");
+    expect(radiogroup.getAttribute("data-part")).toBe("root");
+    expect(items[0].getAttribute("data-component")).toBe("radio-group");
+    expect(items[0].getAttribute("data-part")).toBe("item");
+    expect(inputs[0].getAttribute("data-component")).toBe("radio-group");
+    expect(inputs[0].getAttribute("data-part")).toBe("item-input");
+    expect(label.getAttribute("data-component")).toBe("radio-group");
+    expect(label.getAttribute("data-part")).toBe("label");
 
     expect(radiogroup.getAttribute("aria-orientation")).toBe("vertical");
     expect(radiogroup.getAttribute("aria-labelledby")).toBe(label.id);
@@ -67,8 +76,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
         name: "pets",
         orientation: "horizontal",
       });
-      return rg.Root([
-        rg.Label("Select a Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Select a Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -89,8 +98,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should support defaultValue (uncontrolled selection)", () => {
     const root = setup(() => {
       const rg = createRadioGroup({ defaultValue: "cats" });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -113,8 +122,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const rg = createRadioGroup({ onChange });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -153,15 +162,18 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const rg = createRadioGroup({ defaultValue: "dogs", onChange });
       const catItem = rg.createItem({ value: "cats" });
 
-      return rg.Root([
-        rg.Label("Pets"),
+      return rg.Root({}, [
+        rg.Label({}, "Pets"),
         rg.Item({ value: "dogs", label: "Dogs" }),
-        catItem.Root([catItem.Input(), catItem.Control([catItem.Indicator()]), catItem.Label("Cats")]),
+        catItem.Root({}, [catItem.Input({}), catItem.Control({}, [catItem.Indicator({})]), catItem.Label({}, "Cats")]),
       ]);
     });
 
     const inputs = root.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
     const catControl = root.querySelector(`#${inputs[1].id.replace("-input", "")}-control`) as HTMLElement;
+
+    expect(catControl.getAttribute("data-component")).toBe("radio-group");
+    expect(catControl.getAttribute("data-part")).toBe("item-control");
 
     if (!isSSR) {
       const event = new KeyboardEvent("keydown", { key: " ", bubbles: true });
@@ -181,8 +193,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       updateVal = (v: string) => selected(v);
 
       const rg = createRadioGroup({ value: selected });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -209,8 +221,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const rg = createRadioGroup({ disabled: true, defaultValue: "dogs", onChange });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -240,8 +252,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const rg = createRadioGroup({ defaultValue: "dogs", onChange });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats", disabled: true }),
         rg.Item({ value: "dragons", label: "Dragons" }),
@@ -275,8 +287,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const onChange = vi.fn();
     const root = setup(() => {
       const rg = createRadioGroup({ readOnly: true, defaultValue: "dogs", onChange });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
         rg.Item({ value: "cats", label: "Cats" }),
       ]);
@@ -305,10 +317,10 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       setValidation = (v: ValidationState) => valState(v);
 
       const rg = createRadioGroup({ validationState: valState });
-      return rg.Root([
-        rg.Label("Favorite Pet"),
+      return rg.Root({}, [
+        rg.Label({}, "Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
-        rg.ErrorMessage("A pet selection is required"),
+        rg.ErrorMessage({}, "A pet selection is required"),
       ]);
     });
 
@@ -332,8 +344,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const root = setup(() => {
       const rg = createRadioGroup({ defaultValue: "dogs" });
       return $("form", [
-        rg.Root([
-          rg.Label("Favorite Pet"),
+        rg.Root({}, [
+          rg.Label({}, "Favorite Pet"),
           rg.Item({ value: "dogs", label: "Dogs" }),
           rg.Item({ value: "cats", label: "Cats" }),
         ]),
@@ -463,12 +475,12 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const rg = createRadioGroup({ defaultValue: "dogs" });
       const catsItem = rg.createItem({ value: "cats" });
 
-      return rg.Root([
+      return rg.Root({}, [
         rg.Item({ value: "dogs", label: "Dogs" }),
-        catsItem.Root([
-          catsItem.Input(),
-          catsItem.Control([catsItem.Indicator({ forceMount, id: "cats-indicator" })]),
-          catsItem.Label("Cats"),
+        catsItem.Root({}, [
+          catsItem.Input({}),
+          catsItem.Control({}, [catsItem.Indicator({ forceMount, id: "cats-indicator" })]),
+          catsItem.Label({}, "Cats"),
         ]),
       ]);
     });
@@ -498,8 +510,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const rg = createRadioGroup();
       const item = rg.createItem({ value: "test" });
 
-      return rg.Root([
-        item.Root([
+      return rg.Root({}, [
+        item.Root({}, [
           item.Input({
             id: "styled-input",
             style: {

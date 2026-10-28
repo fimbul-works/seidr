@@ -95,40 +95,40 @@ export interface UseCheckboxResult {
 export interface CheckboxInstance extends UseCheckboxResult {
   /** Pre-bound Checkbox.Root container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CheckboxRootProps<T> | SeidrChild | SeidrChild[],
+    props: CheckboxRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Input element. */
-  Input: (props?: SeidrElementProps<"input">) => HTMLInputElement;
+  Input: (props: SeidrElementProps<"input">) => HTMLInputElement;
 
   /** Pre-bound Checkbox.Control visual box. */
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CheckboxControlProps<T> | SeidrChild | SeidrChild[],
+    props: CheckboxControlProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Indicator checkmark. */
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CheckboxIndicatorProps<T> | SeidrChild | SeidrChild[],
+    props: CheckboxIndicatorProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 
   /** Pre-bound Checkbox.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
-    propsOrChildren?: FormControlLabelProps<T> | SeidrChild | SeidrChild[],
+    props: FormControlLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CheckboxDescriptionProps<T> | SeidrChild | SeidrChild[],
+    props: CheckboxDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
-    propsOrChildren?: CheckboxErrorMessageProps<T> | SeidrChild | SeidrChild[],
+    props: CheckboxErrorMessageProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 }

@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -28,18 +27,9 @@ export type RadioGroupRootProps<T extends keyof SeidrElementTagNameMap = "div"> 
  * RadioGroupRoot is the outer container for a radio group (role="radiogroup").
  */
 export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: RadioGroupRootProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: RadioGroupRootProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "div" as T,
     instance: rg,
@@ -67,8 +57,10 @@ export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ...rg.ariaProps,
       ...rg.dataset,
       ref: rg.rootRef,
+      dataComponent: "radio-group",
+      dataPart: "root",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

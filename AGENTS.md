@@ -16,7 +16,31 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **WAIT FOR USER APPROVAL**:
   - **NEVER** begin writing code until the user has confirmed the behavior and granted permission to proceed.
 
+### 2. Strict Two-Tier Component Model & Semantic CSS Annotations (`dataComponent` & `dataPart`)
+- **Strictly Two Public Tiers Only (No Tier 3)**:
+  - Component packages export ONLY `<Component>`, `create<Component>`, and `types`.
+  - Underlying `use<Component>` hooks and raw subcomponent files are strictly **internal implementation details**—never exported or supported for standalone consumer instantiations.
+- **Tier 1: All-in-One Component (`export const <Component> = createComponent(...)`)**:
+  - Compound components must be wrapped in `createComponent(fn, "<Component>")`.
+  - Single-element atoms (`Button`, `Alert`, `Badge`, `Separator`, `Skeleton`, `VisuallyHidden`) remain raw element factories.
+  - Exposes high-level convenience props (`label`, `description`, `errorMessage`, `indicator`, etc.) alongside sub-part prop bags (`rootProps`, `controlProps`, `inputProps`, etc.).
+  - Internally instantiates `create<Component>(...)` and renders the default composition tree.
+- **Tier 2: Fine-Grained Coordinator (`create<Component>`)**:
+  - The single entry point for fine-grained DOM sculpting.
+  - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
+  - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)`.
+- **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
+  - Take `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+  - Expect an internal `instance` coordinator passed by `create<Component>` (throws `SeidrError` if missing).
+- **Semantic CSS Style System Annotations**:
+  - Every component element MUST provide `dataComponent: "<kebab-name>"` (`data-component="..."` in DOM).
+  - Every compound sub-element MUST provide `dataPart: "<kebab-part>"` (`data-part="..."` in DOM).
+  - For delegating sub-components (e.g. `CheckboxLabel` -> `FormControlLabel`):
+    - Forward `dataComponent: "checkbox"` so it overrides the underlying default `dataComponent: "form-control"` via props spreading, while preserving `dataPart: "label"`.
+
+
 ---
+
 
 ## Top Foundational Rules & Architectural Invariants in Seidr
 

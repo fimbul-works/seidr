@@ -1,6 +1,5 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -29,18 +28,9 @@ export type RadioGroupItemProps<T extends keyof SeidrElementTagNameMap = "div"> 
  * RadioGroupItem is the container for a single radio option (role="group").
  */
 export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
-  props?: RadioGroupItemProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: RadioGroupItemProps<T> | SeidrChild | SeidrChild[] | null,
+  props: RadioGroupItemProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<RadioGroupItemProps<T>>(propsOrChildren, children);
-
   const { as = "div" as T, instance: item, onpointerdown, ...rest } = props;
 
   if (!item) {
@@ -64,8 +54,10 @@ export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
       id: item.id,
       ...item.dataset,
       onpointerdown: handlePointerDown,
+      dataComponent: "radio-group",
+      dataPart: "item",
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

@@ -61,7 +61,7 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
       : createValue(!!(defaultOpen ?? false));
 
   if (isFn(onOpenChange)) {
-    state.watch((val) => onOpenChange(val));
+    state.watch(onOpenChange);
   }
 
   const isDisabled = isValue(disabled) ? disabled.as((d) => !!d) : createValue(!!disabled);

@@ -1,12 +1,12 @@
 import {
   $,
-  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 import type { UseCollapsibleResult } from "./types.js";
 import { type UseCollapsibleOptions, useCollapsible } from "./use-collapsible.js";
+import { SeidrError } from "@fimbul-works/seidr";
 
 export interface CollapsibleRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseCollapsibleOptions {
   /**
@@ -28,18 +28,9 @@ export type CollapsibleRootProps<T extends keyof SeidrElementTagNameMap = "div">
  * CollapsibleRoot is the top-level container for a collapsible disclosure widget.
  */
 export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: CollapsibleRootProps<T>,
   children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
-export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: CollapsibleRootProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [props, content] = resolvePropsAndChildren<CollapsibleRootProps<T>>(propsOrChildren, children);
-
   const {
     as = "div" as T,
     open,
@@ -48,28 +39,23 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
     disabled,
     forceMount,
     id,
-    instance,
+    instance: col,
     ...rest
-  } = props as any;
+  } = props;
 
-  const col =
-    instance ??
-    useCollapsible({
-      open,
-      defaultOpen,
-      onOpenChange,
-      disabled,
-      forceMount,
-      id,
-    });
+  if (!col) {
+    throw new SeidrError("CollapsibleRoot requires an instance prop");
+  }
 
   return $(
-    as as T,
+    as,
     {
       id: col.id,
+      dataComponent: "collapsible",
+      dataPart: "root",
       ...col.dataset,
       ...rest,
     } as SeidrElementProps<T>,
-    content,
+    children,
   );
 }

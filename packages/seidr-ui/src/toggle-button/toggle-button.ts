@@ -1,5 +1,5 @@
 import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
-import { type ButtonOptions, type ButtonProps, ButtonRoot } from "../button.js";
+import { type ButtonOptions, type ButtonProps, Button } from "../button.js";
 import { type UseToggleStateResult, useToggleState } from "../hooks/use-toggle-state.js";
 
 export interface ToggleButtonRootState {
@@ -35,14 +35,14 @@ export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "butt
  * ToggleButton is a two-state button that allows users to toggle a selection on or off.
  * Based on the WAI-ARIA Button Pattern (aria-pressed).
  */
-export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
+export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
+export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
   props?: ToggleButtonRootProps<T> | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T];
-export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
+export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
   propsOrChildren?: ToggleButtonRootProps<T> | SeidrChild | SeidrChild[] | null,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
@@ -65,8 +65,9 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
 
   const resolvedChildren = renderContent ? renderContent({ pressed: isPressed, state }) : content;
 
-  return ButtonRoot<T>(
+  return Button<T>(
     {
+      dataComponent: "toggle-button",
       ...rest,
       disabled,
       ariaPressed: isPressed.as((p) => (p ? "true" : "false")),
@@ -76,7 +77,3 @@ export function ToggleButtonRoot<T extends keyof SeidrElementTagNameMap = "butto
     resolvedChildren,
   );
 }
-
-export const ToggleButton = Object.assign(ToggleButtonRoot, {
-  Root: ToggleButtonRoot,
-});

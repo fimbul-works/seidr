@@ -1,6 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { Collapsible } from "@fimbul-works/seidr-ui";
+import { Collapsible, createCollapsible } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./collapsible.css";
 
@@ -8,7 +8,7 @@ export const CollapsibleShowcase = createComponent(() => {
   const isControlledOpen = createValue(false);
 
   // Example 2 using pre-bound instance factory
-  const colInstance = Collapsible.create({ defaultOpen: true });
+  const colInstance = createCollapsible({ defaultOpen: true });
 
   return $section({ className: "card" }, [
     $div({ className: "card-header" }, [
