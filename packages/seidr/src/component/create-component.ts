@@ -119,8 +119,15 @@ export function createComponent<P = void>(
         isMounted = true;
         appState.components.add(currentComponent);
 
+        // Set current component as active
+        const prev = getComponentScope();
+        setComponentScope(currentComponent);
+
         // Trigger onMounted callbacks on client-side
         componentMountedFns.forEach((fn) => fn());
+
+        // Restore cursor
+        setComponentScope(prev);
 
         children.forEach((child) => child.mount());
       },
