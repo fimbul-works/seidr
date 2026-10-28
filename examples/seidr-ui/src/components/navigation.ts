@@ -6,6 +6,10 @@ import { componentShowcases } from "../component-showcases";
 export const Navigation = createComponent(() => {
   return $nav({ className: "navigation" }, [
     $h2("Components"),
-    $ul(componentShowcases.map((showcase) => $li(Link({ href: `/components/${showcase.id}`, ariaCurrent: 'page' }, showcase.title)))),
+    $ul(
+      componentShowcases.map((showcase) =>
+        $li(Link({ href: `/components/${showcase.id}`, ariaCurrent: "page" }, showcase.title)),
+      ),
+    ),
   ]);
 });

@@ -78,7 +78,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   const ancestorPrefix = url.as(() => {
     const nearest = getNearestRouter();
     if (!nearest) {
-      return undefined
+      return undefined;
     }
     let ancestorPrefix = "";
     let current: RouterTreeNode | false | undefined = nearest;
@@ -90,20 +90,21 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     }
     return ancestorPrefix;
   });
-  const localPath = url.as(() => getNearestRouter()?.pathname())
-  const isActive = url.as(() => isLinkActive(href(), url(), localPath(), ancestorPrefix(), exact))
+  const localPath = url.as(() => getNearestRouter()?.pathname());
+  const isActive = url.as(() => isLinkActive(href(), url(), localPath(), ancestorPrefix(), exact));
 
   // Determine link active status
   const hasDynamicClass = !isUndef(activeClassName) || !isUndef(inactiveClassName);
-  const classNameParents = [isActive, activeClassName, inactiveClassName, rawClassName].filter(
-    isObservable,
-  );
+  const classNameParents = [isActive, activeClassName, inactiveClassName, rawClassName].filter(isObservable);
 
   // Determine className based on active/inactive states
   const className = hasDynamicClass
     ? mergeValues(
         () => {
-          const classes = [unwrapValue(rawClassName), isActive() ? unwrapValue(activeClassName) : unwrapValue(inactiveClassName)].filter(isTruthy);
+          const classes = [
+            unwrapValue(rawClassName),
+            isActive() ? unwrapValue(activeClassName) : unwrapValue(inactiveClassName),
+          ].filter(isTruthy);
           return classes.length > 0 ? classes.join(" ") : undefined;
         },
         { parents: classNameParents },
@@ -112,18 +113,19 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 
   // Determine aria-current when active
   const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
-  const resolvedAriaCurrent = ariaCurrentParents.length > 0
-    ? mergeValues(
-        () => {
-          if (!isActive()) {
-            return null;
-          }
-          const val = unwrapValue(ariaCurrent);
-          return val === true || isUndef(val) ? "page" : val;
-        },
-        { parents: ariaCurrentParents },
-      )
-    : undefined;
+  const resolvedAriaCurrent =
+    ariaCurrentParents.length > 0
+      ? mergeValues(
+          () => {
+            if (!isActive()) {
+              return null;
+            }
+            const val = unwrapValue(ariaCurrent);
+            return val === true || isUndef(val) ? "page" : val;
+          },
+          { parents: ariaCurrentParents },
+        )
+      : undefined;
 
   // Disabled state
   const isDisabled = wrapValue(disabled ?? false, NO_HYDRATE);
@@ -166,7 +168,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     ariaDisabled,
     dataDisabled,
     onclick,
-    onkeydown
+    onkeydown,
   };
 
   if (!isCustomElement && !disabled) {

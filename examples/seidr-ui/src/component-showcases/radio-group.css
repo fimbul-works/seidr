@@ -39,6 +39,22 @@
   gap: 1rem;
 }
 
+.radio-group-root[aria-orientation="horizontal"] > .radio-group-label,
+.radio-group-root.horizontal > .radio-group-label,
+.radio-group-root[aria-orientation="horizontal"] > .radio-group-description,
+.radio-group-root.horizontal > .radio-group-description,
+.radio-group-root[aria-orientation="horizontal"] > .radio-group-error,
+.radio-group-root.horizontal > .radio-group-error {
+  width: 100%;
+  flex-basis: 100%;
+}
+
+.radio-group-root.horizontal .radio-item-card,
+.radio-group-root[aria-orientation="horizontal"] .radio-item-card {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
 .radio-group-root[data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
@@ -168,7 +184,7 @@
 
 .radio-control[data-checked] {
   border-color: var(--accent, #6366f1);
-  background: rgba(99, 102, 241, 0.15);
+  background: var(--accent, #6366f1);
 }
 
 /* Focus Indicator */
@@ -186,16 +202,18 @@
 .radio-item-card[data-checked]:hover:not([data-disabled]) .radio-control,
 .radio-item-row[data-checked]:hover:not([data-disabled]) .radio-control {
   border-color: var(--accent-light, #818cf8);
+  background: var(--accent-light, #818cf8);
 }
 
-/* Radio Indicator (Inner Dot) */
+/* Radio Indicator (Inner White Dot) */
 .radio-indicator {
-  width: 0.625rem;
-  height: 0.625rem;
+  width: 0.5rem;
+  height: 0.5rem;
   border-radius: 50%;
-  background: var(--accent, #6366f1);
+  background: #ffffff;
   transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   transform: scale(1);
+  flex-shrink: 0;
 }
 
 @starting-style {
@@ -210,6 +228,7 @@
   flex-direction: column;
   gap: 0.2rem;
   flex: 1;
+  min-width: 0;
 }
 
 /* Item Label */
@@ -254,6 +273,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  &.disabled {
+    opacity: 0.5;
+  }
 }
 
 .radio-selection-banner strong {

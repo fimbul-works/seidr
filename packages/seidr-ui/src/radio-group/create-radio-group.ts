@@ -1,5 +1,5 @@
 import { isUndef } from "@fimbul-works/hvat";
-import { resolvePropsAndChildren, type SeidrChild } from "@fimbul-works/seidr";
+import { $, resolvePropsAndChildren, type SeidrChild } from "@fimbul-works/seidr";
 import { RadioGroupDescription, type RadioGroupDescriptionProps } from "./radio-group-description.js";
 import { RadioGroupErrorMessage, type RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
 import { RadioGroupItem, type RadioGroupItemProps } from "./radio-group-item.js";
@@ -114,29 +114,38 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
         label,
         description,
         indicator,
+        itemProps,
         inputProps,
         controlProps,
         indicatorProps,
         labelProps,
         descriptionProps,
+        contentProps,
         ...rootProps
       } = itemOptionsOrProps;
 
       const itemInstance = useRadioGroupItem(instance, { value, disabled, id });
 
       if (!isUndef(children)) {
-        return RadioGroupItem({ ...rootProps, instance: itemInstance }, children);
+        return RadioGroupItem({ ...(itemProps ?? {}), ...rootProps, instance: itemInstance }, children);
       }
 
-      return RadioGroupItem({ ...rootProps, instance: itemInstance }, [
+      const labelEl = label ? RadioGroupItemLabel({ ...(labelProps ?? {}), instance: itemInstance }, label) : null;
+      const descEl = description
+        ? RadioGroupItemDescription({ ...(descriptionProps ?? {}), instance: itemInstance }, description)
+        : null;
+
+      const textContent =
+        contentProps || (labelEl && descEl)
+          ? $("div", { ...(contentProps ?? {}) }, [labelEl, descEl])
+          : (labelEl ?? descEl);
+
+      return RadioGroupItem({ ...(itemProps ?? {}), ...rootProps, instance: itemInstance }, [
         RadioGroupItemInput({ ...(inputProps ?? {}), instance: itemInstance }),
         RadioGroupItemControl({ ...(controlProps ?? {}), instance: itemInstance }, [
-          RadioGroupItemIndicator({ ...(indicatorProps ?? {}), instance: itemInstance }, indicator ?? "●"),
+          RadioGroupItemIndicator({ ...(indicatorProps ?? {}), instance: itemInstance }, indicator),
         ]),
-        label ? RadioGroupItemLabel({ ...(labelProps ?? {}), instance: itemInstance }, label) : null,
-        description
-          ? RadioGroupItemDescription({ ...(descriptionProps ?? {}), instance: itemInstance }, description)
-          : null,
+        textContent,
       ]);
     },
     ItemInput: (props = {}) => RadioGroupItemInput(props),

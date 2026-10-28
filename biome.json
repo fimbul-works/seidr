@@ -17,7 +17,8 @@
       "!!**/public",
       "!!**/node_modules",
       "!!**/build",
-      "!!**/bundles"
+      "!!**/bundles",
+      "!!**/kobalte-packages"
     ]
   },
   "linter": {

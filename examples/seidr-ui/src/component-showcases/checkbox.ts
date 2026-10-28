@@ -10,15 +10,11 @@ export const CheckboxShowcase = createComponent(() => {
   const item2 = createValue(false);
   const item3 = createValue(true);
 
-  const allChecked = mergeValues(
-    () => item1() && item2() && item3(),
-    { parents: [item1, item2, item3] },
-  );
+  const allChecked = mergeValues(() => item1() && item2() && item3(), { parents: [item1, item2, item3] });
 
-  const someChecked = mergeValues(
-    () => (item1() || item2() || item3()) && !(item1() && item2() && item3()),
-    { parents: [item1, item2, item3] },
-  );
+  const someChecked = mergeValues(() => (item1() || item2() || item3()) && !(item1() && item2() && item3()), {
+    parents: [item1, item2, item3],
+  });
 
   const toggleAll = (checked: boolean) => {
     item1(checked);

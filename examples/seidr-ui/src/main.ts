@@ -16,21 +16,21 @@ const App = createComponent(() => {
     mode(resolvedMode() === "dark" ? "light" : "dark");
   };
 
-  const routes: Route[] = componentShowcases.map(showcase => ({
-    path: '/components/' + showcase.id,
+  const routes: Route[] = componentShowcases.map((showcase) => ({
+    path: "/components/" + showcase.id,
     component: showcase.component,
   }));
 
   routes.push({
-    path: '/',
+    path: "/",
     exact: true,
     component: () => "Please select a showcase from the navigation",
-  })
+  });
 
   routes.push({
-    path: '*',
+    path: "*",
     component: () => "Not found",
-  })
+  });
 
   return $div({ className: "layout" }, [
     // Header
@@ -52,10 +52,7 @@ const App = createComponent(() => {
 
     Navigation(),
 
-    $main(
-      { className: "section-content" },
-      Router(routes)
-    ),
+    $main({ className: "section-content" }, Router(routes)),
 
     $link({
       ref: linkRef,

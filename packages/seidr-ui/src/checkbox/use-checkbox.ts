@@ -1,4 +1,12 @@
-import { createRef, createValue, inClient, onMounted, type SeidrElementProps, useId, wrapValue } from "@fimbul-works/seidr";
+import {
+  createRef,
+  createValue,
+  inClient,
+  onMounted,
+  type SeidrElementProps,
+  useId,
+  wrapValue,
+} from "@fimbul-works/seidr";
 import { useFormControl } from "../form-control/use-form-control.js";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import { useToggleState } from "../hooks/use-toggle-state.js";

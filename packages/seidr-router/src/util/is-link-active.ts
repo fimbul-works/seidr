@@ -70,7 +70,7 @@ export const isLinkActive = (
   const matchCurrent = parseRouteParams(toPath, currentPath, isExactPath) !== false;
   if (matchCurrent) {
     return true;
-  } 
+  }
 
   // Match local path
   const matchLocal = localPathname

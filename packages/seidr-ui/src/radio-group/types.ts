@@ -181,6 +181,9 @@ export interface RadioGroupItemDescriptor {
   /** Props passed to ItemIndicator. */
   indicatorProps?: RadioGroupItemIndicatorProps;
 
+  /** Props passed to the content wrapper enclosing label and description. */
+  contentProps?: SeidrElementProps<"div">;
+
   /** Props passed to ItemLabel. */
   labelProps?: RadioGroupItemLabelProps;
 

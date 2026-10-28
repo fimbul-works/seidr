@@ -26,7 +26,8 @@
   --nav-width: 200px;
 }
 
-:root[data-theme="light"], body.light {
+:root[data-theme="light"],
+body.light {
   --bg: #f8fafc;
   --bg-card: rgba(255, 255, 255, 0.9);
   --bg-card-hover: #ffffff;
@@ -61,7 +62,9 @@ body {
   color: var(--fg);
   line-height: 1.6;
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .layout {
@@ -285,6 +288,3 @@ nav.navigation {
   background: #fafafa;
   color: #111827;
 }
-
-
-

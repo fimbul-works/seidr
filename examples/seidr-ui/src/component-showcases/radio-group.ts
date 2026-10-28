@@ -24,6 +24,7 @@ export const RadioGroupShowcase = createComponent(() => {
   const shippingGroup = RadioGroup.create({
     id: "shipping-radio-group",
     value: shippingMethod,
+    disabled: isDisabled,
     onChange: (val: string) => shippingMethod(val),
     required: true,
     validationState: shippingValidation,
@@ -106,6 +107,7 @@ export const RadioGroupShowcase = createComponent(() => {
                 inputProps: { className: "radio-item-input" },
                 controlProps: { className: "radio-control" },
                 indicatorProps: { className: "radio-indicator" },
+                contentProps: { className: "radio-item-content" },
                 labelProps: { className: "radio-item-label" },
                 descriptionProps: { className: "radio-item-desc" },
                 label: "Starter",
@@ -117,6 +119,7 @@ export const RadioGroupShowcase = createComponent(() => {
                 inputProps: { className: "radio-item-input" },
                 controlProps: { className: "radio-control" },
                 indicatorProps: { className: "radio-indicator" },
+                contentProps: { className: "radio-item-content" },
                 labelProps: { className: "radio-item-label" },
                 descriptionProps: { className: "radio-item-desc" },
                 label: "Professional",
@@ -128,6 +131,7 @@ export const RadioGroupShowcase = createComponent(() => {
                 inputProps: { className: "radio-item-input" },
                 controlProps: { className: "radio-control" },
                 indicatorProps: { className: "radio-indicator" },
+                contentProps: { className: "radio-item-content" },
                 labelProps: { className: "radio-item-label" },
                 descriptionProps: { className: "radio-item-desc" },
                 label: "Enterprise",
@@ -140,7 +144,7 @@ export const RadioGroupShowcase = createComponent(() => {
         // 2. Controlled RadioGroup with Reactive Selection & Real-Time Feedback
         $div({ className: "radio-group-demo" }, [
           $div({ className: "radio-group-section-title" }, "2. Controlled State & Reactive Feedback"),
-          $div({ className: "radio-selection-banner" }, [
+          $div({ className: isDisabled.as((disabled) => (disabled ? "disabled " : "") + "radio-selection-banner") }, [
             $span(["Active Strategy: ", $strong(selectedFramework.as((s) => s.toUpperCase()))]),
             $span(selectedFramework.as((s) => frameworkDescriptions[s] ?? "")),
           ]),
@@ -187,59 +191,64 @@ export const RadioGroupShowcase = createComponent(() => {
         // 3. Pre-bound Compound Pattern with Validation
         $div({ className: "radio-group-demo" }, [
           $div({ className: "radio-group-section-title" }, "3. Compound Elements & Required Validation"),
-          shippingGroup.Root({ className: "radio-group-root" }, [
-            shippingGroup.Label({ className: "radio-group-label" }, "Delivery Method *"),
-            shippingGroup.Description(
-              { className: "radio-group-description" },
-              "Select a delivery option to calculate estimated arrival and shipping costs.",
-            ),
-            shippingGroup.ErrorMessage(
-              { className: "radio-group-error" },
-              "⚠️ A delivery method is required before checkout can proceed.",
-            ),
+          shippingGroup.Root(
+            {
+              className: isHorizontal.as((h) => `radio-group-root ${h ? "horizontal" : ""}`),
+            },
+            [
+              shippingGroup.Label({ className: "radio-group-label" }, "Delivery Method *"),
+              shippingGroup.Description(
+                { className: "radio-group-description" },
+                "Select a delivery option to calculate estimated arrival and shipping costs.",
+              ),
+              shippingGroup.ErrorMessage(
+                { className: "radio-group-error" },
+                "⚠️ A delivery method is required before checkout can proceed.",
+              ),
 
-            // Item 1: Standard
-            standardItem.Root({ className: "radio-item-card" }, [
-              standardItem.Input({ className: "radio-item-input" }),
-              standardItem.Control({ className: "radio-control" }, [
-                standardItem.Indicator({ className: "radio-indicator" }),
+              // Item 1: Standard
+              standardItem.Root({ className: "radio-item-card" }, [
+                standardItem.Input({ className: "radio-item-input" }),
+                standardItem.Control({ className: "radio-control" }, [
+                  standardItem.Indicator({ className: "radio-indicator" }),
+                ]),
+                $div({ className: "radio-item-content" }, [
+                  standardItem.Label({ className: "radio-item-label" }, "Standard Ground (3-5 days)"),
+                  standardItem.Description({ className: "radio-item-desc" }, "Delivered via postal service. Free."),
+                ]),
+                $span({ className: "radio-item-meta" }, "Free"),
               ]),
-              $div({ className: "radio-item-content" }, [
-                standardItem.Label({ className: "radio-item-label" }, "Standard Ground (3-5 days)"),
-                standardItem.Description({ className: "radio-item-desc" }, "Delivered via postal service. Free."),
-              ]),
-              $span({ className: "radio-item-meta" }, "Free"),
-            ]),
 
-            // Item 2: Express
-            expressItem.Root({ className: "radio-item-card" }, [
-              expressItem.Input({ className: "radio-item-input" }),
-              expressItem.Control({ className: "radio-control" }, [
-                expressItem.Indicator({ className: "radio-indicator" }),
+              // Item 2: Express
+              expressItem.Root({ className: "radio-item-card" }, [
+                expressItem.Input({ className: "radio-item-input" }),
+                expressItem.Control({ className: "radio-control" }, [
+                  expressItem.Indicator({ className: "radio-indicator" }),
+                ]),
+                $div({ className: "radio-item-content" }, [
+                  expressItem.Label({ className: "radio-item-label" }, "Express Courier (1-2 days)"),
+                  expressItem.Description(
+                    { className: "radio-item-desc" },
+                    "Guaranteed delivery with door-to-door tracking.",
+                  ),
+                ]),
+                $span({ className: "radio-item-meta" }, "$9.99"),
               ]),
-              $div({ className: "radio-item-content" }, [
-                expressItem.Label({ className: "radio-item-label" }, "Express Courier (1-2 days)"),
-                expressItem.Description(
-                  { className: "radio-item-desc" },
-                  "Guaranteed delivery with door-to-door tracking.",
-                ),
-              ]),
-              $span({ className: "radio-item-meta" }, "$9.99"),
-            ]),
 
-            // Item 3: Priority Overnight
-            overnightItem.Root({ className: "radio-item-card" }, [
-              overnightItem.Input({ className: "radio-item-input" }),
-              overnightItem.Control({ className: "radio-control" }, [
-                overnightItem.Indicator({ className: "radio-indicator" }),
+              // Item 3: Priority Overnight
+              overnightItem.Root({ className: "radio-item-card" }, [
+                overnightItem.Input({ className: "radio-item-input" }),
+                overnightItem.Control({ className: "radio-control" }, [
+                  overnightItem.Indicator({ className: "radio-indicator" }),
+                ]),
+                $div({ className: "radio-item-content" }, [
+                  overnightItem.Label({ className: "radio-item-label" }, "Priority Overnight"),
+                  overnightItem.Description({ className: "radio-item-desc" }, "Next business day morning delivery."),
+                ]),
+                $span({ className: "radio-item-meta" }, "$24.99"),
               ]),
-              $div({ className: "radio-item-content" }, [
-                overnightItem.Label({ className: "radio-item-label" }, "Priority Overnight"),
-                overnightItem.Description({ className: "radio-item-desc" }, "Next business day morning delivery."),
-              ]),
-              $span({ className: "radio-item-meta" }, "$24.99"),
-            ]),
-          ]),
+            ],
+          ),
         ]),
 
         // 4. Dynamic Radio Group via List Reactivity
@@ -276,6 +285,7 @@ export const RadioGroupShowcase = createComponent(() => {
                 inputProps: { className: "radio-item-input" },
                 controlProps: { className: "radio-control" },
                 indicatorProps: { className: "radio-indicator" },
+                contentProps: { className: "radio-item-content" },
                 labelProps: { className: "radio-item-label" },
                 descriptionProps: { className: "radio-item-desc" },
               })),

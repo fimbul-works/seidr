@@ -72,4 +72,3 @@ export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
     content,
   );
 }
-

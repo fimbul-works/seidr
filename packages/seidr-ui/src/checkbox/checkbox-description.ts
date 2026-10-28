@@ -1,9 +1,4 @@
-import {
-  resolvePropsAndChildren,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseCheckboxResult } from "./types.js";
 
