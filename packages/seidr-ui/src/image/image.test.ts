@@ -1,9 +1,6 @@
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import { ImageFallback } from "./image-fallback.js";
-import { ImageImg } from "./image-img.js";
-import { ImageRoot } from "./image-root.js";
 import { createImage, Image } from "./index.js";
 
 const FALLBACK_TEXT = "AB";
@@ -26,13 +23,6 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
       fallback: FALLBACK_TEXT,
     });
     expect(root.tagName.toLowerCase()).toBe("div");
-  });
-
-  it("should support Image namespace aliases", () => {
-    expect(Image.Root).toBe(ImageRoot);
-    expect(Image.Img).toBe(ImageImg);
-    expect(Image.Fallback).toBe(ImageFallback);
-    expect(Image.create).toBe(createImage);
   });
 
   it("should render fallback initially and not the image", () => {

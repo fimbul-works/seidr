@@ -1,23 +1,46 @@
-import { isValue, List, type SeidrChild } from "@fimbul-works/seidr";
+import { isValue, List, type SeidrChild, ReactiveValue } from "@fimbul-works/seidr";
 import { createRadioGroup } from "./create-radio-group.js";
-import { RadioGroupDescription } from "./radio-group-description.js";
-import { RadioGroupErrorMessage } from "./radio-group-error-message.js";
-import { RadioGroupItem } from "./radio-group-item.js";
-import { RadioGroupItemControl } from "./radio-group-item-control.js";
-import { RadioGroupItemDescription } from "./radio-group-item-description.js";
-import { RadioGroupItemIndicator } from "./radio-group-item-indicator.js";
-import { RadioGroupItemInput } from "./radio-group-item-input.js";
-import { RadioGroupItemLabel } from "./radio-group-item-label.js";
-import { RadioGroupLabel } from "./radio-group-label.js";
-import { RadioGroupRoot, type RadioGroupRootProps } from "./radio-group-root.js";
-import type { RadioGroupItemDescriptor, RadioGroupProps } from "./types.js";
+import { RadioGroupDescriptionProps } from "./radio-group-description.js";
+import { RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
+import { RadioGroupLabelProps } from "./radio-group-label.js";
+import { type RadioGroupRootProps } from "./radio-group-root.js";
+import type { RadioGroupItemDescriptor, UseRadioGroupOptions } from "./types.js";
+
+export interface RadioGroupProps extends UseRadioGroupOptions {
+  /** Optional class name for the root container. */
+  className?: ReactiveValue<string>;
+
+  /** Accessible group label text or element. */
+  label?: SeidrChild | SeidrChild[];
+
+  /** Optional group description text or element. */
+  description?: SeidrChild | SeidrChild[];
+
+  /** Optional group error message text or element. */
+  errorMessage?: SeidrChild | SeidrChild[];
+
+  /** Declarative list of items to render, supports static arrays or reactive observable arrays. */
+  items?: ReactiveValue<RadioGroupItemDescriptor[]>;
+
+  /** Props passed to RadioGroup.Root. */
+  rootProps?: RadioGroupRootProps;
+
+  /** Props passed to RadioGroup.Label. */
+  labelProps?: RadioGroupLabelProps;
+
+  /** Props passed to RadioGroup.Description. */
+  descriptionProps?: RadioGroupDescriptionProps;
+
+  /** Props passed to RadioGroup.ErrorMessage. */
+  errorMessageProps?: RadioGroupErrorMessageProps;
+}
 
 /**
  * Unified all-in-one RadioGroup factory function.
  * Creates an accessible radio group with full WAI-ARIA and form-control integration in one call.
  * Supports static item arrays, reactive observable arrays (dynamic radio groups), or custom children.
  */
-function RadioGroupComponent(options: RadioGroupProps = {}, children?: SeidrChild | SeidrChild[]) {
+export function RadioGroup(options: RadioGroupProps = {}, children?: SeidrChild | SeidrChild[]) {
   const {
     className,
     label,
@@ -53,17 +76,3 @@ function RadioGroupComponent(options: RadioGroupProps = {}, children?: SeidrChil
     ...renderedItems,
   ]);
 }
-
-export const RadioGroup = Object.assign(RadioGroupComponent, {
-  create: createRadioGroup,
-  Root: RadioGroupRoot,
-  Label: RadioGroupLabel,
-  Description: RadioGroupDescription,
-  ErrorMessage: RadioGroupErrorMessage,
-  Item: RadioGroupItem,
-  ItemInput: RadioGroupItemInput,
-  ItemControl: RadioGroupItemControl,
-  ItemIndicator: RadioGroupItemIndicator,
-  ItemLabel: RadioGroupItemLabel,
-  ItemDescription: RadioGroupItemDescription,
-});

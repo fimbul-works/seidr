@@ -40,7 +40,7 @@ describe("Multi-section SSR and Hydration with Router", () => {
           ({ href }) => href,
           (link: Value<NavItem>) =>
             Link({
-              tagName: "a",
+              as: "a",
               href: link.as((l) => l.href),
               textContent: link.as((l) => l.textContent),
             }),
@@ -69,16 +69,14 @@ describe("Multi-section SSR and Hydration with Router", () => {
         $div({ className: "overline" }, "The Forge is Open"),
         $h1({ className: "title" }, ["FIMBUL", $span({ className: "accent" }, "WORKS")]),
         $p({ className: "subtitle" }, "Forging tools at the edge of the world"),
-        $a({ href: "#whatsnew", className: "cta" }, [$span(null, "Enter the Forge")]),
+        $a({ href: "#whatsnew", className: "cta" }, [$span("Enter the Forge")]),
       ]),
-      $div({ className: "scroll-hint" }, [$div({ className: "scroll-bar" }), $span(null, "Scroll")]),
+      $div({ className: "scroll-hint" }, [$div({ className: "scroll-bar" }), $span("Scroll")]),
     ]);
   }, "HeroSection");
 
   const ContactSection = createComponent(() => {
-    return $section({ id: "contact" }, [
-      $div({ className: "content" }, [$h1(null, "Summon"), $div(null, "Lets get in touch.")]),
-    ]);
+    return $section({ id: "contact" }, [$div({ className: "content" }, [$h1("Summon"), $div("Lets get in touch.")])]);
   }, "Contact");
 
   const HomePage = () => {

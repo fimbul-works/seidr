@@ -3,7 +3,7 @@ import { $input } from "@fimbul-works/seidr/html";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import { FormControl, type ValidationState } from "./index.js";
+import { createFormControl, FormControl, type ValidationState } from "./index.js";
 
 const LABEL_TEXT = "Email Address";
 const DESC_TEXT = "We will never share your email address.";
@@ -55,9 +55,9 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
     expect(errorEl).toBeUndefined();
   });
 
-  it("should support pre-bound compound instance pattern FormControl.create", () => {
+  it("should support pre-bound compound instance pattern createFormControl", () => {
     const root = setup(() => {
-      const form = FormControl.create({
+      const form = createFormControl({
         id: "prebound-form",
         name: "prebound-name",
         required: true,
@@ -110,7 +110,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
 
   it("should support forceMount keeping error message in DOM with hidden attribute when valid", () => {
     const root = setup(() => {
-      const form = FormControl.create({
+      const form = createFormControl({
         id: "force-mount-form",
         validationState: createValue<ValidationState | undefined>("valid"),
       });
@@ -130,7 +130,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
 
   it("should not set htmlFor on Label when as is not label", () => {
     const root = setup(() => {
-      const form = FormControl.create({ id: "custom-label-form" });
+      const form = createFormControl({ id: "custom-label-form" });
       return form.Root([form.Label({ as: "span" }, LABEL_TEXT), $input(form.fieldProps)]);
     });
 
@@ -144,7 +144,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
     it("should reactively update ARIA attributes and error visibility on validationState change", () => {
       const validationState = createValue<ValidationState | undefined>(undefined);
       const root = setup(() => {
-        const form = FormControl.create({
+        const form = createFormControl({
           id: "reactive-form",
           validationState,
         });
@@ -183,7 +183,7 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
 
     it("should pass axe accessibility checks", async () => {
       const root = setup(() => {
-        const form = FormControl.create({
+        const form = createFormControl({
           id: "accessible-email-field",
           required: true,
         });

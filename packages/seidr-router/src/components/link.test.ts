@@ -214,8 +214,8 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
 
     it("should reactively update when activeClass or inactiveClass is a Value", () => {
       initRouter("/dashboard");
-      const activeCls = createValue("is-selected", { hydrate: false });
-      const inactiveCls = createValue("is-dimmed", { hydrate: false });
+      const activeCls = createValue<string | undefined>("is-selected", { hydrate: false });
+      const inactiveCls = createValue<string | undefined>("is-dimmed", { hydrate: false });
 
       const App = createComponent(
         () =>
@@ -420,7 +420,7 @@ describeDualMode("Link Component", ({ getDocument, isSSR }) => {
     it("should support non-anchor elements with role='link' and keyboard activation", () => {
       initRouter("/home");
       const App = createComponent(
-        () => Link({ href: "/settings", tagName: "div" }, [$span({ textContent: "Settings" })]),
+        () => Link({ href: "/settings", as: "div" }, [$span({ textContent: "Settings" })]),
         "App",
       );
 

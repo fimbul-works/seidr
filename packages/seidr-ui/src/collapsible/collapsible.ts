@@ -30,7 +30,7 @@ export interface CollapsibleProps<
 /**
  * Collapsible component.
  */
-function CollapsibleComponent<
+export function Collapsible<
   TRoot extends keyof SeidrElementTagNameMap = "div",
   TTrigger extends keyof SeidrElementTagNameMap = "button",
   TContent extends keyof SeidrElementTagNameMap = "div",
@@ -64,10 +64,3 @@ function CollapsibleComponent<
     col.Content(contentProps as any, children),
   ]);
 }
-
-export const Collapsible = Object.assign(CollapsibleComponent, {
-  create: createCollapsible,
-  Root: CollapsibleRoot,
-  Trigger: CollapsibleTrigger,
-  Content: CollapsibleContent,
-});

@@ -12,13 +12,13 @@ export const commonConfig: UserConfig = {
     experimental: {
       attachDebugInfo: "none",
     },
-    optimization: {
-      inlineConst: false,
-    },
+    // optimization: {
+    //   inlineConst: false,
+    // },
   },
-  deps: {
-    alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash", "@fimbul-works/hvat"],
-  },
+  // deps: {
+  //   alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash", "@fimbul-works/hvat"],
+  // },
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
   },

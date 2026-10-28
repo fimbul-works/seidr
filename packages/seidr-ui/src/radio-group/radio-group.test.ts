@@ -3,7 +3,7 @@ import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import type { ValidationState } from "../form-control/types.js";
-import { RadioGroup } from "./index.js";
+import { createRadioGroup, RadioGroup } from "./index.js";
 import type { RadioGroupItemDescriptor } from "./types.js";
 
 describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
@@ -25,7 +25,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
 
   it("should generate default ids and WAI-ARIA attributes", () => {
     const root = setup(() => {
-      const rg = RadioGroup.create();
+      const rg = createRadioGroup();
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -62,7 +62,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
 
   it("should support custom ids, orientation, and names", () => {
     const root = setup(() => {
-      const rg = RadioGroup.create({
+      const rg = createRadioGroup({
         id: "pet-selector",
         name: "pets",
         orientation: "horizontal",
@@ -88,7 +88,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
 
   it("should support defaultValue (uncontrolled selection)", () => {
     const root = setup(() => {
-      const rg = RadioGroup.create({ defaultValue: "cats" });
+      const rg = createRadioGroup({ defaultValue: "cats" });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -112,7 +112,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should update selection when clicking item label or control", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const rg = RadioGroup.create({ onChange });
+      const rg = createRadioGroup({ onChange });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -150,7 +150,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should select value when pressing Space key on item control", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const rg = RadioGroup.create({ defaultValue: "dogs", onChange });
+      const rg = createRadioGroup({ defaultValue: "dogs", onChange });
       const catItem = rg.createItem({ value: "cats" });
 
       return rg.Root([
@@ -180,7 +180,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const selected = createValue("dogs");
       updateVal = (v: string) => selected(v);
 
-      const rg = RadioGroup.create({ value: selected });
+      const rg = createRadioGroup({ value: selected });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -208,7 +208,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should prevent selection when group is disabled", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const rg = RadioGroup.create({ disabled: true, defaultValue: "dogs", onChange });
+      const rg = createRadioGroup({ disabled: true, defaultValue: "dogs", onChange });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -239,7 +239,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should prevent selection when an individual item is disabled", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const rg = RadioGroup.create({ defaultValue: "dogs", onChange });
+      const rg = createRadioGroup({ defaultValue: "dogs", onChange });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -274,7 +274,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
   it("should prevent selection when group is readOnly", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const rg = RadioGroup.create({ readOnly: true, defaultValue: "dogs", onChange });
+      const rg = createRadioGroup({ readOnly: true, defaultValue: "dogs", onChange });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -304,7 +304,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const valState = createValue<ValidationState | undefined>("valid");
       setValidation = (v: ValidationState) => valState(v);
 
-      const rg = RadioGroup.create({ validationState: valState });
+      const rg = createRadioGroup({ validationState: valState });
       return rg.Root([
         rg.Label("Favorite Pet"),
         rg.Item({ value: "dogs", label: "Dogs" }),
@@ -330,7 +330,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
 
   it("should restore defaultValue on parent form reset", () => {
     const root = setup(() => {
-      const rg = RadioGroup.create({ defaultValue: "dogs" });
+      const rg = createRadioGroup({ defaultValue: "dogs" });
       return $("form", [
         rg.Root([
           rg.Label("Favorite Pet"),
@@ -460,7 +460,7 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
       const forceMount = createValue(false);
       setForceMount = (val) => forceMount(val);
 
-      const rg = RadioGroup.create({ defaultValue: "dogs" });
+      const rg = createRadioGroup({ defaultValue: "dogs" });
       const catsItem = rg.createItem({ value: "cats" });
 
       return rg.Root([
@@ -488,10 +488,38 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     }
   });
 
-  it("should throw SeidrError when subcomponents are instantiated without an instance", () => {
-    expect(() => RadioGroup.ItemControl()).toThrow(/RadioGroupItemControl requires/);
-    expect(() => RadioGroup.ItemInput()).toThrow(/RadioGroupItemInput requires/);
-    expect(() => RadioGroup.Item()).toThrow(/RadioGroupItem requires/);
-    expect(() => RadioGroup.ItemLabel()).toThrow(/RadioGroupItemLabel requires/);
+  it("should support reactive styles and style overrides on ItemInput", () => {
+    let setOpacity: (val: number | string | undefined) => void;
+
+    const root = setup(() => {
+      const opacity = createValue<number | string | undefined>(0);
+      setOpacity = (val) => opacity(val);
+
+      const rg = createRadioGroup();
+      const item = rg.createItem({ value: "test" });
+
+      return rg.Root([
+        item.Root([
+          item.Input({
+            id: "styled-input",
+            style: {
+              opacity,
+              clip: "",
+            },
+          }),
+        ]),
+      ]);
+    });
+
+    const input = root.querySelector("#styled-input") as HTMLInputElement;
+    expect(input).not.toBeNull();
+    expect(input.style.opacity).toBe("0");
+    expect(input.style.position).toBe("absolute");
+    expect(input.style.clip).toBe("");
+
+    if (!isSSR) {
+      setOpacity!(0.5);
+      expect(input.style.opacity).toBe("0.5");
+    }
   });
 });

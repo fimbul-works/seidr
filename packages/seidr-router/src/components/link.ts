@@ -8,16 +8,15 @@ import { initRouter } from "../init-router.js";
 import { getNearestRouter } from "../router-tree/get-nearest-router.js";
 import type { RouterTreeNode } from "../types.js";
 import { isLinkActive } from "../util/is-link-active.js";
-import { usePathname } from "../hooks/use-pathname.js";
 
 /**
  * Link component props.
  */
-export interface LinkOptions<K extends keyof HTMLElementTagNameMap = "a"> {
+export interface LinkOptions<T extends keyof HTMLElementTagNameMap = "a"> {
   /** The URL to navigate to */
   href: ReactiveValue<string>;
   /** Optional HTML tag name (default: "a") */
-  tagName?: K;
+  as?: T;
   /** Class name to apply to the element */
   className?: ReactiveValue<string | undefined>;
   /** Class name to apply when the link is active */
@@ -47,15 +46,15 @@ export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions
 /**
  * Link element factory.
  *
- * @template K - Key from the HTMLElementTagNameMap interface
- * @param {LinkProps<K>} props - Link props with reactive bindings
+ * @template T - Key from the HTMLElementTagNameMap interface
+ * @param {LinkProps<T>} props - Link props with reactive bindings
  * @param {SeidrChild | SeidrChild[]} [children] - Optional child nodes
- * @returns {HTMLElementTagNameMap[K]} Element that wraps an anchor element
+ * @returns {HTMLElementTagNameMap[T]} Element that wraps an anchor element
  */
-export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
+export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
   {
     href,
-    tagName = "a" as K,
+    as = "a" as T,
     className: rawClassName,
     activeClass: activeClassName,
     inactiveClass: inactiveClassName,
@@ -63,9 +62,9 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     ariaCurrent,
     disabled,
     ...restProps
-  }: LinkProps<K>,
+  }: LinkProps<T>,
   children?: SeidrChild | SeidrChild[],
-): HTMLElementTagNameMap[K] => {
+): HTMLElementTagNameMap[T] => {
   initRouter();
 
   href = wrapValue(href, NO_HYDRATE);
@@ -121,7 +120,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
               return null;
             }
             const val = unwrapValue(ariaCurrent);
-            return val === true || isUndef(val) ? "page" : val;
+            return val === false ? undefined : val === true || isUndef(val) ? "page" : val;
           },
           { parents: ariaCurrentParents },
         )
@@ -133,7 +132,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   const ariaDisabled = isDisabled.as((d) => (d ? "true" : undefined));
   const dataDisabled = isDisabled.as((d) => (d ? "" : undefined));
 
-  const isCustomElement = tagName !== "a";
+  const isCustomElement = as !== "a";
   const role = isCustomElement ? ((restProps as any).role ?? "link") : (restProps as any).role;
   const tabIndex = isCustomElement
     ? ((restProps as any).tabIndex ??
@@ -175,5 +174,5 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     elementProps.href = href;
   }
 
-  return $(tagName as K, elementProps as SeidrElementProps<K>, children);
+  return $(as, elementProps as SeidrElementProps<T>, children);
 };

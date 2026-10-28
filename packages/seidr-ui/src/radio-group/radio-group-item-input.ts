@@ -1,5 +1,4 @@
-import { isObj } from "@fimbul-works/hvat";
-import { $, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { $, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseRadioGroupItemResult } from "./types.js";
 
@@ -21,7 +20,7 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
     throw new SeidrError("RadioGroupItemInput requires an instance prop");
   }
 
-  const mergedStyle = isObj(style) ? { ...VISUALLY_HIDDEN_STYLES, ...style } : VISUALLY_HIDDEN_STYLES;
+  const mergedStyle = mergeStyleProps(VISUALLY_HIDDEN_STYLES, style);
 
   const handleClick = (e: MouseEvent) => {
     (onclick as any)?.(e);

@@ -191,35 +191,6 @@ export interface RadioGroupItemDescriptor {
   descriptionProps?: RadioGroupItemDescriptionProps;
 }
 
-export interface RadioGroupProps extends UseRadioGroupOptions {
-  /** Optional class name for the root container. */
-  className?: ReactiveValue<string>;
-
-  /** Accessible group label text or element. */
-  label?: SeidrChild | SeidrChild[];
-
-  /** Optional group description text or element. */
-  description?: SeidrChild | SeidrChild[];
-
-  /** Optional group error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
-
-  /** Declarative list of items to render, supports static arrays or reactive observable arrays. */
-  items?: ReactiveValue<RadioGroupItemDescriptor[]>;
-
-  /** Props passed to RadioGroup.Root. */
-  rootProps?: RadioGroupRootProps;
-
-  /** Props passed to RadioGroup.Label. */
-  labelProps?: RadioGroupLabelProps;
-
-  /** Props passed to RadioGroup.Description. */
-  descriptionProps?: RadioGroupDescriptionProps;
-
-  /** Props passed to RadioGroup.ErrorMessage. */
-  errorMessageProps?: RadioGroupErrorMessageProps;
-}
-
 export interface RadioGroupItemInstance extends UseRadioGroupItemResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     propsOrChildren?: RadioGroupItemProps<T> | SeidrChild | SeidrChild[] | null,

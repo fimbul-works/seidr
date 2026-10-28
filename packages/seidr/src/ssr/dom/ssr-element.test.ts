@@ -43,6 +43,19 @@ describe("ServerElement", () => {
     el.style.color = "red";
     el.style.fontSize = "12px";
     expect(el.toString()).toBe('<div style="color: red; font-size: 12px;"></div>');
+
+    // Setting empty string unsets the style
+    el.style.color = "";
+    expect(el.toString()).toBe('<div style="font-size: 12px;"></div>');
+
+    // Preserving 0
+    (el.style as any).zIndex = 0;
+    expect(el.toString()).toBe('<div style="font-size: 12px; z-index: 0;"></div>');
+
+    // Setting null/undefined unsets
+    (el.style as any).fontSize = null;
+    (el.style as any).zIndex = undefined;
+    expect(el.toString()).toBe("<div></div>");
   });
 
   it("should handle dataset", () => {

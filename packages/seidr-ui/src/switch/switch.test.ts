@@ -3,7 +3,7 @@ import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import type { ValidationState } from "../form-control/types.js";
-import { Switch } from "./index.js";
+import { createSwitch, Switch } from "./index.js";
 
 describeDualMode("Switch", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -24,7 +24,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
 
   it("should generate default ids and aria attributes", () => {
     const root = setup(() => {
-      const sw = Switch.create();
+      const sw = createSwitch();
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -55,7 +55,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
 
   it("should support custom ids", () => {
     const root = setup(() => {
-      const sw = Switch.create({ id: "my-custom-sw" });
+      const sw = createSwitch({ id: "my-custom-sw" });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Custom Switch")]);
     });
 
@@ -74,7 +74,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
 
   it("should support custom name and value", () => {
     const root = setup(() => {
-      const sw = Switch.create({ name: "airplane-mode", value: "active" });
+      const sw = createSwitch({ name: "airplane-mode", value: "active" });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()])]);
     });
 
@@ -87,7 +87,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
 
   it("should support defaultChecked: true", () => {
     const root = setup(() => {
-      const sw = Switch.create({ defaultChecked: true });
+      const sw = createSwitch({ defaultChecked: true });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -108,7 +108,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should toggle checked state when clicking the control or input", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const sw = Switch.create({ onChange });
+      const sw = createSwitch({ onChange });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -149,7 +149,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should toggle when pressing Space on the control", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const sw = Switch.create({ onChange });
+      const sw = createSwitch({ onChange });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -174,7 +174,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
       const checkedVal = createValue(false);
       toggleVal = (v: boolean) => checkedVal(v);
 
-      const sw = Switch.create({ checked: checkedVal });
+      const sw = createSwitch({ checked: checkedVal });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Controlled Switch")]);
     });
 
@@ -193,7 +193,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should guard against changes when disabled", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const sw = Switch.create({ disabled: true, onChange });
+      const sw = createSwitch({ disabled: true, onChange });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -217,7 +217,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
   it("should guard against changes when readOnly", () => {
     const onChange = vi.fn();
     const root = setup(() => {
-      const sw = Switch.create({ readOnly: true, onChange });
+      const sw = createSwitch({ readOnly: true, onChange });
       return sw.Root([sw.Input(), sw.Control([sw.Thumb()]), sw.Label("Airplane Mode")]);
     });
 
@@ -245,7 +245,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
       const valState = createValue<ValidationState | undefined>("invalid");
       setValidation = (state) => valState(state);
 
-      const sw = Switch.create({ validationState: valState });
+      const sw = createSwitch({ validationState: valState });
       return sw.Root([
         sw.Input(),
         sw.Control([sw.Thumb()]),

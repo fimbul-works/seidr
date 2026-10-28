@@ -22,21 +22,21 @@ describe("Router Hydration", () => {
 
   const HomePage = createComponent(() => {
     const message = $text("Welcome to my homepage");
-    return $section({ className: "home-page" }, [$h1(null, "Home"), $div(null, message)]);
+    return $section({ className: "home-page" }, [$h1("Home"), $div(message)]);
   }, "HomePage");
 
   const AboutPage = createComponent(() => {
     return $section({ className: "about-page" }, [
-      $h1(null, "About"),
-      $p(null, "This page tells something about me"),
-      $p(null, "I am a developer from Finland"),
+      $h1("About"),
+      $p("This page tells something about me"),
+      $p("I am a developer from Finland"),
     ]);
   }, "AboutPage");
 
   const NotFoundPage = createComponent(() => {
     return $section({ className: "not-found-page" }, [
-      $h1(null, "Not Found"),
-      $p(null, "The page you are looking for does not exist"),
+      $h1("Not Found"),
+      $p("The page you are looking for does not exist"),
       Link({ href: "/" }, "Back to home"),
     ]);
   }, "NotFoundPage");

@@ -298,9 +298,27 @@ export class SSRElement<
         if (!isStr(prop)) return Reflect.get(storage, prop);
         if (prop === "toString") return () => self._serializeStyle();
         if (prop === "cssText") return self._serializeStyle();
-        if (prop === "setProperty") return (k: string, v: string) => (storage[k] = v);
-        if (prop === "getPropertyValue") return (k: string) => storage[k];
-        if (prop === "removeProperty") return (k: string) => delete storage[k];
+        if (prop === "setProperty") {
+          return (k: string, v: string) => {
+            const kebab = camelToKebab(k);
+            if (v === null || v === undefined || v === "" || (v as any) === false) {
+              delete storage[k];
+              delete storage[kebab];
+            } else {
+              storage[kebab] = String(v);
+            }
+          };
+        }
+        if (prop === "getPropertyValue") return (k: string) => storage[k] ?? storage[camelToKebab(k)] ?? "";
+        if (prop === "removeProperty") {
+          return (k: string) => {
+            const kebab = camelToKebab(k);
+            const prev = storage[k] ?? storage[kebab] ?? "";
+            delete storage[k];
+            delete storage[kebab];
+            return prev;
+          };
+        }
 
         if (prop in storage) return storage[prop];
         return storage[camelToKebab(prop)] || "";
@@ -322,7 +340,13 @@ export class SSRElement<
           return true;
         }
 
-        storage[camelToKebab(prop)] = String(value);
+        const kebab = camelToKebab(prop);
+        if (value === null || value === undefined || value === "" || value === false) {
+          delete storage[kebab];
+          delete storage[prop as string];
+        } else {
+          storage[kebab] = String(value);
+        }
         return true;
       },
     }) as CSSStyleDeclaration;

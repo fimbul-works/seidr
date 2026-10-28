@@ -1,16 +1,14 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
-  $,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
-  Show,
 } from "@fimbul-works/seidr";
 import { createImage } from "./create-image.js";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
-import { ImageRoot } from "./image-root.js";
+import { ImageRoot, ImageRootProps } from "./image-root.js";
 import { type UseImageOptions, useImage } from "./use-image.js";
 
 export interface ImageOptions<
@@ -57,7 +55,7 @@ export type ImageComponentProps<T extends keyof SeidrElementTagNameMap = "span">
 /**
  * Unified Image component rendering an accessible image with fallback.
  */
-export function ImageComponent<T extends keyof SeidrElementTagNameMap = "span">(
+export function Image<T extends keyof SeidrElementTagNameMap = "span">(
   props: ImageComponentProps<T>,
 ): SeidrElementTagNameMap[T] {
   const {
@@ -75,7 +73,7 @@ export function ImageComponent<T extends keyof SeidrElementTagNameMap = "span">(
     ...rest
   } = props;
 
-  const img = useImage({
+  const image = createImage({
     src,
     fallbackDelay,
     crossOrigin,
@@ -83,35 +81,14 @@ export function ImageComponent<T extends keyof SeidrElementTagNameMap = "span">(
     onLoadingStatusChange,
   });
 
-  const children: SeidrChild[] = [];
-
-  if (!isUndef(fallback)) {
-    children.push(
-      Show(img.canRenderFallback, () => $(fallbackAs, { className: "image-fallback", ...fallbackProps }, fallback)),
-    );
-  }
-
-  if (!isUndef(src)) {
-    const finalImgProps: SeidrElementProps<"img"> = {
-      src: src as any,
-      alt,
-      crossOrigin,
-      referrerPolicy,
-      className: "image-img",
-      ...imgProps,
-    };
-    children.push(Show(img.isLoaded, () => $("img", finalImgProps)));
-  }
-
-  return $(as, { "data-status": img.status, ...rest } as any, children) as SeidrElementTagNameMap[T];
+  return image.Root(
+    {
+      as,
+      ...rest,
+    } as ImageRootProps<T>,
+    [
+      !isUndef(fallback) && image.Fallback({ as: fallbackAs, ...fallbackProps }, fallback),
+      !isUndef(src) && image.Img({ alt, ...imgProps }),
+    ],
+  );
 }
-
-/**
- * Image namespace offering both a unified component and compound element factories.
- */
-export const Image = Object.assign(ImageComponent, {
-  Root: ImageRoot,
-  Img: ImageImg,
-  Fallback: ImageFallback,
-  create: createImage,
-});

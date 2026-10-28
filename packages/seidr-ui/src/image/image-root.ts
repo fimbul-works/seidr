@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 import { type UseImageOptions, type UseImageResult, useImage } from "./use-image.js";
+import { SeidrError } from "@fimbul-works/seidr";
 
 export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
   /**
@@ -42,7 +43,7 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
 
   const {
     as = "span" as T,
-    instance,
+    instance: img,
     src,
     fallbackDelay,
     crossOrigin,
@@ -51,17 +52,15 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
     ...rest
   } = props;
 
-  const state =
-    instance ??
-    (src || !isUndef(fallbackDelay) || onLoadingStatusChange
-      ? useImage({ src, fallbackDelay, crossOrigin, referrerPolicy, onLoadingStatusChange })
-      : undefined);
+  if (!img) {
+    throw new SeidrError("ImageRoot requires an instance prop");
+  }
 
   return $(
     as,
     {
       ...rest,
-      "data-status": state ? state.status : "idle",
+      "data-status": img.status,
     } as SeidrElementProps<T>,
     content,
   );

@@ -91,50 +91,50 @@ export function useImage({
 
     // Browser image loading lifecycle
     let active = true;
+    let current: HTMLImageElement | null = null;
 
     const resolveUrl = (v: unknown): string | undefined => (isStr(v) && v.trim().length > 0 ? v : undefined);
 
     const loadImage = (rawUrl: unknown) => {
       const url = resolveUrl(rawUrl);
       if (!url) {
+        current = null;
         setStatus("error");
         return;
       }
 
-      setStatus("loading");
-
       const image = new window.Image();
-      if (!isUndef(crossOrigin)) image.crossOrigin = crossOrigin;
-      if (!isUndef(referrerPolicy)) image.referrerPolicy = referrerPolicy;
+      current = image;
+      if (!isUndef(crossOrigin)) {
+        image.crossOrigin = crossOrigin;
+      }
+      if (!isUndef(referrerPolicy)) {
+        image.referrerPolicy = referrerPolicy;
+      }
 
-      image.onload = () => {
-        if (active) setStatus("loaded");
-      };
-
-      image.onerror = () => {
-        if (active) setStatus("error");
-      };
+      image.onload = () => active && current === image && setStatus("loaded");
+      image.onerror = () => active && current === image && setStatus("error");
 
       image.src = url;
+
+      // Often true immediately for cached images, which avoids a loading/fallback flash
+      if (image.complete) {
+        setStatus(image.naturalWidth > 0 ? "loaded" : "error");
+      } else {
+        setStatus("loading");
+      }
     };
 
     if (isValue(src)) {
       if (!isUndef(src())) {
         loadImage(src());
       }
-      const unwatch = src.watch((next) => {
-        if (active) loadImage(next);
-      });
-      onUnmounted(() => {
-        active = false;
-        unwatch();
-      });
+      src.watch((next) => active && loadImage(next));
     } else if (!isUndef(src)) {
       loadImage(src);
-      onUnmounted(() => {
-        active = false;
-      });
     }
+
+    onUnmounted(() => (active = false));
   });
 
   const canRenderFallback = mergeValues(() => delayPassed() && status() !== "loaded", {

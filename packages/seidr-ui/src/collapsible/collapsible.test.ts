@@ -2,7 +2,7 @@ import { createComponent, createValue, mount } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { Collapsible } from "./index.js";
+import { Collapsible, createCollapsible } from "./index.js";
 
 const TRIGGER_TEXT = "Toggle Trigger";
 const CONTENT_TEXT = "Collapsible Content Area";
@@ -63,9 +63,9 @@ describeDualMode("Collapsible", ({ getDocument, isSSR }) => {
     expect(trigger.getAttribute("aria-controls")).toBe(content?.id);
   });
 
-  it("should support pre-bound instance factory Collapsible.create", () => {
+  it("should support pre-bound instance factory createCollapsible", () => {
     const root = setup(() => {
-      const col = Collapsible.create({ defaultOpen: true });
+      const col = createCollapsible({ defaultOpen: true });
       return col.Root([col.Trigger(TRIGGER_TEXT), col.Content(CONTENT_TEXT)]);
     });
 

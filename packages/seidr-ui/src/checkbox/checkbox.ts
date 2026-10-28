@@ -50,7 +50,7 @@ export interface CheckboxProps extends UseCheckboxOptions {
 /**
  * Checkbox component.
  */
-function CheckboxComponent(options: CheckboxProps = {}) {
+export function Checkbox(options: CheckboxProps = {}) {
   const {
     className,
     label,
@@ -77,14 +77,3 @@ function CheckboxComponent(options: CheckboxProps = {}) {
     errorMessage ? cb.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
 }
-
-export const Checkbox = Object.assign(CheckboxComponent, {
-  create: createCheckbox,
-  Root: CheckboxRoot,
-  Input: CheckboxInput,
-  Control: CheckboxControl,
-  Indicator: CheckboxIndicator,
-  Label: CheckboxLabel,
-  Description: CheckboxDescription,
-  ErrorMessage: CheckboxErrorMessage,
-});

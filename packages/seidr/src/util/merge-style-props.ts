@@ -3,10 +3,21 @@ import type { ReactiveStyleDeclaration, ReactiveValue } from "../element/types.j
 import { isValue, mergeValues, unwrapValue } from "../observable/index.js";
 
 /**
- * Merge style declarations, combining values and functions into a single declaration.
+ * Merges two reactive style declarations, combining static values and reactive `Value` observables
+ * into a unified `ReactiveStyleDeclaration`.
  *
- * @param oldStyle - Old style declaration.
- * @param newStyle - New style declaration.
+ * ### Override Semantics:
+ * - **Nullish Coalescing (`??`)**: If a property in `newStyle` is `null` or `undefined`,
+ *   it falls back to the corresponding property in `oldStyle`.
+ * - **Erasing Declarations (`""`)**: Setting a property in `newStyle` to an empty string (`""`)
+ *   explicitly overrides and unsets the style from `oldStyle`, clearing the CSS declaration.
+ * - **Preserving Numeric Values (`0`)**: Falsy CSS values such as `0` (e.g. `opacity: 0`, `zIndex: 0`)
+ *   are preserved and will correctly override `oldStyle`.
+ * - **Reactivity**: If either property is an observable `Value`, a `DerivedValue` is created
+ *   via `mergeValues` that tracks both sources and re-evaluates dynamically.
+ *
+ * @param oldStyle - Base/default style declaration.
+ * @param newStyle - Overriding style declaration.
  * @returns Merged reactive style declaration.
  */
 export function mergeStyleProps(

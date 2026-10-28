@@ -5,6 +5,10 @@ import { commonConfig } from "../../tsdown.common.js";
 // Target option for seidrRolldownPlugin
 const target = "browser";
 
+const deps = {
+  alwaysBundle: ["@fimbul-works/futhark", "@fimbul-works/hash", "@fimbul-works/hvat"],
+};
+
 export default defineConfig([
   // Client-side bundle with SSR hydration
   {
@@ -12,6 +16,7 @@ export default defineConfig([
       seidr: "src/index.ts",
     },
     ...commonConfig,
+    deps,
     plugins: [seidrRolldownPlugin({ disableSSR: false, target })],
   },
   // Full client-side bundle with SSR hydration
@@ -20,6 +25,7 @@ export default defineConfig([
       "seidr.full": "src/index.full.ts",
     },
     ...commonConfig,
+    deps,
     plugins: [seidrRolldownPlugin({ disableSSR: false, target })],
   },
   // Core bundle (no SSR)
@@ -28,6 +34,7 @@ export default defineConfig([
       "seidr.core": "src/index.core.ts",
     },
     ...commonConfig,
+    deps,
     plugins: [seidrRolldownPlugin({ disableSSR: true, target })],
   },
 ]);

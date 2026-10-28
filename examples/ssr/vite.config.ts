@@ -27,7 +27,6 @@ export default defineConfig({
       },
       treeshake: true,
       inputOptions: {
-        optimization: {},
         experimental: {
           attachDebugInfo: "none",
         },

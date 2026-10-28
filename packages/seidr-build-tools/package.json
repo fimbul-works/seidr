@@ -56,16 +56,6 @@
       "types": "./dist/babel.d.ts",
       "import": "./dist/babel.js",
       "default": "./dist/babel.js"
-    },
-    "./vite-plugin": {
-      "types": "./dist/vite-plugin.d.ts",
-      "import": "./dist/vite-plugin.js",
-      "default": "./dist/vite-plugin.js"
-    },
-    "./rolldown-plugin": {
-      "types": "./dist/rolldown-plugin.d.ts",
-      "import": "./dist/rolldown-plugin.js",
-      "default": "./dist/rolldown-plugin.js"
     }
   },
   "files": [

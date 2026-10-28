@@ -1,5 +1,4 @@
-import { isObj } from "@fimbul-works/hvat";
-import { $, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { $, mergeStyleProps, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseSwitchResult } from "./types.js";
 
@@ -24,7 +23,7 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
   const fieldId = customId ?? sw.id.as((base) => `${base}-input`);
   onUnmounted(sw.formControl.registerField(fieldId));
 
-  const mergedStyle = isObj(style) ? { ...VISUALLY_HIDDEN_STYLES, ...style } : VISUALLY_HIDDEN_STYLES;
+  const mergedStyle = mergeStyleProps(VISUALLY_HIDDEN_STYLES, style);
 
   const handleChange = (e: Event) => {
     (onchange as any)?.(e);

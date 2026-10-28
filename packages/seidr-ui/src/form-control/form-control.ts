@@ -41,7 +41,7 @@ export interface FormControlProps<
 /**
  * FormControl component.
  */
-export function FormControlFactory<
+export function FormControl<
   TRoot extends keyof SeidrElementTagNameMap = "div",
   TLabel extends keyof SeidrElementTagNameMap = "label",
   TDescription extends keyof SeidrElementTagNameMap = "div",
@@ -103,11 +103,3 @@ export function FormControlFactory<
 
   return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
 }
-
-export const FormControl = Object.assign(FormControlFactory, {
-  create: createFormControl,
-  Root: FormControlRoot,
-  Label: FormControlLabel,
-  Description: FormControlDescription,
-  ErrorMessage: FormControlErrorMessage,
-});

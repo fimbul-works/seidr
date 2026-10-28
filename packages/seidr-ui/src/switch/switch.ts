@@ -1,12 +1,12 @@
 import type { SeidrChild } from "@fimbul-works/seidr";
 import { createSwitch } from "./create-switch";
-import { SwitchControl, type SwitchControlProps } from "./switch-control.js";
-import { SwitchDescription, type SwitchDescriptionProps } from "./switch-description.js";
-import { SwitchErrorMessage, type SwitchErrorMessageProps } from "./switch-error-message.js";
-import { SwitchInput, type SwitchInputProps } from "./switch-input.js";
-import { SwitchLabel, type SwitchLabelProps } from "./switch-label.js";
-import { SwitchRoot, type SwitchRootProps } from "./switch-root.js";
-import { SwitchThumb, type SwitchThumbProps } from "./switch-thumb.js";
+import { type SwitchControlProps } from "./switch-control.js";
+import { type SwitchDescriptionProps } from "./switch-description.js";
+import { type SwitchErrorMessageProps } from "./switch-error-message.js";
+import { type SwitchInputProps } from "./switch-input.js";
+import { type SwitchLabelProps } from "./switch-label.js";
+import { type SwitchRootProps } from "./switch-root.js";
+import { type SwitchThumbProps } from "./switch-thumb.js";
 import type { UseSwitchOptions } from "./types.js";
 
 export interface SwitchProps extends UseSwitchOptions {
@@ -51,7 +51,7 @@ export interface SwitchProps extends UseSwitchOptions {
  * Unified all-in-one Switch factory function.
  * Creates an accessible switch with full WAI-ARIA and form-control integration in one call.
  */
-function SwitchComponent(options: SwitchProps = {}) {
+export function Switch(options: SwitchProps = {}) {
   const {
     className,
     label,
@@ -78,14 +78,3 @@ function SwitchComponent(options: SwitchProps = {}) {
     errorMessage ? sw.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
 }
-
-export const Switch = Object.assign(SwitchComponent, {
-  create: createSwitch,
-  Root: SwitchRoot,
-  Input: SwitchInput,
-  Control: SwitchControl,
-  Thumb: SwitchThumb,
-  Label: SwitchLabel,
-  Description: SwitchDescription,
-  ErrorMessage: SwitchErrorMessage,
-});
