@@ -42,18 +42,13 @@ export const ImageShowcase = createComponent(() => {
           src: avatarUrl,
           alt: "User portrait",
           fallback: "CN",
-          className: "avatar",
-          fallbackProps: { className: "avatar-fallback" },
-          imgProps: { className: "avatar-img" },
         }),
         // Large avatar with custom fallback
         Image({
           src: avatarUrl,
           alt: "User portrait large",
           fallback: "Claus",
-          className: "avatar large",
-          fallbackProps: { className: "avatar-fallback" },
-          imgProps: { className: "avatar-img" },
+          className: "large",
         }),
         // Avatar with delayMs on fallback
         Image({
@@ -61,37 +56,33 @@ export const ImageShowcase = createComponent(() => {
           alt: "Small avatar",
           fallback: "FW",
           fallbackDelay: 300,
-          className: "avatar small",
-          fallbackProps: { className: "avatar-fallback muted" },
-          imgProps: { className: "avatar-img" },
+          className: "small",
+          fallbackProps: { className: "muted" },
         }),
         // Broken image with permanent fallback
         Image({
           src: "https://invalid-avatar-url.fake/none.png",
           alt: "Broken avatar",
           fallback: "⚠️",
-          className: "avatar",
-          fallbackProps: { className: "avatar-fallback" },
-          imgProps: { className: "avatar-img" },
         }),
       ]),
     ]),
     CodeBlock(
       `import { Image } from "@fimbul-works/seidr-ui";
 
+// Basic avatar with fallback
 Image({
   src: avatarUrl,
   alt: "User portrait",
   fallback: "CN",
   fallbackDelay: 300,
-  className: "avatar",
 });
 
-// 2. Compound instance workflow (for custom markup)
-const avatar = Image.create({ src: avatarUrl });
-avatar.Root({ className: "avatar" }, [
-  avatar.Fallback({ className: "avatar-fallback" }, "CN"),
-  avatar.Img({ alt: "User portrait", className: "avatar-img" }),
+// Compound instance workflow (for custom markup)
+const avatar = createImage({ src: avatarUrl });
+avatar.Root([
+  avatar.Fallback("CN"),
+  avatar.Img({ alt: "User portrait" }),
 ]);`,
     ),
   ]);

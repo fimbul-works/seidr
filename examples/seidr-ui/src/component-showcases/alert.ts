@@ -1,4 +1,4 @@
-import { createComponent, createValue } from "@fimbul-works/seidr";
+import { createComponent, createValue, type Value } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Alert } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block";
@@ -44,7 +44,7 @@ export const AlertShowcase = createComponent(() => {
       ]),
       Alert(
         {
-          className: alertSeverity.as((s) => `alert ${s}`),
+          className: alertSeverity as Value<string>,
         },
         alertSeverity.as((s) => {
           if (s === "warning") return "⚠️ Warning: Storage is reaching 90% capacity.";
@@ -60,7 +60,7 @@ export const AlertShowcase = createComponent(() => {
 Alert("Scheduled maintenance at midnight");
 
 // With props and custom severity
-Alert({ className: "alert warning" }, "Storage almost full");`,
+Alert({ className: "warning" }, "Storage almost full");`,
     ),
   ]);
-}, "lerttShocase");
+}, "AlertShowcase");

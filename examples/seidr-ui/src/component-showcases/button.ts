@@ -35,7 +35,7 @@ export const ButtonShowcase = createComponent(() => {
       $div({ style: { display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" } }, [
         Button(
           {
-            className: "btn primary",
+            className: "primary",
             disabled: isButtonDisabled,
             onclick: () => buttonClicks((c) => c + 1),
           },
@@ -43,7 +43,7 @@ export const ButtonShowcase = createComponent(() => {
         ),
         Button(
           {
-            className: "btn secondary",
+            className: "secondary",
             disabled: isButtonDisabled,
             onclick: () => buttonClicks((c) => c + 1),
           },
@@ -51,7 +51,7 @@ export const ButtonShowcase = createComponent(() => {
         ),
         Button(
           {
-            className: "btn destructive",
+            className: "destructive",
             disabled: isButtonDisabled,
             onclick: () => buttonClicks((c) => c + 1),
           },
@@ -60,7 +60,7 @@ export const ButtonShowcase = createComponent(() => {
         Button(
           {
             as: "div",
-            className: "btn secondary",
+            className: "secondary",
             disabled: isButtonDisabled,
             onclick: () => buttonClicks((c) => c + 1),
           },
@@ -75,7 +75,7 @@ export const ButtonShowcase = createComponent(() => {
 Button({ onclick: () => alert("Clicked") }, "Click me");
 
 // Non-button element (auto-adds role="button", tabindex="0", and Enter/Space keyboard handlers)
-Button({ as: "div", className: "btn" }, "Div Button");
+Button({ as: "div", className: "secondary" }, "Div Button");
 
 // Reactive disabled state
 Button({ disabled: isBusy }, "Submitting...");`,

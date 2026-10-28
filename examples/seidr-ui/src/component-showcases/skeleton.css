@@ -1,9 +1,9 @@
 /* Component Styles: Skeleton */
-.skeleton {
+[data-component="skeleton"] {
   background: var(--skeleton-bg);
 }
 
-.skeleton[data-animate] {
+[data-component="skeleton"][data-animate] {
   animation: skeleton-pulse 1s ease-in-out infinite;
 }
 

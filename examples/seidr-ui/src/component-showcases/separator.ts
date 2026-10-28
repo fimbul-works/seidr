@@ -18,13 +18,13 @@ export const SeparatorShowcase = createComponent(() => {
     $div({ className: "preview-box" }, [
       $div({ style: { display: "flex", flexDirection: "column", gap: "0.75rem" } }, [
         $span({ style: { fontSize: "0.875rem" } }, "Horizontal Separator:"),
-        Separator({ className: "separator", orientation: "horizontal" }),
+        Separator({ orientation: "horizontal" }),
         $span({ style: { fontSize: "0.875rem" } }, "Inline / Vertical Separator:"),
         $div({ style: { display: "flex", alignItems: "center", gap: "1rem" } }, [
           $span("Home"),
-          Separator({ as: "div", className: "separator", orientation: "vertical" }),
+          Separator({ as: "div", orientation: "vertical" }),
           $span("Components"),
-          Separator({ as: "div", className: "separator", orientation: "vertical" }),
+          Separator({ as: "div", orientation: "vertical" }),
           $span("Showcase"),
         ]),
       ]),

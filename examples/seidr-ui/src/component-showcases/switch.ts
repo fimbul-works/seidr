@@ -50,12 +50,6 @@ export const SwitchShowcase = createComponent(() => {
         $div({ className: "switch-group" }, [
           $div({ className: "switch-section-title" }, "1. Unified Helper"),
           Switch({
-            className: "switch-root",
-            inputProps: { className: "switch-input" },
-            controlProps: { className: "switch-control" },
-            thumbProps: { className: "switch-thumb" },
-            labelProps: { className: "switch-label" },
-            descriptionProps: { className: "switch-description" },
             defaultChecked: true,
             disabled: isDisabled,
             label: "Airplane Mode",
@@ -67,12 +61,6 @@ export const SwitchShowcase = createComponent(() => {
         $div({ className: "switch-group" }, [
           $div({ className: "switch-section-title" }, "2. Controlled Switch"),
           Switch({
-            className: "switch-root",
-            inputProps: { className: "switch-input" },
-            controlProps: { className: "switch-control" },
-            thumbProps: { className: "switch-thumb" },
-            labelProps: { className: "switch-label" },
-            descriptionProps: { className: "switch-description" },
             checked: isDND,
             disabled: isDisabled,
             onChange: (val: boolean) => isDND(val),
@@ -88,19 +76,19 @@ export const SwitchShowcase = createComponent(() => {
         // 3. Pre-bound Compound Pattern with Validation
         $div({ className: "switch-group" }, [
           $div({ className: "switch-section-title" }, "3. Compound Elements & Validation"),
-          maintenanceSwitch.Root({ className: "switch-root" }, [
-            maintenanceSwitch.Input({ className: "switch-input" }),
-            maintenanceSwitch.Control({ className: "switch-control" }, [
-              maintenanceSwitch.Thumb({ className: "switch-thumb" }),
+          maintenanceSwitch.Root({}, [
+            maintenanceSwitch.Input(),
+            maintenanceSwitch.Control({}, [
+              maintenanceSwitch.Thumb({}),
             ]),
             $div({ className: "switch-content" }, [
-              maintenanceSwitch.Label({ className: "switch-label" }, "Enable Maintenance Window"),
+              maintenanceSwitch.Label({}, "Enable Maintenance Window"),
               maintenanceSwitch.Description(
-                { className: "switch-description" },
+                {},
                 "Activating redirects incoming traffic to the maintenance page.",
               ),
               maintenanceSwitch.ErrorMessage(
-                { className: "switch-error" },
+                {},
                 "Maintenance must be active before scheduled operations can proceed.",
               ),
             ]),

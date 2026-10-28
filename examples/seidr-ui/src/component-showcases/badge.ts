@@ -17,17 +17,17 @@ export const BadgeShowcase = createComponent(() => {
     // Live Preview
     $div({ className: "preview-box" }, [
       $div({ style: { display: "flex", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" } }, [
-        Badge({ className: "badge" }, "Default"),
-        Badge({ className: "badge success" }, "Active"),
-        Badge({ className: "badge danger", textValue: "3 unresolved issues" }, "3"),
-        Badge({ as: "div", className: "badge" }, "Custom Div Tag"),
+        Badge("Default"),
+        Badge({ className: "success" }, "Active"),
+        Badge({ className: "danger", textValue: "3 unresolved issues" }, "3"),
+        Badge({ as: "div" }, "Custom Div Tag"),
       ]),
     ]),
     CodeBlock(
       `import { Badge } from "@fimbul-works/seidr-ui";
 
 // Status badge
-Badge({ className: "badge success" }, "Active");
+Badge({ className: "success" }, "Active");
 
 // Badge with accessible label for icon or number counts
 Badge({ textValue: "3 unread messages" }, "3");`,

@@ -15,23 +15,27 @@
   border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
 }
 
-.form-control-group {
+/* Form Control Root Container */
+[data-component="form-control"][data-part="root"] {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
 }
 
-.form-control-label {
+/* Form Control Label */
+[data-component="form-control"][data-part="label"] {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--fg-default, #e2e8f0);
 }
 
-.form-control-label[data-required]::after {
+[data-component="form-control"][data-part="label"][data-required]::after {
   content: " *";
   color: #ef4444;
 }
 
+/* Form Control Inputs */
+[data-component="form-control"] input,
 .form-control-input {
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -46,40 +50,48 @@
     box-shadow 0.15s ease;
 }
 
+[data-component="form-control"] input:focus,
 .form-control-input:focus {
   border-color: #3b82f6;
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
 }
 
+[data-component="form-control"] input[data-invalid],
 .form-control-input[data-invalid] {
   border-color: #ef4444;
 }
 
+[data-component="form-control"] input[data-invalid]:focus,
 .form-control-input[data-invalid]:focus {
   border-color: #ef4444;
   box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
 }
 
+[data-component="form-control"] input[data-valid],
 .form-control-input[data-valid] {
   border-color: #10b981;
 }
 
+[data-component="form-control"] input[data-valid]:focus,
 .form-control-input[data-valid]:focus {
   border-color: #10b981;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }
 
+[data-component="form-control"] input[data-disabled],
 .form-control-input[data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.form-control-description {
+/* Form Control Description */
+[data-component="form-control"][data-part="description"] {
   font-size: 0.8rem;
   color: var(--fg-muted, #94a3b8);
 }
 
-.form-control-error {
+/* Form Control Error Message */
+[data-component="form-control"][data-part="error-message"] {
   font-size: 0.8rem;
   color: #f87171;
   font-weight: 500;

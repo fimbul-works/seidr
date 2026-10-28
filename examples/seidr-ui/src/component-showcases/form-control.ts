@@ -1,6 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $input, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { FormControl, createFormControl } from "@fimbul-works/seidr-ui";
+import { createFormControl, FormControl } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./form-control.css";
 
@@ -49,24 +49,17 @@ export const FormControlShowcase = createComponent(() => {
       $div({ className: "form-control-showcase" }, [
         // 1. Interactive Form Control with Pre-bound Compound Factory
         $div({ className: "form-control-box" }, [
-          emailForm.Root({ className: "form-control-group" }, [
-            emailForm.Label({ className: "form-control-label" }, "Email Address"),
+          emailForm.Root({}, [
+            emailForm.Label({}, "Email Address"),
             $input({
               type: "email",
               placeholder: "alice@example.com",
-              className: "form-control-input",
               value: emailInput,
               oninput: (e: Event) => emailInput((e.target as HTMLInputElement).value),
               ...emailForm.fieldProps,
             }),
-            emailForm.Description(
-              { className: "form-control-description" },
-              "Type a valid email to see reactive validation states update.",
-            ),
-            emailForm.ErrorMessage(
-              { className: "form-control-error" },
-              "Please enter a valid email address with an '@' and domain.",
-            ),
+            emailForm.Description({}, "Type a valid email to see reactive validation states update."),
+            emailForm.ErrorMessage({}, "Please enter a valid email address with an '@' and domain."),
           ]),
         ]),
 
@@ -76,16 +69,12 @@ export const FormControlShowcase = createComponent(() => {
             id: "showcase-username-control",
             name: "username",
             label: "Username",
-            labelProps: { className: "form-control-label" },
             field: $input({
               type: "text",
               placeholder: "Enter unique username...",
-              className: "form-control-input",
               disabled: isFormDisabled,
             }),
             description: "Usernames must be between 3 and 20 alphanumeric characters.",
-            descriptionProps: { className: "form-control-description" },
-            rootProps: { className: "form-control-group" },
           }),
         ]),
       ]),

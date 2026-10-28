@@ -65,12 +65,6 @@ export const CheckboxShowcase = createComponent(() => {
         $div({ className: "checkbox-group-demo" }, [
           $div({ className: "checkbox-section-title" }, "1. Unified Helper"),
           Checkbox({
-            className: "checkbox-root",
-            inputProps: { className: "checkbox-input" },
-            controlProps: { className: "checkbox-control" },
-            indicatorProps: { className: "checkbox-indicator" },
-            labelProps: { className: "checkbox-label" },
-            descriptionProps: { className: "checkbox-description" },
             defaultChecked: true,
             disabled: isDisabled,
             label: "Receive weekly product updates",
@@ -83,11 +77,6 @@ export const CheckboxShowcase = createComponent(() => {
         $div({ className: "checkbox-group-demo" }, [
           $div({ className: "checkbox-section-title" }, "2. Tri-State 'Select All' Indeterminate"),
           Checkbox({
-            className: "checkbox-root",
-            inputProps: { className: "checkbox-input" },
-            controlProps: { className: "checkbox-control" },
-            indicatorProps: { className: "checkbox-indicator" },
-            labelProps: { className: "checkbox-label" },
             checked: allChecked,
             indeterminate: someChecked,
             disabled: isDisabled,
@@ -98,11 +87,6 @@ export const CheckboxShowcase = createComponent(() => {
 
           $div({ className: "checkbox-nested-list" }, [
             Checkbox({
-              className: "checkbox-root",
-              inputProps: { className: "checkbox-input" },
-              controlProps: { className: "checkbox-control" },
-              indicatorProps: { className: "checkbox-indicator" },
-              labelProps: { className: "checkbox-label" },
               checked: item1,
               disabled: isDisabled,
               onChange: (v: boolean) => item1(v),
@@ -110,11 +94,6 @@ export const CheckboxShowcase = createComponent(() => {
               indicator: "✓",
             }),
             Checkbox({
-              className: "checkbox-root",
-              inputProps: { className: "checkbox-input" },
-              controlProps: { className: "checkbox-control" },
-              indicatorProps: { className: "checkbox-indicator" },
-              labelProps: { className: "checkbox-label" },
               checked: item2,
               disabled: isDisabled,
               onChange: (v: boolean) => item2(v),
@@ -122,11 +101,6 @@ export const CheckboxShowcase = createComponent(() => {
               indicator: "✓",
             }),
             Checkbox({
-              className: "checkbox-root",
-              inputProps: { className: "checkbox-input" },
-              controlProps: { className: "checkbox-control" },
-              indicatorProps: { className: "checkbox-indicator" },
-              labelProps: { className: "checkbox-label" },
               checked: item3,
               disabled: isDisabled,
               onChange: (v: boolean) => item3(v),
@@ -139,19 +113,19 @@ export const CheckboxShowcase = createComponent(() => {
         // 3. Pre-bound Compound Pattern with Validation
         $div({ className: "checkbox-group-demo" }, [
           $div({ className: "checkbox-section-title" }, "3. Compound Elements & Validation"),
-          termsCheckbox.Root({ className: "checkbox-root" }, [
-            termsCheckbox.Input({ className: "checkbox-input" }),
-            termsCheckbox.Control({ className: "checkbox-control" }, [
-              termsCheckbox.Indicator({ className: "checkbox-indicator" }, "✓"),
+          termsCheckbox.Root({}, [
+            termsCheckbox.Input({}),
+            termsCheckbox.Control({}, [
+              termsCheckbox.Indicator({}, "✓"),
             ]),
             $div({ className: "checkbox-content" }, [
-              termsCheckbox.Label({ className: "checkbox-label" }, "I agree to the Terms and Conditions"),
+              termsCheckbox.Label({}, "I agree to the Terms and Conditions"),
               termsCheckbox.Description(
-                { className: "checkbox-description" },
+                {},
                 "You must check this box to submit the form.",
               ),
               termsCheckbox.ErrorMessage(
-                { className: "checkbox-error" },
+                {},
                 "You must accept the terms before proceeding.",
               ),
             ]),

@@ -62,7 +62,6 @@ export const SkeletonShowcase = createComponent(() => {
                 Skeleton({
                   circle: true,
                   height: 48,
-                  className: "skeleton",
                   animate: isSkeletonAnimated(),
                 }),
                 $div({ style: { display: "flex", flexDirection: "column", gap: "0.5rem", flex: "1" } }, [
@@ -70,14 +69,12 @@ export const SkeletonShowcase = createComponent(() => {
                     width: "60%",
                     height: 18,
                     radius: 4,
-                    className: "skeleton",
                     animate: isSkeletonAnimated(),
                   }),
                   Skeleton({
                     width: "40%",
                     height: 14,
                     radius: 4,
-                    className: "skeleton",
                     animate: isSkeletonAnimated(),
                   }),
                 ]),

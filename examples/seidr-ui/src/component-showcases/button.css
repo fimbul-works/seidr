@@ -1,5 +1,5 @@
 /* Component Styles: Button */
-.btn {
+[data-component="button"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -14,39 +14,45 @@
   border: 1px solid transparent;
 }
 
-.btn.primary {
+[data-component="button"].primary,
+[data-component="button"][data-variant="primary"] {
   background: var(--accent);
   color: #ffffff;
 }
 
-.btn.primary:hover:not([data-disabled]) {
+[data-component="button"].primary:hover:not([data-disabled]),
+[data-component="button"][data-variant="primary"]:hover:not([data-disabled]) {
   background: var(--accent-light);
   box-shadow: 0 4px 14px var(--accent-glow);
 }
 
-.btn.secondary {
+[data-component="button"].secondary,
+[data-component="button"][data-variant="secondary"] {
   background: var(--bg-card);
   color: var(--fg);
   border-color: var(--border);
 }
 
-.btn.secondary:hover:not([data-disabled]) {
+[data-component="button"].secondary:hover:not([data-disabled]),
+[data-component="button"][data-variant="secondary"]:hover:not([data-disabled]) {
   background: var(--bg-card-hover);
   border-color: var(--border-focus);
 }
 
-.btn.destructive {
+[data-component="button"].destructive,
+[data-component="button"][data-variant="destructive"] {
   background: rgba(239, 68, 68, 0.15);
   color: #f87171;
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-.btn.destructive:hover:not([data-disabled]) {
+[data-component="button"].destructive:hover:not([data-disabled]),
+[data-component="button"][data-variant="destructive"]:hover:not([data-disabled]) {
   background: rgba(239, 68, 68, 0.25);
   border-color: #ef4444;
 }
 
-.btn[data-disabled] {
+[data-component="button"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }

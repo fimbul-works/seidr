@@ -1,5 +1,5 @@
 /* Component Styles: Alert */
-.alert {
+[data-component="alert"] {
   padding: 1rem 1.25rem;
   border-radius: 8px;
   background: var(--alert-bg);
@@ -10,14 +10,17 @@
   font-size: 0.95rem;
 }
 
-.alert.warning {
+[data-component="alert"].warning,
+[data-component="alert"][data-severity="warning"] {
   border-left: 4px solid #f59e0b;
 }
 
-.alert.info {
+[data-component="alert"].info,
+[data-component="alert"][data-severity="info"] {
   border-left: 4px solid var(--accent);
 }
 
-.alert.error {
+[data-component="alert"].error,
+[data-component="alert"][data-severity="error"] {
   border-left: 4px solid #ef4444;
 }

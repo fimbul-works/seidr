@@ -5,14 +5,16 @@
   width: 100%;
 }
 
-.collapsible-box {
-  border: 1px solid var(--border-color, #e2e8f0);
+/* Collapsible Root Container */
+[data-component="collapsible"][data-part="root"] {
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
   border-radius: 0.5rem;
   overflow: hidden;
-  background: var(--bg-surface, #ffffff);
+  background: var(--bg-surface, rgba(255, 255, 255, 0.03));
 }
 
-.collapsible-trigger-btn {
+/* Collapsible Trigger Button */
+[data-component="collapsible"][data-part="trigger"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -23,17 +25,17 @@
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-color, #1e293b);
+  color: var(--fg, #f3f4f6);
   cursor: pointer;
   text-align: left;
-  transition: background 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
-.collapsible-trigger-btn:hover {
-  background: var(--bg-hover, #f8fafc);
+[data-component="collapsible"][data-part="trigger"]:hover:not([data-disabled]) {
+  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
 }
 
-.collapsible-trigger-btn[data-disabled] {
+[data-component="collapsible"][data-part="trigger"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
@@ -41,25 +43,24 @@
 .collapsible-chevron {
   font-size: 0.8rem;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--fg-muted, #9ca3af);
 }
 
-.collapsible-trigger-btn[data-expanded] .collapsible-chevron {
+[data-component="collapsible"][data-part="trigger"][data-expanded] .collapsible-chevron {
   transform: rotate(180deg);
 }
 
-.collapsible-panel {
+/* Collapsible Content Panel */
+[data-component="collapsible"][data-part="content"] {
   padding: 0 1rem 1rem 1rem;
   font-size: 0.9rem;
   line-height: 1.5;
-  color: var(--text-muted, #64748b);
-  border-top: 1px solid var(--border-color, #f1f5f9);
+  color: var(--fg-muted, #9ca3af);
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
 }
 
 /* Smooth CSS discrete transition with allow-discrete */
-.collapsible-panel-animated {
-  padding: 0 1rem 1rem 1rem;
-  font-size: 0.9rem;
-  color: var(--text-muted, #64748b);
+[data-component="collapsible"][data-part="content"].animated {
   transition:
     opacity 0.2s ease,
     transform 0.2s ease,
@@ -68,7 +69,7 @@
   transform: translateY(0);
 }
 
-.collapsible-panel-animated[data-closed] {
+[data-component="collapsible"][data-part="content"].animated[data-closed] {
   opacity: 0;
   transform: translateY(-4px);
 }

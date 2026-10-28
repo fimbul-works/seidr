@@ -21,14 +21,12 @@ export const ToggleButtonShowcase = createComponent(() => {
       $div({ style: { display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" } }, [
         // Sound Mute Toggle (uncontrolled with renderContent prop)
         ToggleButton({
-          className: "toggle-btn",
           defaultPressed: false,
           renderContent: ({ pressed }) => pressed.as((p: boolean) => (p ? "🔊 Sound On" : "🔇 Sound Muted")),
         }),
         // Star/Bookmark Toggle (controlled)
         ToggleButton(
           {
-            className: "toggle-btn",
             pressed: isStarred,
             onChange: (val) => isStarred(val),
           },
@@ -37,7 +35,6 @@ export const ToggleButtonShowcase = createComponent(() => {
         // Disabled toggle button
         ToggleButton(
           {
-            className: "toggle-btn",
             defaultPressed: true,
             disabled: true,
           },

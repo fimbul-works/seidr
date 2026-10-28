@@ -25,21 +25,23 @@
 }
 
 /* Base Checkbox Root Container */
-.checkbox-root {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 0.75rem;
+[data-component="checkbox"][data-part="root"] {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  column-gap: 0.75rem;
+  row-gap: 0.2rem;
+  align-items: start;
   position: relative;
   user-select: none;
 }
 
-.checkbox-root[data-disabled] {
+[data-component="checkbox"][data-part="root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Hidden Accessible Native Input */
-.checkbox-input {
+[data-component="checkbox"][data-part="input"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -52,7 +54,9 @@
 }
 
 /* Visual Checkbox Control Box */
-.checkbox-control {
+[data-component="checkbox"][data-part="control"] {
+  grid-column: 1;
+  grid-row: 1;
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 4px;
@@ -62,49 +66,49 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 0;
+  margin-top: 0.1rem;
   cursor: pointer;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.checkbox-root[data-disabled] .checkbox-control {
+[data-component="checkbox"][data-part="root"][data-disabled] [data-component="checkbox"][data-part="control"] {
   cursor: not-allowed;
 }
 
 /* Hover & Focus States */
-.checkbox-control:focus-visible,
-.checkbox-input:focus-visible + .checkbox-control {
+[data-component="checkbox"][data-part="control"]:focus-visible,
+[data-component="checkbox"][data-part="input"]:focus-visible + [data-component="checkbox"][data-part="control"] {
   outline: none;
   border-color: var(--accent, #6366f1);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
 }
 
-.checkbox-root:hover:not([data-disabled]) .checkbox-control {
+[data-component="checkbox"][data-part="root"]:hover:not([data-disabled]) [data-component="checkbox"][data-part="control"] {
   border-color: var(--accent, #6366f1);
   background: rgba(99, 102, 241, 0.08);
 }
 
 /* Checked & Indeterminate States */
-.checkbox-control[data-checked],
-.checkbox-control[data-indeterminate] {
+[data-component="checkbox"][data-part="control"][data-checked],
+[data-component="checkbox"][data-part="control"][data-indeterminate] {
   background: var(--accent, #6366f1);
   border-color: var(--accent, #6366f1);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
 /* Validation Invalid State */
-.checkbox-control[data-invalid] {
+[data-component="checkbox"][data-part="control"][data-invalid] {
   border-color: #ef4444;
 }
 
-.checkbox-control[data-invalid][data-checked] {
+[data-component="checkbox"][data-part="control"][data-invalid][data-checked] {
   background: #ef4444;
   border-color: #ef4444;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 /* Checkbox Indicator (Icon) */
-.checkbox-indicator {
+[data-component="checkbox"][data-part="indicator"] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -116,40 +120,49 @@
   line-height: 1;
 }
 
-/* Text Content Container (Label + Description + Error) */
-.checkbox-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-}
-
-.checkbox-label {
+/* Label */
+[data-component="checkbox"][data-part="label"] {
+  grid-column: 2;
+  grid-row: 1;
   font-size: 0.925rem;
   font-weight: 500;
   color: var(--fg, #f8fafc);
   cursor: pointer;
+  line-height: 1.35;
 }
 
-.checkbox-root[data-disabled] .checkbox-label {
+[data-component="checkbox"][data-part="root"][data-disabled] [data-component="checkbox"][data-part="label"] {
   cursor: not-allowed;
 }
 
-.checkbox-label[data-required]::after {
+[data-component="checkbox"][data-part="label"][data-required]::after {
   content: " *";
   color: #ef4444;
 }
 
-.checkbox-description {
+/* Description */
+[data-component="checkbox"][data-part="description"] {
+  grid-column: 2;
   font-size: 0.8rem;
   color: var(--fg-muted, #94a3b8);
   line-height: 1.4;
 }
 
-.checkbox-error {
+/* Error Message */
+[data-component="checkbox"][data-part="error-message"] {
+  grid-column: 2;
   font-size: 0.8rem;
   color: #f87171;
   font-weight: 500;
   line-height: 1.4;
+}
+
+/* Text Content Container (used in compound layout if grouping label + desc + error) */
+.checkbox-content {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 /* Nested Sub-Checkboxes */

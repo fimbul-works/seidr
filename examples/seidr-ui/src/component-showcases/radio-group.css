@@ -25,62 +25,39 @@
 }
 
 /* Radio Group Root Container */
-.radio-group-root {
+[data-component="radio-group"][data-part="root"] {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   user-select: none;
 }
 
-.radio-group-root[aria-orientation="horizontal"],
-.radio-group-root.horizontal {
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
-.radio-group-root[aria-orientation="horizontal"] > .radio-group-label,
-.radio-group-root.horizontal > .radio-group-label,
-.radio-group-root[aria-orientation="horizontal"] > .radio-group-description,
-.radio-group-root.horizontal > .radio-group-description,
-.radio-group-root[aria-orientation="horizontal"] > .radio-group-error,
-.radio-group-root.horizontal > .radio-group-error {
-  width: 100%;
-  flex-basis: 100%;
-}
-
-.radio-group-root.horizontal .radio-item-card,
-.radio-group-root[aria-orientation="horizontal"] .radio-item-card {
-  flex: 1 1 240px;
-  min-width: 200px;
-}
-
-.radio-group-root[data-disabled] {
+[data-component="radio-group"][data-part="root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Radio Group Label */
-.radio-group-label {
+[data-component="radio-group"][data-part="label"] {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--fg, #f3f4f6);
   margin-bottom: 0.25rem;
 }
 
-.radio-group-root[data-invalid] .radio-group-label {
+[data-component="radio-group"][data-part="root"][data-invalid] [data-component="radio-group"][data-part="label"] {
   color: #f87171;
 }
 
 /* Radio Group Description */
-.radio-group-description {
+[data-component="radio-group"][data-part="description"] {
   font-size: 0.825rem;
   color: var(--fg-muted, #9ca3af);
   margin-bottom: 0.5rem;
 }
 
 /* Radio Group Error Message */
-.radio-group-error {
+[data-component="radio-group"][data-part="error-message"] {
   font-size: 0.825rem;
   color: #f87171;
   font-weight: 500;
@@ -90,12 +67,36 @@
   gap: 0.35rem;
 }
 
-.radio-group-error[hidden] {
+[data-component="radio-group"][data-part="error-message"][hidden] {
   display: none;
 }
 
-/* Radio Item (Card & Row Styles) */
-.radio-item-card {
+/* Horizontal Orientation Overrides */
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"],
+[data-component="radio-group"][data-part="root"].horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="label"],
+[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="label"],
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="description"],
+[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="description"],
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="error-message"],
+[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="error-message"] {
+  width: 100%;
+  flex-basis: 100%;
+}
+
+[data-component="radio-group"][data-part="root"].horizontal [data-component="radio-group"][data-part="item"]:not(.row),
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] [data-component="radio-group"][data-part="item"]:not(.row) {
+  flex: 1 1 240px;
+  min-width: 200px;
+}
+
+/* Radio Item (Default Card Style) */
+[data-component="radio-group"][data-part="item"] {
   display: flex;
   align-items: flex-start;
   gap: 0.875rem;
@@ -111,44 +112,48 @@
   position: relative;
 }
 
-.radio-item-card:hover:not([data-disabled]) {
+[data-component="radio-group"][data-part="item"]:hover:not([data-disabled]) {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.radio-item-card[data-checked] {
+[data-component="radio-group"][data-part="item"][data-checked] {
   background: var(--accent-glow, rgba(99, 102, 241, 0.12));
   border-color: var(--accent, #6366f1);
   box-shadow: 0 0 0 1px var(--accent, #6366f1);
 }
 
-.radio-item-card[data-disabled] {
+[data-component="radio-group"][data-part="item"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Simple inline row item */
-.radio-item-row {
+[data-component="radio-group"][data-part="item"].row {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
   cursor: pointer;
   padding: 0.375rem 0.5rem;
   border-radius: 6px;
+  background: transparent;
+  border: 1px solid transparent;
+  box-shadow: none;
   transition: background-color 0.15s ease;
 }
 
-.radio-item-row:hover:not([data-disabled]) {
+[data-component="radio-group"][data-part="item"].row:hover:not([data-disabled]) {
   background: rgba(255, 255, 255, 0.04);
 }
 
-.radio-item-row[data-disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
+[data-component="radio-group"][data-part="item"].row[data-checked] {
+  background: rgba(99, 102, 241, 0.1);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 /* Hidden Accessible Native Radio Input */
-.radio-item-input {
+[data-component="radio-group"][data-part="item-input"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -161,7 +166,7 @@
 }
 
 /* Visual Radio Button Circle / Control */
-.radio-control {
+[data-component="radio-group"][data-part="item-control"] {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
@@ -178,35 +183,33 @@
     box-shadow 0.2s ease;
 }
 
-.radio-item-row .radio-control {
+[data-component="radio-group"][data-part="item"].row [data-component="radio-group"][data-part="item-control"] {
   margin-top: 0;
 }
 
-.radio-control[data-checked] {
+[data-component="radio-group"][data-part="item-control"][data-checked] {
   border-color: var(--accent, #6366f1);
   background: var(--accent, #6366f1);
 }
 
 /* Focus Indicator */
-.radio-control:focus-visible,
-.radio-item-input:focus-visible + .radio-control {
+[data-component="radio-group"][data-part="item-control"]:focus-visible,
+[data-component="radio-group"][data-part="item-input"]:focus-visible + [data-component="radio-group"][data-part="item-control"] {
   outline: none;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
 }
 
-.radio-item-card:hover:not([data-disabled]) .radio-control,
-.radio-item-row:hover:not([data-disabled]) .radio-control {
+[data-component="radio-group"][data-part="item"]:hover:not([data-disabled]) [data-component="radio-group"][data-part="item-control"] {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-.radio-item-card[data-checked]:hover:not([data-disabled]) .radio-control,
-.radio-item-row[data-checked]:hover:not([data-disabled]) .radio-control {
+[data-component="radio-group"][data-part="item"][data-checked]:hover:not([data-disabled]) [data-component="radio-group"][data-part="item-control"] {
   border-color: var(--accent-light, #818cf8);
   background: var(--accent-light, #818cf8);
 }
 
 /* Radio Indicator (Inner White Dot) */
-.radio-indicator {
+[data-component="radio-group"][data-part="item-indicator"] {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
@@ -217,7 +220,7 @@
 }
 
 @starting-style {
-  .radio-indicator {
+  [data-component="radio-group"][data-part="item-indicator"] {
     transform: scale(0);
   }
 }
@@ -232,20 +235,20 @@
 }
 
 /* Item Label */
-.radio-item-label {
+[data-component="radio-group"][data-part="item-label"] {
   font-size: 0.925rem;
   font-weight: 500;
   color: var(--fg, #f3f4f6);
   cursor: pointer;
 }
 
-.radio-item-card[data-checked] .radio-item-label {
+[data-component="radio-group"][data-part="item"][data-checked] [data-component="radio-group"][data-part="item-label"] {
   color: #ffffff;
   font-weight: 600;
 }
 
 /* Item Description */
-.radio-item-desc {
+[data-component="radio-group"][data-part="item-description"] {
   font-size: 0.8rem;
   color: var(--fg-muted, #9ca3af);
   line-height: 1.4;

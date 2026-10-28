@@ -24,60 +24,48 @@ export const CollapsibleShowcase = createComponent(() => {
     $div({ className: "preview-box" }, [
       $div({ className: "collapsible-showcase" }, [
         // 1. Unified Collapsible Component (uncontrolled)
-        $div({ className: "collapsible-box" }, [
-          Collapsible({
-            trigger: [$span("What is Seidr?"), $span({ className: "collapsible-chevron" }, "▼")],
-            triggerProps: { className: "collapsible-trigger-btn" },
-            contentProps: { className: "collapsible-panel" },
-            children: $p(
-              "Seidr is a single-pass fine-grained reactive UI framework. Components execute exactly once to construct the DOM tree, and subsequent state mutations update targeted DOM nodes directly with zero VDOM overhead.",
-            ),
-          }),
-        ]),
+        Collapsible({
+          trigger: [$span("What is Seidr?"), $span({ className: "collapsible-chevron" }, "▼")],
+          children: $p(
+            "Seidr is a single-pass fine-grained reactive UI framework. Components execute exactly once to construct the DOM tree, and subsequent state mutations update targeted DOM nodes directly with zero VDOM overhead.",
+          ),
+        }),
 
         // 2. Pre-bound Instance Factory (createCollapsible) with defaultOpen: true
-        $div({ className: "collapsible-box" }, [
-          colInstance.Root({}, [
-            colInstance.Trigger({ className: "collapsible-trigger-btn" }, [
-              $span("Pre-bound Instance Pattern (Collapsible.create)"),
-              $span({ className: "collapsible-chevron" }, "▼"),
-            ]),
-            colInstance.Content(
-              { className: "collapsible-panel" },
-              $p(
-                "Using Collapsible.create() binds Root, Trigger, and Content into a coordinated compound instance with type-safe closures and zero ambient context races.",
-              ),
-            ),
+        colInstance.Root({}, [
+          colInstance.Trigger({}, [
+            $span("Pre-bound Instance Pattern (Collapsible.create)"),
+            $span({ className: "collapsible-chevron" }, "▼"),
           ]),
+          colInstance.Content(
+            {},
+            $p(
+              "Using Collapsible.create() binds Root, Trigger, and Content into a coordinated compound instance with type-safe closures and zero ambient context races.",
+            ),
+          ),
         ]),
 
         // 3. Controlled Mode with forceMount for CSS Discrete Transitions
-        $div({ className: "collapsible-box" }, [
-          Collapsible({
-            open: isControlledOpen,
-            onOpenChange: (open) => isControlledOpen(open),
-            forceMount: createValue(true),
-            trigger: [
-              isControlledOpen.as((o) => (o ? "Hide Advanced Settings" : "Show Advanced Settings")),
-              $span({ className: "collapsible-chevron" }, "▼"),
-            ],
-            triggerProps: { className: "collapsible-trigger-btn" },
-            contentProps: { className: "collapsible-panel-animated" },
-            children: $p(
-              "This panel uses forceMount: true with CSS transition-behavior: allow-discrete, smoothly transitioning opacity and transform while remaining in the DOM.",
-            ),
-          }),
-        ]),
+        Collapsible({
+          open: isControlledOpen,
+          onOpenChange: (open) => isControlledOpen(open),
+          forceMount: createValue(true),
+          trigger: [
+            isControlledOpen.as((o) => (o ? "Hide Advanced Settings" : "Show Advanced Settings")),
+            $span({ className: "collapsible-chevron" }, "▼"),
+          ],
+          contentProps: { className: "animated" },
+          children: $p(
+            "This panel uses forceMount: true with CSS transition-behavior: allow-discrete, smoothly transitioning opacity and transform while remaining in the DOM.",
+          ),
+        }),
 
         // 4. Disabled Collapsible
-        $div({ className: "collapsible-box" }, [
-          Collapsible({
-            disabled: true,
-            trigger: [$span("🔒 Locked Disclosure (Disabled)"), $span({ className: "collapsible-chevron" }, "▼")],
-            triggerProps: { className: "collapsible-trigger-btn" },
-            children: $p("Cannot be toggled when disabled."),
-          }),
-        ]),
+        Collapsible({
+          disabled: true,
+          trigger: [$span("🔒 Locked Disclosure (Disabled)"), $span({ className: "collapsible-chevron" }, "▼")],
+          children: $p("Cannot be toggled when disabled."),
+        }),
       ]),
     ]),
 
