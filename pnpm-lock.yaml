@@ -239,7 +239,7 @@ importers:
         version: 7.20.5
       babel-loader:
         specifier: ^10.1.1
-        version: 10.1.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31))
+        version: 10.1.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32))
       esbuild:
         specifier: ^0.25.0
         version: 0.25.12
@@ -266,7 +266,7 @@ importers:
         version: 5.0.3(@types/node@26.6.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15))
       webpack:
         specifier: ^5.98.0
-        version: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+        version: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
 
   examples/particles:
     devDependencies:
@@ -291,6 +291,9 @@ importers:
       '@fimbul-works/seidr':
         specifier: workspace:*
         version: link:../../packages/seidr
+      '@fimbul-works/seidr-router':
+        specifier: workspace:*
+        version: link:../../packages/seidr-router
       '@fimbul-works/seidr-ui':
         specifier: workspace:*
         version: link:../../packages/seidr-ui
@@ -361,7 +364,7 @@ importers:
         version: 4.0.3
       marked:
         specifier: ^18.0.14
-        version: 18.1.1
+        version: 18.1.2
       sirv:
         specifier: ^3.0.2
         version: 3.0.2
@@ -437,7 +440,7 @@ importers:
         version: 0.25.12
       magic-string:
         specifier: ^1.4.3
-        version: 1.4.4
+        version: 1.4.5
       oxc-parser:
         specifier: ^0.153.0
         version: 0.153.0
@@ -446,10 +449,10 @@ importers:
         version: 4.65.1
       unplugin:
         specifier: ^3.4.0
-        version: 3.5.0(esbuild@0.25.12)(rolldown@1.2.15)(rollup@4.65.1)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31))
+        version: 3.5.0(esbuild@0.25.12)(rolldown@1.2.15)(rollup@4.65.1)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32))
       webpack:
         specifier: ^5.0.0
-        version: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+        version: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
     devDependencies:
       '@repo/biome-config':
         specifier: workspace:*
@@ -1872,8 +1875,8 @@ packages:
     resolution: {integrity: sha512-yQbXgO/OSZVD2IsiLlro+7Hf6Q18EJrKSEsdoMzKePKXct3gvD8oLcOQdIzGupr5Fj+EDe8gO/lxc1BzfMpxvA==}
     engines: {node: '>=8'}
 
-  browserslist@4.29.4:
-    resolution: {integrity: sha512-2TcbbiwXEq+N0kD36tykpCfyyQigUXmuwNQbnPp4Xk4PX9JOqVIKjJlIDjpH7uY6tmRGoAd+apeT1p60T8wsdA==}
+  browserslist@4.29.5:
+    resolution: {integrity: sha512-khTmKu5NGYTotqcYo8Bew2k4RAE9PuXRSFRXG2lQBrCEQHyeQ/vX6gKMxfokwywBsLiXZMnHsmWMG1pnO8J7uQ==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
 
@@ -2024,8 +2027,8 @@ packages:
   ee-first@1.1.1:
     resolution: {integrity: sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow==}
 
-  electron-to-chromium@1.5.464:
-    resolution: {integrity: sha512-nRa65aFge40viPAKxMKULIY8tcXKwKboJWNn4RoKwyWXJ6SP7BnrDGKUTzc64818jIciH0PK7LSF8QzZes19GA==}
+  electron-to-chromium@1.5.465:
+    resolution: {integrity: sha512-zg4iUpbeGw7YNZsswc2xKr2uiBex2d8dELAXo92Icw3but1ULbrvK8USe6wVLaWjgJnKBARv0pchx9Owktx6wQ==}
 
   emoji-regex@10.6.0:
     resolution: {integrity: sha512-toUI84YS5YmxW219erniWD0CIVOo46xGKColeNQRgOzDorgBi1v4D71/OFzgD9GO2UGKIv1C3Sp8DAn0+j5w7A==}
@@ -2411,11 +2414,11 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
-  magic-string@1.4.4:
-    resolution: {integrity: sha512-jQz9sVhrZuphH4NrAIHSgkDJCluQO7Ioi4KGRLa7aTUjAODQ13hENX0YIytqYE/rIkO485gQG2LeBxJaW53kkQ==}
+  magic-string@1.4.5:
+    resolution: {integrity: sha512-oLLC2+YvQUfAa+vxoufE/yc1icb87M9iXIRqAoR/2EhE/8cb3SF/+Gi0c2By1B+5Vz2e2vQtUvHiu1+63Znh+w==}
 
-  marked@18.1.1:
-    resolution: {integrity: sha512-zEGgrtUG8crk+TrMacJSVABU4DYDDkS8uqgU3ohrn/2fW9C2AEfUrO3m6IhpIpQpl7YcVpiXXC9cSMWDANT3dg==}
+  marked@18.1.2:
+    resolution: {integrity: sha512-DfOnvLAQ6WYeWxWO1u4RyFOeqyHup6dks5PPqnoFiooU7ipRvidO/2j8plhAHIiZg574E9ZlzSjUiPMLAzFkgg==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -2609,8 +2612,8 @@ packages:
     resolution: {integrity: sha512-qcJu88Q2IWqJsDD529JKMdwGm/dvInW4HvQnRwiH9JtihJvzGOscDtHE3x1pBKeUOTysQ8kVmLnJ2kJu7yhcGA==}
     engines: {node: '>=12'}
 
-  postcss@8.5.31:
-    resolution: {integrity: sha512-YUbWYCgErwnMAVkjUnYa+KlMBzGpHwiIt/DE7f0G33AuX2LH9UcTk6KgWxd3zRU+pN3u/C+Xl3EnMLM4Hea7Sg==}
+  postcss@8.5.32:
+    resolution: {integrity: sha512-LJlKCCAUFKOuZxipUdYw1NzIITEsPcgyOG9LkvRJvuKj/bRzbuRY0ARXvL0pWGpsZvn8jku+LMep2eU0seHp8g==}
     engines: {node: ^10 || ^12 || >=14}
 
   proxy-addr@2.0.8:
@@ -2625,8 +2628,8 @@ packages:
     resolution: {integrity: sha512-VA5Pf54N8shfopNkZZXCdiiwfnnY8ZJYAMqFQRhlH5mGUhfwf53Ar770GPtdpTDLUqvQeYpIBtC9/G2Jij2IJw==}
     engines: {node: '>=22.12.0'}
 
-  qs@6.16.1:
-    resolution: {integrity: sha512-5Px6J7rfHBAGUhNQ3es4YzcOdBBw0SDcVtThJml4RdnKw4tKs2epA0kPZ+K8X+WiHktT93RHVcQ/3ym5aTCgtg==}
+  qs@6.17.0:
+    resolution: {integrity: sha512-5LK5BZ2XDHMvcUJaf0CQ5HL3aVgKbpklvByC7qLSxYkfE8COEEbJg5xCHWCTqzqi0Gs4Jn5Mv5v3R38W6edscA==}
     engines: {node: '>=0.6'}
 
   quansync@1.0.0:
@@ -3267,7 +3270,7 @@ snapshots:
     dependencies:
       '@babel/compat-data': 7.29.7
       '@babel/helper-validator-option': 7.29.7
-      browserslist: 4.29.4
+      browserslist: 4.29.5
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -4002,7 +4005,7 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.3
       estree-walker: 3.0.3
-      magic-string: 1.4.4
+      magic-string: 1.4.5
     optionalDependencies:
       vite: 8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15)
 
@@ -4011,7 +4014,7 @@ snapshots:
       '@jridgewell/trace-mapping': 0.3.31
       '@vitest/spy': 5.0.3
       estree-walker: 3.0.3
-      magic-string: 1.4.4
+      magic-string: 1.4.5
     optionalDependencies:
       vite: 8.3.5(@types/node@26.6.5)(esbuild@0.28.2)(terser@5.51.2)(tsx@4.23.15)
 
@@ -4174,12 +4177,12 @@ snapshots:
 
   axe-core@4.14.0: {}
 
-  babel-loader@10.1.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)):
+  babel-loader@10.1.1(@babel/core@7.29.7(supports-color@8.1.1))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)):
     dependencies:
       '@babel/core': 7.29.7(supports-color@8.1.1)
       find-up: 5.0.0
     optionalDependencies:
-      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
 
   balanced-match@4.0.4: {}
 
@@ -4197,7 +4200,7 @@ snapshots:
       http-errors: 2.0.1
       iconv-lite: 0.7.3
       on-finished: 2.4.2
-      qs: 6.16.1
+      qs: 6.17.0
       raw-body: 3.0.2
       type-is: 2.1.0
     transitivePeerDependencies:
@@ -4211,13 +4214,13 @@ snapshots:
     dependencies:
       fill-range: 7.1.1
 
-  browserslist@4.29.4:
+  browserslist@4.29.5:
     dependencies:
       baseline-browser-mapping: 2.11.33
       caniuse-lite: 1.0.30001819
-      electron-to-chromium: 1.5.464
+      electron-to-chromium: 1.5.465
       node-releases: 2.0.60
-      update-browserslist-db: 1.3.4(browserslist@4.29.4)
+      update-browserslist-db: 1.3.4(browserslist@4.29.5)
 
   buffer-from@1.1.2: {}
 
@@ -4336,7 +4339,7 @@ snapshots:
 
   ee-first@1.1.1: {}
 
-  electron-to-chromium@1.5.464: {}
+  electron-to-chromium@1.5.465: {}
 
   emoji-regex@10.6.0: {}
 
@@ -4459,7 +4462,7 @@ snapshots:
       once: 1.4.0
       parseurl: 1.3.3
       proxy-addr: 2.0.8
-      qs: 6.16.1
+      qs: 6.17.0
       range-parser: 1.3.0
       router: 2.2.0(supports-color@8.1.1)
       send: 1.2.1(supports-color@8.1.1)
@@ -4767,11 +4770,11 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
-  magic-string@1.4.4:
+  magic-string@1.4.5:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  marked@18.1.1: {}
+  marked@18.1.2: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -4800,17 +4803,17 @@ snapshots:
     dependencies:
       brace-expansion: 5.0.12
 
-  minimizer-webpack-plugin@5.13.1(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)):
+  minimizer-webpack-plugin@5.13.1(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
-      schema-utils: 4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31))
+      schema-utils: 4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32))
       terser: 5.51.2
-      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
     optionalDependencies:
       esbuild: 0.25.12
       lightningcss: 1.33.0
-      postcss: 8.5.31
+      postcss: 8.5.32
 
   minipass@7.1.3: {}
 
@@ -4901,7 +4904,7 @@ snapshots:
 
   picomatch@4.0.7: {}
 
-  postcss@8.5.31:
+  postcss@8.5.32:
     dependencies:
       nanoid: 3.3.20
       picocolors: 1.1.1
@@ -4928,7 +4931,7 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  qs@6.16.1:
+  qs@6.17.0:
     dependencies:
       es-define-property: 1.0.1
       side-channel: 1.1.1
@@ -5051,14 +5054,14 @@ snapshots:
     dependencies:
       xmlchars: 2.2.0
 
-  schema-utils@4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)):
+  schema-utils@4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)):
     dependencies:
       '@types/json-schema': 7.0.15
       ajv: 8.20.0
       ajv-formats: 3.0.1
       ajv-keywords: 5.1.0(ajv@8.20.0)
     optionalDependencies:
-      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
 
   section-matter@1.0.0:
     dependencies:
@@ -5282,7 +5285,7 @@ snapshots:
 
   unpipe@1.0.0: {}
 
-  unplugin@3.5.0(esbuild@0.25.12)(rolldown@1.2.15)(rollup@4.65.1)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)):
+  unplugin@3.5.0(esbuild@0.25.12)(rolldown@1.2.15)(rollup@4.65.1)(vite@8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15))(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)):
     dependencies:
       '@jridgewell/remapping': 2.3.5
       picomatch: 4.0.7
@@ -5292,15 +5295,15 @@ snapshots:
       rolldown: 1.2.15
       rollup: 4.65.1
       vite: 8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15)
-      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)
+      webpack: 5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)
 
   unrun@0.3.1:
     dependencies:
       rolldown: 1.2.15
 
-  update-browserslist-db@1.3.4(browserslist@4.29.4):
+  update-browserslist-db@1.3.4(browserslist@4.29.5):
     dependencies:
-      browserslist: 4.29.4
+      browserslist: 4.29.5
       escalade: 3.2.0
       picocolors: 1.1.1
 
@@ -5312,7 +5315,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.31
+      postcss: 8.5.32
       rolldown: 1.2.15
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -5326,7 +5329,7 @@ snapshots:
     dependencies:
       lightningcss: 1.33.0
       picomatch: 4.0.7
-      postcss: 8.5.31
+      postcss: 8.5.32
       rolldown: 1.2.15
       tinyglobby: 0.2.17
     optionalDependencies:
@@ -5351,7 +5354,7 @@ snapshots:
       chai: 6.3.0
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
-      magic-string: 1.4.4
+      magic-string: 1.4.5
       obug: 2.2.1
       picomatch: 4.0.7
       std-env: 4.3.0
@@ -5373,7 +5376,7 @@ snapshots:
       chai: 6.3.0
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
-      magic-string: 1.4.4
+      magic-string: 1.4.5
       obug: 2.2.1
       picomatch: 4.0.7
       std-env: 4.3.0
@@ -5395,7 +5398,7 @@ snapshots:
       chai: 6.3.0
       es-module-lexer: 2.3.2
       expect-type: 1.4.0
-      magic-string: 1.4.4
+      magic-string: 1.4.5
       obug: 2.2.1
       picomatch: 4.0.7
       std-env: 4.3.0
@@ -5426,22 +5429,22 @@ snapshots:
 
   webpack-virtual-modules@0.6.2: {}
 
-  webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31):
+  webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32):
     dependencies:
       '@types/estree': 1.0.9
       '@types/json-schema': 7.0.15
       '@webassemblyjs/ast': 1.14.1
       '@webassemblyjs/wasm-edit': 1.14.1
       '@webassemblyjs/wasm-parser': 1.14.1
-      browserslist: 4.29.4
+      browserslist: 4.29.5
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.26.0
       es-module-lexer: 2.3.2
       events: 3.3.0
       graceful-fs: 4.2.11
       mime-db: 1.54.0
-      minimizer-webpack-plugin: 5.13.1(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31)(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31))
-      schema-utils: 4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.31))
+      minimizer-webpack-plugin: 5.13.1(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32)(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32))
+      schema-utils: 4.8.1(webpack@5.112.2(esbuild@0.25.12)(lightningcss@1.33.0)(postcss@8.5.32))
       tapable: 2.3.3
       watchpack: 2.6.3
       webpack-sources: 3.6.0

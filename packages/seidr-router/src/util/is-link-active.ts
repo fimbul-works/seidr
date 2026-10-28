@@ -1,3 +1,4 @@
+import { isUndef } from "@fimbul-works/hvat";
 import { parseRouteParams } from "../parse-route-params.js";
 
 /**
@@ -17,35 +18,35 @@ export const isLinkActive = (
   ancestorPrefix?: string,
   exact?: boolean,
 ): boolean => {
-  const currentPath = currentUrl?.pathname.replace(/\/+$/, "") || "/";
+  const currentPath = currentUrl.pathname.replace(/\/+$/, "") ?? "/";
 
   // Parse `to` into path, search, and hash
   const [toPathAndQuery, toHashRaw] = href.split("#");
   const [toPathRaw, toSearchRaw] = toPathAndQuery.split("?");
-  const toPath = toPathRaw.replace(/\/+$/, "") || "/";
+  const toPath = toPathRaw.replace(/\/+$/, "") ?? "/";
 
   // 1. Check Hash
-  if (toHashRaw !== undefined) {
-    const expectedHash = toHashRaw ? `#${toHashRaw}` : "";
-    if (currentUrl.hash !== expectedHash) {
+  if (!isUndef(toHashRaw)) {
+    if (currentUrl.hash !== `#${toHashRaw}`) {
       return false;
     }
   }
 
   // 2. Check Query Parameters
-  const toParams = new URLSearchParams(toSearchRaw || "");
+  const toParams = new URLSearchParams(toSearchRaw ?? "");
   const currentParams = currentUrl.searchParams;
 
-  if (toSearchRaw !== undefined) {
+  if (!isUndef(toSearchRaw)) {
     // If query parameters were specified in `to`, all must match currentUrl
     for (const [key, value] of toParams.entries()) {
       if (currentParams.get(key) !== value) {
         return false;
       }
     }
+
     // If exact matching is requested, ensure no extra query parameters exist
-    if (exact === true) {
-      for (const [key] of currentParams.entries()) {
+    if (exact) {
+      for (const key of currentParams.keys()) {
         if (!toParams.has(key)) {
           return false;
         }
@@ -65,11 +66,21 @@ export const isLinkActive = (
     return currentPath === "/" || localPathname === "/";
   }
 
+  // Check if the current path matches the route
   const matchCurrent = parseRouteParams(toPath, currentPath, isExactPath) !== false;
+  if (matchCurrent) {
+    return true;
+  } 
+
+  // Match local path
   const matchLocal = localPathname
     ? parseRouteParams(toPath, localPathname.replace(/\/+$/, "") || "/", isExactPath) !== false
     : false;
+  if (matchLocal) {
+    return true;
+  }
 
+  // Match ancestor prefix if available
   let matchPrefix = false;
   if (ancestorPrefix && currentPath.startsWith(ancestorPrefix)) {
     const remaining = currentPath.slice(ancestorPrefix.length) || "/";
@@ -77,5 +88,5 @@ export const isLinkActive = (
     matchPrefix = parseRouteParams(toPath, normalizedRemaining, isExactPath) !== false;
   }
 
-  return matchCurrent || matchLocal || matchPrefix;
+  return matchPrefix;
 };

@@ -1,6 +1,6 @@
-import { isUndef } from "@fimbul-works/hvat";
-import type { SeidrChild, SeidrElementProps } from "@fimbul-works/seidr";
-import { $, isValue, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
+import { isTruthy, isUndef } from "@fimbul-works/hvat";
+import type { Observable, ReactiveValue, SeidrChild, SeidrElementProps } from "@fimbul-works/seidr";
+import { $, isObservable, isValue, mergeValues, unwrapValue, type Value, wrapValue } from "@fimbul-works/seidr";
 import { NO_HYDRATE } from "../constants.js";
 import { getRouterState } from "../get-router-state.js";
 import { useNavigate } from "../hooks/use-navigate.js";
@@ -8,21 +8,22 @@ import { initRouter } from "../init-router.js";
 import { getNearestRouter } from "../router-tree/get-nearest-router.js";
 import type { RouterTreeNode } from "../types.js";
 import { isLinkActive } from "../util/is-link-active.js";
+import { usePathname } from "../hooks/use-pathname.js";
 
 /**
  * Link component props.
  */
 export interface LinkOptions<K extends keyof HTMLElementTagNameMap = "a"> {
   /** The URL to navigate to */
-  href: Value<string> | string;
+  href: ReactiveValue<string>;
   /** Optional HTML tag name (default: "a") */
   tagName?: K;
   /** Class name to apply to the element */
-  className?: string | Value<string>;
+  className?: ReactiveValue<string | undefined>;
   /** Class name to apply when the link is active */
-  activeClass?: string | Value<string>;
+  activeClass?: ReactiveValue<string | undefined>;
   /** Class name to apply when the link is inactive */
-  inactiveClass?: string | Value<string>;
+  inactiveClass?: ReactiveValue<string | undefined>;
   /** Whether the route match must be exact */
   exact?: boolean;
   /** The aria-current attribute value to apply when active (default: "page"). Set to false to disable. */
@@ -37,7 +38,7 @@ export interface LinkOptions<K extends keyof HTMLElementTagNameMap = "a"> {
     | boolean
     | Value<string | boolean | undefined | null>;
   /** Whether the link is disabled */
-  disabled?: boolean | Value<boolean>;
+  disabled?: ReactiveValue<boolean>;
 }
 
 export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions<K> &
@@ -66,51 +67,43 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
   children?: SeidrChild | SeidrChild[],
 ): HTMLElementTagNameMap[K] => {
   initRouter();
-  const navigate = useNavigate();
-  href = wrapValue(href, NO_HYDRATE);
-  const url = getRouterState().url;
-  const nearest = getNearestRouter();
-  const localPath = nearest?.pathname;
 
-  // Find the prefix matched by the nearest routers
-  let ancestorPrefix = "";
-  if (nearest) {
-    let current: RouterTreeNode | null | undefined = nearest;
-    const state = getRouterState();
+  href = wrapValue(href, NO_HYDRATE);
+
+  const state = getRouterState();
+  const navigate = useNavigate();
+  const url = state.url;
+
+  // Derive local state from URL
+  const ancestorPrefix = url.as(() => {
+    const nearest = getNearestRouter();
+    if (!nearest) {
+      return undefined
+    }
+    let ancestorPrefix = "";
+    let current: RouterTreeNode | false | undefined = nearest;
     while (current) {
       if (current.matchedPath) {
         ancestorPrefix = current.matchedPath + ancestorPrefix;
       }
-      current = current.parentId !== undefined ? state.tree.get(current.parentId) : undefined;
+      current = !isUndef(current.parentId) && state.tree.get(current.parentId);
     }
-  }
+    return ancestorPrefix;
+  });
+  const localPath = url.as(() => getNearestRouter()?.pathname())
+  const isActive = url.as(() => isLinkActive(href(), url(), localPath(), ancestorPrefix(), exact))
 
   // Determine link active status
-  const hasDynamicClass = activeClassName !== undefined || inactiveClassName !== undefined;
-  const classNameParents: Value[] = [href, url, localPath, activeClassName, inactiveClassName, rawClassName].filter(
-    isValue,
+  const hasDynamicClass = !isUndef(activeClassName) || !isUndef(inactiveClassName);
+  const classNameParents = [isActive, activeClassName, inactiveClassName, rawClassName].filter(
+    isObservable,
   );
 
   // Determine className based on active/inactive states
   const className = hasDynamicClass
     ? mergeValues(
         () => {
-          const active = isLinkActive(href(), url(), localPath?.(), ancestorPrefix, exact);
-
-          const classes: string[] = [];
-          const base = unwrapValue(rawClassName);
-          if (base) {
-            classes.push(base);
-          }
-
-          if (active) {
-            const activeVal = unwrapValue(activeClassName);
-            if (activeVal) classes.push(activeVal);
-          } else {
-            const inactiveVal = unwrapValue(inactiveClassName);
-            if (inactiveVal) classes.push(inactiveVal);
-          }
-
+          const classes = [unwrapValue(rawClassName), isActive() ? unwrapValue(activeClassName) : unwrapValue(inactiveClassName)].filter(isTruthy);
           return classes.length > 0 ? classes.join(" ") : undefined;
         },
         { parents: classNameParents },
@@ -118,33 +111,27 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
     : rawClassName;
 
   // Determine aria-current when active
-  const shouldTrackAriaCurrent = !isUndef(ariaCurrent) ? ariaCurrent !== false : !isUndef(activeClassName);
-
-  const ariaCurrentParents: Value[] = [href, url, localPath, isValue(ariaCurrent) ? ariaCurrent : null].filter(isValue);
-
-  const resolvedAriaCurrent = shouldTrackAriaCurrent
+  const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
+  const resolvedAriaCurrent = ariaCurrentParents.length > 0
     ? mergeValues(
         () => {
-          const active = isLinkActive(href(), url(), localPath?.(), ancestorPrefix, exact);
-          if (!active) {
-            return undefined;
+          if (!isActive()) {
+            return null;
           }
           const val = unwrapValue(ariaCurrent);
-          return val === true || val === undefined ? "page" : (val as string);
+          return val === true || isUndef(val) ? "page" : val;
         },
         { parents: ariaCurrentParents },
       )
     : undefined;
 
   // Disabled state
-  const isDisabled = isValue(disabled) ? disabled : undefined;
-  const isCurrentlyDisabled = () => (isDisabled ? !!isDisabled() : !!disabled);
+  const isDisabled = wrapValue(disabled ?? false, NO_HYDRATE);
 
-  const ariaDisabled = isDisabled ? isDisabled.as((d) => (d ? "true" : undefined)) : disabled ? "true" : undefined;
+  const ariaDisabled = isDisabled.as((d) => (d ? "true" : undefined));
+  const dataDisabled = isDisabled.as((d) => (d ? "" : undefined));
 
-  const dataDisabled = isDisabled ? isDisabled.as((d) => (d ? "" : undefined)) : disabled ? "" : undefined;
-
-  const isCustomElement = (tagName as string) !== "a";
+  const isCustomElement = tagName !== "a";
   const role = isCustomElement ? ((restProps as any).role ?? "link") : (restProps as any).role;
   const tabIndex = isCustomElement
     ? ((restProps as any).tabIndex ??
@@ -153,7 +140,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 
   const onclick = (e: Event) => {
     e.preventDefault();
-    if (isCurrentlyDisabled()) {
+    if (isDisabled()) {
       return;
     }
     navigate(unwrapValue(href));
@@ -162,7 +149,7 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
 
   const onkeydown = isCustomElement
     ? (e: KeyboardEvent) => {
-        if (e.key === "Enter" && !isCurrentlyDisabled()) {
+        if (e.key === "Enter" && !isDisabled()) {
           e.preventDefault();
           navigate(unwrapValue(href));
         }
@@ -170,32 +157,20 @@ export const Link = <K extends keyof HTMLElementTagNameMap = "a">(
       }
     : (restProps as any).onkeydown;
 
-  const elementProps: any = {
+  const elementProps: Record<string, unknown> = {
     className,
     ...restProps,
+    role,
+    tabIndex,
+    ariaCurrent: resolvedAriaCurrent,
+    ariaDisabled,
+    dataDisabled,
     onclick,
+    onkeydown
   };
 
   if (!isCustomElement && !disabled) {
     elementProps.href = href;
-  }
-  if (role !== undefined) {
-    elementProps.role = role;
-  }
-  if (tabIndex !== undefined) {
-    elementProps.tabIndex = tabIndex;
-  }
-  if (resolvedAriaCurrent !== undefined) {
-    elementProps.ariaCurrent = resolvedAriaCurrent;
-  }
-  if (ariaDisabled !== undefined) {
-    elementProps.ariaDisabled = ariaDisabled;
-  }
-  if (dataDisabled !== undefined) {
-    elementProps.dataDisabled = dataDisabled;
-  }
-  if (onkeydown !== undefined) {
-    elementProps.onkeydown = onkeydown;
   }
 
   return $(tagName as K, elementProps as SeidrElementProps<K>, children);

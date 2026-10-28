@@ -25,7 +25,7 @@ export * from "./skeleton.js";
 export * from "./switch.js";
 export * from "./toggle-button.js";
 
-export interface ComponentExample {
+export interface ComponentShowcase {
   id: string;
   title: string;
   badge: string;
@@ -33,7 +33,7 @@ export interface ComponentExample {
   component: SeidrComponentFactory;
 }
 
-export const examples: ComponentExample[] = [
+export const componentShowcases: ComponentShowcase[] = [
   { id: "alert", title: "Alert", badge: "Atom", category: "Atom", component: AlertShowcase },
   { id: "badge", title: "Badge", badge: "Atom", category: "Atom", component: BadgeShowcase },
   { id: "button", title: "Button", badge: "Atom", category: "Atom", component: ButtonShowcase },

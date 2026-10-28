@@ -13,15 +13,7 @@ import { getRouterTree } from "./get-router-tree.js";
  */
 export const getNearestRouter = (component?: SeidrComponent | null): RouterTreeNode | null => {
   if (!component) {
-    if (process.env.VITEST) {
-      try {
-        component = getComponentScope();
-      } catch {
-        return null;
-      }
-    } else {
-      component = getComponentScope();
-    }
+    component = getComponentScope();
   }
 
   if (!component) {

@@ -50,10 +50,8 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
       effectiveProp = camelToKebab(prop);
       useAttribute = true;
     } else if (propStartsWith("aria") && matchUpperCasePosition(4)) {
-      if (!(prop in el)) {
-        effectiveProp = camelToKebab(prop);
-        useAttribute = true;
-      }
+      effectiveProp = camelToKebab(prop);
+      useAttribute = true;
     } else if (prop === "htmlFor") {
       effectiveProp = "for";
       useAttribute = true;

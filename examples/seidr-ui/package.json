@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@fimbul-works/seidr": "workspace:*",
-    "@fimbul-works/seidr-ui": "workspace:*"
+    "@fimbul-works/seidr-ui": "workspace:*",
+    "@fimbul-works/seidr-router": "workspace:*"
   },
   "devDependencies": {
     "@fimbul-works/seidr-build-tools": "workspace:*",

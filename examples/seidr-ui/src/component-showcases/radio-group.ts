@@ -29,6 +29,10 @@ export const RadioGroupShowcase = createComponent(() => {
     validationState: shippingValidation,
   });
 
+  const standardItem = shippingGroup.createItem({ value: "standard" });
+  const expressItem = shippingGroup.createItem({ value: "express" });
+  const overnightItem = shippingGroup.createItem({ value: "overnight" });
+
   // --- Section 4: Dynamic Items (Fine-Grained List Reactivity) ---
   const initialDynamicItems: RadioGroupItemDescriptor[] = [
     { value: "us-east", label: "US East (N. Virginia)", description: "Lowest latency for North America." },
@@ -195,27 +199,27 @@ export const RadioGroupShowcase = createComponent(() => {
             ),
 
             // Item 1: Standard
-            shippingGroup.Item({ value: "standard", className: "radio-item-card" }, [
-              shippingGroup.ItemInput({ className: "radio-item-input" }),
-              shippingGroup.ItemControl({ className: "radio-control" }, [
-                shippingGroup.ItemIndicator({ className: "radio-indicator" }),
+            standardItem.Root({ className: "radio-item-card" }, [
+              standardItem.Input({ className: "radio-item-input" }),
+              standardItem.Control({ className: "radio-control" }, [
+                standardItem.Indicator({ className: "radio-indicator" }),
               ]),
               $div({ className: "radio-item-content" }, [
-                shippingGroup.ItemLabel({ className: "radio-item-label" }, "Standard Ground (3-5 days)"),
-                shippingGroup.ItemDescription({ className: "radio-item-desc" }, "Delivered via postal service. Free."),
+                standardItem.Label({ className: "radio-item-label" }, "Standard Ground (3-5 days)"),
+                standardItem.Description({ className: "radio-item-desc" }, "Delivered via postal service. Free."),
               ]),
               $span({ className: "radio-item-meta" }, "Free"),
             ]),
 
             // Item 2: Express
-            shippingGroup.Item({ value: "express", className: "radio-item-card" }, [
-              shippingGroup.ItemInput({ className: "radio-item-input" }),
-              shippingGroup.ItemControl({ className: "radio-control" }, [
-                shippingGroup.ItemIndicator({ className: "radio-indicator" }),
+            expressItem.Root({ className: "radio-item-card" }, [
+              expressItem.Input({ className: "radio-item-input" }),
+              expressItem.Control({ className: "radio-control" }, [
+                expressItem.Indicator({ className: "radio-indicator" }),
               ]),
               $div({ className: "radio-item-content" }, [
-                shippingGroup.ItemLabel({ className: "radio-item-label" }, "Express Courier (1-2 days)"),
-                shippingGroup.ItemDescription(
+                expressItem.Label({ className: "radio-item-label" }, "Express Courier (1-2 days)"),
+                expressItem.Description(
                   { className: "radio-item-desc" },
                   "Guaranteed delivery with door-to-door tracking.",
                 ),
@@ -224,14 +228,14 @@ export const RadioGroupShowcase = createComponent(() => {
             ]),
 
             // Item 3: Priority Overnight
-            shippingGroup.Item({ value: "overnight", className: "radio-item-card" }, [
-              shippingGroup.ItemInput({ className: "radio-item-input" }),
-              shippingGroup.ItemControl({ className: "radio-control" }, [
-                shippingGroup.ItemIndicator({ className: "radio-indicator" }),
+            overnightItem.Root({ className: "radio-item-card" }, [
+              overnightItem.Input({ className: "radio-item-input" }),
+              overnightItem.Control({ className: "radio-control" }, [
+                overnightItem.Indicator({ className: "radio-indicator" }),
               ]),
               $div({ className: "radio-item-content" }, [
-                shippingGroup.ItemLabel({ className: "radio-item-label" }, "Priority Overnight"),
-                shippingGroup.ItemDescription({ className: "radio-item-desc" }, "Next business day morning delivery."),
+                overnightItem.Label({ className: "radio-item-label" }, "Priority Overnight"),
+                overnightItem.Description({ className: "radio-item-desc" }, "Next business day morning delivery."),
               ]),
               $span({ className: "radio-item-meta" }, "$24.99"),
             ]),
@@ -304,14 +308,16 @@ const rg = RadioGroup.create({
   validationState: selectedMethod.as(v => v ? "valid" : "invalid"),
 });
 
+const item = rg.createItem({ value: "standard" });
+
 rg.Root([
   rg.Label("Delivery Method *"),
   rg.Description("Select a shipping tier."),
   rg.ErrorMessage("A delivery method is required."),
-  rg.Item({ value: "standard" }, [
-    rg.ItemInput(),
-    rg.ItemControl([rg.ItemIndicator()]),
-    rg.ItemLabel("Standard Ground"),
+  item.Root({ className: "radio-item-card" }, [
+    item.Input(),
+    item.Control([item.Indicator()]),
+    item.Label("Standard Ground"),
   ]),
 ]);`,
     ),
