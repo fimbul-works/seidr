@@ -47,7 +47,7 @@ export function getElementFromItem(item: DomCollectionItem): HTMLElement | null 
 }
 
 function isElementPreceding(a: Element, b: Element): boolean {
-  return Boolean(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING);
+  return !!(b.compareDocumentPosition(a) & Node.DOCUMENT_POSITION_PRECEDING);
 }
 
 export function findDOMIndex<T extends DomCollectionItem>(items: T[], item: T): number {

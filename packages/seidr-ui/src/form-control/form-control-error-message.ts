@@ -54,7 +54,7 @@ export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap =
   const errorMessageId = customId ?? form.id.as((base) => `${base}-error-message`);
   onUnmounted(form.registerErrorMessage(errorMessageId));
 
-  const condition = mergeValues(() => Boolean(unwrapValue(forceMount) || form.isInvalid()), {
+  const condition = mergeValues(() => !!(unwrapValue(forceMount) || form.isInvalid()), {
     parents: [forceMount, form.isInvalid],
   });
 

@@ -221,7 +221,7 @@ export function useTransition(
   inClient(() => {
     if (isValue(shouldMount)) {
       shouldMount.watch((next) => {
-        handleStateChange(Boolean(next));
+        handleStateChange(!!next);
       });
     }
   });

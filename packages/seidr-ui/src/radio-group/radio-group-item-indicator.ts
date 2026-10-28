@@ -63,7 +63,7 @@ export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap =
     ...rest,
   };
 
-  const condition = mergeValues(() => Boolean(unwrapValue(forceMount) || item.isSelected()), {
+  const condition = mergeValues(() => !!(unwrapValue(forceMount) || item.isSelected()), {
     parents: [forceMount, item.isSelected],
   });
 

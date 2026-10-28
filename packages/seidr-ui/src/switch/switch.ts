@@ -26,25 +26,25 @@ export interface SwitchProps extends UseSwitchOptions {
   thumb?: SeidrChild | SeidrChild[];
 
   /** Props passed to Switch.Root. */
-  rootProps?: SwitchRootProps<any>;
+  rootProps?: SwitchRootProps;
 
   /** Props passed to Switch.Input. */
   inputProps?: SwitchInputProps;
 
   /** Props passed to Switch.Control. */
-  controlProps?: SwitchControlProps<any>;
+  controlProps?: SwitchControlProps;
 
   /** Props passed to Switch.Thumb. */
-  thumbProps?: SwitchThumbProps<any>;
+  thumbProps?: SwitchThumbProps;
 
   /** Props passed to Switch.Label. */
-  labelProps?: SwitchLabelProps<any>;
+  labelProps?: SwitchLabelProps;
 
   /** Props passed to Switch.Description. */
-  descriptionProps?: SwitchDescriptionProps<any>;
+  descriptionProps?: SwitchDescriptionProps;
 
   /** Props passed to Switch.ErrorMessage. */
-  errorMessageProps?: SwitchErrorMessageProps<any>;
+  errorMessageProps?: SwitchErrorMessageProps;
 }
 
 /**

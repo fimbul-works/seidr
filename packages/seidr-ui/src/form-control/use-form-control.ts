@@ -43,9 +43,9 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   const isInvalid = validationState.as((s) => s === "invalid");
   const isValid = validationState.as((s) => s === "valid");
 
-  const isRequired = wrapValue(required ?? false).as((r) => Boolean(r));
-  const isDisabled = wrapValue(disabled ?? false).as((d) => Boolean(d));
-  const isReadOnly = wrapValue(readOnly ?? false).as((ro) => Boolean(ro));
+  const isRequired = wrapValue(required ?? false).as((r) => !!r);
+  const isDisabled = wrapValue(disabled ?? false).as((d) => !!d);
+  const isReadOnly = wrapValue(readOnly ?? false).as((ro) => !!ro);
 
   const defaultFieldId = providedFieldId ?? id.as((bid) => `${bid}-field`);
   const customFieldId = createValue<string | undefined>(undefined);
@@ -61,9 +61,6 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     const wrappedId = wrapValue(newId as any);
     return wrappedId.bind((val) => {
       labelId(val);
-      return () => {
-        labelId(undefined);
-      };
     });
   };
 
@@ -71,9 +68,6 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     const wrappedId = wrapValue(newId as any);
     return wrappedId.bind((val) => {
       customFieldId(val);
-      return () => {
-        customFieldId(undefined);
-      };
     });
   };
 
@@ -81,9 +75,6 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     const wrappedId = wrapValue(newId as any);
     return wrappedId.bind((val) => {
       descriptionId(val);
-      return () => {
-        descriptionId(undefined);
-      };
     });
   };
 
@@ -93,13 +84,10 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     const wrappedId = wrapValue(newId as any);
     return wrappedId.bind((val) => {
       errorMessageId(val);
-      return () => {
-        errorMessageId(undefined);
-      };
     });
   };
 
-  const ariaLabelledBy = labelId.as((lid) => lid ?? undefined);
+  const ariaLabelledBy = labelId.as((id) => id);
 
   const ariaDescribedBy = mergeValues(
     () => {
@@ -110,8 +98,8 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   );
 
   const dataset: FormControlDataSet = {
-    "data-valid": validationState.as((s) => (s === "valid" ? "" : undefined)),
-    "data-invalid": validationState.as((s) => (s === "invalid" ? "" : undefined)),
+    "data-valid": isValid.as((v) => (v ? "" : undefined)),
+    "data-invalid": isInvalid.as((inv) => (inv ? "" : undefined)),
     "data-required": isRequired.as((r) => (r ? "" : undefined)),
     "data-disabled": isDisabled.as((d) => (d ? "" : undefined)),
     "data-readonly": isReadOnly.as((ro) => (ro ? "" : undefined)),
@@ -127,7 +115,7 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     "aria-required": isRequired.as((req) => (req ? "true" : undefined)),
     "aria-disabled": isDisabled.as((dis) => (dis ? "true" : undefined)),
     "aria-readonly": isReadOnly.as((ro) => (ro ? "true" : undefined)),
-    "aria-labelledby": ariaLabelledBy,
+    "aria-labelledby": labelId,
     "aria-describedby": ariaDescribedBy,
     ...dataset,
   };
@@ -142,14 +130,14 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     isDisabled,
     isReadOnly,
     fieldId,
-    labelId: labelId.as((id) => id),
+    labelId: ariaLabelledBy,
     descriptionId: descriptionId.as((id) => id),
     errorMessageId: errorMessageId.as((id) => id),
     registerLabel,
     registerField,
     registerDescription,
     registerErrorMessage,
-    ariaLabelledBy,
+    ariaLabelledBy: ariaLabelledBy,
     ariaDescribedBy,
     dataset,
     fieldProps,

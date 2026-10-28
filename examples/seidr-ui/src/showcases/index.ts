@@ -6,6 +6,7 @@ import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
+import { RadioGroupShowcase } from "./radio-group.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
 import { SwitchShowcase } from "./switch.js";
@@ -18,6 +19,7 @@ export * from "./checkbox.js";
 export * from "./collapsible.js";
 export * from "./form-control.js";
 export * from "./image.js";
+export * from "./radio-group.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./switch.js";
@@ -39,6 +41,7 @@ export const examples: ComponentExample[] = [
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
+  { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },
   { id: "switch", title: "Switch", badge: "Form", category: "Form", component: SwitchShowcase },

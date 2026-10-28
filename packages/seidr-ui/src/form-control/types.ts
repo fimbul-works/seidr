@@ -89,10 +89,10 @@ export interface UseFormControlResult {
   registerErrorMessage: (id: ReactiveValue<string> | ObservableValue<string | undefined>) => CleanupFunction;
 
   /** Space-separated reactive aria-labelledby string. */
-  ariaLabelledBy: ObservableValue<string | undefined>;
+  ariaLabelledBy: DerivedValue<string | undefined>;
 
   /** Space-separated reactive aria-describedby string (auto-incorporates error message when invalid). */
-  ariaDescribedBy: ObservableValue<string | undefined>;
+  ariaDescribedBy: DerivedValue<string | undefined>;
 
   /** Reactive data-* attributes for Root, Label, Description, ErrorMessage, and Field. */
   dataset: FormControlDataSet;

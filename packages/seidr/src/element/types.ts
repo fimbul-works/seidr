@@ -51,11 +51,13 @@ export type SeidrElementTagNameMap = HTMLElementTagNameMap;
  *
  * @template T - The underlying type
  */
-export type ReactiveValue<T> = [T] extends [boolean]
-  ? boolean | ObservableValue<boolean>
-  : [T] extends [infer A]
-    ? A | ObservableValue<A>
-    : T | ObservableValue<T | null | undefined>;
+export type ReactiveValue<T> = 0 extends 1 & T
+  ? any
+  : [T] extends [boolean]
+    ? boolean | ObservableValue<boolean>
+    : [T] extends [infer A]
+      ? A | ObservableValue<A>
+      : T | ObservableValue<T | null | undefined>;
 
 /**
  * Type definition for reactive ARIA mixin properties.

@@ -66,7 +66,7 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
     ...rest,
   };
 
-  const condition = mergeValues(() => Boolean(unwrapValue(forceMount ?? col.forceMount) || col.isOpen()), {
+  const condition = mergeValues(() => !!(unwrapValue(forceMount ?? col.forceMount) || col.isOpen()), {
     parents: [forceMount, col.forceMount, col.isOpen],
   });
 

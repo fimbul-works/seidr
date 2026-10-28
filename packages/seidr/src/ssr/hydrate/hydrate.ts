@@ -1,4 +1,4 @@
-import { isNullish } from "@fimbul-works/hvat";
+import { isNullish, isStr } from "@fimbul-works/hvat";
 import type { SeidrComponentFactoryOrFunction } from "../../component/types.js";
 import { mount } from "../../dom/mount.js";
 import { type CleanupFunction, SeidrError } from "../../types.js";
@@ -27,10 +27,9 @@ export function hydrate(
     throw new SeidrError("Hydration is already active");
   }
 
-  const resolvedData: HydrationData =
-    typeof hydrationData === "string"
-      ? (getHydrationSerializer().parse(hydrationData) as HydrationData)
-      : hydrationData;
+  const resolvedData: HydrationData = isStr(hydrationData)
+    ? (getHydrationSerializer().parse(hydrationData) as HydrationData)
+    : hydrationData;
 
   if (
     isNullish(resolvedData) ||

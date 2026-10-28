@@ -1,3 +1,4 @@
+import { isFn } from "@fimbul-works/hvat";
 import { transformSource } from "./transform.js";
 import type { SeidrBabelPluginOptions } from "./types.js";
 
@@ -30,12 +31,12 @@ export function seidrBabelPlugin(_api: any, options: SeidrBabelPluginOptions = {
         }
       }
 
-      if (typeof parse === "function") {
+      if (isFn(parse)) {
         return parse(transformedCode, opts);
       }
 
       const defaultParser = (opts as any)?.parser;
-      if (typeof defaultParser === "function") {
+      if (isFn(defaultParser)) {
         return defaultParser(transformedCode, opts);
       }
 

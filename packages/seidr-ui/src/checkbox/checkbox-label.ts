@@ -2,7 +2,7 @@ import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, 
 import { FormControlLabel, type FormControlLabelProps } from "../form-control/form-control-label.js";
 import type { UseCheckboxResult } from "./types.js";
 
-export type CheckboxLabelProps<T extends keyof SeidrElementTagNameMap> = FormControlLabelProps<T> & {
+export type CheckboxLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = FormControlLabelProps<T> & {
   instance?: UseCheckboxResult;
 };
 

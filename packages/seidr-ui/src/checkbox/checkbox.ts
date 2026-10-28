@@ -26,25 +26,25 @@ export interface CheckboxProps extends UseCheckboxOptions {
   indicator?: SeidrChild | SeidrChild[];
 
   /** Props passed to Checkbox.Root. */
-  rootProps?: CheckboxRootProps<any>;
+  rootProps?: CheckboxRootProps;
 
   /** Props passed to Checkbox.Input. */
   inputProps?: CheckboxInputProps;
 
   /** Props passed to Checkbox.Control. */
-  controlProps?: CheckboxControlProps<any>;
+  controlProps?: CheckboxControlProps;
 
   /** Props passed to Checkbox.Indicator. */
-  indicatorProps?: CheckboxIndicatorProps<any>;
+  indicatorProps?: CheckboxIndicatorProps;
 
   /** Props passed to Checkbox.Label. */
-  labelProps?: CheckboxLabelProps<any>;
+  labelProps?: CheckboxLabelProps;
 
   /** Props passed to Checkbox.Description. */
-  descriptionProps?: CheckboxDescriptionProps<any>;
+  descriptionProps?: CheckboxDescriptionProps;
 
   /** Props passed to Checkbox.ErrorMessage. */
-  errorMessageProps?: CheckboxErrorMessageProps<any>;
+  errorMessageProps?: CheckboxErrorMessageProps;
 }
 
 /**

@@ -1,3 +1,4 @@
+import { isStr } from "@fimbul-works/hvat";
 import { createUnplugin, type UnpluginInstance } from "unplugin";
 import { transformSource } from "./transform.js";
 import type { SeidrBuildPluginOptions } from "./types.js";
@@ -14,7 +15,7 @@ function createFilter(
   exclude?: string | RegExp | Array<string | RegExp>,
 ): (id: string) => boolean {
   const matchPattern = (pattern: string | RegExp, id: string): boolean => {
-    if (typeof pattern === "string") {
+    if (isStr(pattern)) {
       return id.includes(pattern);
     }
     return pattern.test(id);

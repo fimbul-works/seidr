@@ -170,27 +170,27 @@ export interface RadioGroupItemDescriptor {
   indicator?: SeidrChild | SeidrChild[];
 
   /** Props passed to Item container. */
-  itemProps?: RadioGroupItemProps<any>;
+  itemProps?: RadioGroupItemProps;
 
   /** Props passed to ItemInput. */
   inputProps?: RadioGroupItemInputProps;
 
   /** Props passed to ItemControl. */
-  controlProps?: RadioGroupItemControlProps<any>;
+  controlProps?: RadioGroupItemControlProps;
 
   /** Props passed to ItemIndicator. */
-  indicatorProps?: RadioGroupItemIndicatorProps<any>;
+  indicatorProps?: RadioGroupItemIndicatorProps;
 
   /** Props passed to ItemLabel. */
-  labelProps?: RadioGroupItemLabelProps<any>;
+  labelProps?: RadioGroupItemLabelProps;
 
   /** Props passed to ItemDescription. */
-  descriptionProps?: RadioGroupItemDescriptionProps<any>;
+  descriptionProps?: RadioGroupItemDescriptionProps;
 }
 
 export interface RadioGroupProps extends UseRadioGroupOptions {
   /** Optional class name for the root container. */
-  className?: string;
+  className?: ReactiveValue<string>;
 
   /** Accessible group label text or element. */
   label?: SeidrChild | SeidrChild[];
@@ -205,16 +205,16 @@ export interface RadioGroupProps extends UseRadioGroupOptions {
   items?: ReactiveValue<RadioGroupItemDescriptor[]>;
 
   /** Props passed to RadioGroup.Root. */
-  rootProps?: RadioGroupRootProps<any>;
+  rootProps?: RadioGroupRootProps;
 
   /** Props passed to RadioGroup.Label. */
-  labelProps?: RadioGroupLabelProps<any>;
+  labelProps?: RadioGroupLabelProps;
 
   /** Props passed to RadioGroup.Description. */
-  descriptionProps?: RadioGroupDescriptionProps<any>;
+  descriptionProps?: RadioGroupDescriptionProps;
 
   /** Props passed to RadioGroup.ErrorMessage. */
-  errorMessageProps?: RadioGroupErrorMessageProps<any>;
+  errorMessageProps?: RadioGroupErrorMessageProps;
 }
 
 export interface RadioGroupItemInstance extends UseRadioGroupItemResult {

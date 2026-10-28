@@ -48,7 +48,7 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
     ? col.isDisabled
     : isValue(disabled)
       ? mergeValues(() => col.isDisabled() || disabled(), { parents: [col.isDisabled, disabled] })
-      : col.isDisabled.as((d: boolean) => d || Boolean(disabled));
+      : col.isDisabled.as((d: boolean) => d || !!disabled);
 
   const handleClick = (e: MouseEvent) => {
     if (isFn(userOnClick)) {

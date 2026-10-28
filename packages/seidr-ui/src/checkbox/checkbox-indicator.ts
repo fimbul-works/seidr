@@ -56,7 +56,7 @@ export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div"
     ...rest,
   };
 
-  const isVisible = mergeValues(() => Boolean(unwrapValue(forceMount) || cb.checked() || cb.indeterminate()), {
+  const isVisible = mergeValues(() => !!(unwrapValue(forceMount) || cb.checked() || cb.indeterminate()), {
     parents: [forceMount, cb.checked, cb.indeterminate],
   });
 

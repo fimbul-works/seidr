@@ -8,12 +8,16 @@ import {
   Show,
 } from "@fimbul-works/seidr";
 import { createImage } from "./create-image.js";
-import { ImageFallback } from "./image-fallback.js";
-import { ImageImg } from "./image-img.js";
+import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
+import { ImageImg, type ImageImgProps } from "./image-img.js";
 import { ImageRoot } from "./image-root.js";
 import { type UseImageOptions, useImage } from "./use-image.js";
 
-export interface ImageOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
+export interface ImageOptions<
+  T extends keyof SeidrElementTagNameMap = "span",
+  F extends keyof SeidrElementTagNameMap = "span",
+  I extends keyof SeidrElementTagNameMap = "img",
+> extends UseImageOptions {
   /**
    * The HTML element tag name for the root container.
    * @default "span"
@@ -34,17 +38,17 @@ export interface ImageOptions<T extends keyof SeidrElementTagNameMap = "span"> e
    * Tag name for the fallback container.
    * @default "span"
    */
-  fallbackAs?: keyof SeidrElementTagNameMap;
+  fallbackAs?: F;
 
   /**
    * Props to apply to the fallback element.
    */
-  fallbackProps?: SeidrElementProps<any>;
+  fallbackProps?: ImageFallbackProps<F>;
 
   /**
    * Props to apply to the <img> element.
    */
-  imgProps?: SeidrElementProps<"img">;
+  imgProps?: Omit<ImageImgProps<I>, "src"> & { src?: ReactiveValue<string | undefined | null> };
 }
 
 export type ImageComponentProps<T extends keyof SeidrElementTagNameMap = "span"> = ImageOptions<T> &

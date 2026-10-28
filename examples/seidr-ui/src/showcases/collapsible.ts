@@ -56,7 +56,7 @@ export const CollapsibleShowcase = createComponent(() => {
           Collapsible({
             open: isControlledOpen,
             onOpenChange: (open) => isControlledOpen(open),
-            forceMount: true,
+            forceMount: createValue(true),
             trigger: [
               isControlledOpen.as((o) => (o ? "Hide Advanced Settings" : "Show Advanced Settings")),
               $span({ className: "collapsible-chevron" }, "▼"),

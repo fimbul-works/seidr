@@ -57,21 +57,21 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
   const state: Value<boolean> = isControlledValue
     ? open
     : isControlledStatic
-      ? createValue(Boolean(open))
-      : createValue(Boolean(defaultOpen ?? false));
+      ? createValue(!!open)
+      : createValue(!!(defaultOpen ?? false));
 
   if (isFn(onOpenChange)) {
     state.watch((val) => onOpenChange(val));
   }
 
-  const isDisabled = isValue(disabled) ? disabled.as((d) => Boolean(d)) : createValue(Boolean(disabled));
+  const isDisabled = isValue(disabled) ? disabled.as((d) => !!d) : createValue(!!disabled);
 
-  const isBlocked = () => Boolean(unwrapValue(disabled));
+  const isBlocked = () => !!unwrapValue(disabled);
 
   const setIsOpen = (next: boolean | ((prev: boolean) => boolean)) => {
     if (isBlocked()) return;
     const current = state();
-    const nextVal = typeof next === "function" ? next(current) : next;
+    const nextVal = isFn(next) ? next(current) : next;
     if (nextVal === current) return;
 
     if (isControlledStatic) {

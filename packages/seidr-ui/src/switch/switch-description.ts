@@ -2,9 +2,10 @@ import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, 
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseSwitchResult } from "./types.js";
 
-export type SwitchDescriptionProps<T extends keyof SeidrElementTagNameMap> = FormControlDescriptionProps<T> & {
-  instance?: UseSwitchResult;
-};
+export type SwitchDescriptionProps<T extends keyof SeidrElementTagNameMap = "div"> =
+  FormControlDescriptionProps<T> & {
+    instance?: UseSwitchResult;
+  };
 
 /**
  * SwitchDescription standalone component.

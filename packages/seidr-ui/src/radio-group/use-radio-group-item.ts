@@ -26,7 +26,7 @@ export function useRadioGroupItem(
 
   const isSelected = group.value.as((curr) => curr === value);
 
-  const isDisabled = group.formControl.isDisabled.as((groupDis) => Boolean(groupDis || options.disabled));
+  const isDisabled = group.formControl.isDisabled.as((groupDis) => !!(groupDis || options.disabled));
 
   const select = () => {
     if (isDisabled() || group.formControl.isReadOnly()) {

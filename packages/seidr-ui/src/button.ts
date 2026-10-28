@@ -1,3 +1,4 @@
+import { isStr } from "@fimbul-works/hvat";
 import {
   $,
   isValue,
@@ -87,7 +88,7 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
   const isCurrentlyDisabled = () => (isDisabledValue ? !!isDisabledValue() : !!disabled);
 
   const tagNameStr = as as string;
-  const native = isNativeButton(tagNameStr, typeof type === "string" ? type : undefined);
+  const native = isNativeButton(tagNameStr, isStr(type) ? type : undefined);
 
   const onclick = (e: MouseEvent) => {
     if (isCurrentlyDisabled()) {
@@ -105,11 +106,7 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
       ? {
           type,
           disabled,
-          dataDisabled: isDisabledValue
-            ? isDisabledValue.as((d) => (d ? "" : undefined))
-            : disabled
-              ? ""
-              : undefined,
+          dataDisabled: isDisabledValue ? isDisabledValue.as((d) => (d ? "" : undefined)) : disabled ? "" : undefined,
         }
       : {
           role: role ?? "button",
@@ -120,11 +117,7 @@ export function ButtonRoot<T extends keyof SeidrElementTagNameMap = "button">(
             : disabled
               ? "true"
               : undefined,
-          dataDisabled: isDisabledValue
-            ? isDisabledValue.as((d) => (d ? "" : undefined))
-            : disabled
-              ? ""
-              : undefined,
+          dataDisabled: isDisabledValue ? isDisabledValue.as((d) => (d ? "" : undefined)) : disabled ? "" : undefined,
           onkeydown: (e: KeyboardEvent) => {
             if (e.key === "Enter") {
               if (!isCurrentlyDisabled()) {

@@ -14,7 +14,7 @@ export interface ImageInstance extends UseImageResult {
    * Pre-bound Image.Root container.
    */
   Root: <T extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren: ImageRootProps<T> | SeidrChild | SeidrChild[],
+    propsOrChildren?: ImageRootProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
@@ -22,15 +22,14 @@ export interface ImageInstance extends UseImageResult {
    * Pre-bound Image.Img element.
    */
   Img: <T extends keyof SeidrElementTagNameMap = "img">(
-    propsOrChildren: ImageImgProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    props: ImageImgProps<T>,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /**
    * Pre-bound Image.Fallback container.
    */
   Fallback: <T extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren: ImageFallbackProps<T> | SeidrChild | SeidrChild[],
+    propsOrChildren?: ImageFallbackProps<T> | SeidrChild | SeidrChild[],
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
@@ -47,9 +46,8 @@ export function createImage(options: UseImageOptions = {}): ImageInstance {
       const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
       return ImageRoot({ instance, ...props }, content);
     },
-    Img: (propsOrChildren, children) => {
-      const [props, content] = resolvePropsAndChildren(propsOrChildren, children);
-      return ImageImg({ instance, ...props }, content);
+    Img: (props) => {
+      return ImageImg({ instance, ...props });
     },
     Fallback: (propsOrChildren, children) => {
       const [props, content] = resolvePropsAndChildren(propsOrChildren, children);

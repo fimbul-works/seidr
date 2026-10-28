@@ -3,8 +3,6 @@ import {
   $,
   type DerivedValue,
   type ReactiveValue,
-  resolvePropsAndChildren,
-  type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
@@ -17,7 +15,7 @@ export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img">
   /**
    * The image URL to load.
    */
-  src: ReactiveValue<string | undefined | null>;
+  src?: ReactiveValue<string | undefined | null>;
 
   /**
    * The HTML element tag name to render.
@@ -58,18 +56,8 @@ export type ImageImgProps<T extends keyof SeidrElementTagNameMap = "img"> = Imag
  * Image.Img renders an image element once it has successfully loaded.
  */
 export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
-  props?: ImageImgProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
-): DerivedValue<SeidrElementTagNameMap[T] | null>;
-export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
-  propsOrChildren?: ImageImgProps<T> | SeidrChild | SeidrChild[] | null,
-  children?: SeidrChild | SeidrChild[],
+  props: ImageImgProps<T>,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const [props, content] = resolvePropsAndChildren<ImageImgProps<T>>(propsOrChildren, children);
-
   const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 
   if (!instance && !isLoaded && !src) {
@@ -86,7 +74,7 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   if (!isUndef(crossOrigin)) elementProps.crossOrigin = crossOrigin;
   if (!isUndef(referrerPolicy)) elementProps.referrerPolicy = referrerPolicy;
 
-  const renderEl = () => $(as, elementProps as SeidrElementProps<T>, content);
+  const renderEl = () => $(as, elementProps as SeidrElementProps<T>);
 
   return Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
