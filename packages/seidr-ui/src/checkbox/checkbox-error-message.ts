@@ -20,7 +20,7 @@ export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "d
   const { instance: cb, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxErrorMessage requires an instance prop");
+    throw new SeidrError("CheckboxErrorMessage requires an instance coordinator");
   }
 
   return FormControlErrorMessage(

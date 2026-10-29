@@ -1,4 +1,10 @@
-import { $, mergeStyleProps, resolvePropsAndChildren, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
+import {
+  $,
+  mergeStyleProps,
+  resolvePropsAndChildren,
+  type SeidrChild,
+  type SeidrElementProps,
+} from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "./constants.js";
 
 export { VISUALLY_HIDDEN_STYLES } from "./constants.js";

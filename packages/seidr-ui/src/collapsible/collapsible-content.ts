@@ -1,7 +1,8 @@
+import { easeInOutCubic, tween } from "@fimbul-works/flaedi";
 import {
   $,
-  type DerivedValue,
   createValue,
+  type DerivedValue,
   inClient,
   mergeStyleProps,
   mergeValues,
@@ -15,7 +16,6 @@ import {
   wrapValue,
   wrapValueObject,
 } from "@fimbul-works/seidr";
-import { easeInOutCubic, tween } from "@fimbul-works/flaedi";
 import type { CollapsibleAnimationOptions, UseCollapsibleResult } from "./types.js";
 
 export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -60,7 +60,7 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
   } = props;
 
   if (!col) {
-    throw new SeidrError("CollapsibleContent requires an instance prop");
+    throw new SeidrError("CollapsibleContent requires an instance coordinator");
   }
 
   const isAnimationEnabled = animation !== false;

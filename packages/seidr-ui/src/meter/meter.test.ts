@@ -24,11 +24,7 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
   it("should render default structure, roles, and semantic data attributes", () => {
     const root = setup(() => {
       const m = createMeter({ id: "test-meter" });
-      return m.Root({}, [
-        m.Label({}, "Storage Space"),
-        m.ValueLabel({}),
-        m.Track({}, [m.Fill({})]),
-      ]);
+      return m.Root({}, [m.Label({}, "Storage Space"), m.ValueLabel({}), m.Track({}, [m.Fill({})])]);
     });
 
     const rootEl = root.querySelector("[role='meter']") as HTMLElement;

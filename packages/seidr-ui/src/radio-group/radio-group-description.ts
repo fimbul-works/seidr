@@ -28,7 +28,7 @@ export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "
   const { as = "span" as T, instance: rg, ...rest } = props;
 
   if (!rg) {
-    throw new SeidrError("RadioGroupDescription requires an instance prop");
+    throw new SeidrError("RadioGroupDescription requires an instance coordinator");
   }
 
   return FormControlDescription(

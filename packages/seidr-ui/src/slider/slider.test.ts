@@ -86,7 +86,9 @@ describeDualMode("Slider", ({ getDocument, isSSR }) => {
     setup(() => {
       const slider = createSlider({ id: "callable-slider", defaultValue: [25, 75] });
       capturedValues = slider.values();
-      return slider.Root({}, [slider.Track({}, [slider.Fill({}), slider.Thumb({ index: 0 }), slider.Thumb({ index: 1 })])]);
+      return slider.Root({}, [
+        slider.Track({}, [slider.Fill({}), slider.Thumb({ index: 0 }), slider.Thumb({ index: 1 })]),
+      ]);
     });
 
     expect(capturedValues).toEqual([25, 75]);

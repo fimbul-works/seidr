@@ -44,7 +44,7 @@ export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
   } = props;
 
   if (!form) {
-    throw new SeidrError("FormControlRoot requires an instance prop");
+    throw new SeidrError("FormControlRoot requires an instance coordinator");
   }
 
   return $(

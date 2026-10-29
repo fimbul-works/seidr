@@ -17,7 +17,7 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
   const { instance: sw, id: customId, style, onchange, onfocus, onblur, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchInput requires an instance prop");
+    throw new SeidrError("SwitchInput requires an instance coordinator");
   }
 
   const fieldId = customId ?? sw.id.as((base: string) => `${base}-input`);

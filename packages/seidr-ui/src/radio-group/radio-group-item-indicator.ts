@@ -45,7 +45,7 @@ export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap =
   const { as = "div" as T, instance: item, forceMount = false, id, ...rest } = props;
 
   if (!item) {
-    throw new SeidrError("RadioGroupItemIndicator requires an instance prop");
+    throw new SeidrError("RadioGroupItemIndicator requires an instance coordinator");
   }
 
   const elementProps = {

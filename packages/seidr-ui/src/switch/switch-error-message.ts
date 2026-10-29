@@ -18,7 +18,7 @@ export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div
   const { instance: sw, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchErrorMessage requires an instance prop");
+    throw new SeidrError("SwitchErrorMessage requires an instance coordinator");
   }
 
   return FormControlErrorMessage(

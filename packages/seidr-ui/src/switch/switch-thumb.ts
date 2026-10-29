@@ -34,7 +34,7 @@ export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, instance: sw, id, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchThumb requires an instance prop");
+    throw new SeidrError("SwitchThumb requires an instance coordinator");
   }
 
   return $(

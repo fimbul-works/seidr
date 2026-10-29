@@ -34,7 +34,7 @@ export function FormControlDescription<T extends keyof SeidrElementTagNameMap = 
   const { as = "div" as T, instance: form, id: customId, ...rest } = props;
 
   if (!form) {
-    throw new SeidrError("FormControlDescription requires an instance prop");
+    throw new SeidrError("FormControlDescription requires an instance coordinator");
   }
 
   const descriptionId = customId ?? form.id.as((base) => `${base}-description`);

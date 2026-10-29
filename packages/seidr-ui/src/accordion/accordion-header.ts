@@ -29,7 +29,7 @@ export function AccordionHeader<T extends keyof SeidrElementTagNameMap = "h3">(
   const { as = "h3" as T, instance, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("AccordionHeader requires an instance prop");
+    throw new SeidrError("AccordionHeader requires an instance coordinator");
   }
 
   return $(

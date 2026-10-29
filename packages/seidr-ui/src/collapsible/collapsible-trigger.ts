@@ -1,9 +1,15 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
-import { isValue, mergeValues, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
-import { type ButtonOptions, type ButtonProps, Button } from "../button.js";
+import {
+  isValue,
+  mergeValues,
+  type SeidrChild,
+  type SeidrElementProps,
+  type SeidrElementTagNameMap,
+  SeidrError,
+  wrapValue,
+} from "@fimbul-works/seidr";
+import { Button, type ButtonOptions, type ButtonProps } from "../button.js";
 import type { UseCollapsibleResult } from "./types.js";
-import { wrapValue } from "@fimbul-works/seidr";
-import { SeidrElementProps } from "@fimbul-works/seidr";
 
 export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
   /** Explicit instance providing reactive state. */
@@ -24,7 +30,7 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
   const { instance: col, disabled, onclick: userOnClick, ...rest } = props;
 
   if (!col) {
-    throw new SeidrError("CollapsibleTrigger requires an instance prop");
+    throw new SeidrError("CollapsibleTrigger requires an instance coordinator");
   }
 
   const wrappedDisabled = wrapValue(disabled ?? false);

@@ -35,7 +35,7 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, instance: sw, id, onclick, onkeydown, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchControl requires an instance prop");
+    throw new SeidrError("SwitchControl requires an instance coordinator");
   }
 
   const handleClick = (e: MouseEvent) => {

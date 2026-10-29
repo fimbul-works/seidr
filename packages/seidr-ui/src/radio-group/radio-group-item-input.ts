@@ -17,7 +17,7 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
   const { instance: item, style, onclick, onchange, onfocus, onblur, ...rest } = props;
 
   if (!item) {
-    throw new SeidrError("RadioGroupItemInput requires an instance prop");
+    throw new SeidrError("RadioGroupItemInput requires an instance coordinator");
   }
 
   const mergedStyle = mergeStyleProps(VISUALLY_HIDDEN_STYLES, style);

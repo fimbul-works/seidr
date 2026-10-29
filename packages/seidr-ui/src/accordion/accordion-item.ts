@@ -28,7 +28,7 @@ export function AccordionItem<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, instance, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("AccordionItem requires an instance prop");
+    throw new SeidrError("AccordionItem requires an instance coordinator");
   }
 
   return $(

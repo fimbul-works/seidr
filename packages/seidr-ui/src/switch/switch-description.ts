@@ -16,7 +16,7 @@ export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div"
   const { instance: sw, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchDescription requires an instance prop");
+    throw new SeidrError("SwitchDescription requires an instance coordinator");
   }
 
   return FormControlDescription(

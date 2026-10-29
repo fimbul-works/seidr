@@ -35,7 +35,7 @@ export function AccordionContent<T extends keyof SeidrElementTagNameMap = "div">
   const { instance, style, animation, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("AccordionContent requires an instance prop");
+    throw new SeidrError("AccordionContent requires an instance coordinator");
   }
 
   const dynamicStyles = {

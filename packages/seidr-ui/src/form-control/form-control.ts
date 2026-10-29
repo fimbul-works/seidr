@@ -1,12 +1,12 @@
 import { isUndef } from "@fimbul-works/hvat";
 import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { createComponent } from "@fimbul-works/seidr";
 import { createFormControl } from "./create-form-control.js";
 import type { FormControlDescriptionProps } from "./form-control-description.js";
 import type { FormControlErrorMessageProps } from "./form-control-error-message.js";
 import type { FormControlLabelProps } from "./form-control-label.js";
 import type { FormControlRootProps } from "./form-control-root.js";
 import type { UseFormControlOptions } from "./types.js";
-import { createComponent } from "@fimbul-works/seidr";
 
 export interface FormControlProps<
   TRoot extends keyof SeidrElementTagNameMap = "div",
@@ -69,6 +69,7 @@ export const FormControl = createComponent(
       errorMessage,
       errorMessageProps = {},
       children,
+      ...restProps
     } = props;
 
     const form = createFormControl({
@@ -107,7 +108,7 @@ export const FormControl = createComponent(
       childrenToRender.push(children);
     }
 
-    return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
+    return form.Root({ as, ...restProps, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
   },
   "FormControl",
 );

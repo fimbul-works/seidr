@@ -37,7 +37,7 @@ export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div"
   const { as = "div" as T, instance: cb, forceMount, id, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxIndicator requires an instance prop");
+    throw new SeidrError("CheckboxIndicator requires an instance coordinator");
   }
 
   const elementProps = {

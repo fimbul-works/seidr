@@ -17,7 +17,7 @@ export function CheckboxInput(props: CheckboxInputProps = {}): HTMLInputElement 
   const { instance: cb, id: customId, style, onchange, onfocus, onblur, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxInput requires an instance prop");
+    throw new SeidrError("CheckboxInput requires an instance coordinator");
   }
 
   const fieldId = customId ?? cb.id.as((base) => `${base}-input`);

@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { extractAriaProps } from "../utils/aria.js";
 import type { SliderThumbProps } from "./types.js";
 
 /**
@@ -17,6 +18,8 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
   props: SliderThumbProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
+  const [aria, restProps] = extractAriaProps(props);
+
   const {
     as = "span" as T,
     instance: slider,
@@ -26,12 +29,8 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
     onpointerdown: userOnPointerDown,
     onkeydown: userOnKeyDown,
     onfocus: userOnFocus,
-    ariaLabel: propAriaLabel,
-    "aria-label": propAriaLabelKebab,
-    ariaLabelledby: propAriaLabelledby,
-    "aria-labelledby": propAriaLabelledbyKebab,
     ...rest
-  } = props;
+  } = restProps;
 
   if (!slider) {
     throw new SeidrError("SliderThumb requires an instance coordinator");
@@ -79,11 +78,8 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
         }),
   };
 
-  const ariaLabel = propAriaLabel ?? propAriaLabelKebab;
-  const ariaLabelledby =
-    propAriaLabelledby ??
-    propAriaLabelledbyKebab ??
-    (ariaLabel ? undefined : `${slider.id}-label`);
+  const ariaLabel = aria.ariaLabel;
+  const ariaLabelledby = aria.ariaLabelledBy ?? (ariaLabel ? undefined : `${slider.id}-label`);
 
   return $(
     as as T,

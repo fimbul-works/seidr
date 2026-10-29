@@ -35,7 +35,7 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, instance: cb, id, onclick, onkeydown, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxControl requires an instance prop");
+    throw new SeidrError("CheckboxControl requires an instance coordinator");
   }
 
   const handleClick = (e: MouseEvent) => {

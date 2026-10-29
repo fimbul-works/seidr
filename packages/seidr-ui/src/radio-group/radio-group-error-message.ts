@@ -37,7 +37,7 @@ export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = 
   const { as = "span" as T, instance: rg, ...rest } = props;
 
   if (!rg) {
-    throw new SeidrError("RadioGroupErrorMessage requires an instance prop");
+    throw new SeidrError("RadioGroupErrorMessage requires an instance coordinator");
   }
 
   return FormControlErrorMessage(

@@ -1,4 +1,4 @@
-import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import type { DerivedValue, SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { FormControlDescription, type FormControlDescriptionProps } from "./form-control-description.js";
 import { FormControlErrorMessage, type FormControlErrorMessageProps } from "./form-control-error-message.js";
 import { FormControlLabel, type FormControlLabelProps } from "./form-control-label.js";

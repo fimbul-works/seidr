@@ -48,7 +48,7 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
   } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchRoot requires an instance prop");
+    throw new SeidrError("SwitchRoot requires an instance coordinator");
   }
 
   const handlePointerDown = (e: PointerEvent) => {

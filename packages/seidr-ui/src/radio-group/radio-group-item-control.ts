@@ -34,7 +34,7 @@ export function RadioGroupItemControl<T extends keyof SeidrElementTagNameMap = "
   const { as = "div" as T, instance: item, id, onclick, onkeydown, ...rest } = props;
 
   if (!item) {
-    throw new SeidrError("RadioGroupItemControl requires an instance prop");
+    throw new SeidrError("RadioGroupItemControl requires an instance coordinator");
   }
 
   const handleClick = (e: MouseEvent) => {

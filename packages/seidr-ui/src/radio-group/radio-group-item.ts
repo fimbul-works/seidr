@@ -34,7 +34,7 @@ export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, instance: item, onpointerdown, ...rest } = props;
 
   if (!item) {
-    throw new SeidrError("RadioGroupItem requires an instance prop");
+    throw new SeidrError("RadioGroupItem requires an instance coordinator");
   }
 
   const handlePointerDown = (e: PointerEvent) => {

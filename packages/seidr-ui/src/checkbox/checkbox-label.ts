@@ -1,7 +1,7 @@
 import { type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import { FormControlLabel, type FormControlLabelProps } from "../form-control/form-control-label.js";
+import type { UseFormControlResult } from "../form-control/types.js";
 import type { UseCheckboxResult } from "./types.js";
-import { UseFormControlResult } from "../form-control/types.js";
 
 export type CheckboxLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = FormControlLabelProps<T> & {
   instance?: UseCheckboxResult;
@@ -18,7 +18,7 @@ export function CheckboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
   const { instance: cb, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxLabel requires an instance prop");
+    throw new SeidrError("CheckboxLabel requires an instance coordinator");
   }
 
   return FormControlLabel(

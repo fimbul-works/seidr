@@ -24,11 +24,7 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
   it("should render default structure, roles, and semantic data attributes", () => {
     const root = setup(() => {
       const p = createProgress({ id: "test-progress" });
-      return p.Root({}, [
-        p.Label({}, "Task Progress"),
-        p.ValueLabel({}),
-        p.Track({}, [p.Fill({})]),
-      ]);
+      return p.Root({}, [p.Label({}, "Task Progress"), p.ValueLabel({}), p.Track({}, [p.Fill({})])]);
     });
 
     const rootEl = root.querySelector("[role='progressbar']") as HTMLElement;

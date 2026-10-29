@@ -9,7 +9,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
-import { type UseImageResult } from "./use-image.js";
+import type { UseImageResult } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
   /**
@@ -61,7 +61,7 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   const { as = "img" as T, instance, isLoaded, src, alt, crossOrigin, referrerPolicy, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("ImageImg requires an instance prop");
+    throw new SeidrError("ImageImg requires an instance coordinator");
   }
 
   const condition = wrapValue(isLoaded ?? instance.isLoaded);

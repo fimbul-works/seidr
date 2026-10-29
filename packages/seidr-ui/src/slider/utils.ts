@@ -14,9 +14,7 @@ export function roundValue(value: number, decimalCount: number): number {
 export function snapValueToStep(value: number, min: number, max: number, step: number): number {
   const remainder = (value - min) % step;
   let snapped =
-    Math.abs(remainder) * 2 >= step
-      ? value - remainder + (remainder > 0 ? step : -step)
-      : value - remainder;
+    Math.abs(remainder) * 2 >= step ? value - remainder + (remainder > 0 ? step : -step) : value - remainder;
   const decimalCount = getDecimalCount(step);
   snapped = roundValue(snapped, decimalCount);
   return clamp(snapped, min, max);

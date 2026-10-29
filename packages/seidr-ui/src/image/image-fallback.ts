@@ -42,7 +42,7 @@ export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   const { as = "span" as T, instance, canRender, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("ImageFallback requires an instance prop");
+    throw new SeidrError("ImageFallback requires an instance coordinator");
   }
 
   const renderEl = () =>

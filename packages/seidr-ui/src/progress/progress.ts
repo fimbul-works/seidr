@@ -44,10 +44,7 @@ export const Progress = createComponent((props: ProgressProps = {}) => {
     ? progress.Header(headerProps, [
         label ? progress.Label(labelProps, label) : null,
         valueLabel
-          ? progress.ValueLabel(
-              valueLabelProps,
-              typeof valueLabel === "boolean" ? undefined : valueLabel,
-            )
+          ? progress.ValueLabel(valueLabelProps, typeof valueLabel === "boolean" ? undefined : valueLabel)
           : null,
       ])
     : null;

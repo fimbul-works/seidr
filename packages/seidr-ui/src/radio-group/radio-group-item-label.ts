@@ -39,7 +39,7 @@ export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "la
   const { as = "label" as T, instance: item, id, htmlFor, ...rest } = props;
 
   if (!item) {
-    throw new SeidrError("RadioGroupItemLabel requires an instance prop");
+    throw new SeidrError("RadioGroupItemLabel requires an instance coordinator");
   }
 
   const effectiveHtmlFor = as === "label" ? (htmlFor ?? item.inputId) : undefined;

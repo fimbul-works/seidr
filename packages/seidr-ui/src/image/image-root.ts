@@ -5,7 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
-import { type UseImageOptions, type UseImageResult } from "./use-image.js";
+import type { UseImageOptions, UseImageResult } from "./use-image.js";
 
 export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
   /**
@@ -42,7 +42,7 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   } = props;
 
   if (!img) {
-    throw new SeidrError("ImageRoot requires an instance prop");
+    throw new SeidrError("ImageRoot requires an instance coordinator");
   }
 
   return $(

@@ -47,7 +47,7 @@ export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
   } = props;
 
   if (!rg) {
-    throw new SeidrError("RadioGroupRoot requires an instance prop");
+    throw new SeidrError("RadioGroupRoot requires an instance coordinator");
   }
 
   return $(

@@ -24,7 +24,7 @@ export interface UseFormControlOptions {
   name?: ReactiveValue<string>;
 
   /** Validation state: "valid" | "invalid" | undefined. */
-  validationState?: ObservableValue<ValidationState | undefined> | ObservableValue<ValidationState>;
+  validationState?: ReactiveValue<ValidationState | undefined>;
 
   /** Whether the field is required. */
   required?: ReactiveValue<boolean>;

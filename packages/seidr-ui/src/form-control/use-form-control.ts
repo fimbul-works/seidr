@@ -2,6 +2,7 @@ import { isTruthy } from "@fimbul-works/hvat";
 import {
   type CleanupFunction,
   createValue,
+  isValue,
   mergeValues,
   type ObservableValue,
   type ReactiveValue,
@@ -37,11 +38,13 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   const id = wrapValue(providedId ?? createFormControlId());
   const name = wrapValue(providedName as string | undefined).as((v) => v);
 
-  const validationState = providedValidationState
-    ? providedValidationState.as<ValidationState | undefined>((s) => s)
-    : createValue<ValidationState | undefined>(undefined);
-  const isInvalid = validationState.as((s) => s === "invalid");
-  const isValid = validationState.as((s) => s === "valid");
+  const validationState: ObservableValue<ValidationState | undefined> = isValue<ValidationState | undefined>(
+    providedValidationState,
+  )
+    ? providedValidationState
+    : createValue<ValidationState | undefined>(providedValidationState);
+  const isInvalid = validationState.as((s: ValidationState | undefined) => s === "invalid");
+  const isValid = validationState.as((s: ValidationState | undefined) => s === "valid");
 
   const isRequired = wrapValue(required ?? false).as((r) => !!r);
   const isDisabled = wrapValue(disabled ?? false).as((d) => !!d);
@@ -58,33 +61,49 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   const errorMessageId = createValue<string | undefined>(undefined);
 
   const registerLabel = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
-    const wrappedId = wrapValue(newId as any);
-    return wrappedId.bind((val) => {
+    const wrappedId = wrapValue(newId as ReactiveValue<string | undefined>);
+    const unbind = wrappedId.bind((val) => {
       labelId(val);
     });
+    return () => {
+      unbind();
+      labelId(undefined);
+    };
   };
 
   const registerField = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
-    const wrappedId = wrapValue(newId as any);
-    return wrappedId.bind((val) => {
+    const wrappedId = wrapValue(newId as ReactiveValue<string | undefined>);
+    const unbind = wrappedId.bind((val) => {
       customFieldId(val);
     });
+    return () => {
+      unbind();
+      customFieldId(undefined);
+    };
   };
 
   const registerDescription = (newId: ReactiveValue<string> | ObservableValue<string | undefined>): CleanupFunction => {
-    const wrappedId = wrapValue(newId as any);
-    return wrappedId.bind((val) => {
+    const wrappedId = wrapValue(newId as ReactiveValue<string | undefined>);
+    const unbind = wrappedId.bind((val) => {
       descriptionId(val);
     });
+    return () => {
+      unbind();
+      descriptionId(undefined);
+    };
   };
 
   const registerErrorMessage = (
     newId: ReactiveValue<string> | ObservableValue<string | undefined>,
   ): CleanupFunction => {
-    const wrappedId = wrapValue(newId as any);
-    return wrappedId.bind((val) => {
+    const wrappedId = wrapValue(newId as ReactiveValue<string | undefined>);
+    const unbind = wrappedId.bind((val) => {
       errorMessageId(val);
     });
+    return () => {
+      unbind();
+      errorMessageId(undefined);
+    };
   };
 
   const ariaLabelledBy = labelId.as((id) => id);

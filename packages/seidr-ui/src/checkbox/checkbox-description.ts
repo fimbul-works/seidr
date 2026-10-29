@@ -15,7 +15,7 @@ export function CheckboxDescription<T extends keyof SeidrElementTagNameMap = "di
   const { instance: cb, ...rest } = props;
 
   if (!cb) {
-    throw new SeidrError("CheckboxDescription requires an instance prop");
+    throw new SeidrError("CheckboxDescription requires an instance coordinator");
   }
 
   return FormControlDescription(

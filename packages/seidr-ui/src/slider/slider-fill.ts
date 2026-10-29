@@ -55,9 +55,7 @@ export function SliderFill<T extends keyof SeidrElementTagNameMap = "div">(
           right: maxPct.as((p) => `${(1 - p) * 100}%`),
         };
 
-  const finalStyle = isObj(userStyle)
-    ? mergeStyleProps(baseStyle, userStyle)
-    : baseStyle;
+  const finalStyle = isObj(userStyle) ? mergeStyleProps(baseStyle, userStyle) : baseStyle;
 
   return $(
     as as T,

@@ -38,7 +38,7 @@ export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap =
   const { as = "div" as T, instance: form, id: customId, forceMount, ...rest } = props;
 
   if (!form) {
-    throw new SeidrError("FormControlErrorMessage requires an instance prop");
+    throw new SeidrError("FormControlErrorMessage requires an instance coordinator");
   }
 
   const errorMessageId = customId ?? form.id.as((base) => `${base}-error-message`);

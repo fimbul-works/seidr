@@ -1,0 +1,162 @@
+.text-field-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.text-field-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  border-radius: 8px;
+  background: var(--bg-surface, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+}
+
+.text-field-box-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted, #94a3b8);
+  margin-bottom: 0.25rem;
+}
+
+.text-field-value-display {
+  font-size: 0.8rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--fg-muted, #94a3b8);
+  padding: 0.35rem 0.6rem;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  border-left: 3px solid #3b82f6;
+}
+
+/* ==========================================================================
+   Semantic Component Styling via data-component and data-part
+   ========================================================================== */
+
+/* Root Container */
+[data-component="text-field"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+/* Label */
+[data-component="text-field"][data-part="label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-default, #e2e8f0);
+}
+
+[data-component="text-field"][data-part="label"][data-required]::after {
+  content: " *";
+  color: #ef4444;
+}
+
+/* Single-Line Input */
+[data-component="text-field"][data-part="input"] {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: var(--bg-input, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: 6px;
+  color: var(--fg-default, #f8fafc);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+[data-component="text-field"][data-part="input"]::placeholder {
+  color: var(--fg-subtle, #64748b);
+}
+
+[data-component="text-field"][data-part="input"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Multi-Line TextArea */
+[data-component="text-field"][data-part="text-area"] {
+  width: 100%;
+  min-height: 80px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.9rem;
+  font-family: inherit;
+  line-height: 1.5;
+  background: var(--bg-input, rgba(0, 0, 0, 0.25));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.15));
+  border-radius: 6px;
+  color: var(--fg-default, #f8fafc);
+  outline: none;
+  resize: vertical;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+[data-component="text-field"][data-part="text-area"]::placeholder {
+  color: var(--fg-subtle, #64748b);
+}
+
+[data-component="text-field"][data-part="text-area"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25);
+}
+
+/* Validation States (Valid / Invalid) */
+[data-component="text-field"] [data-part="input"][data-invalid],
+[data-component="text-field"] [data-part="text-area"][data-invalid] {
+  border-color: #ef4444;
+}
+
+[data-component="text-field"] [data-part="input"][data-invalid]:focus,
+[data-component="text-field"] [data-part="text-area"][data-invalid]:focus {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.25);
+}
+
+[data-component="text-field"] [data-part="input"][data-valid],
+[data-component="text-field"] [data-part="text-area"][data-valid] {
+  border-color: #10b981;
+}
+
+[data-component="text-field"] [data-part="input"][data-valid]:focus,
+[data-component="text-field"] [data-part="text-area"][data-valid]:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+/* Disabled & ReadOnly States */
+[data-component="text-field"] [data-part="input"][data-disabled],
+[data-component="text-field"] [data-part="text-area"][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="text-field"] [data-part="input"][data-readonly],
+[data-component="text-field"] [data-part="text-area"][data-readonly] {
+  background: rgba(255, 255, 255, 0.02);
+  border-style: dashed;
+  cursor: default;
+}
+
+/* Description */
+[data-component="text-field"][data-part="description"] {
+  font-size: 0.8rem;
+  color: var(--fg-muted, #94a3b8);
+}
+
+/* Error Message */
+[data-component="text-field"][data-part="error-message"] {
+  font-size: 0.8rem;
+  color: #f87171;
+  font-weight: 500;
+}

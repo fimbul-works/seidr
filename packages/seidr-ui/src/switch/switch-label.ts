@@ -16,7 +16,7 @@ export function SwitchLabel<T extends keyof SeidrElementTagNameMap = "label">(
   const { instance: sw, ...rest } = props;
 
   if (!sw) {
-    throw new SeidrError("SwitchLabel requires an instance prop");
+    throw new SeidrError("SwitchLabel requires an instance coordinator");
   }
 
   return FormControlLabel(

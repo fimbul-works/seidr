@@ -1,7 +1,12 @@
-import { $, type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import {
+  $,
+  type SeidrChild,
+  type SeidrElementProps,
+  type SeidrElementTagNameMap,
+  SeidrError,
+} from "@fimbul-works/seidr";
 import type { UseCollapsibleResult } from "./types.js";
 import { type UseCollapsibleOptions, useCollapsible } from "./use-collapsible.js";
-import { SeidrError } from "@fimbul-works/seidr";
 
 export interface CollapsibleRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseCollapsibleOptions {
   /**
@@ -29,7 +34,7 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
   const { as = "div" as T, open, defaultOpen, onOpenChange, disabled, forceMount, id, instance: col, ...rest } = props;
 
   if (!col) {
-    throw new SeidrError("CollapsibleRoot requires an instance prop");
+    throw new SeidrError("CollapsibleRoot requires an instance coordinator");
   }
 
   return $(

@@ -40,7 +40,7 @@ export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label
   const { as = "label" as T, instance: form, id: customId, htmlFor, ...rest } = props;
 
   if (!form) {
-    throw new SeidrError("FormControlLabel requires an instance prop");
+    throw new SeidrError("FormControlLabel requires an instance coordinator");
   }
 
   const id = customId ?? form.id.as((base) => `${base}-label`);

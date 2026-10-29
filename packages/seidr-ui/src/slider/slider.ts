@@ -56,12 +56,7 @@ export const Slider = createComponent((props: SliderProps = {}) => {
   });
 
   const thumbCount =
-    thumbs ??
-    (Array.isArray(value)
-      ? value.length
-      : Array.isArray(defaultValue)
-        ? defaultValue.length
-        : 1);
+    thumbs ?? (Array.isArray(value) ? value.length : Array.isArray(defaultValue) ? defaultValue.length : 1);
 
   const thumbElements = Array.from({ length: thumbCount }, (_, index) =>
     slider.Thumb({ index, ...(thumbProps ?? {}) }),
@@ -71,11 +66,7 @@ export const Slider = createComponent((props: SliderProps = {}) => {
     slider.Input({ index, ...(inputProps ?? {}) }),
   );
 
-  const trackElement = slider.Track(trackProps, [
-    slider.Fill(fillProps),
-    ...thumbElements,
-    ...inputElements,
-  ]);
+  const trackElement = slider.Track(trackProps, [slider.Fill(fillProps), ...thumbElements, ...inputElements]);
 
   return slider.Root({ as, ...rootProps } as Omit<SliderRootProps<"div">, "instance">, [
     label ? slider.Label({}, label) : null,

@@ -49,7 +49,7 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   } = props;
 
   if (!instance) {
-    throw new SeidrError("CheckboxRoot requires an instance prop");
+    throw new SeidrError("CheckboxRoot requires an instance coordinator");
   }
 
   const cb = instance;

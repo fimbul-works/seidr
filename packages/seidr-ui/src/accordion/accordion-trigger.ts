@@ -28,7 +28,7 @@ export function AccordionTrigger<T extends keyof SeidrElementTagNameMap = "butto
   const { instance, ref: userRef, onclick: userOnClick, onkeydown: userOnKeyDown, id: customId, ...rest } = props;
 
   if (!instance) {
-    throw new SeidrError("AccordionTrigger requires an instance prop");
+    throw new SeidrError("AccordionTrigger requires an instance coordinator");
   }
 
   const triggerRef = createRef<HTMLElement>();
