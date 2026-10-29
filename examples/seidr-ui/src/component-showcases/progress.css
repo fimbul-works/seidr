@@ -1,0 +1,97 @@
+.progress-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.progress-showcase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.progress-showcase-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+}
+
+/* Progress Header */
+[data-component="progress"][data-part="header"],
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Progress Root */
+[data-component="progress"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Progress Label */
+[data-component="progress"][data-part="label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg, #e5e7eb);
+}
+
+/* Progress Value Label */
+[data-component="progress"][data-part="value-label"] {
+  font-size: 0.8125rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: hsl(217, 91%, 65%);
+}
+
+/* Progress Track */
+[data-component="progress"][data-part="track"] {
+  position: relative;
+  height: 8px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+/* Progress Fill */
+[data-component="progress"][data-part="fill"] {
+  height: 100%;
+  background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(224, 76%, 50%));
+  border-radius: 9999px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+  box-shadow: 0 0 10px hsla(217, 91%, 60%, 0.35);
+}
+
+/* Complete state */
+[data-component="progress"][data-progress="complete"] [data-part="fill"],
+[data-component="progress"][data-part="fill"][data-progress="complete"] {
+  background: linear-gradient(135deg, hsl(142, 71%, 45%), hsl(160, 84%, 39%));
+  box-shadow: 0 0 12px hsla(142, 71%, 45%, 0.45);
+}
+
+[data-component="progress"][data-progress="complete"] [data-part="value-label"] {
+  color: hsl(142, 71%, 50%);
+}
+
+/* Indeterminate animation */
+[data-component="progress"][data-indeterminate] [data-part="fill"],
+[data-component="progress"][data-part="fill"][data-indeterminate] {
+  width: 40% !important;
+  animation: progress-indeterminate-slide 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes progress-indeterminate-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(350%);
+  }
+}

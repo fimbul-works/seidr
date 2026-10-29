@@ -26,6 +26,10 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
     onpointerdown: userOnPointerDown,
     onkeydown: userOnKeyDown,
     onfocus: userOnFocus,
+    ariaLabel: propAriaLabel,
+    "aria-label": propAriaLabelKebab,
+    ariaLabelledby: propAriaLabelledby,
+    "aria-labelledby": propAriaLabelledbyKebab,
     ...rest
   } = props;
 
@@ -39,7 +43,7 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
 
   const handlePointerDown = (e: PointerEvent) => {
     if (isFn(userOnPointerDown)) {
-      (userOnPointerDown as any)(e);
+      Reflect.apply(userOnPointerDown, e.currentTarget, [e]);
     }
     if (e.defaultPrevented) return;
     slider.handleThumbPointerDown(index, e);
@@ -47,7 +51,7 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (isFn(userOnKeyDown)) {
-      (userOnKeyDown as any)(e);
+      Reflect.apply(userOnKeyDown, e.currentTarget, [e]);
     }
     if (e.defaultPrevented) return;
     slider.handleThumbKeyDown(index, e);
@@ -55,12 +59,12 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
 
   const handleFocus = (e: FocusEvent) => {
     if (isFn(userOnFocus)) {
-      (userOnFocus as any)(e);
+      Reflect.apply(userOnFocus, e.currentTarget, [e]);
     }
     slider.focusedThumb(index);
   };
 
-  const baseStyle = {
+  const baseStyle: ReactiveStyleDeclaration = {
     position: "absolute",
     ...(isVertical
       ? {
@@ -73,12 +77,12 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
           top: "50%",
           transform: "translate(-50%, -50%)",
         }),
-  } as ReactiveStyleDeclaration;
+  };
 
-  const ariaLabel = (rest as any).ariaLabel ?? (rest as any)["aria-label"];
+  const ariaLabel = propAriaLabel ?? propAriaLabelKebab;
   const ariaLabelledby =
-    (rest as any).ariaLabelledby ??
-    (rest as any)["aria-labelledby"] ??
+    propAriaLabelledby ??
+    propAriaLabelledbyKebab ??
     (ariaLabel ? undefined : `${slider.id}-label`);
 
   return $(
@@ -99,7 +103,7 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
       onpointerdown: handlePointerDown,
       onkeydown: handleKeyDown,
       onfocus: handleFocus,
-      style: mergeStyleProps(baseStyle, userStyle as any),
+      style: mergeStyleProps(baseStyle, userStyle),
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
       dataDragging: slider.isDragging.as((d) => (d ? "" : undefined)),

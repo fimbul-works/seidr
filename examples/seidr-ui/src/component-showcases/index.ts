@@ -7,6 +7,8 @@ import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
+import { MeterShowcase } from "./meter.js";
+import { ProgressShowcase } from "./progress.js";
 import { RadioGroupShowcase } from "./radio-group.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
@@ -23,6 +25,8 @@ export * from "./checkbox.js";
 export * from "./collapsible.js";
 export * from "./form-control.js";
 export * from "./image.js";
+export * from "./meter.js";
+export * from "./progress.js";
 export * from "./radio-group.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
@@ -48,6 +52,8 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
+  { id: "meter", title: "Meter", badge: "Widget", category: "Widget", component: MeterShowcase },
+  { id: "progress", title: "Progress", badge: "Widget", category: "Widget", component: ProgressShowcase },
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },

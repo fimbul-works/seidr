@@ -25,40 +25,39 @@ export function SliderFill<T extends keyof SeidrElementTagNameMap = "div">(
 
   const isVertical = slider.orientation === "vertical";
 
-  const dynamicStyle = slider.values.as((vals) => {
+  const minPct = slider.values.as((vals) => {
     const percents = vals.map((v) => slider.getValuePercent(v));
-    const minPct = vals.length > 1 ? Math.min(...percents) : 0;
-    const maxPct = vals.length > 1 ? Math.max(...percents) : (percents[0] ?? 0);
-
-    if (isVertical) {
-      if (slider.inverted) {
-        return {
-          top: `${minPct * 100}%`,
-          bottom: `${(1 - maxPct) * 100}%`,
-        };
-      }
-      return {
-        bottom: `${minPct * 100}%`,
-        top: `${(1 - maxPct) * 100}%`,
-      };
-    }
-
-    if (slider.inverted) {
-      return {
-        right: `${minPct * 100}%`,
-        left: `${(1 - maxPct) * 100}%`,
-      };
-    }
-
-    return {
-      left: `${minPct * 100}%`,
-      right: `${(1 - maxPct) * 100}%`,
-    };
+    return vals.length > 1 ? Math.min(...percents) : 0;
   });
 
+  const maxPct = slider.values.as((vals) => {
+    const percents = vals.map((v) => slider.getValuePercent(v));
+    return vals.length > 1 ? Math.max(...percents) : (percents[0] ?? 0);
+  });
+
+  const baseStyle: ReactiveStyleDeclaration = isVertical
+    ? slider.inverted
+      ? {
+          top: minPct.as((p) => `${p * 100}%`),
+          bottom: maxPct.as((p) => `${(1 - p) * 100}%`),
+        }
+      : {
+          bottom: minPct.as((p) => `${p * 100}%`),
+          top: maxPct.as((p) => `${(1 - p) * 100}%`),
+        }
+    : slider.inverted
+      ? {
+          right: minPct.as((p) => `${p * 100}%`),
+          left: maxPct.as((p) => `${(1 - p) * 100}%`),
+        }
+      : {
+          left: minPct.as((p) => `${p * 100}%`),
+          right: maxPct.as((p) => `${(1 - p) * 100}%`),
+        };
+
   const finalStyle = isObj(userStyle)
-    ? mergeStyleProps(dynamicStyle as any, userStyle as ReactiveStyleDeclaration)
-    : (dynamicStyle as any);
+    ? mergeStyleProps(baseStyle, userStyle)
+    : baseStyle;
 
   return $(
     as as T,

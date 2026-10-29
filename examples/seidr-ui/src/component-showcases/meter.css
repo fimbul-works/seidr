@@ -1,0 +1,94 @@
+.meter-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.meter-showcase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.meter-showcase-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+}
+
+/* Meter Header */
+[data-component="meter"][data-part="header"],
+.meter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+/* Meter Root */
+[data-component="meter"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+/* Meter Label */
+[data-component="meter"][data-part="label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg, #e5e7eb);
+}
+
+/* Meter Value Label */
+[data-component="meter"][data-part="value-label"] {
+  font-size: 0.8125rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-weight: 600;
+  color: hsl(173, 80%, 55%);
+}
+
+/* Meter Track */
+[data-component="meter"][data-part="track"] {
+  position: relative;
+  height: 10px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+/* Meter Fill */
+[data-component="meter"][data-part="fill"] {
+  height: 100%;
+  background: linear-gradient(135deg, hsl(173, 80%, 45%), hsl(190, 90%, 40%));
+  border-radius: 9999px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px hsla(173, 80%, 45%, 0.35);
+}
+
+/* Warning Gauge Fill */
+.meter-warning [data-component="meter"][data-part="fill"],
+.meter-warning[data-component="meter"] [data-part="fill"] {
+  background: linear-gradient(135deg, hsl(38, 92%, 50%), hsl(25, 95%, 48%));
+  box-shadow: 0 0 10px hsla(38, 92%, 50%, 0.4);
+}
+
+.meter-warning [data-component="meter"][data-part="value-label"],
+.meter-warning[data-component="meter"] [data-part="value-label"] {
+  color: hsl(38, 92%, 60%);
+}
+
+/* Critical Gauge Fill */
+.meter-danger [data-component="meter"][data-part="fill"],
+.meter-danger[data-component="meter"] [data-part="fill"] {
+  background: linear-gradient(135deg, hsl(0, 84%, 60%), hsl(340, 82%, 52%));
+  box-shadow: 0 0 12px hsla(0, 84%, 60%, 0.45);
+}
+
+.meter-danger [data-component="meter"][data-part="value-label"],
+.meter-danger[data-component="meter"] [data-part="value-label"] {
+  color: hsl(0, 84%, 65%);
+}

@@ -2,7 +2,6 @@ import { isFn } from "@fimbul-works/hvat";
 import {
   $,
   mergeStyleProps,
-  type ReactiveStyleDeclaration,
   type SeidrElementProps,
   SeidrError,
 } from "@fimbul-works/seidr";
@@ -20,6 +19,10 @@ export function SliderInput(props: SliderInputProps = {}): HTMLInputElement {
     name: customName,
     style: userStyle,
     onchange: userOnChange,
+    ariaLabel: propAriaLabel,
+    "aria-label": propAriaLabelKebab,
+    ariaLabelledby: propAriaLabelledby,
+    "aria-labelledby": propAriaLabelledbyKebab,
     ...rest
   } = props;
 
@@ -32,16 +35,16 @@ export function SliderInput(props: SliderInputProps = {}): HTMLInputElement {
 
   const handleChange = (e: Event) => {
     if (isFn(userOnChange)) {
-      (userOnChange as any)(e);
+      Reflect.apply(userOnChange, e.currentTarget, [e]);
     }
     const target = e.target as HTMLInputElement;
     slider.setThumbValue(index, Number.parseFloat(target.value));
   };
 
-  const ariaLabel = (rest as any).ariaLabel ?? (rest as any)["aria-label"];
+  const ariaLabel = propAriaLabel ?? propAriaLabelKebab;
   const ariaLabelledby =
-    (rest as any).ariaLabelledby ??
-    (rest as any)["aria-labelledby"] ??
+    propAriaLabelledby ??
+    propAriaLabelledbyKebab ??
     (ariaLabel ? undefined : `${slider.id}-label`);
 
   return $(
@@ -59,7 +62,7 @@ export function SliderInput(props: SliderInputProps = {}): HTMLInputElement {
       ariaLabel,
       ariaLabelledby,
       onchange: handleChange,
-      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, userStyle as ReactiveStyleDeclaration),
+      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, userStyle),
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent: "slider",

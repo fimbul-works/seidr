@@ -22,17 +22,21 @@ export function SliderTrack<T extends keyof SeidrElementTagNameMap = "div">(
     throw new SeidrError("SliderTrack requires an instance coordinator");
   }
 
-  const trackRef = createRef<HTMLElementTagNameMap[T]>();
+  const trackRef = createRef<SeidrElementTagNameMap[T]>();
   trackRef.bind((el) => {
-    if (userRef) {
-      userRef(el as any);
+    if (userRef && el) {
+      if (isFn(userRef)) {
+        Reflect.apply(userRef, null, [el]);
+      }
     }
-    slider.registerTrack(el);
+    if (el) {
+      slider.registerTrack(el);
+    }
   });
 
   const handlePointerDown = (e: PointerEvent) => {
     if (isFn(userOnPointerDown)) {
-      (userOnPointerDown as any)(e);
+      Reflect.apply(userOnPointerDown, e.currentTarget, [e]);
     }
     if (e.defaultPrevented) return;
     slider.handleTrackPointerDown(e);
@@ -41,7 +45,7 @@ export function SliderTrack<T extends keyof SeidrElementTagNameMap = "div">(
   return $(
     as as T,
     {
-      ref: trackRef as any,
+      ref: trackRef,
       onpointerdown: handlePointerDown,
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),

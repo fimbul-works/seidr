@@ -187,11 +187,19 @@ export type SliderThumbProps<T extends keyof SeidrElementTagNameMap = "span"> = 
   as?: T;
   index?: number;
   instance?: UseSliderResult;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
 };
 
 export type SliderInputProps = SeidrElementProps<"input"> & {
   index?: number;
   instance?: UseSliderResult;
+  ariaLabel?: string;
+  ariaLabelledby?: string;
+  "aria-label"?: string;
+  "aria-labelledby"?: string;
 };
 
 export type SliderLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = SeidrElementProps<T> & {

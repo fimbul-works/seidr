@@ -121,4 +121,11 @@ When implementing or refactoring components:
    - For delegating sub-components (e.g. `CheckboxLabel` -> `FormControlLabel`):
      - Forward `dataComponent: "checkbox"` so it overrides the underlying default `dataComponent: "form-control"` via props spreading, while preserving `dataPart: "label"`.
 
+3. **Strict Type Safety & Forbid `as any` Casting**:
+   - Avoid `as any` at all costs. Casting as `any` destroys TypeScript's type safety and makes the codebase impossible to reason about.
+   - Always declare component props explicitly in `SubcomponentProps` (e.g. `dataComponent?: string`, `role?: ...`, `ariaLabel?: string`).
+   - Destructure needed properties directly from `props`: `const { as = "div" as T, instance, dataComponent, ...rest } = props;`.
+   - Never use `(rest as any).dataComponent` or `(rest as any)["aria-label"]`. Extracting properties prevents them from leaking into `...rest` and keeps everything statically typed.
+   - Pass props to element factories typed as `as SeidrElementProps<T>` rather than `as any`.
+
 

@@ -8,6 +8,8 @@ export * from "./collection/index.js";
 export * from "./form-control/index.js";
 export * from "./hooks/index.js";
 export * from "./image/index.js";
+export * from "./meter/index.js";
+export * from "./progress/index.js";
 export * from "./radio-group/index.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
