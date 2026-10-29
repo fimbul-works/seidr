@@ -1,8 +1,8 @@
 import { isNullish } from "@fimbul-works/hvat";
-import { getComponentRegitry, getMarkerRegistry } from "../component/component-registry.js";
-import { DATA_KEY_STATE } from "../observable/index.js";
+import { DATA_KEY_HYDRATION_DATA } from "../constants.js";
+import { DATA_KEY_STATE } from "../observable/constants.js";
+import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
-import { getHydrationData, isHydrating } from "../ssr/hydrate/storage.js";
 import type { CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
@@ -106,8 +106,8 @@ export class AppState {
 
     this.strategies.set(key, [captureFn, restoreFn]);
 
-    if (isHydrating()) {
-      const hydrationData = getHydrationData();
+    if (this.hasData(DATA_KEY_HYDRATION_DATA)) {
+      const hydrationData = this.getData<{ data: Record<string, any> }>(DATA_KEY_HYDRATION_DATA);
       if (hydrationData?.data && key in hydrationData.data) {
         restoreFn(hydrationData.data[key]);
       }
@@ -134,13 +134,8 @@ export class AppState {
   destroy(): void {
     if (process.env.SEIDR_DISABLE_SSR) return;
 
-    getComponentRegitry().forEach((c) => c.unmount());
-    getComponentRegitry().clear();
-
-    getMarkerRegistry().forEach(([m1, m2]) => (m1.remove(), m2.remove()));
-    getMarkerRegistry().clear();
-
     this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
+    this.data.forEach((value) => isValue(value) && value.destroy());
     this.data.clear();
     this.strategies.clear();
   }

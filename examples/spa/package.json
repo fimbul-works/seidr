@@ -11,9 +11,7 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@fimbul-works/seidr": "workspace:*",
-    "@fimbul-works/seidr-random": "workspace:*",
-    "@fimbul-works/seidr-router": "workspace:*"
+    "@fimbul-works/seidr": "workspace:*"
   },
   "devDependencies": {
     "@example/particles": "workspace:*",

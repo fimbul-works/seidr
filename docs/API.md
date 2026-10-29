@@ -75,6 +75,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 
 ## [Utilities & Type Guards](type-guards.md) (`@fimbul-works/seidr`)
 - Utilities (`docs/utils.md`):
+  - [`random()`](utils.md#random-number-generator) — SSR-friendly pseudo-random number generator.
   - [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
   - [`SeidrError`](utils.md#seidrerror) — Standard Seidr runtime assertion error class.
 - [Type Guards](type-guards.md):
@@ -104,7 +105,6 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 
 ## [Official Addons](addons.md) (`@fimbul-works/seidr-*`)
 - [`@fimbul-works/seidr-router`](Router.md) — Declarative routing, nested routing, URL params, and history management.
-- [`@fimbul-works/seidr-random`](addons.md#seidr-random-package) — Deterministic pseudo-random number generation.
 
 ---
 

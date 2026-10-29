@@ -1,9 +1,9 @@
 import { getAppState } from "@fimbul-works/seidr";
+import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { beforeEach, expect, it } from "vitest";
 import { DATA_KEY_ROUTER } from "./constants.js";
 import { initRouter } from "./init-router.js";
 import type { RouterState } from "./types.js";
-import { describeDualMode } from "@fimbul-works/seidr/testing";
 
 describeDualMode("initRouter()", ({ isSSR }) => {
   beforeEach(() => {

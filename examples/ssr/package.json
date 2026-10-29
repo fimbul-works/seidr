@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@fimbul-works/seidr": "workspace:*",
-    "@fimbul-works/seidr-random": "workspace:*",
     "@fimbul-works/seidr-router": "workspace:*",
     "express": "^5.2.1",
     "gray-matter": "^4.0.3",

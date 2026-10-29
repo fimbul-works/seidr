@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { createValue } from "../observable/value.js";
 import { enableSSRMode, resetNextId } from "../test-setup/index.js";

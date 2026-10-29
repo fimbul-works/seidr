@@ -1,6 +1,6 @@
 import { expect, it, vi } from "vitest";
-import { getAppState } from "../app-state/app-state";
-import { DATA_KEY_COMPONENT_CURSOR } from "../constants";
+import { DATA_KEY_COMPONENT_CURSOR } from "../../dist/component/component-scope";
+import { getAppState } from "../app-state/get-app-state";
 import { mount } from "../dom/mount";
 import { describeDualMode } from "../test-setup";
 import { onMounted } from "./on-mounted";

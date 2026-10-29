@@ -1,6 +1,7 @@
 import { AppState } from "../app-state/class-app-state.js";
 import { setAppStateProvider } from "../app-state/get-app-state.js";
 import { contextLocalStorage } from "../app-state/get-app-state.ssr.js";
+import { clearComponentRegistry } from "../component/component-registry.js";
 import { resetIdCounters } from "../hooks/use-id.js";
 
 // Set up a simple browser app state that returns a valid state object
@@ -23,6 +24,7 @@ export function clearTestAppState() {
   // Clean up data
   try {
     testAppState.destroy();
+    clearComponentRegistry();
   } catch {}
 }
 

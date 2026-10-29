@@ -29,62 +29,11 @@
 
 ## Features
 
-- 🔋 **Batteries Included:** SSR engine, Global State, and lightweight Router
-- 🪄 **Reactive Bindings:** Fine-grained observable to DOM attribute and child bindings
-- 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes
-- 🔧 **Functional API:** Simple, composable functions for DOM creation and state
-- 📦 **Tiny Footprint:**
-  - Hello World: **3.2KB** (brotli)
-  - TodoMVC: **4.6KB** (brotli)
-  - SSR Bundle: **8.8KB** (brotli) - Includes reactivity, DOM bindings, built-in components including the Router system, and SSR capability; no compiler or runtime layering required.
-  - Tree-shakable: Import only what you need
+- 🪄 **Reactive Bindings:** Fine-grained observable for DOM attribute and child bindings.
+- 🎯 **Type-Safe Props:** TypeScript magic for reactive HTML attributes.
+- 🔧 **Functional API:** Simple, composable functions for DOM creation and state.
+- 📦 **Tiny Footprint:** Full client-side bundle with SSR suppor is only **7.8KB** (brotli).
 - 🏗️ **Isomorphic by construction:** Write a single component that runs identically on server and client. Seidr's build plugin removes environment-inapplicable branches during compilation, so server-only and client-only code paths don't leak into the opposite bundle.
-
-## When to Use Seidr
-
-Seidr is designed for developers who value **control, correctness, and deliberate engineering**. It is not the right tool for every project.
-
-### Ideal Use Cases
-
-**Small to Medium-Sized Applications**
-- SPAs where bundle size and startup speed matter
-- Interactive widgets, dashboards, and embedded components
-- Browser extensions with strict size constraints
-- Progressive enhancement of server-rendered pages
-
-**Projects That Benefit From**
-- Direct DOM manipulation without virtual DOM overhead
-- Explicit lifecycle management (no hidden re-renders)
-- Type-safe reactive bindings
-- Build step optional (runs directly in modern browsers)
-- Full TypeScript support with advanced type inference
-
-**Teams That Prefer**
-- Functional programming patterns over class hierarchies
-- Explicit over implicit (no magic compilers, just functions)
-- Understanding how their tools work internally
-- Fine-grained control over performance characteristics
-
-### Consider Alternatives When
-
-**You Need**
-- A large ecosystem of pre-built UI widget libraries (use React, Vue)
-- Heavy meta-frameworks with full server ecosystems (use Next.js, SvelteKit, Nuxt)
-- Learning resources for junior developers (use mainstream frameworks)
-- Browser devtools extension ecosystems
-
-**Your Team**
-- Prefers convention over configuration
-- Doesn't want to think about resource cleanup and memory management
-- Relies heavily on JSX/compiler transformations
-
-### The Philosophy
-
-Seidr embraces **fact-based tradeoffs**:
-
-- **No virtual DOM** → Faster, surgical updates and lower memory overhead
-- **Callable getter-setter Values** → Clean functional state API without getter/setter boilerplate
-- **Explicit over Implicit** → Predictable data flow with zero hidden re-renders
 
 ## Installation
 
@@ -130,134 +79,13 @@ const Counter = () => {
 mount(Counter, document.body);
 ```
 
-## Conceptual Overview
-
-Before diving into the details, it helps to understand Seidr's mental model. This section walks through the complete flow from state to reactivity to cleanup.
-
-### The Three Pillars
-
-**1. Reactive State (`createValue`)**
-- Functional getter-setter: `val()` to read, `val(newVal)` or `val(prev => next)` to write
-- Holds a value and notifies listeners on change
-- Automatic derivation with `.as()` and `mergeValues()`
-
-**2. Direct Bindings**
-- Connect reactive state to DOM properties and attributes
-- Automatically update when the observable changes
-- No virtual DOM diffing or full-tree reconciliation
-
-**3. Lifecycle & Cleanup**
-- Dedicated lifecycle and element reference hooks (`onMounted`, `onUnmounted`)
-- Components track their bindings and clean up automatically
-- Guaranteed memory safety when components are unmounted
-
-### A Complete Flow: From State to UI to Cleanup
-
-Let's build a simple search filter step by step:
-
-#### Step 1: Create State
-```typescript
-import { createValue } from '@fimbul-works/seidr';
-
-// Create observables with initial values
-const searchQuery = createValue('');
-const items = createValue([
-  { id: 1, name: 'Apple' },
-  { id: 2, name: 'Banana' },
-  { id: 3, name: 'Cherry' }
-]);
-```
-
-#### Step 2: Derive Filtered Results
-```typescript
-import { mergeValues } from '@fimbul-works/seidr';
-
-// Create derived observable that filters based on search
-const filteredItems = mergeValues(() => {
-  const query = searchQuery().toLowerCase();
-  return query
-    ? items().filter((item) => item.name.toLowerCase().includes(query))
-    : items();
-});
-```
-
-**What happens:** `filteredItems` automatically recomputes whenever `items` or `searchQuery` changes.
-
-#### Step 3: Bind to DOM
-```typescript
-import { createValue } from '@fimbul-works/seidr';
-import { $input } from '@fimbul-works/seidr/html';
-
-const searchQuery = createValue('');
-
-// Create input bound to search query
-const searchInput = $input({
-  type: 'text',
-  placeholder: 'Search...',
-  value: searchQuery,
-  oninput: (e: Event) => searchQuery((e.target as HTMLInputElement).value)
-});
-```
-
-#### Step 4: Create Component with List Rendering
-```typescript
-import { createValue, List, mergeValues } from '@fimbul-works/seidr';
-import { $div, $input, $li, $ul } from '@fimbul-works/seidr/html';
-
-const SearchApp = () => {
-  const searchQuery = createValue('');
-  const items = createValue([
-    { id: 1, name: 'Apple' },
-    { id: 2, name: 'Banana' },
-    { id: 3, name: 'Cherry' }
-  ]);
-
-  const filteredItems = mergeValues(() => {
-    const query = searchQuery().toLowerCase();
-    return query
-      ? items().filter((item) => item.name.toLowerCase().includes(query))
-      : items();
-  });
-
-  const searchInput = $input({
-    type: 'text',
-    placeholder: 'Search...',
-    value: searchQuery,
-    oninput: (e: Event) => searchQuery((e.target as HTMLInputElement).value)
-  });
-
-  return $div({}, [
-    searchInput,
-    $ul({}, [
-      // List component with keyed diffing
-      List(
-        filteredItems,
-        (item) => item.id,
-        (itemValue) => $li({ textContent: itemValue.as((i) => i.name) })
-      )
-    ])
-  ]);
-};
-```
-
-#### Step 5: Mount and Automatic Cleanup
-```typescript
-import { mount } from '@fimbul-works/seidr';
-
-const unmount = mount(SearchApp, document.body);
-
-// SearchApp is now fully interactive.
-// When done, cleanup everything cleanly:
-unmount();
-```
-
 ---
 
 ## Core Concepts
 
 ### Reactive State
 
-State is stored in [`Value`](docs/Value.md) observables created via `createValue()`.
+State is stored in [`Value`](docs/Value.md) observable getter-setter functions created via `createValue()`.
 
 ```typescript
 import { createValue } from '@fimbul-works/seidr';
@@ -440,6 +268,7 @@ hydrate(App, document.getElementById('app')!, window.__HYDRATION_DATA__);
 ## ⚡ Performance
 
 ### Surgical Updates
+
 Only changed DOM attributes and nodes are updated without virtual DOM diffing overhead.
 
 ```typescript
@@ -451,30 +280,20 @@ count((c) => c + 1);
 ```
 
 ### No Reconciliation Overhead
+
 Unlike React/Vue, Seidr doesn't diff entire virtual component trees. Updates go straight to the real DOM.
 
 ### Minimal Bundle Impact (gzipped)
 - **React TodoMVC**: ~60KB (React + ReactDOM)
 - **Vue3 TodoMVC**: ~25KB (Vue runtime)
 - **SolidJS TodoMVC**: ~6KB (SolidJS runtime)
-- **Seidr TodoMVC**: ~5.2KB (Seidr client-side runtime)
-
----
-
-## 🌐 Browser Support
-
-Seidr works in all modern browsers:
-
-- ✅ Chrome/Edge 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Opera 76+
+- **Seidr TodoMVC**: ~5.3KB (Seidr runtime)
 
 ---
 
 ## 📚 API Reference
 
-For complete API documentation with all methods, parameters, and examples, see **[API.md](docs/API.md)**.
+For complete API documentation with all methods, parameters, and examples, see [Seidr API documentation](docs/API.md).
 
 ---
 

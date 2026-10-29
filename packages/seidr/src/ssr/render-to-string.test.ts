@@ -1,11 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { TodoApp } from "../../../../examples/spa/todo-mvc/todo-mvc.js";
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { createComponent } from "../component/create-component.js";
 import { Suspense, type SuspenseState } from "../components/suspense.js";
 import { $ } from "../element/create-element.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
-import { createValue, mergeValues, type Value } from "../observable/value.js";
+import type { Value } from "../observable/types.js";
+import { createValue, mergeValues } from "../observable/value.js";
 import { enableSSRMode, resetRequestIdCounter } from "../test-setup/index.js";
 import { inServer } from "../util/environment/in-server.js";
 import { renderToString } from "./render-to-string.js";

@@ -322,12 +322,6 @@ importers:
       '@fimbul-works/seidr':
         specifier: workspace:*
         version: link:../../packages/seidr
-      '@fimbul-works/seidr-random':
-        specifier: workspace:*
-        version: link:../../packages/seidr-random
-      '@fimbul-works/seidr-router':
-        specifier: workspace:*
-        version: link:../../packages/seidr-router
     devDependencies:
       '@example/particles':
         specifier: workspace:*
@@ -353,9 +347,6 @@ importers:
       '@fimbul-works/seidr':
         specifier: workspace:*
         version: link:../../packages/seidr
-      '@fimbul-works/seidr-random':
-        specifier: workspace:*
-        version: link:../../packages/seidr-random
       '@fimbul-works/seidr-router':
         specifier: workspace:*
         version: link:../../packages/seidr-router
@@ -475,24 +466,6 @@ importers:
       vite:
         specifier: ^8.3.2
         version: 8.3.5(@types/node@26.6.5)(esbuild@0.25.12)(terser@5.51.2)(tsx@4.23.15)
-
-  packages/seidr-random:
-    devDependencies:
-      '@fimbul-works/seidr':
-        specifier: workspace:*
-        version: link:../seidr
-      '@fimbul-works/seidr-build-tools':
-        specifier: workspace:*
-        version: link:../seidr-build-tools
-      '@repo/biome-config':
-        specifier: workspace:*
-        version: link:../biome-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@repo/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
 
   packages/seidr-router:
     devDependencies:

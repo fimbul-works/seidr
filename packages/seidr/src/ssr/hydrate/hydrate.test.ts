@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { setAppStateProvider } from "../../app-state/app-state.js";
+import { setAppStateProvider } from "../../app-state/get-app-state.js";
 import { createComponent } from "../../component/index.js";
 import { mount } from "../../dom/mount.js";
 import { isCommentNode } from "../../dom/type-guards.js";

@@ -26,3 +26,16 @@ export const getNodeIndex = () =>
  */
 export const getMarkerRegistry = () =>
   getAppState().getData<Map<string, [Comment, Comment]>>("seidr.markers", new Map());
+
+/**
+ * Clear the component registry data.
+ * 
+ * @internal Used in testing.
+ */
+export const clearComponentRegistry = () => {
+  getMarkerRegistry().forEach(([m1, m2]) => (m1.remove(), m2.remove()));
+  getMarkerRegistry().clear();
+
+  getComponentRegitry().forEach((c) => c.unmount());
+  getComponentRegitry().clear();
+}

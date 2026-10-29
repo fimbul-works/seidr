@@ -1,3 +1,4 @@
+import { clearComponentRegistry } from "../component/component-registry.js";
 import { AppState } from "./class-app-state.js";
 
 /** Default application state */
@@ -28,8 +29,7 @@ export const setAppStateProvider = (fn: () => AppState) => {
  */
 export const setAppStateID = (id: number) => {
   const state = getAppState();
-  if (process.env.VITEST) {
-    state.destroy();
-  }
+  state.destroy();
+  clearComponentRegistry();
   (state as any).ctxID = id;
 };

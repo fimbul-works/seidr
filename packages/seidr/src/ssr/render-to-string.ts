@@ -1,5 +1,6 @@
 import { getAppState, setAppStateProvider } from "../app-state/get-app-state.js";
 import { getSSRAppState, runWithAppState } from "../app-state/get-app-state.ssr.js";
+import { clearComponentRegistry } from "../component/component-registry.js";
 import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
@@ -58,6 +59,7 @@ export async function renderToString(
         comp.unmount();
         container.remove();
         appState.destroy();
+        clearComponentRegistry();
         activeScope.clear();
 
         return { html, hydrationData };

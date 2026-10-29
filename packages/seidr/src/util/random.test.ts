@@ -1,6 +1,8 @@
-import { type CleanupFunction, createComponent, hydrate } from "@fimbul-works/seidr";
-import { $div } from "@fimbul-works/seidr/html";
-import { renderToString } from "@fimbul-works/seidr/ssr";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { createComponent } from "../component/create-component.js";
+import { $div } from "../elements/div.js";
+import { hydrate } from "../ssr/hydrate/hydrate.js";
+import { renderToString } from "../ssr/render-to-string.js";
 import {
   enableClientMode,
   enableSSRMode,
@@ -9,9 +11,8 @@ import {
   resetRequestIdCounter,
   runWithAppState,
   setupAppState,
-} from "@fimbul-works/seidr/testing";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-
+} from "../test-setup";
+import type { CleanupFunction } from "../types.js";
 import { DATA_KEY_RANDOM, random } from "./random.js";
 
 describe("random", () => {

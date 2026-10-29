@@ -1,9 +1,10 @@
-import { describe, expect, it, vi } from "vitest";
-import { getMarkerRegistry } from "../component/component-registry";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { clearComponentRegistry, getMarkerRegistry } from "../component/component-registry";
 import { createValue } from "../observable";
 import { AppState } from "./class-app-state";
 
 describe("AppState class", () => {
+  afterEach(clearComponentRegistry);
   it("should initialize with default values", () => {
     const state = new AppState(1);
     expect(state.ctxID).toBe(1);
@@ -61,7 +62,7 @@ describe("AppState class", () => {
   });
 
   describe("destroy()", () => {
-    it("should clear data and destroy Seidr instances", () => {
+    it("should clear data and destroy observable instances", () => {
       const state = new AppState(1);
       const s1 = createValue(1);
       const destroySpy = vi.spyOn(s1, "destroy");
@@ -73,23 +74,6 @@ describe("AppState class", () => {
 
       expect(destroySpy).toHaveBeenCalled();
       expect(state.data.size).toBe(0);
-    });
-
-    it("should remove markers from DOM", () => {
-      const state = new AppState(1);
-      const start = document.createComment("start");
-      const end = document.createComment("end");
-      const container = document.createElement("div");
-      container.appendChild(start);
-      container.appendChild(end);
-
-      getMarkerRegistry().set("test", [start, end]);
-
-      state.destroy();
-
-      expect(container.contains(start)).toBe(false);
-      expect(container.contains(end)).toBe(false);
-      expect(getMarkerRegistry().size).toBe(0);
     });
   });
 });
