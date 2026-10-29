@@ -78,4 +78,3 @@ export const Switch = createComponent((props: SwitchProps = {}) => {
     errorMessage ? sw.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
 }, "Switch");
-

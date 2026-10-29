@@ -1,8 +1,4 @@
-import {
-  type DerivedValue,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
 import { ImageRoot, type ImageRootProps } from "./image-root.js";

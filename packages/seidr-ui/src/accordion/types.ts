@@ -73,11 +73,7 @@ export interface UseAccordionResult {
   collapse: (key: string) => void;
 
   /** Registers a trigger button into the accordion's focus order. */
-  registerTrigger: (
-    key: string,
-    el: HTMLElement,
-    disabled?: boolean | ObservableValue<boolean>,
-  ) => CleanupFunction;
+  registerTrigger: (key: string, el: HTMLElement, disabled?: boolean | ObservableValue<boolean>) => CleanupFunction;
 
   /** Handles arrow and home/end keyboard navigation between accordion triggers. */
   handleKeyDown: (e: KeyboardEvent, key: string) => void;

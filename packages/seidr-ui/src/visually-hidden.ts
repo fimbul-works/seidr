@@ -1,6 +1,7 @@
-import { $, resolvePropsAndChildren, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
+import { $, mergeStyleProps, resolvePropsAndChildren, type SeidrChild, type SeidrElementProps } from "@fimbul-works/seidr";
 import { VISUALLY_HIDDEN_STYLES } from "./constants.js";
-import { mergeStyleProps } from "@fimbul-works/seidr";
+
+export { VISUALLY_HIDDEN_STYLES } from "./constants.js";
 
 /**
  * Creates a visually hidden span element.
@@ -23,7 +24,7 @@ export function VisuallyHidden(
     {
       dataComponent: "visually-hidden",
       ...rest,
-      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, style)
+      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, style),
     },
     content,
   );

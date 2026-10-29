@@ -38,9 +38,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRes
   const isControlledValue = isValue(value);
   const isControlledStatic = isControlled && !isControlledValue;
 
-  const initialValues = isControlledStatic
-    ? (value as string[])
-    : (defaultValue ?? []);
+  const initialValues = isControlledStatic ? (value as string[]) : (defaultValue ?? []);
 
   const state: Value<string[]> = isControlledValue
     ? (value as Value<string[]>)
@@ -59,10 +57,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRes
     }
 
     const current = state();
-    if (
-      current.length === nextKeys.length &&
-      current.every((k, i) => k === nextKeys[i])
-    ) {
+    if (current.length === nextKeys.length && current.every((k, i) => k === nextKeys[i])) {
       return;
     }
 

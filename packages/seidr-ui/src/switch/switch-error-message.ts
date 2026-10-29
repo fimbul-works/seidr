@@ -1,9 +1,4 @@
-import {
-  type DerivedValue,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,

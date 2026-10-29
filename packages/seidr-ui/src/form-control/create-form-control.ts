@@ -1,8 +1,4 @@
-import {
-  type DerivedValue,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { FormControlDescription, type FormControlDescriptionProps } from "./form-control-description.js";
 import { FormControlErrorMessage, type FormControlErrorMessageProps } from "./form-control-error-message.js";
 import { FormControlLabel, type FormControlLabelProps } from "./form-control-label.js";
@@ -54,7 +50,9 @@ export function createFormControl(options: UseFormControlOptions = {}): FormCont
     ...instance,
     Root: (props = {}, children) => FormControlRoot({ instance, ...props }, children),
     Label: (props = {}, children) => FormControlLabel({ instance, ...instance.dataset, ...props }, children),
-    Description: (props = {}, children) => FormControlDescription({ instance, ...instance.dataset, ...props }, children),
-    ErrorMessage: (props = {}, children) => FormControlErrorMessage({ instance, ...instance.dataset, ...props }, children),
+    Description: (props = {}, children) =>
+      FormControlDescription({ instance, ...instance.dataset, ...props }, children),
+    ErrorMessage: (props = {}, children) =>
+      FormControlErrorMessage({ instance, ...instance.dataset, ...props }, children),
   };
 }

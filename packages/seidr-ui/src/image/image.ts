@@ -56,40 +56,41 @@ export type ImageComponentProps<T extends keyof SeidrElementTagNameMap = "span">
 /**
  * Unified Image component rendering an accessible image with fallback.
  */
-export const Image = createComponent(<T extends keyof SeidrElementTagNameMap = "span">(
-  props: ImageComponentProps<T>,
-): SeidrElementTagNameMap[T] => {
-  const {
-    as = "span" as T,
-    src,
-    alt,
-    fallback,
-    fallbackAs = "span",
-    fallbackProps,
-    imgProps,
-    fallbackDelay,
-    crossOrigin,
-    referrerPolicy,
-    onLoadingStatusChange,
-    ...rest
-  } = props;
+export const Image = createComponent(
+  <T extends keyof SeidrElementTagNameMap = "span">(props: ImageComponentProps<T>): SeidrElementTagNameMap[T] => {
+    const {
+      as = "span" as T,
+      src,
+      alt,
+      fallback,
+      fallbackAs = "span",
+      fallbackProps,
+      imgProps,
+      fallbackDelay,
+      crossOrigin,
+      referrerPolicy,
+      onLoadingStatusChange,
+      ...rest
+    } = props;
 
-  const image = createImage({
-    src,
-    fallbackDelay,
-    crossOrigin,
-    referrerPolicy,
-    onLoadingStatusChange,
-  });
+    const image = createImage({
+      src,
+      fallbackDelay,
+      crossOrigin,
+      referrerPolicy,
+      onLoadingStatusChange,
+    });
 
-  return image.Root(
-    {
-      as,
-      ...rest,
-    } as ImageRootProps<T>,
-    [
-      !isUndef(fallback) && image.Fallback({ as: fallbackAs, ...fallbackProps }, fallback),
-      !isUndef(src) && image.Img({ alt, ...imgProps }),
-    ],
-  );
-}, "Image")
+    return image.Root(
+      {
+        as,
+        ...rest,
+      } as ImageRootProps<T>,
+      [
+        !isUndef(fallback) && image.Fallback({ as: fallbackAs, ...fallbackProps }, fallback),
+        !isUndef(src) && image.Img({ alt, ...imgProps }),
+      ],
+    );
+  },
+  "Image",
+);

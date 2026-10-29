@@ -91,12 +91,12 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
     r?: number | string;
   };
 
-  const wrappedVisible = wrapValue(visible ?? true)
-  const wrappedAnimate = wrapValue(animate ?? true)
+  const wrappedVisible = wrapValue(visible ?? true);
+  const wrappedAnimate = wrapValue(animate ?? true);
   const wrappedCircle = wrapValue(circle ?? false);
-  const wrappedWidth = wrapValue(width as string | number | undefined)
-  const wrappedHeight = wrapValue(height as string | number | undefined)
-  const wrappedRadius = wrapValue(radius as string | number | undefined)
+  const wrappedWidth = wrapValue(width as string | number | undefined);
+  const wrappedHeight = wrapValue(height as string | number | undefined);
+  const wrappedRadius = wrapValue(radius as string | number | undefined);
 
   const dimensions = mergeValues<Dimensions>(() => ({
     c: wrappedCircle(),
@@ -106,11 +106,7 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   }));
 
   const resolvedHeight = dimensions.as(({ c, w, h }: Dimensions) => {
-    return isNum(h)
-      ? `${h}px`
-      : c
-        ? (h ?? (isNum(w) ? `${w}px` : (w ?? "auto")))
-        : (h ?? "auto");
+    return isNum(h) ? `${h}px` : c ? (h ?? (isNum(w) ? `${w}px` : (w ?? "auto"))) : (h ?? "auto");
   });
 
   const resolvedWidth = dimensions.as(({ c, w }: Dimensions) => {
@@ -127,9 +123,9 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
       role,
       dataComponent: "skeleton",
       ...rest,
-      ariaBusy: wrappedVisible.as(visible => visible ? "true" : undefined),
-      dataVisible: wrappedVisible.as(visible => visible ? "" : undefined),
-      dataAnimate: wrappedAnimate.as(animate => animate ? "" : undefined),
+      ariaBusy: wrappedVisible.as((visible) => (visible ? "true" : undefined)),
+      dataVisible: wrappedVisible.as((visible) => (visible ? "" : undefined)),
+      dataAnimate: wrappedAnimate.as((animate) => (animate ? "" : undefined)),
       style: mergeStyleProps(
         {
           width: resolvedWidth,

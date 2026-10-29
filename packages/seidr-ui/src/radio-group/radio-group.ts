@@ -76,4 +76,4 @@ export const RadioGroup = createComponent((props: RadioGroupProps = {}, children
     errorMessage ? rg.ErrorMessage(errorMessageProps, errorMessage) : null,
     ...renderedItems,
   ]);
-}, "RadioGroup")
+}, "RadioGroup");

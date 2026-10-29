@@ -93,15 +93,9 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
     { parents: [height, fullHeight] },
   );
 
-  const inlineHeight = mergeValues(
-    () => (isAnimating() ? `${height()}px` : ""),
-    { parents: [isAnimating, height] },
-  );
+  const inlineHeight = mergeValues(() => (isAnimating() ? `${height()}px` : ""), { parents: [isAnimating, height] });
 
-  const inlineOverflow = mergeValues(
-    () => (isAnimating() ? "hidden" : ""),
-    { parents: [isAnimating] },
-  );
+  const inlineOverflow = mergeValues(() => (isAnimating() ? "hidden" : ""), { parents: [isAnimating] });
 
   const inlinePaddingTop = mergeValues(
     () => (isAnimating() && padTopVal() > 0 ? `${progress() * padTopVal()}px` : ""),
@@ -277,10 +271,7 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
     const el = $(
       as as T,
       {
-        hidden: mergeValues(
-          () => !col.isOpen() && !isAnimating(),
-          { parents: [col.isOpen, isAnimating] },
-        ),
+        hidden: mergeValues(() => !col.isOpen() && !isAnimating(), { parents: [col.isOpen, isAnimating] }),
         dataComponent: "collapsible",
         dataPart: "content",
         ...elementProps,

@@ -1,0 +1,134 @@
+.tabs-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.tabs-showcase-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tabs-showcase-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+}
+
+/* Tabs Root */
+[data-component="tabs"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 0.5rem;
+  background: var(--bg-surface, rgba(255, 255, 255, 0.03));
+  overflow: hidden;
+}
+
+[data-component="tabs"][data-part="root"][data-orientation="vertical"] {
+  flex-direction: row;
+}
+
+/* Tabs List */
+[data-component="tabs"][data-part="list"] {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  gap: 0.25rem;
+  padding: 0.35rem 0.5rem;
+}
+
+[data-component="tabs"][data-part="list"][aria-orientation="vertical"] {
+  flex-direction: column;
+  align-items: stretch;
+  border-bottom: none;
+  border-right: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  min-width: 150px;
+}
+
+/* Tabs Trigger */
+[data-component="tabs"][data-part="trigger"] {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: var(--fg-muted, #9ca3af);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
+  outline: none;
+}
+
+[data-component="tabs"][data-part="trigger"]:hover:not([data-disabled]) {
+  color: var(--fg, #f3f4f6);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-component="tabs"][data-part="trigger"][data-selected] {
+  color: #fff;
+  font-weight: 600;
+}
+
+[data-component="tabs"][data-part="trigger"]:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: -1px;
+}
+
+[data-component="tabs"][data-part="trigger"][data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sliding active indicator */
+[data-component="tabs"][data-part="indicator"] {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  background: var(--primary, #3b82f6);
+  border-radius: 9999px;
+  pointer-events: none;
+  transition:
+    transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    width 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+[data-component="tabs"][data-part="indicator"][data-orientation="vertical"] {
+  bottom: auto;
+  right: 0;
+  left: auto;
+  width: 2px;
+}
+
+/* Tabs Content Panel */
+[data-component="tabs"][data-part="content"] {
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--fg, #f3f4f6);
+  outline: none;
+  flex: 1;
+}
+
+[data-component="tabs"][data-part="content"]:focus-visible {
+  outline: 2px solid var(--primary, #3b82f6);
+  outline-offset: -2px;
+}

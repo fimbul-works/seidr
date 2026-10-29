@@ -31,8 +31,7 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
     const Root = (props: RadioGroupItemProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
       RadioGroupItem({ instance: itemInstance, ...props }, children);
 
-    const Input = (props: RadioGroupItemInputProps = {}) =>
-      RadioGroupItemInput({ instance: itemInstance, ...props });
+    const Input = (props: RadioGroupItemInputProps = {}) => RadioGroupItemInput({ instance: itemInstance, ...props });
 
     const Control = (props: RadioGroupItemControlProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
       RadioGroupItemControl({ instance: itemInstance, ...props }, children);
@@ -69,7 +68,8 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
     Root: (props = {}, children) => RadioGroupRoot({ instance, ...props }, children),
     Label: (props = {}, children) => RadioGroupLabel({ instance, ...instance.dataset, ...props }, children),
     Description: (props = {}, children) => RadioGroupDescription({ instance, ...instance.dataset, ...props }, children),
-    ErrorMessage: (props = {}, children) => RadioGroupErrorMessage({ instance, ...instance.dataset, ...props }, children),
+    ErrorMessage: (props = {}, children) =>
+      RadioGroupErrorMessage({ instance, ...instance.dataset, ...props }, children),
     Item: (itemOptionsOrProps, children?: SeidrChild | SeidrChild[]) => {
       const {
         value,

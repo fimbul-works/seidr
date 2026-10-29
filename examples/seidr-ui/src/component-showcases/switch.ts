@@ -78,19 +78,11 @@ export const SwitchShowcase = createComponent(() => {
           $div({ className: "switch-section-title" }, "3. Compound Elements & Validation"),
           maintenanceSwitch.Root({}, [
             maintenanceSwitch.Input(),
-            maintenanceSwitch.Control({}, [
-              maintenanceSwitch.Thumb({}),
-            ]),
+            maintenanceSwitch.Control({}, [maintenanceSwitch.Thumb({})]),
             $div({ className: "switch-content" }, [
               maintenanceSwitch.Label({}, "Enable Maintenance Window"),
-              maintenanceSwitch.Description(
-                {},
-                "Activating redirects incoming traffic to the maintenance page.",
-              ),
-              maintenanceSwitch.ErrorMessage(
-                {},
-                "Maintenance must be active before scheduled operations can proceed.",
-              ),
+              maintenanceSwitch.Description({}, "Activating redirects incoming traffic to the maintenance page."),
+              maintenanceSwitch.ErrorMessage({}, "Maintenance must be active before scheduled operations can proceed."),
             ]),
           ]),
         ]),

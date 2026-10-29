@@ -77,4 +77,4 @@ export const Checkbox = createComponent((props: CheckboxProps = {}) => {
     description ? cb.Description(descriptionProps, description) : null,
     errorMessage ? cb.ErrorMessage(errorMessageProps, errorMessage) : null,
   ]);
-}, "Checkbox")
+}, "Checkbox");

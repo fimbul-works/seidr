@@ -25,14 +25,7 @@ export function AccordionTrigger<T extends keyof SeidrElementTagNameMap = "butto
   props: AccordionTriggerProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    instance,
-    ref: userRef,
-    onclick: userOnClick,
-    onkeydown: userOnKeyDown,
-    id: customId,
-    ...rest
-  } = props;
+  const { instance, ref: userRef, onclick: userOnClick, onkeydown: userOnKeyDown, id: customId, ...rest } = props;
 
   if (!instance) {
     throw new SeidrError("AccordionTrigger requires an instance prop");

@@ -41,7 +41,13 @@ export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = 
   }
 
   return FormControlErrorMessage(
-    { as, instance: rg.formControl, ...rg.dataset, dataComponent: "radio-group", ...rest } as FormControlErrorMessageProps<T>,
+    {
+      as,
+      instance: rg.formControl,
+      ...rg.dataset,
+      dataComponent: "radio-group",
+      ...rest,
+    } as FormControlErrorMessageProps<T>,
     children,
   );
 }

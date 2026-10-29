@@ -10,7 +10,9 @@ import { ImageShowcase } from "./image.js";
 import { RadioGroupShowcase } from "./radio-group.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
+import { SliderShowcase } from "./slider.js";
 import { SwitchShowcase } from "./switch.js";
+import { TabsShowcase } from "./tabs.js";
 import { ToggleButtonShowcase } from "./toggle-button.js";
 
 export * from "./accordion.js";
@@ -24,7 +26,9 @@ export * from "./image.js";
 export * from "./radio-group.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
+export * from "./slider.js";
 export * from "./switch.js";
+export * from "./tabs.js";
 export * from "./toggle-button.js";
 
 export interface ComponentShowcase {
@@ -47,6 +51,8 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },
+  { id: "slider", title: "Slider", badge: "Form", category: "Form", component: SliderShowcase },
   { id: "switch", title: "Switch", badge: "Form", category: "Form", component: SwitchShowcase },
+  { id: "tabs", title: "Tabs", badge: "Widget", category: "Widget", component: TabsShowcase },
   { id: "toggle-button", title: "ToggleButton", badge: "Atom", category: "Atom", component: ToggleButtonShowcase },
 ];

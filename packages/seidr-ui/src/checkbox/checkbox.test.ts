@@ -56,7 +56,7 @@ describeDualMode("Checkbox", ({ getDocument, isSSR }) => {
     const root = setup(() => {
       const cb = createCheckbox({ id: "my-custom-cb" });
       return cb.Root({}, [
-        cb.Input({}, ),
+        cb.Input({}),
         cb.Control({}, [cb.Indicator({ forceMount: createValue(true) }, "✓")]),
         cb.Label({}, "Custom Checkbox"),
       ]);

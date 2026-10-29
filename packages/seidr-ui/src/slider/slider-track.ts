@@ -1,0 +1,54 @@
+import { isFn } from "@fimbul-works/hvat";
+import {
+  $,
+  createRef,
+  type SeidrChild,
+  type SeidrElementProps,
+  type SeidrElementTagNameMap,
+  SeidrError,
+} from "@fimbul-works/seidr";
+import type { SliderTrackProps } from "./types.js";
+
+/**
+ * Visual rail container for the slider thumb and fill.
+ */
+export function SliderTrack<T extends keyof SeidrElementTagNameMap = "div">(
+  props: SliderTrackProps<T> = {},
+  children?: SeidrChild | SeidrChild[],
+): SeidrElementTagNameMap[T] {
+  const { as = "div" as T, instance: slider, ref: userRef, onpointerdown: userOnPointerDown, ...rest } = props;
+
+  if (!slider) {
+    throw new SeidrError("SliderTrack requires an instance coordinator");
+  }
+
+  const trackRef = createRef<HTMLElementTagNameMap[T]>();
+  trackRef.bind((el) => {
+    if (userRef) {
+      userRef(el as any);
+    }
+    slider.registerTrack(el);
+  });
+
+  const handlePointerDown = (e: PointerEvent) => {
+    if (isFn(userOnPointerDown)) {
+      (userOnPointerDown as any)(e);
+    }
+    if (e.defaultPrevented) return;
+    slider.handleTrackPointerDown(e);
+  };
+
+  return $(
+    as as T,
+    {
+      ref: trackRef as any,
+      onpointerdown: handlePointerDown,
+      dataOrientation: slider.orientation,
+      dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
+      dataComponent: "slider",
+      dataPart: "track",
+      ...rest,
+    } as SeidrElementProps<T>,
+    children,
+  );
+}

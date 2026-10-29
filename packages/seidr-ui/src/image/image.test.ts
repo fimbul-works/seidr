@@ -44,7 +44,10 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
 
   it("should work with createImage instance factory", () => {
     const imgInstance = createImage({ src: "/test.jpg" });
-    const root = imgInstance.Root({}, [imgInstance.Fallback({}, FALLBACK_TEXT), imgInstance.Img({ alt: IMAGE_ALT_TEXT })]);
+    const root = imgInstance.Root({}, [
+      imgInstance.Fallback({}, FALLBACK_TEXT),
+      imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
+    ]);
 
     expect(root.getAttribute("data-component")).toBe("image");
     expect(root.getAttribute("data-part")).toBe("root");
@@ -86,8 +89,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         });
 
         const doc = getDocument();
-        const unmount = mount(() => component, doc.body)
-        const root = component.nodes.at(0) as HTMLElement
+        const unmount = mount(() => component, doc.body);
+        const root = component.nodes.at(0) as HTMLElement;
 
         // Initially fallback is visible
         expect(root.textContent).toContain(FALLBACK_TEXT);
@@ -107,7 +110,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         expect(statusChanges).toContain("loading");
         expect(statusChanges).toContain("loaded");
 
-        unmount()
+        unmount();
       });
 
       it("should keep fallback and set status to error on image failure", async () => {
@@ -130,8 +133,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         });
 
         const doc = getDocument();
-        const unmount = mount(() => component, doc.body)
-        const root = component.nodes.at(0) as HTMLElement
+        const unmount = mount(() => component, doc.body);
+        const root = component.nodes.at(0) as HTMLElement;
 
         await new Promise((resolve) => setTimeout(resolve, DELAY + 20));
 
@@ -139,7 +142,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         expect(root.textContent).toContain(FALLBACK_TEXT);
         expect(root.getAttribute("data-status")).toBe("error");
 
-        unmount()
+        unmount();
       });
 
       it("should delay fallback rendering when fallbackDelay is set", async () => {
@@ -149,8 +152,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         });
 
         const doc = getDocument();
-        const unmount = mount(() => component, doc.body)
-        const root = component.nodes.at(0) as HTMLElement
+        const unmount = mount(() => component, doc.body);
+        const root = component.nodes.at(0) as HTMLElement;
 
         // Initially should not render fallback because of delay
         expect(root.textContent).not.toContain(FALLBACK_TEXT);
@@ -161,7 +164,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         // Now fallback should be visible
         expect(root.textContent).toContain(FALLBACK_TEXT);
 
-        unmount()
+        unmount();
       });
 
       it("should support createImage compound workflow in the browser", async () => {
@@ -178,10 +181,13 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         };
 
         const imgInstance = createImage({ src: "/compound-test.jpg" });
-        const root = imgInstance.Root({}, [imgInstance.Fallback({}, FALLBACK_TEXT), imgInstance.Img({ alt: IMAGE_ALT_TEXT })]);
+        const root = imgInstance.Root({}, [
+          imgInstance.Fallback({}, FALLBACK_TEXT),
+          imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
+        ]);
 
         const doc = getDocument();
-        const unmount = mount(() => root, doc.body)
+        const unmount = mount(() => root, doc.body);
 
         expect(root.textContent).toContain(FALLBACK_TEXT);
         expect(root.querySelector("img")).toBeNull();
@@ -191,7 +197,7 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         expect(root.querySelector("img")).not.toBeNull();
         expect(root.textContent).not.toContain(FALLBACK_TEXT);
 
-        unmount()
+        unmount();
       });
 
       it("should pass axe accessibility checks", async () => {
@@ -201,14 +207,14 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         });
 
         const doc = getDocument();
-        const unmount = mount(() => component, doc.body)
-        const root = component.nodes.at(0) as HTMLElement
+        const unmount = mount(() => component, doc.body);
+        const root = component.nodes.at(0) as HTMLElement;
 
         const results = await axe(root);
         // @ts-expect-error vitest-axe types
         expect(results).toHaveNoViolations();
 
-        unmount()
+        unmount();
       });
     });
   }

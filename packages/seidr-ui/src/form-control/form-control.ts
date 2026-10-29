@@ -42,66 +42,72 @@ export interface FormControlProps<
 /**
  * FormControl component.
  */
-export const FormControl = createComponent(<
-  TRoot extends keyof SeidrElementTagNameMap = "div",
-  TLabel extends keyof SeidrElementTagNameMap = "label",
-  TDescription extends keyof SeidrElementTagNameMap = "div",
-  TErrorMessage extends keyof SeidrElementTagNameMap = "div",
->(props: FormControlProps<TRoot, TLabel, TDescription, TErrorMessage>): SeidrElementTagNameMap[TRoot] => {
-  const {
-    id,
-    name,
-    validationState,
-    required,
-    disabled,
-    readOnly,
-    fieldId,
-    as = "div" as TRoot,
-    rootProps = {},
-    label,
-    labelProps = {},
-    field,
-    description,
-    descriptionProps = {},
-    errorMessage,
-    errorMessageProps = {},
-    children,
-  } = props;
+export const FormControl = createComponent(
+  <
+    TRoot extends keyof SeidrElementTagNameMap = "div",
+    TLabel extends keyof SeidrElementTagNameMap = "label",
+    TDescription extends keyof SeidrElementTagNameMap = "div",
+    TErrorMessage extends keyof SeidrElementTagNameMap = "div",
+  >(
+    props: FormControlProps<TRoot, TLabel, TDescription, TErrorMessage>,
+  ): SeidrElementTagNameMap[TRoot] => {
+    const {
+      id,
+      name,
+      validationState,
+      required,
+      disabled,
+      readOnly,
+      fieldId,
+      as = "div" as TRoot,
+      rootProps = {},
+      label,
+      labelProps = {},
+      field,
+      description,
+      descriptionProps = {},
+      errorMessage,
+      errorMessageProps = {},
+      children,
+    } = props;
 
-  const form = createFormControl({
-    id,
-    name,
-    validationState,
-    required,
-    disabled,
-    readOnly,
-    fieldId,
-  });
+    const form = createFormControl({
+      id,
+      name,
+      validationState,
+      required,
+      disabled,
+      readOnly,
+      fieldId,
+    });
 
-  const childrenToRender: SeidrChild[] = [];
+    const childrenToRender: SeidrChild[] = [];
 
-  if (!isUndef(label)) {
-    childrenToRender.push(form.Label(labelProps as FormControlLabelProps<TLabel>, label));
-  }
+    if (!isUndef(label)) {
+      childrenToRender.push(form.Label(labelProps as FormControlLabelProps<TLabel>, label));
+    }
 
-  if (!isUndef(field)) {
-    childrenToRender.push(field);
-  }
+    if (!isUndef(field)) {
+      childrenToRender.push(field);
+    }
 
-  if (!isUndef(description)) {
-    childrenToRender.push(form.Description(descriptionProps as FormControlDescriptionProps<TDescription>, description));
-  }
+    if (!isUndef(description)) {
+      childrenToRender.push(
+        form.Description(descriptionProps as FormControlDescriptionProps<TDescription>, description),
+      );
+    }
 
-  if (!isUndef(errorMessage)) {
-    childrenToRender.push(
-      form.ErrorMessage(errorMessageProps as FormControlErrorMessageProps<TErrorMessage>, errorMessage),
-    );
-  }
+    if (!isUndef(errorMessage)) {
+      childrenToRender.push(
+        form.ErrorMessage(errorMessageProps as FormControlErrorMessageProps<TErrorMessage>, errorMessage),
+      );
+    }
 
-  if (!isUndef(children)) {
-    childrenToRender.push(children);
-  }
+    if (!isUndef(children)) {
+      childrenToRender.push(children);
+    }
 
-  return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
-}, "FormControl")
-
+    return form.Root({ as, ...rootProps } as FormControlRootProps<TRoot>, childrenToRender.flat());
+  },
+  "FormControl",
+);

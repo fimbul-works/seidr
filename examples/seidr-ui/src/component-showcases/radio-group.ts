@@ -164,17 +164,12 @@ export const RadioGroupShowcase = createComponent(() => {
                 {},
                 "Select a delivery option to calculate estimated arrival and shipping costs.",
               ),
-              shippingGroup.ErrorMessage(
-                {},
-                "⚠️ A delivery method is required before checkout can proceed.",
-              ),
+              shippingGroup.ErrorMessage({}, "⚠️ A delivery method is required before checkout can proceed."),
 
               // Item 1: Standard
               standardItem.Root({}, [
                 standardItem.Input(),
-                standardItem.Control({}, [
-                  standardItem.Indicator(),
-                ]),
+                standardItem.Control({}, [standardItem.Indicator()]),
                 $div({ className: "radio-item-content" }, [
                   standardItem.Label({}, "Standard Ground (3-5 days)"),
                   standardItem.Description({}, "Delivered via postal service. Free."),
@@ -185,15 +180,10 @@ export const RadioGroupShowcase = createComponent(() => {
               // Item 2: Express
               expressItem.Root({}, [
                 expressItem.Input(),
-                expressItem.Control({}, [
-                  expressItem.Indicator(),
-                ]),
+                expressItem.Control({}, [expressItem.Indicator()]),
                 $div({ className: "radio-item-content" }, [
                   expressItem.Label({}, "Express Courier (1-2 days)"),
-                  expressItem.Description(
-                    {},
-                    "Guaranteed delivery with door-to-door tracking.",
-                  ),
+                  expressItem.Description({}, "Guaranteed delivery with door-to-door tracking."),
                 ]),
                 $span({ className: "radio-item-meta" }, "$9.99"),
               ]),
@@ -201,9 +191,7 @@ export const RadioGroupShowcase = createComponent(() => {
               // Item 3: Priority Overnight
               overnightItem.Root({}, [
                 overnightItem.Input(),
-                overnightItem.Control({}, [
-                  overnightItem.Indicator(),
-                ]),
+                overnightItem.Control({}, [overnightItem.Indicator()]),
                 $div({ className: "radio-item-content" }, [
                   overnightItem.Label({}, "Priority Overnight"),
                   overnightItem.Description({}, "Next business day morning delivery."),

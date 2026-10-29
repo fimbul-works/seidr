@@ -79,18 +79,23 @@
   gap: 1rem;
 }
 
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="label"],
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
+  > [data-component="radio-group"][data-part="label"],
 [data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="label"],
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="description"],
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
+  > [data-component="radio-group"][data-part="description"],
 [data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="description"],
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] > [data-component="radio-group"][data-part="error-message"],
-[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="error-message"] {
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
+  > [data-component="radio-group"][data-part="error-message"],
+[data-component="radio-group"][data-part="root"].horizontal
+  > [data-component="radio-group"][data-part="error-message"] {
   width: 100%;
   flex-basis: 100%;
 }
 
 [data-component="radio-group"][data-part="root"].horizontal [data-component="radio-group"][data-part="item"]:not(.row),
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"] [data-component="radio-group"][data-part="item"]:not(.row) {
+[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
+  [data-component="radio-group"][data-part="item"]:not(.row) {
   flex: 1 1 240px;
   min-width: 200px;
 }
@@ -194,16 +199,19 @@
 
 /* Focus Indicator */
 [data-component="radio-group"][data-part="item-control"]:focus-visible,
-[data-component="radio-group"][data-part="item-input"]:focus-visible + [data-component="radio-group"][data-part="item-control"] {
+[data-component="radio-group"][data-part="item-input"]:focus-visible
+  + [data-component="radio-group"][data-part="item-control"] {
   outline: none;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
 }
 
-[data-component="radio-group"][data-part="item"]:hover:not([data-disabled]) [data-component="radio-group"][data-part="item-control"] {
+[data-component="radio-group"][data-part="item"]:hover:not([data-disabled])
+  [data-component="radio-group"][data-part="item-control"] {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-[data-component="radio-group"][data-part="item"][data-checked]:hover:not([data-disabled]) [data-component="radio-group"][data-part="item-control"] {
+[data-component="radio-group"][data-part="item"][data-checked]:hover:not([data-disabled])
+  [data-component="radio-group"][data-part="item-control"] {
   border-color: var(--accent-light, #818cf8);
   background: var(--accent-light, #818cf8);
 }

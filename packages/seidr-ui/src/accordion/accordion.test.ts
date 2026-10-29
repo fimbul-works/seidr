@@ -100,14 +100,8 @@ describeDualMode("Accordion", ({ getDocument, isSSR }) => {
       const item2 = accordion.createItem({ value: "faq-2" });
 
       return accordion.Root({}, [
-        item1.Root({}, [
-          item1.Header({}, [item1.Trigger({}, "FAQ 1 Question")]),
-          item1.Content({}, "FAQ 1 Answer"),
-        ]),
-        item2.Root({}, [
-          item2.Header({}, [item2.Trigger({}, "FAQ 2 Question")]),
-          item2.Content({}, "FAQ 2 Answer"),
-        ]),
+        item1.Root({}, [item1.Header({}, [item1.Trigger({}, "FAQ 1 Question")]), item1.Content({}, "FAQ 1 Answer")]),
+        item2.Root({}, [item2.Header({}, [item2.Trigger({}, "FAQ 2 Question")]), item2.Content({}, "FAQ 2 Answer")]),
       ]);
     });
 
@@ -328,7 +322,9 @@ describeDualMode("Accordion", ({ getDocument, isSSR }) => {
 
       const content = root.querySelector('[role="region"]') as HTMLElement;
       expect(content).not.toBeNull();
-      expect(content.style.getPropertyValue("--seidr-accordion-content-height")).toContain("var(--seidr-collapsible-content-height)");
+      expect(content.style.getPropertyValue("--seidr-accordion-content-height")).toContain(
+        "var(--seidr-collapsible-content-height)",
+      );
     });
 
     it("should accept custom Flaedi animation options", () => {

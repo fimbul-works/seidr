@@ -115,19 +115,11 @@ export const CheckboxShowcase = createComponent(() => {
           $div({ className: "checkbox-section-title" }, "3. Compound Elements & Validation"),
           termsCheckbox.Root({}, [
             termsCheckbox.Input({}),
-            termsCheckbox.Control({}, [
-              termsCheckbox.Indicator({}, "✓"),
-            ]),
+            termsCheckbox.Control({}, [termsCheckbox.Indicator({}, "✓")]),
             $div({ className: "checkbox-content" }, [
               termsCheckbox.Label({}, "I agree to the Terms and Conditions"),
-              termsCheckbox.Description(
-                {},
-                "You must check this box to submit the form.",
-              ),
-              termsCheckbox.ErrorMessage(
-                {},
-                "You must accept the terms before proceeding.",
-              ),
+              termsCheckbox.Description({}, "You must check this box to submit the form."),
+              termsCheckbox.ErrorMessage({}, "You must accept the terms before proceeding."),
             ]),
           ]),
         ]),

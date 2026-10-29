@@ -95,7 +95,8 @@
   background: rgba(255, 255, 255, 0.22);
 }
 
-[data-component="switch"][data-part="root"]:hover:not([data-disabled]) [data-component="switch"][data-part="control"][data-checked] {
+[data-component="switch"][data-part="root"]:hover:not([data-disabled])
+  [data-component="switch"][data-part="control"][data-checked] {
   background: var(--accent-light, #818cf8);
 }
 

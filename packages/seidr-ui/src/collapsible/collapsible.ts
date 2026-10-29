@@ -34,38 +34,43 @@ export interface CollapsibleProps<
 /**
  * Collapsible component.
  */
-export const Collapsible = createComponent(<
-  TRoot extends keyof SeidrElementTagNameMap = "div",
-  TTrigger extends keyof SeidrElementTagNameMap = "button",
-  TContent extends keyof SeidrElementTagNameMap = "div",
->(props: CollapsibleProps<TRoot, TTrigger, TContent>): SeidrElementTagNameMap[TRoot] => {
-  const {
-    open,
-    defaultOpen,
-    onOpenChange,
-    disabled,
-    forceMount,
-    id,
-    as = "div" as TRoot,
-    rootProps = {},
-    trigger,
-    triggerProps = {},
-    children,
-    animation,
-    contentProps = {},
-  } = props;
+export const Collapsible = createComponent(
+  <
+    TRoot extends keyof SeidrElementTagNameMap = "div",
+    TTrigger extends keyof SeidrElementTagNameMap = "button",
+    TContent extends keyof SeidrElementTagNameMap = "div",
+  >(
+    props: CollapsibleProps<TRoot, TTrigger, TContent>,
+  ): SeidrElementTagNameMap[TRoot] => {
+    const {
+      open,
+      defaultOpen,
+      onOpenChange,
+      disabled,
+      forceMount,
+      id,
+      as = "div" as TRoot,
+      rootProps = {},
+      trigger,
+      triggerProps = {},
+      children,
+      animation,
+      contentProps = {},
+    } = props;
 
-  const col = createCollapsible({
-    open,
-    defaultOpen,
-    onOpenChange,
-    disabled,
-    forceMount,
-    id,
-  });
+    const col = createCollapsible({
+      open,
+      defaultOpen,
+      onOpenChange,
+      disabled,
+      forceMount,
+      id,
+    });
 
-  return col.Root({ as, ...rootProps } as CollapsibleRootProps<TRoot>, [
-    col.Trigger(triggerProps, trigger),
-    col.Content({ animation, ...contentProps }, children),
-  ]);
-}, "Collapsible")
+    return col.Root({ as, ...rootProps } as CollapsibleRootProps<TRoot>, [
+      col.Trigger(triggerProps, trigger),
+      col.Content({ animation, ...contentProps }, children),
+    ]);
+  },
+  "Collapsible",
+);

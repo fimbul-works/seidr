@@ -39,10 +39,7 @@ export const AccordionShowcase = createComponent(() => {
             items: [
               {
                 value: "item-1",
-                trigger: [
-                  $span("What is Seidr UI?"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("What is Seidr UI?"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "Seidr UI is a headless, fully accessible component library built natively for Seidr's fine-grained reactive runtime. It provides strict WAI-ARIA semantics without framework lock-in or synthetic DOM wrappers.",
                 ),
@@ -59,10 +56,7 @@ export const AccordionShowcase = createComponent(() => {
               },
               {
                 value: "item-3",
-                trigger: [
-                  $span("Is it accessible?"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Is it accessible?"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "Yes! Accordion implements full WAI-ARIA disclosure patterns, linking aria-controls and aria-labelledby with automated deterministic IDs, plus arrow key roving focus navigation (ArrowDown, ArrowUp, Home, End).",
                 ),
@@ -84,30 +78,21 @@ export const AccordionShowcase = createComponent(() => {
             items: [
               {
                 value: "account",
-                trigger: [
-                  $span("Account Preferences"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Account Preferences"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "Manage profile credentials, email notifications, language preferences, and personal display settings.",
                 ),
               },
               {
                 value: "billing",
-                trigger: [
-                  $span("Billing & Invoices"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Billing & Invoices"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "View current tier subscription, download past tax receipts, and update corporate payment cards.",
                 ),
               },
               {
                 value: "security",
-                trigger: [
-                  $span("Security & Keys"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Security & Keys"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "Configure hardware FIDO2 2FA security keys, OAuth tokens, and audit session activity logs.",
                 ),
@@ -129,20 +114,14 @@ export const AccordionShowcase = createComponent(() => {
             items: [
               {
                 value: "q1",
-                trigger: [
-                  $span("Can I close the active panel?"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Can I close the active panel?"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p(
                   "Yes, passing collapsible: true allows clicking an open trigger to collapse it back to 0 open items.",
                 ),
               },
               {
                 value: "q2",
-                trigger: [
-                  $span("Does it support disabled items?"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Does it support disabled items?"), $span({ className: "accordion-chevron" }, "▼")],
                 disabled: true,
                 content: $p("This content cannot be opened because the trigger is disabled."),
               },
@@ -160,20 +139,14 @@ export const AccordionShowcase = createComponent(() => {
           fineGrainedAccordion.Root({}, [
             fineGrainedAccordion.Item({
               value: "item-1",
-              trigger: [
-                $span("Pre-Bound Item Helper 1"),
-                $span({ className: "accordion-chevron" }, "▼"),
-              ],
+              trigger: [$span("Pre-Bound Item Helper 1"), $span({ className: "accordion-chevron" }, "▼")],
               content: $p(
                 "Fine-grained Tier 2 coordinator provides Root, Item, Header, Trigger, Content, and createItem helpers.",
               ),
             }),
             fineGrainedAccordion.Item({
               value: "item-2",
-              trigger: [
-                $span("Pre-Bound Item Helper 2"),
-                $span({ className: "accordion-chevron" }, "▼"),
-              ],
+              trigger: [$span("Pre-Bound Item Helper 2"), $span({ className: "accordion-chevron" }, "▼")],
               content: $p(
                 "Smooth slide animations run using CSS keyframes targeting --seidr-accordion-content-height.",
               ),
@@ -198,18 +171,12 @@ export const AccordionShowcase = createComponent(() => {
             items: [
               {
                 value: "faq-1",
-                trigger: [
-                  $span("Controlled Item 1"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Controlled Item 1"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p("Controlled directly by a Seidr Value<string[]> signal."),
               },
               {
                 value: "faq-2",
-                trigger: [
-                  $span("Controlled Item 2"),
-                  $span({ className: "accordion-chevron" }, "▼"),
-                ],
+                trigger: [$span("Controlled Item 2"), $span({ className: "accordion-chevron" }, "▼")],
                 content: $p("State mutations automatically update trigger aria-expanded and panel visibility."),
               },
             ],

@@ -1,11 +1,5 @@
 import { isFn, isUndef } from "@fimbul-works/hvat";
-import {
-  isValue,
-  mergeValues,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { isValue, mergeValues, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import { type ButtonOptions, type ButtonProps, Button } from "../button.js";
 import type { UseCollapsibleResult } from "./types.js";
 import { wrapValue } from "@fimbul-works/seidr";
@@ -30,12 +24,10 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
   const { instance: col, disabled, onclick: userOnClick, ...rest } = props;
 
   if (!col) {
-    throw new SeidrError(
-      "CollapsibleTrigger requires an instance prop",
-    );
+    throw new SeidrError("CollapsibleTrigger requires an instance prop");
   }
 
-  const wrappedDisabled = wrapValue(disabled ?? false)
+  const wrappedDisabled = wrapValue(disabled ?? false);
 
   const effectiveDisabled = mergeValues(() => wrappedDisabled() || col.isDisabled(), {
     parents: [wrappedDisabled, col.isDisabled],

@@ -1,9 +1,4 @@
-import {
-  $,
-  type SeidrChild,
-  type SeidrElementProps,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { $, type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import type { UseCollapsibleResult } from "./types.js";
 import { type UseCollapsibleOptions, useCollapsible } from "./use-collapsible.js";
 import { SeidrError } from "@fimbul-works/seidr";
@@ -31,17 +26,7 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: CollapsibleRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "div" as T,
-    open,
-    defaultOpen,
-    onOpenChange,
-    disabled,
-    forceMount,
-    id,
-    instance: col,
-    ...rest
-  } = props;
+  const { as = "div" as T, open, defaultOpen, onOpenChange, disabled, forceMount, id, instance: col, ...rest } = props;
 
   if (!col) {
     throw new SeidrError("CollapsibleRoot requires an instance prop");

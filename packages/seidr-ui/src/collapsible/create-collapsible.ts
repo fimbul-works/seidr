@@ -1,8 +1,4 @@
-import {
-  type DerivedValue,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { CollapsibleContent, type CollapsibleContentProps } from "./collapsible-content.js";
 import { CollapsibleRoot, type CollapsibleRootProps } from "./collapsible-root.js";
 import { CollapsibleTrigger, type CollapsibleTriggerProps } from "./collapsible-trigger.js";
@@ -44,7 +40,8 @@ export function createCollapsible(options: UseCollapsibleOptions = {}): Collapsi
   return {
     ...instance,
     Root: (props = {}, children) => CollapsibleRoot({ instance, ...props }, children),
-    Trigger: (props = {} as CollapsibleTriggerProps<any>, children) => CollapsibleTrigger({ instance, ...props }, children),
+    Trigger: (props = {} as CollapsibleTriggerProps<any>, children) =>
+      CollapsibleTrigger({ instance, ...props }, children),
     Content: (props = {}, children) => CollapsibleContent({ instance, ...props }, children),
   };
 }
