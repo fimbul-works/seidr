@@ -1,5 +1,5 @@
 import { isNum } from "@fimbul-works/hvat";
-import { isClient, SeidrError } from "@fimbul-works/seidr";
+import { navigate, SeidrError } from "@fimbul-works/seidr";
 import { getRouterState } from "../get-router-state.js";
 
 /**
@@ -17,28 +17,18 @@ export const useNavigate = (): NavigateFn => {
   return (href: string | number, replace = false): void => {
     // Backwards and forwards navigation
     if (isNum(href)) {
-      if (isClient()) {
-        window.history.go(href);
-      }
+      navigate(href, { replace });
       return;
     }
 
-    // Handle string path
-    const url = getRouterState().url;
-    const currentUrl = url();
+    // Verify origin boundary for router's useNavigate
+    const currentUrl = getRouterState().url();
     const nextUrl = new URL(href, currentUrl.href);
 
     if (nextUrl.origin !== currentUrl.origin) {
       throw new SeidrError("Cross-origin navigation is not allowed");
     }
 
-    url(nextUrl);
-
-    // Handle client-side navigation
-    if (isClient()) {
-      if (nextUrl.href !== currentUrl.href) {
-        window.history[replace ? "replaceState" : "pushState"]({}, "", nextUrl.href);
-      }
-    }
+    navigate(nextUrl, { replace });
   };
 };

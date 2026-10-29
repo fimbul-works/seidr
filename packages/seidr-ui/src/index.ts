@@ -1,6 +1,7 @@
 export * from "./accordion/index.js";
 export * from "./alert.js";
 export * from "./badge.js";
+export * from "./breadcrumbs/index.js";
 export * from "./button.js";
 export * from "./checkbox/index.js";
 export * from "./collapsible/index.js";

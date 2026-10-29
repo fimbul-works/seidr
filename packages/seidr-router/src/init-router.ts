@@ -1,5 +1,5 @@
-import { isNullish, isObj, isStr } from "@fimbul-works/hvat";
-import { createValue, getAppState, isClient, isValue, SeidrError } from "@fimbul-works/seidr";
+import { isNullish, isNum, isObj, isStr } from "@fimbul-works/hvat";
+import { createValue, getAppState, isClient, isValue, registerNavigationHandler, SeidrError } from "@fimbul-works/seidr";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_ROUTER, DUMMY_BASE_URL, NO_HYDRATE, VALUE_ID_ROUTER_URL } from "./constants.js";
 import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
@@ -88,6 +88,38 @@ export const initRouter = (
     tree: new Map<number, RouterTreeNode>(),
     parentMap: new Map<number, RouterTreeNode | null>(),
     popstateListeners,
+  });
+
+  // Register navigation handler
+  registerNavigationHandler((target, options) => {
+    if (isNum(target)) {
+      if (isClient()) {
+        window.history.go(target);
+      }
+      return true;
+    }
+
+    const currentUrl = url();
+    let nextUrl: URL;
+    try {
+      nextUrl = target instanceof URL ? target : new URL(String(target), currentUrl.href);
+    } catch {
+      return false;
+    }
+
+    if (nextUrl.origin !== currentUrl.origin) {
+      return false;
+    }
+
+    url(nextUrl);
+
+    if (isClient()) {
+      if (nextUrl.href !== currentUrl.href) {
+        window.history[options?.replace ? "replaceState" : "pushState"](options?.state ?? {}, "", nextUrl.href);
+      }
+    }
+
+    return true;
   });
 
   // Eagerly initialize the browser router singleton

@@ -1,3 +1,4 @@
+export { navigate } from "@fimbul-works/seidr";
 export * from "./components/index.js";
 export { DATA_KEY_ROUTER } from "./constants.js";
 export * from "./hooks/index.js";
