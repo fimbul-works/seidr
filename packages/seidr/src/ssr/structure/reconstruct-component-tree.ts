@@ -1,4 +1,4 @@
-import { getAppState } from "../../app-state/app-state.js";
+import { getMarkerRegistry } from "../../component/component-registry.js";
 import { isMarkerComment } from "../../component/type-guards.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
 import { isCommentNode, isElementNode, isTextNode } from "../../dom/type-guards.js";
@@ -26,14 +26,14 @@ export const reconstructComponentTree = (
         const isStart = data.startsWith(TAG_COMPONENT_PREFIX);
         const id = isStart ? data.slice(TAG_COMPONENT_PREFIX.length) : data.slice(1);
 
-        const state = getAppState();
-        const markers = state.markers.get(id) || ([null, null] as unknown as [Comment, Comment]);
+        const state = getMarkerRegistry();
+        const markers = state.get(id) || ([null, null] as unknown as [Comment, Comment]);
         if (isStart) {
           markers[0] = node as Comment;
         } else {
           markers[1] = node as Comment;
         }
-        state.markers.set(id, markers);
+        state.set(id, markers);
         currentDomIndex++;
       } else {
         break;

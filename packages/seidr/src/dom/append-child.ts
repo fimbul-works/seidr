@@ -1,5 +1,5 @@
 import { isArr, isBool, isNullish, isNum, isStr } from "@fimbul-works/hvat";
-import { getAppState } from "../app-state/app-state.js";
+import { getNodeIndex } from "../component/component-registry.js";
 import { isComponent } from "../component/type-guards.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
 import type { SeidrChild } from "../element/types.js";
@@ -74,12 +74,11 @@ export const createReactiveValueNodes = (
     }
 
     // Remove old nodes between startMarker and endMarker
-    const appState = getAppState();
     let current = startMarker.nextSibling;
 
     while (isDOMNode(current) && current !== endMarker) {
       const next = current.nextSibling;
-      const component = appState.nodeIndex.get(current);
+      const component = getNodeIndex().get(current);
       if (component && !component.nodes.includes(startMarker) && !component.nodes.includes(endMarker)) {
         component.unmount();
       } else {
@@ -104,11 +103,10 @@ export const createReactiveValueNodes = (
   const fullCleanup = () => {
     unbind();
 
-    const appState = getAppState();
     let current = startMarker.nextSibling;
     while (isDOMNode(current) && current !== endMarker) {
       const next = current.nextSibling;
-      const comp = appState.nodeIndex.get(current);
+      const comp = getNodeIndex().get(current);
       if (comp && !comp.nodes.includes(startMarker) && !comp.nodes.includes(endMarker)) {
         comp.unmount();
       } else {
@@ -134,7 +132,6 @@ export const mountConnectedComponents = (node: Node) => {
     return;
   }
 
-  const appState = getAppState();
   const stack: Node[] = [node];
 
   while (stack.length > 0) {
@@ -143,7 +140,7 @@ export const mountConnectedComponents = (node: Node) => {
       continue;
     }
 
-    const comp = appState.nodeIndex.get(current as ChildNode);
+    const comp = getNodeIndex().get(current as ChildNode);
 
     if (comp && !comp.isMounted) {
       // Find top-most unmounted component ancestor to preserve top-down lifecycle

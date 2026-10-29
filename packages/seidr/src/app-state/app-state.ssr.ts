@@ -2,7 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import { DATA_KEY_IS_SSR } from "../constants.js";
 import { SeidrError } from "../types.js";
 import { createAppState } from "./create-app-state.js";
-import type { AppState, AppStateData } from "./types.js";
+import type { AppState } from "./types.js";
 
 /** Global fallback store for request ID generation */
 let requestIdCounter = 0;
@@ -31,10 +31,10 @@ export const getSSRAppState = (): AppState => {
  * @template T - Type of the promise callback resolves to
  *
  * @param {() => Promise<T>} callback - Callback to invoke inside AsyncLocalStorage closure
- * @param {AppStateData} [initialData] - Optional initial data to populate in AppState
+ * @param {Record<string, any>} [initialData] - Optional initial data to populate in AppState
  * @return {Promise<T>}
  */
-export const runWithAppState = async <T>(callback: () => Promise<T>, initialData?: AppStateData): Promise<T> => {
+export const runWithAppState = async <T>(callback: () => Promise<T>, initialData?: Record<string, any>): Promise<T> => {
   // Use rolling ID counter to avoid overflow, but keep it within safe integer range
   const context: AppState = createAppState(++requestIdCounter % Number.MAX_SAFE_INTEGER);
 

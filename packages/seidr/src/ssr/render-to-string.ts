@@ -1,6 +1,5 @@
 import { getAppState, setAppStateProvider } from "../app-state/app-state.js";
 import { getSSRAppState, runWithAppState } from "../app-state/app-state.ssr.js";
-import type { AppStateData } from "../app-state/types.js";
 import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
@@ -8,19 +7,19 @@ import { appendChild } from "../dom/append-child.js";
 import { getDocument, setDocumentProvider } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
 import { SSRScope, setSSRScope } from "./ssr-scope.js";
-import type { SSRRenderResult } from "./types.js";
+import type { RenderToStringResult } from "./types.js";
 
 /**
  * Renders a component or factory function to an HTML string with hydration data capture.
  *
  * @param {SeidrComponentFactoryOrFunction} factory - Component or factory function to render
- * @param {AppStateData} [initialAppState] - Optional initial AppState data
- * @returns {Promise<SSRRenderResult>} Object containing HTML string and hydration data
+ * @param {Record<string, any>} [initialAppState] - Optional initial AppState data
+ * @returns {Promise<RenderToStringResult>} Object containing HTML string and hydration data
  */
 export async function renderToString(
   factory: SeidrComponentFactoryOrFunction,
-  initialAppState?: AppStateData,
-): Promise<SSRRenderResult> {
+  initialAppState?: Record<string, any>,
+): Promise<RenderToStringResult> {
   // Keep track of previous SSR state for tests
   let prevSSR: string | undefined;
   if (process.env.VITEST) {

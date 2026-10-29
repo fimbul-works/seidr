@@ -1,4 +1,4 @@
-import { getAppState } from "../../app-state/app-state.js";
+import { getNodeIndex } from "../component-registry.js";
 import type { SeidrComponent } from "../types.js";
 import { getMarkerComments } from "./get-marker-comments.js";
 
@@ -10,8 +10,6 @@ import { getMarkerComments } from "./get-marker-comments.js";
  * @param {ChildNode[]} nodes
  */
 export function setComponentNodes(instance: SeidrComponent, nodes: ChildNode[]) {
-  const appState = getAppState();
-
   let parentNode: ParentNode | null = null;
   let anchor: ChildNode | null = null;
 
@@ -21,7 +19,7 @@ export function setComponentNodes(instance: SeidrComponent, nodes: ChildNode[]) 
     anchor = parentNode && instance.nodes.length ? instance.nodes[instance.nodes.length - 1]?.nextSibling : null;
 
     // Remove existing nodes, and remove bindings from WeakMap
-    instance.nodes.forEach((n) => (n.remove(), appState.nodeIndex.delete(n)));
+    instance.nodes.forEach((n) => (n.remove(), getNodeIndex().delete(n)));
   }
 
   // Clear out empty nodes
@@ -44,7 +42,7 @@ export function setComponentNodes(instance: SeidrComponent, nodes: ChildNode[]) 
   instance.nodes = nodes;
 
   // Bind root nodes to component instance (preserving inner child component bindings)
-  nodes.forEach((n) => !appState.nodeIndex.has(n) && appState.nodeIndex.set(n, instance));
+  nodes.forEach((n) => !getNodeIndex().has(n) && getNodeIndex().set(n, instance));
 
   // Insert nodes if parent exists
   if (parentNode) {

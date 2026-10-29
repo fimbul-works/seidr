@@ -1,6 +1,5 @@
 import { fastMix } from "@fimbul-works/hash";
 import { isArray, isBool, isNullish, isNum, isStr } from "@fimbul-works/hvat";
-import { getAppState } from "../app-state/app-state.js";
 import { TYPE_COMPONENT, TYPE_COMPONENT_FACTORY, TYPE_PROP } from "../constants.js";
 import { createReactiveValueNodes } from "../dom/append-child.js";
 import { $text } from "../dom/node/text.js";
@@ -13,6 +12,7 @@ import type { CleanupFunction } from "../types.js";
 import { defineValueProp } from "../util/define-prop.js";
 import { isServer } from "../util/environment/is-server.js";
 import { fastHash } from "../util/fast-hash.js";
+import { getComponentRegitry } from "./component-registry.js";
 import { getComponentScope, setComponentScope } from "./component-scope.js";
 import { isComponent } from "./type-guards.js";
 import type {
@@ -38,31 +38,15 @@ export function createComponent<P = void>(
   name: string = "Component",
 ): SeidrComponentFactory<P> {
   const componentFactory = ((props: P, identifier?: unknown) => {
-    const appState = getAppState();
     const parentComponent = getComponentScope();
+    const registry = getComponentRegitry();
 
-    // Determine ID
-    let id: number;
-    if (parentComponent) {
-      // Handle collision by incrementing ID value until a free slot is found
-      const siblings = new Set(Array.from(parentComponent.children).map((c) => c.id));
-      let idCounter = siblings.size + 1;
-      id = fastHash(!isNullish(identifier) ? identifier : idCounter, parentComponent.id);
-      while (siblings.has(id)) {
-        id = fastMix(++idCounter, id);
-      }
-    } else {
-      // Root component
-      const roots = new Set(
-        Array.from(appState.components)
-          .filter((c) => !c.parent)
-          .map((c) => c.id),
-      );
-      let idCounter = roots.size + 1;
-      id = fastHash(!isNullish(identifier) ? identifier : idCounter, appState.ctxID);
-      while (roots.has(id)) {
-        id = fastMix(++idCounter, id);
-      }
+    // Determine unique ID
+    const idSet = new Set(registry.values().map((c) => c.id));
+    let idCounter = idSet.size;
+    let id = fastHash(!isNullish(identifier) ? identifier : (parentComponent?.id ?? idCounter));
+    while (idSet.has(id)) {
+      id = fastMix(++idCounter, id);
     }
 
     // Component mounted status
@@ -117,7 +101,7 @@ export function createComponent<P = void>(
       mount() {
         if (isMounted) return;
         isMounted = true;
-        appState.components.add(currentComponent);
+        registry.add(currentComponent);
 
         // Set current component as active
         const prev = getComponentScope();
@@ -146,7 +130,7 @@ export function createComponent<P = void>(
           getHydrationContext()?.removeComponent(currentComponent);
         }
 
-        appState.components.delete(currentComponent);
+        registry.delete(currentComponent);
         currentComponent.parent?.removeChild(currentComponent);
 
         componentUnmountedFns.forEach((fn) => fn());
@@ -179,8 +163,8 @@ export function createComponent<P = void>(
       };
     }
 
-    // Register with AppState
-    appState.components.add(currentComponent);
+    // Add to component registry
+    registry.add(currentComponent);
 
     // Set active component scope
     setComponentScope(currentComponent);

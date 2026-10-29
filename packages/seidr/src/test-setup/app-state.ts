@@ -17,16 +17,22 @@ export function setAppStateID(id: number) {
 
 /**
  * Clears the test app state data and markers.
+ *
  * Does NOT reset IDs to avoid collisions with top-level observables.
  */
 export function clearTestAppState() {
   // Clean up data
-  testAppState.destroy();
+  try {
+    testAppState.destroy();
+  } catch {}
 }
 
 /**
- * Robust getAppState for tests.
- * Prefers AsyncLocalStorage ONLY during renderToString (identified by SEIDR_TEST_SSR) to ensure correct state isolation.
+ * Testing version of getAppState.
+ *
+ * Prefers AsyncLocalStorage ONLY during renderToString (identified by SEIDR_TEST_SSR)
+ * to ensure correct state isolation.
+ *
  * Falls back to testAppState.
  */
 export function getAppState() {
@@ -38,6 +44,7 @@ export function getAppState() {
 
 /**
  * Initializes the app state for testing.
+ * @internal
  */
 export function setupAppState() {
   setAppStateProvider(getAppState);

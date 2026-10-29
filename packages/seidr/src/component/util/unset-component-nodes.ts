@@ -1,4 +1,4 @@
-import { getAppState } from "../../app-state/app-state.js";
+import { getNodeIndex } from "../component-registry.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
@@ -8,7 +8,5 @@ import type { SeidrComponent } from "../types.js";
  * @param {SeidrComponent} instance
  * @param {ChildNode[]} nodes
  */
-export function unsetComponentNodes(currentComponent: SeidrComponent) {
-  const appState = getAppState();
-  currentComponent.nodes.forEach((n) => (n.remove(), appState.nodeIndex.delete(n)));
-}
+export const unsetComponentNodes = (currentComponent: SeidrComponent) =>
+  currentComponent.nodes.forEach((n) => (n.remove(), getNodeIndex().delete(n)));

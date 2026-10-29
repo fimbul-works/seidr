@@ -1,4 +1,3 @@
-import type { AppStateData } from "../app-state/types.js";
 import type { StructureMapTuple } from "./structure/types.js";
 
 export type { StructureMapTuple } from "./structure/types.js";
@@ -7,7 +6,7 @@ export type { HydrationStateTuple } from "./util/state-tuple.js";
 /**
  * Result of SSR rendering containing HTML and hydration data.
  */
-export interface SSRRenderResult {
+export interface RenderToStringResult {
   /** Rendered HTML output */
   html: string;
 
@@ -28,7 +27,7 @@ export interface HydrationData {
   /**
    * AppState data for hydration.
    */
-  data: AppStateData;
+  data: Record<string, any>;
 
   /**
    * Component ID mapping for hydration.

@@ -1,4 +1,3 @@
-import { isObj } from "@fimbul-works/hvat";
 import {
   $,
   createValue,

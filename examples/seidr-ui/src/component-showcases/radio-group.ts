@@ -121,7 +121,7 @@ export const RadioGroupShowcase = createComponent(() => {
         // 2. Controlled RadioGroup with Reactive Selection & Real-Time Feedback
         $div({ className: "radio-group-demo" }, [
           $div({ className: "radio-group-section-title" }, "2. Controlled State & Reactive Feedback"),
-          $div({ className: isDisabled.as((disabled) => (disabled ? "disabled " : "") + "radio-selection-banner") }, [
+          $div({ className: isDisabled.as((disabled) => `${disabled ? "disabled " : ""}radio-selection-banner`) }, [
             $span(["Active Strategy: ", $strong(selectedFramework.as((s) => s.toUpperCase()))]),
             $span(selectedFramework.as((s) => frameworkDescriptions[s] ?? "")),
           ]),

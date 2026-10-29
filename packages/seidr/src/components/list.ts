@@ -1,12 +1,12 @@
 import { isArr } from "@fimbul-works/hvat";
-import { getAppState } from "../app-state/app-state.js";
+import { getNodeIndex } from "../component/component-registry.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
+import { wrapComponent } from "../component/wrap-component.js";
 import { normalizeChildNodes } from "../dom/append-child.js";
 import { onUnmounted } from "../hooks/on-unmounted.js";
-import { wrapComponent } from "../component/wrap-component.js";
 import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 
@@ -78,13 +78,12 @@ export const List = <T, K extends string | number>(
       }
 
       const newKeys = new Set(items.map(getKey));
-      const appState = getAppState();
 
       // 1. Remove deleted items
       for (const [key, entry] of Array.from(itemMap.entries())) {
         if (!newKeys.has(key)) {
           entry.nodes.forEach((n) => {
-            const comp = appState.nodeIndex.get(n);
+            const comp = getNodeIndex().get(n);
             if (comp && comp !== listComponent && !comp.nodes.includes(endMarker)) {
               comp.unmount();
             }

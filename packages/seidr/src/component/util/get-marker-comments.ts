@@ -1,9 +1,9 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
 import { isObj, isStr } from "@fimbul-works/hvat";
-import { getAppState } from "../../app-state/app-state.js";
 import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX } from "../../constants.js";
 import { getDocument } from "../../dom/get-document.js";
 import { isCommentNode } from "../../dom/type-guards.js";
+import { getMarkerRegistry } from "../component-registry.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
@@ -25,8 +25,8 @@ export const getMarkerComments = (
       : `${instanceOrId.name}-${encodeBase62(instanceOrId.id)}`;
 
   // Check for existing
-  const state = getAppState();
-  const cached = state.markers.get(commentText);
+  const state = getMarkerRegistry();
+  const cached = state.get(commentText);
   if (cached) {
     return cached;
   }
@@ -45,7 +45,7 @@ export const getMarkerComments = (
 
     if (startComment && endComment) {
       const markers: [Comment, Comment] = [startComment, endComment];
-      state.markers.set(commentText, markers);
+      state.set(commentText, markers);
       return markers;
     }
   }
@@ -56,6 +56,6 @@ export const getMarkerComments = (
 
   const doc = getDocument();
   const markers: [Comment, Comment] = [doc.createComment(startText), doc.createComment(endText)];
-  state.markers.set(commentText, markers);
+  state.set(commentText, markers);
   return markers;
 };

@@ -1,5 +1,5 @@
 import { isUndef } from "@fimbul-works/hvat";
-import type { SeidrComponent } from "../component/types.js";
+import { getComponentRegitry, getMarkerRegistry } from "../component/component-registry.js";
 import { DATA_KEY_HYDRATION_DATA } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
@@ -13,9 +13,6 @@ import type { AppState, CaptureDataFn, DataStrategy, RestoreDataFn } from "./typ
  */
 export const createAppState = (ctxID: number): AppState => ({
   ctxID,
-  components: new Set<SeidrComponent>(),
-  nodeIndex: new WeakMap<ChildNode, SeidrComponent>(),
-  markers: new Map<string, [Comment, Comment]>(),
   data: new Map<string, any>(),
   strategies: new Map<string, DataStrategy>(),
   hasData(key: string): boolean {
@@ -52,19 +49,15 @@ export const createAppState = (ctxID: number): AppState => ({
   destroy(): void {
     if (process.env.SEIDR_DISABLE_SSR) return;
 
-    // Clean up components
-    this.components.clear();
+    getComponentRegitry().forEach((c) => c.unmount());
+    getComponentRegitry().clear();
 
-    // Clean up data
+    getMarkerRegistry().forEach(([m1, m2]) => (m1.remove(), m2.remove()));
+    getMarkerRegistry().clear();
+
     this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
     this.data.forEach((value) => isValue(value) && value.destroy());
     this.data.clear();
-
-    // Remove markers
-    this.markers.forEach(([a, b]) => (a?.remove(), b?.remove()));
-    this.markers.clear();
-
-    // Clear data strategies
     this.strategies.clear();
   },
 });

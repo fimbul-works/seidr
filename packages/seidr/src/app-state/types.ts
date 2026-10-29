@@ -1,20 +1,9 @@
-import type { SeidrComponent } from "../component/types.js";
-
 /**
  * AppState is used for application state management, SSR and hydration.
  */
 export interface AppState {
   /** Application state ID is used to differentiate state between requests */
   ctxID: number;
-
-  /** Main component registry */
-  components: Set<SeidrComponent>;
-
-  /** ChildNode to Component index mapping */
-  nodeIndex: WeakMap<ChildNode, SeidrComponent>;
-
-  /** Cache for marker comments indexed by component ID */
-  markers: Map<string, [Comment, Comment]>;
 
   /** Application data store */
   data: Map<string, any>;
@@ -25,58 +14,58 @@ export interface AppState {
   /**
    * Check if data exists.
    *
-   * @param {string} key - The key to check
-   * @returns {boolean} True if data exists, false otherwise
+   * @param key - The key to check
+   * @returns `true` if data exists, `false` otherwise
    */
   hasData(key: string): boolean;
 
   /**
-   * Get data.
+   * Get application global data.
    *
-   * @param {string} key - The key to get
-   * @param {T} defaultValue - Optional default value to return if data is not found
-   * @returns {T | undefined} The data, or undefined if not found
+   * @param key - The key to get.
+   * @param defaultValue - Optional default value to return if data is not found.
+   * @returns The data, or `undefined` if not found.
    */
   getData<T>(key: string, defaultValue?: T): typeof defaultValue extends undefined ? T | undefined : T;
 
   /**
-   * Set data.
+   * Set application global data.
    *
-   * @param {string} key - The key to set
-   * @param {T} value - The value to set
+   * @param key - The key to set.
+   * @param value - The value to set.
    */
   setData<T>(key: string, value: T): void;
 
   /**
-   * Delete data.
+   * Delete application global data.
    *
-   * @param {string} key - The key to delete
-   * @returns {boolean} True if data was deleted, false otherwise
+   * @param key - The key to delete.
+   * @returns `true` if data was deleted, `false` otherwise.
    */
   deleteData(key: string): boolean;
 
   /**
    * Define a data strategy for hydration, and cleanup after application unmount.
    *
-   * @template T - The type of data for hydration
-   * @template I - The type of data from hydration
-   * @param {string} key - The key to define a strategy for
-   * @param {CaptureDataFn<T>} captureFn - Function to capture data for hydration
-   * @param {RestoreDataFn<I>} restoreFn - Function to restore data from hydration
+   * @template T - The type of data for hydration.
+   * @template I - The type of data from hydration.
+   * @param key - The key to define a strategy for.
+   * @param captureFn - Function to capture data for hydration.
+   * @param restoreFn - Function to restore data from hydration.
    */
   defineDataStrategy<T, I>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<I>): void;
 
   /**
    * Get data strategy for a key.
    *
-   * @template T - The type of data for hydration
-   * @param {string} key - The key to get a strategy for
-   * @returns {DataStrategy<T> | undefined} The data strategy, or undefined if not found
+   * @template T - The type of data for hydration.
+   * @param key - The key to get a strategy for.
+   * @returns The data strategy, or `undefined` if not found.
    */
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined;
 
   /**
-   * Destroy the application state.
+   * Destroy the application state, and cleanup all resources.
    */
   destroy(): void;
 }
@@ -93,8 +82,3 @@ export type RestoreDataFn<T> = (data: T) => void;
  * A strategy consists of a capture function, and a restore function.
  */
 export type DataStrategy<T = any> = [CaptureDataFn<T>, RestoreDataFn<T>];
-
-/**
- * AppState data to restore application state during renderToString and hydration.
- */
-export type AppStateData = Record<string, any>;

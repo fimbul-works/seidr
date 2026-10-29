@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { getMarkerRegistry } from "../component/component-registry";
 import { createValue } from "../observable";
 import { createAppState } from "./create-app-state";
 
@@ -8,7 +9,7 @@ describe("createAppState", () => {
     expect(state.ctxID).toBe(1);
     expect(state.data).toBeInstanceOf(Map);
     expect(state.strategies).toBeInstanceOf(Map);
-    expect(state.markers).toBeInstanceOf(Map);
+    expect(getMarkerRegistry()).toBeInstanceOf(Map);
   });
 
   describe("data management", () => {
@@ -82,13 +83,13 @@ describe("createAppState", () => {
       container.appendChild(start);
       container.appendChild(end);
 
-      state.markers.set("test", [start, end]);
+      getMarkerRegistry().set("test", [start, end]);
 
       state.destroy();
 
       expect(container.contains(start)).toBe(false);
       expect(container.contains(end)).toBe(false);
-      expect(state.markers.size).toBe(0);
+      expect(getMarkerRegistry().size).toBe(0);
     });
   });
 });

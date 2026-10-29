@@ -1,5 +1,5 @@
 import { isNullish } from "@fimbul-works/hvat";
-import type { SeidrComponent } from "../component/index.js";
+import { getComponentRegitry, getMarkerRegistry } from "../component/component-registry.js";
 import { DATA_KEY_STATE } from "../observable/index.js";
 import type { Value } from "../observable/types.js";
 import type { CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
@@ -16,18 +16,6 @@ export class AppState {
    * @public
    */
   public readonly ctxID: number;
-
-  /**
-   * Components that are currently mounted.
-   * @public
-   */
-  public readonly components = new Set<SeidrComponent>();
-
-  /**
-   * Index of components by node.
-   * @public
-   */
-  public readonly nodeIndex = new WeakMap<ChildNode, SeidrComponent>();
 
   /**
    * Markers for components.
@@ -138,14 +126,14 @@ export class AppState {
   destroy(): void {
     if (process.env.SEIDR_DISABLE_SSR) return;
 
-    this.components.clear();
+    getComponentRegitry().forEach((c) => c.unmount());
+    getComponentRegitry().clear();
+
+    getMarkerRegistry().forEach(([m1, m2]) => (m1.remove(), m2.remove()));
+    getMarkerRegistry().clear();
 
     this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
     this.data.clear();
-
-    this.markers.forEach(([a, b]) => (a?.remove(), b?.remove()));
-    this.markers.clear();
-
     this.strategies.clear();
   }
 }

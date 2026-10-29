@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { getMarkerRegistry } from "../component/component-registry";
 import { createValue } from "../observable";
 import { describeDualMode, enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
@@ -42,14 +43,13 @@ describeDualMode("AppState Infrastructure", () => {
     });
 
     it("should remove all markers from DOM", () => {
-      const state = getAppState();
       const start = document.createComment("start");
       const end = document.createComment("end");
       const container = document.createElement("div");
       container.appendChild(start);
       container.appendChild(end);
 
-      state.markers.set("test", [start, end]);
+      getMarkerRegistry().set("test", [start, end]);
 
       expect(container.contains(start)).toBe(true);
 
@@ -57,7 +57,7 @@ describeDualMode("AppState Infrastructure", () => {
 
       expect(container.contains(start)).toBe(false);
       expect(container.contains(end)).toBe(false);
-      expect(state.markers.size).toBe(0);
+      expect(getMarkerRegistry().size).toBe(0);
     });
   });
 });
