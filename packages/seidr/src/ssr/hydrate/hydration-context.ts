@@ -1,5 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppState } from "../../app-state/app-state.js";
+import { getAppState } from "../../app-state/get-app-state.js";
 import { isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
 import {

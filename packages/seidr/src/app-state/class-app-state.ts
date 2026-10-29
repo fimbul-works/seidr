@@ -2,6 +2,7 @@ import { isNullish } from "@fimbul-works/hvat";
 import { getComponentRegitry, getMarkerRegistry } from "../component/component-registry.js";
 import { DATA_KEY_STATE } from "../observable/index.js";
 import type { Value } from "../observable/types.js";
+import { getHydrationData, isHydrating } from "../ssr/hydrate/storage.js";
 import type { CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
@@ -38,7 +39,7 @@ export class AppState {
   /**
    * Creates a new AppState instance.
    *
-   * @param {number} [ctxID=0] - The ID of the app state (default: 0).
+   * @param ctxID - The ID of the app state (default: 0).
    */
   constructor(ctxID: number = 0) {
     this.ctxID = ctxID;
@@ -47,8 +48,8 @@ export class AppState {
   /**
    * Check if data exists for a given key.
    *
-   * @param {string} key - The key to check.
-   * @returns {boolean} `true` if data exists, `false` otherwise.
+   * @param key - The key to check.
+   * @returns `true` if data exists, `false` otherwise.
    */
   hasData(key: string): boolean {
     return this.data.has(key);
@@ -57,10 +58,10 @@ export class AppState {
   /**
    * Get data for a given key, or a default value if the key is not found.
    *
-   * @template T
-   * @param {string} key - The key to get.
-   * @param {T} [defaultValue] - Optional default value to return if data is not found.
-   * @returns {T | undefined} The data, or undefined if not found.
+   * @template T - The type of data to get.
+   * @param key - The key to get.
+   * @param defaultValue - Optional default value to return if data is not found.
+   * @returns The data, or undefined if not found.
    */
   getData<T>(key: string, defaultValue?: T): typeof defaultValue extends undefined ? T | undefined : T {
     if (!this.data.has(key) && !isNullish(defaultValue)) {
@@ -73,9 +74,9 @@ export class AppState {
   /**
    * Set data for a given key.
    *
-   * @template T
-   * @param {string} key - The key to set.
-   * @param {T} value - The value to set.
+   * @template T - The type of data to set.
+   * @param key - The key to set.
+   * @param value - The value to set.
    */
   setData<T>(key: string, value: T): void {
     this.data.set(key, value);
@@ -84,8 +85,8 @@ export class AppState {
   /**
    * Delete data for a given key.
    *
-   * @param {string} key - The key to delete.
-   * @returns {boolean} `true` if data was deleted, `false` otherwise.
+   * @param key - The key to delete.
+   * @returns `true` if data was deleted, `false` otherwise.
    */
   deleteData(key: string): boolean {
     return this.data.delete(key);
@@ -104,6 +105,13 @@ export class AppState {
     if (process.env.SEIDR_DISABLE_SSR) return;
 
     this.strategies.set(key, [captureFn, restoreFn]);
+
+    if (isHydrating()) {
+      const hydrationData = getHydrationData();
+      if (hydrationData?.data && key in hydrationData.data) {
+        restoreFn(hydrationData.data[key]);
+      }
+    }
   }
 
   /**

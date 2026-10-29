@@ -1,4 +1,4 @@
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import type { SeidrComponent } from "./types.js";
 
 /** Current component cursor data key. */

@@ -1,8 +1,7 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { DATA_KEY_IS_SSR } from "../constants.js";
 import { SeidrError } from "../types.js";
-import { createAppState } from "./create-app-state.js";
-import type { AppState } from "./types.js";
+import { AppState } from "./class-app-state.js";
 
 /** Global fallback store for request ID generation */
 let requestIdCounter = 0;
@@ -36,7 +35,7 @@ export const getSSRAppState = (): AppState => {
  */
 export const runWithAppState = async <T>(callback: () => Promise<T>, initialData?: Record<string, any>): Promise<T> => {
   // Use rolling ID counter to avoid overflow, but keep it within safe integer range
-  const context: AppState = createAppState(++requestIdCounter % Number.MAX_SAFE_INTEGER);
+  const context = new AppState(++requestIdCounter % Number.MAX_SAFE_INTEGER);
 
   if (process.env.VITEST) {
     context.setData(DATA_KEY_IS_SSR, true);

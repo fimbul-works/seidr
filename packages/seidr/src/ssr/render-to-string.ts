@@ -1,5 +1,5 @@
-import { getAppState, setAppStateProvider } from "../app-state/app-state.js";
-import { getSSRAppState, runWithAppState } from "../app-state/app-state.ssr.js";
+import { getAppState, setAppStateProvider } from "../app-state/get-app-state.js";
+import { getSSRAppState, runWithAppState } from "../app-state/get-app-state.ssr.js";
 import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";

@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { getMarkerRegistry } from "../component/component-registry";
 import { createValue } from "../observable";
-import { createAppState } from "./create-app-state";
+import { AppState } from "./class-app-state";
 
-describe("createAppState", () => {
+describe("AppState class", () => {
   it("should initialize with default values", () => {
-    const state = createAppState(1);
+    const state = new AppState(1);
     expect(state.ctxID).toBe(1);
     expect(state.data).toBeInstanceOf(Map);
     expect(state.strategies).toBeInstanceOf(Map);
@@ -14,28 +14,28 @@ describe("createAppState", () => {
 
   describe("data management", () => {
     it("should set and get data", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       state.setData("key", "value");
       expect(state.hasData("key")).toBe(true);
       expect(state.getData("key")).toBe("value");
     });
 
     it("should delete data", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       state.setData("key", "value");
       expect(state.deleteData("key")).toBe(true);
       expect(state.hasData("key")).toBe(false);
     });
 
     it("should return undefined for missing data", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       expect(state.getData("missing")).toBeUndefined();
     });
   });
 
   describe("strategy management", () => {
     it("should define and get data strategies", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       const captureFn = () => ({});
       const restoreFn = () => {};
 
@@ -46,7 +46,7 @@ describe("createAppState", () => {
     });
 
     it("should execute restoreFn if hydration data exists for key", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       state.setData("seidr.hydration.data", {
         data: {
           test: "restored-value",
@@ -62,7 +62,7 @@ describe("createAppState", () => {
 
   describe("destroy()", () => {
     it("should clear data and destroy Seidr instances", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       const s1 = createValue(1);
       const destroySpy = vi.spyOn(s1, "destroy");
 
@@ -76,7 +76,7 @@ describe("createAppState", () => {
     });
 
     it("should remove markers from DOM", () => {
-      const state = createAppState(1);
+      const state = new AppState(1);
       const start = document.createComment("start");
       const end = document.createComment("end");
       const container = document.createElement("div");

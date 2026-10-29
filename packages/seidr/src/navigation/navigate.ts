@@ -1,4 +1,4 @@
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { DATA_KEY_NAVIGATION_HANDLERS } from "./constants.js";
 import type { NavigationHandler, NavigationOptions, NavigationTarget } from "./types.js";
 

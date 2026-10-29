@@ -1,4 +1,4 @@
-import { setAppStateProvider } from "../app-state/app-state.js";
+import { setAppStateProvider } from "../app-state/get-app-state.js";
 import { DATA_KEY_IS_SSR } from "../constants.js";
 import { setDocumentProvider } from "../dom/get-document.js";
 import { getSSRDocument } from "../dom/get-document.ssr.js";
@@ -6,7 +6,7 @@ import type { CleanupFunction } from "../types.js";
 import { clearTestAppState, getAppState } from "./app-state.js";
 import type { TestEnvironmentState } from "./types.js";
 
-export { resetRequestIdCounter, runWithAppState } from "../app-state/app-state.ssr.js";
+export { resetRequestIdCounter, runWithAppState } from "../app-state/get-app-state.ssr.js";
 export const clearHydrationData = (): void => {};
 
 /**

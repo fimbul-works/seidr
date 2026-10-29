@@ -1,6 +1,6 @@
 import { isFn } from "@fimbul-works/hvat";
-import { getAppState } from "../app-state/app-state.js";
-import type { AppState } from "../app-state/types.js";
+import type { AppState } from "../app-state/class-app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { getComponentScope } from "../component/component-scope.js";
 import { TYPE_PROP } from "../constants.js";
 import { type CleanupFunction, SeidrError } from "../types.js";

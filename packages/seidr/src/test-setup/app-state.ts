@@ -1,17 +1,16 @@
-import { setAppStateProvider } from "../app-state/app-state.js";
-import { contextLocalStorage } from "../app-state/app-state.ssr.js";
-import { createAppState } from "../app-state/create-app-state.js";
-import type { AppState } from "../app-state/types.js";
+import { AppState } from "../app-state/class-app-state.js";
+import { setAppStateProvider } from "../app-state/get-app-state.js";
+import { contextLocalStorage } from "../app-state/get-app-state.ssr.js";
 import { resetIdCounters } from "../hooks/use-id.js";
 
 // Set up a simple browser app state that returns a valid state object
-export const testAppState: AppState = createAppState(0);
+export const testAppState = new AppState(0);
 
 /**
  * Set the app state ID for tests.
  */
 export function setAppStateID(id: number) {
-  testAppState.ctxID = id;
+  (testAppState as any).ctxID = id;
   clearTestAppState();
 }
 

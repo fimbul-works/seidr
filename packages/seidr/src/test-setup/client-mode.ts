@@ -1,4 +1,4 @@
-import { setAppStateProvider } from "../app-state/app-state.js";
+import { setAppStateProvider } from "../app-state/get-app-state.js";
 import { DATA_KEY_IS_SSR } from "../constants.js";
 import { defaultClientDocument, setDocumentProvider } from "../dom/get-document.js";
 import { setRegisterValueForSSR } from "../observable/register-value-for-ssr.js";

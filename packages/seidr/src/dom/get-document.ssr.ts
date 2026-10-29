@@ -1,4 +1,4 @@
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { DATA_KEY_DOCUMENT } from "../constants.js";
 import { SSRDocument } from "../ssr/dom/ssr-document.js";
 import { setDocumentProvider } from "./get-document.js";

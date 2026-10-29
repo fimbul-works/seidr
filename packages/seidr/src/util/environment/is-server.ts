@@ -1,7 +1,7 @@
 /// <reference types="vite/client" />
 
 import { isFn, isNullish } from "@fimbul-works/hvat";
-import { getAppState } from "../../app-state/app-state.js";
+import { getAppState } from "../../app-state/get-app-state.js";
 import { DATA_KEY_IS_SSR } from "../../constants.js";
 
 /**

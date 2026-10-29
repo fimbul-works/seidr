@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, vi } from "vitest";
-import { getAppState } from "../app-state/app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import { DATA_KEY_COMPONENT_CURSOR } from "../component/component-scope.js";
 import type { OnMountedFunction, SeidrComponent } from "../component/types.js";
 import { TYPE_COMPONENT, TYPE_PROP } from "../constants.js";

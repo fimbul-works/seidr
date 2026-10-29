@@ -1,6 +1,6 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppState } from "../app-state/app-state.js";
-import type { AppState } from "../app-state/types.js";
+import type { AppState } from "../app-state/class-app-state.js";
+import { getAppState } from "../app-state/get-app-state.js";
 import type { SeidrComponent } from "../component/types.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";

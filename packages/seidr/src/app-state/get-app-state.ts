@@ -1,20 +1,19 @@
-import { createAppState } from "./create-app-state.js";
-import type { AppState } from "./types.js";
+import { AppState } from "./class-app-state.js";
 
 /** Default application state */
-const defaultAppState: AppState = createAppState(0);
+const defaultAppState = new AppState(0);
 
 /**
  * Get the current application state.
  *
- * @returns {AppState} AppState object.
+ * @returns The current application state.
  */
 export let getAppState = (): AppState => defaultAppState;
 
 /**
  * Cross-environment getAppState contract dependency injector.
  *
- * @param {(() => AppState)} fn
+ * @param fn - AppState getter.
  * @internal
  */
 export const setAppStateProvider = (fn: () => AppState) => {
@@ -23,11 +22,14 @@ export const setAppStateProvider = (fn: () => AppState) => {
 
 /**
  * Set the application state ID (used during hydration to match server-side IDs).
- * @param {number} id - The state ID from the server
+ *
+ * @param id - The state ID from the server.
  * @internal
  */
 export const setAppStateID = (id: number) => {
   const state = getAppState();
-  state.destroy();
-  state.ctxID = id;
+  if (process.env.VITEST) {
+    state.destroy();
+  }
+  (state as any).ctxID = id;
 };

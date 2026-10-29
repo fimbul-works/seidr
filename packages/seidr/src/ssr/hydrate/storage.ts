@@ -1,5 +1,5 @@
 import { isArr } from "@fimbul-works/hvat";
-import { getAppState, setAppStateID } from "../../app-state/app-state.js";
+import { getAppState, setAppStateID } from "../../app-state/get-app-state.js";
 import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
 import { setRegisterValueForSSR } from "../../observable/register-value-for-ssr.js";

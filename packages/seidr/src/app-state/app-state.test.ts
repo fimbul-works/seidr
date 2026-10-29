@@ -3,7 +3,7 @@ import { getMarkerRegistry } from "../component/component-registry";
 import { createValue } from "../observable";
 import { describeDualMode, enableClientMode } from "../test-setup";
 import type { CleanupFunction } from "../types";
-import { getAppState, setAppStateID } from "./app-state";
+import { getAppState, setAppStateID } from "./get-app-state";
 
 describeDualMode("AppState Infrastructure", () => {
   let restore: CleanupFunction;
