@@ -12,7 +12,7 @@ import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
  */
 export const initRouter = (
   initialUrl?: string | URL | Location,
-  base: string = isClient() ? window.location.href : DUMMY_BASE_URL,
+  base: string = isClient() && window.location.href !== "about:blank" ? window.location.href : DUMMY_BASE_URL,
 ) => {
   /**
    * Normalize the initial URL input to a URL object.
@@ -54,7 +54,7 @@ export const initRouter = (
 
   // Fallback to default if not provided
   if (isNullish(initialUrl)) {
-    initialUrl = isClient() ? window.location.href : "/";
+    initialUrl = isClient() && window.location.href !== "about:blank" ? window.location.href : "/";
   }
 
   const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, ...NO_HYDRATE });

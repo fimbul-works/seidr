@@ -43,6 +43,20 @@ describe("createAppState", () => {
       const strategy = state.getDataStrategy("test");
       expect(strategy).toEqual([captureFn, restoreFn]);
     });
+
+    it("should execute restoreFn if hydration data exists for key", () => {
+      const state = createAppState(1);
+      state.setData("seidr.hydration.data", {
+        data: {
+          test: "restored-value",
+        },
+      });
+
+      const restoreSpy = vi.fn();
+      state.defineDataStrategy("test", () => ({}), restoreSpy);
+
+      expect(restoreSpy).toHaveBeenCalledWith("restored-value");
+    });
   });
 
   describe("destroy()", () => {

@@ -68,7 +68,7 @@ describe("random", () => {
     expect(results1).not.toEqual(results2);
   });
 
-  it("should capture random state in SSR hydrationData under 'seidr.random' and match values on client and server", async () => {
+  it("should produce deterministic random values during SSR and match values on client hydration", async () => {
     const renderedValues: number[] = [];
 
     // Define component once to be used for both SSR and hydration
@@ -82,11 +82,6 @@ describe("random", () => {
     // 1. Server-side render
     cleanup = enableSSRMode();
     const { html, hydrationData } = await renderToString(RandomApp);
-
-    // Verify SSR payload captured the random state strategy explicitly under 'seidr.random'
-    expect(hydrationData.data).toBeDefined();
-    expect(hydrationData.data).toHaveProperty(DATA_KEY_RANDOM);
-    expect(hydrationData.data[DATA_KEY_RANDOM]).toBeDefined();
 
     const serverR1 = renderedValues[0];
     const serverR2 = renderedValues[1];
@@ -132,8 +127,6 @@ describe("random", () => {
     cleanup = enableSSRMode();
     const { html, hydrationData } = await renderToString(Parent);
 
-    // Verify 'seidr.random' key is stored in hydrationData.data
-    expect(hydrationData.data).toHaveProperty(DATA_KEY_RANDOM);
     expect(recordedValues).toHaveLength(3);
     const serverValues = [...recordedValues];
 

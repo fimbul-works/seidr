@@ -1,5 +1,6 @@
 import { isUndef } from "@fimbul-works/hvat";
 import type { SeidrComponent } from "../component/types.js";
+import { DATA_KEY_HYDRATION_DATA } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
@@ -36,6 +37,13 @@ export const createAppState = (ctxID: number): AppState => ({
   defineDataStrategy<T, I>(key: string, captureFn: CaptureDataFn<T>, restoreFn: RestoreDataFn<I>): void {
     if (process.env.SEIDR_DISABLE_SSR) return;
     this.strategies.set(key, [captureFn, restoreFn]);
+
+    if (this.hasData(DATA_KEY_HYDRATION_DATA)) {
+      const hydrationData = this.getData<{ data?: Record<string, any> }>(DATA_KEY_HYDRATION_DATA);
+      if (hydrationData?.data && key in hydrationData.data) {
+        restoreFn(hydrationData.data[key]);
+      }
+    }
   },
   getDataStrategy<T>(key: string): DataStrategy<T> | undefined {
     if (process.env.SEIDR_DISABLE_SSR) return;
