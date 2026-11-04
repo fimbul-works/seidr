@@ -1,4 +1,4 @@
-import { isFn, isStr } from "@fimbul-works/hvat";
+import { isFn, isStr, isUndef } from "@fimbul-works/hvat";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
@@ -98,7 +98,11 @@ export const withStorage = <T extends Value, V = Unwrapped<T>>(
   // Observe changes and save to storage
   value.watch((value) => {
     try {
-      storage.setItem(key, JSON.stringify(value));
+      if (isUndef(value)) {
+        storage.removeItem(key)
+      } else {
+        storage.setItem(key, JSON.stringify(value));
+      }
     } catch (error) {
       const err = wrapError(error);
       if (onError) {

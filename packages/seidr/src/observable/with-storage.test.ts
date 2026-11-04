@@ -45,6 +45,28 @@ describe("withStorage", () => {
     expect(JSON.parse(storage.getItem(STORAGE_KEY)!)).toEqual({ count: 1 });
   });
 
+  it("should remove 'undefined' keys instead of persisting them", () => {
+    const s = createValue({ count: 0 });
+    withStorage(STORAGE_KEY, s, { storage });
+
+    s({ count: undefined as any });
+
+    // Seidr updates are usually scheduled, but withStorage observer is called
+    // We might need to wait for a tick or use sync: true
+    expect(JSON.parse(storage.getItem(STORAGE_KEY)!)).toEqual({});
+  })
+
+  it("should remove 'undefined' values entirely", () => {
+    const s = createValue("holmgang");
+    withStorage(STORAGE_KEY, s, { storage });
+
+    s(undefined as any);
+
+    // Seidr updates are usually scheduled, but withStorage observer is called
+    // We might need to wait for a tick or use sync: true
+    expect(storage.getItem(STORAGE_KEY)).toEqual(null);
+  })
+
   it("should handle invalid JSON in storage (read error)", () => {
     storage.setItem(STORAGE_KEY, "not-json");
     const s = createValue({ foo: "initial" });
