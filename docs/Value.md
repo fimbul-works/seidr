@@ -11,10 +11,10 @@ Seidr uses callable getter-setter functions called **Values** (`Value<T>`) for r
 The primary factory function for creating reactive state.
 
 ```typescript
-import { createValue } from '@fimbul-works/seidr';
+import { createValue } from "@fimbul-works/seidr";
 
 const count = createValue(0);
-const name = createValue('Alice');
+const name = createValue("Alice");
 const isActive = createValue<boolean>(false);
 
 // Reading value (getter)
@@ -35,9 +35,9 @@ When creating a `Value`, you can provide an options object:
 
 ```typescript
 const count = createValue(0, {
-  id: 'count',
+  id: "count",
   isEqual: Object.is,
-  hydrate: true
+  hydrate: true,
 });
 ```
 
@@ -92,18 +92,18 @@ Creates a derived `Value` that automatically transforms the source observable's 
 ```typescript
 const count = createValue(2);
 
-const doubled = count.as((n) => n * 2);         // Value<number>
-const isEven = count.as((n) => n % 2 === 0);    // Value<boolean>
-const label = count.as((n) => `Count: ${n}`);   // Value<string>
+const doubled = count.as((n) => n * 2); // Value<number>
+const isEven = count.as((n) => n % 2 === 0); // Value<boolean>
+const label = count.as((n) => `Count: ${n}`); // Value<string>
 
 console.log(doubled()); // 4
-console.log(isEven());  // true
-console.log(label());   // "Count: 2"
+console.log(isEven()); // true
+console.log(label()); // "Count: 2"
 
 count(5);
 console.log(doubled()); // 10
-console.log(isEven());  // false
-console.log(label());   // "Count: 5"
+console.log(isEven()); // false
+console.log(label()); // "Count: 5"
 ```
 
 ---
@@ -151,13 +151,13 @@ unwatch();
 #### Side Effects with Teardown
 
 ```typescript
-const userId = createValue('user-1');
+const userId = createValue("user-1");
 
 userId.watch((id) => {
   const controller = new AbortController();
   fetch(`/api/users/${id}`, { signal: controller.signal })
     .then((res) => res.json())
-    .then((data) => console.log('User data:', data));
+    .then((data) => console.log("User data:", data));
 
   // Cleanup runs before next user ID change, when unwatching, or on component unmount
   return () => controller.abort();
@@ -218,13 +218,13 @@ isTracking.bind((active) => {
     console.log(`Pointer at (${e.clientX}, ${e.clientY})`);
   };
 
-  window.addEventListener('mousemove', onMouseMove);
+  window.addEventListener("mousemove", onMouseMove);
 
   // Automatically cleans up before active changes or when component unmounts
-  return () => window.removeEventListener('mousemove', onMouseMove);
+  return () => window.removeEventListener("mousemove", onMouseMove);
 });
 
-isTracking(true);  // Attaches event listener
+isTracking(true); // Attaches event listener
 isTracking(false); // Cleans up event listener
 ```
 
@@ -240,7 +240,7 @@ Registers a cleanup function that will be executed when `.destroy()` is called o
 ```typescript
 const count = createValue(0);
 count.cleanup(() => {
-  console.log('Value destroyed, performing custom resource cleanup');
+  console.log("Value destroyed, performing custom resource cleanup");
 });
 ```
 
@@ -262,19 +262,19 @@ count.destroy();
 Passing `Value` observables directly as props, attributes, or children into Seidr DOM element creators automatically binds them to the DOM:
 
 ```typescript
-import { createValue } from '@fimbul-works/seidr';
-import { $button, $div, $span } from '@fimbul-works/seidr/html';
+import { createValue } from "@fimbul-works/seidr";
+import { $button, $div, $span } from "@fimbul-works/seidr/html";
 
 const count = createValue(0);
 const isDisabled = count.as((c) => c >= 10);
 
-const counter = $div({ className: 'counter' }, [
+const counter = $div({ className: "counter" }, [
   $span({ textContent: count.as((c) => `Clicks: ${c}`) }),
   $button({
-    textContent: '+1',
+    textContent: "+1",
     disabled: isDisabled, // Reactive attribute binding
-    onclick: () => count((c) => c + 1)
-  })
+    onclick: () => count((c) => c + 1),
+  }),
 ]);
 ```
 
@@ -297,18 +297,18 @@ Creates a derived `Value` that depends on multiple reactive sources. Any `Value`
 **Returns:** Derived `Value<T>` instance.
 
 ```typescript
-import { createValue, mergeValues } from '@fimbul-works/seidr';
+import { createValue, mergeValues } from "@fimbul-works/seidr";
 
-const firstName = createValue('John');
-const lastName = createValue('Doe');
+const firstName = createValue("John");
+const lastName = createValue("Doe");
 
 const fullName = mergeValues(() => `${firstName()} ${lastName()}`);
 console.log(fullName()); // "John Doe"
 
-firstName('Jane');
+firstName("Jane");
 console.log(fullName()); // "Jane Doe"
 
-lastName('Smith');
+lastName("Smith");
 console.log(fullName()); // "Jane Smith"
 ```
 
@@ -345,17 +345,14 @@ Synchronizes a `Value` observable with browser storage (`localStorage` or `sessi
 **Returns:** The same `Value` instance with storage synchronization enabled.
 
 ```typescript
-import { createValue, withStorage } from '@fimbul-works/seidr';
+import { createValue, withStorage } from "@fimbul-works/seidr";
 
 // Persist in localStorage
-const theme = withStorage('app_theme', createValue('dark'));
+const theme = withStorage("app_theme", createValue("dark"));
 
 // Persist in sessionStorage with custom error handling
-const draft = withStorage(
-  'draft_content',
-  createValue(''),
-  sessionStorage,
-  (error, op) => console.warn(`Storage ${op} failed:`, error)
+const draft = withStorage("draft_content", createValue(""), sessionStorage, (error, op) =>
+  console.warn(`Storage ${op} failed:`, error),
 );
 ```
 
@@ -372,9 +369,9 @@ Ensures a value is wrapped in a `Value` observable. If already a `Value`, it is 
 **Returns:** `Value<T>`
 
 ```typescript
-import { createValue, wrapValue } from '@fimbul-works/seidr';
+import { createValue, wrapValue } from "@fimbul-works/seidr";
 
-const v1 = wrapValue(42);         // Returns a new Value<number> with 42
+const v1 = wrapValue(42); // Returns a new Value<number> with 42
 const v2 = wrapValue(createValue(42)); // Returns existing Value instance
 ```
 
@@ -390,11 +387,11 @@ Safely extracts the raw value from a `Value` observable or returns plain values 
 **Returns:** `T`
 
 ```typescript
-import { createValue, unwrapValue } from '@fimbul-works/seidr';
+import { createValue, unwrapValue } from "@fimbul-works/seidr";
 
 const count = createValue(5);
 console.log(unwrapValue(count)); // 5
-console.log(unwrapValue(10));    // 10
+console.log(unwrapValue(10)); // 10
 ```
 
 ---
@@ -407,13 +404,13 @@ This provides an OOP accessor bridge for reactive `Value` observables, allowing 
 
 **Generic Types:**
 
-* `T` — The type of value stored in the observable.
-* `K extends string = "value"` — The property key name on the returned object (defaults to `"value"`).
+- `T` — The type of value stored in the observable.
+- `K extends string = "value"` — The property key name on the returned object (defaults to `"value"`).
 
 **Parameters:**
 
-* `value: Value<T>` — The reactive `Value<T>` observable to wrap.
-* `key?: K` (default: `"value"`) — The property key to use on the returned object.
+- `value: Value<T>` — The reactive `Value<T>` observable to wrap.
+- `key?: K` (default: `"value"`) — The property key to use on the returned object.
 
 **Returns:** `Record<K, T>` — An object with getter and setter accessors bound to the `Value`.
 
@@ -427,9 +424,9 @@ const target = wrapValueObject(count);
 
 console.log(target.value); // 0 (calls count())
 
-target.value = 10;         // Calls count(10), triggering watchers and bindings
+target.value = 10; // Calls count(10), triggering watchers and bindings
 
-console.log(count());      // 10
+console.log(count()); // 10
 
 // Custom key
 const opacity = createValue(0);
@@ -437,7 +434,7 @@ const animTarget = wrapValueObject(opacity, "opacity");
 
 console.log(animTarget.opacity); // 0
 
-animTarget.opacity = 1;          // Calls opacity(1)
+animTarget.opacity = 1; // Calls opacity(1)
 ```
 
 #### OOP Animation Integration (e.g. [Flaedi](https://github.com/fimbul-works/flaedi))
@@ -470,7 +467,7 @@ The same adapter can be used with other libraries that expect mutable object pro
 Creates a specialized `Ref<T>` observable holding a DOM element reference (or `null`). A `Ref` is a decorated `Value` tailored for DOM element bindings via the `ref` prop, with SSR hydration disabled.
 
 ```typescript
-import { createRef } from '@fimbul-works/seidr';
+import { createRef } from "@fimbul-works/seidr";
 
 const inputRef = createRef<HTMLInputElement>();
 console.log(inputRef()); // null initially
@@ -490,11 +487,11 @@ Type guard checking if a value is a Seidr `Value` observable.
 **Returns:** `boolean` (type narrows to `v is Value<T>`).
 
 ```typescript
-import { createValue, isValue } from '@fimbul-works/seidr';
+import { createValue, isValue } from "@fimbul-works/seidr";
 
 const count = createValue(0);
 console.log(isValue(count)); // true
-console.log(isValue(42));    // false
+console.log(isValue(42)); // false
 ```
 
 ---
@@ -509,11 +506,11 @@ Type guard checking if a value is a Seidr `Ref` observable created by `createRef
 **Returns:** `boolean` (type narrows to `v is Ref<T>`).
 
 ```typescript
-import { isRef, createRef } from '@fimbul-works/seidr';
+import { isRef, createRef } from "@fimbul-works/seidr";
 
 const ref = createRef<HTMLDivElement>();
 console.log(isRef(ref)); // true
-console.log(isRef({}));  // false
+console.log(isRef({})); // false
 ```
 
 ---

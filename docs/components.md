@@ -2,7 +2,7 @@
 
 # Component & Lifecycle API
 
-Seidr components are functions that create and return UI elements. They receive configuration via arguments (*"props"*), create reactive state with [`createValue()`](Value.md#createvalue), and manage resource lifecycles using dedicated lifecycle hooks like [`onMounted()`](#onmounted), and [`onUnmounted()`](#onunmounted).
+Seidr components are functions that create and return UI elements. They receive configuration via arguments (_"props"_), create reactive state with [`createValue()`](Value.md#createvalue), and manage resource lifecycles using dedicated lifecycle hooks like [`onMounted()`](#onmounted), and [`onUnmounted()`](#onunmounted).
 
 ---
 
@@ -11,8 +11,8 @@ Seidr components are functions that create and return UI elements. They receive 
 Defines a component with automatic lifecycle tracking and deterministic ID generation.
 
 ```typescript
-import { createComponent, createValue } from '@fimbul-works/seidr';
-import { $button, $div, $span } from '@fimbul-works/seidr/html';
+import { createComponent, createValue } from "@fimbul-works/seidr";
+import { $button, $div, $span } from "@fimbul-works/seidr/html";
 
 interface CounterProps {
   initialCount?: number;
@@ -20,22 +20,18 @@ interface CounterProps {
   label?: string;
 }
 
-export const Counter = createComponent<CounterProps>(({
-  initialCount = 0,
-  step = 1,
-  label = 'Counter'
-} = {}) => {
+export const Counter = createComponent<CounterProps>(({ initialCount = 0, step = 1, label = "Counter" } = {}) => {
   const count = createValue(initialCount);
 
-  return $div({ className: 'counter' }, [
+  return $div({ className: "counter" }, [
     $span({ textContent: `${label}: ` }),
     $span({ textContent: count.as(String) }),
     $button({
       textContent: `+${step}`,
-      onclick: () => count((c) => c + step)
-    })
+      onclick: () => count((c) => c + step),
+    }),
   ]);
-}, 'Counter');
+}, "Counter");
 ```
 
 **Parameters:**
@@ -53,18 +49,15 @@ Components accept arguments for configuration. Props are captured when the compo
 - Child components can be passed directly as children in element arrays without JSX or extra wrapping.
 
 ```typescript
-import { createComponent } from '@fimbul-works/seidr';
-import { $div, $header, $img } from '@fimbul-works/seidr/html';
+import { createComponent } from "@fimbul-works/seidr";
+import { $div, $header, $img } from "@fimbul-works/seidr/html";
 
-const Header = createComponent(() => $header({ textContent: 'User Profile' }), 'Header');
-const Avatar = createComponent<{ src: string }>(({ src }) => $img({ src, alt: 'Avatar' }), 'Avatar');
+const Header = createComponent(() => $header({ textContent: "User Profile" }), "Header");
+const Avatar = createComponent<{ src: string }>(({ src }) => $img({ src, alt: "Avatar" }), "Avatar");
 
 const UserProfile = createComponent(() => {
-  return $div({ className: 'profile' }, [
-    Header(),
-    Avatar({ src: '/avatar.png' })
-  ]);
-}, 'UserProfile');
+  return $div({ className: "profile" }, [Header(), Avatar({ src: "/avatar.png" })]);
+}, "UserProfile");
 ```
 
 ---
@@ -74,10 +67,10 @@ const UserProfile = createComponent(() => {
 Mounts a component or element tree into a DOM container element.
 
 ```typescript
-import { mount } from '@fimbul-works/seidr';
-import { App } from './App.js';
+import { mount } from "@fimbul-works/seidr";
+import { App } from "./App.js";
 
-const unmount = mount(App, document.getElementById('app')!);
+const unmount = mount(App, document.getElementById("app")!);
 
 // Unmount and destroy component tree when needed
 unmount();
@@ -100,24 +93,24 @@ Seidr provides individual lifecycle hooks that can be called inside component fa
 Registers a callback executed when the component (or a specific target DOM node) is mounted to its parent container.
 
 ```typescript
-import { createComponent, onMounted } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { createComponent, onMounted } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
 
 const CanvasComponent = createComponent(() => {
-  const container = $div({ className: 'canvas-wrapper' });
+  const container = $div({ className: "canvas-wrapper" });
 
   // Hook without element: runs when component is mounted
   onMounted((parent) => {
-    console.log('Component mounted inside container:', parent);
+    console.log("Component mounted inside container:", parent);
   });
 
   // Hook with target node: runs when that specific node is mounted
   onMounted((parent) => {
-    console.log('Div attached to parent:', parent);
+    console.log("Div attached to parent:", parent);
   }, container);
 
   return container;
-}, 'CanvasComponent');
+}, "CanvasComponent");
 ```
 
 **Parameters:**
@@ -138,8 +131,8 @@ Registers a cleanup function executed when the component (or a specific target D
 Use `onUnmounted` to cancel timers, detach native event listeners, close WebSockets, or clean up custom non-reactive resources:
 
 ```typescript
-import { createComponent, createValue, onUnmounted } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { createComponent, createValue, onUnmounted } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
 
 const Timer = createComponent(() => {
   const seconds = createValue(0);
@@ -154,10 +147,10 @@ const Timer = createComponent(() => {
   });
 
   // Reactive subscriptions automatically clean up on unmount without needing onUnmounted:
-  seconds.watch((sec) => console.log('Tick:', sec));
+  seconds.watch((sec) => console.log("Tick:", sec));
 
   return $div({ textContent: seconds.as((s) => `Active for ${s}s`) });
-}, 'Timer');
+}, "Timer");
 ```
 
 > [!NOTE]
@@ -174,16 +167,16 @@ const Timer = createComponent(() => {
 Returns the active `SeidrComponent` instance during the execution of a component factory function.
 
 ```typescript
-import { createComponent, getComponentScope } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { createComponent, getComponentScope } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
 
 const Inspectable = createComponent(() => {
   const currentScope = getComponentScope();
-  console.log('Component ID:', currentScope?.id);
-  console.log('Component Name:', currentScope?.name);
+  console.log("Component ID:", currentScope?.id);
+  console.log("Component Name:", currentScope?.name);
 
   return $div({ textContent: `Component ID: ${currentScope?.id}` });
-}, 'Inspectable');
+}, "Inspectable");
 ```
 
 **Returns:** `SeidrComponent | null`
@@ -203,11 +196,11 @@ Internal DOM mutation listener that monitors `document.documentElement` to trigg
 Utility that ensures a pure function or existing component factory is normalized into a `SeidrComponentFactory`.
 
 ```typescript
-import { wrapComponent } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
+import { wrapComponent } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
 
-const SimpleView = () => $div({ textContent: 'Hello' });
-const factory = wrapComponent(SimpleView, 'SimpleView');
+const SimpleView = () => $div({ textContent: "Hello" });
+const factory = wrapComponent(SimpleView, "SimpleView");
 const componentInstance = factory();
 ```
 
@@ -248,7 +241,6 @@ export interface SeidrComponent {
   unmount(): void;
 }
 ```
-
 
 ---
 

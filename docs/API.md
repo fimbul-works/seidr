@@ -14,11 +14,13 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 ---
 
 ## [Application State](AppState.md) (`@fimbul-works/seidr`)
+
 - [`getAppState()`](AppState.md#getappstate) — Retrieve the active application execution context.
 - [`AppState`](AppState.md#appstate-interface) — Central execution context, component registry, and data store interface.
 - [`AppState.defineDataStrategy()`](AppState.md#defining-a-data-strategy-definedatastrategy) — Register pluggable state capture and hydration strategies.
 
 ## [Reactive State](Value.md) (`@fimbul-works/seidr`)
+
 - [`createValue()`](Value.md#createvalue) — Factory function to create reactive getter-setter Values.
 - [`mergeValues()`](Value.md#mergevalues) — Create a derived Value combining multiple parent observables.
 - [`withStorage()`](Value.md#withstorage) — Synchronize a Value with localStorage/sessionStorage.
@@ -30,6 +32,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
 - [`isRef()`](Value.md#isref) — Check if a value is a Seidr Ref observable.
 
 ## [DOM Elements](DOM.md)
+
 - **Core Utilities** (`@fimbul-works/seidr`)
   - [`$()`](DOM.md#--create-dom-elements) — Create a DOM element with reactive attributes and child bindings.
   - [`$factory()`](DOM.md#factory) — Create a reusable custom element creator.
@@ -45,6 +48,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - `$div`, `$span`, `$p`, `$h1`, `$button`, `$input`, `$ul`, `$li`, `$table`, and 100+ standard HTML tags.
 
 ## [Components & Lifecycle](components.md) (`@fimbul-works/seidr`)
+
 - [`createComponent()`](components.md#createcomponent) — Define a component with automatic lifecycle tracking.
 - [`mount()`](components.md#mount) — Mount a component to a DOM container.
 - Lifecycle Hooks:
@@ -63,6 +67,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`lazy()`](Lazy.md#lazy) — Asynchronous code-splitting utility for dynamically imported component modules.
 
 ## [Router API](Router.md) (`@fimbul-works/seidr-router`)
+
 - [`Router()`](Router.md#router) — Declarative router component supporting nested routing and SSR hydration.
 - [`Link()`](Router.md#link) — Declarative navigation link component preventing full reloads.
 - Hooks:
@@ -74,6 +79,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`interceptLinks()`](Router.md#interceptlinks) — Intercept clicks on anchor tags and navigate with the Seidr router.
 
 ## [Utilities & Type Guards](type-guards.md) (`@fimbul-works/seidr`)
+
 - Utilities (`docs/utils.md`):
   - [`random()`](utils.md#random-number-generator) — SSR-friendly pseudo-random number generator.
   - [`wrapError()`](utils.md#wraperror) — Wrap an unknown thrown value in an `Error` or `SeidrError`.
@@ -84,6 +90,7 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - DOM: [`isDOMNode`](type-guards.md#isdomnode), [`isHTMLElement`](type-guards.md#ishtmlelement), [`isComment`](type-guards.md#iscomment), [`isTextNode`](type-guards.md#istextnode).
 
 ## [SSR API](SSR.md) (`@fimbul-works/seidr/ssr` & `@fimbul-works/seidr`)
+
 - [`renderToString()`](SSR.md#rendertostring) — Render a component tree to HTML string and hydration payload with optional `initialAppState`.
 - [`hydrate()`](SSR.md#hydrate) — Hydrate server-rendered HTML markup on the client (accepts object or serialized string).
 - [`isHydrating()`](SSR.md#ishydrating) — Check if client-side hydration is currently active.
@@ -96,14 +103,17 @@ Seidr is organized into a lightweight core library and specialized sub-exports t
   - [`inServer()`](SSR.md#inserver) — Run code only on the server (awaits async Promises during SSR).
 
 ## [Build Plugins](build.md) (`@fimbul-works/seidr-build-tools`)
+
 - [`seidrVitePlugin()`](build.md#vite-plugin-seidrviteplugin) — Official Vite plugin for compile-time branch pruning and dead-code elimination.
 - [`seidrRolldownPlugin()`](build.md#rolldown-bundle-plugin-seidrrolldownplugin) — Official Rolldown plugin for component and bundle builds.
 
 ## [Testing Utilities](testing.md) (`@fimbul-works/seidr/testing`)
+
 - Dual-Mode Runners: [`describeDualMode()`](testing.md#describedualmode), [`itHasParity()`](testing.md#ithasparity).
 - Environment Controls: `enableClientMode()`, `enableSSRMode()`, `setupAppState()`, `mockLocation()`.
 
 ## [Official Addons](addons.md) (`@fimbul-works/seidr-*`)
+
 - [`@fimbul-works/seidr-router`](Router.md) — Declarative routing, nested routing, URL params, and history management.
 
 ---

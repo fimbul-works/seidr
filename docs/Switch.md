@@ -20,35 +20,35 @@ The `Switch` function selects and renders different element or component branche
 **Returns:** `Value<SeidrChild>` — A reactive derived `Value` representing the currently active branch.
 
 ```typescript
-import { Switch, createValue, mount } from '@fimbul-works/seidr';
-import { $button, $div, $p } from '@fimbul-works/seidr/html';
+import { Switch, createValue, mount } from "@fimbul-works/seidr";
+import { $button, $div, $p } from "@fimbul-works/seidr/html";
 
-type Tab = 'home' | 'profile' | 'settings';
+type Tab = "home" | "profile" | "settings";
 
-const activeTab = createValue<Tab>('home');
+const activeTab = createValue<Tab>("home");
 
 const TabContent = () => {
-  return $div({ className: 'tab-content' }, [
+  return $div({ className: "tab-content" }, [
     Switch(
       activeTab,
       {
-        home: () => $p({ textContent: 'Welcome to the Home tab!' }),
-        profile: () => $p({ textContent: 'User profile and details.' }),
-        settings: () => $p({ textContent: 'Application settings.' })
+        home: () => $p({ textContent: "Welcome to the Home tab!" }),
+        profile: () => $p({ textContent: "User profile and details." }),
+        settings: () => $p({ textContent: "Application settings." }),
       },
-      () => $p({ textContent: 'Page not found.' })
-    )
+      () => $p({ textContent: "Page not found." }),
+    ),
   ]);
 };
 
 const TabNavigation = () => {
-  return $div({ className: 'tabs-container' }, [
-    $div({ className: 'tab-buttons' }, [
-      $button({ textContent: 'Home', onclick: () => activeTab('home') }),
-      $button({ textContent: 'Profile', onclick: () => activeTab('profile') }),
-      $button({ textContent: 'Settings', onclick: () => activeTab('settings') })
+  return $div({ className: "tabs-container" }, [
+    $div({ className: "tab-buttons" }, [
+      $button({ textContent: "Home", onclick: () => activeTab("home") }),
+      $button({ textContent: "Profile", onclick: () => activeTab("profile") }),
+      $button({ textContent: "Settings", onclick: () => activeTab("settings") }),
     ]),
-    TabContent
+    TabContent,
   ]);
 };
 
@@ -56,6 +56,7 @@ mount(TabNavigation, document.body);
 ```
 
 ### Key Features
+
 - **Composable Derived Value:** `Switch` returns a `Value<SeidrChild>`, allowing it to be embedded directly as a child inside any element array or component.
 - **Dynamic Branches:** You can pass either a static record/Map or a reactive `Value<SwitchBranches<K>>` if branches change dynamically.
 - **Component Scope Preservation:** Branch factories execute with the caller's component scope preserved for accurate lifecycle tracking and automatic cleanup.

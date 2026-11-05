@@ -16,14 +16,14 @@ The `Safe` component acts as an error boundary, catching synchronous initializat
 **Returns:** [`SeidrComponent`](components.md#seidrcomponent-type)
 
 ```typescript
-import { Safe, onUnmounted, mount, SeidrError } from '@fimbul-works/seidr';
-import { $div, $h2, $p } from '@fimbul-works/seidr/html';
+import { Safe, onUnmounted, mount, SeidrError } from "@fimbul-works/seidr";
+import { $div, $h2, $p } from "@fimbul-works/seidr/html";
 
 const DangerousWidget = () => {
-  onUnmounted(() => console.log('Cleaning up dangerous widget'));
+  onUnmounted(() => console.log("Cleaning up dangerous widget"));
 
   // Code that might fail (e.g., malformed JSON or corrupted storage)
-  const rawData = '{ invalid json }';
+  const rawData = "{ invalid json }";
   const parsed = JSON.parse(rawData);
 
   return $div({ textContent: parsed.title });
@@ -31,17 +31,19 @@ const DangerousWidget = () => {
 
 const SafeWidget = Safe(
   DangerousWidget,
-  (err) => $div({ className: 'error-card' }, [
-    $h2({ textContent: 'Failed to load widget' }),
-    $p({ textContent: err.message })
-  ]),
-  'SafeWidget'
+  (err) =>
+    $div({ className: "error-card" }, [
+      $h2({ textContent: "Failed to load widget" }),
+      $p({ textContent: err.message }),
+    ]),
+  "SafeWidget",
 );
 
 mount(SafeWidget, document.body);
 ```
 
 ### Behavior & Features
+
 - **Error Interception:** Catches errors thrown during the synchronous creation pass of `factory()`.
 - **Automatic Normalization:** Normalizes thrown values into standard `Error` instances via `wrapError()`.
 - **Isolated Fallback:** Renders the fallback elements safely inside the component boundary.

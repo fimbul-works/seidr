@@ -2,7 +2,7 @@
 
 # Server-Side Rendering (SSR) & Hydration
 
-Seidr provides Server-Side Rendering with automatic state capture and deterministic client-side hydration. Components run in a *"Dual-Mode"* fashion, generating accessible static HTML on the server and seamless interactive functionality on the client without code duplication.
+Seidr provides Server-Side Rendering with automatic state capture and deterministic client-side hydration. Components run in a _"Dual-Mode"_ fashion, generating accessible static HTML on the server and seamless interactive functionality on the client without code duplication.
 
 ---
 
@@ -21,9 +21,9 @@ Seidr provides Server-Side Rendering with automatic state capture and determinis
 ### Server-Side (Node.js)
 
 ```typescript
-import { createValue, List } from '@fimbul-works/seidr';
-import { $div, $ul, $li } from '@fimbul-works/seidr/html';
-import { renderToString } from '@fimbul-works/seidr/ssr';
+import { createValue, List } from "@fimbul-works/seidr";
+import { $div, $ul, $li } from "@fimbul-works/seidr/html";
+import { renderToString } from "@fimbul-works/seidr/ssr";
 
 export interface Todo {
   id: string;
@@ -33,22 +33,22 @@ export interface Todo {
 
 // Dual-mode component working seamlessly on both server and client
 export const TodoApp = (initialTodos: Todo[] = []) => {
-  const todos = createValue(initialTodos, { id: 'todos' });
+  const todos = createValue(initialTodos, { id: "todos" });
 
-  return $div({ className: 'todo-app' }, [
+  return $div({ className: "todo-app" }, [
     $ul({}, [
       List<Todo, string>(
         todos,
         (item) => item.id,
-        (itemValue) => $li({ textContent: itemValue.as((t) => t.text) })
-      )
-    ])
+        (itemValue) => $li({ textContent: itemValue.as((t) => t.text) }),
+      ),
+    ]),
   ]);
 };
 
 // Server route handler (e.g. Express, Fastify, Hono, Node http)
-app.get('/', async (req, res) => {
-  const todos = await db.query('SELECT * FROM todos');
+app.get("/", async (req, res) => {
+  const todos = await db.query("SELECT * FROM todos");
 
   // Render component to HTML and capture hydration payload
   const { html, hydrationData } = await renderToString(() => TodoApp(todos));
@@ -75,10 +75,10 @@ app.get('/', async (req, res) => {
 ### Client-Side Hydration
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr';
-import { TodoApp } from './TodoApp.js';
+import { hydrate } from "@fimbul-works/seidr";
+import { TodoApp } from "./TodoApp.js";
 
-const container = document.getElementById('app')!;
+const container = document.getElementById("app")!;
 const hydrationData = window.__SEIDR_HYDRATION_DATA__;
 
 // Hydrate server markup and bind reactive event handlers
@@ -112,12 +112,11 @@ Renders a component tree to an HTML string and captures the hydration payload.
 - `hydrationData: HydrationData` — Captured state and structure map payload.
 
 ```typescript
-import { renderToString } from '@fimbul-works/seidr/ssr';
+import { renderToString } from "@fimbul-works/seidr/ssr";
 
-const { html, hydrationData } = await renderToString(
-  () => App(initialProps),
-  { currentUser: { id: '123', name: 'Alice' } }
-);
+const { html, hydrationData } = await renderToString(() => App(initialProps), {
+  currentUser: { id: "123", name: "Alice" },
+});
 ```
 
 ---
@@ -134,13 +133,13 @@ Hydrates server-rendered markup in the browser using the captured SSR hydration 
 **Returns:** `CleanupFunction` (`() => void`) to unmount and destroy the hydrated tree.
 
 ```typescript
-import { hydrate } from '@fimbul-works/seidr';
+import { hydrate } from "@fimbul-works/seidr";
 
 // Passing parsed object
-const unmount = hydrate(App, document.getElementById('app')!, window.__SEIDR_HYDRATION_DATA__);
+const unmount = hydrate(App, document.getElementById("app")!, window.__SEIDR_HYDRATION_DATA__);
 
 // Alternatively, passing raw serialized JSON string directly
-const unmountRaw = hydrate(App, document.getElementById('app')!, '{"ctxID":1,"data":{},"components":[]}');
+const unmountRaw = hydrate(App, document.getElementById("app")!, '{"ctxID":1,"data":{},"components":[]}');
 ```
 
 ---
@@ -152,25 +151,24 @@ Returns `true` if a hydration pass is currently in progress. Useful inside compo
 **Returns:** `boolean`
 
 ```typescript
-import { isHydrating } from '@fimbul-works/seidr';
+import { isHydrating } from "@fimbul-works/seidr";
 
 if (isHydrating()) {
-  console.log('Currently hydrating server-rendered markup');
+  console.log("Currently hydrating server-rendered markup");
 }
 ```
 
 ---
-
 
 ### `isClient()`
 
 Returns `true` if executing in the browser environment.
 
 ```typescript
-import { isClient } from '@fimbul-works/seidr';
+import { isClient } from "@fimbul-works/seidr";
 
 if (isClient()) {
-  console.log('Running in browser');
+  console.log("Running in browser");
 }
 ```
 
@@ -181,10 +179,10 @@ if (isClient()) {
 Returns `true` if executing on the server (SSR / Node.js).
 
 ```typescript
-import { isServer } from '@fimbul-works/seidr';
+import { isServer } from "@fimbul-works/seidr";
 
 if (isServer()) {
-  console.log('Running in SSR server');
+  console.log("Running in SSR server");
 }
 ```
 
@@ -200,11 +198,11 @@ Executes a callback only when running in the browser. Useful for accessing brows
 **Returns:** `T | undefined`
 
 ```typescript
-import { inClient } from '@fimbul-works/seidr';
+import { inClient } from "@fimbul-works/seidr";
 
 inClient(() => {
   const width = window.innerWidth;
-  console.log('Viewport width:', width);
+  console.log("Viewport width:", width);
 });
 ```
 
@@ -220,21 +218,19 @@ Executes a callback only when running on the server. If the callback returns a `
 **Returns:** `T | Promise<T> | undefined`
 
 ```typescript
-import { createValue, inServer } from '@fimbul-works/seidr';
-import { $div, $p } from '@fimbul-works/seidr/html';
+import { createValue, inServer } from "@fimbul-works/seidr";
+import { $div, $p } from "@fimbul-works/seidr/html";
 
 const AsyncProfile = () => {
   const profileData = createValue<any>(null);
 
   inServer(async () => {
-    const res = await fetch('https://api.example.com/profile');
+    const res = await fetch("https://api.example.com/profile");
     profileData(await res.json());
     // renderToString awaits this async function before rendering HTML!
   });
 
-  return $div({}, [
-    $p({ textContent: profileData.as((p) => p ? `Welcome, ${p.name}` : 'Loading...') })
-  ]);
+  return $div({}, [$p({ textContent: profileData.as((p) => (p ? `Welcome, ${p.name}` : "Loading...")) })]);
 };
 ```
 
@@ -249,13 +245,13 @@ Seidr uses a pluggable serializer to stringify and parse SSR hydration payloads.
 If your application state includes types not supported by standard JSON (such as `Date`, `Map`, `Set`, `BigInt`, or `RegExp`), you can register a custom serializer via `setHydrationSerializer()`:
 
 ```typescript
-import { setHydrationSerializer, type HydrationSerializer } from '@fimbul-works/seidr';
-import superjson from 'superjson';
+import { setHydrationSerializer, type HydrationSerializer } from "@fimbul-works/seidr";
+import superjson from "superjson";
 
 // Configure custom serializer on both server and client:
 const superjsonSerializer: HydrationSerializer = {
   stringify: (data) => superjson.stringify(data),
-  parse: (text) => superjson.parse(text)
+  parse: (text) => superjson.parse(text),
 };
 
 setHydrationSerializer(superjsonSerializer);
@@ -266,7 +262,7 @@ setHydrationSerializer(superjsonSerializer);
 Returns the currently active hydration serializer instance.
 
 ```typescript
-import { getHydrationSerializer } from '@fimbul-works/seidr';
+import { getHydrationSerializer } from "@fimbul-works/seidr";
 
 const serializer = getHydrationSerializer();
 ```
@@ -274,4 +270,3 @@ const serializer = getHydrationSerializer();
 ---
 
 [Seidr](https://github.com/fimbul-works/seidr) brought to you by [FimbulWorks](https://github.com/fimbul-works) | [README.md](../README.md) | [API.md](API.md)
-

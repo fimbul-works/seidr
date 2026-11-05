@@ -5,6 +5,7 @@
 When implementing, refactoring, or porting any component, primitive, or hook for `seidr-ui`:
 
 ### 1. Slow Down & Behavior-First Alignment Protocol
+
 - **DO NOT start implementing code immediately.**
 - **Study Kobalte for Intended Behavior ONLY**:
   - Study the corresponding Kobalte component/hook source solely to understand the **intended behavioral contract** (user interactions, accessibility/WAI-ARIA roles, attributes, keyboard navigation, state transitions).
@@ -17,6 +18,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
   - **NEVER** begin writing code until the user has confirmed the behavior and granted permission to proceed.
 
 ### 2. Strict Two-Tier Component Model & Semantic CSS Annotations (`dataComponent` & `dataPart`)
+
 - **Strictly Two Public Tiers Only (No Tier 3)**:
   - Component packages export ONLY `<Component>`, `create<Component>`, and `types`.
   - Underlying `use<Component>` hooks and raw subcomponent files are strictly **internal implementation details**—never exported or supported for standalone consumer instantiations.
@@ -39,6 +41,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
     - Forward `dataComponent: "checkbox"` so it overrides the underlying default `dataComponent: "form-control"` via props spreading, while preserving `dataPart: "label"`.
 
 ### 3. Strict Type Safety & Forbid `as any` Casting
+
 - **Avoid `as any` at All Costs**: Casting expressions as `any` destroys TypeScript's type safety and makes the codebase impossible to reason about.
 - **Extract Props Directly via Destructuring**:
   - Always declare component props explicitly in `SubcomponentProps` (e.g. `dataComponent?: string`, `role?: ...`, `ariaLabel?: string`).
@@ -47,18 +50,18 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Type DOM Elements with `SeidrElementProps<T>`**:
   - Pass props to element factories typed as `as SeidrElementProps<T>` rather than `as any`.
 
-
 ---
-
 
 ## Top Foundational Rules & Architectural Invariants in Seidr
 
 ### Rule 1: Single-Pass Component Execution (No Re-Render Loops)
+
 - **The Invariant**: Components in Seidr are initialization factories that execute **exactly once** (`createComponent()`). There is NO virtual DOM, NO component re-render cycle, and NO hook re-execution loop.
 - **Why It Matters**: Variables, closures, and DOM elements created in a component body exist permanently for the life of that component instance. State changes do not re-run the component factory; they update DOM nodes directly via fine-grained reactive listeners.
 - **Reference Docs**: [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#createcomponent), [docs/presence-and-transitions.md](file:///home/claus/code/TypeScript/seidr/docs/presence-and-transitions.md#4-current-state-of-seidr-core)
 
 ### Rule 2: Seidr Reactive Typing Hierarchy (`Value`, `DerivedValue`, `ObservableValue`, `ReactiveValue`)
+
 - **The Invariant**: Reactive state in Seidr consists of distinct typing tiers:
   - `Value<T>`: Callable dual getter-setter function for mutable state (`val()` reads, `val(newVal)` and `val(prevVal => newVal)` mutates).
   - `DerivedValue<T>`: Read-only reactive value produced by derivations (`source.as(...)`, `mergeValues(...)`, `Show(...)`).
@@ -68,31 +71,35 @@ When implementing, refactoring, or porting any component, primitive, or hook for
   - `wrapValue(x)`: Normalizes `ReactiveValue<T>` into an `ObservableValue<T>` (creates a `Value<T>` if given a raw scalar, or preserves existing observables).
   - `unwrapValue(x)`: Extracts the underlying scalar `T` whether `x` is raw or observable.
 - **Immediate vs Delayed Observers (`bind` vs `watch`)**:
-  - `.watch(callback)`: Executes *only* on subsequent state mutations.
-  - `.bind(callback)`: Executes *immediately* upon registration with the current value, and then on every subsequent mutation.
+  - `.watch(callback)`: Executes _only_ on subsequent state mutations.
+  - `.bind(callback)`: Executes _immediately_ upon registration with the current value, and then on every subsequent mutation.
 - **Avoid Casting with `as Value`**: Never cast derived values as mutable `Value<T>` or `as any`. Use `DerivedValue<T>` or `ObservableValue<T>`.
-- **The Function-Children Trap**: Because `Value<T>` *is a function*, using `typeof x === "function"` or typing `children?: SeidrChild | ((state) => SeidrChild)` creates severe bugs by misclassifying reactive values and reactive child getters (`() => SeidrChild`) as render props.
+- **The Function-Children Trap**: Because `Value<T>` _is a function_, using `typeof x === "function"` or typing `children?: SeidrChild | ((state) => SeidrChild)` creates severe bugs by misclassifying reactive values and reactive child getters (`() => SeidrChild`) as render props.
 - **Use Type Guards**: Use `isValue(x)` from `@fimbul-works/seidr` to verify reactive values.
 - **FORBID Mixed Render Props**: Never accept a function as `children` or mix render-props with standard `SeidrChild | SeidrChild[]`. If a custom render function is strictly required, use a separate named prop with a distinct type (e.g. `RenderContent`).
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#createvalue), [docs/type-guards.md](file:///home/claus/code/TypeScript/seidr/docs/type-guards.md#isvalue)
 
 ### Rule 3: Automatic Component Scope Cleanup vs. Manual Unwatch
-- **The Invariant**: When `.watch()` or `.bind()` is called *inside* an active component factory, Seidr automatically registers its teardown with that component's `onUnmounted` lifecycle.
+
+- **The Invariant**: When `.watch()` or `.bind()` is called _inside_ an active component factory, Seidr automatically registers its teardown with that component's `onUnmounted` lifecycle.
 - **When `onUnmounted` is Required**: Only call explicit `onUnmounted(() => ...)` for non-reactive external resources (native `window.addEventListener`, `setInterval`, `ResizeObserver`, WebSocket connections).
 - **Outside Components (Tests/Global)**: Subscriptions live indefinitely until manually stopped by calling the returned `unwatch()` / `unbind()` or calling `.destroy()` on the `Value`.
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-scope-cleanup-vs-manual-unwatch), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onunmounted)
 
 ### Rule 4: Fine-Grained Reactive DOM Data-Binding via `$()` and HTML Helpers
+
 - **The Invariant**: Passing an `ObservableValue<T>` directly as an attribute property (e.g. `disabled: isDisabled`, `className: clsValue`) or child into `$()` / `$button()` / `$div()` binds reactively to that exact attribute or text node.
 - **Why It Matters**: Updates bypass parent and sibling elements completely. There is no diffing overhead; only the targeted DOM attribute or text node mutates.
 - **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#--create-dom-elements), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#automatic-dom-data-binding)
 
 ### Rule 5: Derivations (`.as()`) vs Multi-Source (`mergeValues`) & The Conditional Branch Trap
+
 - **The Invariant**: Use `source.as(v => transform(v))` for single-source derivations. Use `mergeValues(() => a() + b())` for multi-source derivations.
-- **The Conditional Trap**: `mergeValues` only auto-discovers dependencies read on its **initial execution**. If it contains conditional branches (`if (cond()) x() else y()`), observables in untaken branches will *not* be tracked. In such cases, you **must** supply explicit parents: `mergeValues(fn, { parents: [cond, x, y] })`.
+- **The Conditional Trap**: `mergeValues` only auto-discovers dependencies read on its **initial execution**. If it contains conditional branches (`if (cond()) x() else y()`), observables in untaken branches will _not_ be tracked. In such cases, you **must** supply explicit parents: `mergeValues(fn, { parents: [cond, x, y] })`.
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#mergevalues)
 
 ### Rule 6: Control Flow (`Show`, `Switch`, `List`) Returns Derived Reactive Values
+
 - **The Invariant**: `Show(condition, whenTrue, whenFalse)` and `Switch(value, branches, fallback)` are not compiler macros; they return a `DerivedValue<SeidrChild | null>`.
 - **The Show Pattern**: Always wrap conditions into an observable (`wrapValue(condition)`) and return `Show(condition, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>`. Never branch with `if (condition) return Show(...) else return $(...)`.
 - **Composition**: They can be embedded directly in child arrays: `$div([ Show(isOpen, () => $p('Open')) ])`.
@@ -100,11 +107,13 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Reference Docs**: [docs/Show.md](file:///home/claus/code/TypeScript/seidr/docs/Show.md), [docs/Switch.md](file:///home/claus/code/TypeScript/seidr/docs/Switch.md), [docs/List.md](file:///home/claus/code/TypeScript/seidr/docs/List.md)
 
 ### Rule 7: Element References (`createRef`) & Document Attachment Timing
+
 - **The Invariant**: `createRef<T>()` creates a decorated `Ref<T>` with SSR hydration disabled. Pass it to the `ref` prop: `$input({ ref: inputRef })`.
 - **Attachment Timing**: While Seidr sets the ref on element creation and resets it to `null` on unmount, the node is **only guaranteed to be attached to the document DOM tree inside `onMounted()`**. Measuring layout geometry (`getBoundingClientRect`), focusing elements, or initializing canvas contexts must be done inside `onMounted()`.
 - **Reference Docs**: [docs/DOM.md](file:///home/claus/code/TypeScript/seidr/docs/DOM.md#element-references-createref), [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md#onmounted)
 
 ### Rule 8: Guarded State Pattern & Subcomponent Integrity
+
 - **Guarded State Invariant**: When state transitions can be blocked (e.g. `isDisabled`, `isReadOnly`), never expose the raw mutable `state: Value<T>` directly to consumers.
   1. Internal mutable state: `const state = createValue(initial)`.
   2. Exposed value: derived read-only `state.as(v => v)` (`DerivedValue<T>`).
@@ -114,6 +123,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#as)
 
 ### Rule 9: Dual-Mode Environment Boundaries (`isClient`, `inClient`, `inServer`)
+
 - **The Invariant**: Seidr components run isomorphically on both server (SSR) and client.
 - **Environment Isolation**:
   - `inClient(() => ...)` runs exclusively in the browser. Wrap all browser-only globals (`window`, `document`, timers, `localStorage`, `ResizeObserver`) here.
@@ -122,18 +132,21 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Reference Docs**: [docs/SSR.md](file:///home/claus/code/TypeScript/seidr/docs/SSR.md#isclient-inclient-isserver-inserver)
 
 ### Rule 10: Deterministic IDs & Context Management (`AppState`)
+
 - **The Invariant**: `createValue(init, { id: '...' })` acts as a **singleton** within the active `AppState`. Calling `createValue` with an existing `id` returns the existing instance rather than creating a new one.
 - **SSR Lock-Step Hydration**: Values created inside components automatically get deterministic sequence IDs (`1-1`, `1-2`) based on the component's hierarchical ID.
 - **Global Values**: Creating Values outside of components during SSR without explicit IDs warns in development because it risks hydration mismatches.
 - **Reference Docs**: [docs/AppState.md](file:///home/claus/code/TypeScript/seidr/docs/AppState.md), [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#valueoptions), [docs/SSR.md](file:///home/claus/code/TypeScript/seidr/docs/SSR.md#architecture-lock-step-hydration)
 
 ### Rule 11: Synchronous Unmount Engine & Exit Animations
+
 - **The Invariant**: Seidr's reactive node remover synchronously tears down components and removes DOM nodes when a condition becomes falsy.
 - **Do NOT Replicate React `usePresence`**: Multi-pass presence hooks that abuse re-renders are fundamentally incompatible with Seidr's single-pass model.
 - **Idiomatic Approach**: For animated reveals and hides, prefer modern CSS transitions with `@starting-style` and `transition-behavior: allow-discrete` (toggling `hidden` and `data-state`), or a dedicated reactive coordinator component (`AnimatedShow`).
 - **Reference Docs**: [docs/presence-and-transitions.md](file:///home/claus/code/TypeScript/seidr/docs/presence-and-transitions.md#5-architectural-approaches-for-seidr)
 
 ### Rule 12: Minimal Architecture (No Unneeded Context Stacks)
+
 - **The Invariant**: Avoid replicating ANY external framework features or complex context hierarchies unless it is a core, unavoidable requirement.
 - Coordinate directly via props, derived values, or minimal element factories.
 - **Reference Docs**: [docs/components.md](file:///home/claus/code/TypeScript/seidr/docs/components.md)

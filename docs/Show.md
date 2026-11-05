@@ -39,20 +39,21 @@ mount(App, document.body);
 You can supply an optional third callback to render fallback content when `condition` is falsy:
 
 ```typescript
-import { Show, createValue } from '@fimbul-works/seidr';
-import { $p } from '@fimbul-works/seidr/html';
+import { Show, createValue } from "@fimbul-works/seidr";
+import { $p } from "@fimbul-works/seidr/html";
 
 const isLoggedIn = createValue(false);
 
 const UserGreeting = () =>
   Show(
     isLoggedIn,
-    () => $p({ textContent: 'Welcome back, authenticated user!' }),
-    () => $p({ textContent: 'Please log in to continue.' })
+    () => $p({ textContent: "Welcome back, authenticated user!" }),
+    () => $p({ textContent: "Please log in to continue." }),
   );
 ```
 
 ### Behavior & Semantics
+
 - **Derived Value Return:** `Show` returns a reactive `Value<SeidrChild>` (implemented via `condition.as(...)`). It can be passed directly as a child inside any Seidr element creator (like `$div`, `$section`), and the DOM automatically updates when the condition changes.
 - **Truthiness:** Evaluates the JavaScript truthiness of `condition()`. Any truthy value displays `whenTrue()`.
 - **Falsy Handling:** When falsy, renders `whenFalse()` if provided, or `null` (rendering nothing).

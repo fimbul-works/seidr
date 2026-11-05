@@ -11,9 +11,9 @@ Seidr includes several built-in utilities for error wrapping, deterministic rand
 The standard error class thrown by Seidr runtime assertions and invalid lifecycle operations.
 
 ```typescript
-import { SeidrError } from '@fimbul-works/seidr';
+import { SeidrError } from "@fimbul-works/seidr";
 
-throw new SeidrError('Custom Seidr error message');
+throw new SeidrError("Custom Seidr error message");
 ```
 
 ---
@@ -23,8 +23,8 @@ throw new SeidrError('Custom Seidr error message');
 A deterministic, high-entropy pseudo-random number generator using the SplitMix32 algorithm. Unlike `Math.random()`, this integrates with Seidr's [`AppState`](AppState.md) so the server and client produce the same sequence during hydration, preventing mismatches.
 
 ```typescript
-import { createValue, mount, random } from '@fimbul-works/seidr';
-import { $button, $div } from '@fimbul-works/seidr/html';
+import { createValue, mount, random } from "@fimbul-works/seidr";
+import { $button, $div } from "@fimbul-works/seidr/html";
 
 const RandomExample = () => {
   const messages = ["Push me", "Poke me", "Try me"];
@@ -33,7 +33,7 @@ const RandomExample = () => {
   return $div([
     $button({
       textContent: messages[Math.floor(random() * messages.length)],
-      onclick: () => num(Math.floor(random() * 10) + 1)
+      onclick: () => num(Math.floor(random() * 10) + 1),
     }),
     $div({ textContent: num }),
   ]);
@@ -52,17 +52,14 @@ The package includes a large collection of various randomizing utilities such as
 
 ```typescript
 import { random } from "@fimbul-works/seidr";
-import { $button, $div, $input } from '@fimbul-works/seidr/html';
+import { $button, $div, $input } from "@fimbul-works/seidr/html";
 import { randomString, shuffleArray } from "@fimbul-works/random";
 
 const Quiz = ({ questions }) => {
   const shuffled = shuffleArray(questions, random); // deterministic during hydration
-  const inputId = `q-${randomString(8, '0123456789', random)}`; // hydration-safe element ID
+  const inputId = `q-${randomString(8, "0123456789", random)}`; // hydration-safe element ID
 
-  return $div([
-    $label({ htmlFor: inputId, textContent: shuffled[0].text }),
-    $input({ id: inputId }),
-  ]);
+  return $div([$label({ htmlFor: inputId, textContent: shuffled[0].text }), $input({ id: inputId })]);
 };
 ```
 
@@ -79,10 +76,10 @@ Ensures a caught value is an instance of `Error` or a custom error subclass (e.g
 **Returns:** `E` — The error instance.
 
 ```typescript
-import { wrapError, SeidrError } from '@fimbul-works/seidr';
+import { wrapError, SeidrError } from "@fimbul-works/seidr";
 
 try {
-  throw 'Something went wrong';
+  throw "Something went wrong";
 } catch (e) {
   const err = wrapError(e, SeidrError);
   console.log(err instanceof SeidrError); // true

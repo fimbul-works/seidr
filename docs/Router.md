@@ -15,21 +15,22 @@ The router supports dynamic path parameters, wildcard routes, regular expression
 The declarative routing component that matches the current URL against an array of route definitions and renders the matching route component.
 
 ```typescript
-import { Router, type Route } from '@fimbul-works/seidr-router';
-import { Home } from './pages/Home.js';
-import { UserProfile } from './pages/UserProfile.js';
-import { NotFound } from './pages/NotFound.js';
+import { Router, type Route } from "@fimbul-works/seidr-router";
+import { Home } from "./pages/Home.js";
+import { UserProfile } from "./pages/UserProfile.js";
+import { NotFound } from "./pages/NotFound.js";
 
 const routes: Route[] = [
-  { path: '/', component: Home, exact: true },
-  { path: '/users/:id', component: UserProfile },
-  { path: '*', component: NotFound }
+  { path: "/", component: Home, exact: true },
+  { path: "/users/:id", component: UserProfile },
+  { path: "*", component: NotFound },
 ];
 
 export const App = () => Router(routes);
 ```
 
 #### Parameters:
+
 - `routes: Array<Route> | Value<Array<Route>>` — Static array of route definitions, or a reactive [`Value`](Value.md) allowing dynamic route changes.
 - `options?: RouterOptions` — Optional router configuration:
   - `url?: string | URL | Location` — Initial URL (defaults to `window.location.pathname` in the browser or `"/"` in SSR).
@@ -66,22 +67,19 @@ Most UI libraries (such as React Router, TanStack Router, Next.js, and Vue Route
 In Seidr, the route table itself is a first-class observable:
 
 ```typescript
-import { createValue } from '@fimbul-works/seidr';
-import { Router, type Route } from '@fimbul-works/seidr-router';
-import { HomePage, PublicPage, SecretPage } from './pages.js';
+import { createValue } from "@fimbul-works/seidr";
+import { Router, type Route } from "@fimbul-works/seidr-router";
+import { HomePage, PublicPage, SecretPage } from "./pages.js";
 
 // 1. Initial route table as a reactive Value
 export const routes = createValue<Route[]>([
-  { path: '/', component: HomePage, exact: true },
-  { path: '/public', component: PublicPage },
+  { path: "/", component: HomePage, exact: true },
+  { path: "/public", component: PublicPage },
 ]);
 
 // 2. Dynamically mutate the route table at runtime
 export function unlockSecretRoute() {
-  routes((prev) => [
-    ...prev,
-    { path: '/secret-chamber', component: SecretPage },
-  ]);
+  routes((prev) => [...prev, { path: "/secret-chamber", component: SecretPage }]);
 }
 
 // 3. Router subscribes to `routes` and reconciles seamlessly
@@ -89,11 +87,11 @@ export const App = () => Router(routes);
 ```
 
 #### Why This Matters & Use Cases:
+
 - **Zero-Teardown Reconciliation**: When `routes` updates, the router re-evaluates the active match against the current URL. If the currently rendered route component still matches, it is preserved in place without remounting, preserving DOM state and scroll position. If a newly registered route now matches the active URL (e.g. unlocking a path while the user was on it or on a 404 fallback), it transitions smoothly.
 - **Progressive Disclosure & Easter Eggs**: Applications and exploratory websites can progressively reveal new routes, secret areas, and easter eggs based on user discovery, achievements, or interaction sequences.
 - **Role & Auth Transitions**: Dynamically register administrative, moderator, or premium routes upon authentication without requiring full-page reloads or tearing down application layouts.
 - **Plugin & Micro-Frontend Systems**: Third-party plugins or dynamically loaded modules can register their own routes into the host application's route table at runtime.
-
 
 ---
 
@@ -102,28 +100,27 @@ export const App = () => Router(routes);
 An element creator for client-side navigation. It renders an HTML anchor (`<a>` by default) with an `onclick` handler that prevents standard full-page reloads and triggers client-side router navigation.
 
 ```typescript
-import { $span } from '@fimbul-works/seidr/html';
-import { Link } from '@fimbul-works/seidr-router';
+import { $span } from "@fimbul-works/seidr/html";
+import { Link } from "@fimbul-works/seidr-router";
 
 // Basic Link
-const homeLink = Link({ href: '/' }, 'Home');
+const homeLink = Link({ href: "/" }, "Home");
 
 // Link with reactive destination and custom child elements
 const userLink = Link(
   {
     href: userId.as((id) => `/users/${id}`),
-    className: 'nav-link'
+    className: "nav-link",
   },
-  [
-    $span({ textContent: 'View Profile' })
-  ]
+  [$span({ textContent: "View Profile" })],
 );
 
 // Custom element tag (e.g. button styled as a link)
-const buttonLink = Link({ href: '/dashboard', tagName: 'button' }, 'Go to Dashboard');
+const buttonLink = Link({ href: "/dashboard", tagName: "button" }, "Go to Dashboard");
 ```
 
 #### Parameters:
+
 - `props: LinkProps<K> & SeidrElementProps<K>`:
   - `href: string | Value<string>` — The destination route pathname or URL.
   - `tagName?: K` (default: `"a"`) — HTML element tag to create.
@@ -146,8 +143,8 @@ Seidr provides reactive hooks that can be called anywhere inside component rende
 Returns a programmatic navigation function.
 
 ```typescript
-import { $button } from '@fimbul-works/seidr/html';
-import { useNavigate } from '@fimbul-works/seidr-router';
+import { $button } from "@fimbul-works/seidr/html";
+import { useNavigate } from "@fimbul-works/seidr-router";
 
 const NavigationControls = () => {
   const navigate = useNavigate();
@@ -155,26 +152,27 @@ const NavigationControls = () => {
   return [
     // Push new history entry
     $button({
-      textContent: 'Go to Settings',
-      onclick: () => navigate('/settings')
+      textContent: "Go to Settings",
+      onclick: () => navigate("/settings"),
     }),
 
     // Replace current history entry
     $button({
-      textContent: 'Redirect to Home',
-      onclick: () => navigate('/', true)
+      textContent: "Redirect to Home",
+      onclick: () => navigate("/", true),
     }),
 
     // Delta history navigation (back/forward)
     $button({
-      textContent: 'Go Back',
-      onclick: () => navigate(-1)
-    })
+      textContent: "Go Back",
+      onclick: () => navigate(-1),
+    }),
   ];
 };
 ```
 
 #### Returns: `NavigateFn`
+
 - `navigate(to: string, replace?: boolean): void` — Navigates to a path.
 - `navigate(delta: number): void` — Steps backward or forward in browser history (e.g. `-1`, `1`).
 
@@ -185,14 +183,14 @@ const NavigationControls = () => {
 Returns the current router pathname as a reactive, read-only [`Value<string>`](Value.md).
 
 ```typescript
-import { $p } from '@fimbul-works/seidr/html';
-import { usePathname } from '@fimbul-works/seidr-router';
+import { $p } from "@fimbul-works/seidr/html";
+import { usePathname } from "@fimbul-works/seidr-router";
 
 const CurrentRouteDisplay = () => {
   const pathname = usePathname();
 
   return $p({
-    textContent: pathname.as((path) => `Current Path: ${path}`)
+    textContent: pathname.as((path) => `Current Path: ${path}`),
   });
 };
 ```
@@ -207,8 +205,8 @@ const CurrentRouteDisplay = () => {
 Returns the route parameters extracted from the current route pattern as a reactive [`Value<Record<string, string>>`](Value.md).
 
 ```typescript
-import { $div, $h1 } from '@fimbul-works/seidr/html';
-import { useRouteParams } from '@fimbul-works/seidr-router';
+import { $div, $h1 } from "@fimbul-works/seidr/html";
+import { useRouteParams } from "@fimbul-works/seidr-router";
 
 // Route: "/users/:userId/posts/:postId"
 const PostView = () => {
@@ -216,8 +214,8 @@ const PostView = () => {
 
   return $div({}, [
     $h1({
-      textContent: params.as((p) => `User ${p.userId} - Post ${p.postId}`)
-    })
+      textContent: params.as((p) => `User ${p.userId} - Post ${p.postId}`),
+    }),
   ]);
 };
 ```
@@ -229,34 +227,35 @@ const PostView = () => {
 Returns a tuple containing a reactive [`Value`](Value.md) of the current URL query parameters and a setter function to update individual query parameters.
 
 ```typescript
-import { $button, $input, $p } from '@fimbul-works/seidr/html';
-import { useSearchParams } from '@fimbul-works/seidr-router';
+import { $button, $input, $p } from "@fimbul-works/seidr/html";
+import { useSearchParams } from "@fimbul-works/seidr-router";
 
 const ProductFilter = () => {
   const [searchParams, setSearchParam] = useSearchParams();
 
   return [
     $input({
-      type: 'text',
-      placeholder: 'Filter by category...',
-      value: searchParams.as((params) => params.category ?? ''),
+      type: "text",
+      placeholder: "Filter by category...",
+      value: searchParams.as((params) => params.category ?? ""),
       oninput: (e: Event) => {
         const val = (e.target as HTMLInputElement).value;
-        setSearchParam('category', val);
-      }
+        setSearchParam("category", val);
+      },
     }),
     $p({
-      textContent: searchParams.as((p) => `Selected sort: ${p.sort ?? 'default'}`)
+      textContent: searchParams.as((p) => `Selected sort: ${p.sort ?? "default"}`),
     }),
     $button({
-      textContent: 'Sort Ascending',
-      onclick: () => setSearchParam('sort', 'asc')
-    })
+      textContent: "Sort Ascending",
+      onclick: () => setSearchParam("sort", "asc"),
+    }),
   ];
 };
 ```
 
 #### Returns: `[Value<Record<string, string>>, (name: string, value: string) => void]`
+
 - `searchParams: Value<Record<string, string>>` — Reactive record of all URL query parameters.
 - `setParam: (name: string, value: string) => void` — Updates a search parameter and pushes the new URL.
 
@@ -267,33 +266,33 @@ const ProductFilter = () => {
 Seidr routers automatically coordinate as a hierarchical tree. When a parent `Router` matches a prefix, any child `Router` rendered inside that route automatically scopes its paths relative to the parent router's matched path.
 
 ```typescript
-import { createComponent } from '@fimbul-works/seidr';
-import { $div, $nav, $p } from '@fimbul-works/seidr/html';
-import { Router, type Route, Link } from '@fimbul-works/seidr-router';
+import { createComponent } from "@fimbul-works/seidr";
+import { $div, $nav, $p } from "@fimbul-works/seidr/html";
+import { Router, type Route, Link } from "@fimbul-works/seidr-router";
 
 // Child routes inside the Admin section
 const adminRoutes: Route[] = [
-  { path: '/', component: () => $p({ textContent: 'Admin Dashboard Overview' }), exact: true },
-  { path: '/users', component: () => $p({ textContent: 'Manage Users' }) },
-  { path: '/reports', component: () => $p({ textContent: 'System Reports' }) }
+  { path: "/", component: () => $p({ textContent: "Admin Dashboard Overview" }), exact: true },
+  { path: "/users", component: () => $p({ textContent: "Manage Users" }) },
+  { path: "/reports", component: () => $p({ textContent: "System Reports" }) },
 ];
 
 const AdminLayout = () => {
-  return $div({ className: 'admin-layout' }, [
+  return $div({ className: "admin-layout" }, [
     $nav({}, [
-      Link({ to: '/admin' }, 'Overview'),
-      Link({ to: '/admin/users' }, 'Users'),
-      Link({ to: '/admin/reports' }, 'Reports')
+      Link({ to: "/admin" }, "Overview"),
+      Link({ to: "/admin/users" }, "Users"),
+      Link({ to: "/admin/reports" }, "Reports"),
     ]),
     // Nested router handles /admin/* paths relative to /admin
-    Router(adminRoutes)
+    Router(adminRoutes),
   ]);
 };
 
 // Root router
 const rootRoutes: Route[] = [
-  { path: '/', component: () => $p({ textContent: 'Public Home' }), exact: true },
-  { path: '/admin/*', component: AdminLayout }
+  { path: "/", component: () => $p({ textContent: "Public Home" }), exact: true },
+  { path: "/admin/*", component: AdminLayout },
 ];
 
 export const App = () => Router(rootRoutes);
@@ -308,9 +307,9 @@ export const App = () => Router(rootRoutes);
 Client-side utility that scans an element (or `document.body`) for anchor tags (`<a>`) and intercepts eligible link clicks to navigate with the Seidr router instead of causing a full-page reload. Ideal for dynamic content such as Markdown-rendered HTML.
 
 ```typescript
-import { onMounted, createRef } from '@fimbul-works/seidr';
-import { $div } from '@fimbul-works/seidr/html';
-import { interceptLinks } from '@fimbul-works/seidr-router';
+import { onMounted, createRef } from "@fimbul-works/seidr";
+import { $div } from "@fimbul-works/seidr/html";
+import { interceptLinks } from "@fimbul-works/seidr-router";
 
 const InterceptedLinksExample = () => {
   const containerRef = createRef<HTMLDivElement>();
@@ -322,6 +321,7 @@ const InterceptedLinksExample = () => {
 ```
 
 #### Criteria for link interception:
+
 - The `<a>` element does not have a `target` attribute.
 - The destination URL is either a relative path or has the same origin as the router.
 - The `<a>` element does not already have an `onclick` handler attached.

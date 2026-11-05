@@ -48,5 +48,3 @@ Before implementing, refactoring, or porting any component, primitive, or hook f
      - Every element must specify `dataComponent: "<kebab-name>"` (e.g. `"button"`, `"checkbox"`, `"collapsible"`, `"form-control"`).
      - Every compound sub-element must specify `dataPart: "<kebab-part>"` (e.g. `"root"`, `"control"`, `"indicator"`, `"thumb"`, `"trigger"`, `"content"`, `"label"`, `"description"`, `"error-message"`).
      - Composed parts delegating to another primitive (e.g., `CheckboxLabel` -> `FormControlLabel`): pass `dataComponent: "checkbox"` so it overrides the delegate's default `dataComponent: "form-control"`, preserving `dataPart: "label"`.
-
-

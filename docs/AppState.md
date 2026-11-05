@@ -13,10 +13,10 @@ In the browser, a default singleton `AppState` is maintained throughout the appl
 Retrieves the current active application state instance.
 
 ```typescript
-import { getAppState } from '@fimbul-works/seidr';
+import { getAppState } from "@fimbul-works/seidr";
 
 const appState = getAppState();
-console.log('Active request/context ID:', appState.ctxID);
+console.log("Active request/context ID:", appState.ctxID);
 ```
 
 **Returns:** [`AppState`](#appstate-interface)
@@ -57,15 +57,15 @@ export interface AppState {
 - **`deleteData(key: string): boolean`** — Removes a stored key from the application state.
 
 ```typescript
-import { getAppState } from '@fimbul-works/seidr';
+import { getAppState } from "@fimbul-works/seidr";
 
 const appState = getAppState();
 
 // Storing application-level service or state
-appState.setData('apiClient', new ApiClient({ token: 'xyz' }));
+appState.setData("apiClient", new ApiClient({ token: "xyz" }));
 
 // Retrieving stored data with type safety
-const client = appState.getData<ApiClient>('apiClient');
+const client = appState.getData<ApiClient>("apiClient");
 ```
 
 ---
@@ -85,16 +85,17 @@ appState.defineDataStrategy<T, I>(
 ```
 
 #### Parameters:
+
 - `key: string` — Unique identifier for the serialized state slice.
 - `captureFn: () => T` — Executed on the server at the end of SSR to extract serializable state.
 - `restoreFn: (data: I) => void` — Executed on the client during `hydrate()` before components re-render.
 
 ```typescript
-import { getAppState } from '@fimbul-works/seidr';
+import { getAppState } from "@fimbul-works/seidr";
 
-const DATA_KEY_PREFERENCES = 'app.preferences';
+const DATA_KEY_PREFERENCES = "app.preferences";
 
-export function initPreferences(initialTheme = 'light') {
+export function initPreferences(initialTheme = "light") {
   const appState = getAppState();
 
   // Define strategy if not already registered
@@ -102,14 +103,14 @@ export function initPreferences(initialTheme = 'light') {
     appState.defineDataStrategy(
       DATA_KEY_PREFERENCES,
       // Server-side capture
-      () => appState.getData('theme'),
+      () => appState.getData("theme"),
       // Client-side restore
-      (theme: string) => appState.setData('theme', theme)
+      (theme: string) => appState.setData("theme", theme),
     );
   }
 
-  if (!appState.hasData('theme')) {
-    appState.setData('theme', initialTheme);
+  if (!appState.hasData("theme")) {
+    appState.setData("theme", initialTheme);
   }
 }
 ```
@@ -118,10 +119,10 @@ export function initPreferences(initialTheme = 'light') {
 
 Seidr uses `AppState` data strategies internally to provide seamless SSR hydration for its core subsystems:
 
-| Key | Subsystem | Description |
-| :--- | :--- | :--- |
-| `DATA_KEY_STATE` (`state"`) | Reactive Values | Captures all registered `Value` instances created with `{ hydrate: true }` and restores them during hydration. |
-| `DATA_KEY_ROUTER` (`"router"`) | Router | Captures the server request URL and restores it during client-side hydration so the router starts on the exact server-matched route. |
+| Key                            | Subsystem       | Description                                                                                                                          |
+| :----------------------------- | :-------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
+| `DATA_KEY_STATE` (`state"`)    | Reactive Values | Captures all registered `Value` instances created with `{ hydrate: true }` and restores them during hydration.                       |
+| `DATA_KEY_ROUTER` (`"router"`) | Router          | Captures the server request URL and restores it during client-side hydration so the router starts on the exact server-matched route. |
 
 ---
 

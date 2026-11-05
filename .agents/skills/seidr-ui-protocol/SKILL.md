@@ -1,7 +1,8 @@
 ---
+
 name: seidr-ui-protocol
 description: >-
-  Use this skill whenever implementing, porting, refactoring, or reviewing components, hooks, or primitives in packages/seidr-ui. Enforces the behavior-first Kobalte analysis protocol, Seidr reactive state contracts, and forbids function-as-children anti-patterns.
+Use this skill whenever implementing, porting, refactoring, or reviewing components, hooks, or primitives in packages/seidr-ui. Enforces the behavior-first Kobalte analysis protocol, Seidr reactive state contracts, and forbids function-as-children anti-patterns.
 ---
 
 # Seidr UI Component & Hook Protocol
@@ -43,8 +44,8 @@ Before writing ANY code in `packages/seidr-ui`:
   - `wrapValue(x)`: Normalizes scalar or observable to an observable.
   - `unwrapValue(x)`: Extracts the underlying scalar from an observable or scalar.
 - **Immediate vs Delayed Observers (`bind` vs `watch`)**:
-  - `watch(cb)`: Runs *only* on subsequent state mutations.
-  - `bind(cb)`: Runs *immediately* on registration, and on every subsequent mutation.
+  - `watch(cb)`: Runs _only_ on subsequent state mutations.
+  - `bind(cb)`: Runs _immediately_ on registration, and on every subsequent mutation.
 - **Avoid Casting with `as Value`**: Use `DerivedValue<T>` or `ObservableValue<T>`.
 - **Guarded State Contract**:
   - When state updates can be blocked (e.g. `isDisabled`, `isReadOnly`):
@@ -127,5 +128,3 @@ When implementing or refactoring components:
    - Destructure needed properties directly from `props`: `const { as = "div" as T, instance, dataComponent, ...rest } = props;`.
    - Never use `(rest as any).dataComponent` or `(rest as any)["aria-label"]`. Extracting properties prevents them from leaking into `...rest` and keeps everything statically typed.
    - Pass props to element factories typed as `as SeidrElementProps<T>` rather than `as any`.
-
-

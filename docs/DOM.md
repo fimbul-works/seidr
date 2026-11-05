@@ -22,26 +22,26 @@ Creates a DOM element with reactive props, attributes, event handlers, and child
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
-import { $, createValue } from '@fimbul-works/seidr';
+import { $, createValue } from "@fimbul-works/seidr";
 
 const isDisabled = createValue(false);
 
-const button = $('button', {
-  className: 'btn btn-primary',
-  disabled: isDisabled, // Reactive boolean attribute binding
-  textContent: 'Click me',
-  onclick: () => console.log('Button clicked!')
-}, []);
+const button = $(
+  "button",
+  {
+    className: "btn btn-primary",
+    disabled: isDisabled, // Reactive boolean attribute binding
+    textContent: "Click me",
+    onclick: () => console.log("Button clicked!"),
+  },
+  [],
+);
 
 document.body.appendChild(button);
 
 // Shorthand: omitting props when only children are needed
-const container = $('div', [
-  $('h1', 'Title'),
-  $('p', 'Paragraph content without explicit props object')
-]);
+const container = $("div", [$("h1", "Title"), $("p", "Paragraph content without explicit props object")]);
 ```
-
 
 ---
 
@@ -56,21 +56,19 @@ Creates a reusable element factory function with optional predefined default pro
 **Returns:** `(props?: ElementProps, children?: SeidrChild | SeidrChild[]) => HTMLElement`
 
 ```typescript
-import { $factory } from '@fimbul-works/seidr';
+import { $factory } from "@fimbul-works/seidr";
 
 // Factory without default props
-const $card = $factory('article');
-const card = $card({ className: 'card' }, [
-  'Content goes here'
-]);
+const $card = $factory("article");
+const card = $card({ className: "card" }, ["Content goes here"]);
 
 // Factory with default props
-const $checkbox = $factory('input', { type: 'checkbox' });
-const $primaryButton = $factory('button', { className: 'btn btn-primary' });
+const $checkbox = $factory("input", { type: "checkbox" });
+const $primaryButton = $factory("button", { className: "btn btn-primary" });
 
 // Use them
-const agreeCheckbox = $checkbox({ id: 'agree', checked: true });
-const submitButton = $primaryButton({ textContent: 'Submit' });
+const agreeCheckbox = $checkbox({ id: "agree", checked: true });
+const submitButton = $primaryButton({ textContent: "Submit" });
 ```
 
 ---
@@ -89,17 +87,17 @@ For convenience, Seidr provides ready-to-use element creator functions for all s
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
 ```typescript
-import { createValue } from '@fimbul-works/seidr';
-import { $div, $button, $span } from '@fimbul-works/seidr/html';
+import { createValue } from "@fimbul-works/seidr";
+import { $div, $button, $span } from "@fimbul-works/seidr/html";
 
 const count = createValue(0);
 
-const counter = $div({ className: 'counter-container' }, [
+const counter = $div({ className: "counter-container" }, [
   $span({ textContent: count.as((c) => `Count: ${c}`) }),
   $button({
-    textContent: '+1',
-    onclick: () => count((c) => c + 1)
-  })
+    textContent: "+1",
+    onclick: () => count((c) => c + 1),
+  }),
 ]);
 ```
 
@@ -132,8 +130,8 @@ Creates a typed `Ref<T>` reference object. Holds references to DOM elements, obj
 **Returns:** `Ref<T>` — A decorated [`Value<T | null>`](Value.md) observable.
 
 ```typescript
-import { createComponent, onMounted, createRef } from '@fimbul-works/seidr';
-import { $button, $canvas, $div } from '@fimbul-works/seidr/html';
+import { createComponent, onMounted, createRef } from "@fimbul-works/seidr";
+import { $button, $canvas, $div } from "@fimbul-works/seidr/html";
 
 const CanvasViewer = createComponent(() => {
   const canvasRef = createRef<HTMLCanvasElement>();
@@ -142,26 +140,26 @@ const CanvasViewer = createComponent(() => {
   onMounted(() => {
     const canvas = canvasRef();
     if (canvas) {
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (ctx) {
-        ctx.fillStyle = '#4f46e5';
+        ctx.fillStyle = "#4f46e5";
         ctx.fillRect(20, 20, 160, 100);
       }
     }
   });
 
   return $div([
-    $canvas({ id: 'viewer-canvas', width: 300, height: 200, ref: canvasRef }),
+    $canvas({ id: "viewer-canvas", width: 300, height: 200, ref: canvasRef }),
     $button({
-      textContent: 'Clear',
+      textContent: "Clear",
       onclick: () => {
         const canvas = canvasRef();
-        const ctx = canvas?.getContext('2d');
+        const ctx = canvas?.getContext("2d");
         ctx?.clearRect(0, 0, 300, 200);
-      }
-    })
+      },
+    }),
   ]);
-}, 'CanvasViewer');
+}, "CanvasViewer");
 ```
 
 ### The `ref` Prop
@@ -170,7 +168,7 @@ Pass the `Ref` instance into the `ref` prop of any element created with [`$()`](
 
 ```typescript
 const inputRef = createRef<HTMLInputElement>();
-const input = $('input', { type: 'text', ref: inputRef });
+const input = $("input", { type: "text", ref: inputRef });
 ```
 
 ### Lifecycle & Timing: Using with `onMounted()`
@@ -207,9 +205,9 @@ Shorthand for [`document.getElementById()`](https://developer.mozilla.org/en-US/
 **Returns:** `T | null`
 
 ```typescript
-import { $getById } from '@fimbul-works/seidr';
+import { $getById } from "@fimbul-works/seidr";
 
-const app = $getById<HTMLDivElement>('app');
+const app = $getById<HTMLDivElement>("app");
 ```
 
 ---
@@ -227,10 +225,10 @@ Shorthand for [`querySelector()`](https://developer.mozilla.org/en-US/docs/Web/A
 **Returns:** `T | null`
 
 ```typescript
-import { $query } from '@fimbul-works/seidr';
+import { $query } from "@fimbul-works/seidr";
 
-const submitBtn = $query<HTMLButtonElement>('button.btn-primary');
-const headerTitle = $query<HTMLHeadingElement>('h1', headerContainer);
+const submitBtn = $query<HTMLButtonElement>("button.btn-primary");
+const headerTitle = $query<HTMLHeadingElement>("h1", headerContainer);
 ```
 
 ---
@@ -248,10 +246,10 @@ Shorthand for [`querySelectorAll()`](https://developer.mozilla.org/en-US/docs/We
 **Returns:** `T[]` — Array of matching DOM elements.
 
 ```typescript
-import { $queryAll } from '@fimbul-works/seidr';
+import { $queryAll } from "@fimbul-works/seidr";
 
-const allItems = $queryAll<HTMLLIElement>('li.todo-item');
-const formInputs = $queryAll<HTMLInputElement>('input', formElement);
+const allItems = $queryAll<HTMLLIElement>("li.todo-item");
+const formInputs = $queryAll<HTMLInputElement>("input", formElement);
 ```
 
 ---
@@ -268,9 +266,9 @@ Creates a DOM `Text` node. In SSR mode, the text node is registered in the compo
 **Returns:** `Text`
 
 ```typescript
-import { $text } from '@fimbul-works/seidr';
+import { $text } from "@fimbul-works/seidr";
 
-const textNode = $text('Hello world');
+const textNode = $text("Hello world");
 ```
 
 ---
@@ -285,9 +283,9 @@ Creates a DOM `Comment` node. Used by Seidr components and reactive bindings for
 **Returns:** `Comment`
 
 ```typescript
-import { $comment } from '@fimbul-works/seidr';
+import { $comment } from "@fimbul-works/seidr";
 
-const marker = $comment('custom-boundary');
+const marker = $comment("custom-boundary");
 ```
 
 ---
@@ -299,13 +297,12 @@ Retrieves the active `Document` instance. Returns the global `window.document` i
 **Returns:** `Document`
 
 ```typescript
-import { getDocument } from '@fimbul-works/seidr';
+import { getDocument } from "@fimbul-works/seidr";
 
 const doc = getDocument();
-const element = doc.createElement('div');
+const element = doc.createElement("div");
 ```
 
 ---
 
 [Seidr](https://github.com/fimbul-works/seidr) brought to you by [FimbulWorks](https://github.com/fimbul-works) | [README.md](../README.md) | [API.md](API.md)
-
