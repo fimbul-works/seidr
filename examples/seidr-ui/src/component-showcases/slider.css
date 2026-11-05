@@ -104,15 +104,22 @@
   border-radius: 50%;
   background: #ffffff;
   border: 2px solid hsl(217, 91%, 60%);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.1);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(0, 0, 0, 0.1);
   cursor: grab;
   outline: none;
-  transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    transform 0.15s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 [data-component="slider"][data-part="thumb"]:hover {
   transform: translate(-50%, -50%) scale(1.12);
-  box-shadow: 0 4px 14px hsla(217, 91%, 60%, 0.4), 0 0 0 2px hsla(217, 91%, 60%, 0.2);
+  box-shadow:
+    0 4px 14px hsla(217, 91%, 60%, 0.4),
+    0 0 0 2px hsla(217, 91%, 60%, 0.2);
 }
 
 [data-component="slider"][data-part="thumb"][data-orientation="vertical"]:hover {
@@ -120,13 +127,17 @@
 }
 
 [data-component="slider"][data-part="thumb"]:focus-visible {
-  box-shadow: 0 0 0 3px hsla(217, 91%, 60%, 0.45), 0 2px 8px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 0 0 3px hsla(217, 91%, 60%, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.4);
 }
 
 [data-component="slider"][data-part="thumb"][data-dragging] {
   cursor: grabbing;
   transform: translate(-50%, -50%) scale(1.18);
-  box-shadow: 0 4px 16px hsla(217, 91%, 60%, 0.5), 0 0 0 3px hsla(217, 91%, 60%, 0.3);
+  box-shadow:
+    0 4px 16px hsla(217, 91%, 60%, 0.5),
+    0 0 0 3px hsla(217, 91%, 60%, 0.3);
 }
 
 [data-component="slider"][data-part="thumb"][data-orientation="vertical"][data-dragging] {

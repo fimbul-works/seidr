@@ -79,10 +79,7 @@ export const ProgressShowcase = createComponent(() => {
         $div({ className: "progress-showcase-section" }, [
           $h3({ className: "progress-showcase-heading" }, "4. Fine-Grained Coordinator (createProgress)"),
           fineGrained.Root({}, [
-            fineGrained.Header({}, [
-              fineGrained.Label({}, "Disk Verification"),
-              fineGrained.ValueLabel({}),
-            ]),
+            fineGrained.Header({}, [fineGrained.Label({}, "Disk Verification"), fineGrained.ValueLabel({})]),
             fineGrained.Track({}, [fineGrained.Fill({})]),
           ]),
         ]),

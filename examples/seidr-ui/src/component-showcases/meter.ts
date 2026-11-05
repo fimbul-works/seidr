@@ -19,7 +19,7 @@ export const MeterShowcase = createComponent(() => {
     ]),
     $p(
       { className: "card-desc" },
-      "Displays a scalar measurement or quantity within a known range (role=\"meter\"). Ideal for capacity indicators, battery levels, disk storage, memory utilization, and performance metrics.",
+      'Displays a scalar measurement or quantity within a known range (role="meter"). Ideal for capacity indicators, battery levels, disk storage, memory utilization, and performance metrics.',
     ),
 
     // Live Preview
@@ -70,10 +70,7 @@ export const MeterShowcase = createComponent(() => {
         $div({ className: "meter-showcase-section" }, [
           $h3({ className: "meter-showcase-heading" }, "4. Fine-Grained Coordinator (createMeter)"),
           fineGrained.Root({}, [
-            fineGrained.Header({}, [
-              fineGrained.Label({}, "Bandwidth Quota"),
-              fineGrained.ValueLabel({}),
-            ]),
+            fineGrained.Header({}, [fineGrained.Label({}, "Bandwidth Quota"), fineGrained.ValueLabel({})]),
             fineGrained.Track({}, [fineGrained.Fill({})]),
           ]),
         ]),

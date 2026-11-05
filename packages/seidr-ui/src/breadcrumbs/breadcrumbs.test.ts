@@ -112,9 +112,7 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       const root = setup(() => {
         const breadcrumbs = createBreadcrumbs();
         return breadcrumbs.Root([
-          breadcrumbs.List([
-            breadcrumbs.Item([breadcrumbs.Link({ href: "/docs", disabled: true }, "Docs")]),
-          ]),
+          breadcrumbs.List([breadcrumbs.Item([breadcrumbs.Link({ href: "/docs", disabled: true }, "Docs")])]),
         ]);
       });
 

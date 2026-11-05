@@ -65,7 +65,9 @@
   height: 100%;
   background: linear-gradient(135deg, hsl(217, 91%, 60%), hsl(224, 76%, 50%));
   border-radius: 9999px;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), background 0.3s ease;
+  transition:
+    width 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    background 0.3s ease;
   box-shadow: 0 0 10px hsla(217, 91%, 60%, 0.35);
 }
 
