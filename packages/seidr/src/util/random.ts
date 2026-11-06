@@ -1,4 +1,6 @@
-import { getAppState, getComponentScope, onUnmounted } from "@fimbul-works/seidr";
+import { getAppState } from "../app-state/index.js";
+import { getComponentScope } from "../component/index.js";
+import { onUnmounted } from "../hooks/index.js";
 
 /** AppState key for storing random number generator state */
 export const DATA_KEY_RANDOM = "random.splitmix32";

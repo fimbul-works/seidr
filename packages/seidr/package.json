@@ -50,10 +50,7 @@
     "README.md",
     "LICENSE"
   ],
-  "sideEffects": [
-    "./dist/index.js",
-    "./src/index.ts"
-  ],
+  "sideEffects": true,
   "engines": {
     "node": ">=24"
   },

@@ -17,7 +17,4 @@ export type NavigationTarget = string | number | URL;
  * Function signature for navigation handlers.
  * Return `true` if the navigation was handled, or `false`/`void` to pass to subsequent handlers.
  */
-export type NavigationHandler = (
-  target: NavigationTarget,
-  options?: NavigationOptions,
-) => boolean | void;
+export type NavigationHandler = (target: NavigationTarget, options?: NavigationOptions) => boolean | void;

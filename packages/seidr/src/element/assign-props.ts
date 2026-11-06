@@ -1,3 +1,4 @@
+import { handleLinkProps } from "../navigation/handle-link-props.js";
 import { assignProp } from "./assign-prop.js";
 import type { SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
@@ -15,4 +16,11 @@ export const assignProps = <
 >(
   el: E,
   props: SeidrElementProps<K>,
-): void => Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));
+): void => {
+  // Handle links
+  if (el.tagName.toLowerCase() === "a") {
+    props = handleLinkProps(el, props);
+  }
+
+  Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));
+};

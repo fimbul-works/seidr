@@ -18,11 +18,11 @@ pnpm add -D @fimbul-works/seidr-build-tools
 
 ```ts
 // vite.config.ts
-import { defineConfig } from 'vite';
-import { seidrVitePlugin } from '@fimbul-works/seidr-build-tools/vite';
+import { defineConfig } from "vite";
+import { seidrVitePlugin } from "@fimbul-works/seidr-build-tools/vite";
 
 export default defineConfig({
-  plugins: [seidrVitePlugin({ target: 'browser', disableSSR: false })],
+  plugins: [seidrVitePlugin({ target: "browser", disableSSR: false })],
 });
 ```
 
@@ -30,10 +30,10 @@ export default defineConfig({
 
 ```ts
 // webpack.config.js
-import { seidrWebpackPlugin } from '@fimbul-works/seidr-build-tools/webpack';
+import { seidrWebpackPlugin } from "@fimbul-works/seidr-build-tools/webpack";
 
 export default {
-  plugins: [seidrWebpackPlugin({ target: 'browser' })],
+  plugins: [seidrWebpackPlugin({ target: "browser" })],
 };
 ```
 
@@ -41,10 +41,10 @@ export default {
 
 ```ts
 // rollup.config.js
-import { seidrRollupPlugin } from '@fimbul-works/seidr-build-tools/rollup';
+import { seidrRollupPlugin } from "@fimbul-works/seidr-build-tools/rollup";
 
 export default {
-  plugins: [seidrRollupPlugin({ target: 'browser' })],
+  plugins: [seidrRollupPlugin({ target: "browser" })],
 };
 ```
 
@@ -52,10 +52,10 @@ export default {
 
 ```ts
 // rolldown.config.ts / tsdown.config.ts
-import { seidrRolldownPlugin } from '@fimbul-works/seidr-build-tools/rolldown';
+import { seidrRolldownPlugin } from "@fimbul-works/seidr-build-tools/rolldown";
 
 export default {
-  plugins: [seidrRolldownPlugin({ target: 'browser' })],
+  plugins: [seidrRolldownPlugin({ target: "browser" })],
 };
 ```
 
@@ -63,14 +63,14 @@ export default {
 
 ```ts
 // build.js
-import esbuild from 'esbuild';
-import { seidrEsbuildPlugin } from '@fimbul-works/seidr-build-tools/esbuild';
+import esbuild from "esbuild";
+import { seidrEsbuildPlugin } from "@fimbul-works/seidr-build-tools/esbuild";
 
 await esbuild.build({
-  entryPoints: ['src/index.ts'],
+  entryPoints: ["src/index.ts"],
   bundle: true,
-  outfile: 'dist/bundle.js',
-  plugins: [seidrEsbuildPlugin({ target: 'browser' })],
+  outfile: "dist/bundle.js",
+  plugins: [seidrEsbuildPlugin({ target: "browser" })],
 });
 ```
 
@@ -78,10 +78,10 @@ await esbuild.build({
 
 ```ts
 // rspack.config.js
-import { seidrRspackPlugin } from '@fimbul-works/seidr-build-tools/rspack';
+import { seidrRspackPlugin } from "@fimbul-works/seidr-build-tools/rspack";
 
 export default {
-  plugins: [seidrRspackPlugin({ target: 'browser' })],
+  plugins: [seidrRspackPlugin({ target: "browser" })],
 };
 ```
 
@@ -89,9 +89,7 @@ export default {
 
 ```json
 {
-  "plugins": [
-    ["@fimbul-works/seidr-build-tools/babel", { "target": "browser" }]
-  ]
+  "plugins": [["@fimbul-works/seidr-build-tools/babel", { "target": "browser" }]]
 }
 ```
 

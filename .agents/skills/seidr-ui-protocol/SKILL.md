@@ -1,8 +1,7 @@
 ---
 
 name: seidr-ui-protocol
-description: >-
-Use this skill whenever implementing, porting, refactoring, or reviewing components, hooks, or primitives in packages/seidr-ui. Enforces the behavior-first Kobalte analysis protocol, Seidr reactive state contracts, and forbids function-as-children anti-patterns.
+description: Use this skill whenever implementing, porting, refactoring, or reviewing components, hooks, or primitives in packages/seidr-ui. Enforces the behavior-first Kobalte analysis protocol, Seidr reactive state contracts, and forbids function-as-children anti-patterns.
 ---
 
 # Seidr UI Component & Hook Protocol

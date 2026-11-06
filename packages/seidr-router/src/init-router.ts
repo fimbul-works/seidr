@@ -1,5 +1,12 @@
 import { isNullish, isNum, isObj, isStr } from "@fimbul-works/hvat";
-import { createValue, getAppState, isClient, isValue, registerNavigationHandler, SeidrError } from "@fimbul-works/seidr";
+import {
+  createValue,
+  getAppState,
+  isClient,
+  isValue,
+  registerNavigationHandler,
+  SeidrError,
+} from "@fimbul-works/seidr";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_ROUTER, DUMMY_BASE_URL, NO_HYDRATE, VALUE_ID_ROUTER_URL } from "./constants.js";
 import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";

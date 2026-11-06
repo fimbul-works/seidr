@@ -29,7 +29,7 @@ export const getMarkerRegistry = () =>
 
 /**
  * Clear the component registry data.
- * 
+ *
  * @internal Used in testing.
  */
 export const clearComponentRegistry = () => {
@@ -38,4 +38,4 @@ export const clearComponentRegistry = () => {
 
   getComponentRegitry().forEach((c) => c.unmount());
   getComponentRegitry().clear();
-}
+};

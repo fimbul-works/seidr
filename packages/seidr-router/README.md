@@ -25,26 +25,23 @@ npm install @fimbul-works/seidr-router
 ## Quick Start
 
 ```typescript
-import { createComponent } from '@fimbul-works/seidr';
-import { $div, $h1, $p } from '@fimbul-works/seidr/html';
-import { Router, type Route, Link, useRouteParams } from '@fimbul-works/seidr-router';
+import { createComponent } from "@fimbul-works/seidr";
+import { $div, $h1, $p } from "@fimbul-works/seidr/html";
+import { Router, type Route, Link, useRouteParams } from "@fimbul-works/seidr-router";
 
-const Home = () => $h1({ textContent: 'Home' });
+const Home = () => $h1({ textContent: "Home" });
 
 const UserProfile = () => {
   const params = useRouteParams();
   return $p({ textContent: params.as((p) => `User Profile: ${p.id}`) });
 };
 
-const NotFound = () => $div([
-  $p({ textContent: 'Page not found' }),
-  Link({ href: '/' }, 'Return Home')
-]);
+const NotFound = () => $div([$p({ textContent: "Page not found" }), Link({ href: "/" }, "Return Home")]);
 
 const routes: Route[] = [
-  { path: '/', component: Home, exact: true },
-  { path: '/users/:id', component: UserProfile },
-  { path: '*', component: NotFound }
+  { path: "/", component: Home, exact: true },
+  { path: "/users/:id", component: UserProfile },
+  { path: "*", component: NotFound },
 ];
 
 export const App = () => Router(routes);
@@ -57,30 +54,27 @@ A distinctive capability of `@fimbul-works/seidr-router`—not found in traditio
 This allows route tables to be mutated dynamically at runtime:
 
 ```typescript
-import { createValue } from '@fimbul-works/seidr';
-import { Router, type Route } from '@fimbul-works/seidr-router';
-import { HomePage, PublicPage, SecretChamberPage } from './pages.js';
+import { createValue } from "@fimbul-works/seidr";
+import { Router, type Route } from "@fimbul-works/seidr-router";
+import { HomePage, PublicPage, SecretChamberPage } from "./pages.js";
 
 // 1. Initial route table as a reactive Value
 export const routes = createValue<Route[]>([
-  { path: '/', component: HomePage, exact: true },
-  { path: '/public', component: PublicPage },
+  { path: "/", component: HomePage, exact: true },
+  { path: "/public", component: PublicPage },
 ]);
 
 // 2. Dynamically mutate the route table at runtime
 export function unlockSecretChamber() {
-  routes((prev) => [
-    ...prev,
-    { path: '/secret-chamber', component: SecretChamberPage },
-  ]);
+  routes((prev) => [...prev, { path: "/secret-chamber", component: SecretChamberPage }]);
 }
-
 
 // 3. Router automatically updates without unmounting or tearing down
 export const App = () => Router(routes);
 ```
 
 ### Why This Matters:
+
 - **Zero-Teardown Reconciliation**: The router re-evaluates matches against the current URL. If the currently rendered route component still matches, it is preserved in place without remounting.
 - **Progressive Disclosure & Easter Eggs**: Progressively reveal new routes, secret areas, and easter eggs based on user discovery and interactions.
 - **Role & Auth Transitions**: Dynamically unlock admin or member routes upon authentication without full-page reloads.
