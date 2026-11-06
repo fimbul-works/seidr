@@ -1,15 +1,15 @@
 import { isUndef } from "@fimbul-works/hvat";
 import { $, type SeidrChild } from "@fimbul-works/seidr";
-import { RadioGroupDescription, type RadioGroupDescriptionProps } from "./radio-group-description.js";
-import { RadioGroupErrorMessage, type RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
+import { RadioGroupDescription } from "./radio-group-description.js";
+import { RadioGroupErrorMessage } from "./radio-group-error-message.js";
 import { RadioGroupItem, type RadioGroupItemProps } from "./radio-group-item.js";
 import { RadioGroupItemControl, type RadioGroupItemControlProps } from "./radio-group-item-control.js";
 import { RadioGroupItemDescription, type RadioGroupItemDescriptionProps } from "./radio-group-item-description.js";
 import { RadioGroupItemIndicator, type RadioGroupItemIndicatorProps } from "./radio-group-item-indicator.js";
 import { RadioGroupItemInput, type RadioGroupItemInputProps } from "./radio-group-item-input.js";
 import { RadioGroupItemLabel, type RadioGroupItemLabelProps } from "./radio-group-item-label.js";
-import { RadioGroupLabel, type RadioGroupLabelProps } from "./radio-group-label.js";
-import { RadioGroupRoot, type RadioGroupRootProps } from "./radio-group-root.js";
+import { RadioGroupLabel } from "./radio-group-label.js";
+import { RadioGroupRoot } from "./radio-group-root.js";
 import type {
   RadioGroupInstance,
   RadioGroupItemInstance,

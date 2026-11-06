@@ -87,8 +87,9 @@ export const ProgressShowcase = createComponent(() => {
     ]),
 
     // Usage Examples
-    CodeBlock(
-      `import { createProgress, Progress } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { createProgress, Progress } from "@fimbul-works/seidr-ui";
 
 // 1. All-in-One Component (Tier 1)
 Progress({
@@ -116,6 +117,6 @@ progress.Root({}, [
     progress.Fill({}),
   ]),
 ]);`,
-    ),
+    }),
   ]);
 }, "ProgressShowcase");

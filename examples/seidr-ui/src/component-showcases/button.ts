@@ -68,8 +68,9 @@ export const ButtonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    CodeBlock(
-      `import { Button } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Button } from "@fimbul-works/seidr-ui";
 
 // Standard native button
 Button({ onclick: () => alert("Clicked") }, "Click me");
@@ -79,6 +80,6 @@ Button({ as: "div", className: "secondary" }, "Div Button");
 
 // Reactive disabled state
 Button({ disabled: isBusy }, "Submitting...");`,
-    ),
+    }),
   ]);
 }, "ButtonShowcase");

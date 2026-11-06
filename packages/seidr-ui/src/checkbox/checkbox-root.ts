@@ -65,7 +65,7 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as T,
+    as,
     {
       role: "group",
       id: cb.id,

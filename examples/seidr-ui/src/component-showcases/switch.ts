@@ -89,8 +89,9 @@ export const SwitchShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { Switch } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Switch } from "@fimbul-works/seidr-ui";
 
 // 1. All-in-one unified usage
 Switch({
@@ -113,6 +114,6 @@ sw.Root([
   sw.Label("Maintenance Mode"),
   sw.ErrorMessage("Maintenance mode is required."),
 ]);`,
-    ),
+    }),
   ]);
 }, "SwitchShowcase");

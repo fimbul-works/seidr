@@ -233,8 +233,9 @@ export const RadioGroupShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { RadioGroup } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { RadioGroup } from "@fimbul-works/seidr-ui";
 
 // 1. All-in-one unified usage with item descriptors
 RadioGroup({
@@ -268,6 +269,6 @@ rg.Root([
     item.Label("Standard Ground"),
   ]),
 ]);`,
-    ),
+    }),
   ]);
 }, "RadioGroupShowcase");

@@ -29,14 +29,15 @@ export const SeparatorShowcase = createComponent(() => {
         ]),
       ]),
     ]),
-    CodeBlock(
-      `import { Separator } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Separator } from "@fimbul-works/seidr-ui";
 
 // Horizontal divider (renders <hr>)
 Separator();
 
 // Vertical divider (renders <div role="separator" data-orientation="vertical">)
 Separator({ as: "div", orientation: "vertical" });`,
-    ),
+    }),
   ]);
 }, "SeparatorShowcase");

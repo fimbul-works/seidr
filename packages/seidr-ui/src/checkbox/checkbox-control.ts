@@ -62,7 +62,7 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as T,
+    as,
     {
       id: id ?? cb.id.as((base) => `${base}-control`),
       ref: cb.controlRef,

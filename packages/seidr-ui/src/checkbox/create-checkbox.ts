@@ -1,12 +1,12 @@
 import { CheckboxControl } from "./checkbox-control.js";
+import { CheckboxDescription } from "./checkbox-description.js";
+import { CheckboxErrorMessage } from "./checkbox-error-message.js";
 import { CheckboxIndicator } from "./checkbox-indicator.js";
 import { CheckboxInput } from "./checkbox-input.js";
+import { CheckboxLabel } from "./checkbox-label.js";
 import { CheckboxRoot } from "./checkbox-root.js";
 import type { CheckboxInstance, UseCheckboxOptions } from "./types.js";
 import { useCheckbox } from "./use-checkbox.js";
-import { CheckboxLabel } from "./checkbox-label.js";
-import { CheckboxDescription } from "./checkbox-description.js";
-import { CheckboxErrorMessage } from "./checkbox-error-message.js";
 
 /**
  * Creates a checkbox state coordinator instance with pre-bound compound element helpers.

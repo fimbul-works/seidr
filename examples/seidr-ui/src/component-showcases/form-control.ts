@@ -80,8 +80,9 @@ export const FormControlShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { FormControl } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { FormControl } from "@fimbul-works/seidr-ui";
 import { $input } from "@fimbul-works/seidr/html";
 
 // 1. Pre-bound Compound Instance Pattern (FormControl.create)
@@ -105,6 +106,6 @@ FormControl({
   field: $input({ type: "text" }),
   description: "Must be 3-20 alphanumeric characters.",
 });`,
-    ),
+    }),
   ]);
 }, "FormControlShowcase");

@@ -13,11 +13,11 @@ await build({
   configFile: false,
   root: rootDir,
   publicDir: false,
-  plugins: [loiskeVitePlugin({ compress: true, stripTransforms: true })],
+  plugins: [loiskeVitePlugin({ compress: false, stripTransforms: true })],
   build: {
     outDir: distDir,
     emptyOutDir: true,
-    minify: true,
+    minify: false,
     sourcemap: false,
     target: "chrome107",
     modulePreload: { polyfill: false },

@@ -110,8 +110,9 @@ export const ToggleGroupShowcase = createComponent(() => {
     ]),
 
     // Usage Examples
-    CodeBlock(
-      `import { createToggleGroup, ToggleGroup } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { createToggleGroup, ToggleGroup } from "@fimbul-works/seidr-ui";
 
 // 1. Single Selection (Tier 1)
 ToggleGroup({
@@ -145,6 +146,6 @@ group.Root({}, [
   group.Item({ value: "week" }, "Week"),
   group.Item({ value: "month" }, "Month"),
 ]);`,
-    ),
+    }),
   ]);
 }, "ToggleGroupShowcase");

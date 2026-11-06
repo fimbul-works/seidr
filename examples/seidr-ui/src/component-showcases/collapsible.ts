@@ -69,8 +69,9 @@ export const CollapsibleShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { Collapsible } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Collapsible } from "@fimbul-works/seidr-ui";
 
 // 1. Unified All-In-One Helper
 Collapsible({
@@ -93,6 +94,6 @@ Collapsible({
   trigger: "Advanced Settings",
   children: $p("Animated content..."),
 });`,
-    ),
+    }),
   ]);
 }, "CollapsibleShowcase");

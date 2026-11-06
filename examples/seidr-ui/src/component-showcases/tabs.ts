@@ -138,8 +138,9 @@ export const TabsShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { createTabs, Tabs } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { createTabs, Tabs } from "@fimbul-works/seidr-ui";
 
 // 1. All-in-One Component
 Tabs({
@@ -172,6 +173,6 @@ Tabs({
   indicator: true,
   items: [ ... ],
 });`,
-    ),
+    }),
   ]);
 }, "TabsShowcase");

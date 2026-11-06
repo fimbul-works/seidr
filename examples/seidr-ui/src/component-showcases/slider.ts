@@ -129,7 +129,9 @@ export const SliderShowcase = createComponent(() => {
       $h3({ className: "usage-title" }, "Usage Examples"),
 
       $p({ className: "usage-subtitle" }, "1. All-in-One Component (Tier 1)"),
-      CodeBlock(`import { Slider } from "@fimbul-works/seidr-ui";
+      CodeBlock({
+        language: "typescript",
+        code: `import { Slider } from "@fimbul-works/seidr-ui";
 
 // Basic single-thumb slider
 Slider({
@@ -147,10 +149,13 @@ Slider({
   thumbs: 2,
   minStepsBetweenThumbs: 5,
   getValueLabel: ({ values }) => \`$\${values[0]} – $\${values[1]}\`,
-});`),
+});`,
+      }),
 
       $p({ className: "usage-subtitle" }, "2. Fine-Grained Coordinator (Tier 2)"),
-      CodeBlock(`import { createSlider } from "@fimbul-works/seidr-ui";
+      CodeBlock({
+        language: "typescript",
+        code: `import { createSlider } from "@fimbul-works/seidr-ui";
 
 const slider = createSlider({
   defaultValue: 50,
@@ -168,7 +173,8 @@ slider.Root({}, [
     slider.Input({ index: 0 }),
   ]),
   slider.Description({}, "Adjust display intensity"),
-]);`),
+]);`,
+      }),
     ]),
   ]);
 }, "SliderShowcase");

@@ -126,8 +126,9 @@ export const CheckboxShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { Checkbox } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Checkbox } from "@fimbul-works/seidr-ui";
 
 // All-in-one unified component
 Checkbox({
@@ -151,6 +152,6 @@ cb.Root([
   cb.Label("I agree to the Terms"),
   cb.ErrorMessage("You must accept the terms before continuing."),
 ]);`,
-    ),
+    }),
   ]);
 }, "CheckboxShowcase");

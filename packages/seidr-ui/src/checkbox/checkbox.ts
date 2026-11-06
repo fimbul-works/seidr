@@ -1,14 +1,14 @@
 import type { SeidrChild } from "@fimbul-works/seidr";
-import { type CheckboxControlProps } from "./checkbox-control.js";
-import { type CheckboxDescriptionProps } from "./checkbox-description.js";
-import { type CheckboxErrorMessageProps } from "./checkbox-error-message.js";
-import { type CheckboxIndicatorProps } from "./checkbox-indicator.js";
-import { type CheckboxInputProps } from "./checkbox-input.js";
-import { type CheckboxLabelProps } from "./checkbox-label.js";
-import { type CheckboxRootProps } from "./checkbox-root.js";
+import { createComponent } from "@fimbul-works/seidr";
+import type { CheckboxControlProps } from "./checkbox-control.js";
+import type { CheckboxDescriptionProps } from "./checkbox-description.js";
+import type { CheckboxErrorMessageProps } from "./checkbox-error-message.js";
+import type { CheckboxIndicatorProps } from "./checkbox-indicator.js";
+import type { CheckboxInputProps } from "./checkbox-input.js";
+import type { CheckboxLabelProps } from "./checkbox-label.js";
+import type { CheckboxRootProps } from "./checkbox-root.js";
 import { createCheckbox } from "./create-checkbox.js";
 import type { UseCheckboxOptions } from "./types.js";
-import { createComponent } from "@fimbul-works/seidr";
 
 export interface CheckboxProps extends UseCheckboxOptions {
   /** Optional class name for the root container. */

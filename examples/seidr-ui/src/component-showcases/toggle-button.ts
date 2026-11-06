@@ -42,8 +42,9 @@ export const ToggleButtonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    CodeBlock(
-      `import { ToggleButton } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { ToggleButton } from "@fimbul-works/seidr-ui";
 
 // 1. Uncontrolled with renderContent prop
 ToggleButton({
@@ -56,6 +57,6 @@ ToggleButton(
   { pressed: isStarred, onChange: (val) => isStarred(val) },
   isStarred.as(s => s ? "⭐ Starred" : "☆ Star")
 );`,
-    ),
+    }),
   ]);
 }, "ToggleButtonShowcase");

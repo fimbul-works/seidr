@@ -67,8 +67,9 @@ export const ImageShowcase = createComponent(() => {
         }),
       ]),
     ]),
-    CodeBlock(
-      `import { Image } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Image } from "@fimbul-works/seidr-ui";
 
 // Basic avatar with fallback
 Image({
@@ -84,6 +85,6 @@ avatar.Root([
   avatar.Fallback("CN"),
   avatar.Img({ alt: "User portrait" }),
 ]);`,
-    ),
+    }),
   ]);
 }, "ImageShowcase");

@@ -1,6 +1,6 @@
+import { easeOutBack } from "@fimbul-works/flaedi";
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
-import { easeOutBack } from "@fimbul-works/flaedi";
 import { Accordion, createAccordion } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./accordion.css";
@@ -213,8 +213,9 @@ export const AccordionShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { Accordion, createAccordion } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Accordion, createAccordion } from "@fimbul-works/seidr-ui";
 
 // 1. Tier 1 All-In-One Component
 Accordion({
@@ -250,6 +251,6 @@ Accordion({
   animation: { duration: 400, easing: easeOutBack },
   items: [ ... ],
 });`,
-    ),
+    }),
   ]);
 }, "AccordionShowcase");

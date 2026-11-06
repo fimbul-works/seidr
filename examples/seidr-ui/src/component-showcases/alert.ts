@@ -53,14 +53,15 @@ export const AlertShowcase = createComponent(() => {
         }),
       ),
     ]),
-    CodeBlock(
-      `import { Alert } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Alert } from "@fimbul-works/seidr-ui";
 
 // Basic usage
 Alert("Scheduled maintenance at midnight");
 
 // With props and custom severity
 Alert({ className: "warning" }, "Storage almost full");`,
-    ),
+    }),
   ]);
 }, "AlertShowcase");

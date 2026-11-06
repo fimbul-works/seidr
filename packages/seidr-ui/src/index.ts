@@ -12,6 +12,7 @@ export * from "./image/index.js";
 export * from "./meter/index.js";
 export * from "./progress/index.js";
 export * from "./radio-group/index.js";
+export * from "./segmented-control/index.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./slider/index.js";

@@ -23,14 +23,15 @@ export const BadgeShowcase = createComponent(() => {
         Badge({ as: "div" }, "Custom Div Tag"),
       ]),
     ]),
-    CodeBlock(
-      `import { Badge } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Badge } from "@fimbul-works/seidr-ui";
 
 // Status badge
 Badge({ className: "success" }, "Active");
 
 // Badge with accessible label for icon or number counts
 Badge({ textValue: "3 unread messages" }, "3");`,
-    ),
+    }),
   ]);
 }, "BadgeShowcase");

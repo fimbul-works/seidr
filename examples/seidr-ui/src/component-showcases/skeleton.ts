@@ -82,14 +82,15 @@ export const SkeletonShowcase = createComponent(() => {
         ),
       ]),
     ]),
-    CodeBlock(
-      `import { Skeleton } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { Skeleton } from "@fimbul-works/seidr-ui";
 
 // Circular avatar skeleton
 Skeleton({ circle: true, height: 48 });
 
 // Text line skeleton
 Skeleton({ width: "60%", height: 18, radius: 4 });`,
-    ),
+    }),
   ]);
 }, "SkeletonShowcase");

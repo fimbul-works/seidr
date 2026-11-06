@@ -78,8 +78,9 @@ export const MeterShowcase = createComponent(() => {
     ]),
 
     // Usage Examples
-    CodeBlock(
-      `import { createMeter, Meter } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { createMeter, Meter } from "@fimbul-works/seidr-ui";
 
 // 1. All-in-One Component (Tier 1)
 Meter({
@@ -104,6 +105,6 @@ meter.Root({}, [
     meter.Fill({}),
   ]),
 ]);`,
-    ),
+    }),
   ]);
 }, "MeterShowcase");

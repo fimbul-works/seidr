@@ -109,8 +109,9 @@ export const TextFieldShowcase = createComponent(() => {
       ]),
     ]),
 
-    CodeBlock(
-      `import { TextField, createTextField } from "@fimbul-works/seidr-ui";
+    CodeBlock({
+      language: "typescript",
+      code: `import { TextField, createTextField } from "@fimbul-works/seidr-ui";
 
 // 1. Tier 1: Unified All-in-One Component
 TextField({
@@ -141,6 +142,6 @@ field.Root([
   field.Input({ placeholder: "Fine-grained control" }),
   field.Description("Explicit layout coordination"),
 ]);`,
-    ),
+    }),
   ]);
 }, "TextFieldShowcase");
