@@ -49,19 +49,13 @@ export function ListboxFactory<T extends keyof SeidrElementTagNameMap = "ul">(
 
   const content: SeidrChild[] = [];
 
-  if (items && items.length > 0) {
-    for (const item of items) {
-      const itemEl = lb.Item({
-        value: item.value,
-        label: item.label,
-        description: item.description,
+  if (items) {
+    content.push(
+      lb.List(items, {
         indicator,
-        disabled: item.disabled,
-        textValue: item.textValue ?? item.label,
-        ...(itemProps ?? {}),
-      });
-      content.push(itemEl);
-    }
+        itemProps,
+      }),
+    );
   }
 
   if (children) {

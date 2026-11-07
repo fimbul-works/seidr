@@ -11,9 +11,11 @@ import { ListboxShowcase } from "./listbox.js";
 import { MeterShowcase } from "./meter.js";
 import { NumberFieldShowcase } from "./number-field.js";
 import { PaginationShowcase } from "./pagination.js";
+import { PopperShowcase } from "./popper.js";
 import { ProgressShowcase } from "./progress.js";
 import { RadioGroupShowcase } from "./radio-group.js";
 import { SegmentedControlShowcase } from "./segmented-control.js";
+import { SelectShowcase } from "./select.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
 import { SliderShowcase } from "./slider.js";
@@ -36,9 +38,11 @@ export * from "./listbox.js";
 export * from "./meter.js";
 export * from "./number-field.js";
 export * from "./pagination.js";
+export * from "./popper.js";
 export * from "./progress.js";
 export * from "./radio-group.js";
 export * from "./segmented-control.js";
+export * from "./select.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./slider.js";
@@ -70,6 +74,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "meter", title: "Meter", badge: "Widget", category: "Widget", component: MeterShowcase },
   { id: "number-field", title: "NumberField", badge: "Form", category: "Form", component: NumberFieldShowcase },
   { id: "pagination", title: "Pagination", badge: "Widget", category: "Widget", component: PaginationShowcase },
+  { id: "popper", title: "Popper", badge: "Foundation", category: "Widget", component: PopperShowcase },
   { id: "progress", title: "Progress", badge: "Widget", category: "Widget", component: ProgressShowcase },
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
   {
@@ -79,6 +84,7 @@ export const componentShowcases: ComponentShowcase[] = [
     category: "Widget",
     component: SegmentedControlShowcase,
   },
+  { id: "select", title: "Select", badge: "Form", category: "Form", component: SelectShowcase },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },
   { id: "slider", title: "Slider", badge: "Form", category: "Form", component: SliderShowcase },

@@ -389,4 +389,106 @@ describeDualMode("Listbox", ({ getDocument, isSSR }) => {
     const results = await axe(root);
     expect(results).toHaveNoViolations();
   });
+
+  it("supports dynamic runtime additions and removals with reactive items", () => {
+    const dynamicItems = createValue(
+      [
+        { value: "opt-1", label: "Option 1" },
+        { value: "opt-2", label: "Option 2" },
+      ],
+      { id: "dyn-items" },
+    );
+
+    const root = setup(() =>
+      Listbox({
+        id: "dyn-listbox",
+        items: dynamicItems,
+      }),
+    );
+
+    let options = Array.from(root.querySelectorAll("[role='option']")) as HTMLElement[];
+    expect(options).toHaveLength(2);
+    expect(options[0]?.getAttribute("data-key")).toBe("opt-1");
+    expect(options[1]?.getAttribute("data-key")).toBe("opt-2");
+
+    if (!isSSR) {
+      // Add a 3rd item at runtime
+      dynamicItems((prev) => [...prev, { value: "opt-3", label: "Option 3" }]);
+      options = Array.from(root.querySelectorAll("[role='option']")) as HTMLElement[];
+      expect(options).toHaveLength(3);
+      expect(options[2]?.getAttribute("data-key")).toBe("opt-3");
+
+      // Click on newly added item to select it
+      options[2]?.click();
+      expect(options[2]?.getAttribute("aria-selected")).toBe("true");
+
+      // Remove the 1st item at runtime
+      dynamicItems((prev) => prev.filter((i) => i.value !== "opt-1"));
+      options = Array.from(root.querySelectorAll("[role='option']")) as HTMLElement[];
+      expect(options).toHaveLength(2);
+      expect(options[0]?.getAttribute("data-key")).toBe("opt-2");
+      expect(options[1]?.getAttribute("data-key")).toBe("opt-3");
+    }
+  });
+
+  it("supports grouped sections with nested items", () => {
+    const root = setup(() =>
+      Listbox({
+        id: "sections-listbox",
+        items: [
+          {
+            type: "section",
+            key: "sec-fruits",
+            label: "Fruits",
+            items: [
+              { value: "apple", label: "Apple" },
+              { value: "banana", label: "Banana" },
+            ],
+          },
+          {
+            type: "section",
+            key: "sec-veggies",
+            label: "Vegetables",
+            items: [{ value: "carrot", label: "Carrot" }],
+          },
+        ],
+      }),
+    );
+
+    const sections = Array.from(root.querySelectorAll("[data-part='section']"));
+    expect(sections).toHaveLength(2);
+
+    const labels = Array.from(root.querySelectorAll("[data-part='section-label']"));
+    expect(labels).toHaveLength(2);
+    expect(labels[0]?.textContent).toContain("Fruits");
+    expect(labels[1]?.textContent).toContain("Vegetables");
+
+    const options = Array.from(root.querySelectorAll("[role='option']"));
+    expect(options).toHaveLength(3);
+  });
+
+  it("supports lb.List helper with custom renderItem and renderSection (Tier 2)", () => {
+    const root = setup(() => {
+      const lb = createListbox();
+      return lb.Root({}, [
+        lb.List(
+          [
+            { value: "custom-1", label: "Custom One" },
+            { value: "custom-2", label: "Custom Two" },
+          ],
+          {
+            renderItem: (itemVal, key, item) =>
+              item.Root({ className: "custom-item" }, [
+                item.Label({}, itemVal.as((i) => `Prefix: ${i.label}`)),
+              ]),
+          },
+        ),
+      ]);
+    });
+
+    const options = Array.from(root.querySelectorAll("[role='option']"));
+    expect(options).toHaveLength(2);
+    expect(options[0]?.className).toContain("custom-item");
+    expect(options[0]?.textContent).toContain("Prefix: Custom One");
+  });
 });

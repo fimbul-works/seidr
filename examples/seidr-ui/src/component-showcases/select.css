@@ -1,0 +1,183 @@
+.select-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.select-section-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 380px;
+}
+
+.select-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: hsl(220, 15%, 85%);
+  margin: 0;
+}
+
+.select-value-text {
+  font-size: 0.85rem;
+  color: hsl(220, 10%, 65%);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Select Component Semantic Styles
+   --------------------------------------------------------------------------- */
+
+[data-component="select"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  position: relative;
+}
+
+[data-component="select"][data-part="label"] {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: hsl(220, 15%, 80%);
+  user-select: none;
+  cursor: pointer;
+}
+
+[data-component="select"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.55rem 0.85rem;
+  background-color: hsl(222, 24%, 13%);
+  border: 1px solid hsl(222, 16%, 26%);
+  border-radius: 6px;
+  color: hsl(220, 20%, 94%);
+  font-size: 0.9rem;
+  line-height: 1.4;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
+}
+
+[data-component="select"][data-part="trigger"]:hover:not([data-disabled]) {
+  background-color: hsl(222, 24%, 16%);
+  border-color: hsl(222, 16%, 35%);
+}
+
+[data-component="select"][data-part="trigger"]:focus-visible {
+  border-color: hsl(217, 91%, 60%);
+  box-shadow: 0 0 0 2px hsl(217, 91%, 60%, 0.25);
+}
+
+[data-component="select"][data-part="trigger"][data-expanded] {
+  border-color: hsl(217, 91%, 60%);
+}
+
+[data-component="select"][data-part="trigger"][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="select"][data-part="value"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-component="select"][data-part="value"][data-placeholder-shown] {
+  color: hsl(220, 10%, 50%);
+}
+
+[data-component="select"][data-part="icon"] {
+  font-size: 0.75rem;
+  color: hsl(220, 10%, 60%);
+  transition: transform 150ms ease;
+  margin-left: 0.5rem;
+}
+
+[data-component="select"][data-part="trigger"][data-expanded] [data-part="icon"] {
+  transform: rotate(180deg);
+}
+
+/* Floating Content */
+[data-component="select"][data-part="content"] {
+  background-color: hsl(222, 24%, 14%);
+  border: 1px solid hsl(222, 16%, 26%);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  padding: 0.35rem;
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+[data-component="select"][data-part="listbox"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  max-height: 240px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Options */
+[data-component="select"][data-part="item"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.65rem;
+  border-radius: 5px;
+  font-size: 0.875rem;
+  color: hsl(220, 15%, 85%);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 100ms ease, color 100ms ease;
+}
+
+[data-component="select"][data-part="item"][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+[data-component="select"][data-part="item"][data-selected]:not([data-highlighted]) {
+  background-color: hsl(217, 91%, 60%, 0.15);
+  color: hsl(217, 91%, 65%);
+}
+
+[data-component="select"][data-part="item"][data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[data-component="select"][data-part="item-label"] {
+  font-weight: 500;
+}
+
+[data-component="select"][data-part="item-indicator"] {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+/* Sections */
+[data-component="select"][data-part="section"] {
+  list-style: none;
+  margin: 0.25rem 0;
+}
+
+[data-component="select"][data-part="section-label"] {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(220, 10%, 55%);
+  padding: 0.4rem 0.65rem 0.2rem;
+}
+

@@ -40,7 +40,8 @@
     "prepublishOnly": "pnpm clean:dist && pnpm build"
   },
   "dependencies": {
-    "@fimbul-works/flaedi": "^1.0.1"
+    "@fimbul-works/flaedi": "^1.0.1",
+    "@floating-ui/dom": "^1.8.0"
   },
   "peerDependencies": {
     "@fimbul-works/seidr": "^1.0.0"

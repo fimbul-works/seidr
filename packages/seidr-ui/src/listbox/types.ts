@@ -15,13 +15,29 @@ export type ListboxSelectionMode = "single" | "multiple" | "none";
 export type ListboxOrientation = "vertical" | "horizontal";
 
 /** High-level data item definition for options rendered in Listbox. */
-export interface ListboxOptionItem {
+export interface ListboxItemData<T = any> {
+  type?: "item";
   value: string;
-  label: string;
+  label?: SeidrChild;
   textValue?: string;
   disabled?: boolean;
-  description?: string;
+  description?: SeidrChild;
+  rawValue?: T;
 }
+
+/** High-level section definition for grouped options rendered in Listbox. */
+export interface ListboxSectionData<T = any> {
+  type: "section";
+  key: string;
+  label: SeidrChild;
+  items: ListboxItemData<T>[];
+  rawValue?: T;
+}
+
+export type ListboxNode<T = any> = ListboxItemData<T> | ListboxSectionData<T>;
+
+/** Alias for backward compatibility */
+export type ListboxOptionItem<T = any> = ListboxItemData<T>;
 
 /** Configuration options for the headless `useListbox` hook. */
 export interface UseListboxOptions {
@@ -287,6 +303,17 @@ export interface ListboxBoundItemHelpers {
 
 export interface ListboxItemInstance extends UseListboxItemResult, ListboxBoundItemHelpers {}
 
+export interface ListboxListRenderOptions {
+  renderItem?: (
+    itemValue: Value<ListboxItemData>,
+    key: string,
+    item: ListboxItemInstance,
+  ) => SeidrChild;
+  renderSection?: (sectionValue: Value<ListboxSectionData>, key: string) => SeidrChild;
+  indicator?: SeidrChild;
+  itemProps?: Record<string, any>;
+}
+
 /** Tier 2 Coordinator instance returned by `createListbox`. */
 export interface ListboxInstance extends UseListboxResult {
   createItem: (options: UseListboxItemOptions) => ListboxItemInstance;
@@ -325,12 +352,17 @@ export interface ListboxInstance extends UseListboxResult {
     props?: ListboxSectionLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+
+  List: (
+    items: ReactiveValue<ListboxNode[]>,
+    options?: ListboxListRenderOptions,
+  ) => SeidrChild;
 }
 
 /** Tier 1 All-in-One Component Props. */
 export interface ListboxOptions<T extends keyof SeidrElementTagNameMap = "ul"> extends UseListboxOptions {
   as?: T;
-  items?: ListboxOptionItem[];
+  items?: ReactiveValue<ListboxNode[]>;
   rootProps?: Omit<ListboxRootProps<T>, "instance" | "as">;
   itemProps?: Record<string, any>;
   indicator?: SeidrChild;

@@ -1,0 +1,90 @@
+.popper-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.popper-section-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.popper-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+}
+
+.popper-anchor-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #fff;
+  background: hsl(217, 91%, 60%);
+  border: 1px solid hsl(217, 91%, 50%);
+  border-radius: 6px;
+  cursor: pointer;
+  outline: none;
+  transition: background-color 0.15s ease;
+}
+
+.popper-anchor-button:hover {
+  background: hsl(217, 91%, 55%);
+}
+
+.popper-anchor-button:focus-visible {
+  box-shadow: 0 0 0 2px hsla(217, 91%, 60%, 0.35);
+}
+
+/* Popper Floating Positioner Card */
+.popper-tooltip-content {
+  background: hsl(222, 47%, 14%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 0.5rem 0.85rem;
+  font-size: 0.8125rem;
+  color: var(--fg, #f3f4f6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  pointer-events: auto;
+}
+
+[data-component="popper"][data-part="arrow"] {
+  color: hsl(222, 47%, 14%);
+}
+
+.popper-controls-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.popper-pill-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg-muted, #9ca3af);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.popper-pill-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.popper-pill-btn[data-active] {
+  background: hsla(217, 91%, 60%, 0.2);
+  color: hsl(217, 91%, 70%);
+  border-color: hsl(217, 91%, 60%);
+}
+

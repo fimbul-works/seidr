@@ -400,8 +400,8 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `@floating-ui/dom`, `useDirection`.
 - **Complexity**: Moderate (~577 LOC).
 - **Tasks**:
-  - [ ] Wrap `@floating-ui/dom` with reactive placement signals.
-  - [ ] Implement `Popper.Root`, `Popper.Positioner`, `Popper.Arrow`.
+  - [x] Wrap `@floating-ui/dom` with reactive placement signals.
+  - [x] Implement `Popper.Root`, `Popper.Positioner`, `Popper.Arrow`.
 
 ### 33. `toast`
 
@@ -512,10 +512,12 @@ Non-standard specialized form components (excluding color pickers, which are def
 
 - **Location**: `kobalte-packages/core/src/select`
 - **Description**: Dropdown select menu with customizable trigger, native hidden `<select>` fallback for form submission, typeahead search, popper positioning, and keyboard navigation.
-- **Dependencies**: `portal`, `button`, `form-control`, `list`, `listbox`, `popper`, `dismissable-layer`, `useDisclosureState`, `useFocusScope`, `selection`, `useTransition`.
+- **Dependencies**: `button`, `form-control`, `listbox`, `popper`.
 - **Complexity**: High (~1,664 LOC).
 - **Tasks**:
-  - [ ] Implement Select parts.
+  - [x] Implement `useSelect`, `createSelect`, and all Select parts.
+  - [x] Implement Tier 1 All-in-One `Select` with dynamic reactive options (`ReactiveValue<SelectNode[]>`), single/multi-selection, closed typeahead/arrow cycling, outside pointer/escape dismissal, form reset, and hidden select integration.
+  - [x] Comprehensive dual-mode tests (30 tests: 15 browser + 15 SSR) and showcase in `examples/seidr-ui`.
 
 ### 43. `combobox`
 
