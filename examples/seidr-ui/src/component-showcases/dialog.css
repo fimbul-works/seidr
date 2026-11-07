@@ -1,0 +1,163 @@
+/* Dialog Showcase Styles */
+
+.dialog-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.dialog-section-box {
+  background: var(--bg-surface, #1e1e24);
+  border: 1px solid var(--border-subtle, #2e2e38);
+  border-radius: 8px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dialog-heading {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary, #f0f0f5);
+}
+
+.dialog-desc {
+  font-size: 0.875rem;
+  color: var(--text-muted, #9e9ea8);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.dialog-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Dialog Component Semantic Part Styles */
+
+[data-component="dialog"][data-part="root"] {
+  display: inline-flex;
+}
+
+[data-component="dialog"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  background: var(--accent, #6366f1);
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+[data-component="dialog"][data-part="trigger"]:hover {
+  background: var(--accent-hover, #4f46e5);
+}
+
+[data-component="dialog"][data-part="trigger"]:focus-visible {
+  outline: 2px solid var(--accent-focus, #818cf8);
+  outline-offset: 2px;
+}
+
+[data-component="dialog"][data-part="overlay"] {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  animation: dialog-overlay-fade 0.15s ease-out;
+}
+
+[data-component="dialog"][data-part="content"] {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1001;
+  background: var(--bg-elevated, #24242d);
+  color: var(--text-primary, #f0f0f5);
+  border: 1px solid var(--border-default, #3f3f4e);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6), 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  width: 90vw;
+  max-width: 480px;
+  outline: none;
+  animation: dialog-content-zoom 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-component="dialog"][data-part="title"] {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary, #f8fafc);
+  margin: 0 0 0.5rem 0;
+  padding-right: 2rem;
+}
+
+[data-component="dialog"][data-part="description"] {
+  font-size: 0.875rem;
+  color: var(--text-muted, #94a3b8);
+  margin: 0 0 1.25rem 0;
+  line-height: 1.5;
+}
+
+[data-component="dialog"][data-part="close-button"] {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted, #94a3b8);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+[data-component="dialog"][data-part="close-button"]:hover {
+  background: var(--bg-subtle, #2e2e38);
+  color: var(--text-primary, #f8fafc);
+}
+
+[data-component="dialog"][data-part="close-button"]:focus-visible {
+  outline: 2px solid var(--accent, #6366f1);
+  outline-offset: 1px;
+}
+
+@keyframes dialog-overlay-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-content-zoom {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+

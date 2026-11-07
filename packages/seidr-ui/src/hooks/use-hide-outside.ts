@@ -16,14 +16,14 @@ import {
 
 const DATA_TOP_LAYER_ATTR = "data-kb-top-layer";
 
-export type HideOutsideTarget = Element | Ref<Element>;
+export type HideOutsideTarget = Element | Ref<Element> | Ref<HTMLElement>;
 
 export interface UseHideOutsideProps {
   /** The elements or ref(s) that should remain visible (not hidden). */
   targets: HideOutsideTarget | HideOutsideTarget[];
 
   /** Nothing will be hidden above this element. Defaults to document.body. */
-  root?: Element | Ref<Element>;
+  root?: Element | Ref<Element> | Ref<HTMLElement>;
 
   /** Whether the hide outside behavior is disabled or not. */
   isDisabled?: boolean | Value<boolean>;
@@ -207,7 +207,7 @@ function extractElements(targets: HideOutsideTarget[]): Element[] {
   return targets.flatMap(walk);
 }
 
-const extractRoot = (root?: Element | Ref<Element>): Element | undefined => {
+const extractRoot = (root?: Element | Ref<Element> | Ref<HTMLElement>): Element | undefined => {
   if (isRef(root)) {
     const val = root();
     return isElementNode(val) ? val : undefined;

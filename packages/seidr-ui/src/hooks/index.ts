@@ -10,6 +10,7 @@ export * from "./use-focus-scope.js";
 export * from "./use-form-reset-listener.js";
 export * from "./use-hide-outside.js";
 export * from "./use-interact-outside.js";
+export * from "./use-prevent-scroll.js";
 export * from "./use-rect.js";
 export * from "./use-register-id.js";
 export * from "./use-size.js";
