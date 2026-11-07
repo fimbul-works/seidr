@@ -1,0 +1,254 @@
+.dropdown-menu-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.dropdown-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.dropdown-menu-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+  margin-bottom: 0.25rem;
+}
+
+.dropdown-menu-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------------
+ * Semantic CSS Styles: DropdownMenu Component
+ * Target via [data-component="dropdown-menu"] and [data-part="..."]
+ * --------------------------------------------------------------------------- */
+
+/* Trigger button */
+[data-component="dropdown-menu"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  background-color: hsl(222, 24%, 13%);
+  color: hsl(220, 20%, 94%);
+  border: 1px solid hsl(222, 16%, 26%);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+[data-component="dropdown-menu"][data-part="trigger"]:hover {
+  background-color: hsl(222, 24%, 18%);
+  border-color: hsl(222, 16%, 38%);
+}
+
+[data-component="dropdown-menu"][data-part="trigger"][data-expanded] {
+  border-color: hsl(217, 91%, 60%);
+  box-shadow: 0 0 0 2px hsla(217, 91%, 60%, 0.25);
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="trigger"] {
+  background-color: #ffffff;
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="trigger"]:hover {
+  background-color: #f1f5f9;
+  border-color: rgba(0, 0, 0, 0.2);
+}
+
+/* Floating content dropdown */
+[data-component="dropdown-menu"][data-part="content"],
+[data-component="dropdown-menu"][data-part="sub-content"] {
+  min-width: 14rem;
+  padding: 0.35rem;
+  background-color: hsl(222, 24%, 13%);
+  border: 1px solid hsl(222, 16%, 26%);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  box-sizing: border-box;
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="content"],
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="sub-content"] {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+
+/* Items (standard, checkbox, radio, sub-trigger) */
+[data-component="dropdown-menu"][data-part="item"],
+[data-component="dropdown-menu"][data-part="checkbox-item"],
+[data-component="dropdown-menu"][data-part="radio-item"],
+[data-component="dropdown-menu"][data-part="sub-trigger"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.875rem;
+  color: hsl(220, 15%, 85%);
+  border-radius: 5px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="item"],
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="checkbox-item"],
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="radio-item"],
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="sub-trigger"] {
+  color: #1e293b;
+}
+
+/* Hover and Highlighted State */
+[data-component="dropdown-menu"][data-part="item"]:hover:not([data-disabled]),
+[data-component="dropdown-menu"][data-part="checkbox-item"]:hover:not([data-disabled]),
+[data-component="dropdown-menu"][data-part="radio-item"]:hover:not([data-disabled]),
+[data-component="dropdown-menu"][data-part="sub-trigger"]:hover:not([data-disabled]),
+[data-component="dropdown-menu"][data-part="item"][data-highlighted],
+[data-component="dropdown-menu"][data-part="checkbox-item"][data-highlighted],
+[data-component="dropdown-menu"][data-part="radio-item"][data-highlighted],
+[data-component="dropdown-menu"][data-part="sub-trigger"][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+/* Selected / Checked State */
+[data-component="dropdown-menu"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
+[data-component="dropdown-menu"][data-part="radio-item"][data-checked]:not([data-highlighted]),
+[data-component="dropdown-menu"][data-part="item"][data-checked]:not([data-highlighted]) {
+  background-color: hsla(217, 91%, 60%, 0.15);
+  color: hsl(217, 91%, 70%);
+  font-weight: 500;
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="radio-item"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="item"][data-checked]:not([data-highlighted]) {
+  background-color: rgba(79, 70, 229, 0.1);
+  color: #4338ca;
+  font-weight: 500;
+}
+
+[data-component="dropdown-menu"][data-part="checkbox-item"][data-checked][data-highlighted],
+[data-component="dropdown-menu"][data-part="radio-item"][data-checked][data-highlighted],
+[data-component="dropdown-menu"][data-part="item"][data-checked][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+[data-component="dropdown-menu"][data-part="item"][data-disabled],
+[data-component="dropdown-menu"][data-part="checkbox-item"][data-disabled],
+[data-component="dropdown-menu"][data-part="radio-item"][data-disabled],
+[data-component="dropdown-menu"][data-part="sub-trigger"][data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sub-trigger chevron arrow indicator */
+[data-component="dropdown-menu"][data-part="sub-trigger"]::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Indicators */
+[data-component="dropdown-menu"][data-part="item-indicator"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-right: 0.25rem;
+}
+
+/* Labels and descriptions */
+[data-component="dropdown-menu"][data-part="item-label"] {
+  flex: 1;
+  font-weight: 500;
+}
+
+[data-component="dropdown-menu"][data-part="item-description"] {
+  font-size: 0.75rem;
+  color: var(--fg-muted, #94a3b8);
+  margin-left: auto;
+}
+
+[data-component="dropdown-menu"][data-part="item"][data-highlighted] [data-component="dropdown-menu"][data-part="item-description"] {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Icons */
+[data-component="dropdown-menu"][data-part="icon"] {
+  display: inline-flex;
+  font-size: 1rem;
+  width: 1.25rem;
+  justify-content: center;
+}
+
+/* Separator */
+[data-component="dropdown-menu"][data-part="separator"] {
+  height: 1px;
+  background-color: hsl(222, 16%, 26%);
+  margin: 0.35rem 0;
+  border: none;
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="separator"] {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+/* Group Label */
+[data-component="dropdown-menu"][data-part="group-label"] {
+  padding: 0.4rem 0.65rem 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--fg-muted, #94a3b8);
+}
+
+:root[data-theme="light"] [data-component="dropdown-menu"][data-part="group-label"] {
+  color: #64748b;
+}
+
+/* Dynamic Controls & Status Bar */
+.dropdown-menu-status-badge {
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+  background: hsl(222, 24%, 13%);
+  border-radius: 6px;
+  border: 1px solid hsl(222, 16%, 26%);
+  color: hsl(220, 15%, 85%);
+}
+
+:root[data-theme="light"] .dropdown-menu-status-badge {
+  background: #f8fafc;
+  border-color: rgba(0, 0, 0, 0.1);
+  color: #334155;
+}
+
+.dropdown-menu-status-badge strong {
+  color: hsl(217, 91%, 60%);
+}
+

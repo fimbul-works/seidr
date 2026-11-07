@@ -12,15 +12,10 @@ export const PopperShowcase = createComponent(() => {
 
   const popper = createPopper({
     anchorRef,
-    placement: "bottom",
+    placement: selectedPlacement,
     gutter: 8,
     flip: true,
     slide: true,
-  });
-
-  selectedPlacement.watch((next) => {
-    popper.currentPlacement(next);
-    void popper.updatePosition();
   });
 
   const placements: Placement[] = [
@@ -64,7 +59,7 @@ export const PopperShowcase = createComponent(() => {
           ),
         ]),
 
-        $div({ className: "popper-section-box", style: { minHeight: "180px", position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" } }, [
+        $div({ className: "popper-section-box", style: { minHeight: "260px", position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" } }, [
           $button(
             {
               ref: anchorRef,
@@ -77,7 +72,7 @@ export const PopperShowcase = createComponent(() => {
             "Anchor Element (Click to Toggle)",
           ),
 
-          popper.Root({ style: { display: isVisible.as((v) => (v ? "block" : "none")) } }, [
+          popper.Root({ style: { position: "absolute", inset: "0", pointerEvents: "none", display: isVisible.as((v) => (v ? "block" : "none")) } }, [
             popper.Positioner({}, [
               popper.Arrow(),
               $div(

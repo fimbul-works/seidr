@@ -8,7 +8,7 @@ import type {
   SeidrElementTagNameMap,
   Value,
 } from "@fimbul-works/seidr";
-import type { Placement } from "../popper/types.js";
+import type { AnchorRect, Placement } from "../popper/types.js";
 import type { UsePopperResult } from "../popper/types.js";
 
 export type MenuOrientation = "horizontal" | "vertical";
@@ -142,6 +142,8 @@ export type MenuItemDescriptor =
 export interface UseMenuOptions {
   /** Unique ID for the menu system. */
   id?: string;
+  /** Custom data-component attribute prefix. Defaults to "menu". */
+  dataComponent?: string;
   /** Controlled open state. */
   open?: ReactiveValue<boolean>;
   /** Default open state when initially rendered. */
@@ -162,6 +164,8 @@ export interface UseMenuOptions {
   closeOnSelect?: boolean;
   /** Reference to parent menu if this instance is a submenu. */
   parentMenu?: UseMenuResult | null;
+  /** Custom function to determine virtual anchor boundaries for popper positioning. */
+  getAnchorRect?: (anchor?: HTMLElement) => AnchorRect | undefined;
 }
 
 export interface UseMenuResult {

@@ -1,5 +1,16 @@
 import { isFn } from "@fimbul-works/hvat";
-import { createRef, createValue, inClient, isRef, onUnmounted, type Ref, useId, type Value } from "@fimbul-works/seidr";
+import {
+  createRef,
+  createValue,
+  inClient,
+  isRef,
+  type ObservableValue,
+  onUnmounted,
+  type Ref,
+  useId,
+  type Value,
+  wrapValue,
+} from "@fimbul-works/seidr";
 import { arrow, autoUpdate, computePosition, flip, hide, offset, platform, shift, size } from "@floating-ui/dom";
 import { useDirection } from "../hooks/use-direction.js";
 import type { BasePlacement, Placement, UsePopperOptions, UsePopperResult } from "./types.js";
@@ -11,7 +22,6 @@ import { getAnchorElement, getTransformOrigin, isValidPlacement } from "./utils.
 export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
   const {
     id: customId,
-    placement: preferredPlacement = "bottom",
     gutter = 0,
     shift: shiftOffset = 0,
     flip: flipOption = true,
@@ -28,7 +38,8 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
   } = options;
 
   const id = customId ?? useId("popper");
-  const currentPlacement: Value<Placement> = createValue<Placement>(preferredPlacement);
+  const preferredPlacement: ObservableValue<Placement> = wrapValue(options.placement ?? "bottom");
+  const currentPlacement: Value<Placement> = createValue<Placement>(preferredPlacement());
 
   const anchorRef: Ref<HTMLElement> = isRef(options.anchorRef) ? options.anchorRef : createRef<HTMLElement>();
 
@@ -148,7 +159,7 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
     }
 
     const pos = await computePosition(referenceEl, floatingEl, {
-      placement: preferredPlacement,
+      placement: preferredPlacement(),
       strategy: "absolute",
       middleware: middlewareList,
       platform: {
@@ -183,6 +194,13 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
     if (arrowEl && pos.middlewareData.arrow) {
       const { x: arrowX, y: arrowY } = pos.middlewareData.arrow;
       const baseDir = pos.placement.split("-")[0] as BasePlacement;
+
+      Object.assign(arrowEl.style, {
+        left: "",
+        right: "",
+        top: "",
+        bottom: "",
+      });
 
       Object.assign(arrowEl.style, {
         left: arrowX != null ? `${arrowX}px` : "",
@@ -222,6 +240,10 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
   };
 
   inClient(() => {
+    preferredPlacement.watch(() => {
+      void updatePosition();
+    });
+
     positionerRef.bind((el) => {
       if (el) {
         startAutoUpdate();
@@ -247,6 +269,7 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
 
   return {
     id,
+    placement: preferredPlacement,
     currentPlacement,
     anchorRef,
     positionerRef,

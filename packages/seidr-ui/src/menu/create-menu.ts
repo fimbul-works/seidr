@@ -65,33 +65,41 @@ let keySeq = 0;
  * Returns pre-bound element helpers and reactive observables.
  */
 export function createMenu(options: UseMenuOptions = {}): MenuInstance {
-  const instance = useMenu(options);
+  const { dataComponent = "menu", ...menuOptions } = options;
+  const instance = useMenu(menuOptions);
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRootProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuRoot<T>({ ...props, instance } as MenuRootProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuRoot<T>({ dataComponent, ...props, instance } as MenuRootProps<T>, children);
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props?: MenuTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuTrigger<T>({ ...props, instance } as MenuTriggerProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuTrigger<T>({ dataComponent, ...props, instance } as MenuTriggerProps<T>, children);
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuContentProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
-    MenuContent<T>({ renderList: ListHelper, ...props, instance } as MenuContentProps<T>, children);
+    MenuContent<T>(
+      { renderList: ListHelper, dataComponent, ...props, instance } as MenuContentProps<T>,
+      children,
+    );
 
   const Item = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuItemProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuItem<T>({ ...props, instance } as MenuItemProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuItem<T>({ dataComponent, ...props, instance } as MenuItemProps<T>, children);
 
   const CheckboxItem = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuCheckboxItemProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuCheckboxItem<T>({ ...props, instance } as MenuCheckboxItemProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuCheckboxItem<T>({ dataComponent, ...props, instance } as MenuCheckboxItemProps<T>, children);
 
   let activeRadioGroup: UseMenuRadioGroupResult | undefined;
 
@@ -104,7 +112,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
       children?: SeidrChild | SeidrChild[],
     ): SeidrElementTagNameMap[T] =>
       MenuRadioGroup<T>(
-        { ...props, instance, radioGroupInstance } as MenuRadioGroupProps<T>,
+        { dataComponent, ...props, instance, radioGroupInstance } as MenuRadioGroupProps<T>,
         children,
       );
 
@@ -113,7 +121,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
       children?: SeidrChild | SeidrChild[],
     ): SeidrElementTagNameMap[T] =>
       MenuRadioItem<T>(
-        { ...props, instance, radioGroupInstance } as MenuRadioItemProps<T>,
+        { dataComponent, ...props, instance, radioGroupInstance } as MenuRadioItemProps<T>,
         children,
       );
 
@@ -139,7 +147,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
       });
     activeRadioGroup = radioGroup;
     return MenuRadioGroup<T>(
-      { ...props, instance, radioGroupInstance: radioGroup } as MenuRadioGroupProps<T>,
+      { dataComponent, ...props, instance, radioGroupInstance: radioGroup } as MenuRadioGroupProps<T>,
       children,
     );
   };
@@ -149,12 +157,18 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
     MenuRadioItem<T>(
-      { ...props, instance, radioGroupInstance: props.radioGroupInstance ?? activeRadioGroup } as MenuRadioItemProps<T>,
+      {
+        dataComponent,
+        ...props,
+        instance,
+        radioGroupInstance: props.radioGroupInstance ?? activeRadioGroup,
+      } as MenuRadioItemProps<T>,
       children,
     );
 
   const createSub = (subOptions: Omit<UseMenuOptions, "parentMenu"> = {}): MenuInstance => {
     return createMenu({
+      dataComponent,
       ...subOptions,
       parentMenu: instance,
       placement: subOptions.placement ?? "right-start",
@@ -164,57 +178,72 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
   const Sub = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuSub<T>({ ...props, instance } as MenuSubProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuSub<T>({ dataComponent, ...props, instance } as MenuSubProps<T>, children);
 
   const SubTrigger = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuSubTrigger<T>({ ...props, instance } as MenuSubTriggerProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuSubTrigger<T>({ dataComponent, ...props, instance } as MenuSubTriggerProps<T>, children);
 
   const SubContent = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubContentProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
-    MenuSubContent<T>({ ...props, instance } as MenuSubContentProps<T>, children);
+    MenuSubContent<T>({ dataComponent, ...props, instance } as MenuSubContentProps<T>, children);
 
   const Separator = <T extends keyof SeidrElementTagNameMap = "hr">(
     props?: MenuSeparatorProps<T>,
-  ): SeidrElementTagNameMap[T] => MenuSeparator<T>({ ...props, instance } as MenuSeparatorProps<T>);
+  ): SeidrElementTagNameMap[T] =>
+    MenuSeparator<T>({ dataComponent, ...props, instance } as MenuSeparatorProps<T>);
 
   const Group = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuGroupProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuGroup<T>({ ...props, instance } as MenuGroupProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuGroup<T>({ dataComponent, ...props, instance } as MenuGroupProps<T>, children);
 
   const GroupLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuGroupLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuGroupLabel<T>({ ...props, instance } as MenuGroupLabelProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuGroupLabel<T>({ dataComponent, ...props, instance } as MenuGroupLabelProps<T>, children);
 
   const ItemLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuItemLabel<T>({ ...props, instance } as MenuItemLabelProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuItemLabel<T>({ dataComponent, ...props, instance } as MenuItemLabelProps<T>, children);
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuItemDescription<T>({ ...props, instance } as MenuItemDescriptionProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuItemDescription<T>(
+      { dataComponent, ...props, instance } as MenuItemDescriptionProps<T>,
+      children,
+    );
 
   const ItemIndicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemIndicatorProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
-    MenuItemIndicator<T>({ ...props, instance } as MenuItemIndicatorProps<T>, children);
+    MenuItemIndicator<T>(
+      { dataComponent, ...props, instance } as MenuItemIndicatorProps<T>,
+      children,
+    );
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuIconProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] => MenuIcon<T>({ ...props, instance } as MenuIconProps<T>, children);
+  ): SeidrElementTagNameMap[T] =>
+    MenuIcon<T>({ dataComponent, ...props, instance } as MenuIconProps<T>, children);
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuArrowProps<T>,
-  ): SeidrElementTagNameMap[T] => MenuArrow<T>({ ...props, instance } as MenuArrowProps<T>);
+  ): SeidrElementTagNameMap[T] =>
+    MenuArrow<T>({ dataComponent, ...props, instance } as MenuArrowProps<T>);
 
   const ListHelper = (
     itemsProp: ReactiveValue<MenuItemDescriptor[]>,

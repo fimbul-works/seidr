@@ -559,7 +559,9 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `portal`, `menu`, `popper`, `separator`.
 - **Complexity**: Low (~231 LOC). Thin wrapper around `menu`.
 - **Tasks**:
-  - [ ] Implement DropdownMenu parts by wrapping Menu.
+  - [x] Implement DropdownMenu parts by wrapping Menu.
+  - [x] Implement Tier 1 All-in-One `DropdownMenu` and Tier 2 `createDropdownMenu`.
+  - [x] Dual-mode unit tests (26 tests: 13 browser + 13 SSR) and showcase in `examples/seidr-ui`.
 
 ### 47. `context-menu`
 

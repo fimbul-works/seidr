@@ -64,6 +64,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
     placement: options.placement ?? (parentMenu ? "right-start" : "bottom-start"),
     flip: true,
     gutter: 4,
+    getAnchorRect: options.getAnchorRect,
   });
 
   const highlightedValue: Value<string | null> = createValue<string | null>(null);

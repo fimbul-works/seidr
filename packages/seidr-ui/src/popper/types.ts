@@ -1,4 +1,6 @@
 import type {
+  ObservableValue,
+  ReactiveValue,
   Ref,
   SeidrChild,
   SeidrElementProps,
@@ -39,9 +41,10 @@ export interface UsePopperOptions {
 
   /**
    * Preferred placement of the floating popper relative to the anchor.
+   * Can be a static placement or a reactive observable.
    * @default "bottom"
    */
-  placement?: Placement;
+  placement?: ReactiveValue<Placement>;
 
   /**
    * Spacing between the popper and the anchor element.
@@ -121,6 +124,9 @@ export interface UsePopperOptions {
 export interface UsePopperResult {
   /** Identifier of the popper instance. */
   id: string;
+
+  /** Configured preferred placement (reactive observable). */
+  placement: ObservableValue<Placement>;
 
   /** Reactive observable of current placement. */
   currentPlacement: Value<Placement>;

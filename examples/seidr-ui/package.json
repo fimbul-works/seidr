@@ -11,10 +11,10 @@
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
+    "@fimbul-works/flaedi": "^1.0.1",
     "@fimbul-works/seidr": "workspace:*",
-    "@fimbul-works/seidr-ui": "workspace:*",
     "@fimbul-works/seidr-router": "workspace:*",
-    "@fimbul-works/flaedi": "^1.0.1"
+    "@fimbul-works/seidr-ui": "workspace:*"
   },
   "devDependencies": {
     "@fimbul-works/seidr-build-tools": "workspace:*",

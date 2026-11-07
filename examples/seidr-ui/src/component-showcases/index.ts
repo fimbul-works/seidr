@@ -6,6 +6,7 @@ import { ButtonShowcase } from "./button.js";
 import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
 import { ComboboxShowcase } from "./combobox.js";
+import { DropdownMenuShowcase } from "./dropdown-menu.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
 import { ListboxShowcase } from "./listbox.js";
@@ -36,6 +37,7 @@ export * from "./button.js";
 export * from "./checkbox.js";
 export * from "./collapsible.js";
 export * from "./combobox.js";
+export * from "./dropdown-menu.js";
 export * from "./form-control.js";
 export * from "./image.js";
 export * from "./listbox.js";
@@ -75,6 +77,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "checkbox", title: "Checkbox", badge: "Form", category: "Form", component: CheckboxShowcase },
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
   { id: "combobox", title: "Combobox", badge: "Form", category: "Form", component: ComboboxShowcase },
+  { id: "dropdown-menu", title: "DropdownMenu", badge: "Widget", category: "Widget", component: DropdownMenuShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },

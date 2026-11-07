@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { seidrVitePlugin } from "@fimbul-works/seidr-build-tools/vite";
-import { defineConfig, type UserConfig } from "vite";
+import { defineConfig, type Plugin, type UserConfig } from "vite";
 
 export default defineConfig({
   publicDir: resolve(import.meta.dirname, "../../public"),

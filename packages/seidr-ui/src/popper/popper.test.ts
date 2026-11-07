@@ -1,13 +1,14 @@
 import {
   createComponent,
   createRef,
+  createValue,
   mount,
   type SeidrChild,
 } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it } from "vitest";
 import { axe } from "vitest-axe";
-import { createPopper, Popper } from "./index.js";
+import { createPopper, type Placement, Popper } from "./index.js";
 
 describeDualMode("Popper", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -121,6 +122,57 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
 
     expect(positionerEl.style.transform).toContain("translate3d");
     expect(positionerEl.style.getPropertyValue("--seidr-popper-content-transform-origin")).toBeTruthy();
+
+    anchor.remove();
+  });
+
+  it("supports reactive placement observable and recalculates position when placement changes", async () => {
+    if (isSSR) return;
+
+    const anchor = getDocument().createElement("button");
+    anchor.textContent = "Trigger";
+    anchor.getBoundingClientRect = () => ({
+      x: 200,
+      y: 200,
+      top: 200,
+      bottom: 240,
+      left: 200,
+      right: 300,
+      width: 100,
+      height: 40,
+      toJSON: () => {},
+    });
+    getDocument().body.appendChild(anchor);
+
+    const placementVal = createValue<Placement>("bottom");
+    let popperInstance!: ReturnType<typeof createPopper>;
+
+    const root = setup(() => {
+      popperInstance = createPopper({
+        anchorRef: () => anchor,
+        placement: placementVal,
+        gutter: 8,
+        flip: false,
+      });
+
+      return popperInstance.Root({}, [
+        popperInstance.Positioner({}, [
+          popperInstance.Arrow(),
+          getDocument().createElement("div"),
+        ]),
+      ]);
+    });
+
+    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
+
+    await popperInstance.updatePosition();
+    expect(popperInstance.currentPlacement()).toBe("bottom");
+    expect(positionerEl.getAttribute("data-placement")).toBe("bottom");
+
+    placementVal("top");
+    await popperInstance.updatePosition();
+    expect(popperInstance.currentPlacement()).toBe("top");
+    expect(positionerEl.getAttribute("data-placement")).toBe("top");
 
     anchor.remove();
   });

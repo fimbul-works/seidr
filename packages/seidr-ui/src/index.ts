@@ -7,6 +7,7 @@ export * from "./checkbox/index.js";
 export * from "./collapsible/index.js";
 export * from "./collection/index.js";
 export * from "./combobox/index.js";
+export * from "./dropdown-menu/index.js";
 export * from "./form-control/index.js";
 export * from "./hooks/index.js";
 export * from "./image/index.js";

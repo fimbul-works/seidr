@@ -90,6 +90,10 @@ function removeSpecifierWithComma(
     if (code[start - 1] === ",") {
       start--;
     }
+    // Also eat any trailing comma and whitespace
+    while ([",", " ", "\t", "\n"].includes(code[end])) {
+      end++;
+    }
   }
   ms.remove(start, end);
 }
