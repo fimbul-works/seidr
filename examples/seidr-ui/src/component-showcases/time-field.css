@@ -1,0 +1,182 @@
+/* TimeField Showcase Styling */
+.time-field-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.time-field-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--surface-2, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 0.75rem;
+}
+
+.time-field-heading {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.time-field-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.4;
+}
+
+.time-field-readout {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #cbd5e1);
+  background: var(--surface-3, rgba(255, 255, 255, 0.06));
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.375rem;
+  width: fit-content;
+}
+
+/* TimeField Component Styling */
+[data-component="time-field"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  width: 100%;
+  max-width: 18rem;
+}
+
+[data-component="time-field"][data-part="label"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-primary, #f1f5f9);
+}
+
+[data-component="time-field"][data-part="input"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--surface-1, #1e293b);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-variant-numeric: tabular-nums;
+  box-sizing: border-box;
+  width: fit-content;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+[data-component="time-field"][data-part="input"]:focus-within {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+[data-component="time-field"][data-part="root"][data-invalid] [data-component="time-field"][data-part="input"] {
+  border-color: #f87171;
+  box-shadow: 0 0 0 2px rgba(248, 113, 113, 0.2);
+}
+
+[data-component="time-field"][data-part="root"][data-disabled] [data-component="time-field"][data-part="input"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+[data-component="time-field"][data-part="segment"] {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  min-width: 1.5rem;
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+  text-align: center;
+  color: var(--text-primary, #f1f5f9);
+  user-select: none;
+  cursor: default;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+[data-component="time-field"][data-part="segment"]:focus {
+  background-color: #0284c7;
+  color: #ffffff;
+  outline: none;
+}
+
+[data-component="time-field"][data-part="segment"][data-placeholder] {
+  color: var(--text-muted, #94a3b8);
+}
+
+[data-component="time-field"][data-part="segment"][data-type="dayPeriod"] {
+  min-width: 2rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+[data-component="time-field"][data-part="separator"] {
+  color: var(--text-muted, #64748b);
+  font-weight: 600;
+  user-select: none;
+  margin: 0 -0.05rem;
+}
+
+[data-component="time-field"][data-part="description"] {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.3;
+}
+
+[data-component="time-field"][data-part="error-message"] {
+  font-size: 0.75rem;
+  color: #f87171;
+  line-height: 1.3;
+  margin-top: 0.125rem;
+}
+
+/* Tier 2 Fine-Grained Sculpted Showcase */
+.sculpted-time-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sculpted-time-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3), 0 0 16px -4px rgba(56, 189, 248, 0.15);
+  border-radius: 0.75rem;
+  padding: 0.625rem 1rem;
+  width: fit-content;
+}
+
+.sculpted-time-icon {
+  font-size: 1.25rem;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+}
+
+.sculpted-time-clear {
+  margin-left: 0.5rem;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text-muted, #94a3b8);
+  border-radius: 0.375rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+
+.sculpted-time-clear:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary, #f1f5f9);
+}
+

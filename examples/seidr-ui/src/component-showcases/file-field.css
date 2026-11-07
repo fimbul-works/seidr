@@ -1,0 +1,272 @@
+/* FileField Showcase Styles */
+.file-field-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.file-field-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.file-field-heading {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-heading, #0f172a);
+  margin: 0;
+}
+
+.file-field-subtext {
+  font-size: 0.875rem;
+  color: var(--text-muted, #64748b);
+  margin: 0;
+}
+
+/* FileField semantic component styles */
+[data-component="file-field"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 540px;
+}
+
+[data-component="file-field"][data-part="label"] {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-heading, #0f172a);
+}
+
+[data-component="file-field"][data-part="description"] {
+  font-size: 0.8125rem;
+  color: var(--text-muted, #64748b);
+}
+
+[data-component="file-field"][data-part="error-message"] {
+  font-size: 0.8125rem;
+  color: #ef4444;
+  font-weight: 500;
+}
+
+[data-component="file-field"][data-part="dropzone"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.25rem 1.5rem;
+  border: 2px dashed #cbd5e1;
+  border-radius: 10px;
+  background-color: #f8fafc;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  outline: none;
+}
+
+[data-theme*="dark"] [data-component="file-field"][data-part="dropzone"] {
+  border-color: #334155;
+  background-color: #0f172a;
+}
+
+[data-component="file-field"][data-part="dropzone"]:hover {
+  border-color: #0284c7;
+  background-color: #f0f9ff;
+}
+
+[data-theme*="dark"] [data-component="file-field"][data-part="dropzone"]:hover {
+  border-color: #38bdf8;
+  background-color: #0c4a6e25;
+}
+
+[data-component="file-field"][data-part="dropzone"][data-dragging="true"] {
+  border-color: #0284c7;
+  background-color: #e0f2fe;
+  transform: scale(1.01);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+}
+
+[data-component="file-field"][data-part="dropzone"][aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+[data-component="file-field"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: #0284c7;
+  border: 1px solid #0284c7;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  outline: none;
+}
+
+[data-component="file-field"][data-part="trigger"]:hover:not(:disabled) {
+  background-color: #0369a1;
+  border-color: #0369a1;
+}
+
+[data-component="file-field"][data-part="trigger"]:focus-visible {
+  ring: 2px solid #0284c7;
+  ring-offset: 2px;
+}
+
+[data-component="file-field"][data-part="trigger"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Item List & File Rows */
+[data-component="file-field"][data-part="item-list"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+[data-component="file-field"][data-part="item"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background-color: white;
+  gap: 0.75rem;
+  animation: fileFadeIn 0.2s ease-out;
+}
+
+[data-theme*="dark"] [data-component="file-field"][data-part="item"] {
+  border-color: #334155;
+  background-color: #1e293b;
+}
+
+@keyframes fileFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.file-item-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  overflow: hidden;
+}
+
+[data-component="file-field"][data-part="item-preview-image"] {
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
+  flex-shrink: 0;
+}
+
+[data-theme*="dark"] [data-component="file-field"][data-part="item-preview-image"] {
+  border-color: #475569;
+  background-color: #334155;
+}
+
+.file-item-meta {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+[data-component="file-field"][data-part="item-name"] {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-heading, #0f172a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-component="file-field"][data-part="item-size"] {
+  font-size: 0.75rem;
+  color: var(--text-muted, #64748b);
+}
+
+[data-component="file-field"][data-part="item-delete-trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+[data-component="file-field"][data-part="item-delete-trigger"]:hover:not(:disabled) {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+[data-theme*="dark"] [data-component="file-field"][data-part="item-delete-trigger"]:hover:not(:disabled) {
+  background-color: #7f1d1d40;
+  color: #f87171;
+}
+
+/* Badges and Rejection Notices */
+.file-status-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  background-color: #f1f5f9;
+  color: #475569;
+  width: fit-content;
+}
+
+[data-theme*="dark"] .file-status-badge {
+  background-color: #334155;
+  color: #cbd5e1;
+}
+
+.file-status-badge[data-active="true"] {
+  background-color: #e0f2fe;
+  color: #0284c7;
+}
+
+.rejection-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+  font-size: 0.8125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+[data-theme*="dark"] .rejection-alert {
+  background-color: #450a0a30;
+  border-color: #7f1d1d;
+  color: #fca5a5;
+}
+

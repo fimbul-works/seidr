@@ -226,8 +226,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useEscapeKeyDown`, `useInteractOutside`.
 - **Complexity**: Moderate (~460 LOC). Clean singleton array without React synthetic event hacks.
 - **Tasks**:
-  - [ ] Port `layer-stack.ts`.
-  - [ ] Implement `DismissableLayer`.
+  - [x] Simplified into idiomatic Seidr hooks (`useInteractOutside`, `useEscapeKeydown`).
 
 ### 14. `selection`
 
@@ -236,9 +235,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useControllableValue`, `useDirection`.
 - **Complexity**: Moderate to High (~1,490 LOC).
 - **Tasks**:
-  - [ ] Port `SelectionManager` and `createMultipleSelectionState`.
-  - [ ] Implement `createSelectableCollection` & `createSelectableItem`.
-  - [ ] Implement `createTypeSelect` (typeahead).
+  - [x] Implemented idiomatically within `listbox`, `select`, `combobox`, `tabs`, and `menu` using fine-grained Seidr state.
 
 ### 15. `list`
 
@@ -247,8 +244,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `createCollection`, `selection`, `useDirection`.
 - **Complexity**: Moderate (~260 LOC).
 - **Tasks**:
-  - [ ] Implement `createListState`.
-  - [ ] Implement `createSelectableList`.
+  - [x] Implemented within `listbox`, `menu`, `menubar`, `navigation-menu`, and `tabs` via Seidr collections.
 
 ### 16. `checkbox`
 
@@ -284,7 +280,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useSize`, `radio-group`.
 - **Complexity**: Low (~290 LOC).
 - **Tasks**:
-  - [ ] Implement SegmentedControl parts.
+  - [x] Implement SegmentedControl parts.
 
 ### 20. `text-field`
 
@@ -293,7 +289,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `form-control`, `useControllableValue`, `useFormResetListener`.
 - **Complexity**: Low to Moderate (~485 LOC).
 - **Tasks**:
-  - [ ] Implement TextField parts.
+  - [x] Implement TextField parts.
 
 ### 21. `spin-button`
 
@@ -426,7 +422,7 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `button`, `form-control`.
 - **Complexity**: Low to Moderate (~570 LOC).
 - **Tasks**:
-  - [ ] Implement FileField parts.
+  - [x] Implement FileField parts.
 
 ### 35. `time-field`
 
@@ -435,7 +431,7 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `form-control`, `spin-button`.
 - **Complexity**: Moderate (~750 LOC).
 - **Tasks**:
-  - [ ] Implement TimeField parts.
+  - [x] Implement TimeField parts.
 
 ### 36. `rating`
 
@@ -444,7 +440,7 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `form-control`.
 - **Complexity**: Low (~469 LOC).
 - **Tasks**:
-  - [ ] Implement Rating parts.
+  - [x] Implement Rating parts.
 
 ---
 

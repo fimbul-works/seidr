@@ -8,6 +8,7 @@ import { CollapsibleShowcase } from "./collapsible.js";
 import { ComboboxShowcase } from "./combobox.js";
 import { ContextMenuShowcase } from "./context-menu.js";
 import { DropdownMenuShowcase } from "./dropdown-menu.js";
+import { FileFieldShowcase } from "./file-field.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
 import { ListboxShowcase } from "./listbox.js";
@@ -20,6 +21,7 @@ import { PaginationShowcase } from "./pagination.js";
 import { PopperShowcase } from "./popper.js";
 import { ProgressShowcase } from "./progress.js";
 import { RadioGroupShowcase } from "./radio-group.js";
+import { RatingShowcase } from "./rating.js";
 import { SearchShowcase } from "./search.js";
 import { SegmentedControlShowcase } from "./segmented-control.js";
 import { SelectShowcase } from "./select.js";
@@ -30,6 +32,7 @@ import { SpinButtonShowcase } from "./spin-button.js";
 import { SwitchShowcase } from "./switch.js";
 import { TabsShowcase } from "./tabs.js";
 import { TextFieldShowcase } from "./text-field.js";
+import { TimeFieldShowcase } from "./time-field.js";
 import { ToggleButtonShowcase } from "./toggle-button.js";
 import { ToggleGroupShowcase } from "./toggle-group.js";
 
@@ -42,6 +45,7 @@ export * from "./collapsible.js";
 export * from "./combobox.js";
 export * from "./context-menu.js";
 export * from "./dropdown-menu.js";
+export * from "./file-field.js";
 export * from "./form-control.js";
 export * from "./image.js";
 export * from "./listbox.js";
@@ -54,6 +58,7 @@ export * from "./pagination.js";
 export * from "./popper.js";
 export * from "./progress.js";
 export * from "./radio-group.js";
+export * from "./rating.js";
 export * from "./search.js";
 export * from "./segmented-control.js";
 export * from "./select.js";
@@ -64,6 +69,7 @@ export * from "./spin-button.js";
 export * from "./switch.js";
 export * from "./tabs.js";
 export * from "./text-field.js";
+export * from "./time-field.js";
 export * from "./toggle-button.js";
 export * from "./toggle-group.js";
 
@@ -85,6 +91,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "combobox", title: "Combobox", badge: "Form", category: "Form", component: ComboboxShowcase },
   { id: "context-menu", title: "ContextMenu", badge: "Widget", category: "Widget", component: ContextMenuShowcase },
   { id: "dropdown-menu", title: "DropdownMenu", badge: "Widget", category: "Widget", component: DropdownMenuShowcase },
+  { id: "file-field", title: "FileField", badge: "Form", category: "Form", component: FileFieldShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },
@@ -97,6 +104,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "popper", title: "Popper", badge: "Foundation", category: "Widget", component: PopperShowcase },
   { id: "progress", title: "Progress", badge: "Widget", category: "Widget", component: ProgressShowcase },
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
+  { id: "rating", title: "Rating", badge: "Form", category: "Form", component: RatingShowcase },
   { id: "search", title: "Search", badge: "Form", category: "Form", component: SearchShowcase },
   {
     id: "segmented-control",
@@ -113,6 +121,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "switch", title: "Switch", badge: "Form", category: "Form", component: SwitchShowcase },
   { id: "tabs", title: "Tabs", badge: "Widget", category: "Widget", component: TabsShowcase },
   { id: "text-field", title: "TextField", badge: "Form", category: "Form", component: TextFieldShowcase },
+  { id: "time-field", title: "TimeField", badge: "Form", category: "Form", component: TimeFieldShowcase },
   { id: "toggle-button", title: "ToggleButton", badge: "Atom", category: "Atom", component: ToggleButtonShowcase },
   { id: "toggle-group", title: "ToggleGroup", badge: "Widget", category: "Widget", component: ToggleGroupShowcase },
 ];

@@ -1,4 +1,4 @@
-import { createComponent, createValue, List } from "@fimbul-works/seidr";
+import { createComponent, createValue, List, Show } from "@fimbul-works/seidr";
 import {
   $button,
   $div,
@@ -371,54 +371,55 @@ export const NavigationMenuShowcase = createComponent(() => {
                       ]),
 
                       // List of actions or empty state
-                      dynamicActions.as((items) => {
-                        if (items.length === 0) {
-                          return $div({ className: "content-empty" }, [
+                      Show(
+                        dynamicActions.as((items) => items.length === 0),
+                        () =>
+                          $div({ className: "content-empty" }, [
                             $span({ style: { fontSize: "1.5rem" } }, "📭"),
                             $span("No custom actions registered."),
                             $span(
                               { style: { fontSize: "0.78rem", opacity: "0.6" } },
                               "Click '+ Add Action' above to populate.",
                             ),
-                          ]);
-                        }
-
-                        return $div(
-                          { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
-                          items.map((item) =>
-                            dynamicMenu.Item(
-                              {
-                                value: item.id,
-                                className: "navigation-menu__item",
-                                style: { display: "flex", alignItems: "center", justifyContent: "space-between" },
-                                onclick: () => lastAction(`Triggered: ${item.title}`),
-                              },
-                              [
-                                $div([
-                                  dynamicMenu.ItemLabel({ className: "navigation-menu__item-label" }, item.title),
-                                  dynamicMenu.ItemDescription(
-                                    { className: "navigation-menu__item-description" },
-                                    item.description,
-                                  ),
-                                ]),
-                                $span(
-                                  {
-                                    style: {
-                                      fontSize: "0.72rem",
-                                      fontWeight: "600",
-                                      padding: "0.2rem 0.5rem",
-                                      borderRadius: "4px",
-                                      backgroundColor: "#0284c725",
-                                      color: "#38bdf8",
+                          ]),
+                        () =>
+                          $div(
+                            { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
+                            List(dynamicActions, (item) => item.id, (itemVal) => {
+                              const item = itemVal();
+                              return dynamicMenu.Item(
+                                {
+                                  value: item.id,
+                                  className: "navigation-menu__item",
+                                  style: { display: "flex", alignItems: "center", justifyContent: "space-between" },
+                                  onclick: () => lastAction(`Triggered: ${item.title}`),
+                                },
+                                [
+                                  $div([
+                                    dynamicMenu.ItemLabel({ className: "navigation-menu__item-label" }, item.title),
+                                    dynamicMenu.ItemDescription(
+                                      { className: "navigation-menu__item-description" },
+                                      item.description,
+                                    ),
+                                  ]),
+                                  $span(
+                                    {
+                                      style: {
+                                        fontSize: "0.72rem",
+                                        fontWeight: "600",
+                                        padding: "0.2rem 0.5rem",
+                                        borderRadius: "4px",
+                                        backgroundColor: "#0284c725",
+                                        color: "#38bdf8",
+                                      },
                                     },
-                                  },
-                                  item.badge,
-                                ),
-                              ],
-                            ),
+                                    item.badge,
+                                  ),
+                                ],
+                              );
+                            }),
                           ),
-                        );
-                      }),
+                      ),
                     ],
                   ),
                 ]),
