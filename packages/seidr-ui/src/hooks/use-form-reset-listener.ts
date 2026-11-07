@@ -16,7 +16,7 @@ function getClosestForm(element: HTMLElement): HTMLFormElement | null {
  *
  * Ported from Kobalte's createFormResetListener primitive.
  */
-export function useFormResetListener(element: Ref<HTMLElement>, handler: () => void): void {
+export function useFormResetListener<T extends HTMLElement = HTMLElement>(element: Ref<T>, handler: () => void): void {
   useEffect(() => {
     const el = element();
     if (!el) return;

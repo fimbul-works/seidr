@@ -299,4 +299,65 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
     // @ts-expect-error vitest-axe types
     expect(await axe(root)).toHaveNoViolations();
   });
+
+  it("should support dynamic reactive item lists with List() in Tier 1", () => {
+    let setItems!: (items: { value: string; label: string }[]) => void;
+
+    const root = setup(() => {
+      const itemsValue = createValue([
+        { value: "bold", label: "Bold" },
+        { value: "italic", label: "Italic" },
+      ]);
+      setItems = (newItems) => itemsValue(newItems);
+
+      return ToggleGroup({
+        id: "tg-dynamic-list",
+        defaultValue: "bold",
+        items: itemsValue,
+      });
+    });
+
+    let items = root.querySelectorAll("[data-part='item']");
+    expect(items.length).toBe(2);
+    expect(items[0]?.textContent).toContain("Bold");
+    expect(items[0]?.getAttribute("aria-pressed")).toBe("true");
+
+    if (!isSSR) {
+      setItems([
+        { value: "bold", label: "Bold (Updated)" },
+        { value: "italic", label: "Italic" },
+        { value: "underline", label: "Underline" },
+      ]);
+
+      items = root.querySelectorAll("[data-part='item']");
+      expect(items.length).toBe(3);
+      expect(items[0]?.textContent).toContain("Bold (Updated)");
+      expect(items[2]?.textContent).toContain("Underline");
+      expect(items[0]?.getAttribute("aria-pressed")).toBe("true");
+    }
+  });
+
+  it("supports group.List helper in Tier 2 coordinator with custom renderItem", () => {
+    const root = setup(() => {
+      const group = createToggleGroup({ id: "tg-tier2-list", defaultValue: "opt-1" });
+      const dynamicItems = createValue([
+        { value: "opt-1", label: "Option 1" },
+        { value: "opt-2", label: "Option 2" },
+      ]);
+
+      return group.Root({}, [
+        group.List(dynamicItems, {
+          renderItem: (itemVal, key, inst) =>
+            inst.Item({ value: key, className: "custom-item" }, itemVal.as((i) => `Prefixed: ${i.label}`)),
+        }),
+      ]);
+    });
+
+    const items = root.querySelectorAll("[data-part='item']");
+    expect(items.length).toBe(2);
+    expect(items[0]?.textContent).toContain("Prefixed: Option 1");
+    expect(items[1]?.textContent).toContain("Prefixed: Option 2");
+    expect(items[0]?.classList.contains("custom-item")).toBe(true);
+    expect(items[0]?.getAttribute("aria-pressed")).toBe("true");
+  });
 });

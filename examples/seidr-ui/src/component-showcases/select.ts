@@ -1,5 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { createSelect, Select } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./select.css";
@@ -10,6 +10,15 @@ export const SelectShowcase = createComponent(() => {
 
   // Reactive state for multi-selection
   const multiValues = createValue<string[]>(["apple", "banana"]);
+
+  // Reactive dynamic options state for Section 4
+  const dynamicSelectOptions = createValue([
+    { value: "alpha", label: "Alpha Team" },
+    { value: "bravo", label: "Bravo Team" },
+    { value: "charlie", label: "Charlie Team" },
+  ]);
+  const dynamicSelectVal = createValue<string>("alpha");
+  let nextTeamId = 1;
 
   // Tier 2 Fine-Grained Coordinator with grouping sections
   const customSel = createSelect({
@@ -112,6 +121,55 @@ export const SelectShowcase = createComponent(() => {
               ]),
             ]),
             customSel.HiddenSelect(),
+          ]),
+        ]),
+
+        // 4. Dynamic Reactive Options (Runtime Modifications)
+        $div({ className: "select-section-box" }, [
+          $h3({ className: "select-heading" }, "4. Dynamic Reactive Options (Runtime Updates)"),
+          $div({ className: "controls-row", style: { marginBottom: "0.75rem" } }, [
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  const id = nextTeamId++;
+                  dynamicSelectOptions((prev) => [
+                    ...prev,
+                    {
+                      value: `team-${id}`,
+                      label: `Team #${id} (${Math.random().toString(36).substring(2, 6)})`,
+                    },
+                  ]);
+                },
+              },
+              "+ Add Option",
+            ),
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  dynamicSelectOptions((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+                },
+              },
+              "- Remove Option",
+            ),
+          ]),
+          Select({
+            label: "Project Assignment",
+            placeholder: "Select team...",
+            value: dynamicSelectVal,
+            onChange: (val: any) => dynamicSelectVal(val?.value ?? val),
+            options: dynamicSelectOptions,
+          }),
+          $p({ className: "select-value-text" }, [
+            "Active Team: ",
+            $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
+              dynamicSelectVal.as((v) => v ?? "none"),
+            ]),
+            " | Available Teams: ",
+            $span({ style: { fontWeight: "600", color: "hsl(142, 71%, 45%)" } }, [
+              dynamicSelectOptions.as((opts) => String(opts.length)),
+            ]),
           ]),
         ]),
       ]),

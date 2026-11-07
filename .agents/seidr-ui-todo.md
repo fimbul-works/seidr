@@ -523,19 +523,23 @@ Non-standard specialized form components (excluding color pickers, which are def
 
 - **Location**: `kobalte-packages/core/src/combobox`
 - **Description**: Autocomplete / searchable combobox input combining text field input with floating dropdown listbox.
-- **Dependencies**: `portal`, `button`, `dismissable-layer`, `form-control`, `list`, `listbox`, `popper`, `select`, `selection`, `useTransition`.
+- **Dependencies**: `button`, `form-control`, `listbox`, `popper`.
 - **Complexity**: High (~1,927 LOC).
 - **Tasks**:
-  - [ ] Implement Combobox parts.
+  - [x] Implement `useCombobox`, `createCombobox`, and all Combobox parts.
+  - [x] Implement Tier 1 All-in-One `Combobox` with dynamic reactive options (`ReactiveValue<ComboboxNode[]>`), dynamic text filtering, single/multi-selection, virtual focus (`aria-activedescendant`), keyboard navigation, outside pointer/escape dismissal, form reset, and hidden select integration.
+  - [x] Comprehensive dual-mode tests (22 tests: 11 browser + 11 SSR) and showcase in `examples/seidr-ui`.
 
 ### 44. `search`
 
 - **Location**: `kobalte-packages/core/src/search`
 - **Description**: Search input variant wrapping combobox with custom search query filtering.
-- **Dependencies**: `portal`, `combobox`, `form-control`, `listbox`, `popper`.
+- **Dependencies**: `button`, `combobox`, `form-control`, `listbox`, `popper`.
 - **Complexity**: Moderate (~477 LOC). Wraps Combobox.
 - **Tasks**:
-  - [ ] Implement Search parts.
+  - [x] Implement `useSearch`, `createSearch`, and all Search parts.
+  - [x] Implement Tier 1 All-in-One `Search` with debounced async queries (`debounceOptionsMillisecond`), loading indicator (`Search.Indicator`), empty result state (`Search.NoResult`), and hidden `<select>` form integration.
+  - [x] Comprehensive dual-mode tests (10 tests: 5 browser + 5 SSR).
 
 ### 45. `menu`
 
@@ -544,9 +548,9 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `portal`, `button`, `dismissable-layer`, `list`, `popper`, `useDisclosureState`, `useFocusScope`, `selection`, `useTransition`.
 - **Complexity**: High (~2,168 LOC).
 - **Tasks**:
-  - [ ] Implement core Menu root, trigger, content, item.
-  - [ ] Implement submenus (`Menu.Sub`, `Menu.SubTrigger`, `Menu.SubContent`).
-  - [ ] Implement checkbox & radio items.
+  - [x] Implement core Menu root, trigger, content, item.
+  - [x] Implement submenus (`Menu.Sub`, `Menu.SubTrigger`, `Menu.SubContent`).
+  - [x] Implement checkbox & radio items.
 
 ### 46. `dropdown-menu`
 

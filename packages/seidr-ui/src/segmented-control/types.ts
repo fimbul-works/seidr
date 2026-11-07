@@ -112,7 +112,7 @@ export interface UseSegmentedControlItemOptions {
    * Whether this individual segment is disabled.
    * @default false
    */
-  disabled?: boolean;
+  disabled?: ReactiveValue<boolean>;
 
   /**
    * Optional custom ID for this item container.
@@ -126,6 +126,9 @@ export interface UseSegmentedControlItemResult extends UseRadioGroupItemResult {
 }
 
 export interface SegmentedControlItemDescriptor {
+  /** Optional custom ID for this item container. */
+  id?: ReactiveValue<string>;
+
   /** The value of the segment item. */
   value: string;
 
@@ -136,7 +139,7 @@ export interface SegmentedControlItemDescriptor {
   description?: SeidrChild | SeidrChild[];
 
   /** Whether this individual item is disabled. */
-  disabled?: boolean;
+  disabled?: ReactiveValue<boolean>;
 
   /** Optional custom indicator element. */
   indicator?: SeidrChild | SeidrChild[];
@@ -211,6 +214,15 @@ export interface SegmentedControlItemInstance extends UseSegmentedControlItemRes
   ) => SeidrElementTagNameMap[T];
 }
 
+export interface SegmentedControlListRenderOptions {
+  renderItem?: (
+    itemVal: Value<SegmentedControlItemDescriptor>,
+    key: string,
+    instance: SegmentedControlItemInstance,
+  ) => SeidrChild;
+  itemProps?: Partial<SegmentedControlItemDescriptor>;
+}
+
 export interface SegmentedControlInstance extends UseSegmentedControlResult {
   createItem: (options: UseSegmentedControlItemOptions) => SegmentedControlItemInstance;
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -254,4 +266,8 @@ export interface SegmentedControlInstance extends UseSegmentedControlResult {
     props?: SegmentedControlItemDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+  List: (
+    items: ReactiveValue<SegmentedControlItemDescriptor[]>,
+    options?: SegmentedControlListRenderOptions,
+  ) => SeidrChild;
 }

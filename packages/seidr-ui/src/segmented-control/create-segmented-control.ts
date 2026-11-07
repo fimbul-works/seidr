@@ -1,5 +1,12 @@
 import { isUndef } from "@fimbul-works/hvat";
-import { $, type SeidrChild } from "@fimbul-works/seidr";
+import {
+  $,
+  List,
+  type ReactiveValue,
+  type SeidrChild,
+  type Value,
+  wrapValue,
+} from "@fimbul-works/seidr";
 import { SegmentedControlDescription } from "./segmented-control-description.js";
 import { SegmentedControlErrorMessage } from "./segmented-control-error-message.js";
 import { SegmentedControlIndicator } from "./segmented-control-indicator.js";
@@ -22,7 +29,9 @@ import { SegmentedControlLabel } from "./segmented-control-label.js";
 import { SegmentedControlRoot } from "./segmented-control-root.js";
 import type {
   SegmentedControlInstance,
+  SegmentedControlItemDescriptor,
   SegmentedControlItemInstance,
+  SegmentedControlListRenderOptions,
   UseSegmentedControlItemOptions,
   UseSegmentedControlOptions,
 } from "./types.js";
@@ -73,6 +82,95 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
     };
   };
 
+  const Item = (
+    itemOptionsOrProps: SegmentedControlItemDescriptor & Record<string, any>,
+    children?: SeidrChild | SeidrChild[],
+  ) => {
+    const {
+      value,
+      disabled,
+      id,
+      label,
+      description,
+      indicator,
+      control = true,
+      itemProps,
+      inputProps,
+      controlProps,
+      indicatorProps,
+      labelProps,
+      descriptionProps,
+      contentProps,
+      ...rootProps
+    } = itemOptionsOrProps;
+
+    const itemInstance = useSegmentedControlItem(instance, { value, disabled, id });
+
+    if (!isUndef(children)) {
+      return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
+        SegmentedControlItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
+        ...(Array.isArray(children) ? children : [children]),
+      ]);
+    }
+
+    const labelEl = label
+      ? SegmentedControlItemLabel({ instance: itemInstance, ...(labelProps ?? {}) }, label)
+      : null;
+    const descEl = description
+      ? SegmentedControlItemDescription({ instance: itemInstance, ...(descriptionProps ?? {}) }, description)
+      : null;
+
+    const textContent =
+      contentProps || (labelEl && descEl)
+        ? $("div", { ...(contentProps ?? {}) }, [labelEl, descEl])
+        : (labelEl ?? descEl);
+
+    const controlEl = control
+      ? SegmentedControlItemControl({ instance: itemInstance, ...(controlProps ?? {}) }, [
+          SegmentedControlItemIndicator({ instance: itemInstance, ...(indicatorProps ?? {}) }, indicator),
+        ])
+      : null;
+
+    return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
+      SegmentedControlItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
+      controlEl,
+      textContent,
+    ]);
+  };
+
+  const ListComponent = (
+    itemsProp: ReactiveValue<SegmentedControlItemDescriptor[]>,
+    listOptions: SegmentedControlListRenderOptions = {},
+  ): SeidrChild => {
+    const { renderItem, itemProps } = listOptions;
+    const itemsObservable = wrapValue(itemsProp);
+
+    return List<SegmentedControlItemDescriptor, string>(
+      itemsObservable,
+      (item) => item.value,
+      (itemVal) => {
+        const descriptor = itemVal();
+        const itemKey = descriptor.value;
+        if (renderItem) {
+          const itemInst = createItem({
+            value: itemKey,
+            disabled: descriptor.disabled,
+            id: descriptor.id,
+          });
+          return renderItem(itemVal, itemKey, itemInst);
+        }
+        return Item({
+          value: itemKey,
+          label: itemVal.as((i) => i.label ?? i.value),
+          description: itemVal.as((i) => i.description),
+          disabled: itemVal.as((i) => Boolean(i.disabled)),
+          indicator: descriptor.indicator,
+          ...(itemProps ?? {}),
+        });
+      },
+    );
+  };
+
   return {
     ...instance,
     createItem,
@@ -83,62 +181,12 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
       SegmentedControlDescription({ instance, ...instance.dataset, ...props }, children),
     ErrorMessage: (props = {}, children) =>
       SegmentedControlErrorMessage({ instance, ...instance.dataset, ...props }, children),
-    Item: (itemOptionsOrProps, children?: SeidrChild | SeidrChild[]) => {
-      const {
-        value,
-        disabled,
-        id,
-        label,
-        description,
-        indicator,
-        control = true,
-        itemProps,
-        inputProps,
-        controlProps,
-        indicatorProps,
-        labelProps,
-        descriptionProps,
-        contentProps,
-        ...rootProps
-      } = itemOptionsOrProps;
-
-      const itemInstance = useSegmentedControlItem(instance, { value, disabled, id });
-
-      if (!isUndef(children)) {
-        return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
-          SegmentedControlItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
-          ...(Array.isArray(children) ? children : [children]),
-        ]);
-      }
-
-      const labelEl = label
-        ? SegmentedControlItemLabel({ instance: itemInstance, ...(labelProps ?? {}) }, label)
-        : null;
-      const descEl = description
-        ? SegmentedControlItemDescription({ instance: itemInstance, ...(descriptionProps ?? {}) }, description)
-        : null;
-
-      const textContent =
-        contentProps || (labelEl && descEl)
-          ? $("div", { ...(contentProps ?? {}) }, [labelEl, descEl])
-          : (labelEl ?? descEl);
-
-      const controlEl = control
-        ? SegmentedControlItemControl({ instance: itemInstance, ...(controlProps ?? {}) }, [
-            SegmentedControlItemIndicator({ instance: itemInstance, ...(indicatorProps ?? {}) }, indicator),
-          ])
-        : null;
-
-      return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
-        SegmentedControlItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
-        controlEl,
-        textContent,
-      ]);
-    },
+    Item,
     ItemInput: (props = {}) => SegmentedControlItemInput(props),
     ItemControl: (props = {}, children) => SegmentedControlItemControl(props, children),
     ItemIndicator: (props = {}, children) => SegmentedControlItemIndicator(props, children),
     ItemLabel: (props = {}, children) => SegmentedControlItemLabel(props, children),
     ItemDescription: (props = {}, children) => SegmentedControlItemDescription(props, children),
+    List: ListComponent,
   };
 }

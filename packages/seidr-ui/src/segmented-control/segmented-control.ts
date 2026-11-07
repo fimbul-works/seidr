@@ -66,13 +66,9 @@ export const SegmentedControl = createComponent(
     const itemElements: SeidrChild | SeidrChild[] =
       children !== undefined
         ? children
-        : isValue<SegmentedControlItemDescriptor[]>(items)
-          ? List(
-              items,
-              (item) => item.value,
-              (itemVal) => sc.Item(itemVal()),
-            )
-          : (items?.map((item) => sc.Item(item)) ?? []);
+        : items !== undefined
+          ? sc.List(items)
+          : [];
 
     const renderedItems = Array.isArray(itemElements) ? itemElements : [itemElements];
 

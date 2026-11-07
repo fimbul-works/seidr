@@ -101,7 +101,7 @@ export interface UseRadioGroupItemOptions {
    * Whether this individual radio button is disabled.
    * @default false
    */
-  disabled?: boolean;
+  disabled?: ReactiveValue<boolean>;
 
   /**
    * Optional custom ID for this item container.

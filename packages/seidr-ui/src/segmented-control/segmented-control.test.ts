@@ -369,6 +369,31 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
     }
   });
 
+  it("supports sc.List helper in Tier 2 coordinator with custom renderItem", () => {
+    const root = setup(() => {
+      const sc = createSegmentedControl({ defaultValue: "tab-1" });
+      const dynamicItems = createValue<SegmentedControlItemDescriptor[]>([
+        { value: "tab-1", label: "Tab 1" },
+        { value: "tab-2", label: "Tab 2" },
+      ]);
+
+      return sc.Root({}, [
+        sc.List(dynamicItems, {
+          renderItem: (itemVal, key, inst) =>
+            inst.Root({}, [
+              inst.Input(),
+              inst.Label({}, itemVal.as((i) => `Custom: ${i.label}`)),
+            ]),
+        }),
+      ]);
+    });
+
+    const items = root.querySelectorAll("[role='group']");
+    expect(items.length).toBe(2);
+    expect(items[0]?.textContent).toContain("Custom: Tab 1");
+    expect(items[1]?.textContent).toContain("Custom: Tab 2");
+  });
+
   it("should support keyboard navigation across items with arrow keys, Home, and End", () => {
     const onChange = vi.fn();
     const root = setup(() => {

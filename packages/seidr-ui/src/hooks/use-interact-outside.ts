@@ -3,6 +3,7 @@ import {
   type EffectDependency,
   getDocument,
   isValue,
+  type ObservableValue,
   type Ref,
   unwrapValue,
   useEffect,
@@ -21,7 +22,7 @@ export type InteractOutsideEvent = PointerDownOutsideEvent | FocusOutsideEvent;
 
 export interface UseInteractOutsideProps {
   /** Whether the interact outside events should be listened or not. */
-  isDisabled?: Value<boolean>;
+  isDisabled?: ObservableValue<boolean>;
 
   /**
    * When user interacts with the argument element outside the ref,

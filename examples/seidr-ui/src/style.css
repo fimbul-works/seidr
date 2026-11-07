@@ -181,16 +181,13 @@ h3 {
   -webkit-text-fill-color: transparent;
 }
 
-:root[data-theme="light"] h1 {
+:root[data-theme="light"] h1,
+:root[data-theme="light"] h2,
+:root[data-theme="light"] h3 {
   background: linear-gradient(135deg, #0f172a 0%, #4f46e5 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
-}
-
-:root[data-theme="light"] h2,
-:root[data-theme="light"] h3 {
-  color: var(--fg);
 }
 
 .header-subtitle {

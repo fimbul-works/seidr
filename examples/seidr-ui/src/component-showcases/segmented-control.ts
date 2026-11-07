@@ -23,6 +23,15 @@ export const SegmentedControlShowcase = createComponent(() => {
     disabled: isDisabled,
   });
 
+  // Dynamic segments state for Section 5
+  const dynamicSegments = createValue([
+    { value: "daily", label: "Daily" },
+    { value: "weekly", label: "Weekly" },
+    { value: "monthly", label: "Monthly" },
+  ]);
+  const dynamicSegmentVal = createValue("daily");
+  let nextSegmentId = 1;
+
   return $section({ className: "card" }, [
     $div({ className: "card-header" }, [
       $h2({ className: "card-title" }, "SegmentedControl"),
@@ -109,6 +118,48 @@ export const SegmentedControlShowcase = createComponent(() => {
               { value: "notifications", label: "Notifications" },
             ],
           }),
+        ]),
+
+        // 5. Dynamic Reactive Segments List
+        $div({ className: "segmented-control-demo" }, [
+          $div({ className: "segmented-control-section-title" }, "5. Dynamic Reactive Segments List"),
+          $div({ className: "controls-row", style: { marginBottom: "0.75rem" } }, [
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  const id = nextSegmentId++;
+                  dynamicSegments((prev) => [
+                    ...prev,
+                    {
+                      value: `seg-${id}`,
+                      label: `Custom-${id}`,
+                    },
+                  ]);
+                },
+              },
+              "+ Add Segment",
+            ),
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  dynamicSegments((prev) => (prev.length > 2 ? prev.slice(0, -1) : prev));
+                },
+              },
+              "- Remove Segment",
+            ),
+          ]),
+          SegmentedControl({
+            value: dynamicSegmentVal,
+            onChange: (val) => dynamicSegmentVal(val),
+            disabled: isDisabled,
+            items: dynamicSegments,
+          }),
+          $p(
+            { className: "card-desc", style: { marginTop: "0.5rem" } },
+            dynamicSegmentVal.as((val) => `Selected Segment: ${val}`),
+          ),
         ]),
       ]),
     ]),

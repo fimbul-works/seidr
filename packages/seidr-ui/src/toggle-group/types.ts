@@ -82,6 +82,17 @@ export interface UseToggleGroupResult {
   registerItem: (value: string, el: HTMLElement, isItemDisabled: () => boolean) => () => void;
 }
 
+export interface ToggleGroupListRenderOptions {
+  /** Optional custom item render function receiving reactive item Value, item key, and ToggleGroup instance. */
+  renderItem?: (
+    itemVal: Value<ToggleGroupItemData>,
+    key: string,
+    instance: ToggleGroupInstance,
+  ) => SeidrChild;
+  /** Common props applied to each item. */
+  itemProps?: Partial<Omit<ToggleGroupItemProps<"button">, "instance" | "value">>;
+}
+
 export type ToggleGroupInstance = UseToggleGroupResult & {
   /** Pre-bound ToggleGroup.Root element (role="group"). */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -93,6 +104,11 @@ export type ToggleGroupInstance = UseToggleGroupResult & {
     props: Omit<ToggleGroupItemProps<T>, "instance"> & { value: string },
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+  /** Pre-bound reactive keyed list renderer for dynamic items. */
+  List: (
+    items: ReactiveValue<ToggleGroupItemData[]>,
+    options?: ToggleGroupListRenderOptions,
+  ) => SeidrChild;
 };
 
 export interface ToggleGroupSubcomponentProps {
@@ -118,8 +134,8 @@ export type ToggleGroupItemProps<T extends keyof SeidrElementTagNameMap = "butto
 export type ToggleGroupProps<T extends keyof SeidrElementTagNameMap = "button"> = UseToggleGroupOptions & {
   /** Polymorphic tag name for the root element. Defaults to "div". */
   as?: T;
-  /** Declarative array of item descriptions. */
-  items?: ToggleGroupItemData[];
+  /** Declarative array or reactive observable of item descriptions. */
+  items?: ReactiveValue<ToggleGroupItemData[]>;
   /** Props passed directly to ToggleGroup.Root. */
   rootProps?: Omit<ToggleGroupRootProps<T>, "instance">;
   /** Children elements rendered inside ToggleGroup.Root. */

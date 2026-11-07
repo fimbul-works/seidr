@@ -1,5 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { createListbox, Listbox } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./listbox.css";
@@ -10,6 +10,15 @@ export const ListboxShowcase = createComponent(() => {
 
   // Reactive state for multi-selection
   const multiValues = createValue<string[]>(["apple", "banana"]);
+
+  // Reactive dynamic items state for Section 4
+  const dynamicItems = createValue([
+    { value: "task-1", label: "Implement Popper positioning", description: "Anchor overlays to triggers" },
+    { value: "task-2", label: "Add List reactivity", description: "Fine-grained reactive DOM arrays" },
+    { value: "task-3", label: "Run dual-mode unit tests", description: "Browser & SSR parity checks" },
+  ]);
+  const dynamicSelected = createValue<string>("task-1");
+  let nextTaskId = 4;
 
   // Tier 2 Fine-Grained Coordinator with grouping sections
   const customLb = createListbox({
@@ -111,6 +120,55 @@ export const ListboxShowcase = createComponent(() => {
             "Selected theme: ",
             $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
               customLb.selectedValues.as((vals) => vals[0] ?? "none"),
+            ]),
+          ]),
+        ]),
+
+        // 4. Dynamic Reactive Item List (Runtime Updates)
+        $div({ className: "listbox-section-box" }, [
+          $h3({ className: "listbox-heading" }, "4. Dynamic Reactive Item List (Runtime Updates)"),
+          $div({ className: "controls-row", style: { marginBottom: "0.75rem" } }, [
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  const id = nextTaskId++;
+                  dynamicItems((prev) => [
+                    ...prev,
+                    {
+                      value: `task-${id}`,
+                      label: `Task #${id}: Auto-generated item`,
+                      description: "Added dynamically at runtime via Value<T[]>",
+                    },
+                  ]);
+                },
+              },
+              "+ Add Task Item",
+            ),
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  dynamicItems((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+                },
+              },
+              "- Remove Item",
+            ),
+          ]),
+          Listbox({
+            ariaLabel: "Dynamic task backlog",
+            value: dynamicSelected,
+            onChange: (val: string) => dynamicSelected(val),
+            items: dynamicItems,
+          }),
+          $p({ className: "listbox-value-text" }, [
+            "Selected task: ",
+            $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
+              dynamicSelected.as((v) => v ?? "none"),
+            ]),
+            " | Total items: ",
+            $span({ style: { fontWeight: "600", color: "hsl(142, 71%, 45%)" } }, [
+              dynamicItems.as((items) => String(items.length)),
             ]),
           ]),
         ]),

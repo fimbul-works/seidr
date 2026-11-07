@@ -1,0 +1,256 @@
+.search-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.search-section-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 420px;
+}
+
+.search-heading {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: hsl(220, 15%, 85%);
+  margin: 0;
+}
+
+.search-value-text {
+  font-size: 0.85rem;
+  color: hsl(220, 10%, 65%);
+  margin: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Search Component Semantic Styles
+   Target via [data-component="search"] and [data-part="..."]
+   --------------------------------------------------------------------------- */
+
+[data-component="search"][data-part="root"] {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  position: relative;
+}
+
+[data-component="search"][data-part="label"] {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: hsl(220, 15%, 80%);
+  user-select: none;
+  cursor: pointer;
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="label"] {
+  color: #1e293b;
+}
+
+[data-component="search"][data-part="control"] {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  border: 1px solid hsl(220, 15%, 25%);
+  background-color: hsl(220, 15%, 12%);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="control"] {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-component="search"][data-part="control"]:focus-within {
+  border-color: hsl(210, 100%, 60%);
+  box-shadow: 0 0 0 2px hsla(210, 100%, 60%, 0.25);
+}
+
+[data-component="search"][data-part="control"][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-component="search"][data-part="input"] {
+  flex: 1;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.875rem;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: hsl(220, 15%, 90%);
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="input"] {
+  color: #0f172a;
+}
+
+[data-component="search"][data-part="input"]::placeholder {
+  color: hsl(220, 10%, 45%);
+}
+
+[data-component="search"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  color: hsl(220, 10%, 55%);
+  transition: color 0.15s ease;
+}
+
+[data-component="search"][data-part="trigger"]:hover {
+  color: hsl(220, 15%, 85%);
+}
+
+[data-component="search"][data-part="icon"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+}
+
+/* Loading & Search Indicator */
+[data-component="search"][data-part="indicator"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+}
+
+.search-spinner {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: hsl(210, 100%, 60%);
+  border-radius: 50%;
+  animation: search-spin 0.6s linear infinite;
+}
+
+@keyframes search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Dropdown Content */
+[data-component="search"][data-part="content"] {
+  min-width: var(--kb-popper-anchor-width, 240px);
+  background-color: hsl(222, 24%, 13%);
+  border: 1px solid hsl(222, 16%, 26%);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  padding: 0.35rem;
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="content"] {
+  background-color: #ffffff;
+  border-color: rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+
+[data-component="search"][data-part="listbox"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* No Results fallback */
+[data-component="search"][data-part="no-result"] {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  color: hsl(220, 10%, 60%);
+  text-align: center;
+}
+
+/* Options / Items */
+[data-component="search"][data-part="item"] {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  color: hsl(220, 15%, 85%);
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="item"] {
+  color: #1e293b;
+}
+
+[data-component="search"][data-part="item"]:hover:not([data-disabled]),
+[data-component="search"][data-part="item"][data-highlighted] {
+  background-color: hsl(210, 100%, 60%);
+  color: #ffffff;
+}
+
+[data-component="search"][data-part="item"][data-selected]:not([data-highlighted]) {
+  background-color: hsla(210, 100%, 60%, 0.15);
+  color: hsl(210, 100%, 75%);
+  font-weight: 500;
+}
+
+:root[data-theme="light"] [data-component="search"][data-part="item"][data-selected]:not([data-highlighted]) {
+  background-color: rgba(79, 70, 229, 0.1);
+  color: #4338ca;
+}
+
+[data-component="search"][data-part="item"][data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[data-component="search"][data-part="item-label"] {
+  font-weight: 500;
+}
+
+[data-component="search"][data-part="item-description"] {
+  font-size: 0.75rem;
+  color: hsl(220, 10%, 55%);
+}
+
+[data-component="search"][data-part="item"][data-highlighted] [data-component="search"][data-part="item-description"] {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+[data-component="search"][data-part="item-indicator"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+/* Description & Error */
+[data-component="search"][data-part="description"] {
+  font-size: 0.8rem;
+  color: hsl(220, 10%, 60%);
+}
+
+[data-component="search"][data-part="error-message"] {
+  font-size: 0.8rem;
+  color: hsl(0, 80%, 65%);
+}
+

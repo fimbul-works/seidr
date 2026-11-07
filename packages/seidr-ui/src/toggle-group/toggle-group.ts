@@ -18,7 +18,7 @@ export const ToggleGroup = createComponent((props: ToggleGroupProps = {}) => {
     disallowEmptySelection,
     loop,
     as = "div",
-    items = [],
+    items,
     rootProps = {},
     children,
   } = props;
@@ -49,9 +49,12 @@ export const ToggleGroup = createComponent((props: ToggleGroupProps = {}) => {
 
   const group = createToggleGroup(options);
 
-  const itemElements = items.map((item) =>
-    group.Item({ value: item.value, disabled: item.disabled, ...item.props }, item.label),
-  );
+  const renderedItems = items !== undefined ? group.List(items) : null;
 
-  return group.Root({ as, ...rootProps } as Omit<ToggleGroupRootProps<"div">, "instance">, [...itemElements, children]);
+  return group.Root(
+    { as, ...rootProps } as Omit<ToggleGroupRootProps<"div">, "instance">,
+    children !== undefined && renderedItems !== null
+      ? [renderedItems, children]
+      : (renderedItems ?? children ?? []),
+  );
 }, "ToggleGroup");

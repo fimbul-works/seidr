@@ -1,5 +1,5 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
-import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
+import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { createToggleGroup, ToggleGroup } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./toggle-group.css";
@@ -9,6 +9,15 @@ export const ToggleGroupShowcase = createComponent(() => {
   const alignmentValue = createValue<string | null>("left");
   const formatValues = createValue<string[]>(["bold", "italic"]);
   const viewMode = createValue<string | null>("day");
+
+  // Dynamic toggles state for Section 5
+  const dynamicToggles = createValue([
+    { value: "wifi", label: "📶 Wi-Fi" },
+    { value: "bluetooth", label: "ᛒ Bluetooth" },
+    { value: "airdrop", label: "📡 AirDrop" },
+  ]);
+  const dynamicToggleVal = createValue<string[]>(["wifi"]);
+  let nextToggleId = 1;
 
   // Fine-grained coordinator for Section 4
   const fineGrained = createToggleGroup({
@@ -103,6 +112,55 @@ export const ToggleGroupShowcase = createComponent(() => {
             "Selected period: ",
             $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
               fineGrained.value.as((v) => String(v ?? "none")),
+            ]),
+          ]),
+        ]),
+
+        // 5. Dynamic Reactive Toggles List
+        $div({ className: "toggle-group-section" }, [
+          $h3({ className: "toggle-group-heading" }, "5. Dynamic Reactive Toggles List"),
+          $div({ className: "controls-row", style: { marginBottom: "0.75rem" } }, [
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  const id = nextToggleId++;
+                  dynamicToggles((prev) => [
+                    ...prev,
+                    {
+                      value: `toggle-${id}`,
+                      label: `Feature ${id}`,
+                    },
+                  ]);
+                },
+              },
+              "+ Add Toggle",
+            ),
+            $button(
+              {
+                className: "control-btn",
+                onclick: () => {
+                  dynamicToggles((prev) => (prev.length > 1 ? prev.slice(0, -1) : prev));
+                },
+              },
+              "- Remove Toggle",
+            ),
+          ]),
+          ToggleGroup({
+            id: "dynamic-toggles-group",
+            multiple: true,
+            value: dynamicToggleVal,
+            onChange: (vals: string[]) => dynamicToggleVal(vals),
+            items: dynamicToggles,
+          }),
+          $p({ className: "toggle-group-value" }, [
+            "Active toggles: ",
+            $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
+              dynamicToggleVal.as((v) => (v.length > 0 ? v.join(", ") : "none")),
+            ]),
+            " | Total count: ",
+            $span({ style: { fontWeight: "600", color: "hsl(142, 71%, 45%)" } }, [
+              dynamicToggles.as((t) => String(t.length)),
             ]),
           ]),
         ]),
