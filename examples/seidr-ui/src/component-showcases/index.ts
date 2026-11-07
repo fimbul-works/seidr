@@ -7,8 +7,10 @@ import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
+import { ListboxShowcase } from "./listbox.js";
 import { MeterShowcase } from "./meter.js";
 import { NumberFieldShowcase } from "./number-field.js";
+import { PaginationShowcase } from "./pagination.js";
 import { ProgressShowcase } from "./progress.js";
 import { RadioGroupShowcase } from "./radio-group.js";
 import { SegmentedControlShowcase } from "./segmented-control.js";
@@ -30,8 +32,10 @@ export * from "./checkbox.js";
 export * from "./collapsible.js";
 export * from "./form-control.js";
 export * from "./image.js";
+export * from "./listbox.js";
 export * from "./meter.js";
 export * from "./number-field.js";
+export * from "./pagination.js";
 export * from "./progress.js";
 export * from "./radio-group.js";
 export * from "./segmented-control.js";
@@ -62,8 +66,10 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
+  { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },
   { id: "meter", title: "Meter", badge: "Widget", category: "Widget", component: MeterShowcase },
   { id: "number-field", title: "NumberField", badge: "Form", category: "Form", component: NumberFieldShowcase },
+  { id: "pagination", title: "Pagination", badge: "Widget", category: "Widget", component: PaginationShowcase },
   { id: "progress", title: "Progress", badge: "Widget", category: "Widget", component: ProgressShowcase },
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
   {

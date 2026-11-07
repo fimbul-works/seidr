@@ -373,7 +373,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `button`, `useControllableValue`.
 - **Complexity**: Low to Moderate (~738 LOC).
 - **Tasks**:
-  - [ ] Implement Pagination parts.
+  - [x] Implement Pagination parts.
 
 ### 30. `toggle-group`
 
@@ -391,7 +391,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `list`, `selection`.
 - **Complexity**: Moderate (~852 LOC).
 - **Tasks**:
-  - [ ] Implement all Listbox parts.
+  - [x] Implement all Listbox parts.
 
 ### 32. `popper`
 
