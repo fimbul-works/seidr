@@ -1,11 +1,13 @@
 import { isNullish, isNum, isObj, isStr } from "@fimbul-works/hvat";
 import {
   createValue,
+  DATA_KEY_CURRENT_URL,
   getAppState,
   isClient,
   isValue,
   registerNavigationHandler,
   SeidrError,
+  type Value,
 } from "@fimbul-works/seidr";
 import { browserRouter } from "./browser-router.js";
 import { DATA_KEY_ROUTER, DUMMY_BASE_URL, NO_HYDRATE, VALUE_ID_ROUTER_URL } from "./constants.js";
@@ -64,7 +66,13 @@ export const initRouter = (
     initialUrl = isClient() && window.location.href !== "about:blank" ? window.location.href : "/";
   }
 
-  const url = createValue<URL>(getUrlObject(initialUrl), { id: VALUE_ID_ROUTER_URL, ...NO_HYDRATE });
+  let url = appState.getData<Value<URL>>(DATA_KEY_CURRENT_URL);
+  if (url) {
+    url(getUrlObject(initialUrl));
+  } else {
+    url = createValue<URL>(getUrlObject(initialUrl), { id: DATA_KEY_CURRENT_URL, ...NO_HYDRATE });
+    appState.setData(DATA_KEY_CURRENT_URL, url);
+  }
   const popstateListeners = new Set<PopstateListener>();
 
   // Define event handlers for URL changes

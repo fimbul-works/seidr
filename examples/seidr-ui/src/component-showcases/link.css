@@ -1,0 +1,38 @@
+/* Link Showcase Styles */
+.link-showcase-group {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.5rem 0;
+}
+
+[data-component="link"] {
+  color: var(--primary, #3b82f6);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s, color 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 500;
+}
+
+[data-component="link"]:hover {
+  color: var(--primary-hover, #2563eb);
+}
+
+[data-component="link"][data-current] {
+  color: var(--accent, #10b981);
+  font-weight: 700;
+  text-decoration-thickness: 2px;
+}
+
+[data-component="link"][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  text-decoration: none;
+  pointer-events: none;
+}
+

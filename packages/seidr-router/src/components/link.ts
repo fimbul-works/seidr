@@ -46,6 +46,7 @@ export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions
 /**
  * Link element factory.
  *
+ * @deprecated Use `Link` from `@fimbul-works/seidr-ui` or standard anchor tags (`$a({ href: ... })`) with Seidr navigation instead.
  * @template T - Key from the HTMLElementTagNameMap interface
  * @param {LinkProps<T>} props - Link props with reactive bindings
  * @param {SeidrChild | SeidrChild[]} [children] - Optional child nodes

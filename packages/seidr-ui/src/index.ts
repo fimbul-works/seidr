@@ -16,6 +16,7 @@ export * from "./form-control/index.js";
 export * from "./hooks/index.js";
 export * from "./hover-card/index.js";
 export * from "./image/index.js";
+export * from "./link/index.js";
 export * from "./listbox/index.js";
 export * from "./menu/index.js";
 export * from "./menubar/index.js";

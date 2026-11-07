@@ -117,6 +117,7 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
       role,
       tabIndex,
       href: !isCustom ? resolvedHref : undefined,
+      disabled: isEffectivelyDisabled,
       ariaCurrent: resolvedAriaCurrent,
       ariaDisabled,
       dataDisabled,

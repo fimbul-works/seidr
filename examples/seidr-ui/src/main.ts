@@ -1,7 +1,7 @@
 import { createComponent, createRef, mount } from "@fimbul-works/seidr";
 import { $button, $div, $h1, $header, $img, $link, $main, $p } from "@fimbul-works/seidr/html";
-import { Link, type Route, Router } from "@fimbul-works/seidr-router";
-import { useColorMode } from "@fimbul-works/seidr-ui";
+import { type Route, Router } from "@fimbul-works/seidr-router";
+import { Link, useColorMode } from "@fimbul-works/seidr-ui";
 import { componentShowcases } from "./component-showcases/index.js";
 import { Navigation } from "./components/navigation.js";
 
