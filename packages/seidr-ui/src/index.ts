@@ -16,6 +16,7 @@ export * from "./segmented-control/index.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./slider/index.js";
+export * from "./spin-button.js";
 export * from "./switch/index.js";
 export * from "./tabs/index.js";
 export * from "./text-field/index.js";

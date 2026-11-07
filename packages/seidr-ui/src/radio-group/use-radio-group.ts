@@ -11,10 +11,11 @@ import type { RadioGroupDataSet, UseRadioGroupOptions, UseRadioGroupResult } fro
 export function useRadioGroup(options: UseRadioGroupOptions = {}): UseRadioGroupResult {
   const id = wrapValue(options.id ?? useId("radiogroup"));
   const orientation = options.orientation ?? "vertical";
+  const name = wrapValue(options.name ?? id());
 
   const formControl = useFormControl({
     id,
-    name: options.name,
+    name,
     validationState: options.validationState,
     required: options.required,
     disabled: options.disabled,

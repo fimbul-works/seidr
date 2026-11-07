@@ -105,7 +105,10 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
       const itemInstance = useSegmentedControlItem(instance, { value, disabled, id });
 
       if (!isUndef(children)) {
-        return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, children);
+        return SegmentedControlItem({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps }, [
+          SegmentedControlItemInput({ instance: itemInstance, ...(inputProps ?? {}) }),
+          ...(Array.isArray(children) ? children : [children]),
+        ]);
       }
 
       const labelEl = label

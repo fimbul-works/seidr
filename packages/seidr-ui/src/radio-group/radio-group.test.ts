@@ -57,8 +57,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
 
     const name0 = inputs[0].getAttribute("name");
     const name1 = inputs[1].getAttribute("name");
-    expect(name0).toBeNull();
-    expect(name1).toBeNull();
+    expect(name0).toBe(radiogroup.id);
+    expect(name1).toBe(radiogroup.id);
 
     expect(inputs[0].value).toBe("dogs");
     expect(inputs[1].value).toBe("cats");

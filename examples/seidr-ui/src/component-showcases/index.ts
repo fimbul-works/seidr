@@ -14,6 +14,7 @@ import { SegmentedControlShowcase } from "./segmented-control.js";
 import { SeparatorShowcase } from "./separator.js";
 import { SkeletonShowcase } from "./skeleton.js";
 import { SliderShowcase } from "./slider.js";
+import { SpinButtonShowcase } from "./spin-button.js";
 import { SwitchShowcase } from "./switch.js";
 import { TabsShowcase } from "./tabs.js";
 import { TextFieldShowcase } from "./text-field.js";
@@ -35,6 +36,7 @@ export * from "./segmented-control.js";
 export * from "./separator.js";
 export * from "./skeleton.js";
 export * from "./slider.js";
+export * from "./spin-button.js";
 export * from "./switch.js";
 export * from "./tabs.js";
 export * from "./text-field.js";
@@ -61,10 +63,17 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "meter", title: "Meter", badge: "Widget", category: "Widget", component: MeterShowcase },
   { id: "progress", title: "Progress", badge: "Widget", category: "Widget", component: ProgressShowcase },
   { id: "radio-group", title: "RadioGroup", badge: "Form", category: "Form", component: RadioGroupShowcase },
-  { id: "segmented-control", title: "SegmentedControl", badge: "Widget", category: "Widget", component: SegmentedControlShowcase },
+  {
+    id: "segmented-control",
+    title: "SegmentedControl",
+    badge: "Widget",
+    category: "Widget",
+    component: SegmentedControlShowcase,
+  },
   { id: "separator", title: "Separator", badge: "Atom", category: "Atom", component: SeparatorShowcase },
   { id: "skeleton", title: "Skeleton", badge: "Atom", category: "Atom", component: SkeletonShowcase },
   { id: "slider", title: "Slider", badge: "Form", category: "Form", component: SliderShowcase },
+  { id: "spin-button", title: "SpinButton", badge: "Atom", category: "Atom", component: SpinButtonShowcase },
   { id: "switch", title: "Switch", badge: "Form", category: "Form", component: SwitchShowcase },
   { id: "tabs", title: "Tabs", badge: "Widget", category: "Widget", component: TabsShowcase },
   { id: "text-field", title: "TextField", badge: "Form", category: "Form", component: TextFieldShowcase },

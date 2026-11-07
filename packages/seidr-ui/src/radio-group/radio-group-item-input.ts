@@ -14,7 +14,7 @@ export interface RadioGroupItemInputProps extends SeidrElementProps<"input"> {
  * Ensures full WAI-ARIA radio compliance and HTML form submission compatibility.
  */
 export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLInputElement {
-  const { instance: item, style, onclick, onchange, onfocus, onblur, ...rest } = props;
+  const { instance: item, style, onclick, onchange, onfocus, onblur, onkeydown, ...rest } = props;
 
   if (!item) {
     throw new SeidrError("RadioGroupItemInput requires an instance coordinator");
@@ -55,6 +55,54 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    (onkeydown as any)?.(e);
+    if (e.defaultPrevented) return;
+
+    const isNext = e.key === "ArrowRight" || e.key === "ArrowDown";
+    const isPrev = e.key === "ArrowLeft" || e.key === "ArrowUp";
+    const isHome = e.key === "Home";
+    const isEnd = e.key === "End";
+
+    if (!isNext && !isPrev && !isHome && !isEnd) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const currentInput = e.currentTarget as HTMLInputElement;
+    const root = item.group.rootRef();
+    const groupName = currentInput.name;
+    const selector = groupName
+      ? `input[type="radio"][name="${CSS.escape ? CSS.escape(groupName) : groupName}"]:not([disabled])`
+      : 'input[type="radio"]:not([disabled])';
+    const inputs = Array.from(
+      (root ?? (typeof document !== "undefined" ? document : null))?.querySelectorAll<HTMLInputElement>(selector) ?? [],
+    );
+    if (inputs.length === 0) return;
+
+    const currentIndex = inputs.indexOf(currentInput);
+    let targetIndex = currentIndex;
+
+    if (isHome) {
+      targetIndex = 0;
+    } else if (isEnd) {
+      targetIndex = inputs.length - 1;
+    } else if (isNext) {
+      targetIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % inputs.length;
+    } else if (isPrev) {
+      targetIndex = currentIndex === -1 ? inputs.length - 1 : (currentIndex - 1 + inputs.length) % inputs.length;
+    }
+
+    const targetInput = inputs[targetIndex];
+    if (targetInput) {
+      targetInput.focus();
+      if (!item.group.formControl.isReadOnly()) {
+        targetInput.click();
+      }
+    }
+  };
+
   const handleFocus = (e: FocusEvent) => {
     (onfocus as any)?.(e);
     item.isFocused(true);
@@ -73,6 +121,7 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
     style: mergedStyle,
     onclick: handleClick,
     onchange: handleChange,
+    onkeydown: handleKeyDown,
     onfocus: handleFocus,
     onblur: handleBlur,
     ...rest,

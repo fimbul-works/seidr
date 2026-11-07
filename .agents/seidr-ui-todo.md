@@ -301,7 +301,7 @@ Fast element factories and simple wrappers.
 - **Description**: Low-level numeric stepper state machine (`aria-valuenow`, `aria-valuemin`, `aria-valuemax`, `aria-valuetext`, Home/End/PageUp/PageDown).
 - **Complexity**: Low (~145 LOC).
 - **Tasks**:
-  - [ ] Implement `createSpinButton`.
+  - [x] Implement `createSpinButton`.
 
 ### 22. `number-field`
 

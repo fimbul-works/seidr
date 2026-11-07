@@ -33,7 +33,7 @@ export function SegmentedControlItem<T extends keyof SeidrElementTagNameMap = "d
   props: SegmentedControlItemProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "div" as T, instance: item, ref: userRef, onclick, onpointerdown, ...rest } = props;
+  const { as = "div" as T, instance: item, ref: userRef, onclick, onpointerdown, onkeydown, ...rest } = props;
 
   if (!item) {
     throw new SeidrError("SegmentedControlItem requires an instance coordinator");
@@ -68,6 +68,33 @@ export function SegmentedControlItem<T extends keyof SeidrElementTagNameMap = "d
     const target = e.target as HTMLElement;
     if (target.tagName !== "INPUT") {
       item.select();
+      item.inputRef()?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: KeyboardEvent) => {
+    (onkeydown as (ev: KeyboardEvent) => void)?.(e);
+    if (e.defaultPrevented) return;
+
+    // Forward navigation keys if the container element caught the event
+    if (e.target !== item.inputRef()) {
+      const isNav =
+        e.key === "ArrowRight" ||
+        e.key === "ArrowDown" ||
+        e.key === "ArrowLeft" ||
+        e.key === "ArrowUp" ||
+        e.key === "Home" ||
+        e.key === "End";
+      if (isNav) {
+        item.inputRef()?.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: e.key,
+            code: e.code,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+      }
     }
   };
 
@@ -80,6 +107,7 @@ export function SegmentedControlItem<T extends keyof SeidrElementTagNameMap = "d
       ref: itemRef,
       onpointerdown: handlePointerDown,
       onclick: handleClick,
+      onkeydown: handleKeyDown,
       dataComponent: "segmented-control",
       dataPart: "item",
       ...rest,

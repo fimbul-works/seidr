@@ -1,4 +1,4 @@
-import { $, createComponent, createValue, mount } from "@fimbul-works/seidr";
+import { $, createComponent, createValue, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -19,7 +19,7 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
     target?.remove();
   });
 
-  const setup = (factory: () => HTMLElement) => {
+  const setup = (factory: () => SeidrChild) => {
     target = getDocument().createElement("div");
     getDocument().body.appendChild(target);
     const App = createComponent(factory);
@@ -367,6 +367,120 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
 
       items = root.querySelectorAll("[role='group']");
       expect(items.length).toBe(3);
+    }
+  });
+
+  it("should support keyboard navigation across items with arrow keys, Home, and End", () => {
+    const onChange = vi.fn();
+    const root = setup(() => {
+      return SegmentedControl({
+        defaultValue: "week",
+        onChange,
+        items: [
+          { value: "day", label: "Day" },
+          { value: "week", label: "Week" },
+          { value: "month", label: "Month" },
+          { value: "year", label: "Year" },
+        ],
+      });
+    });
+
+    const inputs = root.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
+    expect(inputs.length).toBe(4);
+
+    // Initial state: "week" (index 1) is selected
+    expect(inputs[1]?.checked).toBe(true);
+
+    if (!isSSR) {
+      // ArrowRight from "week" (1) -> "month" (2)
+      inputs[1]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("month", "week");
+      expect(inputs[2]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[2]);
+
+      // ArrowDown from "month" (2) -> "year" (3)
+      inputs[2]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("year", "month");
+      expect(inputs[3]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[3]);
+
+      // ArrowRight from "year" (3) wraps -> "day" (0)
+      inputs[3]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("day", "year");
+      expect(inputs[0]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[0]);
+
+      // ArrowLeft from "day" (0) wraps -> "year" (3)
+      inputs[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("year", "day");
+      expect(inputs[3]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[3]);
+
+      // ArrowUp from "year" (3) -> "month" (2)
+      inputs[3]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("month", "year");
+      expect(inputs[2]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[2]);
+
+      // Home moves to first item: "day" (0)
+      inputs[2]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Home", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("day", "month");
+      expect(inputs[0]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[0]);
+
+      // End moves to last item: "year" (3)
+      inputs[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
+      expect(onChange).toHaveBeenCalledWith("year", "day");
+      expect(inputs[3]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[3]);
+    }
+  });
+
+  it("should focus input and select when clicking the item container", () => {
+    const onChange = vi.fn();
+    const root = setup(() => {
+      return SegmentedControl({
+        defaultValue: "day",
+        onChange,
+        items: [
+          { value: "day", label: "Day" },
+          { value: "week", label: "Week" },
+        ],
+      });
+    });
+
+    const items = root.querySelectorAll("[role='group']");
+    const inputs = root.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
+
+    if (!isSSR) {
+      // Click container of item 1 (week)
+      (items[1] as HTMLElement)?.click();
+      expect(onChange).toHaveBeenCalledWith("week", "day");
+      expect(inputs[1]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[1]);
+    }
+  });
+
+  it("should include input and support keyboard when custom children are passed to sc.Item", () => {
+    const root = setup(() => {
+      const sc = createSegmentedControl({ defaultValue: "light" });
+      return sc.Root({}, [
+        sc.Indicator({}),
+        sc.Item({ value: "light" }, [$("span", {}, "Light")]),
+        sc.Item({ value: "dark" }, [$("span", {}, "Dark")]),
+      ]);
+    });
+
+    const inputs = root.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
+    expect(inputs.length).toBe(2);
+    expect(inputs[0]?.value).toBe("light");
+    expect(inputs[1]?.value).toBe("dark");
+    expect(inputs[0]?.checked).toBe(true);
+
+    if (!isSSR) {
+      inputs[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
+      expect(inputs[1]?.checked).toBe(true);
+      expect(document.activeElement).toBe(inputs[1]);
     }
   });
 
