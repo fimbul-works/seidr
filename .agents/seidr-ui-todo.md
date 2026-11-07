@@ -310,7 +310,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `button`, `form-control`, `spin-button`.
 - **Complexity**: Moderate (~1,072 LOC).
 - **Tasks**:
-  - [ ] Implement NumberField parts.
+  - [x] Implement NumberField parts.
 
 ### 23. `meter`
 
@@ -319,7 +319,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `useRegisterId`.
 - **Complexity**: Low (~394 LOC).
 - **Tasks**:
-  - [ ] Implement Meter parts.
+  - [x] Implement Meter parts.
 
 ### 24. `progress`
 
@@ -328,7 +328,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `meter`.
 - **Complexity**: Low (~418 LOC).
 - **Tasks**:
-  - [ ] Implement Progress parts.
+  - [x] Implement Progress parts.
 
 ### 25. `slider`
 
@@ -337,7 +337,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `form-control`, `useControllableValue`, `useFormResetListener`, `useSize`, `useDirection`.
 - **Complexity**: Moderate (~1,232 LOC).
 - **Tasks**:
-  - [ ] Implement all Slider parts.
+  - [x] Implement all Slider parts.
 
 ### 26. `tabs`
 
@@ -346,7 +346,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `list`, `selection`, `useSize`, `useTransition`, `useDirection`.
 - **Complexity**: Moderate (~694 LOC).
 - **Tasks**:
-  - [ ] Implement all Tabs parts.
+  - [x] Implement all Tabs parts.
 
 ### 27. `accordion`
 
@@ -364,7 +364,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `link`.
 - **Complexity**: Low (~215 LOC).
 - **Tasks**:
-  - [ ] Implement Breadcrumbs parts.
+  - [x] Implement Breadcrumbs parts.
 
 ### 29. `pagination`
 
@@ -382,7 +382,7 @@ Fast element factories and simple wrappers.
 - **Dependencies**: `list`, `selection`, `tabs`, `toggle-button`.
 - **Complexity**: Moderate (~436 LOC).
 - **Tasks**:
-  - [ ] Implement ToggleGroup parts.
+  - [x] Implement ToggleGroup parts.
 
 ### 31. `listbox`
 

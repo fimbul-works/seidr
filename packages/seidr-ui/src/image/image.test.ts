@@ -1,8 +1,8 @@
+import { mount } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
 import { createImage, Image } from "./index.js";
-import { mount } from "@fimbul-works/seidr";
 
 const FALLBACK_TEXT = "AB";
 const IMAGE_ALT_TEXT = "Fake Image";
@@ -210,9 +210,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         const unmount = mount(() => component, doc.body);
         const root = component.nodes.at(0) as HTMLElement;
 
-        const results = await axe(root);
         // @ts-expect-error vitest-axe types
-        expect(results).toHaveNoViolations();
+        expect(await axe(root)).toHaveNoViolations();
 
         unmount();
       });

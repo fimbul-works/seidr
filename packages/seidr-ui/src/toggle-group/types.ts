@@ -1,6 +1,7 @@
 import type {
   DerivedValue,
   ObservableValue,
+  ReactiveARIAMixin,
   ReactiveValue,
   SeidrChild,
   SeidrElementProps,
@@ -38,7 +39,7 @@ export interface ToggleGroupMultipleOptions {
   /** Controlled selected values array. */
   value?: ReactiveValue<string[]>;
   /** Default selected values array when initially rendered (uncontrolled). */
-  defaultValue?: string[];
+  defaultValue?: string | string[];
   /** Event handler called when the selected values change. */
   onChange?: (value: string[]) => void;
 }
@@ -123,4 +124,4 @@ export type ToggleGroupProps<T extends keyof SeidrElementTagNameMap = "button"> 
   rootProps?: Omit<ToggleGroupRootProps<T>, "instance">;
   /** Children elements rendered inside ToggleGroup.Root. */
   children?: SeidrChild | SeidrChild[];
-};
+} & ReactiveARIAMixin;

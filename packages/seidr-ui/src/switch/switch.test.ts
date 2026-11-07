@@ -1,4 +1,4 @@
-import { createComponent, createValue, mount } from "@fimbul-works/seidr";
+import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -14,7 +14,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     target?.remove();
   });
 
-  const setup = (factory: () => HTMLElement) => {
+  const setup = (factory: () => SeidrChild) => {
     target = getDocument().createElement("div");
     getDocument().body.appendChild(target);
     const App = createComponent(factory);
@@ -323,8 +323,7 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const results = await axe(root);
     // @ts-expect-error vitest-axe types
-    expect(results).toHaveNoViolations();
+    expect(await axe(root)).toHaveNoViolations();
   });
 });

@@ -1,6 +1,5 @@
-import { isFn, isUndef } from "@fimbul-works/hvat";
+import { isFn } from "@fimbul-works/hvat";
 import {
-  isValue,
   mergeValues,
   type SeidrChild,
   type SeidrElementProps,

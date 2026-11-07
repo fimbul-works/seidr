@@ -1,4 +1,4 @@
-import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
+import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -121,8 +121,8 @@ describeDualMode("Tabs", ({ getDocument, isSSR }) => {
       const tabs = createTabs({ id: "fm-tabs", defaultValue: "tab1" });
       return tabs.Root({}, [
         tabs.List({}, [tabs.Trigger({ value: "tab1" }, "Tab 1"), tabs.Trigger({ value: "tab2" }, "Tab 2")]),
-        tabs.Content({ value: "tab1", forceMount: true }, "Content 1"),
-        tabs.Content({ value: "tab2", forceMount: true }, "Content 2"),
+        tabs.Content({ value: "tab1", forceMount: createValue(true) }, "Content 1"),
+        tabs.Content({ value: "tab2", forceMount: createValue(true) }, "Content 2"),
       ]);
     });
 
@@ -304,8 +304,7 @@ describeDualMode("Tabs", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const results = await axe(root);
     // @ts-expect-error vitest-axe types
-    expect(results).toHaveNoViolations();
+    expect(await axe(root)).toHaveNoViolations();
   });
 });

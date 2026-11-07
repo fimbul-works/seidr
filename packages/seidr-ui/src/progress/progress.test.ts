@@ -165,9 +165,8 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const results = await axe(root);
     // @ts-expect-error vitest-axe types
-    expect(results).toHaveNoViolations();
+    expect(await axe(root)).toHaveNoViolations();
   });
 
   it("should render Header containing Label and ValueLabel in Tier 1", () => {

@@ -84,9 +84,8 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const results = await axe(root);
     // @ts-expect-error vitest-axe types
-    expect(results).toHaveNoViolations();
+    expect(await axe(root)).toHaveNoViolations();
   });
 
   it("should handle uncontrolled state with defaultValue and clicks", () => {
