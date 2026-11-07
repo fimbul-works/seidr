@@ -1,6 +1,6 @@
 import { isArr } from "@fimbul-works/hvat";
 import { getNodeIndex } from "../component/component-registry.js";
-import { getComponentScope } from "../component/component-scope.js";
+import { getComponentScope, setComponentScope } from "../component/component-scope.js";
 import { createComponent } from "../component/create-component.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { getMarkerComments } from "../component/util/get-marker-comments.js";
@@ -30,17 +30,23 @@ export const List = <T, K extends string | number>(
   name: string = "List",
 ): SeidrComponent =>
   createComponent(() => {
-    type ItemEntry = { itemValue: Value<T>; nodes: ChildNode[] };
+    type ItemEntry = { itemValue: Value<T>; component: SeidrComponent; nodes: ChildNode[] };
 
     const listComponent = getComponentScope()!;
     const itemMap = new Map<K, ItemEntry>();
     const itemComponent = wrapComponent(factory, `${name}Item`);
 
     const renderItem = (item: T, key: K): ItemEntry => {
-      const itemValue = createValue(item, { hydrate: false });
-      const result = itemComponent(itemValue, key);
-      const nodes = normalizeChildNodes(result);
-      return { itemValue, nodes };
+      const prevScope = getComponentScope();
+      setComponentScope(listComponent);
+      try {
+        const itemValue = createValue(item, { hydrate: false });
+        const component = itemComponent(itemValue, key);
+        const nodes = normalizeChildNodes(component);
+        return { itemValue, component, nodes };
+      } finally {
+        setComponentScope(prevScope);
+      }
     };
 
     const items = observable() ?? [];
@@ -112,6 +118,9 @@ export const List = <T, K extends string | number>(
         if (lastNode && lastNode !== currentAnchor.previousSibling) {
           for (const node of entry.nodes) {
             parent.insertBefore(node, currentAnchor);
+          }
+          if (parent.isConnected && !entry.component.isMounted) {
+            entry.component.mount();
           }
         }
 

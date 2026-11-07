@@ -128,18 +128,10 @@ export const createReactiveValueNodes = (
  * @param {Node} node - Root node to traverse
  */
 export const mountConnectedComponents = (node: Node) => {
-  if (isCommentNode(node)) {
-    return;
-  }
-
   const stack: Node[] = [node];
 
   while (stack.length > 0) {
     const current = stack.pop()!;
-    if (isCommentNode(current)) {
-      continue;
-    }
-
     const comp = getNodeIndex().get(current as ChildNode);
 
     if (comp && !comp.isMounted) {
@@ -153,10 +145,12 @@ export const mountConnectedComponents = (node: Node) => {
       }
     }
 
-    const childNodes = current.childNodes;
-    if (childNodes && childNodes.length > 0) {
-      for (let i = childNodes.length - 1; i >= 0; i--) {
-        stack.push(childNodes[i]);
+    if (!isCommentNode(current)) {
+      const childNodes = current.childNodes;
+      if (childNodes && childNodes.length > 0) {
+        for (let i = childNodes.length - 1; i >= 0; i--) {
+          stack.push(childNodes[i]);
+        }
       }
     }
   }

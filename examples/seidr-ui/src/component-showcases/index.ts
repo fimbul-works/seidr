@@ -33,6 +33,7 @@ import { SwitchShowcase } from "./switch.js";
 import { TabsShowcase } from "./tabs.js";
 import { TextFieldShowcase } from "./text-field.js";
 import { TimeFieldShowcase } from "./time-field.js";
+import { ToastShowcase } from "./toast.js";
 import { ToggleButtonShowcase } from "./toggle-button.js";
 import { ToggleGroupShowcase } from "./toggle-group.js";
 
@@ -70,6 +71,7 @@ export * from "./switch.js";
 export * from "./tabs.js";
 export * from "./text-field.js";
 export * from "./time-field.js";
+export * from "./toast.js";
 export * from "./toggle-button.js";
 export * from "./toggle-group.js";
 
@@ -122,6 +124,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "tabs", title: "Tabs", badge: "Widget", category: "Widget", component: TabsShowcase },
   { id: "text-field", title: "TextField", badge: "Form", category: "Form", component: TextFieldShowcase },
   { id: "time-field", title: "TimeField", badge: "Form", category: "Form", component: TimeFieldShowcase },
+  { id: "toast", title: "Toast", badge: "Widget", category: "Widget", component: ToastShowcase },
   { id: "toggle-button", title: "ToggleButton", badge: "Atom", category: "Atom", component: ToggleButtonShowcase },
   { id: "toggle-group", title: "ToggleGroup", badge: "Widget", category: "Widget", component: ToggleGroupShowcase },
 ];
