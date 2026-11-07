@@ -13,6 +13,7 @@ import { DropdownMenuShowcase } from "./dropdown-menu.js";
 import { FileFieldShowcase } from "./file-field.js";
 import { FormControlShowcase } from "./form-control.js";
 import { HoverCardShowcase } from "./hover-card.js";
+import { IconShowcase } from "./icon.js";
 import { ImageShowcase } from "./image.js";
 import { LinkShowcase } from "./link.js";
 import { ListboxShowcase } from "./listbox.js";
@@ -57,6 +58,7 @@ export * from "./dropdown-menu.js";
 export * from "./file-field.js";
 export * from "./form-control.js";
 export * from "./hover-card.js";
+export * from "./icon.js";
 export * from "./image.js";
 export * from "./link.js";
 export * from "./listbox.js";
@@ -110,6 +112,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "file-field", title: "FileField", badge: "Form", category: "Form", component: FileFieldShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "hover-card", title: "HoverCard", badge: "Widget", category: "Widget", component: HoverCardShowcase },
+  { id: "icon", title: "SVG Icons", badge: "Asset Loader", category: "Atom", component: IconShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "link", title: "Link", badge: "Atom", category: "Atom", component: LinkShowcase },
   { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },

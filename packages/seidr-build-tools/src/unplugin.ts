@@ -1,5 +1,6 @@
 import { isStr } from "@fimbul-works/hvat";
 import { createUnplugin, type UnpluginInstance } from "unplugin";
+import { isSvgComponent, loadSvgFile } from "./svg.js";
 import { transformSource } from "./transform.js";
 import type { SeidrBuildPluginOptions } from "./types.js";
 
@@ -39,19 +40,28 @@ function createFilter(
 
 /**
  * Official unified Seidr build plugin factory created via unplugin.
- * Provides isomorphic AST pruning and dead-code elimination across all supported bundlers:
- * Vite, Webpack, Rollup, Rolldown, Esbuild, Rspack, etc.
+ * Provides isomorphic AST pruning, dead-code elimination, and SVG component loading
+ * across all supported bundlers: Vite, Webpack, Rollup, Rolldown, Esbuild, Rspack, etc.
  */
 export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, false> = createUnplugin<
   SeidrBuildPluginOptions | undefined,
   false
 >((options: SeidrBuildPluginOptions = {}, _meta) => {
-  const { disableSSR = false, target = "browser", include, exclude } = options;
+  const { disableSSR = false, target = "browser", include, exclude, svg = true } = options;
   const filter = createFilter(include, exclude);
+  const isSvgEnabled = svg !== false && (typeof svg !== "object" || svg.enabled !== false);
 
   return {
     name: "seidr",
     enforce: "pre",
+    loadInclude(id: string) {
+      if (!isSvgEnabled) return false;
+      return isSvgComponent(id);
+    },
+    load(id: string) {
+      if (!isSvgEnabled) return null;
+      return loadSvgFile(id);
+    },
     transformInclude(id: string) {
       return filter(id);
     },
@@ -73,6 +83,10 @@ export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, fal
       applyToEnvironment(env) {
         return {
           name: "seidr:env",
+          load(id: string) {
+            if (!isSvgEnabled) return null;
+            return loadSvgFile(id);
+          },
           transform(code: string, id: string) {
             if (!filter(id)) return null;
             const envTarget = options.target ?? (env.config.consumer === "client" ? "browser" : "ssr");

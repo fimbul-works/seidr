@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getAppState } from "../app-state/get-app-state.js";
 import { createValue } from "../observable/value.js";
+import { unwrapValue } from "../observable/unwrap-value.js";
 import { DATA_KEY_CURRENT_URL, DATA_KEY_NAVIGATION_HANDLERS } from "./constants.js";
 import { getCurrentUrl, setCurrentUrl } from "./current-url.js";
 import { getNavigationHandlers } from "./get-navigation-handlers.js";
@@ -319,7 +320,7 @@ describe("Navigation Utilities", () => {
       const el = document.createElement("span");
       const props = handleLinkProps(el, { href: "/about" });
 
-      expect((props as any).role()).toBe("link");
+      expect(unwrapValue((props as any).role)).toBe("link");
       expect((props as any).tabIndex()).toBe(0);
     });
   });

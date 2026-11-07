@@ -43,6 +43,9 @@
     "./testing": {
       "types": "./dist/test-setup/index.d.ts",
       "import": "./dist/test-setup/index.js"
+    },
+    "./client": {
+      "types": "./dist/client.d.ts"
     }
   },
   "files": [
@@ -57,7 +60,7 @@
   "scripts": {
     "build": "pnpm build:clean && pnpm build:lib && pnpm build:bundles",
     "build:clean": "rimraf dist/ bundles/",
-    "build:lib": "NODE_OPTIONS='--max-old-space-size=8192' tsc",
+    "build:lib": "NODE_OPTIONS='--max-old-space-size=8192' tsc && cp src/client.d.ts dist/client.d.ts",
     "build:bundles": "NODE_ENV=production tsdown --config-loader unrun",
     "test": "vitest run",
     "prepublishOnly": "pnpm clean:dist && pnpm build"

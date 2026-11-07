@@ -4,6 +4,17 @@
 export type SeidrBuildTarget = "browser" | "ssr";
 
 /**
+ * Options for Seidr SVG component loader.
+ */
+export interface SeidrSvgPluginOptions {
+  /**
+   * Whether to enable automatic SVG component loading.
+   * @default true
+   */
+  enabled?: boolean;
+}
+
+/**
  * Options for Seidr build plugins across all supported build tools.
  */
 export interface SeidrBuildPluginOptions {
@@ -29,6 +40,12 @@ export interface SeidrBuildPluginOptions {
    * Filter patterns for files to exclude.
    */
   exclude?: string | RegExp | Array<string | RegExp>;
+
+  /**
+   * Options for SVG component loader, or false to disable.
+   * @default true
+   */
+  svg?: boolean | SeidrSvgPluginOptions;
 }
 
 export type SeidrVitePluginOptions = SeidrBuildPluginOptions;

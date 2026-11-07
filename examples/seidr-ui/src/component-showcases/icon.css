@@ -1,0 +1,41 @@
+.icon-demo-grid {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 1rem;
+  background: var(--bg-subtle, rgba(0, 0, 0, 0.05));
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: 1rem;
+}
+
+.icon-demo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 80px;
+}
+
+.icon-demo-label {
+  font-size: 0.8rem;
+  color: var(--fg-muted, #888);
+}
+
+.icon-preview.clickable:hover {
+  filter: brightness(1.2);
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.icon-preview.spinning {
+  animation: spin 2s linear infinite;
+}
+

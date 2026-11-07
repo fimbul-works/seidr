@@ -1,7 +1,7 @@
 {
   "extends": "../../packages/typescript-config/vite.json",
   "compilerOptions": {
-    "types": ["node", "vite/client"]
+    "types": ["node"]
   },
-  "include": ["**/*.ts", "**/*.tsx"]
+  "include": ["**/*.ts", "**/*.tsx", "**/*.d.ts"]
 }

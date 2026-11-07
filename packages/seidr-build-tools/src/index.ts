@@ -5,6 +5,7 @@ export * from "./replacements.js";
 export { seidrRolldownPlugin } from "./rolldown.js";
 export { seidrRollupPlugin } from "./rollup.js";
 export { seidrRspackPlugin } from "./rspack.js";
+export * from "./svg.js";
 export * from "./transform.js";
 export * from "./transform-in-environment.js";
 export * from "./types.js";
