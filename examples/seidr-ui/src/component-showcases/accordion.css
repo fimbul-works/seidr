@@ -14,7 +14,6 @@
 .accordion-example-title {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-color, #1e293b);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -28,16 +27,15 @@
 
 /* Accordion Root */
 [data-component="accordion"][data-part="root"] {
-  border: 1px solid var(--border-color, #e2e8f0);
-  border-radius: 0.625rem;
-  background: var(--bg-surface, #ffffff);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  border-radius: 0.5rem;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background: var(--bg-surface, rgba(255, 255, 255, 0.03));
 }
 
 /* Accordion Item */
 [data-component="accordion"][data-part="item"] {
-  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
 }
 
 [data-component="accordion"][data-part="item"]:last-child {
@@ -57,23 +55,20 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 1rem 1.25rem;
-  background: transparent;
+  padding: 0.75rem 1rem;
+  background: none;
   border: none;
   font-family: inherit;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-color, #1e293b);
-  text-align: left;
+  color: var(--fg, #f3f4f6);
   cursor: pointer;
-  transition:
-    background-color 0.15s ease,
-    color 0.15s ease;
-  user-select: none;
+  text-align: left;
+  transition: background-color 0.15s ease;
 }
 
 [data-component="accordion"][data-part="trigger"]:hover:not([disabled]) {
-  background-color: var(--bg-hover, rgba(0, 0, 0, 0.03));
+  background: var(--bg-hover, rgba(255, 255, 255, 0.05));
 }
 
 [data-component="accordion"][data-part="trigger"]:focus-visible {
@@ -89,27 +84,22 @@
 
 /* Chevron indicator */
 .accordion-chevron {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  color: var(--text-muted, #64748b);
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  font-size: 0.8rem;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  color: var(--fg-muted, #9ca3af);
 }
 
 [data-component="accordion"][data-part="trigger"][data-expanded] .accordion-chevron {
   transform: rotate(180deg);
-  color: var(--primary, #3b82f6);
 }
 
 /* Accordion Content Panel with Flaedi JS tweens */
 [data-component="accordion"][data-part="content"] {
-  box-sizing: border-box;
-  padding: 0 1.25rem;
+  padding: 0 1rem 1rem 1rem;
   font-size: 0.9rem;
-  line-height: 1.6;
-  color: var(--text-muted, #64748b);
-  overflow: hidden;
+  line-height: 1.5;
+  color: var(--fg-muted, #9ca3af);
+  border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
 }
 
 [data-component="accordion"][data-part="content"] > *:last-child,

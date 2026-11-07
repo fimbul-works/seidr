@@ -1,0 +1,184 @@
+.menu-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.menu-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-heading, #fff);
+  margin-bottom: 0.25rem;
+}
+
+.menu-row {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+/* ---------------------------------------------------------------------------
+ * Semantic CSS Styles: Menu Component
+ * Target via [data-component="menu"] and [data-part="..."]
+ * --------------------------------------------------------------------------- */
+
+/* Trigger button */
+[data-component="menu"][data-part="trigger"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 6px;
+  background-color: var(--card-bg, #1e293b);
+  color: var(--text-heading, #f8fafc);
+  border: 1px solid var(--border-color, #334155);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+[data-component="menu"][data-part="trigger"]:hover {
+  background-color: var(--hover-bg, #334155);
+  border-color: var(--border-hover, #475569);
+}
+
+[data-component="menu"][data-part="trigger"][data-expanded] {
+  border-color: var(--primary, #3b82f6);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Floating content dropdown */
+[data-component="menu"][data-part="content"],
+[data-component="menu"][data-part="sub-content"] {
+  min-width: 13rem;
+  padding: 0.25rem;
+  background-color: var(--card-bg, #0f172a);
+  border: 1px solid var(--border-color, #334155);
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+
+/* Menu Items (standard, checkbox, radio, sub-trigger) */
+[data-component="menu"][data-part="item"],
+[data-component="menu"][data-part="checkbox-item"],
+[data-component="menu"][data-part="radio-item"],
+[data-component="menu"][data-part="sub-trigger"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.625rem;
+  font-size: 0.875rem;
+  color: var(--text-color, #cbd5e1);
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+[data-component="menu"][data-part="item"][data-highlighted],
+[data-component="menu"][data-part="checkbox-item"][data-highlighted],
+[data-component="menu"][data-part="radio-item"][data-highlighted],
+[data-component="menu"][data-part="sub-trigger"][data-highlighted] {
+  background-color: var(--primary, #3b82f6);
+  color: #ffffff;
+}
+
+[data-component="menu"][data-part="item"][data-disabled],
+[data-component="menu"][data-part="checkbox-item"][data-disabled],
+[data-component="menu"][data-part="radio-item"][data-disabled],
+[data-component="menu"][data-part="sub-trigger"][data-disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Sub-trigger chevron arrow indicator */
+[data-component="menu"][data-part="sub-trigger"]::after {
+  content: "›";
+  margin-left: auto;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+/* Indicators */
+[data-component="menu"][data-part="item-indicator"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.75rem;
+  margin-right: 0.25rem;
+}
+
+/* Labels and descriptions */
+[data-component="menu"][data-part="item-label"] {
+  flex: 1;
+  font-weight: 500;
+}
+
+[data-component="menu"][data-part="item-description"] {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+  margin-left: auto;
+}
+
+[data-component="menu"][data-part="item"][data-highlighted] [data-component="menu"][data-part="item-description"] {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Icons */
+[data-component="menu"][data-part="icon"] {
+  display: inline-flex;
+  font-size: 1rem;
+  width: 1.25rem;
+  justify-content: center;
+}
+
+/* Separator */
+[data-component="menu"][data-part="separator"] {
+  height: 1px;
+  background-color: var(--border-color, #334155);
+  margin: 0.25rem 0;
+  border: none;
+}
+
+/* Group Label */
+[data-component="menu"][data-part="group-label"] {
+  padding: 0.35rem 0.625rem 0.15rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted, #94a3b8);
+}
+
+/* Dynamic Controls & Status Bar */
+.menu-status-badge {
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.625rem;
+  background: var(--bg-surface-2, #1e293b);
+  border-radius: 4px;
+  border: 1px solid var(--border-color, #334155);
+  color: var(--text-color, #cbd5e1);
+}
+
+.menu-status-badge strong {
+  color: var(--primary, #3b82f6);
+}
+
