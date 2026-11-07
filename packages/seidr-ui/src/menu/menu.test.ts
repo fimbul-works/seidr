@@ -479,6 +479,53 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
     }
   });
 
+  it("supports portaling menu content and submenus via portalTarget", () => {
+    if (isSSR) return;
+
+    const portalHost = getDocument().createElement("div");
+    portalHost.id = "menu-portal-host";
+    getDocument().body.appendChild(portalHost);
+
+    try {
+      const onSelect = vi.fn();
+      const root = setup(() =>
+        Menu({
+          id: "portaled-menu",
+          portalTarget: portalHost,
+          trigger: "Actions",
+          items: [
+            { value: "copy", label: "Copy", onSelect },
+            {
+              type: "sub",
+              value: "more",
+              label: "More",
+              items: [{ value: "archive", label: "Archive", onSelect }],
+            },
+          ],
+        }),
+      );
+
+      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      trigger.click();
+
+      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
+
+      // Open submenu inside portaled content
+      const subTrigger = portalHost.querySelector("[data-part='sub-trigger']") as HTMLElement;
+      subTrigger.click();
+
+      expect(portalHost.querySelector("[data-part='sub-content']")).not.toBeNull();
+
+      // Click submenu item
+      const subItem = portalHost.querySelector("[data-part='sub-content'] [data-part='item']") as HTMLElement;
+      subItem.click();
+      expect(onSelect).toHaveBeenCalledTimes(1);
+    } finally {
+      portalHost.remove();
+    }
+  });
+
   it("passes axe accessibility checks", async () => {
     if (isSSR) return;
 

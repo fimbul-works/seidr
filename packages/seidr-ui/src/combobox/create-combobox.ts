@@ -2,11 +2,14 @@ import { isObj } from "@fimbul-works/hvat";
 import {
   $,
   type DerivedValue,
+  getDocument,
   List,
+  Portal,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementTagNameMap,
   SeidrError,
+  Show,
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
@@ -63,6 +66,7 @@ import type {
   ComboboxLabelProps,
   ComboboxListboxProps,
   ComboboxNode,
+  ComboboxPortalProps,
   ComboboxRootProps,
   ComboboxSectionData,
   ComboboxSectionLabelProps,
@@ -179,6 +183,16 @@ export function createCombobox<Option = any, OptGroup = any>(
     props: ComboboxIconProps<T> = {} as ComboboxIconProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => ComboboxIcon({ instance, dataComponent: "combobox", ...props }, children);
+
+  const PortalHelper = (props: ComboboxPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const target = props.target ?? instance.portalTarget ?? getDocument().body;
+    instance.portalTarget = undefined;
+    const renderPortal = () => Portal(target, () => children ?? null, "ComboboxPortal");
+    if (instance.forceMount) {
+      return renderPortal();
+    }
+    return Show(instance.isOpen, renderPortal);
+  };
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxContentProps<T> = {} as ComboboxContentProps<T>,
@@ -380,6 +394,7 @@ export function createCombobox<Option = any, OptGroup = any>(
     Input,
     Trigger,
     Icon,
+    Portal: PortalHelper,
     Content,
     Listbox,
     Item,

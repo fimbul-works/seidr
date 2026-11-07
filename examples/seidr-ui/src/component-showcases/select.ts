@@ -1,4 +1,4 @@
-import { createComponent, createValue } from "@fimbul-works/seidr";
+import { createComponent, createValue, getDocument } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { createSelect, Select } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
@@ -171,6 +171,35 @@ export const SelectShowcase = createComponent(() => {
               dynamicSelectOptions.as((opts) => String(opts.length)),
             ]),
           ]),
+        ]),
+
+        // 5. Portaled Dropdown (Escaping overflow: hidden)
+        $div({ className: "select-section-box" }, [
+          $h3({ className: "select-heading" }, "5. Portaled Content (portalTarget: document.body)"),
+          $div(
+            {
+              style: {
+                overflow: "hidden",
+                border: "1px dashed hsla(217, 91%, 60%, 0.45)",
+                borderRadius: "8px",
+                padding: "0.75rem",
+              },
+            },
+            [
+              Select({
+                label: "Inside overflow: hidden container",
+                placeholder: "Select region...",
+                defaultValue: "eu-north",
+                portalTarget: getDocument().body,
+                options: [
+                  { value: "eu-north", label: "EU North (Helsinki)" },
+                  { value: "eu-central", label: "EU Central (Frankfurt)" },
+                  { value: "us-east", label: "US East (Virginia)" },
+                  { value: "ap-northeast", label: "Asia Pacific (Tokyo)" },
+                ],
+              }),
+            ],
+          ),
         ]),
       ]),
     ]),

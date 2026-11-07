@@ -22,6 +22,7 @@ export const ContextMenu = createComponent(
       closeOnSelect = true,
       parentMenu = null,
       getAnchorRect,
+      portalTarget,
       as = "div",
       trigger,
       disabled = false,
@@ -45,6 +46,7 @@ export const ContextMenu = createComponent(
       closeOnSelect,
       parentMenu,
       getAnchorRect,
+      portalTarget,
       dataComponent: "context-menu",
     };
 

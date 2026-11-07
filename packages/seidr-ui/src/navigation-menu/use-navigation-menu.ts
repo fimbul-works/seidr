@@ -41,6 +41,7 @@ export function useNavigationMenu(
   const isOpen: DerivedValue<boolean> = valueState.as((v) => v !== null);
 
   const rootRef = createRef<HTMLElement>();
+  const viewportRef = createRef<HTMLElement>();
   const registrations = new Map<string, MenubarMenuRegistration>();
 
   let hoverTimerId: ReturnType<typeof setTimeout> | undefined;
@@ -261,8 +262,11 @@ export function useNavigationMenu(
       if (!target) return false;
       const rootEl = rootRef();
       if (rootEl && rootEl.contains(target)) return true;
+      const viewportEl = viewportRef();
+      if (viewportEl && viewportEl.contains(target)) return true;
 
       for (const reg of registrations.values()) {
+        if (reg.containsTarget?.(target)) return true;
         const triggerEl = reg.getTriggerElement();
         if (triggerEl && triggerEl.contains(target)) return true;
         const contentEl = reg.getContentElement?.();
@@ -278,6 +282,7 @@ export function useNavigationMenu(
     value: valueState,
     activeTrigger,
     orientation,
+    portalTarget: options.portalTarget,
     isOpen,
     delayDuration,
     skipDelayDuration,
@@ -293,6 +298,7 @@ export function useNavigationMenu(
     registerMenu,
     handleListKeyDown,
     rootRef,
+    viewportRef,
   };
 }
 

@@ -1,9 +1,12 @@
 import { isFn } from "@fimbul-works/hvat";
 import {
   type DerivedValue,
+  getDocument,
+  Portal as PortalComponent,
   type SeidrChild,
   type SeidrElementTagNameMap,
   SeidrError,
+  Show,
 } from "@fimbul-works/seidr";
 import { createMenu as createMenuCore } from "../menu/create-menu.js";
 import { MenuArrow } from "../menu/menu-arrow.js";
@@ -56,6 +59,7 @@ import type {
   NavigationMenuListProps,
   NavigationMenuMenuInstance,
   NavigationMenuMenuProps,
+  NavigationMenuPortalProps,
   NavigationMenuRootProps,
   NavigationMenuTriggerProps,
   NavigationMenuViewportProps,
@@ -84,6 +88,7 @@ export function createNavigationMenu(
 
     const underlyingMenu = createMenuCore({
       dataComponent,
+      portalTarget: navMenu.portalTarget,
       ...menuOptions,
       modal: false,
       placement:
@@ -103,6 +108,7 @@ export function createNavigationMenu(
       value: menuValue,
       getTriggerElement: () => underlyingMenu.triggerRef(),
       getContentElement: () => underlyingMenu.contentRef(),
+      containsTarget: (target) => underlyingMenu.containsNode(target),
       open: (autoFocusFirst) => {
         underlyingMenu.open();
         if (autoFocusFirst) {
@@ -196,10 +202,24 @@ export function createNavigationMenu(
       );
     };
 
+    const Portal = (props: NavigationMenuPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+      const configuredTarget = props.target ?? underlyingMenu.portalTarget ?? navMenu.portalTarget;
+      underlyingMenu.portalTarget = undefined;
+      const renderPortal = () => {
+        const target = configuredTarget ?? navMenu.viewportRef() ?? getDocument().body;
+        return PortalComponent(target, () => children ?? null, "NavigationMenuPortal");
+      };
+      if (underlyingMenu.forceMount) {
+        return renderPortal();
+      }
+      return Show(underlyingMenu.isOpen, renderPortal);
+    };
+
     const menuInstance: NavigationMenuMenuInstance = {
       ...underlyingMenu,
       menuValue,
       Trigger,
+      Portal,
       Content,
     };
 
@@ -261,6 +281,14 @@ export function createNavigationMenu(
     }
 
     return targetMenu.Trigger<T>(props, children);
+  };
+
+  const Portal = (props?: NavigationMenuPortalProps, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const targetMenu = activeCreatedMenu;
+    if (!targetMenu) {
+      throw new SeidrError("NavigationMenuPortal requires an active NavigationMenuMenu context");
+    }
+    return targetMenu.Portal(props, children);
   };
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -500,6 +528,7 @@ export function createNavigationMenu(
     List,
     Menu,
     Trigger,
+    Portal,
     Content,
     Link,
     Viewport,

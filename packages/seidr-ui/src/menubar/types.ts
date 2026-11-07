@@ -35,6 +35,7 @@ import type {
   MenuInstance,
   MenuLeafDescriptor,
   MenuListRenderOptions,
+  MenuPortalProps,
   MenuRadioGroupData,
   MenuRadioGroupInstance,
   MenuRadioGroupOptions,
@@ -68,6 +69,7 @@ export interface MenubarMenuRegistration {
   value: string;
   getTriggerElement: () => HTMLElement | null;
   getContentElement?: () => HTMLElement | null;
+  containsTarget?: (target: Node) => boolean;
   open: (autoFocusFirst?: boolean) => void;
   close: () => void;
   focusTrigger: () => void;
@@ -91,6 +93,8 @@ export interface UseMenubarOptions {
   orientation?: MenubarOrientation;
   /** When true, Alt key by itself focuses this menubar. Defaults to false. */
   focusOnAlt?: boolean;
+  /** Optional target element to portal the menu dropdowns into (e.g. `getDocument().body`). */
+  portalTarget?: HTMLElement;
 }
 
 export interface UseMenubarResult {
@@ -104,6 +108,8 @@ export interface UseMenubarResult {
   activeTrigger: Value<string | null>;
   /** Orientation of the menubar. */
   orientation: MenubarOrientation;
+  /** Optional target element to portal the menu dropdowns into. */
+  portalTarget?: HTMLElement;
   /** Derived observable indicating whether any menu in the menubar is open. */
   isOpen: DerivedValue<boolean>;
   /** Sets the currently open menu. */
@@ -163,6 +169,9 @@ export interface MenubarInstance extends UseMenubarResult {
     props?: MenubarTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+
+  /** Portal helper for the active menu dropdown. */
+  Portal: (props?: MenubarPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
 
   /** Menu floating dropdown content factory. */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -294,6 +303,7 @@ export type MenubarTriggerProps<T extends keyof SeidrElementTagNameMap = "button
 
 export type MenubarContentOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuContentOptions<T>;
 export type MenubarContentProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuContentProps<T>;
+export type MenubarPortalProps = MenuPortalProps;
 
 export type MenubarItemOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T>;
 export type MenubarItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemProps<T>;

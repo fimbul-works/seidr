@@ -22,6 +22,34 @@ import type {
 const getParentObservableStack = () => getAppState().getData<Set<Observable>[]>(DATA_KEY_PARENT_OBSERVABLE_STACK, []);
 
 /**
+ * Executes a function without tracking any reactive observables accessed within it.
+ *
+ * @template T - The return type of the function
+ * @param {() => T} fn - Function to execute untracked
+ * @returns {T} The result of the function
+ */
+export function untrack<T>(fn: () => T): T {
+  let appState: AppState | undefined;
+  try {
+    appState = getAppState();
+  } catch {
+    return fn();
+  }
+
+  const stack = appState.getData<Set<Observable>[]>(DATA_KEY_PARENT_OBSERVABLE_STACK, []);
+  if (stack.length === 0) {
+    return fn();
+  }
+
+  const saved = stack.pop()!;
+  try {
+    return fn();
+  } finally {
+    stack.push(saved);
+  }
+}
+
+/**
  * Creates an observable Value,
  * which notifies listeners when that value changes.
  *

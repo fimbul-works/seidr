@@ -668,6 +668,7 @@ export function useCombobox<Option = any, OptGroup = any>(
     listbox,
     popper,
     forceMount,
+    portalTarget: options.portalTarget,
     activeDescendantId,
     handleInput,
     handleInputKeyDown,

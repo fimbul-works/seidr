@@ -21,6 +21,7 @@ export const DropdownMenu = createComponent(
       loop = true,
       closeOnSelect = true,
       parentMenu = null,
+      portalTarget,
       as = "div",
       trigger,
       items,
@@ -42,6 +43,7 @@ export const DropdownMenu = createComponent(
       loop,
       closeOnSelect,
       parentMenu,
+      portalTarget,
       dataComponent: "dropdown-menu",
     };
 

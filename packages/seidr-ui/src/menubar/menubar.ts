@@ -27,6 +27,7 @@ export const Menubar = createComponent(
       loop = true,
       orientation = "horizontal",
       focusOnAlt = false,
+      portalTarget,
       menus,
       children,
       ...rootProps
@@ -41,6 +42,7 @@ export const Menubar = createComponent(
       loop,
       orientation,
       focusOnAlt,
+      portalTarget,
     });
 
     const renderedMenus: SeidrChild[] = [];

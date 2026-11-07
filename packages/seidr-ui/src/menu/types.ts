@@ -172,6 +172,8 @@ export interface UseMenuOptions {
   parentMenu?: UseMenuResult | null;
   /** Custom function to determine virtual anchor boundaries for popper positioning. */
   getAnchorRect?: (anchor?: HTMLElement) => AnchorRect | undefined;
+  /** Optional target element to portal the menu content into (e.g. `getDocument().body`). */
+  portalTarget?: HTMLElement;
 }
 
 export interface UseMenuResult {
@@ -213,6 +215,10 @@ export interface UseMenuResult {
   modal: boolean;
   /** Whether forceMount is active. */
   forceMount: boolean;
+  /** Optional target element to portal the menu content into. */
+  portalTarget?: HTMLElement;
+  /** Checks whether a DOM node is inside this menu's trigger, content, or any nested submenu. */
+  containsNode: (target: Node) => boolean;
   /** Whether keyboard loop navigation is active. */
   loop: boolean;
   /** Parent menu instance if this is a submenu. */
@@ -285,6 +291,8 @@ export interface MenuContentOptions<T extends keyof SeidrElementTagNameMap = "di
   items?: ReactiveValue<MenuItemDescriptor[]>;
   /** Internal render helper for dynamic items list. */
   renderList?: (items: ReactiveValue<MenuItemDescriptor[]>) => SeidrChild;
+  /** Optional target element to portal the content into. Overrides `instance.portalTarget`. */
+  portalTarget?: HTMLElement;
   ariaLabel?: string;
   ariaLabelledBy?: string;
   ariaDescribedBy?: string;
@@ -292,6 +300,13 @@ export interface MenuContentOptions<T extends keyof SeidrElementTagNameMap = "di
 }
 export type MenuContentProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuContentOptions<T> &
   SeidrElementProps<T>;
+
+export interface MenuPortalProps {
+  /** Target element to portal into. Defaults to `instance.portalTarget ?? getDocument().body`. */
+  target?: HTMLElement;
+  instance?: UseMenuResult;
+  subInstance?: UseMenuResult;
+}
 
 export interface MenuItemOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -372,6 +387,8 @@ export type MenuSubTriggerProps<T extends keyof SeidrElementTagNameMap = "div"> 
 export interface MenuSubContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
   dataComponent?: string;
+  /** Optional target element to portal the submenu content into. Overrides `subInstance.portalTarget`. */
+  portalTarget?: HTMLElement;
   ariaLabel?: string;
   ariaLabelledBy?: string;
   ariaDescribedBy?: string;
@@ -470,6 +487,7 @@ export interface MenuInstance extends UseMenuResult {
     props?: MenuTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+  Portal: (props?: MenuPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuContentProps<T>,
     children?: SeidrChild | SeidrChild[],

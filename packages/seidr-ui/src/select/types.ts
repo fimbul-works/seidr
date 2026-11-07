@@ -112,6 +112,9 @@ export interface UseSelectOptions<Option = any, OptGroup = any>
 
   /** Whether to keep the content mounted when closed (e.g. for CSS exit transitions). */
   forceMount?: boolean;
+
+  /** Optional target element to portal the dropdown content into (e.g. `getDocument().body`). */
+  portalTarget?: HTMLElement;
 }
 
 /** Return interface of `useSelect`. */
@@ -179,6 +182,9 @@ export interface UseSelectResult<Option = any> {
 
   /** Whether content should be kept mounted when closed. */
   forceMount: boolean;
+
+  /** Optional target element to portal the dropdown content into. */
+  portalTarget?: HTMLElement;
 
   /** Accessible label computation for the trigger. */
   ariaLabelledBy: DerivedValue<string | undefined>;
@@ -255,6 +261,14 @@ export interface SelectContentOptions<T extends keyof SeidrElementTagNameMap = "
   as?: T;
   instance?: UseSelectResult;
   dataComponent?: string;
+  /** Optional target element to portal the content into. Overrides `instance.portalTarget`. */
+  portalTarget?: HTMLElement;
+}
+
+export interface SelectPortalProps {
+  /** Target element to portal into. Defaults to `instance.portalTarget ?? getDocument().body`. */
+  target?: HTMLElement;
+  instance?: UseSelectResult;
 }
 
 export type SelectContentProps<T extends keyof SeidrElementTagNameMap = "div"> = SelectContentOptions<T> &
@@ -321,6 +335,8 @@ export interface SelectInstance<Option = any> extends UseSelectResult<Option> {
     props?: Omit<SelectIconProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+
+  Portal: (props?: SelectPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectContentProps<T>, "instance">,

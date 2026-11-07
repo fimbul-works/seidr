@@ -465,6 +465,46 @@ describeDualMode("Select", ({ getDocument, isSSR }) => {
     expect(valueEl.textContent).toBe("Red");
   });
 
+  it("supports portaling content via portalTarget and Tier 2 Portal helper", () => {
+    if (isSSR) return;
+
+    const portalHost = getDocument().createElement("div");
+    portalHost.id = "select-portal-host";
+    getDocument().body.appendChild(portalHost);
+
+    try {
+      const onChange = vi.fn();
+      const root = setup(() =>
+        Select({
+          id: "portaled-select",
+          portalTarget: portalHost,
+          options: [
+            { value: "apple", label: "Apple" },
+            { value: "banana", label: "Banana" },
+          ],
+          onChange,
+        }),
+      );
+
+      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      triggerEl.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, button: 0, pointerType: "mouse" }));
+
+      // Content is rendered inside portalHost, NOT inside root
+      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
+
+      const options = Array.from(portalHost.querySelectorAll("[role='option']")) as HTMLElement[];
+      expect(options).toHaveLength(2);
+
+      // Selecting an option inside portaled content works and closes dropdown
+      options[1]?.click();
+      expect(onChange).toHaveBeenCalledWith({ value: "banana", label: "Banana" });
+      expect(portalHost.querySelector("[data-part='content']")).toBeNull();
+    } finally {
+      portalHost.remove();
+    }
+  });
+
   it("should have no accessibility violations (axe)", async () => {
     if (isSSR) return;
 

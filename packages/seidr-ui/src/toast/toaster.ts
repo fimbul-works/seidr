@@ -93,11 +93,38 @@ function clear(): void {
   toastStore.clear();
 }
 
+/**
+ * Checks whether a toast with the given id is currently active (present and not dismissed).
+ */
+function isActive(id: number): boolean {
+  const t = toastStore.get(id);
+  return t !== undefined && !t.dismiss;
+}
+
+/**
+ * Retrieves the toast configuration for the given id if present.
+ */
+function get(id: number) {
+  return toastStore.get(id);
+}
+
 export const toaster = {
   show,
   update,
   promise,
   dismiss,
   clear,
+  isActive,
+  get,
+  get toasts() {
+    return toastStore.toasts;
+  },
+  get queue() {
+    return {
+      toasts() {
+        return toastStore.toasts();
+      },
+    };
+  },
 };
 

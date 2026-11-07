@@ -539,6 +539,7 @@ export function useSelect<Option = any, OptGroup = any>(
     listbox,
     popper,
     forceMount,
+    portalTarget: options.portalTarget,
     ariaLabelledBy,
     closeOnSelection,
     handleTriggerKeyDown,

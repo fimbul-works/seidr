@@ -1,5 +1,5 @@
 import { encodeBase62 } from "@fimbul-works/futhark";
-import { getAppState } from "../app-state";
+import { getAppState } from "../app-state/index.js";
 
 // Data-key for unique ID counters
 export const DATA_KEY_ID = "seidr.id";

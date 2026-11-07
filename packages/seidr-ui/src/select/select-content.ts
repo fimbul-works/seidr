@@ -3,6 +3,7 @@ import {
   $,
   createRef,
   type DerivedValue,
+  Portal,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -24,6 +25,7 @@ export function SelectContent<T extends keyof SeidrElementTagNameMap = "div">(
     as = "div" as T,
     instance: select,
     dataComponent = "select",
+    portalTarget,
     ref: userRef,
     style: userStyle,
     ...rest
@@ -71,9 +73,17 @@ export function SelectContent<T extends keyof SeidrElementTagNameMap = "div">(
     ) as unknown as SeidrElementTagNameMap[T];
   };
 
+  const renderMaybePortaled = (): SeidrElementTagNameMap[T] => {
+    const target = portalTarget ?? select.portalTarget;
+    if (target) {
+      return Portal(target, renderContent, "SelectPortal") as unknown as SeidrElementTagNameMap[T];
+    }
+    return renderContent();
+  };
+
   if (select.forceMount) {
-    return wrapValue(renderContent()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
+    return wrapValue(renderMaybePortaled()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
   }
 
-  return Show(select.isOpen, renderContent) as DerivedValue<SeidrElementTagNameMap[T] | null>;
+  return Show(select.isOpen, renderMaybePortaled) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

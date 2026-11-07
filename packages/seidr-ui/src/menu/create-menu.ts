@@ -2,11 +2,14 @@ import { isArr, isObj } from "@fimbul-works/hvat";
 import {
   $,
   type DerivedValue,
+  getDocument,
   List,
+  Portal,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  Show,
   unwrapValue,
   type Value,
   wrapValue,
@@ -43,6 +46,7 @@ import type {
   MenuItemLabelProps,
   MenuItemProps,
   MenuListRenderOptions,
+  MenuPortalProps,
   MenuRadioGroupInstance,
   MenuRadioGroupProps,
   MenuRadioItemProps,
@@ -79,6 +83,17 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
     MenuTrigger<T>({ dataComponent, ...props, instance } as MenuTriggerProps<T>, children);
+
+  const PortalHelper = (props: MenuPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const targetInst = props.subInstance ?? props.instance ?? instance;
+    const target = props.target ?? targetInst.portalTarget ?? getDocument().body;
+    targetInst.portalTarget = undefined;
+    const renderPortal = () => Portal(target, () => children ?? null, "MenuPortal");
+    if (targetInst.forceMount) {
+      return renderPortal();
+    }
+    return Show(targetInst.isOpen, renderPortal);
+  };
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuContentProps<T>,
@@ -386,6 +401,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
     ...instance,
     Root,
     Trigger,
+    Portal: PortalHelper,
     Content,
     Item,
     CheckboxItem,

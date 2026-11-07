@@ -32,6 +32,7 @@ export const NavigationMenu = createComponent(
       skipDelayDuration = 300,
       loop = true,
       orientation = "horizontal",
+      portalTarget,
       items,
       children,
       ...rootProps
@@ -47,6 +48,7 @@ export const NavigationMenu = createComponent(
       skipDelayDuration,
       loop,
       orientation,
+      portalTarget,
     });
 
     const renderedItems: SeidrChild[] = [];

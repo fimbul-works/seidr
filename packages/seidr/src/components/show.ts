@@ -3,6 +3,7 @@ import type { SeidrComponentFactory, SeidrComponentFactoryOrFunction } from "../
 import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
 import type { DerivedValue, ObservableValue } from "../observable/types.js";
+import { untrack } from "../observable/value.js";
 
 /**
  * Conditionally renders content based on a reactive condition Value.
@@ -31,7 +32,7 @@ export const Show = (
     }
 
     try {
-      return factory();
+      return untrack(() => factory());
     } finally {
       setComponentScope(prevScope);
     }

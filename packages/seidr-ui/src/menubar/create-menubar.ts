@@ -53,6 +53,7 @@ import type {
   MenubarInstance,
   MenubarMenuInstance,
   MenubarMenuProps,
+  MenubarPortalProps,
   MenubarRootProps,
   MenubarTriggerProps,
   UseMenubarOptions,
@@ -78,6 +79,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
     const underlyingMenu = createMenuCore({
       dataComponent,
+      portalTarget: menubar.portalTarget,
       ...menuOptions,
       modal: false,
       placement:
@@ -97,6 +99,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
       value: menuValue,
       getTriggerElement: () => underlyingMenu.triggerRef(),
       getContentElement: () => underlyingMenu.contentRef(),
+      containsTarget: (target) => underlyingMenu.containsNode(target),
       open: (autoFocusFirst) => {
         underlyingMenu.open();
         if (autoFocusFirst) {
@@ -224,6 +227,14 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     }
 
     return targetMenu.Trigger<T>(props, children);
+  };
+
+  const Portal = (props?: MenubarPortalProps, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const targetMenu = activeCreatedMenu;
+    if (!targetMenu) {
+      throw new SeidrError("MenubarPortal requires an active MenubarMenu context");
+    }
+    return targetMenu.Portal(props, children);
   };
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -436,6 +447,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     Root,
     Menu,
     Trigger,
+    Portal,
     Content,
     Item,
     CheckboxItem,

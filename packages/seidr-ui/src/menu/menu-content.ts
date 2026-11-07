@@ -3,6 +3,7 @@ import {
   $,
   createRef,
   type DerivedValue,
+  Portal,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
@@ -26,6 +27,7 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
     dataComponent = "menu",
     items,
     renderList,
+    portalTarget,
     id: userId,
     ref: userRef,
     style: userStyle,
@@ -99,13 +101,21 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
     ) as unknown as SeidrElementTagNameMap[T];
   };
 
+  const renderMaybePortaled = (): SeidrElementTagNameMap[T] => {
+    const target = portalTarget ?? menu.portalTarget;
+    if (target) {
+      return Portal(target, renderContent, "MenuPortal") as unknown as SeidrElementTagNameMap[T];
+    }
+    return renderContent();
+  };
+
   if (menu.forceMount) {
-    return wrapValue(renderContent()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
+    return wrapValue(renderMaybePortaled()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
   }
 
   return Show(
     menu.isOpen,
-    () => renderContent(),
+    renderMaybePortaled,
   ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 

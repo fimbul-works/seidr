@@ -9,10 +9,14 @@ global.ResizeObserver = class ResizeObserver {
     this.cb = cb;
   }
   observe() {
-    this.cb([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }]);
+    queueMicrotask(() => {
+      this.cb?.([{ borderBoxSize: { inlineSize: 0, blockSize: 0 } }]);
+    });
   }
   unobserve() {}
-  disconnect() {}
+  disconnect() {
+    this.cb = null;
+  }
 };
 
 // jsdom does not implement `scrollIntoView`; several primitives (e.g. Select)

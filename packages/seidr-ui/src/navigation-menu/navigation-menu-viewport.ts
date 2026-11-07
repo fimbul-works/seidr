@@ -30,6 +30,7 @@ export function NavigationMenuViewport<T extends keyof SeidrElementTagNameMap = 
     if (userRef && el && isFn(userRef)) {
       Reflect.apply(userRef, null, [el]);
     }
+    instance?.viewportRef(el as unknown as HTMLElement);
   });
 
   const resolvedChildren: (SeidrChild | undefined)[] = [];

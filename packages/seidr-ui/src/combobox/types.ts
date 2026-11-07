@@ -137,6 +137,9 @@ export interface UseComboboxOptions<Option = any, OptGroup = any>
 
   /** Whether to keep the content mounted when closed (e.g. for CSS exit transitions). */
   forceMount?: boolean;
+
+  /** Optional target element to portal the dropdown content into (e.g. `getDocument().body`). */
+  portalTarget?: HTMLElement;
 }
 
 /** Return interface of `useCombobox`. */
@@ -229,6 +232,9 @@ export interface UseComboboxResult<Option = any> {
   /** Whether content is force mounted. */
   forceMount: boolean;
 
+  /** Optional target element to portal the dropdown content into. */
+  portalTarget?: HTMLElement;
+
   /** Dynamic ARIA active descendant ID for the focused listbox item. */
   activeDescendantId: DerivedValue<string | undefined>;
 
@@ -308,6 +314,14 @@ export interface ComboboxContentOptions<T extends keyof SeidrElementTagNameMap =
   as?: T;
   instance?: UseComboboxResult;
   dataComponent?: string;
+  /** Optional target element to portal the content into. Overrides `instance.portalTarget`. */
+  portalTarget?: HTMLElement;
+}
+
+export interface ComboboxPortalProps {
+  /** Target element to portal into. Defaults to `instance.portalTarget ?? getDocument().body`. */
+  target?: HTMLElement;
+  instance?: UseComboboxResult;
 }
 
 export type ComboboxContentProps<T extends keyof SeidrElementTagNameMap = "div"> = ComboboxContentOptions<T> &
@@ -384,6 +398,8 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
     props?: ComboboxIconProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+
+  Portal: (props?: ComboboxPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxContentProps<T>,

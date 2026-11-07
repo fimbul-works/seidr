@@ -1,4 +1,4 @@
-import { createComponent, createValue } from "@fimbul-works/seidr";
+import { createComponent, createValue, getDocument } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import {
   createDropdownMenu,
@@ -226,6 +226,52 @@ export const DropdownMenuShowcase = createComponent(() => {
               ),
             ]),
           ]),
+        ]),
+
+        // Section 5: Portaled Dropdown & Submenus (Escaping overflow: hidden)
+        $div({ className: "dropdown-menu-section" }, [
+          $h3({ className: "dropdown-menu-section-title" }, "5. Portaled Menu & Submenus (portalTarget: document.body)"),
+          $p(
+            { className: "card-desc" },
+            "Renders menu and submenu overlays into document.body to escape clipped parent containers:",
+          ),
+          $div(
+            {
+              style:
+                "overflow: hidden; border: 1px dashed hsla(217, 91%, 60%, 0.45); border-radius: 8px; padding: 0.75rem; max-width: 340px;",
+            },
+            [
+              DropdownMenu({
+                id: "portaled-dropdown-demo",
+                portalTarget: getDocument().body,
+                trigger: "Portaled Actions (inside overflow: hidden) ▾",
+                items: [
+                  {
+                    value: "layer-up",
+                    label: "Bring Forward",
+                    icon: "⬆️",
+                    onSelect: () => lastAction("Bring Forward"),
+                  },
+                  {
+                    value: "layer-down",
+                    label: "Send Backward",
+                    icon: "⬇️",
+                    onSelect: () => lastAction("Send Backward"),
+                  },
+                  {
+                    type: "sub",
+                    value: "boolean-ops",
+                    label: "Boolean Path Ops",
+                    items: [
+                      { value: "union", label: "Union", onSelect: () => lastAction("Boolean Union") },
+                      { value: "subtract", label: "Subtract", onSelect: () => lastAction("Boolean Subtract") },
+                      { value: "intersect", label: "Intersect", onSelect: () => lastAction("Boolean Intersect") },
+                    ],
+                  },
+                ],
+              }),
+            ],
+          ),
         ]),
       ]),
     ]),

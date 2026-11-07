@@ -4,7 +4,7 @@ import { wrapComponent } from "../component/wrap-component.js";
 import type { SeidrChild } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
 import type { DerivedValue, ObservableValue } from "../observable/types.js";
-import { mergeValues } from "../observable/value.js";
+import { mergeValues, untrack } from "../observable/value.js";
 
 /**
  * Type of branch map or record for Switch.
@@ -47,7 +47,7 @@ export const Switch = <K extends string | number, B extends SwitchBranches<K> = 
     }
 
     try {
-      return factory ? factory(undefined, key) : fallbackComp ? fallbackComp() : null;
+      return untrack(() => (factory ? factory(undefined, key) : fallbackComp ? fallbackComp() : null));
     } finally {
       setComponentScope(prevScope);
     }

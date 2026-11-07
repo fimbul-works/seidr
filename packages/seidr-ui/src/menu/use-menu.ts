@@ -317,6 +317,17 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
     },
     modal,
     forceMount,
+    portalTarget: options.portalTarget ?? parentMenu?.portalTarget,
+    containsNode: (target: Node): boolean => {
+      const trigger = triggerRef();
+      if (trigger && (trigger === target || trigger.contains(target))) return true;
+      const content = contentRef();
+      if (content && (content === target || content.contains(target))) return true;
+      for (const sub of submenus) {
+        if (sub.containsNode(target)) return true;
+      }
+      return false;
+    },
     loop,
     parentMenu,
     get rootMenu() {
@@ -342,26 +353,12 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
   useInteractOutside(contentRef, {
     isDisabled: isOutsideDisabled,
     onInteractOutside: (e) => {
-      const trigger = triggerRef();
-      const content = contentRef();
       const originalEv = e.detail?.originalEvent;
       const target = (originalEv?.target ?? e.target) as Node | null;
       if (!target) return;
 
-      // Ignore if clicking trigger
-      if (trigger && (trigger === target || trigger.contains(target))) {
+      if (result.containsNode(target)) {
         return;
-      }
-      // Ignore if clicking content
-      if (content && (content === target || content.contains(target))) {
-        return;
-      }
-      // Ignore if clicking inside any registered submenu content
-      for (const sub of submenus) {
-        const subContent = sub.contentRef();
-        if (subContent && (subContent === target || subContent.contains(target))) {
-          return;
-        }
       }
 
       closeMenu(true);

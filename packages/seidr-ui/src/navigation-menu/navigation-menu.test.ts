@@ -533,6 +533,35 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
         expect(navInstance.activeTrigger()).toBe("m1");
       });
 
+      it("supports portaling content into NavigationMenuViewport via Portal", () => {
+        let navInstance!: ReturnType<typeof createNavigationMenu>;
+
+        const root = setup(() => {
+          navInstance = createNavigationMenu({ id: "viewport-portal-nav" });
+          const m1 = navInstance.createMenu("m1");
+
+          return navInstance.Root({}, [
+            navInstance.List({}, [
+              navInstance.Menu({ value: "m1" }, [
+                m1.Trigger({}, "Products"),
+                m1.Portal({}, [
+                  m1.Content({}, [m1.Item({ value: "p1" }, "Product 1")]),
+                ]),
+              ]),
+            ]),
+            navInstance.Viewport(),
+          ]);
+        });
+
+        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const viewport = root.querySelector("[data-part='viewport']") as HTMLElement;
+        expect(viewport.querySelector("[data-part='content']")).toBeNull();
+
+        trigger.click();
+        expect(navInstance.isOpen()).toBe(true);
+        expect(viewport.querySelector("[data-part='content']")).not.toBeNull();
+      });
+
       it("has no accessibility violations (axe)", async () => {
         const root = setup(() =>
           NavigationMenu({

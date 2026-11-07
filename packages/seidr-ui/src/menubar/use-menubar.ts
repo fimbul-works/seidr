@@ -212,6 +212,7 @@ export function useMenubar(options: UseMenubarOptions = {}): UseMenubarResult {
       if (rootEl && rootEl.contains(target)) return true;
 
       for (const reg of registrations.values()) {
+        if (reg.containsTarget?.(target)) return true;
         const triggerEl = reg.getTriggerElement();
         if (triggerEl && triggerEl.contains(target)) return true;
         const contentEl = reg.getContentElement?.();
@@ -254,6 +255,7 @@ export function useMenubar(options: UseMenubarOptions = {}): UseMenubarResult {
     value: valueState,
     activeTrigger,
     orientation,
+    portalTarget: options.portalTarget,
     isOpen,
     openMenu,
     closeMenu,

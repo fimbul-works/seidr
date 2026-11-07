@@ -78,7 +78,7 @@ export const ToastShowcase = createComponent(() => {
   const showOrUpdatePersistentToast = () => {
     if (
       updatableToastId !== undefined &&
-      toaster.queue.toasts().some((t) => t.id === updatableToastId)
+      toaster.isActive(updatableToastId)
     ) {
       counter += 1;
       toaster.update(updatableToastId, ({ toastId, region }) =>

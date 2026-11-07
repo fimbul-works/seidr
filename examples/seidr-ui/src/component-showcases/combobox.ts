@@ -1,4 +1,4 @@
-import { createComponent, createValue } from "@fimbul-works/seidr";
+import { createComponent, createValue, getDocument } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Combobox, createCombobox } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
@@ -130,6 +130,35 @@ export const ComboboxShowcase = createComponent(() => {
             ]),
             customCb.HiddenSelect(),
           ]),
+        ]),
+
+        // 4. Portaled Dropdown (Escaping overflow: hidden)
+        $div({ className: "combobox-section-box" }, [
+          $h3({ className: "combobox-heading" }, "4. Portaled Content (portalTarget: document.body)"),
+          $div(
+            {
+              style: {
+                overflow: "hidden",
+                border: "1px dashed hsla(210, 100%, 60%, 0.45)",
+                borderRadius: "8px",
+                padding: "0.75rem",
+              },
+            },
+            [
+              Combobox({
+                label: "Inside overflow: hidden container",
+                placeholder: "Search shader uniforms...",
+                portalTarget: getDocument().body,
+                indicator: "✓",
+                options: [
+                  { value: "iResolution", label: "vec3 iResolution" },
+                  { value: "iTime", label: "float iTime" },
+                  { value: "iTimeDelta", label: "float iTimeDelta" },
+                  { value: "iMouse", label: "vec4 iMouse" },
+                ],
+              }),
+            ],
+          ),
         ]),
       ]),
     ]),

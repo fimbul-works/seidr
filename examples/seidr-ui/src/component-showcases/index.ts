@@ -10,6 +10,7 @@ import { ContextMenuShowcase } from "./context-menu.js";
 import { DropdownMenuShowcase } from "./dropdown-menu.js";
 import { FileFieldShowcase } from "./file-field.js";
 import { FormControlShowcase } from "./form-control.js";
+import { HoverCardShowcase } from "./hover-card.js";
 import { ImageShowcase } from "./image.js";
 import { ListboxShowcase } from "./listbox.js";
 import { MenuShowcase } from "./menu.js";
@@ -36,6 +37,7 @@ import { TimeFieldShowcase } from "./time-field.js";
 import { ToastShowcase } from "./toast.js";
 import { ToggleButtonShowcase } from "./toggle-button.js";
 import { ToggleGroupShowcase } from "./toggle-group.js";
+import { TooltipShowcase } from "./tooltip.js";
 
 export * from "./accordion.js";
 export * from "./alert.js";
@@ -48,6 +50,7 @@ export * from "./context-menu.js";
 export * from "./dropdown-menu.js";
 export * from "./file-field.js";
 export * from "./form-control.js";
+export * from "./hover-card.js";
 export * from "./image.js";
 export * from "./listbox.js";
 export * from "./menu.js";
@@ -74,6 +77,7 @@ export * from "./time-field.js";
 export * from "./toast.js";
 export * from "./toggle-button.js";
 export * from "./toggle-group.js";
+export * from "./tooltip.js";
 
 export interface ComponentShowcase {
   id: string;
@@ -95,6 +99,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "dropdown-menu", title: "DropdownMenu", badge: "Widget", category: "Widget", component: DropdownMenuShowcase },
   { id: "file-field", title: "FileField", badge: "Form", category: "Form", component: FileFieldShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
+  { id: "hover-card", title: "HoverCard", badge: "Widget", category: "Widget", component: HoverCardShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },
   { id: "menu", title: "Menu", badge: "Widget", category: "Widget", component: MenuShowcase },
@@ -127,4 +132,5 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "toast", title: "Toast", badge: "Widget", category: "Widget", component: ToastShowcase },
   { id: "toggle-button", title: "ToggleButton", badge: "Atom", category: "Atom", component: ToggleButtonShowcase },
   { id: "toggle-group", title: "ToggleGroup", badge: "Widget", category: "Widget", component: ToggleGroupShowcase },
+  { id: "tooltip", title: "Tooltip", badge: "Widget", category: "Widget", component: TooltipShowcase },
 ];

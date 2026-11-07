@@ -35,6 +35,7 @@ import type {
   MenuInstance,
   MenuLeafDescriptor,
   MenuListRenderOptions,
+  MenuPortalProps,
   MenuRadioGroupData,
   MenuRadioGroupInstance,
   MenuRadioGroupOptions,
@@ -82,6 +83,8 @@ export interface UseNavigationMenuOptions {
   orientation?: ReactiveValue<MenubarOrientation>;
   /** When true, keyboard navigation loops from last item to first and vice versa. Defaults to true. */
   loop?: boolean;
+  /** Optional target element to portal the navigation menu dropdowns into (e.g. `getDocument().body`). */
+  portalTarget?: HTMLElement;
 }
 
 export interface UseNavigationMenuResult {
@@ -95,6 +98,8 @@ export interface UseNavigationMenuResult {
   activeTrigger: Value<string | null>;
   /** Orientation of the navigation menu. */
   orientation: ObservableValue<MenubarOrientation>;
+  /** Optional target element to portal the navigation menu dropdowns into. */
+  portalTarget?: HTMLElement;
   /** Derived observable indicating whether any menu in the navigation menu is open. */
   isOpen: DerivedValue<boolean>;
   /** Delay in milliseconds before opening a menu on hover. */
@@ -125,6 +130,8 @@ export interface UseNavigationMenuResult {
   handleListKeyDown: (e: KeyboardEvent) => void;
   /** Ref to the root container element. */
   rootRef: Ref<HTMLElement>;
+  /** Ref to the shared viewport element (if rendered). */
+  viewportRef: Ref<HTMLElement>;
 }
 
 export interface NavigationMenuMenuInstance extends Omit<MenuInstance, "Trigger"> {
@@ -177,6 +184,9 @@ export interface NavigationMenuInstance extends UseNavigationMenuResult {
     props?: NavigationMenuTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
+
+  /** Portal helper for the active menu dropdown (defaults to `viewportRef() ?? getDocument().body`). */
+  Portal: (props?: NavigationMenuPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
 
   /** Menu floating dropdown content factory. */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -353,6 +363,7 @@ export type NavigationMenuViewportProps<T extends keyof SeidrElementTagNameMap =
 
 export type NavigationMenuContentOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuContentOptions<T>;
 export type NavigationMenuContentProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuContentProps<T>;
+export type NavigationMenuPortalProps = MenuPortalProps;
 
 export type NavigationMenuItemOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T>;
 export type NavigationMenuItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemProps<T>;

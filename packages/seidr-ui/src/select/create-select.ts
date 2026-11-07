@@ -2,11 +2,14 @@ import { isObj } from "@fimbul-works/hvat";
 import {
   $,
   type DerivedValue,
+  getDocument,
   List,
+  Portal,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementTagNameMap,
   SeidrError,
+  Show,
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
@@ -59,6 +62,7 @@ import type {
   SelectLabelProps,
   SelectListboxProps,
   SelectNode,
+  SelectPortalProps,
   SelectRootProps,
   SelectSectionData,
   SelectSectionLabelProps,
@@ -160,6 +164,16 @@ export function createSelect<Option = any, OptGroup = any>(
     props: Omit<SelectIconProps<T>, "instance"> = {} as Omit<SelectIconProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ) => SelectIcon({ instance, ...props } as SelectIconProps<T>, children);
+
+  const PortalHelper = (props: SelectPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const target = props.target ?? instance.portalTarget ?? getDocument().body;
+    instance.portalTarget = undefined;
+    const renderPortal = () => Portal(target, () => children ?? null, "SelectPortal");
+    if (instance.forceMount) {
+      return renderPortal();
+    }
+    return Show(instance.isOpen, renderPortal);
+  };
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<SelectContentProps<T>, "instance"> = {} as Omit<SelectContentProps<T>, "instance">,
@@ -375,6 +389,7 @@ export function createSelect<Option = any, OptGroup = any>(
     Trigger,
     Value,
     Icon,
+    Portal: PortalHelper,
     Content,
     Listbox,
     Item,

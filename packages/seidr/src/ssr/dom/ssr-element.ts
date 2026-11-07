@@ -233,14 +233,19 @@ export class SSRElement<
     if (selector.startsWith("#")) return this.id === selector.slice(1);
     if (selector.startsWith(".")) return this.classList.contains(selector.slice(1));
 
-    if (selector.startsWith("[") && selector.endsWith("]")) {
-      const content = selector.slice(1, -1);
-      if (content.includes("=")) {
-        const [n, v] = content.split("=");
-        const unquoted = v.replace(/^["']|["']$/g, "");
-        return String(this.getAttribute(n)) === unquoted;
+    if (selector.startsWith("[")) {
+      const attrMatches = selector.match(/\[[^\]]+\]/g);
+      if (attrMatches && attrMatches.join("") === selector) {
+        return attrMatches.every((attr) => {
+          const content = attr.slice(1, -1);
+          if (content.includes("=")) {
+            const [n, v] = content.split("=");
+            const unquoted = v.replace(/^["']|["']$/g, "");
+            return String(this.getAttribute(n)) === unquoted;
+          }
+          return this.hasAttribute(content);
+        });
       }
-      return this.hasAttribute(content);
     }
 
     return this.tagName.toLowerCase() === selector.toLowerCase();

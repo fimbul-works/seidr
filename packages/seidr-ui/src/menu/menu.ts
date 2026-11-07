@@ -28,6 +28,7 @@ export const Menu = createComponent(
       loop = true,
       closeOnSelect = true,
       parentMenu = null,
+      portalTarget,
       as = "div",
       trigger,
       items,
@@ -49,6 +50,7 @@ export const Menu = createComponent(
       loop,
       closeOnSelect,
       parentMenu,
+      portalTarget,
     };
 
     const menu = createMenu(options);

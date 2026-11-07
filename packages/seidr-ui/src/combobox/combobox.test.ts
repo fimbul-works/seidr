@@ -385,6 +385,45 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
     form.remove();
   });
 
+  it("supports portaling content via portalTarget", () => {
+    if (isSSR) return;
+
+    const portalHost = getDocument().createElement("div");
+    portalHost.id = "cb-portal-host";
+    getDocument().body.appendChild(portalHost);
+
+    try {
+      const onChange = vi.fn();
+      const root = setup(() =>
+        Combobox({
+          id: "portaled-cb",
+          portalTarget: portalHost,
+          onChange,
+          options: [
+            { value: "apple", label: "Apple" },
+            { value: "banana", label: "Banana" },
+          ],
+        }),
+      );
+
+      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
+      triggerEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+
+      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
+
+      const items = portalHost.querySelectorAll("[data-part='item']");
+      expect(items.length).toBe(2);
+
+      (items[0] as HTMLElement).click();
+      expect(onChange).toHaveBeenCalledWith("apple");
+      expect(portalHost.querySelector("[data-part='content']")).toBeNull();
+    } finally {
+      portalHost.remove();
+    }
+  });
+
   it("passes axe accessibility checks", async () => {
     if (isSSR) return;
 
