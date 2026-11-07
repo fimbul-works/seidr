@@ -33,6 +33,8 @@ export interface MenuItemData {
   description?: SeidrChild | SeidrChild[];
   /** Optional icon or leading element. */
   icon?: SeidrChild | SeidrChild[];
+  /** Optional trailing content or child elements. */
+  children?: SeidrChild | SeidrChild[];
   /** Whether this individual item is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Optional text representation for typeahead searches. */
@@ -65,6 +67,8 @@ export interface MenuCheckboxItemData {
   closeOnSelect?: boolean;
   /** Custom indicator element (e.g. checkmark). */
   indicator?: SeidrChild | SeidrChild[];
+  /** Optional trailing content or child elements. */
+  children?: SeidrChild | SeidrChild[];
   /** Callback fired when the item is activated. */
   onSelect?: () => void;
   /** Custom element props forwarded to the item element. */
@@ -82,6 +86,8 @@ export interface MenuRadioItemDescriptor {
   disabled?: boolean | ObservableValue<boolean>;
   /** Custom indicator element (e.g. dot or checkmark). */
   indicator?: SeidrChild | SeidrChild[];
+  /** Optional trailing content or child elements. */
+  children?: SeidrChild | SeidrChild[];
   /** Custom element props forwarded to the radio item element. */
   props?: Record<string, any>;
 }
@@ -295,6 +301,7 @@ export interface MenuItemOptions<T extends keyof SeidrElementTagNameMap = "div">
   textValue?: string;
   closeOnSelect?: boolean;
   onSelect?: () => void;
+  children?: SeidrChild | SeidrChild[];
   instance?: UseMenuResult;
 }
 export type MenuItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T> &
@@ -310,6 +317,7 @@ export interface MenuCheckboxItemOptions<T extends keyof SeidrElementTagNameMap 
   disabled?: boolean | ObservableValue<boolean>;
   closeOnSelect?: boolean;
   onSelect?: () => void;
+  children?: SeidrChild | SeidrChild[];
   instance?: UseMenuResult;
 }
 export type MenuCheckboxItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuCheckboxItemOptions<T> &
@@ -332,6 +340,7 @@ export interface MenuRadioItemOptions<T extends keyof SeidrElementTagNameMap = "
   disabled?: boolean | ObservableValue<boolean>;
   closeOnSelect?: boolean;
   onSelect?: () => void;
+  children?: SeidrChild | SeidrChild[];
   instance?: UseMenuResult;
   radioGroupInstance?: UseMenuRadioGroupResult;
 }
@@ -353,6 +362,7 @@ export interface MenuSubTriggerOptions<T extends keyof SeidrElementTagNameMap = 
   value?: string;
   disabled?: boolean | ObservableValue<boolean>;
   textValue?: string;
+  children?: SeidrChild | SeidrChild[];
   instance?: UseMenuResult;
   subInstance?: UseMenuResult;
 }

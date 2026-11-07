@@ -570,7 +570,9 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `portal`, `menu`, `popper`, `separator`.
 - **Complexity**: Low to Moderate (~418 LOC). Wraps `menu` with virtual anchor coordinates.
 - **Tasks**:
-  - [ ] Implement ContextMenu parts.
+  - [x] Implement ContextMenu parts by wrapping Menu with virtual anchor coordinates.
+  - [x] Implement Tier 1 All-in-One `ContextMenu` and Tier 2 `createContextMenu`.
+  - [x] Dual-mode unit tests (26 tests: 13 browser + 13 SSR) and showcase in `examples/seidr-ui`.
 
 ### 48. `menubar`
 
@@ -579,7 +581,9 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `portal`, `menu`, `popper`, `separator`.
 - **Complexity**: Moderate (~389 LOC). Coordinates top-level menu instances.
 - **Tasks**:
-  - [ ] Implement Menubar parts.
+  - [x] Implement Menubar parts (`MenubarRoot`, `MenubarTrigger`, `MenubarMenu`).
+  - [x] Implement Tier 1 All-in-One `Menubar` and Tier 2 `createMenubar`.
+  - [x] Dual-mode unit tests (22 tests: 11 browser + 11 SSR) and showcase in `examples/seidr-ui`.
 
 ### 49. `navigation-menu`
 
@@ -588,7 +592,9 @@ Non-standard specialized form components (excluding color pickers, which are def
 - **Dependencies**: `portal`, `dismissable-layer`, `menu`, `menubar`, `popper`, `separator`, `useTransition`.
 - **Complexity**: High (~1,498 LOC).
 - **Tasks**:
-  - [ ] Implement NavigationMenu parts.
+  - [x] Implement NavigationMenu parts (`NavigationMenuRoot`, `NavigationMenuList`, `NavigationMenuMenu`, `NavigationMenuTrigger`, `NavigationMenuLink`, `NavigationMenuViewport`).
+  - [x] Implement Tier 1 All-in-One `NavigationMenu` and Tier 2 `createNavigationMenu`.
+  - [x] Dual-mode unit tests (15 tests: 13 browser + 2 SSR) and showcase in `examples/seidr-ui`.
 
 ---
 

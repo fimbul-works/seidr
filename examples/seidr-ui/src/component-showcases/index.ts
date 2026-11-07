@@ -6,12 +6,15 @@ import { ButtonShowcase } from "./button.js";
 import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
 import { ComboboxShowcase } from "./combobox.js";
+import { ContextMenuShowcase } from "./context-menu.js";
 import { DropdownMenuShowcase } from "./dropdown-menu.js";
 import { FormControlShowcase } from "./form-control.js";
 import { ImageShowcase } from "./image.js";
 import { ListboxShowcase } from "./listbox.js";
 import { MenuShowcase } from "./menu.js";
+import { MenubarShowcase } from "./menubar.js";
 import { MeterShowcase } from "./meter.js";
+import { NavigationMenuShowcase } from "./navigation-menu.js";
 import { NumberFieldShowcase } from "./number-field.js";
 import { PaginationShowcase } from "./pagination.js";
 import { PopperShowcase } from "./popper.js";
@@ -37,12 +40,15 @@ export * from "./button.js";
 export * from "./checkbox.js";
 export * from "./collapsible.js";
 export * from "./combobox.js";
+export * from "./context-menu.js";
 export * from "./dropdown-menu.js";
 export * from "./form-control.js";
 export * from "./image.js";
 export * from "./listbox.js";
 export * from "./menu.js";
+export * from "./menubar.js";
 export * from "./meter.js";
+export * from "./navigation-menu.js";
 export * from "./number-field.js";
 export * from "./pagination.js";
 export * from "./popper.js";
@@ -77,12 +83,15 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "checkbox", title: "Checkbox", badge: "Form", category: "Form", component: CheckboxShowcase },
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },
   { id: "combobox", title: "Combobox", badge: "Form", category: "Form", component: ComboboxShowcase },
+  { id: "context-menu", title: "ContextMenu", badge: "Widget", category: "Widget", component: ContextMenuShowcase },
   { id: "dropdown-menu", title: "DropdownMenu", badge: "Widget", category: "Widget", component: DropdownMenuShowcase },
   { id: "form-control", title: "FormControl", badge: "Form", category: "Form", component: FormControlShowcase },
   { id: "image", title: "Image", badge: "Compound Atom", category: "Compound Atom", component: ImageShowcase },
   { id: "listbox", title: "Listbox", badge: "Widget", category: "Widget", component: ListboxShowcase },
   { id: "menu", title: "Menu", badge: "Widget", category: "Widget", component: MenuShowcase },
+  { id: "menubar", title: "Menubar", badge: "Widget", category: "Widget", component: MenubarShowcase },
   { id: "meter", title: "Meter", badge: "Widget", category: "Widget", component: MeterShowcase },
+  { id: "navigation-menu", title: "NavigationMenu", badge: "Widget", category: "Widget", component: NavigationMenuShowcase },
   { id: "number-field", title: "NumberField", badge: "Form", category: "Form", component: NumberFieldShowcase },
   { id: "pagination", title: "Pagination", badge: "Widget", category: "Widget", component: PaginationShowcase },
   { id: "popper", title: "Popper", badge: "Foundation", category: "Widget", component: PopperShowcase },

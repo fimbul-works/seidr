@@ -285,6 +285,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
         }
 
         if (descriptor.type === "checkbox") {
+          const { children: descChildren, ...descProps } = (descriptor.props ?? {}) as Record<string, any>;
           return CheckboxItem(
             {
               value: itemKey,
@@ -295,12 +296,14 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
               closeOnSelect: descriptor.closeOnSelect,
               onSelect: descriptor.onSelect,
               ...(itemProps ?? {}),
-              ...(descriptor.props ?? {}),
+              ...descProps,
             },
             [
               descriptor.indicator ? ItemIndicator({}, descriptor.indicator) : null,
               descriptor.label ?? itemKey,
               descriptor.description ? ItemDescription({}, descriptor.description) : null,
+              descriptor.children,
+              descChildren,
             ],
           );
         }
@@ -313,22 +316,25 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
             disabled: descriptor.disabled,
           });
 
-          const renderedRadioItems = descriptor.items.map((radio) =>
-            MenuRadioItem(
+          const renderedRadioItems = descriptor.items.map((radio) => {
+            const { children: radioDescChildren, ...radioDescProps } = (radio.props ?? {}) as Record<string, any>;
+            return MenuRadioItem(
               {
                 instance,
                 radioGroupInstance: radioGroupCoord,
                 value: radio.value,
                 disabled: radio.disabled,
-                ...(radio.props ?? {}),
+                ...radioDescProps,
               },
               [
                 radio.indicator ? ItemIndicator({}, radio.indicator) : null,
                 radio.label ?? radio.value,
                 radio.description ? ItemDescription({}, radio.description) : null,
+                radio.children,
+                radioDescChildren,
               ],
-            ),
-          );
+            );
+          });
 
           return MenuRadioGroup(
             {
@@ -353,6 +359,7 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
         }
 
         // Standard "item"
+        const { children: descChildren, ...descProps } = (descriptor.props ?? {}) as Record<string, any>;
         return Item(
           {
             value: itemKey,
@@ -361,12 +368,14 @@ export function createMenu(options: UseMenuOptions = {}): MenuInstance {
             onSelect: descriptor.onSelect,
             textValue: descriptor.textValue,
             ...(itemProps ?? {}),
-            ...(descriptor.props ?? {}),
+            ...descProps,
           },
           [
             descriptor.icon ? Icon({}, descriptor.icon) : null,
             descriptor.label ?? itemKey,
             descriptor.description ? ItemDescription({}, descriptor.description) : null,
+            descriptor.children,
+            descChildren,
           ],
         );
       },

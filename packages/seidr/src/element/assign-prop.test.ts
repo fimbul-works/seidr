@@ -50,6 +50,11 @@ describeDualMode("assignProp", ({ getDocument }) => {
 
       expect(ref()).toBeNull();
     });
+
+    it("should safely ignore children prop without attempting to assign to readonly Element.children", () => {
+      const el = getDocument().createElement("div");
+      expect(() => assignProp(el, "children", ["child1", "child2"])).not.toThrow();
+    });
   });
 
   describe("Property & Attribute Name Transformations", () => {

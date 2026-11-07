@@ -1,4 +1,4 @@
-import { isNullish } from "@fimbul-works/hvat";
+import { isNullish, isObj } from "@fimbul-works/hvat";
 import { isValidSeidrChild } from "../element/type-guards.js";
 import type { SeidrChild } from "../element/types.js";
 
@@ -41,6 +41,22 @@ export function resolvePropsAndChildren<P extends object = Record<string, any>>(
 
   if (defaultProps) {
     props = { ...defaultProps, ...props };
+  }
+
+  if (isObj(props) && "children" in props) {
+    const { children: propsChildren, ...restProps } = props as Record<string, any>;
+    props = restProps as P;
+    if (resolvedChildren === undefined) {
+      resolvedChildren = propsChildren;
+    } else if (propsChildren !== undefined) {
+      const arr = Array.isArray(resolvedChildren) ? [...resolvedChildren] : [resolvedChildren];
+      if (Array.isArray(propsChildren)) {
+        arr.push(...propsChildren);
+      } else {
+        arr.push(propsChildren);
+      }
+      resolvedChildren = arr;
+    }
   }
 
   return [props, resolvedChildren];

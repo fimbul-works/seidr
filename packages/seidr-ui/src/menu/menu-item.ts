@@ -31,6 +31,7 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
     ref: userRef,
     onclick: userOnClick,
     onpointermove: userOnPointerMove,
+    children: propsChildren,
     ...rest
   } = props;
 
@@ -88,6 +89,16 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
     }
   };
 
+  const resolvedChildren: (SeidrChild | undefined)[] = [];
+  if (children) {
+    if (Array.isArray(children)) resolvedChildren.push(...children);
+    else resolvedChildren.push(children);
+  }
+  if (propsChildren) {
+    if (Array.isArray(propsChildren)) resolvedChildren.push(...propsChildren);
+    else resolvedChildren.push(propsChildren);
+  }
+
   return $(
     as,
     {
@@ -104,7 +115,7 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
       onpointermove: handlePointerMove,
       ...rest,
     } as SeidrElementProps<T>,
-    children,
+    resolvedChildren,
   );
 }
 

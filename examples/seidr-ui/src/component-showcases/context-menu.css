@@ -1,0 +1,266 @@
+.context-menu-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+}
+
+.context-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.context-menu-section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--fg, #f3f4f6);
+  margin-bottom: 0.25rem;
+}
+
+.context-menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+ * Semantic CSS Styles: ContextMenu Component
+ * Target via [data-component="context-menu"] and [data-part="..."]
+ * --------------------------------------------------------------------------- */
+
+/* Trigger Target Area */
+[data-component="context-menu"][data-part="trigger"] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem 1.5rem;
+  min-height: 160px;
+  border-radius: 8px;
+  border: 2px dashed hsl(222, 16%, 30%);
+  background-color: hsla(222, 24%, 13%, 0.5);
+  color: hsl(220, 20%, 90%);
+  font-size: 0.925rem;
+  cursor: context-menu;
+  transition: all 0.2s ease;
+  user-select: none;
+  text-align: center;
+}
+
+[data-component="context-menu"][data-part="trigger"]:hover {
+  border-color: hsl(217, 91%, 60%);
+  background-color: hsla(222, 24%, 16%, 0.7);
+}
+
+[data-component="context-menu"][data-part="trigger"][data-state="open"] {
+  border-color: hsl(217, 91%, 60%);
+  background-color: hsla(217, 91%, 60%, 0.1);
+  box-shadow: 0 0 0 2px hsla(217, 91%, 60%, 0.2);
+}
+
+[data-component="context-menu"][data-part="trigger"][data-disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-style: solid;
+}
+
+.context-menu-target-hint {
+  font-size: 0.775rem;
+  color: hsl(220, 10%, 65%);
+}
+
+/* Floating content dropdown */
+[data-component="context-menu"][data-part="content"],
+[data-component="context-menu"][data-part="sub-content"] {
+  z-index: 50;
+  min-width: 14rem;
+  padding: 0.35rem;
+  border-radius: 8px;
+  background-color: hsl(222, 24%, 13%);
+  color: hsl(220, 20%, 94%);
+  border: 1px solid hsl(222, 16%, 26%);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  outline: none;
+  animation: contextMenuFadeIn 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes contextMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Menu Items */
+[data-component="context-menu"][data-part="item"],
+[data-component="context-menu"][data-part="checkbox-item"],
+[data-component="context-menu"][data-part="radio-item"],
+[data-component="context-menu"][data-part="sub-trigger"] {
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: 0.625rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.85rem;
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  color: hsl(220, 20%, 90%);
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+[data-component="context-menu"][data-part="item"]:hover,
+[data-component="context-menu"][data-part="item"][data-highlighted],
+[data-component="context-menu"][data-part="checkbox-item"]:hover,
+[data-component="context-menu"][data-part="checkbox-item"][data-highlighted],
+[data-component="context-menu"][data-part="radio-item"]:hover,
+[data-component="context-menu"][data-part="radio-item"][data-highlighted],
+[data-component="context-menu"][data-part="sub-trigger"]:hover,
+[data-component="context-menu"][data-part="sub-trigger"][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+[data-component="context-menu"][data-part="checkbox-item"][data-checked],
+[data-component="context-menu"][data-part="radio-item"][data-checked] {
+  background-color: hsla(217, 91%, 60%, 0.2);
+  color: hsl(217, 91%, 70%);
+}
+
+[data-component="context-menu"][data-part="checkbox-item"][data-checked]:hover,
+[data-component="context-menu"][data-part="checkbox-item"][data-checked][data-highlighted],
+[data-component="context-menu"][data-part="radio-item"][data-checked]:hover,
+[data-component="context-menu"][data-part="radio-item"][data-checked][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+[data-component="context-menu"][data-part="item"][data-disabled],
+[data-component="context-menu"][data-part="checkbox-item"][data-disabled],
+[data-component="context-menu"][data-part="radio-item"][data-disabled],
+[data-component="context-menu"][data-part="sub-trigger"][data-disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Item parts */
+[data-component="context-menu"][data-part="icon"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.95rem;
+}
+
+[data-component="context-menu"][data-part="item-label"],
+[data-component="context-menu"][data-part="group-label"] {
+  flex: 1;
+  font-weight: 500;
+}
+
+[data-component="context-menu"][data-part="item-description"] {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+[data-component="context-menu"][data-part="item-indicator"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.context-menu-shortcut {
+  margin-left: auto;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
+}
+
+/* Group & Separator */
+[data-component="context-menu"][data-part="group-label"] {
+  padding: 0.35rem 0.65rem 0.2rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(220, 10%, 60%);
+}
+
+[data-component="context-menu"][data-part="separator"] {
+  height: 1px;
+  background-color: hsl(222, 16%, 24%);
+  margin: 0.35rem 0;
+  border: none;
+}
+
+/* Light Theme Overrides */
+:root[data-theme="light"] [data-component="context-menu"][data-part="trigger"] {
+  background-color: hsl(210, 20%, 98%);
+  border-color: hsl(215, 20%, 82%);
+  color: hsl(220, 24%, 16%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="trigger"]:hover {
+  background-color: hsl(210, 25%, 94%);
+  border-color: hsl(217, 91%, 60%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="trigger"][data-state="open"] {
+  background-color: hsla(217, 91%, 60%, 0.08);
+  border-color: hsl(217, 91%, 60%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="content"],
+:root[data-theme="light"] [data-component="context-menu"][data-part="sub-content"] {
+  background-color: #ffffff;
+  color: hsl(222, 24%, 13%);
+  border-color: hsl(215, 20%, 85%);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="item"],
+:root[data-theme="light"] [data-component="context-menu"][data-part="checkbox-item"],
+:root[data-theme="light"] [data-component="context-menu"][data-part="radio-item"],
+:root[data-theme="light"] [data-component="context-menu"][data-part="sub-trigger"] {
+  color: hsl(222, 24%, 18%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="item"]:hover,
+:root[data-theme="light"] [data-component="context-menu"][data-part="item"][data-highlighted],
+:root[data-theme="light"] [data-component="context-menu"][data-part="checkbox-item"]:hover,
+:root[data-theme="light"] [data-component="context-menu"][data-part="checkbox-item"][data-highlighted],
+:root[data-theme="light"] [data-component="context-menu"][data-part="radio-item"]:hover,
+:root[data-theme="light"] [data-component="context-menu"][data-part="radio-item"][data-highlighted],
+:root[data-theme="light"] [data-component="context-menu"][data-part="sub-trigger"]:hover,
+:root[data-theme="light"] [data-component="context-menu"][data-part="sub-trigger"][data-highlighted] {
+  background-color: hsl(217, 91%, 60%);
+  color: #ffffff;
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="checkbox-item"][data-checked],
+:root[data-theme="light"] [data-component="context-menu"][data-part="radio-item"][data-checked] {
+  background-color: hsla(217, 91%, 60%, 0.12);
+  color: hsl(217, 91%, 50%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="separator"] {
+  background-color: hsl(215, 20%, 90%);
+}
+
+:root[data-theme="light"] [data-component="context-menu"][data-part="group-label"] {
+  color: hsl(220, 10%, 45%);
+}
+

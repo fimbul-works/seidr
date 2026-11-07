@@ -30,6 +30,7 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
     ref: userRef,
     onclick: userOnClick,
     onpointermove: userOnPointerMove,
+    children: propsChildren,
     ...rest
   } = props;
 
@@ -110,7 +111,7 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
       onpointermove: handlePointerMove,
       ...rest,
     } as SeidrElementProps<T>,
-    children,
+    [children, propsChildren],
   );
 }
 

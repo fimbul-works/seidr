@@ -42,6 +42,11 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
     return;
   }
 
+  // Children are appended as DOM nodes, not assigned as element properties (Element.children is readonly)
+  if (prop === "children") {
+    return;
+  }
+
   let effectiveProp: PropName<any> = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);
 
@@ -112,7 +117,11 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
     }
 
     if (!(useAttribute || !(effectiveProp in target))) {
-      target[effectiveProp as keyof SeidrElementTagNameMap[K]] = val;
+      try {
+        target[effectiveProp as keyof SeidrElementTagNameMap[K]] = val;
+      } catch {
+        target.setAttribute(effectiveProp, isBoolProp ? "" : String(val));
+      }
     }
   };
 

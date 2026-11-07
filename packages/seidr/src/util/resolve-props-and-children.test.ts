@@ -104,4 +104,17 @@ describe("resolvePropsAndChildren", () => {
     expect(props3).toEqual({ as: "div" });
     expect(children3).toBe("Text");
   });
+
+  it("extracts children from props object and avoids children property leaking into props", () => {
+    const [props1, children1] = resolvePropsAndChildren({ id: "my-id", children: "Hello from props" });
+    expect(props1).toEqual({ id: "my-id" });
+    expect(children1).toBe("Hello from props");
+
+    const [props2, children2] = resolvePropsAndChildren(
+      { id: "my-id", children: ["from props"] },
+      "from argument",
+    );
+    expect(props2).toEqual({ id: "my-id" });
+    expect(children2).toEqual(["from argument", "from props"]);
+  });
 });
