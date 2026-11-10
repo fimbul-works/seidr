@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_GROUP_LABEL } from "../constants.js";
 import type { MenuGroupLabelProps } from "./types.js";
 
 /**
@@ -24,10 +25,9 @@ export function MenuGroupLabel<T extends keyof SeidrElementTagNameMap = "span">(
     as,
     {
       dataComponent,
-      dataPart: "group-label",
+      dataPart: DATA_PART_GROUP_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

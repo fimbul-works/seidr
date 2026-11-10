@@ -13,10 +13,11 @@ import {
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
-import { FormControlDescription } from "../form-control/form-control-description.js";
+import { DATA_COMPONENT_COMBOBOX } from "../constants.js";
 import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
-import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
+import { FormControlDescription } from "../form-control/form-control-description.js";
 import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
+import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
 import { ListboxItem } from "../listbox/listbox-item.js";
 import { ListboxItemDescription } from "../listbox/listbox-item-description.js";
 import { ListboxItemIndicator } from "../listbox/listbox-item-indicator.js";
@@ -88,7 +89,10 @@ export function createCombobox<Option = any, OptGroup = any>(
     const itemResult = useListboxItem(instance.listbox, itemOptions);
 
     const Root = <T extends keyof SeidrElementTagNameMap = "li">(
-      itemProps: Omit<ComboboxItemProps<T>, "instance" | "value"> = {} as Omit<ComboboxItemProps<T>, "instance" | "value">,
+      itemProps: Omit<ComboboxItemProps<T>, "instance" | "value"> = {} as Omit<
+        ComboboxItemProps<T>,
+        "instance" | "value"
+      >,
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItem(
@@ -96,7 +100,7 @@ export function createCombobox<Option = any, OptGroup = any>(
           instance: itemResult,
           listbox: instance.listbox,
           value: itemOptions.value,
-          dataComponent: "combobox",
+          dataComponent: DATA_COMPONENT_COMBOBOX,
           id: `${instance.id}-item-${itemOptions.value}`,
           ...itemProps,
         } as ListboxItemProps<T>,
@@ -110,20 +114,23 @@ export function createCombobox<Option = any, OptGroup = any>(
       ListboxItemLabel(
         {
           instance: itemResult,
-          dataComponent: "combobox",
+          dataComponent: DATA_COMPONENT_COMBOBOX,
           ...labelProps,
         } as ListboxItemLabelProps<T>,
         children,
       );
 
     const Description = <T extends keyof SeidrElementTagNameMap = "div">(
-      descProps: Omit<ComboboxItemDescriptionProps<T>, "instance"> = {} as Omit<ComboboxItemDescriptionProps<T>, "instance">,
+      descProps: Omit<ComboboxItemDescriptionProps<T>, "instance"> = {} as Omit<
+        ComboboxItemDescriptionProps<T>,
+        "instance"
+      >,
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItemDescription(
         {
           instance: itemResult,
-          dataComponent: "combobox",
+          dataComponent: DATA_COMPONENT_COMBOBOX,
           ...descProps,
         } as ListboxItemDescriptionProps<T>,
         children,
@@ -136,7 +143,7 @@ export function createCombobox<Option = any, OptGroup = any>(
       ListboxItemIndicator(
         {
           instance: itemResult,
-          dataComponent: "combobox",
+          dataComponent: DATA_COMPONENT_COMBOBOX,
           ...indProps,
         } as ListboxItemIndicatorProps<T>,
         children,
@@ -158,31 +165,31 @@ export function createCombobox<Option = any, OptGroup = any>(
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxRootProps<T> = {} as ComboboxRootProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxRoot({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxRoot({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "label">(
     props: ComboboxLabelProps<T> = {} as ComboboxLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxLabel({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxLabel({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Control = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxControlProps<T> = {} as ComboboxControlProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxControl({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxControl({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Input = <T extends keyof SeidrElementTagNameMap = "input">(
     props: ComboboxInputProps<T> = {} as ComboboxInputProps<T>,
-  ) => ComboboxInput({ instance, dataComponent: "combobox", ...props });
+  ) => ComboboxInput({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props });
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: ComboboxTriggerProps<T> = {} as ComboboxTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxTrigger({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxTrigger({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props: ComboboxIconProps<T> = {} as ComboboxIconProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxIcon({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxIcon({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const PortalHelper = (props: ComboboxPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
     const target = props.target ?? instance.portalTarget ?? getDocument().body;
@@ -197,12 +204,12 @@ export function createCombobox<Option = any, OptGroup = any>(
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxContentProps<T> = {} as ComboboxContentProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxContent({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxContent({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Listbox = <T extends keyof SeidrElementTagNameMap = "ul">(
     props: ComboboxListboxProps<T> = {} as ComboboxListboxProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxListbox({ instance, dataComponent: "combobox", ...props }, children);
+  ) => ComboboxListbox({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props }, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "li">(
     props: ComboboxItemProps<T>,
@@ -211,7 +218,7 @@ export function createCombobox<Option = any, OptGroup = any>(
     ListboxItem(
       {
         listbox: instance.listbox,
-        dataComponent: "combobox",
+        dataComponent: DATA_COMPONENT_COMBOBOX,
         id: `${instance.id}-item-${props.value}`,
         ...props,
       },
@@ -226,7 +233,10 @@ export function createCombobox<Option = any, OptGroup = any>(
     if (!itemInst) {
       throw new SeidrError("ComboboxItemLabel requires an item instance");
     }
-    return ListboxItemLabel({ instance: itemInst, dataComponent: "combobox", ...props } as ListboxItemLabelProps<T>, children);
+    return ListboxItemLabel(
+      { instance: itemInst, dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxItemLabelProps<T>,
+      children,
+    );
   };
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -238,7 +248,7 @@ export function createCombobox<Option = any, OptGroup = any>(
       throw new SeidrError("ComboboxItemDescription requires an item instance");
     }
     return ListboxItemDescription(
-      { instance: itemInst, dataComponent: "combobox", ...props } as ListboxItemDescriptionProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxItemDescriptionProps<T>,
       children,
     );
   };
@@ -252,7 +262,7 @@ export function createCombobox<Option = any, OptGroup = any>(
       throw new SeidrError("ComboboxItemIndicator requires an item instance");
     }
     return ListboxItemIndicator(
-      { instance: itemInst, dataComponent: "combobox", ...props } as ListboxItemIndicatorProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxItemIndicatorProps<T>,
       children,
     );
   };
@@ -261,21 +271,21 @@ export function createCombobox<Option = any, OptGroup = any>(
     props: ComboboxSectionProps<T> = {} as ComboboxSectionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSection<T>({ dataComponent: "combobox", ...props } as ListboxSectionProps<T>, children);
+    ListboxSection<T>({ dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxSectionProps<T>, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: ComboboxSectionLabelProps<T> = {} as ComboboxSectionLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSectionLabel<T>({ dataComponent: "combobox", ...props } as ListboxSectionLabelProps<T>, children);
+    ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxSectionLabelProps<T>, children);
 
   const HiddenSelect = (props: ComboboxHiddenSelectProps = {}) =>
-    ComboboxHiddenSelect({ instance, dataComponent: "combobox", ...props });
+    ComboboxHiddenSelect({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props });
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxArrowProps<T> = {} as ComboboxArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: "combobox", ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxDescriptionProps<T> = {} as ComboboxDescriptionProps<T>,
@@ -284,7 +294,7 @@ export function createCombobox<Option = any, OptGroup = any>(
     FormControlDescription<T>(
       {
         id: instance.descriptionId,
-        dataComponent: "combobox",
+        dataComponent: DATA_COMPONENT_COMBOBOX,
         ...props,
       } as FormControlDescriptionProps<T>,
       children,
@@ -297,7 +307,7 @@ export function createCombobox<Option = any, OptGroup = any>(
     FormControlErrorMessage<T>(
       {
         id: instance.errorMessageId,
-        dataComponent: "combobox",
+        dataComponent: DATA_COMPONENT_COMBOBOX,
         ...props,
       } as FormControlErrorMessageProps<T>,
       children,
@@ -327,7 +337,10 @@ export function createCombobox<Option = any, OptGroup = any>(
       const secKey = sectionVal().key;
       const sectionItems = sectionVal.as((s) => s.items ?? []) as Value<ComboboxItemData[]>;
       return Section({ id: secKey }, [
-        SectionLabel({}, sectionVal.as((s) => s.label)),
+        SectionLabel(
+          {},
+          sectionVal.as((s) => s.label),
+        ),
         $("ul", { role: "group" }, [
           List<ComboboxItemData, string>(
             sectionItems,
@@ -359,7 +372,8 @@ export function createCombobox<Option = any, OptGroup = any>(
       },
       (nodeVal, nodeKey) => {
         const initialNode = nodeVal();
-        const isSec = isObj(initialNode) && "items" in initialNode && Array.isArray((initialNode as ComboboxSectionData).items);
+        const isSec =
+          isObj(initialNode) && "items" in initialNode && Array.isArray((initialNode as ComboboxSectionData).items);
 
         if (isSec) {
           const secVal = nodeVal as unknown as Value<ComboboxSectionData>;

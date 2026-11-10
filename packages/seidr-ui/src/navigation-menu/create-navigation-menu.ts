@@ -7,7 +7,10 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
   Show,
+  wrapValue,
 } from "@fimbul-works/seidr";
+import type { Placement } from "@floating-ui/dom";
+import { DATA_COMPONENT_NAVIGATION_MENU } from "../constants.js";
 import { createMenu as createMenuCore } from "../menu/create-menu.js";
 import { MenuArrow } from "../menu/menu-arrow.js";
 import { MenuCheckboxItem } from "../menu/menu-checkbox-item.js";
@@ -71,10 +74,8 @@ import { useNavigationMenu } from "./use-navigation-menu.js";
  * Creates a headless coordinator for a NavigationMenu system (Tier 2).
  * Returns pre-bound element helpers and reactive navigation state.
  */
-export function createNavigationMenu(
-  options: UseNavigationMenuOptions = {},
-): NavigationMenuInstance {
-  const { dataComponent = "navigation-menu", ...navOptions } = options;
+export function createNavigationMenu(options: UseNavigationMenuOptions = {}): NavigationMenuInstance {
+  const { dataComponent = DATA_COMPONENT_NAVIGATION_MENU, ...navOptions } = options;
   const navMenu = useNavigationMenu({ dataComponent, ...navOptions });
 
   const createdMenus = new Map<string, NavigationMenuMenuInstance>();
@@ -93,7 +94,9 @@ export function createNavigationMenu(
       modal: false,
       placement:
         menuOptions?.placement ??
-        (navMenu.orientation() === "horizontal" ? "bottom-start" : "right-start"),
+        navMenu.orientation.as<Placement>((orientation) =>
+          orientation === "horizontal" ? "bottom-start" : "right-start",
+        ),
       open: isThisMenuOpen,
       onOpenChange: (open) => {
         if (open) {
@@ -113,9 +116,7 @@ export function createNavigationMenu(
         underlyingMenu.open();
         if (autoFocusFirst) {
           setTimeout(() => {
-            underlyingMenu.highlightItem(
-              underlyingMenu.highlightedValue() ?? "first",
-            );
+            underlyingMenu.highlightItem(underlyingMenu.highlightedValue() ?? "first");
           }, 0);
         }
       },
@@ -232,19 +233,13 @@ export function createNavigationMenu(
     props?: NavigationMenuRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    NavigationMenuRoot<T>(
-      { dataComponent, instance: navMenu, ...props } as NavigationMenuRootProps<T>,
-      children,
-    );
+    NavigationMenuRoot<T>({ dataComponent, instance: navMenu, ...props } as NavigationMenuRootProps<T>, children);
 
   const List = <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: NavigationMenuListProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    NavigationMenuList<T>(
-      { dataComponent, instance: navMenu, ...props } as NavigationMenuListProps<T>,
-      children,
-    );
+    NavigationMenuList<T>({ dataComponent, instance: navMenu, ...props } as NavigationMenuListProps<T>, children);
 
   const Menu = <T extends keyof SeidrElementTagNameMap = "li">(
     props: NavigationMenuMenuProps<T>,
@@ -271,7 +266,7 @@ export function createNavigationMenu(
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = props?.menuValue
-      ? createdMenus.get(props.menuValue) ?? createMenu(props.menuValue)
+      ? (createdMenus.get(props.menuValue) ?? createMenu(props.menuValue))
       : activeCreatedMenu;
 
     if (!targetMenu) {
@@ -419,10 +414,7 @@ export function createNavigationMenu(
     props?: MenuGroupProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
-    return MenuGroup<T>(
-      { dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>,
-      children,
-    );
+    return MenuGroup<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>, children);
   };
 
   const GroupLabel = <T extends keyof SeidrElementTagNameMap = "span">(
@@ -485,10 +477,7 @@ export function createNavigationMenu(
     props?: MenuIconProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
-    return MenuIcon<T>(
-      { dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>,
-      children,
-    );
+    return MenuIcon<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>, children);
   };
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -501,18 +490,14 @@ export function createNavigationMenu(
     } as MenuArrowProps<T>);
   };
 
-  const createRadioGroup = (
-    radioOptions?: UseMenuRadioGroupOptions,
-  ): MenuRadioGroupInstance => {
+  const createRadioGroup = (radioOptions?: UseMenuRadioGroupOptions): MenuRadioGroupInstance => {
     if (!activeCreatedMenu) {
       throw new SeidrError("createRadioGroup requires an active NavigationMenuMenu context");
     }
     return activeCreatedMenu.createRadioGroup(radioOptions);
   };
 
-  const createSub = (
-    subOptions?: Omit<UseMenuOptions, "parentMenu">,
-  ): MenuInstance => {
+  const createSub = (subOptions?: Omit<UseMenuOptions, "parentMenu">): MenuInstance => {
     if (!activeCreatedMenu) {
       throw new SeidrError("createSub requires an active NavigationMenuMenu context");
     }
@@ -549,4 +534,3 @@ export function createNavigationMenu(
     Arrow,
   };
 }
-

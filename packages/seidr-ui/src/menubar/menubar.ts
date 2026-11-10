@@ -1,10 +1,5 @@
-import {
-  createComponent,
-  List,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createComponent, List, type SeidrChild, type SeidrElementTagNameMap, wrapValue } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR } from "../constants.js";
 import { createMenubar } from "./create-menubar.js";
 import type { MenubarMenuDescriptor, MenubarProps, MenubarRootProps } from "./types.js";
 
@@ -20,7 +15,7 @@ export const Menubar = createComponent(
     const {
       as = "div" as T,
       id,
-      dataComponent = "menubar",
+      dataComponent = DATA_COMPONENT_MENUBAR,
       value,
       defaultValue,
       onValueChange,
@@ -70,13 +65,10 @@ export const Menubar = createComponent(
                   },
                   descriptor.trigger,
                 ),
-                menuInst.Content(
-                  descriptor.contentProps,
-                  [
-                    descriptor.items ? menuInst.List(descriptor.items) : null,
-                    descriptor.children,
-                  ],
-                ),
+                menuInst.Content(descriptor.contentProps, [
+                  descriptor.items ? menuInst.List(descriptor.items) : null,
+                  descriptor.children,
+                ]),
               ],
             );
           },

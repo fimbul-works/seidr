@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_NAME } from "../constants.js";
 import type { FileFieldItemNameProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function FileFieldItemName<T extends keyof SeidrElementTagNameMap = "span
     as = "span" as T,
     file,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     children: propsChildren,
     ...rest
   } = props;
@@ -46,10 +47,9 @@ export function FileFieldItemName<T extends keyof SeidrElementTagNameMap = "span
     as,
     {
       dataComponent,
-      dataPart: "item-name",
+      dataPart: DATA_PART_ITEM_NAME,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

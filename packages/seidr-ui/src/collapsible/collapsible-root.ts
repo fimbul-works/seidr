@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COLLAPSIBLE, DATA_PART_ROOT } from "../constants.js";
 import type { UseCollapsibleResult } from "./types.js";
 import { type UseCollapsibleOptions, useCollapsible } from "./use-collapsible.js";
 
@@ -41,8 +42,8 @@ export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       id: col.id,
-      dataComponent: "collapsible",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_COLLAPSIBLE,
+      dataPart: DATA_PART_ROOT,
       ...col.dataset,
       ...rest,
     } as SeidrElementProps<T>,

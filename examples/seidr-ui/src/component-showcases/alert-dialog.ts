@@ -42,7 +42,7 @@ export const AlertDialogShowcase = createComponent(() => {
                     className: "alert-dialog-btn-cancel",
                     onclick: (e) => {
                       // Close using closest or data attribute
-                      const closeBtn = document.querySelector("#delete-repo-alert [data-part='close-button']") as HTMLButtonElement;
+                      const closeBtn = document.querySelector("#delete-repo-alert-content [data-part='CloseButton']") as HTMLButtonElement;
                       closeBtn?.click();
                     },
                   },
@@ -54,7 +54,7 @@ export const AlertDialogShowcase = createComponent(() => {
                     className: "alert-dialog-btn-confirm",
                     onclick: () => {
                       alert("Repository deletion confirmed!");
-                      const closeBtn = document.querySelector("#delete-repo-alert [data-part='close-button']") as HTMLButtonElement;
+                      const closeBtn = document.querySelector("#delete-repo-alert-content [data-part='CloseButton']") as HTMLButtonElement;
                       closeBtn?.click();
                     },
                   },

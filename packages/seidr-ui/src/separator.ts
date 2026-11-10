@@ -6,6 +6,7 @@ import {
   type SeidrElementProps,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEPARATOR } from "./constants.js";
 
 export type Orientation = "horizontal" | "vertical";
 
@@ -53,7 +54,7 @@ export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
       role: role ?? (as !== "hr" ? "separator" : undefined),
       ariaOrientation: orientation === "vertical" ? "vertical" : undefined,
       dataOrientation: orientation,
-      dataComponent: "separator",
+      dataComponent: DATA_COMPONENT_SEPARATOR,
       ...rest,
     } as SeidrElementProps<T>,
     content,

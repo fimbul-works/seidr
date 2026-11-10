@@ -9,6 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_INDICATOR } from "../constants.js";
 import type { UseSegmentedControlResult } from "./types.js";
 
 export interface SegmentedControlIndicatorOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -109,8 +110,8 @@ export function SegmentedControlIndicator<T extends keyof SeidrElementTagNameMap
       dataOrientation: sc.orientation,
       dataResizing: isResizing.as((r) => (r ? "" : undefined)),
       dataState: isActive.as((a) => (a ? "active" : "inactive")),
-      dataComponent: "segmented-control",
-      dataPart: "indicator",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_INDICATOR,
       style: mergeStyleProps(baseStyle, userStyle),
       ...rest,
     } as SeidrElementProps<T>,

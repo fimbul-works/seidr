@@ -10,6 +10,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TABS, DATA_PART_CONTENT } from "../constants.js";
 import type { TabsContentProps } from "./types.js";
 
 /**
@@ -54,8 +55,8 @@ export function TabsContent<T extends keyof SeidrElementTagNameMap = "div">(
         dataOrientation: tabs.orientation,
         dataSelected: isSelected.as((s) => (s ? "" : undefined)),
         hidden,
-        dataComponent: "tabs",
-        dataPart: "content",
+        dataComponent: DATA_COMPONENT_TABS,
+        dataPart: DATA_PART_CONTENT,
         ...rest,
       } as SeidrElementProps<T>,
       children,

@@ -7,6 +7,8 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
+export const DATA_COMPONENT_BADGE = "Badge"
+
 export interface BadgeOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   /**
    * The HTML element tag name to render.
@@ -50,11 +52,11 @@ export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   const resolvedAriaLabel = ariaLabel ?? textValue;
 
   return $(
-    as as T,
+    as,
     {
       role,
       ariaLabel: resolvedAriaLabel,
-      dataComponent: "badge",
+      dataComponent: DATA_COMPONENT_BADGE,
       ...rest,
     } as SeidrElementProps<T>,
     content,

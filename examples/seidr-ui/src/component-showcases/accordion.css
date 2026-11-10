@@ -26,7 +26,7 @@
 }
 
 /* Accordion Root */
-[data-component="accordion"][data-part="root"] {
+[data-component="Accordion"][data-part="Root"] {
   border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
   border-radius: 0.5rem;
   overflow: hidden;
@@ -34,23 +34,23 @@
 }
 
 /* Accordion Item */
-[data-component="accordion"][data-part="item"] {
+[data-component="Accordion"][data-part="Item"] {
   border-bottom: 1px solid var(--border, rgba(255, 255, 255, 0.06));
 }
 
-[data-component="accordion"][data-part="item"]:last-child {
+[data-component="Accordion"][data-part="Item"]:last-child {
   border-bottom: none;
 }
 
 /* Accordion Header */
-[data-component="accordion"][data-part="header"] {
+[data-component="Accordion"][data-part="Header"] {
   margin: 0;
   padding: 0;
   display: flex;
 }
 
 /* Accordion Trigger Button */
-[data-component="accordion"][data-part="trigger"] {
+[data-component="Accordion"][data-part="Trigger"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -67,17 +67,17 @@
   transition: background-color 0.15s ease;
 }
 
-[data-component="accordion"][data-part="trigger"]:hover:not([disabled]) {
+[data-component="Accordion"][data-part="Trigger"]:hover:not([disabled]) {
   background: var(--bg-hover, rgba(255, 255, 255, 0.05));
 }
 
-[data-component="accordion"][data-part="trigger"]:focus-visible {
+[data-component="Accordion"][data-part="Trigger"]:focus-visible {
   outline: 2px solid var(--primary, #3b82f6);
   outline-offset: -2px;
 }
 
-[data-component="accordion"][data-part="trigger"][disabled],
-[data-component="accordion"][data-part="trigger"][data-disabled] {
+[data-component="Accordion"][data-part="Trigger"][disabled],
+[data-component="Accordion"][data-part="Trigger"][data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
 }
@@ -89,12 +89,12 @@
   color: var(--fg-muted, #9ca3af);
 }
 
-[data-component="accordion"][data-part="trigger"][data-expanded] .accordion-chevron {
+[data-component="Accordion"][data-part="Trigger"][data-expanded] .accordion-chevron {
   transform: rotate(180deg);
 }
 
 /* Accordion Content Panel with Flaedi JS tweens */
-[data-component="accordion"][data-part="content"] {
+[data-component="Accordion"][data-part="Content"] {
   padding: 0 1rem 1rem 1rem;
   font-size: 0.9rem;
   line-height: 1.5;
@@ -102,18 +102,18 @@
   border-top: 1px solid var(--border, rgba(255, 255, 255, 0.06));
 }
 
-[data-component="accordion"][data-part="content"] > *:last-child,
-[data-component="accordion"][data-part="content"] p {
+[data-component="Accordion"][data-part="Content"] > *:last-child,
+[data-component="Accordion"][data-part="Content"] p {
   margin: 0;
   padding-bottom: 1.25rem;
 }
 
 /* Optional CSS-only Keyframe Animations (when animation: false is passed) */
-[data-component="accordion"][data-part="content"][data-css-anim][data-expanded] {
+[data-component="Accordion"][data-part="Content"][data-css-anim][data-expanded] {
   animation: seidrAccordionSlideDown 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-component="accordion"][data-part="content"][data-css-anim][data-closed] {
+[data-component="Accordion"][data-part="Content"][data-css-anim][data-closed] {
   animation: seidrAccordionSlideUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 

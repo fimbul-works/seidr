@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP, DATA_PART_ITEM_LABEL } from "../constants.js";
 import type { UseRadioGroupItemResult } from "./types.js";
 
 export interface RadioGroupItemLabelOptions<T extends keyof SeidrElementTagNameMap = "label"> {
@@ -50,8 +51,8 @@ export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "la
       id: id ?? item.labelId,
       htmlFor: effectiveHtmlFor,
       ...item.dataset,
-      dataComponent: "radio-group",
-      dataPart: "item-label",
+      dataComponent: DATA_COMPONENT_RADIO_GROUP,
+      dataPart: DATA_PART_ITEM_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

@@ -9,6 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_REGION } from "../constants.js";
 import type { ToastRegionRootProps } from "./types.js";
 
 /**
@@ -39,10 +40,9 @@ export function ToastRegionRoot<T extends keyof SeidrElementTagNameMap = "div">(
     throw new SeidrError("ToastRegionRoot requires a ToastRegion instance coordinator");
   }
 
-  const pointerEvents = mergeValues(
-    () => (region.hasToasts() ? (region.topLayer() ? "auto" : undefined) : "none"),
-    { parents: [region.hasToasts, region.topLayer] },
-  );
+  const pointerEvents = mergeValues(() => (region.hasToasts() ? (region.topLayer() ? "auto" : undefined) : "none"), {
+    parents: [region.hasToasts, region.topLayer],
+  });
 
   const topLayerAttr = region.topLayer.as((isTop) => (isTop ? "" : undefined));
 
@@ -58,7 +58,7 @@ export function ToastRegionRoot<T extends keyof SeidrElementTagNameMap = "div">(
       dataTopLayer: topLayerAttr,
       dataKbTopLayer: topLayerAttr,
       dataComponent: dataComponent ?? region.dataComponent,
-      dataPart: "region",
+      dataPart: DATA_PART_REGION,
       style: mergeStyleProps({ pointerEvents }, userStyle),
       ...rest,
     } as SeidrElementProps<T>,

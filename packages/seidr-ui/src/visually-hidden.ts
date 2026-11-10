@@ -7,7 +7,7 @@ import {
   type SeidrElementProps,
   unwrapValue,
 } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "./constants.js";
+import { DATA_COMPONENT_VISUALLY_HIDDEN, VISUALLY_HIDDEN_STYLES } from "./constants.js";
 
 export { VISUALLY_HIDDEN_STYLES } from "./constants.js";
 
@@ -30,7 +30,7 @@ export function VisuallyHidden(
   return $(
     "span",
     {
-      dataComponent: "visually-hidden",
+      dataComponent: DATA_COMPONENT_VISUALLY_HIDDEN,
       ...rest,
       style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, style),
     },

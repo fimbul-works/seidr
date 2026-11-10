@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_INCREMENT_TRIGGER } from "../constants.js";
 import type { UseNumberFieldResult } from "./types.js";
 
 export interface NumberFieldIncrementTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> {
@@ -64,8 +65,8 @@ export function NumberFieldIncrementTrigger<T extends keyof SeidrElementTagNameM
       disabled: isDisabled,
       "aria-controls": nf.formControl.fieldId,
       "data-disabled": isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "number-field",
-      dataPart: "increment-trigger",
+      dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+      dataPart: DATA_PART_INCREMENT_TRIGGER,
       onclick: handleClick,
       ...rest,
     } as SeidrElementProps<T>,

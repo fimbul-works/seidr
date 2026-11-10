@@ -54,10 +54,6 @@ export interface UseBreadcrumbsOptions {
   id?: string;
 }
 
-export interface BreadcrumbsDataSet {
-  "data-component": "breadcrumbs";
-}
-
 /**
  * Result returned by the headless useBreadcrumbs coordinator hook.
  */
@@ -65,7 +61,6 @@ export interface UseBreadcrumbsResult {
   id: string;
   separator: ObservableValue<SeidrChild>;
   ariaLabel: ObservableValue<string>;
-  dataset: BreadcrumbsDataSet;
 }
 
 export interface BreadcrumbsRootOptions<T extends keyof SeidrElementTagNameMap = "nav"> {

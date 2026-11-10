@@ -1,11 +1,10 @@
-import { isValue, List, type SeidrChild, ReactiveValue } from "@fimbul-works/seidr";
+import { createComponent, isValue, List, type ReactiveValue, type SeidrChild } from "@fimbul-works/seidr";
 import { createRadioGroup } from "./create-radio-group.js";
-import { RadioGroupDescriptionProps } from "./radio-group-description.js";
-import { RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
-import { RadioGroupLabelProps } from "./radio-group-label.js";
-import { type RadioGroupRootProps } from "./radio-group-root.js";
+import type { RadioGroupDescriptionProps } from "./radio-group-description.js";
+import type { RadioGroupErrorMessageProps } from "./radio-group-error-message.js";
+import type { RadioGroupLabelProps } from "./radio-group-label.js";
+import type { RadioGroupRootProps } from "./radio-group-root.js";
 import type { RadioGroupItemDescriptor, UseRadioGroupOptions } from "./types.js";
-import { createComponent } from "@fimbul-works/seidr";
 
 export interface RadioGroupProps extends UseRadioGroupOptions {
   /** Optional class name for the root container. */

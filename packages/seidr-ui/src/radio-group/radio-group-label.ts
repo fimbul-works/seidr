@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP } from "../constants.js";
 import { FormControlLabel, type FormControlLabelProps } from "../form-control/form-control-label.js";
 import type { UseRadioGroupResult } from "./types.js";
 
@@ -32,7 +33,13 @@ export function RadioGroupLabel<T extends keyof SeidrElementTagNameMap = "span">
   }
 
   return FormControlLabel(
-    { as, instance: rg.formControl, ...rg.dataset, dataComponent: "radio-group", ...rest } as FormControlLabelProps<T>,
+    {
+      as,
+      instance: rg.formControl,
+      ...rg.dataset,
+      dataComponent: DATA_COMPONENT_RADIO_GROUP,
+      ...rest,
+    } as FormControlLabelProps<T>,
     children,
   );
 }

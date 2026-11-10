@@ -29,7 +29,7 @@
    Select Component Semantic Styles
    --------------------------------------------------------------------------- */
 
-[data-component="select"][data-part="root"] {
+[data-component="Select"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -37,7 +37,7 @@
   position: relative;
 }
 
-[data-component="select"][data-part="label"] {
+[data-component="Select"][data-part="Label"] {
   font-size: 0.85rem;
   font-weight: 500;
   color: hsl(220, 15%, 80%);
@@ -45,7 +45,7 @@
   cursor: pointer;
 }
 
-[data-component="select"][data-part="trigger"] {
+[data-component="Select"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: space-between;
@@ -62,48 +62,48 @@
   transition: border-color 150ms ease, box-shadow 150ms ease, background-color 150ms ease;
 }
 
-[data-component="select"][data-part="trigger"]:hover:not([data-disabled]) {
+[data-component="Select"][data-part="Trigger"]:hover:not([data-disabled]) {
   background-color: hsl(222, 24%, 16%);
   border-color: hsl(222, 16%, 35%);
 }
 
-[data-component="select"][data-part="trigger"]:focus-visible {
+[data-component="Select"][data-part="Trigger"]:focus-visible {
   border-color: hsl(217, 91%, 60%);
   box-shadow: 0 0 0 2px hsl(217, 91%, 60%, 0.25);
 }
 
-[data-component="select"][data-part="trigger"][data-expanded] {
+[data-component="Select"][data-part="Trigger"][data-expanded] {
   border-color: hsl(217, 91%, 60%);
 }
 
-[data-component="select"][data-part="trigger"][data-disabled] {
+[data-component="Select"][data-part="Trigger"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-[data-component="select"][data-part="value"] {
+[data-component="Select"][data-part="Value"] {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-[data-component="select"][data-part="value"][data-placeholder-shown] {
+[data-component="Select"][data-part="Value"][data-placeholder-shown] {
   color: hsl(220, 10%, 50%);
 }
 
-[data-component="select"][data-part="icon"] {
+[data-component="Select"][data-part="Icon"] {
   font-size: 0.75rem;
   color: hsl(220, 10%, 60%);
   transition: transform 150ms ease;
   margin-left: 0.5rem;
 }
 
-[data-component="select"][data-part="trigger"][data-expanded] [data-part="icon"] {
+[data-component="Select"][data-part="Trigger"][data-expanded] [data-part="Icon"] {
   transform: rotate(180deg);
 }
 
 /* Floating Content */
-[data-component="select"][data-part="content"] {
+[data-component="Select"][data-part="Content"] {
   background-color: hsl(222, 24%, 14%);
   border: 1px solid hsl(222, 16%, 26%);
   border-radius: 8px;
@@ -113,7 +113,7 @@
   box-sizing: border-box;
 }
 
-[data-component="select"][data-part="listbox"] {
+[data-component="Select"][data-part="Listbox"] {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -126,7 +126,7 @@
 }
 
 /* Options */
-[data-component="select"][data-part="item"] {
+[data-component="Select"][data-part="Item"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -140,38 +140,38 @@
   transition: background-color 100ms ease, color 100ms ease;
 }
 
-[data-component="select"][data-part="item"][data-highlighted] {
+[data-component="Select"][data-part="Item"][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
-[data-component="select"][data-part="item"][data-selected]:not([data-highlighted]) {
+[data-component="Select"][data-part="Item"][data-selected]:not([data-highlighted]) {
   background-color: hsl(217, 91%, 60%, 0.15);
   color: hsl(217, 91%, 65%);
 }
 
-[data-component="select"][data-part="item"][data-disabled] {
+[data-component="Select"][data-part="Item"][data-disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-[data-component="select"][data-part="item-label"] {
+[data-component="Select"][data-part="ItemLabel"] {
   font-weight: 500;
 }
 
-[data-component="select"][data-part="item-indicator"] {
+[data-component="Select"][data-part="ItemIndicator"] {
   font-size: 0.85rem;
   font-weight: 700;
   margin-left: 0.5rem;
 }
 
 /* Sections */
-[data-component="select"][data-part="section"] {
+[data-component="Select"][data-part="Section"] {
   list-style: none;
   margin: 0.25rem 0;
 }
 
-[data-component="select"][data-part="section-label"] {
+[data-component="Select"][data-part="SectionLabel"] {
   display: block;
   font-size: 0.75rem;
   font-weight: 700;

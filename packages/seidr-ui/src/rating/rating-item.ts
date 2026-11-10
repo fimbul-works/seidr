@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RATING, DATA_PART_ITEM } from "../constants.js";
 import type { RatingItemProps, RatingItemState } from "./types.js";
 
 /**
@@ -21,7 +22,7 @@ export function RatingItem<T extends keyof SeidrElementTagNameMap = "span">(
     as = "span" as T,
     value,
     instance,
-    dataComponent = "rating",
+    dataComponent = DATA_COMPONENT_RATING,
     ref: userRef,
     onclick: userOnClick,
     onpointermove: userOnPointerMove,
@@ -111,7 +112,7 @@ export function RatingItem<T extends keyof SeidrElementTagNameMap = "span">(
       "aria-checked": state.as((s) => (s === "checked" ? "true" : "false")),
       tabindex: isCurrentActive.as((a) => (a ? 0 : -1)),
       dataComponent,
-      dataPart: "item",
+      dataPart: DATA_PART_ITEM,
       dataValue: String(value),
       dataState: state,
       dataHighlighted: isHighlighted.as((h) => (h ? "" : undefined)),
@@ -125,4 +126,3 @@ export function RatingItem<T extends keyof SeidrElementTagNameMap = "span">(
     resolvedChildren,
   );
 }
-

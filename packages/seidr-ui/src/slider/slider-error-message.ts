@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_ERROR_MESSAGE } from "../constants.js";
 import type { SliderErrorMessageProps } from "./types.js";
 
 /**
@@ -27,8 +28,8 @@ export function SliderErrorMessage<T extends keyof SeidrElementTagNameMap = "div
       role: "alert",
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "error-message",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_ERROR_MESSAGE,
       ...rest,
     } as SeidrElementProps<T>,
     children,

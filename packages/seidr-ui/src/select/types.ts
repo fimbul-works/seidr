@@ -11,7 +11,6 @@ import type {
 import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
 import type {
-  ListboxBoundItemHelpers,
   ListboxItemData,
   ListboxItemDescriptionProps,
   ListboxItemIndicatorProps,
@@ -20,7 +19,6 @@ import type {
   ListboxItemProps,
   ListboxListRenderOptions,
   ListboxNode,
-  ListboxRootProps,
   ListboxSectionData,
   ListboxSectionLabelProps,
   ListboxSectionProps,

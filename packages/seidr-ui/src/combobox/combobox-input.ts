@@ -1,11 +1,6 @@
 import { isFn } from "@fimbul-works/hvat";
-import {
-  $,
-  createRef,
-  type SeidrElementProps,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { $, createRef, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_INPUT } from "../constants.js";
 import type { ComboboxInputProps } from "./types.js";
 
 /**
@@ -17,7 +12,7 @@ export function ComboboxInput<T extends keyof SeidrElementTagNameMap = "input">(
   const {
     as = "input" as T,
     instance: combobox,
-    dataComponent = "combobox",
+    dataComponent = DATA_COMPONENT_COMBOBOX,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -89,42 +84,38 @@ export function ComboboxInput<T extends keyof SeidrElementTagNameMap = "input">(
     }
   };
 
-  return $(
-    as,
-    {
-      ref: internalRef,
-      id: userId ?? combobox.inputId,
-      type: "text",
-      role: "combobox",
-      dataComponent,
-      dataPart: "input",
-      value: combobox.inputValue,
-      disabled: combobox.isDisabled,
-      readonly: combobox.isReadOnly,
-      required: combobox.isRequired,
-      placeholder: combobox.placeholder,
-      autocomplete: "off",
-      autocorrect: "off",
-      spellcheck: false,
-      ariaHaspopup: "listbox",
-      ariaAutocomplete: "list",
-      ariaExpanded: combobox.isOpen.as((o) => (o ? "true" : "false")),
-      ariaControls: combobox.isOpen.as((o) => (o ? combobox.listboxId : undefined)),
-      ariaActivedescendant: combobox.activeDescendantId,
-      ariaLabel,
-      ariaLabelledby: ariaLabelledBy ?? combobox.labelId,
-      ariaDescribedby: ariaDescribedBy ?? combobox.descriptionId,
-      ariaInvalid: combobox.validationState.as((s) => (s === "invalid" ? "true" : undefined)),
-      ariaRequired: combobox.isRequired.as((r) => (r ? "true" : undefined)),
-      ariaDisabled: combobox.isDisabled.as((d) => (d ? "true" : undefined)),
-      ariaReadonly: combobox.isReadOnly.as((r) => (r ? "true" : undefined)),
-      oninput: handleInput,
-      onkeydown: handleKeyDown,
-      onfocus: handleFocus,
-      onblur: handleBlur,
-      onclick: handleClick,
-      ...rest,
-    } as SeidrElementProps<T>,
-  );
+  return $(as, {
+    ref: internalRef,
+    id: userId ?? combobox.inputId,
+    type: "text",
+    role: "combobox",
+    dataComponent,
+    dataPart: DATA_PART_INPUT,
+    value: combobox.inputValue,
+    disabled: combobox.isDisabled,
+    readonly: combobox.isReadOnly,
+    required: combobox.isRequired,
+    placeholder: combobox.placeholder,
+    autocomplete: "off",
+    autocorrect: "off",
+    spellcheck: false,
+    ariaHaspopup: "listbox",
+    ariaAutocomplete: "list",
+    ariaExpanded: combobox.isOpen.as((o) => (o ? "true" : "false")),
+    ariaControls: combobox.isOpen.as((o) => (o ? combobox.listboxId : undefined)),
+    ariaActivedescendant: combobox.activeDescendantId,
+    ariaLabel,
+    ariaLabelledby: ariaLabelledBy ?? combobox.labelId,
+    ariaDescribedby: ariaDescribedBy ?? combobox.descriptionId,
+    ariaInvalid: combobox.validationState.as((s) => (s === "invalid" ? "true" : undefined)),
+    ariaRequired: combobox.isRequired.as((r) => (r ? "true" : undefined)),
+    ariaDisabled: combobox.isDisabled.as((d) => (d ? "true" : undefined)),
+    ariaReadonly: combobox.isReadOnly.as((r) => (r ? "true" : undefined)),
+    oninput: handleInput,
+    onkeydown: handleKeyDown,
+    onfocus: handleFocus,
+    onblur: handleBlur,
+    onclick: handleClick,
+    ...rest,
+  } as SeidrElementProps<T>);
 }
-

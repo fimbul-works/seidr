@@ -6,6 +6,7 @@ import {
   type SeidrElementProps,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU, DATA_PART_VIEWPORT } from "../constants.js";
 import type { NavigationMenuViewportProps } from "./types.js";
 
 /**
@@ -18,7 +19,7 @@ export function NavigationMenuViewport<T extends keyof SeidrElementTagNameMap = 
   const {
     as = "div" as T,
     instance,
-    dataComponent = "navigation-menu",
+    dataComponent = DATA_COMPONENT_NAVIGATION_MENU,
     ref: userRef,
     children: propsChildren,
     ...rest
@@ -51,10 +52,9 @@ export function NavigationMenuViewport<T extends keyof SeidrElementTagNameMap = 
       dataState: instance?.isOpen.as((o) => (o ? "open" : "closed")),
       dataExpanded: instance?.isOpen.as((o) => (o ? "" : undefined)),
       dataComponent,
-      dataPart: "viewport",
+      dataPart: DATA_PART_VIEWPORT,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

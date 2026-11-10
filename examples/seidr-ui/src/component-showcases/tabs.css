@@ -18,7 +18,7 @@
 }
 
 /* Tabs Root */
-[data-component="tabs"][data-part="root"] {
+[data-component="Tabs"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -28,12 +28,12 @@
   overflow: hidden;
 }
 
-[data-component="tabs"][data-part="root"][data-orientation="vertical"] {
+[data-component="Tabs"][data-part="Root"][data-orientation="vertical"] {
   flex-direction: row;
 }
 
 /* Tabs List */
-[data-component="tabs"][data-part="list"] {
+[data-component="Tabs"][data-part="List"] {
   position: relative;
   display: flex;
   align-items: center;
@@ -43,7 +43,7 @@
   padding: 0.35rem 0.5rem;
 }
 
-[data-component="tabs"][data-part="list"][aria-orientation="vertical"] {
+[data-component="Tabs"][data-part="List"][aria-orientation="vertical"] {
   flex-direction: column;
   align-items: stretch;
   border-bottom: none;
@@ -52,7 +52,7 @@
 }
 
 /* Tabs Trigger */
-[data-component="tabs"][data-part="trigger"] {
+[data-component="Tabs"][data-part="Trigger"] {
   position: relative;
   z-index: 1;
   display: inline-flex;
@@ -75,28 +75,28 @@
   outline: none;
 }
 
-[data-component="tabs"][data-part="trigger"]:hover:not([data-disabled]) {
+[data-component="Tabs"][data-part="Trigger"]:hover:not([data-disabled]) {
   color: var(--fg, #f3f4f6);
   background: rgba(255, 255, 255, 0.05);
 }
 
-[data-component="tabs"][data-part="trigger"][data-selected] {
+[data-component="Tabs"][data-part="Trigger"][data-selected] {
   color: #fff;
   font-weight: 600;
 }
 
-[data-component="tabs"][data-part="trigger"]:focus-visible {
+[data-component="Tabs"][data-part="Trigger"]:focus-visible {
   outline: 2px solid var(--primary, #3b82f6);
   outline-offset: -1px;
 }
 
-[data-component="tabs"][data-part="trigger"][data-disabled] {
+[data-component="Tabs"][data-part="Trigger"][data-disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* Sliding active indicator */
-[data-component="tabs"][data-part="indicator"] {
+[data-component="Tabs"][data-part="Indicator"] {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -111,7 +111,7 @@
   box-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
 }
 
-[data-component="tabs"][data-part="indicator"][data-orientation="vertical"] {
+[data-component="Tabs"][data-part="Indicator"][data-orientation="vertical"] {
   bottom: auto;
   right: 0;
   left: auto;
@@ -119,7 +119,7 @@
 }
 
 /* Tabs Content Panel */
-[data-component="tabs"][data-part="content"] {
+[data-component="Tabs"][data-part="Content"] {
   padding: 1.25rem 1.5rem;
   font-size: 0.9rem;
   line-height: 1.6;
@@ -128,7 +128,7 @@
   flex: 1;
 }
 
-[data-component="tabs"][data-part="content"]:focus-visible {
+[data-component="Tabs"][data-part="Content"]:focus-visible {
   outline: 2px solid var(--primary, #3b82f6);
   outline-offset: -2px;
 }

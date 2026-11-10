@@ -1,10 +1,6 @@
 import { isFn } from "@fimbul-works/hvat";
-import {
-  $,
-  createRef,
-  type SeidrElementProps,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { $, createRef, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_HIDDEN_INPUT } from "../constants.js";
 import type { FileFieldHiddenInputProps } from "./types.js";
 
 const HIDDEN_STYLES: Record<string, string | number> = {
@@ -28,7 +24,7 @@ export function FileFieldHiddenInput(
 ): HTMLInputElement {
   const {
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     ref: userRef,
     onchange: userOnChange,
     style: userStyle,
@@ -64,11 +60,6 @@ export function FileFieldHiddenInput(
     target.value = "";
   };
 
-  const mergedStyle =
-    typeof userStyle === "object" && userStyle !== null
-      ? { ...HIDDEN_STYLES, ...userStyle }
-      : HIDDEN_STYLES;
-
   return $("input", {
     ref: internalRef,
     type: "file",
@@ -80,9 +71,9 @@ export function FileFieldHiddenInput(
     readOnly: instance.isReadOnly,
     tabIndex: -1,
     ariaHidden: "true",
-    style: mergedStyle,
+    style: mergeStyleProps(HIDDEN_STYLES, userStyle),
     dataComponent,
-    dataPart: "hidden-input",
+    dataPart: DATA_PART_HIDDEN_INPUT,
     onchange: handleChange,
     ...rest,
   } as SeidrElementProps<"input">);

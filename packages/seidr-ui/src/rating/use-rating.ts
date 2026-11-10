@@ -3,18 +3,14 @@ import {
   createValue,
   type DerivedValue,
   mergeValues,
-  type Ref,
   useId,
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RATING } from "../constants.js";
 import { useFormControl } from "../form-control/use-form-control.js";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
-import type {
-  RatingItemState,
-  UseRatingOptions,
-  UseRatingResult,
-} from "./types.js";
+import type { RatingItemState, UseRatingOptions, UseRatingResult } from "./types.js";
 
 /**
  * Headless coordinator hook managing rating score, hover preview, half-star calculations,
@@ -23,7 +19,7 @@ import type {
 export function useRating(options: UseRatingOptions = {}): UseRatingResult {
   const autoId = useId("rating");
   const id = options.id ?? autoId;
-  const dataComponent = options.dataComponent ?? "rating";
+  const dataComponent = options.dataComponent ?? DATA_COMPONENT_RATING;
   const max = options.max ?? 5;
   const allowHalf = options.allowHalf ?? false;
   const allowClear = options.allowClear ?? true;
@@ -45,10 +41,9 @@ export function useRating(options: UseRatingOptions = {}): UseRatingResult {
 
   const hoveredValue = createValue<number | null>(null);
 
-  const displayValue: DerivedValue<number> = mergeValues(
-    () => hoveredValue() ?? valueState(),
-    { parents: [hoveredValue, valueState] },
-  );
+  const displayValue: DerivedValue<number> = mergeValues(() => hoveredValue() ?? valueState(), {
+    parents: [hoveredValue, valueState],
+  });
 
   const rootRef = createRef<HTMLElement>();
 
@@ -202,4 +197,3 @@ export function useRating(options: UseRatingOptions = {}): UseRatingResult {
     getItemState,
   };
 }
-

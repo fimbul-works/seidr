@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PAGINATTION, DATA_PART_ELLIPSIS, DATA_PART_ELLIPSIS_WRAPPER } from "../constants.js";
 import type { PaginationEllipsisProps } from "./types.js";
 
 /**
@@ -18,8 +19,8 @@ export function PaginationEllipsis<T extends keyof SeidrElementTagNameMap = "spa
     as = "span" as T,
     instance: pg,
     key: _key,
-    dataComponent = "pagination",
-    dataPart = "ellipsis",
+    dataComponent = DATA_COMPONENT_PAGINATTION,
+    dataPart = DATA_PART_ELLIPSIS,
     ...rest
   } = props;
 
@@ -42,7 +43,7 @@ export function PaginationEllipsis<T extends keyof SeidrElementTagNameMap = "spa
     "li",
     {
       dataComponent,
-      dataPart: "ellipsis-wrapper",
+      dataPart: DATA_PART_ELLIPSIS_WRAPPER,
     },
     content,
   );

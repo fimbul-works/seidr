@@ -9,23 +9,15 @@ import {
   type SeidrElementTagNameMap,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_PREVIEW_IMAGE } from "../constants.js";
 import type { FileFieldItemPreviewImageProps } from "./types.js";
 
 /**
  * Thumbnail image preview for image files, managing URL.createObjectURL lifecycle cleanly with onUnmounted.
  */
 export const FileFieldItemPreviewImage = createComponent(
-  (
-    props: FileFieldItemPreviewImageProps = {} as FileFieldItemPreviewImageProps,
-  ): SeidrElementTagNameMap["img"] => {
-    const {
-      as = "img",
-      file,
-      alt: userAlt,
-      instance,
-      dataComponent = "file-field",
-      ...rest
-    } = props;
+  (props: FileFieldItemPreviewImageProps = {} as FileFieldItemPreviewImageProps): SeidrElementTagNameMap["img"] => {
+    const { as = "img", file, alt: userAlt, instance, dataComponent = DATA_COMPONENT_FILE_FIELD, ...rest } = props;
 
     const rawFile = unwrapValue(file);
     const defaultAlt = rawFile?.name ?? "File preview";
@@ -63,16 +55,13 @@ export const FileFieldItemPreviewImage = createComponent(
       });
     }
 
-    return $(
-      as,
-      {
-        src: urlValue,
-        alt: userAlt ?? defaultAlt,
-        dataComponent,
-        dataPart: "item-preview-image",
-        ...rest,
-      } as SeidrElementProps<"img">,
-    );
+    return $(as, {
+      src: urlValue,
+      alt: userAlt ?? defaultAlt,
+      dataComponent,
+      dataPart: DATA_PART_ITEM_PREVIEW_IMAGE,
+      ...rest,
+    } as SeidrElementProps<"img">);
   },
   "FileFieldItemPreviewImage",
 );

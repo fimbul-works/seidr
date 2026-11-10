@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TABS, DATA_PART_LIST } from "../constants.js";
 import type { TabsListProps } from "./types.js";
 
 /**
@@ -26,8 +27,8 @@ export function TabsList<T extends keyof SeidrElementTagNameMap = "div">(
       role: "tablist",
       "aria-orientation": tabs.orientation,
       "data-orientation": tabs.orientation,
-      dataComponent: "tabs",
-      dataPart: "list",
+      dataComponent: DATA_COMPONENT_TABS,
+      dataPart: DATA_PART_LIST,
       ...rest,
     } as SeidrElementProps<T>,
     children,

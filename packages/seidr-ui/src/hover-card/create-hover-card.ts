@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   Show,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_HOVER_CARD } from "../constants.js";
 import { PopperArrow } from "../popper/popper-arrow.js";
 import type { PopperArrowProps } from "../popper/types.js";
 import { HoverCardContent } from "./hover-card-content.js";
@@ -32,13 +33,19 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
     props: Omit<HoverCardRootProps<T>, "instance"> = {} as Omit<HoverCardRootProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    HoverCardRoot<T>({ instance, dataComponent: "hover-card", ...props } as HoverCardRootProps<T>, children);
+    HoverCardRoot<T>(
+      { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardRootProps<T>,
+      children,
+    );
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "a">(
     props: Omit<HoverCardTriggerProps<T>, "instance"> = {} as Omit<HoverCardTriggerProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    HoverCardTrigger<T>({ instance, dataComponent: "hover-card", ...props } as HoverCardTriggerProps<T>, children);
+    HoverCardTrigger<T>(
+      { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardTriggerProps<T>,
+      children,
+    );
 
   const PortalHelper = (props: HoverCardPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
     const target = props.target ?? instance.portalTarget ?? getDocument().body;
@@ -54,12 +61,19 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
     props: Omit<HoverCardContentProps<T>, "instance"> = {} as Omit<HoverCardContentProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
-    HoverCardContent<T>({ instance, dataComponent: "hover-card", ...props } as HoverCardContentProps<T>, children);
+    HoverCardContent<T>(
+      { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardContentProps<T>,
+      children,
+    );
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<HoverCardArrowProps<T>, "instance"> = {} as Omit<HoverCardArrowProps<T>, "instance">,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: "hover-card", ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({
+      instance: instance.popper,
+      dataComponent: DATA_COMPONENT_HOVER_CARD,
+      ...props,
+    } as PopperArrowProps<T>);
 
   return {
     ...instance,
@@ -70,4 +84,3 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
     Arrow,
   };
 }
-

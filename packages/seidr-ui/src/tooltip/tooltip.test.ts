@@ -242,8 +242,8 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
           }),
         );
 
-        const results = await axe(root);
-        expect(results).toHaveNoViolations();
+        // @ts-expect-error vitest-axe
+        expect( await axe(root)).toHaveNoViolations();
       });
     });
   }

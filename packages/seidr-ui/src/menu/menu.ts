@@ -1,11 +1,7 @@
-import { createComponent, type ReactiveValue, type SeidrChild } from "@fimbul-works/seidr";
+import { createComponent } from "@fimbul-works/seidr";
 import { createMenu } from "./create-menu.js";
 import type {
-  MenuContentProps,
-  MenuItemDescriptor,
   MenuProps,
-  MenuRootProps,
-  MenuTriggerProps,
   UseMenuOptions,
 } from "./types.js";
 

@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TEXT_FIELD, DATA_PART_INPUT } from "../constants.js";
 import { combineAriaDescribedBy, combineAriaLabelledBy, extractAriaProps } from "../utils/aria.js";
 import type { TextFieldInputProps } from "./types.js";
 
@@ -30,8 +31,8 @@ export function TextFieldInput<T extends keyof SeidrElementTagNameMap = "input">
     readonly,
     ref: userRef,
     oninput,
-    dataComponent = "text-field",
-    dataPart = "input",
+    dataComponent = DATA_COMPONENT_TEXT_FIELD,
+    dataPart = DATA_PART_INPUT,
     ...rest
   } = restProps;
 

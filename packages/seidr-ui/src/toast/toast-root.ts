@@ -7,12 +7,8 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
-import type {
-  ToastRootProps,
-  ToastSwipeDirection,
-  ToastSwipeEvent,
-  ToastSwipeEventDetail,
-} from "./types.js";
+import { DATA_PART_ROOT } from "../constants.js";
+import type { ToastRootProps, ToastSwipeDirection, ToastSwipeEvent, ToastSwipeEventDetail } from "./types.js";
 
 const TOAST_SWIPE_START_EVENT = "toast.swipeStart";
 const TOAST_SWIPE_MOVE_EVENT = "toast.swipeMove";
@@ -136,8 +132,6 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
       rootEl.setAttribute("data-swipe", "move");
       rootEl.style.setProperty("--toast-swipe-move-x", `${delta.x}px`);
       rootEl.style.setProperty("--toast-swipe-move-y", `${delta.y}px`);
-      rootEl.style.setProperty("--kb-toast-swipe-move-x", `${delta.x}px`);
-      rootEl.style.setProperty("--kb-toast-swipe-move-y", `${delta.y}px`);
     } else if (isDeltaInDirection(delta, direction, moveStartBuffer)) {
       swipeDelta = delta;
       dispatchSwipeEvent(rootEl, TOAST_SWIPE_START_EVENT, toast.onSwipeStart, eventDetail);
@@ -175,12 +169,8 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
         rootEl.setAttribute("data-swipe", "end");
         rootEl.style.removeProperty("--toast-swipe-move-x");
         rootEl.style.removeProperty("--toast-swipe-move-y");
-        rootEl.style.removeProperty("--kb-toast-swipe-move-x");
-        rootEl.style.removeProperty("--kb-toast-swipe-move-y");
         rootEl.style.setProperty("--toast-swipe-end-x", `${delta.x}px`);
         rootEl.style.setProperty("--toast-swipe-end-y", `${delta.y}px`);
-        rootEl.style.setProperty("--kb-toast-swipe-end-x", `${delta.x}px`);
-        rootEl.style.setProperty("--kb-toast-swipe-end-y", `${delta.y}px`);
         toast.close();
       } else {
         dispatchSwipeEvent(rootEl, TOAST_SWIPE_CANCEL_EVENT, toast.onSwipeCancel, eventDetail);
@@ -189,10 +179,6 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
         rootEl.style.removeProperty("--toast-swipe-move-y");
         rootEl.style.removeProperty("--toast-swipe-end-x");
         rootEl.style.removeProperty("--toast-swipe-end-y");
-        rootEl.style.removeProperty("--kb-toast-swipe-move-x");
-        rootEl.style.removeProperty("--kb-toast-swipe-move-y");
-        rootEl.style.removeProperty("--kb-toast-swipe-end-x");
-        rootEl.style.removeProperty("--kb-toast-swipe-end-y");
       }
 
       rootEl.addEventListener("click", (event) => event.preventDefault(), { once: true });
@@ -221,7 +207,7 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
       dataClosed: toast.isOpen.as((open) => (!open ? "" : undefined)),
       dataSwipeDirection: toast.swipeDirection,
       dataComponent: dataComponent ?? toast.dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       onkeydown: handleKeyDown,
       onpointerdown: handlePointerDown,
       onpointermove: handlePointerMove,

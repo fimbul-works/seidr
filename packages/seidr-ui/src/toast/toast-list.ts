@@ -10,6 +10,7 @@ import {
   SeidrError,
   type Value,
 } from "@fimbul-works/seidr";
+import { DATA_PART_LIST } from "../constants.js";
 import { contains, getActiveElement, getOwnerDocument, getOwnerWindow } from "../utils/dom.js";
 import { focusWithoutScrolling } from "../utils/focus-without-scrolling.js";
 import type { ToastConfig, ToastListProps } from "./types.js";
@@ -111,7 +112,7 @@ export function ToastList<T extends keyof SeidrElementTagNameMap = "ol">(
       id: customId ?? region.generateId("list"),
       tabIndex,
       dataComponent: dataComponent ?? region.dataComponent,
-      dataPart: "list",
+      dataPart: DATA_PART_LIST,
       onpointermove: handlePointerMove,
       onpointerleave: handlePointerLeave,
       ...rest,

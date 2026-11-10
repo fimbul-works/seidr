@@ -4,7 +4,6 @@ import {
   type SeidrChild,
   type SeidrElementTagNameMap,
   unwrapValue,
-  type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
 import { ToggleGroupItem } from "./toggle-group-item.js";

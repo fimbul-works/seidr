@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_LISTBOX } from "../constants.js";
 import type { SelectListboxProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function SelectListbox<T extends keyof SeidrElementTagNameMap = "ul">(
   const {
     as = "ul" as T,
     instance: select,
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     id: userId,
     ref: userRef,
     onkeydown: userOnKeyDown,
@@ -72,7 +73,7 @@ export function SelectListbox<T extends keyof SeidrElementTagNameMap = "ul">(
       id: userId ?? select.listboxId,
       role: "listbox",
       dataComponent,
-      dataPart: "listbox",
+      dataPart: DATA_PART_LISTBOX,
       tabindex: -1,
       ariaOrientation: select.listbox.orientation,
       ariaMultiselectable: select.isMultiple ? "true" : undefined,

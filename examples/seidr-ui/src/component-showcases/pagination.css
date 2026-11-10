@@ -41,12 +41,12 @@
 }
 
 /* Pagination Component Styles */
-[data-component="pagination"][data-part="root"] {
+[data-component="Pagination"][data-part="Root"] {
   display: flex;
   align-items: center;
 }
 
-[data-component="pagination"][data-part="list"] {
+[data-component="Pagination"][data-part="List"] {
   display: flex;
   align-items: center;
   gap: 0.375rem;
@@ -56,10 +56,10 @@
   flex-wrap: wrap;
 }
 
-[data-component="pagination"][data-part="item-wrapper"],
-[data-component="pagination"][data-part="previous-wrapper"],
-[data-component="pagination"][data-part="next-wrapper"],
-[data-component="pagination"][data-part="ellipsis-wrapper"] {
+[data-component="Pagination"][data-part="ItemWrapper"],
+[data-component="Pagination"][data-part="PreviousWrapper"],
+[data-component="Pagination"][data-part="NextWrapper"],
+[data-component="Pagination"][data-part="EllipsisWrapper"] {
   display: inline-flex;
   align-items: center;
   list-style: none;
@@ -67,9 +67,9 @@
   padding: 0;
 }
 
-[data-component="pagination"][data-part="item"],
-[data-component="pagination"][data-part="previous"],
-[data-component="pagination"][data-part="next"] {
+[data-component="Pagination"][data-part="Item"],
+[data-component="Pagination"][data-part="Previous"],
+[data-component="Pagination"][data-part="Next"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -88,30 +88,30 @@
   user-select: none;
 }
 
-[data-component="pagination"][data-part="item"]:hover:not(:disabled),
-[data-component="pagination"][data-part="previous"]:hover:not(:disabled),
-[data-component="pagination"][data-part="next"]:hover:not(:disabled) {
+[data-component="Pagination"][data-part="Item"]:hover:not(:disabled),
+[data-component="Pagination"][data-part="Previous"]:hover:not(:disabled),
+[data-component="Pagination"][data-part="Next"]:hover:not(:disabled) {
   background: var(--surface-3, rgba(255, 255, 255, 0.12));
   border-color: var(--primary, #38bdf8);
   color: var(--text-primary, #ffffff);
 }
 
-[data-component="pagination"][data-part="item"][data-current] {
+[data-component="Pagination"][data-part="Item"][data-current] {
   background: var(--primary, #0284c7);
   border-color: var(--primary, #0284c7);
   color: #ffffff;
   font-weight: 600;
 }
 
-[data-component="pagination"][data-part="item"]:disabled,
-[data-component="pagination"][data-part="previous"]:disabled,
-[data-component="pagination"][data-part="next"]:disabled {
+[data-component="Pagination"][data-part="Item"]:disabled,
+[data-component="Pagination"][data-part="Previous"]:disabled,
+[data-component="Pagination"][data-part="Next"]:disabled {
   opacity: 0.35;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-[data-component="pagination"][data-part="ellipsis"] {
+[data-component="Pagination"][data-part="Ellipsis"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;

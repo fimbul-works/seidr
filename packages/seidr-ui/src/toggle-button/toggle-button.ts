@@ -1,5 +1,6 @@
 import { resolvePropsAndChildren, type SeidrChild, type SeidrElementTagNameMap, type Value } from "@fimbul-works/seidr";
-import { type ButtonOptions, type ButtonProps, Button } from "../button.js";
+import { Button, type ButtonOptions, type ButtonProps } from "../button.js";
+import { DATA_COMPONENT_TOGGLE_BUTTON } from "../constants.js";
 import { type UseToggleStateResult, useToggleState } from "../hooks/use-toggle-state.js";
 
 export interface ToggleButtonRootState {
@@ -67,7 +68,7 @@ export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
 
   return Button<T>(
     {
-      dataComponent: "toggle-button",
+      dataComponent: DATA_COMPONENT_TOGGLE_BUTTON,
       ...rest,
       disabled,
       ariaPressed: isPressed.as((p) => (p ? "true" : "false")),

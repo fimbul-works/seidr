@@ -1,5 +1,5 @@
 import { $, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_HIDDEN_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseNumberFieldResult } from "./types.js";
 
 export interface NumberFieldHiddenInputProps extends SeidrElementProps<"input"> {
@@ -33,8 +33,8 @@ export function NumberFieldHiddenInput(props: NumberFieldHiddenInputProps = {}):
     disabled: nf.formControl.isDisabled,
     readOnly: nf.formControl.isReadOnly,
     required: nf.formControl.isRequired,
-    dataComponent: "number-field",
-    dataPart: "hidden-input",
+    dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+    dataPart: DATA_PART_HIDDEN_INPUT,
     ...rest,
   } as SeidrElementProps<"input">);
 }

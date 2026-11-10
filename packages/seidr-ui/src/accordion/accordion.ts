@@ -7,9 +7,9 @@ import {
   type SeidrChild,
   type SeidrElementProps,
 } from "@fimbul-works/seidr";
+import type { CollapsibleAnimationOptions } from "../collapsible/types.js";
 import { createAccordion } from "./create-accordion.js";
 import type { AccordionItemDescriptor, UseAccordionOptions } from "./types.js";
-import type { CollapsibleAnimationOptions } from "../collapsible/types.js";
 
 export interface AccordionProps extends UseAccordionOptions {
   /** Optional class name for the root container. */

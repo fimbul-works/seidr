@@ -7,6 +7,7 @@ import {
   SeidrError,
   Show,
 } from "@fimbul-works/seidr";
+import { DATA_PART_NO_RESULT } from "../constants.js";
 import type { SearchNoResultProps } from "./types.js";
 
 /**
@@ -27,7 +28,7 @@ export function SearchNoResult<T extends keyof SeidrElementTagNameMap = "div">(
       as,
       {
         dataComponent,
-        dataPart: "no-result",
+        dataPart: DATA_PART_NO_RESULT,
         ...rest,
       } as SeidrElementProps<T>,
       children,
@@ -35,4 +36,3 @@ export function SearchNoResult<T extends keyof SeidrElementTagNameMap = "div">(
 
   return Show(search.noResult, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

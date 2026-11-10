@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SWITCH } from "../constants.js";
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseSwitchResult } from "./types.js";
 
@@ -20,7 +21,12 @@ export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div"
   }
 
   return FormControlDescription(
-    { instance: sw.formControl, ...sw.dataset, dataComponent: "switch", ...rest } as FormControlDescriptionProps<T>,
+    {
+      instance: sw.formControl,
+      ...sw.dataset,
+      dataComponent: DATA_COMPONENT_SWITCH,
+      ...rest,
+    } as FormControlDescriptionProps<T>,
     children,
   );
 }

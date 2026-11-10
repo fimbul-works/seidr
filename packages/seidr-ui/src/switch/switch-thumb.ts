@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SWITCH, DATA_PART_THUMB } from "../constants.js";
 import type { UseSwitchResult } from "./types.js";
 
 export interface SwitchThumbOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -43,8 +44,8 @@ export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
       id: id ?? sw.id.as((base: string) => `${base}-thumb`),
       ref: sw.thumbRef,
       ...sw.dataset,
-      dataComponent: "switch",
-      dataPart: "thumb",
+      dataComponent: DATA_COMPONENT_SWITCH,
+      dataPart: DATA_PART_THUMB,
       ...rest,
     } as SeidrElementProps<T>,
     children,

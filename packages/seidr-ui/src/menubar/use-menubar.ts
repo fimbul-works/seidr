@@ -11,20 +11,16 @@ import {
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR } from "../constants.js";
 import { useInteractOutside } from "../hooks/use-interact-outside.js";
-import type {
-  MenubarMenuRegistration,
-  MenubarOrientation,
-  UseMenubarOptions,
-  UseMenubarResult,
-} from "./types.js";
+import type { MenubarMenuRegistration, MenubarOrientation, UseMenubarOptions, UseMenubarResult } from "./types.js";
 
 /**
  * Headless coordinator hook for a Menubar system.
  */
 export function useMenubar(options: UseMenubarOptions = {}): UseMenubarResult {
   const id = options.id ?? useId("menubar");
-  const dataComponent = options.dataComponent ?? "menubar";
+  const dataComponent = options.dataComponent ?? DATA_COMPONENT_MENUBAR;
   const loop = options.loop ?? true;
   const orientation: MenubarOrientation = options.orientation ?? "horizontal";
   const focusOnAlt = options.focusOnAlt ?? false;

@@ -10,6 +10,7 @@ import {
   useId,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_SUB_TRIGGER } from "../constants.js";
 import type { MenuSubTriggerProps } from "./types.js";
 
 /**
@@ -23,7 +24,7 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
     as = "div" as T,
     instance: menu,
     subInstance,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     value: userValue,
     disabled: itemDisabledProp,
     textValue,
@@ -103,7 +104,7 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
       "aria-controls": subInstance.isOpen.as((o) => (o ? subInstance.contentId() : undefined)),
       "aria-disabled": isDisabled.as((d) => (d ? "true" : undefined)),
       dataComponent,
-      dataPart: "sub-trigger",
+      dataPart: DATA_PART_SUB_TRIGGER,
       dataHighlighted: isHighlighted.as((h) => (h ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
       dataExpanded: subInstance.isOpen.as((o) => (o ? "" : undefined)),
@@ -114,4 +115,3 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
     [children, propsChildren],
   );
 }
-

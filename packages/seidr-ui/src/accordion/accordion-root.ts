@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_ACCORDION, DATA_PART_ROOT } from "../constants.js";
 import type { UseAccordionResult } from "./types.js";
 
 export interface AccordionRootOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -35,8 +36,8 @@ export function AccordionRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       id: id ?? instance.id,
-      dataComponent: "accordion",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_ACCORDION,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

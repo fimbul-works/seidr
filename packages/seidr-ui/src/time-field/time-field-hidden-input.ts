@@ -1,10 +1,6 @@
 import { isFn } from "@fimbul-works/hvat";
-import {
-  $,
-  createRef,
-  type SeidrElementProps,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { $, createRef, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TIME_FIELD, DATA_PART_HIDDEN_INPUT } from "../constants.js";
 import type { TimeFieldHiddenInputProps } from "./types.js";
 import { parseTime } from "./util.js";
 
@@ -29,7 +25,7 @@ export function TimeFieldHiddenInput(
 ): HTMLInputElement {
   const {
     instance,
-    dataComponent = "time-field",
+    dataComponent = DATA_COMPONENT_TIME_FIELD,
     ref: userRef,
     onchange: userOnChange,
     style: userStyle,
@@ -61,11 +57,6 @@ export function TimeFieldHiddenInput(
     instance.setValue(parsed);
   };
 
-  const mergedStyle =
-    typeof userStyle === "object" && userStyle !== null
-      ? { ...HIDDEN_STYLES, ...userStyle }
-      : HIDDEN_STYLES;
-
   return $("input", {
     ref: internalRef,
     type: "text",
@@ -76,11 +67,10 @@ export function TimeFieldHiddenInput(
     readOnly: instance.isReadOnly,
     tabIndex: -1,
     ariaHidden: "true",
-    style: mergedStyle,
+    style: mergeStyleProps(HIDDEN_STYLES, userStyle),
     dataComponent,
-    dataPart: "hidden-input",
+    dataPart: DATA_PART_HIDDEN_INPUT,
     onchange: handleChange,
     ...rest,
   } as SeidrElementProps<"input">);
 }
-

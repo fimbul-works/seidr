@@ -1,5 +1,6 @@
 import { isUndef } from "@fimbul-works/hvat";
 import {
+  createComponent,
   type ReactiveValue,
   type SeidrChild,
   type SeidrElementProps,
@@ -8,9 +9,8 @@ import {
 import { createImage } from "./create-image.js";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
-import { ImageRoot, ImageRootProps } from "./image-root.js";
+import { ImageRoot, type ImageRootProps } from "./image-root.js";
 import { type UseImageOptions, useImage } from "./use-image.js";
-import { createComponent } from "@fimbul-works/seidr";
 
 export interface ImageOptions<
   T extends keyof SeidrElementTagNameMap = "span",
@@ -88,7 +88,7 @@ export const Image = createComponent(
       } as ImageRootProps<T>,
       [
         !isUndef(fallback) && image.Fallback({ as: fallbackAs, ...fallbackProps }, fallback),
-        !isUndef(src) && image.Img({ alt, ...imgProps }),
+        !isUndef(src) && image.Img({ alt, src, ...imgProps }),
       ],
     );
   },

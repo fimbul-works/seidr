@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_PROGRESS_TRACK } from "../constants.js";
 import type { ToastProgressTrackProps } from "./types.js";
 
 /**
@@ -14,13 +15,7 @@ export function ToastProgressTrack<T extends keyof SeidrElementTagNameMap = "div
   props: ToastProgressTrackProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "div" as T,
-    instance: toast,
-    role = "presentation",
-    dataComponent,
-    ...rest
-  } = props;
+  const { as = "div" as T, instance: toast, role = "presentation", dataComponent, ...rest } = props;
 
   if (!toast) {
     throw new SeidrError("ToastProgressTrack requires a Toast instance coordinator");
@@ -32,10 +27,9 @@ export function ToastProgressTrack<T extends keyof SeidrElementTagNameMap = "div
       role,
       ariaHidden: "true",
       dataComponent: dataComponent ?? toast.dataComponent,
-      dataPart: "progress-track",
+      dataPart: DATA_PART_PROGRESS_TRACK,
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

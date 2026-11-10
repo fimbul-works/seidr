@@ -1,16 +1,7 @@
-import {
-  createComponent,
-  List,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createComponent, List, type SeidrChild, type SeidrElementTagNameMap, wrapValue } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU } from "../constants.js";
 import { createNavigationMenu } from "./create-navigation-menu.js";
-import type {
-  NavigationMenuItemDescriptor,
-  NavigationMenuProps,
-  NavigationMenuRootProps,
-} from "./types.js";
+import type { NavigationMenuItemDescriptor, NavigationMenuProps, NavigationMenuRootProps } from "./types.js";
 
 /**
  * All-in-One Tier 1 NavigationMenu component.
@@ -24,7 +15,7 @@ export const NavigationMenu = createComponent(
     const {
       as = "nav" as T,
       id,
-      dataComponent = "navigation-menu",
+      dataComponent = DATA_COMPONENT_NAVIGATION_MENU,
       value,
       defaultValue,
       onValueChange,
@@ -100,13 +91,10 @@ export const NavigationMenu = createComponent(
                   },
                   descriptor.trigger,
                 ),
-                menuInst.Content(
-                  descriptor.contentProps,
-                  [
-                    descriptor.items ? menuInst.List(descriptor.items) : null,
-                    descriptor.children,
-                  ],
-                ),
+                menuInst.Content(descriptor.contentProps, [
+                  descriptor.items ? menuInst.List(descriptor.items) : null,
+                  descriptor.children,
+                ]),
               ],
             );
           },
@@ -119,10 +107,7 @@ export const NavigationMenu = createComponent(
         as,
         ...rootProps,
       } as NavigationMenuRootProps<T>,
-      [
-        navMenu.List({}, renderedItems),
-        children,
-      ],
+      [navMenu.List({}, renderedItems), children],
     );
   },
   "NavigationMenu",

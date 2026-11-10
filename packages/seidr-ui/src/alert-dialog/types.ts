@@ -8,7 +8,6 @@ import type {
   DialogCloseButtonOptions,
   DialogContentOptions,
   DialogDescriptionOptions,
-  DialogInstance,
   DialogOverlayOptions,
   DialogPortalProps,
   DialogRootOptions,

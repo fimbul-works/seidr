@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_LABEL } from "../constants.js";
 import type { FileFieldLabelProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function FileFieldLabel<T extends keyof SeidrElementTagNameMap = "label">
   const {
     as = "label" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     for: userFor,
     htmlFor: userHtmlFor,
     children: propsChildren,
@@ -44,7 +45,7 @@ export function FileFieldLabel<T extends keyof SeidrElementTagNameMap = "label">
       for: userFor ?? userHtmlFor ?? instance.inputId,
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,

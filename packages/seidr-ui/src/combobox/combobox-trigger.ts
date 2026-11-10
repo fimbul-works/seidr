@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_TRIGGER } from "../constants.js";
 import type { ComboboxTriggerProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function ComboboxTrigger<T extends keyof SeidrElementTagNameMap = "button
   const {
     as = "button" as T,
     instance: combobox,
-    dataComponent = "combobox",
+    dataComponent = DATA_COMPONENT_COMBOBOX,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -75,7 +76,7 @@ export function ComboboxTrigger<T extends keyof SeidrElementTagNameMap = "button
       ariaLabelledby: `${combobox.labelId} ${combobox.triggerId}`,
       disabled: combobox.isDisabled,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: combobox.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: combobox.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: combobox.isDisabled.as((d) => (d ? "" : undefined)),
@@ -86,4 +87,3 @@ export function ComboboxTrigger<T extends keyof SeidrElementTagNameMap = "button
     children,
   );
 }
-

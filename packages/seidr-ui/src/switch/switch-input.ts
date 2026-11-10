@@ -1,5 +1,5 @@
 import { $, mergeStyleProps, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { DATA_COMPONENT_SWITCH, DATA_PART_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseSwitchResult } from "./types.js";
 
 export interface SwitchInputProps extends SeidrElementProps<"input"> {
@@ -22,8 +22,6 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
 
   const fieldId = customId ?? sw.id.as((base: string) => `${base}-input`);
   onUnmounted(sw.formControl.registerField(fieldId));
-
-  const mergedStyle = mergeStyleProps(VISUALLY_HIDDEN_STYLES, style);
 
   const handleChange = (e: Event) => {
     (onchange as any)?.(e);
@@ -49,11 +47,11 @@ export function SwitchInput(props: SwitchInputProps = {}): HTMLInputElement {
   return $("input", {
     ...sw.fieldProps,
     id: sw.formControl.fieldId,
-    dataComponent: "switch",
-    dataPart: "input",
+    dataComponent: DATA_COMPONENT_SWITCH,
+    dataPart: DATA_PART_INPUT,
     ...rest,
     ref: sw.inputRef,
-    style: mergedStyle,
+    style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, style),
     onchange: handleChange,
     onfocus: handleFocus,
     onblur: handleBlur,

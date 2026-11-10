@@ -104,7 +104,7 @@ export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof Sei
   /**
    * ID attribute.
    */
-  id?: ReactiveValue<string> | ObservableValue<string | undefined>;
+  id?: ReactiveValue<string>;
 
   /**
    * Ref handle.
@@ -120,7 +120,7 @@ export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof Sei
   /**
    * Reactive styles.
    */
-  style?: ReactiveStyleDeclaration;
+  style?: ReactiveStyleDeclaration | ReactiveValue<string>;
 
   /**
    * Reactive data attributes.

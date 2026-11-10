@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CHECKBOX } from "../constants.js";
 import { FormControlLabel, type FormControlLabelProps } from "../form-control/form-control-label.js";
 import type { UseFormControlResult } from "../form-control/types.js";
 import type { UseCheckboxResult } from "./types.js";
@@ -25,7 +26,7 @@ export function CheckboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
     {
       instance: cb.formControl,
       ...cb.dataset,
-      dataComponent: "checkbox",
+      dataComponent: DATA_COMPONENT_CHECKBOX,
       ...rest,
     } as FormControlLabelProps<T>,
     children,

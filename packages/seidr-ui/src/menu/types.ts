@@ -8,8 +8,7 @@ import type {
   SeidrElementTagNameMap,
   Value,
 } from "@fimbul-works/seidr";
-import type { AnchorRect, Placement } from "../popper/types.js";
-import type { UsePopperResult } from "../popper/types.js";
+import type { AnchorRect, Placement, UsePopperResult } from "../popper/types.js";
 
 export type MenuOrientation = "horizontal" | "vertical";
 
@@ -108,10 +107,7 @@ export interface MenuRadioGroupData {
   items: MenuRadioItemDescriptor[];
 }
 
-export type MenuLeafDescriptor =
-  | MenuItemData
-  | MenuCheckboxItemData
-  | MenuSeparatorData;
+export type MenuLeafDescriptor = MenuItemData | MenuCheckboxItemData | MenuSeparatorData;
 
 export interface MenuSubMenuData {
   type: "sub";
@@ -157,7 +153,7 @@ export interface UseMenuOptions {
   /** Event handler called when the open state changes. */
   onOpenChange?: (isOpen: boolean) => void;
   /** Floating placement for the menu content dropdown. Defaults to "bottom-start". */
-  placement?: Placement;
+  placement?: ReactiveValue<Placement>;
   /** Whether the menu should be modal (closing on outside interaction and trapping focus). Defaults to true. */
   modal?: boolean;
   /** Whether the scroll should be prevented when open. Defaults to false. */
@@ -269,8 +265,7 @@ export interface MenuRootOptions<T extends keyof SeidrElementTagNameMap = "div">
   dataComponent?: string;
   instance?: UseMenuResult;
 }
-export type MenuRootProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuRootOptions<T> &
-  SeidrElementProps<T>;
+export type MenuRootProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuRootOptions<T> & SeidrElementProps<T>;
 
 export interface MenuTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> {
   as?: T;
@@ -319,8 +314,7 @@ export interface MenuItemOptions<T extends keyof SeidrElementTagNameMap = "div">
   children?: SeidrChild | SeidrChild[];
   instance?: UseMenuResult;
 }
-export type MenuItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T> &
-  SeidrElementProps<T>;
+export type MenuItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T> & SeidrElementProps<T>;
 
 export interface MenuCheckboxItemOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -368,8 +362,7 @@ export interface MenuSubOptions<T extends keyof SeidrElementTagNameMap = "div"> 
   instance?: UseMenuResult;
   subInstance?: UseMenuResult;
 }
-export type MenuSubProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubOptions<T> &
-  SeidrElementProps<T>;
+export type MenuSubProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubOptions<T> & SeidrElementProps<T>;
 
 export interface MenuSubTriggerOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -411,8 +404,7 @@ export interface MenuGroupOptions<T extends keyof SeidrElementTagNameMap = "div"
   dataComponent?: string;
   instance?: UseMenuResult;
 }
-export type MenuGroupProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuGroupOptions<T> &
-  SeidrElementProps<T>;
+export type MenuGroupProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuGroupOptions<T> & SeidrElementProps<T>;
 
 export interface MenuGroupLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -435,8 +427,8 @@ export interface MenuItemDescriptionOptions<T extends keyof SeidrElementTagNameM
   dataComponent?: string;
   instance?: UseMenuResult;
 }
-export type MenuItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemDescriptionOptions<T> & SeidrElementProps<T>;
+export type MenuItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemDescriptionOptions<T> &
+  SeidrElementProps<T>;
 
 export interface MenuItemIndicatorOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -445,16 +437,15 @@ export interface MenuItemIndicatorOptions<T extends keyof SeidrElementTagNameMap
   checked?: ObservableValue<boolean | "mixed">;
   instance?: UseMenuResult;
 }
-export type MenuItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemIndicatorOptions<T> & SeidrElementProps<T>;
+export type MenuItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemIndicatorOptions<T> &
+  SeidrElementProps<T>;
 
 export interface MenuIconOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
   dataComponent?: string;
   instance?: UseMenuResult;
 }
-export type MenuIconProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuIconOptions<T> &
-  SeidrElementProps<T>;
+export type MenuIconProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuIconOptions<T> & SeidrElementProps<T>;
 
 export interface MenuArrowOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -462,15 +453,10 @@ export interface MenuArrowOptions<T extends keyof SeidrElementTagNameMap = "div"
   size?: number;
   instance?: UseMenuResult;
 }
-export type MenuArrowProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuArrowOptions<T> &
-  SeidrElementProps<T>;
+export type MenuArrowProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuArrowOptions<T> & SeidrElementProps<T>;
 
 export interface MenuListRenderOptions {
-  renderItem?: (
-    itemVal: Value<MenuItemDescriptor>,
-    key: string,
-    instance: MenuInstance,
-  ) => SeidrChild;
+  renderItem?: (itemVal: Value<MenuItemDescriptor>, key: string, instance: MenuInstance) => SeidrChild;
   itemProps?: Partial<MenuItemOptions<"div">> & Partial<SeidrElementProps<"div">>;
 }
 
@@ -549,13 +535,8 @@ export interface MenuInstance extends UseMenuResult {
     props?: MenuIconProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
-  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
-    props?: MenuArrowProps<T>,
-  ) => SeidrElementTagNameMap[T];
-  List: (
-    items: ReactiveValue<MenuItemDescriptor[]>,
-    options?: MenuListRenderOptions,
-  ) => SeidrChild;
+  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: MenuArrowProps<T>) => SeidrElementTagNameMap[T];
+  List: (items: ReactiveValue<MenuItemDescriptor[]>, options?: MenuListRenderOptions) => SeidrChild;
 }
 
 export interface MenuOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseMenuOptions {

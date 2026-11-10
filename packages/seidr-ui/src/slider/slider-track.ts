@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_TRACK } from "../constants.js";
 import type { SliderTrackProps } from "./types.js";
 
 /**
@@ -49,8 +50,8 @@ export function SliderTrack<T extends keyof SeidrElementTagNameMap = "div">(
       onpointerdown: handlePointerDown,
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "track",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_TRACK,
       ...rest,
     } as SeidrElementProps<T>,
     children,

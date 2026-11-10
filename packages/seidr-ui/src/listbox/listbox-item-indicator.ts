@@ -8,6 +8,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_LISTBOX, DATA_PART_ITEM_INDICATOR } from "../constants.js";
 import type { ListboxItemIndicatorProps } from "./types.js";
 
 /**
@@ -17,7 +18,13 @@ export function ListboxItemIndicator<T extends keyof SeidrElementTagNameMap = "d
   props: ListboxItemIndicatorProps<T> = {} as ListboxItemIndicatorProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const { as = "div" as T, instance: item, forceMount = false, dataComponent = "listbox", ...rest } = props;
+  const {
+    as = "div" as T,
+    instance: item,
+    forceMount = false,
+    dataComponent = DATA_COMPONENT_LISTBOX,
+    ...rest
+  } = props;
 
   if (!item) {
     throw new SeidrError("ListboxItemIndicator requires an item instance");
@@ -32,7 +39,7 @@ export function ListboxItemIndicator<T extends keyof SeidrElementTagNameMap = "d
         as,
         {
           dataComponent,
-          dataPart: "item-indicator",
+          dataPart: DATA_PART_ITEM_INDICATOR,
           ariaHidden: "true",
           dataSelected: item.isSelected.as((s) => (s ? "" : undefined)),
           dataHighlighted: item.isHighlighted.as((h) => (h ? "" : undefined)),
@@ -43,4 +50,3 @@ export function ListboxItemIndicator<T extends keyof SeidrElementTagNameMap = "d
       ) as SeidrElementTagNameMap[T],
   ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SWITCH, DATA_PART_CONTROL } from "../constants.js";
 import type { UseSwitchResult } from "./types.js";
 
 export interface SwitchControlOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -69,8 +70,8 @@ export function SwitchControl<T extends keyof SeidrElementTagNameMap = "div">(
       ...sw.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
-      dataComponent: "switch",
-      dataPart: "control",
+      dataComponent: DATA_COMPONENT_SWITCH,
+      dataPart: DATA_PART_CONTROL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_VALUE_DESCRIPTION } from "../constants.js";
 import type { TimeFieldValueDescriptionProps } from "./types.js";
 
 /**
@@ -29,10 +30,7 @@ export function TimeFieldValueDescription<T extends keyof SeidrElementTagNameMap
   }
 
   const baseStyle: Record<string, string> = { display: "none" };
-  const mergedStyle =
-    typeof userStyle === "object" && userStyle !== null
-      ? { ...baseStyle, ...userStyle }
-      : baseStyle;
+  const mergedStyle = typeof userStyle === "object" && userStyle !== null ? { ...baseStyle, ...userStyle } : baseStyle;
 
   const resolvedChildren: (SeidrChild | undefined)[] = [];
   if (children) {
@@ -46,9 +44,7 @@ export function TimeFieldValueDescription<T extends keyof SeidrElementTagNameMap
 
   if (resolvedChildren.length === 0) {
     resolvedChildren.push(
-      instance.formattedValue.as((fv) =>
-        fv ? instance.translations.selectedTimeDescription(fv) : "",
-      ),
+      instance.formattedValue.as((fv) => (fv ? instance.translations.selectedTimeDescription(fv) : "")),
     );
   }
 
@@ -58,10 +54,9 @@ export function TimeFieldValueDescription<T extends keyof SeidrElementTagNameMap
       id: customId ?? instance.formControl.id.as((id) => `${id}-val-desc`),
       style: mergedStyle,
       dataComponent,
-      dataPart: "value-description",
+      dataPart: DATA_PART_VALUE_DESCRIPTION,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

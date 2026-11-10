@@ -10,24 +10,17 @@ import {
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU } from "../constants.js";
 import { useInteractOutside } from "../hooks/use-interact-outside.js";
-import type {
-  MenubarMenuRegistration,
-  MenubarOrientation,
-} from "../menubar/types.js";
-import type {
-  UseNavigationMenuOptions,
-  UseNavigationMenuResult,
-} from "./types.js";
+import type { MenubarMenuRegistration, MenubarOrientation } from "../menubar/types.js";
+import type { UseNavigationMenuOptions, UseNavigationMenuResult } from "./types.js";
 
 /**
  * Headless coordinator hook for a NavigationMenu system.
  */
-export function useNavigationMenu(
-  options: UseNavigationMenuOptions = {},
-): UseNavigationMenuResult {
+export function useNavigationMenu(options: UseNavigationMenuOptions = {}): UseNavigationMenuResult {
   const id = options.id ?? useId("nav-menu");
-  const dataComponent = options.dataComponent ?? "navigation-menu";
+  const dataComponent = options.dataComponent ?? DATA_COMPONENT_NAVIGATION_MENU;
   const delayDuration = options.delayDuration ?? 200;
   const skipDelayDuration = options.skipDelayDuration ?? 300;
   const loop = options.loop ?? true;
@@ -69,11 +62,7 @@ export function useNavigationMenu(
   const getRegisteredEntries = (): MenubarMenuRegistration[] => {
     const rootEl = rootRef();
     if (rootEl && inClient(() => true)) {
-      const triggers = Array.from(
-        rootEl.querySelectorAll<HTMLElement>(
-          "[data-part='trigger'], [data-part='link']",
-        ),
-      );
+      const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-part='trigger'], [data-part='link']"));
       if (triggers.length > 0) {
         return Array.from(registrations.values()).sort((a, b) => {
           const elA = a.getTriggerElement();
@@ -151,10 +140,7 @@ export function useNavigationMenu(
     }, skipDelayDuration);
   };
 
-  const navigateToMenu = (
-    targetReg: MenubarMenuRegistration | undefined,
-    shouldOpen: boolean,
-  ) => {
+  const navigateToMenu = (targetReg: MenubarMenuRegistration | undefined, shouldOpen: boolean) => {
     if (!targetReg) return;
     activeTrigger(targetReg.value);
     targetReg.focusTrigger();
@@ -301,4 +287,3 @@ export function useNavigationMenu(
     viewportRef,
   };
 }
-

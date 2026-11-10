@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_TRACK } from "../constants.js";
 import type { ProgressTrackProps } from "./types.js";
 
 /**
@@ -27,7 +28,7 @@ export function ProgressTrack<T extends keyof SeidrElementTagNameMap = "div">(
       dataIndeterminate:
         progress.role === "meter" ? undefined : progress.isIndeterminate.as((i) => (i ? "" : undefined)),
       dataComponent: dataComponent ?? progress.dataComponent,
-      dataPart: "track",
+      dataPart: DATA_PART_TRACK,
       ...rest,
     } as SeidrElementProps<T>,
     children,

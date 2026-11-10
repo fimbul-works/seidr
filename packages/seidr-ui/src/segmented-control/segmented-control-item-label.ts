@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ITEM_LABEL } from "../constants.js";
 import { RadioGroupItemLabel, type RadioGroupItemLabelProps } from "../radio-group/radio-group-item-label.js";
 import type { UseSegmentedControlItemResult } from "./types.js";
 
@@ -46,11 +47,10 @@ export function SegmentedControlItemLabel<T extends keyof SeidrElementTagNameMap
     {
       as,
       instance: item,
-      dataComponent: "segmented-control",
-      dataPart: "item-label",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_ITEM_LABEL,
       ...rest,
     } as RadioGroupItemLabelProps<T>,
     children,
   );
 }
-

@@ -2,11 +2,13 @@ import { isFn, isObj } from "@fimbul-works/hvat";
 import {
   $,
   createRef,
+  mergeStyleProps,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPPEER, DATA_PART_POSITIONER } from "../constants.js";
 import type { PopperPositionerProps } from "./types.js";
 
 /**
@@ -21,7 +23,7 @@ export function PopperPositioner<T extends keyof SeidrElementTagNameMap = "div">
     instance: popper,
     ref: userRef,
     style: userStyle,
-    dataComponent = "popper",
+    dataComponent = DATA_COMPONENT_POPPEER,
     ...rest
   } = props;
 
@@ -45,20 +47,17 @@ export function PopperPositioner<T extends keyof SeidrElementTagNameMap = "div">
     minWidth: "max-content",
   };
 
-  const combinedStyle = isObj(userStyle) ? { ...baseStyle, ...userStyle } : baseStyle;
-
   return $(
     as,
     {
       ref: internalRef,
       dataComponent,
-      dataPart: "positioner",
+      dataPart: DATA_PART_POSITIONER,
       dataPopperPositioner: "",
       dataPlacement: popper.currentPlacement,
-      style: combinedStyle,
+      style: mergeStyleProps(baseStyle, userStyle),
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

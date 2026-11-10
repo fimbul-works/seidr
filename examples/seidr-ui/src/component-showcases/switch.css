@@ -25,7 +25,7 @@
 }
 
 /* Base Switch Root Container */
-[data-component="switch"][data-part="root"] {
+[data-component="Switch"][data-part="Root"] {
   display: inline-grid;
   grid-template-columns: auto 1fr;
   column-gap: 0.875rem;
@@ -35,13 +35,13 @@
   user-select: none;
 }
 
-[data-component="switch"][data-part="root"][data-disabled] {
+[data-component="Switch"][data-part="Root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Hidden Accessible Native Input */
-[data-component="switch"][data-part="input"] {
+[data-component="Switch"][data-part="Input"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -54,7 +54,7 @@
 }
 
 /* Visual Switch Track / Control */
-[data-component="switch"][data-part="control"] {
+[data-component="Switch"][data-part="Control"] {
   grid-column: 1;
   grid-row: 1;
   position: relative;
@@ -74,44 +74,44 @@
     box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-component="switch"][data-part="root"][data-disabled] [data-component="switch"][data-part="control"] {
+[data-component="Switch"][data-part="Root"][data-disabled] [data-component="Switch"][data-part="Control"] {
   cursor: not-allowed;
 }
 
 /* Checked State */
-[data-component="switch"][data-part="control"][data-checked] {
+[data-component="Switch"][data-part="Control"][data-checked] {
   background: var(--accent, #6366f1);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.35);
 }
 
 /* Hover & Focus States */
-[data-component="switch"][data-part="control"]:focus-visible,
-[data-component="switch"][data-part="input"]:focus-visible + [data-component="switch"][data-part="control"] {
+[data-component="Switch"][data-part="Control"]:focus-visible,
+[data-component="Switch"][data-part="Input"]:focus-visible + [data-component="Switch"][data-part="Control"] {
   outline: none;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
 }
 
-[data-component="switch"][data-part="root"]:hover:not([data-disabled]) [data-component="switch"][data-part="control"] {
+[data-component="Switch"][data-part="Root"]:hover:not([data-disabled]) [data-component="Switch"][data-part="Control"] {
   background: rgba(255, 255, 255, 0.22);
 }
 
-[data-component="switch"][data-part="root"]:hover:not([data-disabled])
-  [data-component="switch"][data-part="control"][data-checked] {
+[data-component="Switch"][data-part="Root"]:hover:not([data-disabled])
+  [data-component="Switch"][data-part="Control"][data-checked] {
   background: var(--accent-light, #818cf8);
 }
 
 /* Validation Invalid State */
-[data-component="switch"][data-part="control"][data-invalid] {
+[data-component="Switch"][data-part="Control"][data-invalid] {
   box-shadow: 0 0 0 2px #ef4444;
 }
 
-[data-component="switch"][data-part="control"][data-invalid][data-checked] {
+[data-component="Switch"][data-part="Control"][data-invalid][data-checked] {
   background: #ef4444;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 /* Sliding Switch Thumb */
-[data-component="switch"][data-part="thumb"] {
+[data-component="Switch"][data-part="Thumb"] {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 9999px;
@@ -123,12 +123,12 @@
   transform: translateX(0);
 }
 
-[data-component="switch"][data-part="thumb"][data-checked] {
+[data-component="Switch"][data-part="Thumb"][data-checked] {
   transform: translateX(1.25rem);
 }
 
 /* Label */
-[data-component="switch"][data-part="label"] {
+[data-component="Switch"][data-part="Label"] {
   grid-column: 2;
   grid-row: 1;
   font-size: 0.925rem;
@@ -138,17 +138,17 @@
   line-height: 1.4;
 }
 
-[data-component="switch"][data-part="root"][data-disabled] [data-component="switch"][data-part="label"] {
+[data-component="Switch"][data-part="Root"][data-disabled] [data-component="Switch"][data-part="Label"] {
   cursor: not-allowed;
 }
 
-[data-component="switch"][data-part="label"][data-required]::after {
+[data-component="Switch"][data-part="Label"][data-required]::after {
   content: " *";
   color: #ef4444;
 }
 
 /* Description */
-[data-component="switch"][data-part="description"] {
+[data-component="Switch"][data-part="Description"] {
   grid-column: 2;
   font-size: 0.8rem;
   color: var(--fg-muted, #94a3b8);
@@ -156,7 +156,7 @@
 }
 
 /* Error Message */
-[data-component="switch"][data-part="error-message"] {
+[data-component="Switch"][data-part="ErrorMessage"] {
   grid-column: 2;
   font-size: 0.8rem;
   color: #f87171;

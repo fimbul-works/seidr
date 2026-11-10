@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PAGINATTION, DATA_PART_NEXT, DATA_PART_NEXT_WRAPPER } from "../constants.js";
 import type { PaginationNextProps } from "./types.js";
 
 /**
@@ -14,7 +15,14 @@ export function PaginationNext<T extends keyof SeidrElementTagNameMap = "button"
   props: PaginationNextProps<T> = {} as PaginationNextProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): HTMLLIElement {
-  const { as = "button" as T, instance: pg, dataComponent = "pagination", dataPart = "next", onclick, ...rest } = props;
+  const {
+    as = "button" as T,
+    instance: pg,
+    dataComponent = DATA_COMPONENT_PAGINATTION,
+    dataPart = DATA_PART_NEXT,
+    onclick,
+    ...rest
+  } = props;
 
   if (!pg) {
     throw new SeidrError("PaginationNext requires an instance coordinator");
@@ -47,7 +55,7 @@ export function PaginationNext<T extends keyof SeidrElementTagNameMap = "button"
     "li",
     {
       dataComponent,
-      dataPart: "next-wrapper",
+      dataPart: DATA_PART_NEXT_WRAPPER,
     },
     button,
   );

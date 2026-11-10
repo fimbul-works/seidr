@@ -6,6 +6,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR } from "../constants.js";
 import { createMenu as createMenuCore } from "../menu/create-menu.js";
 import { MenuArrow } from "../menu/menu-arrow.js";
 import { MenuCheckboxItem } from "../menu/menu-checkbox-item.js";
@@ -65,7 +66,7 @@ import { useMenubar } from "./use-menubar.js";
  * Returns pre-bound element helpers and reactive navigation state.
  */
 export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance {
-  const { dataComponent = "menubar", ...menubarOptions } = options;
+  const { dataComponent = DATA_COMPONENT_MENUBAR, ...menubarOptions } = options;
   const menubar = useMenubar({ dataComponent, ...menubarOptions });
 
   const createdMenus = new Map<string, MenubarMenuInstance>();
@@ -82,9 +83,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
       portalTarget: menubar.portalTarget,
       ...menuOptions,
       modal: false,
-      placement:
-        menuOptions?.placement ??
-        (menubar.orientation === "horizontal" ? "bottom-start" : "right-start"),
+      placement: menuOptions?.placement ?? (menubar.orientation === "horizontal" ? "bottom-start" : "right-start"),
       open: isThisMenuOpen,
       onOpenChange: (open) => {
         if (open) {
@@ -104,9 +103,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
         underlyingMenu.open();
         if (autoFocusFirst) {
           setTimeout(() => {
-            underlyingMenu.highlightItem(
-              underlyingMenu.highlightedValue() ?? "first",
-            );
+            underlyingMenu.highlightItem(underlyingMenu.highlightedValue() ?? "first");
           }, 0);
         }
       },
@@ -187,10 +184,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     props?: MenubarRootProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    MenubarRoot<T>(
-      { dataComponent, instance: menubar, ...props } as MenubarRootProps<T>,
-      children,
-    );
+    MenubarRoot<T>({ dataComponent, instance: menubar, ...props } as MenubarRootProps<T>, children);
 
   const Menu = <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenubarMenuProps<T>,
@@ -217,13 +211,11 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = props?.menuValue
-      ? createdMenus.get(props.menuValue) ?? createMenu(props.menuValue)
+      ? (createdMenus.get(props.menuValue) ?? createMenu(props.menuValue))
       : activeCreatedMenu;
 
     if (!targetMenu) {
-      throw new SeidrError(
-        "MenubarTrigger requires either a menuValue prop or an active MenubarMenu context",
-      );
+      throw new SeidrError("MenubarTrigger requires either a menuValue prop or an active MenubarMenu context");
     }
 
     return targetMenu.Trigger<T>(props, children);
@@ -339,10 +331,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     props?: MenuGroupProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
-    return MenuGroup<T>(
-      { dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>,
-      children,
-    );
+    return MenuGroup<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>, children);
   };
 
   const GroupLabel = <T extends keyof SeidrElementTagNameMap = "span">(
@@ -405,10 +394,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     props?: MenuIconProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] => {
-    return MenuIcon<T>(
-      { dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>,
-      children,
-    );
+    return MenuIcon<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>, children);
   };
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -421,18 +407,14 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     } as MenuArrowProps<T>);
   };
 
-  const createRadioGroup = (
-    radioOptions?: UseMenuRadioGroupOptions,
-  ): MenuRadioGroupInstance => {
+  const createRadioGroup = (radioOptions?: UseMenuRadioGroupOptions): MenuRadioGroupInstance => {
     if (!activeCreatedMenu) {
       throw new SeidrError("createRadioGroup requires an active MenubarMenu context");
     }
     return activeCreatedMenu.createRadioGroup(radioOptions);
   };
 
-  const createSub = (
-    subOptions?: Omit<UseMenuOptions, "parentMenu">,
-  ): MenuInstance => {
+  const createSub = (subOptions?: Omit<UseMenuOptions, "parentMenu">): MenuInstance => {
     if (!activeCreatedMenu) {
       throw new SeidrError("createSub requires an active MenubarMenu context");
     }

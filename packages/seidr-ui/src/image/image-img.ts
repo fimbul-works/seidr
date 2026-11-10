@@ -9,6 +9,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_IMAGE, DATA_PART_IMAGE } from "../constants.js";
 import type { UseImageResult } from "./use-image.js";
 
 export interface ImageImgOptions<T extends keyof SeidrElementTagNameMap = "img"> {
@@ -67,8 +68,8 @@ export function ImageImg<T extends keyof SeidrElementTagNameMap = "img">(
   const condition = wrapValue(isLoaded ?? instance.isLoaded);
 
   const elementProps = {
-    dataComponent: "image",
-    dataPart: "img",
+    dataComponent: DATA_COMPONENT_IMAGE,
+    dataPart: DATA_PART_IMAGE,
     ...rest,
   } as ImageImgProps;
   if (!isUndef(src)) elementProps.src = src;

@@ -11,6 +11,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TOOLTIP, DATA_PART_TRIGGER } from "../constants.js";
 import { getOwnerDocument } from "../utils/dom.js";
 import type { TooltipTriggerProps } from "./types.js";
 
@@ -24,7 +25,7 @@ export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button"
   const {
     as = "button" as T,
     instance: tooltip,
-    dataComponent = "tooltip",
+    dataComponent = DATA_COMPONENT_TOOLTIP,
     type,
     disabled: triggerDisabledProp,
     ariaLabel,
@@ -54,10 +55,9 @@ export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button"
   });
 
   const triggerDisabled = wrapValue(triggerDisabledProp ?? false);
-  const isTriggerDisabled = mergeValues(
-    () => Boolean(triggerDisabled()) || tooltip.isDisabled(),
-    { parents: [triggerDisabled, tooltip.isDisabled] },
-  );
+  const isTriggerDisabled = mergeValues(() => Boolean(triggerDisabled()) || tooltip.isDisabled(), {
+    parents: [triggerDisabled, tooltip.isDisabled],
+  });
 
   let isPointerDown = false;
   let isHovered = false;
@@ -84,12 +84,7 @@ export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button"
       Reflect.apply(userOnPointerEnter, e.currentTarget, [e]);
     }
 
-    if (
-      e.pointerType === "touch" ||
-      tooltip.triggerOnFocusOnly() ||
-      isTriggerDisabled() ||
-      e.defaultPrevented
-    ) {
+    if (e.pointerType === "touch" || tooltip.triggerOnFocusOnly() || isTriggerDisabled() || e.defaultPrevented) {
       return;
     }
 
@@ -190,7 +185,7 @@ export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button"
       "aria-labelledby": ariaLabelledBy,
       "aria-describedby": computedDescribedBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: tooltip.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: tooltip.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: isTriggerDisabled.as((d) => (d ? "" : undefined)),
@@ -205,4 +200,3 @@ export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button"
     children,
   );
 }
-

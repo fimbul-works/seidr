@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PAGINATTION, DATA_PART_ROOT } from "../constants.js";
 import type { PaginationRootProps } from "./types.js";
 
 /**
@@ -18,8 +19,8 @@ export function PaginationRoot<T extends keyof SeidrElementTagNameMap = "nav">(
     as = "nav" as T,
     instance: pg,
     ariaLabel = "Pagination",
-    dataComponent = "pagination",
-    dataPart = "root",
+    dataComponent = DATA_COMPONENT_PAGINATTION,
+    dataPart = DATA_PART_ROOT,
     ...rest
   } = props;
 
@@ -40,4 +41,3 @@ export function PaginationRoot<T extends keyof SeidrElementTagNameMap = "nav">(
     children,
   );
 }
-

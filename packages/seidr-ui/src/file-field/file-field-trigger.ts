@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_TRIGGER } from "../constants.js";
 import type { FileFieldTriggerProps } from "./types.js";
 
 /**
@@ -18,7 +19,7 @@ export function FileFieldTrigger<T extends keyof SeidrElementTagNameMap = "butto
   const {
     as = "button" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     onclick: userOnClick,
     children: propsChildren,
     ...rest
@@ -59,11 +60,10 @@ export function FileFieldTrigger<T extends keyof SeidrElementTagNameMap = "butto
       disabled: instance.isDisabled,
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       onclick: handleClick,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

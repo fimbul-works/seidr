@@ -1,4 +1,5 @@
 import { createComponent } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_METEER } from "../constants.js";
 import { createProgress, Progress } from "../progress/index.js";
 import type { MeterInstance, MeterProps, UseMeterOptions } from "./types.js";
 
@@ -7,7 +8,7 @@ import type { MeterInstance, MeterProps, UseMeterOptions } from "./types.js";
  * Configured with role="meter" and dataComponent="meter".
  */
 export function createMeter(options: UseMeterOptions = {}): MeterInstance {
-  return createProgress({ ...options, role: "meter", dataComponent: "meter" });
+  return createProgress({ ...options, role: "meter", dataComponent: DATA_COMPONENT_METEER });
 }
 
 /**
@@ -15,5 +16,5 @@ export function createMeter(options: UseMeterOptions = {}): MeterInstance {
  * Renders an accessible gauge (role="meter", dataComponent="meter") with label, value label, track, and fill.
  */
 export const Meter = createComponent((props: MeterProps = {}) => {
-  return Progress({ ...props, role: "meter", dataComponent: "meter" });
+  return Progress({ ...props, role: "meter", dataComponent: DATA_COMPONENT_METEER });
 }, "Meter");

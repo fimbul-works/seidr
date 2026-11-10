@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP, DATA_PART_ROOT } from "../constants.js";
 import type { UseRadioGroupOptions, UseRadioGroupResult } from "./types.js";
 
 export interface RadioGroupRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseRadioGroupOptions {
@@ -57,8 +58,8 @@ export function RadioGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ...rg.ariaProps,
       ...rg.dataset,
       ref: rg.rootRef,
-      dataComponent: "radio-group",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_RADIO_GROUP,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

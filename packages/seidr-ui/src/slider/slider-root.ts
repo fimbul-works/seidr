@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_ROOT } from "../constants.js";
 import type { SliderRootProps } from "./types.js";
 
 /**
@@ -28,8 +29,8 @@ export function SliderRoot<T extends keyof SeidrElementTagNameMap = "div">(
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
       dataReadonly: slider.isReadOnly.as((r) => (r ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

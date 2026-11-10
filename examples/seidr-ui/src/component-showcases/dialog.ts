@@ -114,7 +114,7 @@ export const DialogShowcase = createComponent(() => {
                   fgDialog.Title({}, "Sculpted Architecture"),
                   fgDialog.Description({}, "Composed using pre-bound compound element factories."),
                   $p({ style: "margin: 0 0 1rem 0; color: #cbd5e1;" }, "Each sub-element maintains full reactive state and strict accessibility semantics."),
-                  fgDialog.CloseButton({}, "Close Dialog"),
+                  fgDialog.CloseButton({}, "Close"),
                 ]),
               ]),
             ]),

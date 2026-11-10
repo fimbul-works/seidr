@@ -27,11 +27,11 @@
 
 /* ---------------------------------------------------------------------------
  * Semantic CSS Styles: DropdownMenu Component
- * Target via [data-component="dropdown-menu"] and [data-part="..."]
+ * Target via [data-component="DropdownMenu"] and [data-part="..."]
  * --------------------------------------------------------------------------- */
 
 /* Trigger button */
-[data-component="dropdown-menu"][data-part="trigger"] {
+[data-component="DropdownMenu"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -48,30 +48,30 @@
   user-select: none;
 }
 
-[data-component="dropdown-menu"][data-part="trigger"]:hover {
+[data-component="DropdownMenu"][data-part="Trigger"]:hover {
   background-color: hsl(222, 24%, 18%);
   border-color: hsl(222, 16%, 38%);
 }
 
-[data-component="dropdown-menu"][data-part="trigger"][data-expanded] {
+[data-component="DropdownMenu"][data-part="Trigger"][data-expanded] {
   border-color: hsl(217, 91%, 60%);
   box-shadow: 0 0 0 2px hsla(217, 91%, 60%, 0.25);
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="trigger"] {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Trigger"] {
   background-color: #ffffff;
   color: #0f172a;
   border-color: rgba(0, 0, 0, 0.12);
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="trigger"]:hover {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Trigger"]:hover {
   background-color: #f1f5f9;
   border-color: rgba(0, 0, 0, 0.2);
 }
 
 /* Floating content dropdown */
-[data-component="dropdown-menu"][data-part="content"],
-[data-component="dropdown-menu"][data-part="sub-content"] {
+[data-component="DropdownMenu"][data-part="Content"],
+[data-component="DropdownMenu"][data-part="SubContent"] {
   min-width: 14rem;
   padding: 0.35rem;
   background-color: hsl(222, 24%, 13%);
@@ -85,18 +85,18 @@
   box-sizing: border-box;
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="content"],
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="sub-content"] {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Content"],
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="SubContent"] {
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.12);
   box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
 }
 
 /* Items (standard, checkbox, radio, sub-trigger) */
-[data-component="dropdown-menu"][data-part="item"],
-[data-component="dropdown-menu"][data-part="checkbox-item"],
-[data-component="dropdown-menu"][data-part="radio-item"],
-[data-component="dropdown-menu"][data-part="sub-trigger"] {
+[data-component="DropdownMenu"][data-part="Item"],
+[data-component="DropdownMenu"][data-part="CheckboxItem"],
+[data-component="DropdownMenu"][data-part="RadioItem"],
+[data-component="DropdownMenu"][data-part="SubTrigger"] {
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -110,60 +110,60 @@
   transition: background-color 0.1s ease, color 0.1s ease;
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="item"],
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="checkbox-item"],
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="radio-item"],
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="sub-trigger"] {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Item"],
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="CheckboxItem"],
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="RadioItem"],
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="SubTrigger"] {
   color: #1e293b;
 }
 
 /* Hover and Highlighted State */
-[data-component="dropdown-menu"][data-part="item"]:hover:not([data-disabled]),
-[data-component="dropdown-menu"][data-part="checkbox-item"]:hover:not([data-disabled]),
-[data-component="dropdown-menu"][data-part="radio-item"]:hover:not([data-disabled]),
-[data-component="dropdown-menu"][data-part="sub-trigger"]:hover:not([data-disabled]),
-[data-component="dropdown-menu"][data-part="item"][data-highlighted],
-[data-component="dropdown-menu"][data-part="checkbox-item"][data-highlighted],
-[data-component="dropdown-menu"][data-part="radio-item"][data-highlighted],
-[data-component="dropdown-menu"][data-part="sub-trigger"][data-highlighted] {
+[data-component="DropdownMenu"][data-part="Item"]:hover:not([data-disabled]),
+[data-component="DropdownMenu"][data-part="CheckboxItem"]:hover:not([data-disabled]),
+[data-component="DropdownMenu"][data-part="RadioItem"]:hover:not([data-disabled]),
+[data-component="DropdownMenu"][data-part="SubTrigger"]:hover:not([data-disabled]),
+[data-component="DropdownMenu"][data-part="Item"][data-highlighted],
+[data-component="DropdownMenu"][data-part="CheckboxItem"][data-highlighted],
+[data-component="DropdownMenu"][data-part="RadioItem"][data-highlighted],
+[data-component="DropdownMenu"][data-part="SubTrigger"][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
 /* Selected / Checked State */
-[data-component="dropdown-menu"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
-[data-component="dropdown-menu"][data-part="radio-item"][data-checked]:not([data-highlighted]),
-[data-component="dropdown-menu"][data-part="item"][data-checked]:not([data-highlighted]) {
+[data-component="DropdownMenu"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
+[data-component="DropdownMenu"][data-part="RadioItem"][data-checked]:not([data-highlighted]),
+[data-component="DropdownMenu"][data-part="Item"][data-checked]:not([data-highlighted]) {
   background-color: hsla(217, 91%, 60%, 0.15);
   color: hsl(217, 91%, 70%);
   font-weight: 500;
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="radio-item"][data-checked]:not([data-highlighted]),
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="item"][data-checked]:not([data-highlighted]) {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="RadioItem"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Item"][data-checked]:not([data-highlighted]) {
   background-color: rgba(79, 70, 229, 0.1);
   color: #4338ca;
   font-weight: 500;
 }
 
-[data-component="dropdown-menu"][data-part="checkbox-item"][data-checked][data-highlighted],
-[data-component="dropdown-menu"][data-part="radio-item"][data-checked][data-highlighted],
-[data-component="dropdown-menu"][data-part="item"][data-checked][data-highlighted] {
+[data-component="DropdownMenu"][data-part="CheckboxItem"][data-checked][data-highlighted],
+[data-component="DropdownMenu"][data-part="RadioItem"][data-checked][data-highlighted],
+[data-component="DropdownMenu"][data-part="Item"][data-checked][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
-[data-component="dropdown-menu"][data-part="item"][data-disabled],
-[data-component="dropdown-menu"][data-part="checkbox-item"][data-disabled],
-[data-component="dropdown-menu"][data-part="radio-item"][data-disabled],
-[data-component="dropdown-menu"][data-part="sub-trigger"][data-disabled] {
+[data-component="DropdownMenu"][data-part="Item"][data-disabled],
+[data-component="DropdownMenu"][data-part="CheckboxItem"][data-disabled],
+[data-component="DropdownMenu"][data-part="RadioItem"][data-disabled],
+[data-component="DropdownMenu"][data-part="SubTrigger"][data-disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
 /* Sub-trigger chevron arrow indicator */
-[data-component="dropdown-menu"][data-part="sub-trigger"]::after {
+[data-component="DropdownMenu"][data-part="SubTrigger"]::after {
   content: "›";
   margin-left: auto;
   font-size: 1.1rem;
@@ -171,7 +171,7 @@
 }
 
 /* Indicators */
-[data-component="dropdown-menu"][data-part="item-indicator"] {
+[data-component="DropdownMenu"][data-part="ItemIndicator"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -183,23 +183,23 @@
 }
 
 /* Labels and descriptions */
-[data-component="dropdown-menu"][data-part="item-label"] {
+[data-component="DropdownMenu"][data-part="ItemLabel"] {
   flex: 1;
   font-weight: 500;
 }
 
-[data-component="dropdown-menu"][data-part="item-description"] {
+[data-component="DropdownMenu"][data-part="ItemDescription"] {
   font-size: 0.75rem;
   color: var(--fg-muted, #94a3b8);
   margin-left: auto;
 }
 
-[data-component="dropdown-menu"][data-part="item"][data-highlighted] [data-component="dropdown-menu"][data-part="item-description"] {
+[data-component="DropdownMenu"][data-part="Item"][data-highlighted] [data-component="DropdownMenu"][data-part="ItemDescription"] {
   color: rgba(255, 255, 255, 0.8);
 }
 
 /* Icons */
-[data-component="dropdown-menu"][data-part="icon"] {
+[data-component="DropdownMenu"][data-part="Icon"] {
   display: inline-flex;
   font-size: 1rem;
   width: 1.25rem;
@@ -207,19 +207,19 @@
 }
 
 /* Separator */
-[data-component="dropdown-menu"][data-part="separator"] {
+[data-component="DropdownMenu"][data-part="Separator"] {
   height: 1px;
   background-color: hsl(222, 16%, 26%);
   margin: 0.35rem 0;
   border: none;
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="separator"] {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="Separator"] {
   background-color: rgba(0, 0, 0, 0.08);
 }
 
 /* Group Label */
-[data-component="dropdown-menu"][data-part="group-label"] {
+[data-component="DropdownMenu"][data-part="GroupLabel"] {
   padding: 0.4rem 0.65rem 0.2rem;
   font-size: 0.7rem;
   font-weight: 700;
@@ -228,7 +228,7 @@
   color: var(--fg-muted, #94a3b8);
 }
 
-:root[data-theme="light"] [data-component="dropdown-menu"][data-part="group-label"] {
+:root[data-theme="light"] [data-component="DropdownMenu"][data-part="GroupLabel"] {
   color: #64748b;
 }
 

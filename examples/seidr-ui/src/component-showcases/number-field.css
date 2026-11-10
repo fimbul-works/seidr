@@ -41,7 +41,7 @@
 }
 
 /* NumberField Component Styling */
-[data-component="number-field"][data-part="root"] {
+[data-component="NumberField"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   gap: 0.375rem;
@@ -49,7 +49,7 @@
   max-width: 20rem;
 }
 
-[data-component="number-field"][data-part="label"] {
+[data-component="NumberField"][data-part="Label"] {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-primary, #f1f5f9);
@@ -71,7 +71,7 @@
   box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
 }
 
-[data-component="number-field"][data-part="input"] {
+[data-component="NumberField"][data-part="Input"] {
   flex: 1;
   width: 100%;
   padding: 0.5rem 0.75rem;
@@ -83,7 +83,7 @@
   outline: none;
 }
 
-[data-component="number-field"][data-part="input"]::placeholder {
+[data-component="NumberField"][data-part="Input"]::placeholder {
   color: var(--text-muted, #64748b);
 }
 
@@ -93,8 +93,8 @@
   border-left: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
 }
 
-[data-component="number-field"][data-part="increment-trigger"],
-[data-component="number-field"][data-part="decrement-trigger"] {
+[data-component="NumberField"][data-part="IncrementTrigger"],
+[data-component="NumberField"][data-part="DecrementTrigger"] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,24 +110,24 @@
   user-select: none;
 }
 
-[data-component="number-field"][data-part="increment-trigger"]:hover:not(:disabled),
-[data-component="number-field"][data-part="decrement-trigger"]:hover:not(:disabled) {
+[data-component="NumberField"][data-part="IncrementTrigger"]:hover:not(:disabled),
+[data-component="NumberField"][data-part="DecrementTrigger"]:hover:not(:disabled) {
   background: var(--surface-3, rgba(255, 255, 255, 0.12));
   color: var(--text-primary, #ffffff);
 }
 
-[data-component="number-field"][data-part="increment-trigger"]:disabled,
-[data-component="number-field"][data-part="decrement-trigger"]:disabled {
+[data-component="NumberField"][data-part="IncrementTrigger"]:disabled,
+[data-component="NumberField"][data-part="DecrementTrigger"]:disabled {
   opacity: 0.35;
   cursor: not-allowed;
 }
 
-[data-component="number-field"][data-part="description"] {
+[data-component="NumberField"][data-part="Description"] {
   font-size: 0.8rem;
   color: var(--text-muted, #94a3b8);
 }
 
-[data-component="number-field"][data-part="error-message"] {
+[data-component="NumberField"][data-part="ErrorMessage"] {
   font-size: 0.8rem;
   color: var(--error, #f87171);
 }

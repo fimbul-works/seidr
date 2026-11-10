@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_ERROR_MESSAGE } from "../constants.js";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -34,7 +35,12 @@ export function NumberFieldErrorMessage<T extends keyof SeidrElementTagNameMap =
   props: NumberFieldErrorMessageProps<T> = {} as NumberFieldErrorMessageProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const { instance: nf, dataComponent = "number-field", dataPart = "error-message", ...rest } = props;
+  const {
+    instance: nf,
+    dataComponent = DATA_COMPONENT_NUMBER_FIELD,
+    dataPart = DATA_PART_ERROR_MESSAGE,
+    ...rest
+  } = props;
 
   if (!nf) {
     throw new SeidrError("NumberFieldErrorMessage requires an instance coordinator");

@@ -5,6 +5,7 @@ import {
   type SeidrElementProps,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
+import { DATA_PART_GROUP } from "../constants.js";
 import { createRating } from "./create-rating.js";
 import type { RatingProps, RatingRootProps } from "./types.js";
 
@@ -59,7 +60,7 @@ export const Rating = createComponent(
             alignItems: "center",
             gap: "0.25rem",
           },
-          dataPart: "group",
+          dataPart: DATA_PART_GROUP,
         } as SeidrElementProps<"div">,
         Array.from({ length: max }, (_, i) => {
           const itemVal = i + 1;
@@ -98,4 +99,3 @@ export const Rating = createComponent(
   },
   "Rating",
 );
-

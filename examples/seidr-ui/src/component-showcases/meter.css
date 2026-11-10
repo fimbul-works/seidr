@@ -18,7 +18,7 @@
 }
 
 /* Meter Header */
-[data-component="meter"][data-part="header"],
+[data-component="Meter"][data-part="Header"],
 .meter-header {
   display: flex;
   justify-content: space-between;
@@ -27,7 +27,7 @@
 }
 
 /* Meter Root */
-[data-component="meter"][data-part="root"] {
+[data-component="Meter"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -36,14 +36,14 @@
 }
 
 /* Meter Label */
-[data-component="meter"][data-part="label"] {
+[data-component="Meter"][data-part="Label"] {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--fg, #e5e7eb);
 }
 
 /* Meter Value Label */
-[data-component="meter"][data-part="value-label"] {
+[data-component="Meter"][data-part="ValueLabel"] {
   font-size: 0.8125rem;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-weight: 600;
@@ -51,7 +51,7 @@
 }
 
 /* Meter Track */
-[data-component="meter"][data-part="track"] {
+[data-component="Meter"][data-part="Track"] {
   position: relative;
   height: 10px;
   width: 100%;
@@ -61,7 +61,7 @@
 }
 
 /* Meter Fill */
-[data-component="meter"][data-part="fill"] {
+[data-component="Meter"][data-part="Fill"] {
   height: 100%;
   background: linear-gradient(135deg, hsl(173, 80%, 45%), hsl(190, 90%, 40%));
   border-radius: 9999px;
@@ -70,25 +70,25 @@
 }
 
 /* Warning Gauge Fill */
-.meter-warning [data-component="meter"][data-part="fill"],
-.meter-warning[data-component="meter"] [data-part="fill"] {
+.meter-warning [data-component="Meter"][data-part="Fill"],
+.meter-warning[data-component="Meter"] [data-part="Fill"] {
   background: linear-gradient(135deg, hsl(38, 92%, 50%), hsl(25, 95%, 48%));
   box-shadow: 0 0 10px hsla(38, 92%, 50%, 0.4);
 }
 
-.meter-warning [data-component="meter"][data-part="value-label"],
-.meter-warning[data-component="meter"] [data-part="value-label"] {
+.meter-warning [data-component="Meter"][data-part="ValueLabel"],
+.meter-warning[data-component="Meter"] [data-part="ValueLabel"] {
   color: hsl(38, 92%, 60%);
 }
 
 /* Critical Gauge Fill */
-.meter-danger [data-component="meter"][data-part="fill"],
-.meter-danger[data-component="meter"] [data-part="fill"] {
+.meter-danger [data-component="Meter"][data-part="Fill"],
+.meter-danger[data-component="Meter"] [data-part="Fill"] {
   background: linear-gradient(135deg, hsl(0, 84%, 60%), hsl(340, 82%, 52%));
   box-shadow: 0 0 12px hsla(0, 84%, 60%, 0.45);
 }
 
-.meter-danger [data-component="meter"][data-part="value-label"],
-.meter-danger[data-component="meter"] [data-part="value-label"] {
+.meter-danger [data-component="Meter"][data-part="ValueLabel"],
+.meter-danger[data-component="Meter"] [data-part="ValueLabel"] {
   color: hsl(0, 84%, 65%);
 }

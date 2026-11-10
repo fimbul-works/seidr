@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TIME_FIELD, DATA_PART_INPUT } from "../constants.js";
 import type { SegmentType, TimeFieldInputProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function TimeFieldInput<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance,
-    dataComponent = "time-field",
+    dataComponent = DATA_COMPONENT_TIME_FIELD,
     ref: userRef,
     onkeydown: userOnKeyDown,
     children: propsChildren,
@@ -78,11 +79,10 @@ export function TimeFieldInput<T extends keyof SeidrElementTagNameMap = "div">(
       id: instance.formControl.fieldId,
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "input",
+      dataPart: DATA_PART_INPUT,
       onkeydown: handleKeyDown,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP } from "../constants.js";
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseRadioGroupResult } from "./types.js";
 
@@ -36,7 +37,7 @@ export function RadioGroupDescription<T extends keyof SeidrElementTagNameMap = "
       as,
       instance: rg.formControl,
       ...rg.dataset,
-      dataComponent: "radio-group",
+      dataComponent: DATA_COMPONENT_RADIO_GROUP,
       ...rest,
     } as FormControlDescriptionProps<T>,
     children,

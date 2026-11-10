@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL } from "../constants.js";
 import { FormControlDescription, type FormControlDescriptionProps } from "../form-control/form-control-description.js";
 import type { UseSegmentedControlResult } from "./types.js";
 
@@ -36,10 +37,9 @@ export function SegmentedControlDescription<T extends keyof SeidrElementTagNameM
       as,
       instance: sc.formControl,
       ...sc.dataset,
-      dataComponent: "segmented-control",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
       ...rest,
     } as FormControlDescriptionProps<T>,
     children,
   );
 }
-

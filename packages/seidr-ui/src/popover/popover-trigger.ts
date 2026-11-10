@@ -8,6 +8,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPOVER, DATA_PART_TRIGGER } from "../constants.js";
 import type { PopoverTriggerProps } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button"
   const {
     as = "button" as T,
     instance: popover,
-    dataComponent = "popover",
+    dataComponent = DATA_COMPONENT_POPOVER,
     type,
     disabled: triggerDisabledProp,
     ariaLabel,
@@ -76,7 +77,7 @@ export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button"
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: popover.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: popover.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: isTriggerDisabled.as((d) => (d ? "" : undefined)),
@@ -87,4 +88,3 @@ export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button"
     children,
   );
 }
-

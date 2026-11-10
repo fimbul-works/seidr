@@ -81,11 +81,11 @@
 
 /* Tooltip Component Semantic Part Styles */
 
-[data-component="tooltip"][data-part="root"] {
+[data-component="Tooltip"][data-part="Root"] {
   display: inline-flex;
 }
 
-[data-component="tooltip"][data-part="trigger"] {
+[data-component="Tooltip"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -100,21 +100,21 @@
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
-[data-component="tooltip"][data-part="trigger"]:hover {
+[data-component="Tooltip"][data-part="Trigger"]:hover {
   background: var(--btn-hover-bg, #3f3f46);
 }
 
-[data-component="tooltip"][data-part="trigger"]:focus-visible {
+[data-component="Tooltip"][data-part="Trigger"]:focus-visible {
   outline: 2px solid var(--accent, #6366f1);
   outline-offset: 2px;
 }
 
-[data-component="tooltip"][data-part="positioner"] {
+[data-component="Tooltip"][data-part="Positioner"] {
   z-index: 1000;
   pointer-events: none;
 }
 
-[data-component="tooltip"][data-part="content"] {
+[data-component="Tooltip"][data-part="Content"] {
   background: #18181b;
   color: #fafafa;
   border: 1px solid #3f3f46;
@@ -128,7 +128,7 @@
   max-width: 260px;
 }
 
-[data-component="tooltip"][data-part="arrow"] {
+[data-component="Tooltip"][data-part="Arrow"] {
   color: #18181b;
 }
 

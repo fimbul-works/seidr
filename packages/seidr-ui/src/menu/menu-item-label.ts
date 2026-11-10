@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_ITEM_LABEL } from "../constants.js";
 import type { MenuItemLabelProps } from "./types.js";
 
 /**
@@ -14,7 +15,7 @@ export function MenuItemLabel<T extends keyof SeidrElementTagNameMap = "span">(
   props: MenuItemLabelProps<T> = {} as MenuItemLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "span" as T, instance: menu, dataComponent = "menu", ...rest } = props;
+  const { as = "span" as T, instance: menu, dataComponent = DATA_COMPONENT_MENU, ...rest } = props;
 
   if (!menu) {
     throw new SeidrError("MenuItemLabel requires an instance coordinator");
@@ -24,10 +25,9 @@ export function MenuItemLabel<T extends keyof SeidrElementTagNameMap = "span">(
     as,
     {
       dataComponent,
-      dataPart: "item-label",
+      dataPart: DATA_PART_ITEM_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

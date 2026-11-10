@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_LIST } from "../constants.js";
 import type { FileFieldItemListProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function FileFieldItemList<T extends keyof SeidrElementTagNameMap = "ul">
   const {
     as = "ul" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     children: propsChildren,
     ...rest
   } = props;
@@ -41,10 +42,9 @@ export function FileFieldItemList<T extends keyof SeidrElementTagNameMap = "ul">
     {
       role: "list",
       dataComponent,
-      dataPart: "item-list",
+      dataPart: DATA_PART_ITEM_LIST,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

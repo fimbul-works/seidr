@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR, DATA_PART_ROOT } from "../constants.js";
 import type { MenubarRootProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function MenubarRoot<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance,
-    dataComponent = "menubar",
+    dataComponent = DATA_COMPONENT_MENUBAR,
     ref: userRef,
     onkeydown: userOnKeyDown,
     children: propsChildren,
@@ -69,11 +70,10 @@ export function MenubarRoot<T extends keyof SeidrElementTagNameMap = "div">(
       "aria-orientation": instance.orientation,
       dataOrientation: instance.orientation,
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       onkeydown: handleKeyDown,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

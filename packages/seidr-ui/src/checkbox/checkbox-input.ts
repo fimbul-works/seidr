@@ -1,5 +1,5 @@
 import { $, mergeStyleProps, onUnmounted, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { DATA_COMPONENT_CHECKBOX, DATA_PART_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseCheckboxResult } from "./types.js";
 
 export interface CheckboxInputProps extends SeidrElementProps<"input"> {
@@ -50,8 +50,8 @@ export function CheckboxInput(props: CheckboxInputProps = {}): HTMLInputElement 
   return $("input", {
     ...cb.fieldProps,
     id: cb.formControl.fieldId,
-    dataComponent: "checkbox",
-    dataPart: "input",
+    dataComponent: DATA_COMPONENT_CHECKBOX,
+    dataPart: DATA_PART_INPUT,
     ...rest,
     ref: cb.inputRef,
     style: mergedStyle,

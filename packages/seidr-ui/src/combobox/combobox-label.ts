@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_LABEL } from "../constants.js";
 import type { ComboboxLabelProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function ComboboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
   const {
     as = "label" as T,
     instance: combobox,
-    dataComponent = "combobox",
+    dataComponent = DATA_COMPONENT_COMBOBOX,
     id: userId,
     onclick: userOnClick,
     ...rest
@@ -42,7 +43,7 @@ export function ComboboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
       id: userId ?? combobox.labelId,
       htmlFor: as === "label" ? combobox.inputId : undefined,
       dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       dataDisabled: combobox.isDisabled.as((d) => (d ? "" : undefined)),
       onclick: handleClick,
       ...rest,
@@ -50,4 +51,3 @@ export function ComboboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
     children,
   );
 }
-

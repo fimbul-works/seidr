@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_LISTBOX, DATA_PART_ROOT } from "../constants.js";
 import type { ListboxRootProps } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export function ListboxRoot<T extends keyof SeidrElementTagNameMap = "ul">(
   const {
     as = "ul" as T,
     instance: listbox,
-    dataComponent = "listbox",
+    dataComponent = DATA_COMPONENT_LISTBOX,
     ref: userRef,
     onkeydown: userOnKeyDown,
     onfocusin: userOnFocusIn,
@@ -79,7 +80,7 @@ export function ListboxRoot<T extends keyof SeidrElementTagNameMap = "ul">(
       id: listbox.id,
       role: "listbox",
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       dataOrientation: listbox.orientation,
       dataDisabled: listbox.isDisabled.as((d) => (d ? "" : undefined)),
       ariaOrientation: listbox.orientation,

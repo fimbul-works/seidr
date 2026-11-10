@@ -55,7 +55,7 @@
   pointer-events: auto;
 }
 
-[data-component="popper"][data-part="arrow"] {
+[data-component="popper"][data-part="Arrow"] {
   color: hsl(222, 47%, 14%);
 }
 

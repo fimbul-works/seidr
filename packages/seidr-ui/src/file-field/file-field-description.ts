@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_DESCRIPTION } from "../constants.js";
 import type { FileFieldDescriptionProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function FileFieldDescription<T extends keyof SeidrElementTagNameMap = "s
   const {
     as = "span" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     id: customId,
     children: propsChildren,
     ...rest
@@ -43,10 +44,9 @@ export function FileFieldDescription<T extends keyof SeidrElementTagNameMap = "s
       id: customId ?? instance.formControl.descriptionId,
       dataDisabled: instance.isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent,
-      dataPart: "description",
+      dataPart: DATA_PART_DESCRIPTION,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

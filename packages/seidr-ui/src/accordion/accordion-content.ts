@@ -8,6 +8,7 @@ import {
 } from "@fimbul-works/seidr";
 import { CollapsibleContent } from "../collapsible/collapsible-content.js";
 import type { CollapsibleAnimationOptions } from "../collapsible/types.js";
+import { DATA_COMPONENT_ACCORDION, DATA_PART_CONTENT } from "../constants.js";
 import type { AccordionItemInstance } from "./types.js";
 
 export interface AccordionContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -48,8 +49,8 @@ export function AccordionContent<T extends keyof SeidrElementTagNameMap = "div">
       instance: instance.collapsibleInstance,
       role: "region",
       ariaLabelledby: instance.triggerId,
-      dataComponent: "accordion",
-      dataPart: "content",
+      dataComponent: DATA_COMPONENT_ACCORDION,
+      dataPart: DATA_PART_CONTENT,
       animation,
       style: mergeStyleProps(dynamicStyles, style as any),
       ...rest,

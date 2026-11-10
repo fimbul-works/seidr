@@ -10,6 +10,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TOGGLE_GROUP, DATA_PART_ITEM } from "../constants.js";
 import type { ToggleGroupItemProps } from "./types.js";
 
 /**
@@ -24,7 +25,6 @@ export function ToggleGroupItem<T extends keyof SeidrElementTagNameMap = "button
     instance: toggleGroup,
     value,
     disabled: itemDisabledProp,
-    dataComponent = "toggle-group",
     ref: userRef,
     onclick: userOnClick,
     onkeydown: userOnKeyDown,
@@ -98,8 +98,8 @@ export function ToggleGroupItem<T extends keyof SeidrElementTagNameMap = "button
     {
       ref: itemRef,
       type: as === "button" ? (userType ?? "button") : undefined,
-      dataComponent,
-      dataPart: "item",
+      dataComponent: DATA_COMPONENT_TOGGLE_GROUP,
+      dataPart: DATA_PART_ITEM,
       dataOrientation: toggleGroup.orientation,
       dataDisabled: isItemDisabledDerived.as((d) => (d ? "" : undefined)),
       disabled: as === "button" ? isItemDisabledDerived.as((d) => (d ? true : undefined)) : undefined,

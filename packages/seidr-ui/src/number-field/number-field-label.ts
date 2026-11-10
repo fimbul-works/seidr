@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_LABEL } from "../constants.js";
 import { FormControlLabel, type FormControlLabelProps } from "../form-control/form-control-label.js";
 import type { UseNumberFieldResult } from "./types.js";
 
@@ -25,7 +26,7 @@ export function NumberFieldLabel<T extends keyof SeidrElementTagNameMap = "label
   props: NumberFieldLabelProps<T> = {} as NumberFieldLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { instance: nf, dataComponent = "number-field", dataPart = "label", ...rest } = props;
+  const { instance: nf, dataComponent = DATA_COMPONENT_NUMBER_FIELD, dataPart = DATA_PART_LABEL, ...rest } = props;
 
   if (!nf) {
     throw new SeidrError("NumberFieldLabel requires an instance coordinator");

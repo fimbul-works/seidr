@@ -2,7 +2,7 @@ import { createComponent, createValue, mount, registerNavigationHandler, type Se
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { Breadcrumbs, createBreadcrumbs } from "./index.js";
+import { type BreadcrumbItemDescriptor, Breadcrumbs, createBreadcrumbs } from "./index.js";
 
 describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
   let target: HTMLElement;

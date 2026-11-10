@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CHECKBOX, DATA_PART_ROOT } from "../constants.js";
 import type { UseCheckboxOptions, UseCheckboxResult } from "./types.js";
 
 export interface CheckboxRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseCheckboxOptions {
@@ -72,8 +73,8 @@ export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ref: cb.rootRef,
       ...cb.dataset,
       onpointerdown: handlePointerDown,
-      dataComponent: "checkbox",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_CHECKBOX,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

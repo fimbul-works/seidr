@@ -1,10 +1,5 @@
-import {
-  $,
-  createRef,
-  inClient,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { $, createRef, inClient, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_HIDDEN_INPUT, DATA_PART_HIDDEN_SELECT } from "../constants.js";
 import type { SelectHiddenSelectProps, SelectItemData, SelectNode } from "./types.js";
 
 function flattenItems(nodes: SelectNode[]): SelectItemData[] {
@@ -23,7 +18,7 @@ function flattenItems(nodes: SelectNode[]): SelectItemData[] {
  * Visually hidden native `<select>` element for form participation, validation, and browser autofill.
  */
 export function SelectHiddenSelect(props: SelectHiddenSelectProps = {}): SeidrElementTagNameMap["select"] {
-  const { instance: select, dataComponent = "select", ...rest } = props;
+  const { instance: select, dataComponent = DATA_COMPONENT_SELECT, ...rest } = props;
 
   if (!select) {
     throw new SeidrError("SelectHiddenSelect requires an instance coordinator");
@@ -93,7 +88,7 @@ export function SelectHiddenSelect(props: SelectHiddenSelectProps = {}): SeidrEl
       tabIndex: -1,
       ariaHidden: "true",
       dataComponent,
-      dataPart: "hidden-select",
+      dataPart: DATA_PART_HIDDEN_SELECT,
       style: visuallyHiddenStyle,
       ...rest,
     },

@@ -10,6 +10,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_RADIO_ITEM } from "../constants.js";
 import type { MenuRadioItemProps } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function MenuRadioItem<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: menu,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     value,
     radioGroupInstance,
     disabled: itemDisabledProp,
@@ -48,10 +49,9 @@ export function MenuRadioItem<T extends keyof SeidrElementTagNameMap = "div">(
   }
 
   const disabledObservable = wrapValue(itemDisabledProp ?? false);
-  const isDisabled = mergeValues(
-    () => Boolean(radioGroupInstance.isDisabled() || disabledObservable()),
-    { parents: [radioGroupInstance.isDisabled, disabledObservable] },
-  );
+  const isDisabled = mergeValues(() => Boolean(radioGroupInstance.isDisabled() || disabledObservable()), {
+    parents: [radioGroupInstance.isDisabled, disabledObservable],
+  });
 
   const isSelected = radioGroupInstance.isSelected(value);
   const isHighlighted = menu.highlightedValue.as((h) => h === value);
@@ -120,7 +120,7 @@ export function MenuRadioItem<T extends keyof SeidrElementTagNameMap = "div">(
       "aria-checked": isSelected.as((s) => (s ? "true" : "false")),
       "aria-disabled": isDisabled.as((d) => (d ? "true" : undefined)),
       dataComponent,
-      dataPart: "radio-item",
+      dataPart: DATA_PART_RADIO_ITEM,
       dataValue: value,
       dataHighlighted: isHighlighted.as((h) => (h ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
@@ -132,4 +132,3 @@ export function MenuRadioItem<T extends keyof SeidrElementTagNameMap = "div">(
     resolvedChildren,
   );
 }
-

@@ -13,10 +13,11 @@ import {
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
-import { FormControlDescription } from "../form-control/form-control-description.js";
+import { DATA_COMPONENT_SELECT } from "../constants.js";
 import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
-import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
+import { FormControlDescription } from "../form-control/form-control-description.js";
 import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
+import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
 import { ListboxItem } from "../listbox/listbox-item.js";
 import { ListboxItemDescription } from "../listbox/listbox-item-description.js";
 import { ListboxItemIndicator } from "../listbox/listbox-item-indicator.js";
@@ -94,7 +95,7 @@ export function createSelect<Option = any, OptGroup = any>(
         {
           instance: itemInstance,
           value: itemOptions.value,
-          dataComponent: "select",
+          dataComponent: DATA_COMPONENT_SELECT,
           ...props,
         } as ListboxItemProps<T>,
         children,
@@ -105,7 +106,7 @@ export function createSelect<Option = any, OptGroup = any>(
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItemLabel(
-        { instance: itemInstance, dataComponent: "select", ...props } as ListboxItemLabelProps<T>,
+        { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemLabelProps<T>,
         children,
       );
 
@@ -114,7 +115,7 @@ export function createSelect<Option = any, OptGroup = any>(
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItemDescription(
-        { instance: itemInstance, dataComponent: "select", ...props } as ListboxItemDescriptionProps<T>,
+        { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemDescriptionProps<T>,
         children,
       );
 
@@ -123,7 +124,7 @@ export function createSelect<Option = any, OptGroup = any>(
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItemIndicator(
-        { instance: itemInstance, dataComponent: "select", ...props } as ListboxItemIndicatorProps<T>,
+        { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemIndicatorProps<T>,
         children,
       );
 
@@ -198,7 +199,10 @@ export function createSelect<Option = any, OptGroup = any>(
     const previous = currentItemInstance;
     currentItemInstance = itemInstance;
     try {
-      return ListboxItem({ instance: itemInstance, dataComponent: "select", ...props } as ListboxItemProps<T>, children);
+      return ListboxItem(
+        { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemProps<T>,
+        children,
+      );
     } finally {
       currentItemInstance = previous;
     }
@@ -215,7 +219,10 @@ export function createSelect<Option = any, OptGroup = any>(
     if (!itemInst) {
       throw new SeidrError("SelectItemLabel requires an item instance or must be rendered inside SelectItem");
     }
-    return ListboxItemLabel({ instance: itemInst, dataComponent: "select", ...props } as ListboxItemLabelProps<T>, children);
+    return ListboxItemLabel(
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemLabelProps<T>,
+      children,
+    );
   };
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -230,7 +237,7 @@ export function createSelect<Option = any, OptGroup = any>(
       throw new SeidrError("SelectItemDescription requires an item instance or must be rendered inside SelectItem");
     }
     return ListboxItemDescription(
-      { instance: itemInst, dataComponent: "select", ...props } as ListboxItemDescriptionProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemDescriptionProps<T>,
       children,
     );
   };
@@ -247,7 +254,7 @@ export function createSelect<Option = any, OptGroup = any>(
       throw new SeidrError("SelectItemIndicator requires an item instance or must be rendered inside SelectItem");
     }
     return ListboxItemIndicator(
-      { instance: itemInst, dataComponent: "select", ...props } as ListboxItemIndicatorProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemIndicatorProps<T>,
       children,
     );
   };
@@ -256,21 +263,21 @@ export function createSelect<Option = any, OptGroup = any>(
     props: SelectSectionProps<T> = {} as SelectSectionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSection<T>({ dataComponent: "select", ...props } as ListboxSectionProps<T>, children);
+    ListboxSection<T>({ dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxSectionProps<T>, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SelectSectionLabelProps<T> = {} as SelectSectionLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSectionLabel<T>({ dataComponent: "select", ...props } as ListboxSectionLabelProps<T>, children);
+    ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxSectionLabelProps<T>, children);
 
   const HiddenSelect = (props: SelectHiddenSelectProps = {}) =>
-    SelectHiddenSelect({ instance, dataComponent: "select", ...props });
+    SelectHiddenSelect({ instance, dataComponent: DATA_COMPONENT_SELECT, ...props });
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectArrowProps<T> = {} as SelectArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: "select", ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_SELECT, ...props } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectDescriptionProps<T> = {} as SelectDescriptionProps<T>,
@@ -279,7 +286,7 @@ export function createSelect<Option = any, OptGroup = any>(
     FormControlDescription<T>(
       {
         id: instance.descriptionId,
-        dataComponent: "select",
+        dataComponent: DATA_COMPONENT_SELECT,
         ...props,
       } as FormControlDescriptionProps<T>,
       children,
@@ -292,7 +299,7 @@ export function createSelect<Option = any, OptGroup = any>(
     FormControlErrorMessage<T>(
       {
         id: instance.errorMessageId,
-        dataComponent: "select",
+        dataComponent: DATA_COMPONENT_SELECT,
         ...props,
       } as FormControlErrorMessageProps<T>,
       children,
@@ -322,7 +329,10 @@ export function createSelect<Option = any, OptGroup = any>(
       const secKey = sectionVal().key;
       const sectionItems = sectionVal.as((s) => s.items ?? []) as Value<SelectItemData<Option>[]>;
       return Section({ id: secKey }, [
-        SectionLabel({}, sectionVal.as((s) => s.label)),
+        SectionLabel(
+          {},
+          sectionVal.as((s) => s.label),
+        ),
         $("ul", { role: "group" }, [
           List<SelectItemData<Option>, string>(
             sectionItems,

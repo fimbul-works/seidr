@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_THUMB } from "../constants.js";
 import { extractAriaProps } from "../utils/aria.js";
 import type { SliderThumbProps } from "./types.js";
 
@@ -103,8 +104,8 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
       dataDragging: slider.isDragging.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "thumb",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_THUMB,
       ...rest,
     } as SeidrElementProps<T>,
     children,

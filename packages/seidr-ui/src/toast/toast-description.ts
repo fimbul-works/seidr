@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_DESCRIPTION } from "../constants.js";
 import type { ToastDescriptionProps } from "./types.js";
 
 /**
@@ -30,10 +31,9 @@ export function ToastDescription<T extends keyof SeidrElementTagNameMap = "div">
     {
       id: descriptionId,
       dataComponent: dataComponent ?? toast.dataComponent,
-      dataPart: "description",
+      dataPart: DATA_PART_DESCRIPTION,
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

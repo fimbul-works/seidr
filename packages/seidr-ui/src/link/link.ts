@@ -12,6 +12,7 @@ import {
   unwrapValue,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_LINK } from "../constants.js";
 import type { LinkProps } from "./types.js";
 
 /**
@@ -95,7 +96,7 @@ export function Link<T extends keyof SeidrElementTagNameMap = "a">(
   return $(
     as,
     {
-      dataComponent: "link",
+      dataComponent: DATA_COMPONENT_LINK,
       dataCurrent: isActive.as((a) => (a ? "" : undefined)),
       ...restProps,
       href: wrappedHref,

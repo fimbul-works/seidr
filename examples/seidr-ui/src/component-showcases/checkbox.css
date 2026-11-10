@@ -25,7 +25,7 @@
 }
 
 /* Base Checkbox Root Container */
-[data-component="checkbox"][data-part="root"] {
+[data-component="Checkbox"][data-part="Root"] {
   display: inline-grid;
   grid-template-columns: auto 1fr;
   column-gap: 0.75rem;
@@ -35,13 +35,13 @@
   user-select: none;
 }
 
-[data-component="checkbox"][data-part="root"][data-disabled] {
+[data-component="Checkbox"][data-part="Root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Hidden Accessible Native Input */
-[data-component="checkbox"][data-part="input"] {
+[data-component="Checkbox"][data-part="Input"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -54,7 +54,7 @@
 }
 
 /* Visual Checkbox Control Box */
-[data-component="checkbox"][data-part="control"] {
+[data-component="Checkbox"][data-part="Control"] {
   grid-column: 1;
   grid-row: 1;
   width: 1.25rem;
@@ -71,45 +71,45 @@
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-component="checkbox"][data-part="root"][data-disabled] [data-component="checkbox"][data-part="control"] {
+[data-component="Checkbox"][data-part="Root"][data-disabled] [data-component="Checkbox"][data-part="Control"] {
   cursor: not-allowed;
 }
 
 /* Hover & Focus States */
-[data-component="checkbox"][data-part="control"]:focus-visible,
-[data-component="checkbox"][data-part="input"]:focus-visible + [data-component="checkbox"][data-part="control"] {
+[data-component="Checkbox"][data-part="Control"]:focus-visible,
+[data-component="Checkbox"][data-part="Input"]:focus-visible + [data-component="Checkbox"][data-part="Control"] {
   outline: none;
   border-color: var(--accent, #6366f1);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
 }
 
-[data-component="checkbox"][data-part="root"]:hover:not([data-disabled])
-  [data-component="checkbox"][data-part="control"] {
+[data-component="Checkbox"][data-part="Root"]:hover:not([data-disabled])
+  [data-component="Checkbox"][data-part="Control"] {
   border-color: var(--accent, #6366f1);
   background: rgba(99, 102, 241, 0.08);
 }
 
 /* Checked & Indeterminate States */
-[data-component="checkbox"][data-part="control"][data-checked],
-[data-component="checkbox"][data-part="control"][data-indeterminate] {
+[data-component="Checkbox"][data-part="Control"][data-checked],
+[data-component="Checkbox"][data-part="Control"][data-indeterminate] {
   background: var(--accent, #6366f1);
   border-color: var(--accent, #6366f1);
   box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
 }
 
 /* Validation Invalid State */
-[data-component="checkbox"][data-part="control"][data-invalid] {
+[data-component="Checkbox"][data-part="Control"][data-invalid] {
   border-color: #ef4444;
 }
 
-[data-component="checkbox"][data-part="control"][data-invalid][data-checked] {
+[data-component="Checkbox"][data-part="Control"][data-invalid][data-checked] {
   background: #ef4444;
   border-color: #ef4444;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
 }
 
 /* Checkbox Indicator (Icon) */
-[data-component="checkbox"][data-part="indicator"] {
+[data-component="Checkbox"][data-part="Indicator"] {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,7 +122,7 @@
 }
 
 /* Label */
-[data-component="checkbox"][data-part="label"] {
+[data-component="Checkbox"][data-part="Label"] {
   grid-column: 2;
   grid-row: 1;
   font-size: 0.925rem;
@@ -132,17 +132,17 @@
   line-height: 1.35;
 }
 
-[data-component="checkbox"][data-part="root"][data-disabled] [data-component="checkbox"][data-part="label"] {
+[data-component="Checkbox"][data-part="Root"][data-disabled] [data-component="Checkbox"][data-part="Label"] {
   cursor: not-allowed;
 }
 
-[data-component="checkbox"][data-part="label"][data-required]::after {
+[data-component="Checkbox"][data-part="Label"][data-required]::after {
   content: " *";
   color: #ef4444;
 }
 
 /* Description */
-[data-component="checkbox"][data-part="description"] {
+[data-component="Checkbox"][data-part="Description"] {
   grid-column: 2;
   font-size: 0.8rem;
   color: var(--fg-muted, #94a3b8);
@@ -150,7 +150,7 @@
 }
 
 /* Error Message */
-[data-component="checkbox"][data-part="error-message"] {
+[data-component="Checkbox"][data-part="ErrorMessage"] {
   grid-column: 2;
   font-size: 0.8rem;
   color: #f87171;

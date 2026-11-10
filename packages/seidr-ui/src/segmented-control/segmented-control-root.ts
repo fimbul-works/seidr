@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ROOT } from "../constants.js";
 import type { UseSegmentedControlOptions, UseSegmentedControlResult } from "./types.js";
 
 export interface SegmentedControlRootOptions<T extends keyof SeidrElementTagNameMap = "div">
@@ -58,8 +59,8 @@ export function SegmentedControlRoot<T extends keyof SeidrElementTagNameMap = "d
       ...sc.ariaProps,
       ...sc.dataset,
       ref: sc.rootRef,
-      dataComponent: "segmented-control",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

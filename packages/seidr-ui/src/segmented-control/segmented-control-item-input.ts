@@ -1,4 +1,5 @@
 import { type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ITEM_INPUT } from "../constants.js";
 import { RadioGroupItemInput } from "../radio-group/radio-group-item-input.js";
 import type { UseSegmentedControlItemResult } from "./types.js";
 
@@ -22,9 +23,8 @@ export function SegmentedControlItemInput(props: SegmentedControlItemInputProps 
 
   return RadioGroupItemInput({
     instance: item,
-    dataComponent: "segmented-control",
-    dataPart: "item-input",
+    dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+    dataPart: DATA_PART_ITEM_INPUT,
     ...rest,
   });
 }
-

@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FORM_CONTROL, DATA_PART_LABEL } from "../constants.js";
 import type { UseFormControlResult } from "./types.js";
 
 export interface FormControlLabelOptions<T extends keyof SeidrElementTagNameMap = "label"> {
@@ -53,8 +54,8 @@ export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label
     {
       id,
       htmlFor: effectiveHtmlFor,
-      dataComponent: "form-control",
-      dataPart: "label",
+      dataComponent: DATA_COMPONENT_FORM_CONTROL,
+      dataPart: DATA_PART_LABEL,
       ...form.dataset,
       ...rest,
     } as SeidrElementProps<T>,

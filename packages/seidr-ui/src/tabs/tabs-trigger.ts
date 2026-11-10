@@ -9,6 +9,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TABS, DATA_PART_TRIGGER } from "../constants.js";
 import type { TabsTriggerProps } from "./types.js";
 
 /**
@@ -113,8 +114,8 @@ export function TabsTrigger<T extends keyof SeidrElementTagNameMap = "button">(
       dataOrientation: tabs.orientation,
       dataSelected: isSelected.as((s) => (s ? "" : undefined)),
       dataDisabled: effectiveDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "tabs",
-      dataPart: "trigger",
+      dataComponent: DATA_COMPONENT_TABS,
+      dataPart: DATA_PART_TRIGGER,
       ...rest,
     } as SeidrElementProps<T>,
     children,

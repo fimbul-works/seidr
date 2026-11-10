@@ -1,6 +1,7 @@
 import { createValue, inClient, mergeValues, onUnmounted, useId, wrapValue } from "@fimbul-works/seidr";
-import { toastStore } from "./toast-store.js";
+import { DATA_COMPONENT_TOAST } from "../constants.js";
 import { TOAST_INTL_TRANSLATIONS } from "./toast.intl.js";
+import { toastStore } from "./toast-store.js";
 import type { ToastPriority, ToastSwipeDirection, UseToastOptions, UseToastResult } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function useToast(options: UseToastOptions): UseToastResult {
     onSwipeCancel,
     onSwipeEnd,
     onEscapeKeyDown,
-    dataComponent = "toast",
+    dataComponent = DATA_COMPONENT_TOAST,
   } = options;
 
   const id = customId ?? useId(dataComponent);
@@ -55,9 +56,7 @@ export function useToast(options: UseToastOptions): UseToastResult {
     { parents: region ? [customDuration, region.duration] : [customDuration] },
   );
 
-  const swipeDirection = region
-    ? region.swipeDirection
-    : wrapValue<ToastSwipeDirection>("right").as((d) => d);
+  const swipeDirection = region ? region.swipeDirection : wrapValue<ToastSwipeDirection>("right").as((d) => d);
   const swipeThreshold = region ? region.swipeThreshold : wrapValue(50).as((t) => t);
 
   const lifeTimeState = createValue(100, { hydrate: false });
@@ -188,4 +187,3 @@ export function useToast(options: UseToastOptions): UseToastResult {
     onEscapeKeyDown,
   };
 }
-

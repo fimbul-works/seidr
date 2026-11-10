@@ -1,10 +1,6 @@
-import {
-  type SeidrChild,
-  type SeidrElementProps,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
 import { Button } from "../button.js";
+import { DATA_PART_CLOSE_BUTTON } from "../constants.js";
 import type { ToastCloseButtonProps } from "./types.js";
 
 /**
@@ -40,11 +36,10 @@ export function ToastCloseButton<T extends keyof SeidrElementTagNameMap = "butto
       as,
       ariaLabel: ariaLabel ?? ariaLabelHyphen ?? toast.translations.close,
       dataComponent: dataComponent ?? toast.dataComponent,
-      dataPart: "close-button",
+      dataPart: DATA_PART_CLOSE_BUTTON,
       onclick: handleClick,
       ...rest,
     } as SeidrElementProps<T>,
     children,
   );
 }
-

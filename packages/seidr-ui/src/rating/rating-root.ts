@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RATING, DATA_PART_ROOT } from "../constants.js";
 import type { RatingRootProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function RatingRoot<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance,
-    dataComponent = "rating",
+    dataComponent = DATA_COMPONENT_RATING,
     ref: userRef,
     onkeydown: userOnKeyDown,
     onpointerleave: userOnPointerLeave,
@@ -83,7 +84,7 @@ export function RatingRoot<T extends keyof SeidrElementTagNameMap = "div">(
       "aria-invalid": instance.formControl.isInvalid.as((i) => (i ? "true" : undefined)),
       dataOrientation: instance.orientation,
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       dataDisabled: instance.isDisabled.as((d) => (d ? "" : undefined)),
       dataReadonly: instance.isReadOnly.as((r) => (r ? "" : undefined)),
       dataInvalid: instance.formControl.isInvalid.as((i) => (i ? "" : undefined)),
@@ -95,4 +96,3 @@ export function RatingRoot<T extends keyof SeidrElementTagNameMap = "div">(
     resolvedChildren,
   );
 }
-

@@ -26,17 +26,18 @@ export const CheckboxShowcase = createComponent(() => {
   const agreedToTerms = createValue(false);
   const termsValidation = agreedToTerms.as((agreed) => (agreed ? "valid" : "invalid"));
 
-  // Checkbox.create instance pattern for the terms agreement
+  // --- Section 4: Interactive Disabling ---
+  const isDisabled = createValue(false);
+
+    // Checkbox.create instance pattern for the terms agreement
   const termsCheckbox = createCheckbox({
     id: "terms-checkbox",
     checked: agreedToTerms,
     onChange: (val: boolean) => agreedToTerms(val),
     required: true,
+    disabled: isDisabled,
     validationState: termsValidation,
   });
-
-  // --- Section 4: Interactive Disabling ---
-  const isDisabled = createValue(false);
 
   return $section({ className: "card" }, [
     $div({ className: "card-header" }, [

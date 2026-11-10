@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_VALUE } from "../constants.js";
 import type { SelectItemData, SelectNode, SelectValueProps } from "./types.js";
 
 function flattenItems(nodes: SelectNode[]): SelectItemData[] {
@@ -30,7 +31,7 @@ export function SelectValue<T extends keyof SeidrElementTagNameMap = "span">(
   const {
     as = "span" as T,
     instance: select,
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     id: userId,
     placeholder,
     formatValue,
@@ -71,9 +72,7 @@ export function SelectValue<T extends keyof SeidrElementTagNameMap = "span">(
         }
 
         const first = selectedNodes[0];
-        return first
-          ? (first.label ?? first.textValue ?? first.value)
-          : (placeholder ?? select.placeholder ?? "");
+        return first ? (first.label ?? first.textValue ?? first.value) : (placeholder ?? select.placeholder ?? "");
       },
       {
         parents: [select.isEmpty, select.listbox.selectedValues, select.normalizedOptions],
@@ -86,7 +85,7 @@ export function SelectValue<T extends keyof SeidrElementTagNameMap = "span">(
     {
       id: userId ?? select.valueId,
       dataComponent,
-      dataPart: "value",
+      dataPart: DATA_PART_VALUE,
       dataPlaceholderShown: select.isEmpty.as((empty) => (empty ? "" : undefined)),
       ...rest,
     } as SeidrElementProps<T>,

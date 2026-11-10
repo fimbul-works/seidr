@@ -46,29 +46,29 @@
 }
 
 /* Core Rating Component Elements */
-[data-component="rating"][data-part="root"] {
+[data-component="Rating"][data-part="Root"] {
   display: inline-flex;
   flex-direction: column;
   gap: 0.375rem;
   user-select: none;
 }
 
-[data-component="rating"][data-part="label"] {
+[data-component="Rating"][data-part="Label"] {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-color, #18181b);
 }
 
-[data-component="rating"][data-part="description"] {
+[data-component="Rating"][data-part="Description"] {
   font-size: 0.75rem;
   color: #6b7280;
 }
 
-[data-theme*="dark"] [data-component="rating"][data-part="description"] {
+[data-theme*="dark"] [data-component="Rating"][data-part="Description"] {
   color: #9ca3af;
 }
 
-[data-component="rating"][data-part="item"] {
+[data-component="Rating"][data-part="Item"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -80,34 +80,34 @@
   line-height: 1;
 }
 
-[data-component="rating"][data-part="item"]:hover {
+[data-component="Rating"][data-part="Item"]:hover {
   transform: scale(1.18);
 }
 
-[data-component="rating"][data-part="item"]:focus-visible {
+[data-component="Rating"][data-part="Item"]:focus-visible {
   outline: 2px solid #0284c7;
   outline-offset: 2px;
 }
 
-[data-component="rating"][data-part="item"][data-disabled] {
+[data-component="Rating"][data-part="Item"][data-disabled] {
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-[data-component="rating"][data-part="item"][data-disabled]:hover {
+[data-component="Rating"][data-part="Item"][data-disabled]:hover {
   transform: none;
 }
 
-[data-component="rating"][data-part="item"][data-readonly] {
+[data-component="Rating"][data-part="Item"][data-readonly] {
   cursor: default;
 }
 
-[data-component="rating"][data-part="item"][data-readonly]:hover {
+[data-component="Rating"][data-part="Item"][data-readonly]:hover {
   transform: none;
 }
 
 /* Item Star Indicator */
-[data-component="rating"][data-part="item-indicator"] {
+[data-component="Rating"][data-part="ItemIndicator"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -116,42 +116,42 @@
   transition: color 150ms ease;
 }
 
-[data-theme*="dark"] [data-component="rating"][data-part="item-indicator"] {
+[data-theme*="dark"] [data-component="Rating"][data-part="ItemIndicator"] {
   color: #4b5563;
 }
 
-[data-component="rating"][data-part="item-indicator"][data-state="checked"] {
+[data-component="Rating"][data-part="ItemIndicator"][data-state="checked"] {
   color: #f59e0b; /* bright amber */
 }
 
-[data-component="rating"][data-part="item-indicator"][data-state="half"] {
+[data-component="Rating"][data-part="ItemIndicator"][data-state="half"] {
   color: #f59e0b;
 }
 
 /* Custom Emoji / Heart / Flame Indicators */
-.rating-flame [data-component="rating"][data-part="item-indicator"] {
+.rating-flame [data-component="Rating"][data-part="ItemIndicator"] {
   font-size: 1.5rem;
   filter: grayscale(1) opacity(0.35);
   transition: filter 150ms ease;
 }
 
-.rating-flame [data-component="rating"][data-part="item-indicator"][data-state="checked"],
-.rating-flame [data-component="rating"][data-part="item-indicator"][data-state="half"] {
+.rating-flame [data-component="Rating"][data-part="ItemIndicator"][data-state="checked"],
+.rating-flame [data-component="Rating"][data-part="ItemIndicator"][data-state="half"] {
   filter: none;
 }
 
-.rating-heart [data-component="rating"][data-part="item-indicator"] {
+.rating-heart [data-component="Rating"][data-part="ItemIndicator"] {
   font-size: 1.5rem;
   color: #e5e7eb;
   transition: color 150ms ease;
 }
 
-[data-theme*="dark"] .rating-heart [data-component="rating"][data-part="item-indicator"] {
+[data-theme*="dark"] .rating-heart [data-component="Rating"][data-part="ItemIndicator"] {
   color: #374151;
 }
 
-.rating-heart [data-component="rating"][data-part="item-indicator"][data-state="checked"],
-.rating-heart [data-component="rating"][data-part="item-indicator"][data-state="half"] {
+.rating-heart [data-component="Rating"][data-part="ItemIndicator"][data-state="checked"],
+.rating-heart [data-component="Rating"][data-part="ItemIndicator"][data-state="half"] {
   color: #ef4444; /* red-500 */
 }
 

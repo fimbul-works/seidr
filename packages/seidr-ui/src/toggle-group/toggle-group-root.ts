@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TOGGLE_GROUP, DATA_PART_ROOT } from "../constants.js";
 import type { ToggleGroupRootProps } from "./types.js";
 
 /**
@@ -14,19 +15,19 @@ export function ToggleGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToggleGroupRootProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "div" as T, instance: toggleGroup, dataComponent = "toggle-group", ...rest } = props;
+  const { as = "div" as T, instance: toggleGroup, ...rest } = props;
 
   if (!toggleGroup) {
     throw new SeidrError("ToggleGroupRoot requires an instance coordinator");
   }
 
   return $(
-    as as T,
+    as,
     {
       id: toggleGroup.id,
       role: "group",
-      dataComponent,
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_TOGGLE_GROUP,
+      dataPart: DATA_PART_ROOT,
       dataOrientation: toggleGroup.orientation,
       dataDisabled: toggleGroup.isDisabled.as((d) => (d ? "" : undefined)),
       ariaDisabled: toggleGroup.isDisabled.as((d) => (d ? "true" : undefined)),

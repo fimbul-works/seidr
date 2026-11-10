@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ROOT } from "../constants.js";
 import type { FileFieldRootProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function FileFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     id: customId,
     children: propsChildren,
     ...rest
@@ -44,10 +45,9 @@ export function FileFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
       id: customId ?? instance.formControl.id,
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

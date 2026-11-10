@@ -1,4 +1,5 @@
 import { $, createComponent, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_CONTROLS, DATA_PART_GROUP } from "../constants.js";
 import { createNumberField } from "./create-number-field.js";
 import type { NumberFieldProps } from "./types.js";
 
@@ -39,8 +40,8 @@ export const NumberField = createComponent(
           "div",
           {
             className: "number-field-controls",
-            dataComponent: "number-field",
-            dataPart: "controls",
+            dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+            dataPart: DATA_PART_CONTROLS,
           },
           [nf.DecrementTrigger(decrementProps), nf.IncrementTrigger(incrementProps)],
         )
@@ -50,8 +51,8 @@ export const NumberField = createComponent(
       "div",
       {
         className: "number-field-group",
-        dataComponent: "number-field",
-        dataPart: "group",
+        dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+        dataPart: DATA_PART_GROUP,
       },
       [nf.Input({ placeholder, ...inputProps }), defaultControls],
     );
@@ -66,4 +67,3 @@ export const NumberField = createComponent(
   },
   "NumberField",
 );
-

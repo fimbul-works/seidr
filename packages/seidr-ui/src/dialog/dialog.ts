@@ -1,9 +1,6 @@
 import { isArr } from "@fimbul-works/hvat";
-import {
-  createComponent,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { createComponent, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_DIALOG } from "../constants.js";
 import { createDialog } from "./create-dialog.js";
 import type { DialogProps } from "./types.js";
 
@@ -24,7 +21,7 @@ export function DialogFactory<
     portal = true,
     portalTarget,
     as = "div" as TRoot,
-    dataComponent = "dialog",
+    dataComponent = DATA_COMPONENT_DIALOG,
     trigger,
     triggerProps,
     title,
@@ -56,10 +53,7 @@ export function DialogFactory<
 
   if (closeButton !== false) {
     contentChildren.push(
-      dialog.CloseButton(
-        closeButtonProps,
-        closeButton === true ? "✕" : (closeButton as SeidrChild),
-      ),
+      dialog.CloseButton(closeButtonProps, closeButton === true ? "✕" : (closeButton as SeidrChild)),
     );
   }
 

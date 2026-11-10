@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RATING, DATA_PART_ITEM_INDICATOR } from "../constants.js";
 import type { RatingItemIndicatorProps, RatingItemState } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function RatingItemIndicator<T extends keyof SeidrElementTagNameMap = "sp
     as = "span" as T,
     instance,
     itemValue = 1,
-    dataComponent = "rating",
+    dataComponent = DATA_COMPONENT_RATING,
     fullIcon = "★",
     halfIcon = "⯨",
     emptyIcon = "☆",
@@ -45,11 +46,10 @@ export function RatingItemIndicator<T extends keyof SeidrElementTagNameMap = "sp
     {
       "aria-hidden": "true",
       dataComponent,
-      dataPart: "item-indicator",
+      dataPart: DATA_PART_ITEM_INDICATOR,
       dataState: state,
       ...rest,
     } as SeidrElementProps<T>,
     [iconContent],
   );
 }
-

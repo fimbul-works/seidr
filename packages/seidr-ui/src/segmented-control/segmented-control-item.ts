@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ITEM } from "../constants.js";
 import type { UseSegmentedControlItemOptions, UseSegmentedControlItemResult } from "./types.js";
 
 export interface SegmentedControlItemOptions<T extends keyof SeidrElementTagNameMap = "div">
@@ -108,8 +109,8 @@ export function SegmentedControlItem<T extends keyof SeidrElementTagNameMap = "d
       onpointerdown: handlePointerDown,
       onclick: handleClick,
       onkeydown: handleKeyDown,
-      dataComponent: "segmented-control",
-      dataPart: "item",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_ITEM,
       ...rest,
     } as SeidrElementProps<T>,
     children,

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_LABEL } from "../constants.js";
 import type { ProgressLabelProps } from "./types.js";
 
 /**
@@ -28,7 +29,7 @@ export function ProgressLabel<T extends keyof SeidrElementTagNameMap = "span">(
       dataIndeterminate:
         progress.role === "meter" ? undefined : progress.isIndeterminate.as((i) => (i ? "" : undefined)),
       dataComponent: dataComponent ?? progress.dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

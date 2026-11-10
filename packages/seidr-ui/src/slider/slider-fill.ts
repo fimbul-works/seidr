@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_FILL } from "../constants.js";
 import type { SliderFillProps } from "./types.js";
 
 /**
@@ -55,16 +56,14 @@ export function SliderFill<T extends keyof SeidrElementTagNameMap = "div">(
           right: maxPct.as((p) => `${(1 - p) * 100}%`),
         };
 
-  const finalStyle = isObj(userStyle) ? mergeStyleProps(baseStyle, userStyle) : baseStyle;
-
   return $(
-    as as T,
+    as,
     {
-      style: finalStyle,
+      style: mergeStyleProps(baseStyle, userStyle),
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "fill",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_FILL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

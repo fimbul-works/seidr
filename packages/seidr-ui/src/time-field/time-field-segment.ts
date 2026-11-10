@@ -2,11 +2,13 @@ import { isFn } from "@fimbul-works/hvat";
 import {
   $,
   createRef,
+  mergeStyleProps,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TIME_FIELD, DATA_PART_SEGMENT } from "../constants.js";
 import type { TimeFieldSegmentProps } from "./types.js";
 import { PAGE_STEP } from "./util.js";
 
@@ -21,7 +23,7 @@ export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">
     as = "div" as T,
     segment,
     instance,
-    dataComponent = "time-field",
+    dataComponent = DATA_COMPONENT_TIME_FIELD,
     ref: userRef,
     onclick: userOnClick,
     onkeydown: userOnKeyDown,
@@ -64,17 +66,11 @@ export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">
         break;
       case "PageUp":
         e.preventDefault();
-        instance.adjustSegment(
-          segment,
-          segment === "dayPeriod" ? 1 : PAGE_STEP[segment],
-        );
+        instance.adjustSegment(segment, segment === "dayPeriod" ? 1 : PAGE_STEP[segment]);
         break;
       case "PageDown":
         e.preventDefault();
-        instance.adjustSegment(
-          segment,
-          segment === "dayPeriod" ? -1 : -PAGE_STEP[segment],
-        );
+        instance.adjustSegment(segment, segment === "dayPeriod" ? -1 : -PAGE_STEP[segment]);
         break;
       case "Home":
         e.preventDefault();
@@ -114,24 +110,16 @@ export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">
   };
 
   const ariaValuemin =
-    segment === "dayPeriod"
-      ? undefined
-      : instance.hourCycle.as((c) => (segment === "hour" && c === 12 ? 1 : 0));
+    segment === "dayPeriod" ? undefined : instance.hourCycle.as((c) => (segment === "hour" && c === 12 ? 1 : 0));
   const ariaValuemax =
     segment === "dayPeriod"
       ? undefined
-      : instance.hourCycle.as((c) =>
-          segment === "hour" ? (c === 12 ? 12 : 23) : 59,
-        );
+      : instance.hourCycle.as((c) => (segment === "hour" ? (c === 12 ? 12 : 23) : 59));
 
   const baseStyle: Record<string, string> = {
     caretColor: "transparent",
     outline: "none",
   };
-  const mergedStyle =
-    typeof userStyle === "object" && userStyle !== null
-      ? { ...baseStyle, ...userStyle }
-      : baseStyle;
 
   const resolvedChildren: (SeidrChild | undefined)[] = [];
   if (children) {
@@ -144,9 +132,7 @@ export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">
   }
 
   if (resolvedChildren.length === 0) {
-    resolvedChildren.push(
-      instance.value.as(() => instance.getSegmentText(segment)),
-    );
+    resolvedChildren.push(instance.value.as(() => instance.getSegmentText(segment)));
   }
 
   return $(
@@ -167,19 +153,17 @@ export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">
       ariaLabel: instance.translations[segment],
       dataType: segment,
       dataPlaceholder: instance.value.as((v) =>
-        v?.[segment === "dayPeriod" ? "hour" : segment] === undefined
-          ? ""
-          : undefined,
+        v?.[segment === "dayPeriod" ? "hour" : segment] === undefined ? "" : undefined,
       ),
       contenteditable: instance.isReadOnly.as((ro) => (!ro ? "true" : undefined)),
       inputmode: segment === "dayPeriod" ? "text" : "numeric",
       spellcheck: false,
       autocapitalize: "off",
       autocorrect: "off",
-      style: mergedStyle,
+      style: mergeStyleProps(baseStyle, userStyle),
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "segment",
+      dataPart: DATA_PART_SEGMENT,
       onkeydown: handleKeyDown,
       onbeforeinput: handleBeforeInput,
       ...rest,

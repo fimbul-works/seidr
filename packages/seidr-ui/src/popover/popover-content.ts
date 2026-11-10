@@ -11,6 +11,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPOVER, DATA_PART_CONTENT } from "../constants.js";
 import { useEscapeKeyDown } from "../hooks/use-escape-keydown.js";
 import { useFocusScope } from "../hooks/use-focus-scope.js";
 import { useHideOutside } from "../hooks/use-hide-outside.js";
@@ -29,7 +30,7 @@ export function PopoverContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: popover,
-    dataComponent = "popover",
+    dataComponent = DATA_COMPONENT_POPOVER,
     portalTarget,
     onOpenAutoFocus,
     onCloseAutoFocus,
@@ -69,8 +70,7 @@ export function PopoverContent<T extends keyof SeidrElementTagNameMap = "div">(
   useInteractOutside(popover.contentRef, {
     isDisabled: isClosed,
     shouldExcludeElement: (element) =>
-      contains(popover.triggerRef() ?? undefined, element) ||
-      contains(popover.anchorRef() ?? undefined, element),
+      contains(popover.triggerRef() ?? undefined, element) || contains(popover.anchorRef() ?? undefined, element),
     onPointerDownOutside: (event) => {
       onPointerDownOutside?.(event);
       if (!event.defaultPrevented) {
@@ -81,22 +81,19 @@ export function PopoverContent<T extends keyof SeidrElementTagNameMap = "div">(
     onInteractOutside,
   });
 
-  useFocusScope(
-    popover.contentRef,
-    {
-      trapFocus: popover.isModal,
-      onMountAutoFocus: onOpenAutoFocus,
-      onUnmountAutoFocus: (event) => {
-        onCloseAutoFocus?.(event);
-        if (!event.defaultPrevented) {
-          const trigger = popover.triggerRef();
-          if (trigger) {
-            trigger.focus();
-          }
+  useFocusScope(popover.contentRef, {
+    trapFocus: popover.isModal,
+    onMountAutoFocus: onOpenAutoFocus,
+    onUnmountAutoFocus: (event) => {
+      onCloseAutoFocus?.(event);
+      if (!event.defaultPrevented) {
+        const trigger = popover.triggerRef();
+        if (trigger) {
+          trigger.focus();
         }
-      },
+      }
     },
-  );
+  });
 
   useHideOutside({
     isDisabled: popover.isOpen.as((o) => !o || !popover.isModal()),
@@ -130,7 +127,7 @@ export function PopoverContent<T extends keyof SeidrElementTagNameMap = "div">(
         "aria-labelledby": ariaLabelledBy ?? popover.titleId,
         "aria-describedby": ariaDescribedBy ?? popover.descriptionId,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: popover.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: popover.isOpen.as((o) => (!o ? "" : undefined)),
         style: combinedStyle,

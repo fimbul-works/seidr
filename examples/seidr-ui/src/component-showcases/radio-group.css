@@ -25,39 +25,39 @@
 }
 
 /* Radio Group Root Container */
-[data-component="radio-group"][data-part="root"] {
+[data-component="RadioGroup"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   user-select: none;
 }
 
-[data-component="radio-group"][data-part="root"][data-disabled] {
+[data-component="RadioGroup"][data-part="Root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Radio Group Label */
-[data-component="radio-group"][data-part="label"] {
+[data-component="RadioGroup"][data-part="Label"] {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--fg, #f3f4f6);
   margin-bottom: 0.25rem;
 }
 
-[data-component="radio-group"][data-part="root"][data-invalid] [data-component="radio-group"][data-part="label"] {
+[data-component="RadioGroup"][data-part="Root"][data-invalid] [data-component="RadioGroup"][data-part="Label"] {
   color: #f87171;
 }
 
 /* Radio Group Description */
-[data-component="radio-group"][data-part="description"] {
+[data-component="RadioGroup"][data-part="Description"] {
   font-size: 0.825rem;
   color: var(--fg-muted, #9ca3af);
   margin-bottom: 0.5rem;
 }
 
 /* Radio Group Error Message */
-[data-component="radio-group"][data-part="error-message"] {
+[data-component="RadioGroup"][data-part="ErrorMessage"] {
   font-size: 0.825rem;
   color: #f87171;
   font-weight: 500;
@@ -67,41 +67,41 @@
   gap: 0.35rem;
 }
 
-[data-component="radio-group"][data-part="error-message"][hidden] {
+[data-component="RadioGroup"][data-part="ErrorMessage"][hidden] {
   display: none;
 }
 
 /* Horizontal Orientation Overrides */
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"],
-[data-component="radio-group"][data-part="root"].horizontal {
+[data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"],
+[data-component="RadioGroup"][data-part="Root"].horizontal {
   flex-direction: row;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
-  > [data-component="radio-group"][data-part="label"],
-[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="label"],
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
-  > [data-component="radio-group"][data-part="description"],
-[data-component="radio-group"][data-part="root"].horizontal > [data-component="radio-group"][data-part="description"],
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
-  > [data-component="radio-group"][data-part="error-message"],
-[data-component="radio-group"][data-part="root"].horizontal
-  > [data-component="radio-group"][data-part="error-message"] {
+[data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"]
+  > [data-component="RadioGroup"][data-part="Label"],
+[data-component="RadioGroup"][data-part="Root"].horizontal > [data-component="RadioGroup"][data-part="Label"],
+[data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"]
+  > [data-component="RadioGroup"][data-part="Description"],
+[data-component="RadioGroup"][data-part="Root"].horizontal > [data-component="RadioGroup"][data-part="Description"],
+[data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"]
+  > [data-component="RadioGroup"][data-part="ErrorMessage"],
+[data-component="RadioGroup"][data-part="Root"].horizontal
+  > [data-component="RadioGroup"][data-part="ErrorMessage"] {
   width: 100%;
   flex-basis: 100%;
 }
 
-[data-component="radio-group"][data-part="root"].horizontal [data-component="radio-group"][data-part="item"]:not(.row),
-[data-component="radio-group"][data-part="root"][aria-orientation="horizontal"]
-  [data-component="radio-group"][data-part="item"]:not(.row) {
+[data-component="RadioGroup"][data-part="Root"].horizontal [data-component="RadioGroup"][data-part="Item"]:not(.row),
+[data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"]
+  [data-component="RadioGroup"][data-part="Item"]:not(.row) {
   flex: 1 1 240px;
   min-width: 200px;
 }
 
 /* Radio Item (Default Card Style) */
-[data-component="radio-group"][data-part="item"] {
+[data-component="RadioGroup"][data-part="Item"] {
   display: flex;
   align-items: flex-start;
   gap: 0.875rem;
@@ -117,24 +117,24 @@
   position: relative;
 }
 
-[data-component="radio-group"][data-part="item"]:hover:not([data-disabled]) {
+[data-component="RadioGroup"][data-part="Item"]:hover:not([data-disabled]) {
   background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-[data-component="radio-group"][data-part="item"][data-checked] {
+[data-component="RadioGroup"][data-part="Item"][data-checked] {
   background: var(--accent-glow, rgba(99, 102, 241, 0.12));
   border-color: var(--accent, #6366f1);
   box-shadow: 0 0 0 1px var(--accent, #6366f1);
 }
 
-[data-component="radio-group"][data-part="item"][data-disabled] {
+[data-component="RadioGroup"][data-part="Item"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Simple inline row item */
-[data-component="radio-group"][data-part="item"].row {
+[data-component="RadioGroup"][data-part="Item"].row {
   display: inline-flex;
   align-items: center;
   gap: 0.625rem;
@@ -147,18 +147,18 @@
   transition: background-color 0.15s ease;
 }
 
-[data-component="radio-group"][data-part="item"].row:hover:not([data-disabled]) {
+[data-component="RadioGroup"][data-part="Item"].row:hover:not([data-disabled]) {
   background: rgba(255, 255, 255, 0.04);
 }
 
-[data-component="radio-group"][data-part="item"].row[data-checked] {
+[data-component="RadioGroup"][data-part="Item"].row[data-checked] {
   background: rgba(99, 102, 241, 0.1);
   border-color: transparent;
   box-shadow: none;
 }
 
 /* Hidden Accessible Native Radio Input */
-[data-component="radio-group"][data-part="item-input"] {
+[data-component="RadioGroup"][data-part="ItemInput"] {
   position: absolute;
   width: 1px;
   height: 1px;
@@ -171,7 +171,7 @@
 }
 
 /* Visual Radio Button Circle / Control */
-[data-component="radio-group"][data-part="item-control"] {
+[data-component="RadioGroup"][data-part="ItemControl"] {
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
@@ -188,36 +188,36 @@
     box-shadow 0.2s ease;
 }
 
-[data-component="radio-group"][data-part="item"].row [data-component="radio-group"][data-part="item-control"] {
+[data-component="RadioGroup"][data-part="Item"].row [data-component="RadioGroup"][data-part="ItemControl"] {
   margin-top: 0;
 }
 
-[data-component="radio-group"][data-part="item-control"][data-checked] {
+[data-component="RadioGroup"][data-part="ItemControl"][data-checked] {
   border-color: var(--accent, #6366f1);
   background: var(--accent, #6366f1);
 }
 
 /* Focus Indicator */
-[data-component="radio-group"][data-part="item-control"]:focus-visible,
-[data-component="radio-group"][data-part="item-input"]:focus-visible
-  + [data-component="radio-group"][data-part="item-control"] {
+[data-component="RadioGroup"][data-part="ItemControl"]:focus-visible,
+[data-component="RadioGroup"][data-part="ItemInput"]:focus-visible
+  + [data-component="RadioGroup"][data-part="ItemControl"] {
   outline: none;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.4);
 }
 
-[data-component="radio-group"][data-part="item"]:hover:not([data-disabled])
-  [data-component="radio-group"][data-part="item-control"] {
+[data-component="RadioGroup"][data-part="Item"]:hover:not([data-disabled])
+  [data-component="RadioGroup"][data-part="ItemControl"] {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-[data-component="radio-group"][data-part="item"][data-checked]:hover:not([data-disabled])
-  [data-component="radio-group"][data-part="item-control"] {
+[data-component="RadioGroup"][data-part="Item"][data-checked]:hover:not([data-disabled])
+  [data-component="RadioGroup"][data-part="ItemControl"] {
   border-color: var(--accent-light, #818cf8);
   background: var(--accent-light, #818cf8);
 }
 
 /* Radio Indicator (Inner White Dot) */
-[data-component="radio-group"][data-part="item-indicator"] {
+[data-component="RadioGroup"][data-part="ItemIndicator"] {
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 50%;
@@ -228,7 +228,7 @@
 }
 
 @starting-style {
-  [data-component="radio-group"][data-part="item-indicator"] {
+  [data-component="RadioGroup"][data-part="ItemIndicator"] {
     transform: scale(0);
   }
 }
@@ -243,20 +243,20 @@
 }
 
 /* Item Label */
-[data-component="radio-group"][data-part="item-label"] {
+[data-component="RadioGroup"][data-part="ItemLabel"] {
   font-size: 0.925rem;
   font-weight: 500;
   color: var(--fg, #f3f4f6);
   cursor: pointer;
 }
 
-[data-component="radio-group"][data-part="item"][data-checked] [data-component="radio-group"][data-part="item-label"] {
+[data-component="RadioGroup"][data-part="Item"][data-checked] [data-component="RadioGroup"][data-part="ItemLabel"] {
   color: #ffffff;
   font-weight: 600;
 }
 
 /* Item Description */
-[data-component="radio-group"][data-part="item-description"] {
+[data-component="RadioGroup"][data-part="ItemDescription"] {
   font-size: 0.8rem;
   color: var(--fg-muted, #9ca3af);
   line-height: 1.4;

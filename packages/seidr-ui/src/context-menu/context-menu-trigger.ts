@@ -9,6 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CONTEXT_MENU, DATA_PART_TRIGGER } from "../constants.js";
 import type { ContextMenuTriggerProps } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function ContextMenuTrigger<T extends keyof SeidrElementTagNameMap = "div
     as = "div" as T,
     instance,
     disabled = false,
-    dataComponent = "context-menu",
+    dataComponent = DATA_COMPONENT_CONTEXT_MENU,
     id: userId,
     ref: userRef,
     style: userStyle,
@@ -62,8 +63,7 @@ export function ContextMenuTrigger<T extends keyof SeidrElementTagNameMap = "div
     clearLongPressTimeout();
   });
 
-  const isTouchOrPen = (e: PointerEvent): boolean =>
-    e.pointerType === "touch" || e.pointerType === "pen";
+  const isTouchOrPen = (e: PointerEvent): boolean => e.pointerType === "touch" || e.pointerType === "pen";
 
   const handleContextMenu = (e: MouseEvent) => {
     if (isFn(userOnContextMenu)) {
@@ -161,7 +161,7 @@ export function ContextMenuTrigger<T extends keyof SeidrElementTagNameMap = "div
       id: userId ?? instance.triggerId,
       ref: internalRef,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataState: instance.isOpen.as((o) => (o ? "open" : "closed")),
       dataExpanded: instance.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: instance.isOpen.as((o) => (!o ? "" : undefined)),
@@ -177,4 +177,3 @@ export function ContextMenuTrigger<T extends keyof SeidrElementTagNameMap = "div
     children,
   );
 }
-

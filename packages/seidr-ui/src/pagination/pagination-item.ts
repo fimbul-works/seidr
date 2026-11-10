@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PAGINATTION, DATA_PART_ITEM, DATA_PART_ITEM_WRAPPER } from "../constants.js";
 import type { PaginationItemProps } from "./types.js";
 
 /**
@@ -19,8 +20,8 @@ export function PaginationItem<T extends keyof SeidrElementTagNameMap = "button"
     instance: pg,
     page,
     key: _key,
-    dataComponent = "pagination",
-    dataPart = "item",
+    dataComponent = DATA_COMPONENT_PAGINATTION,
+    dataPart = DATA_PART_ITEM,
     onclick,
     ...rest
   } = props;
@@ -58,7 +59,7 @@ export function PaginationItem<T extends keyof SeidrElementTagNameMap = "button"
     "li",
     {
       dataComponent,
-      dataPart: "item-wrapper",
+      dataPart: DATA_PART_ITEM_WRAPPER,
     },
     button,
   );

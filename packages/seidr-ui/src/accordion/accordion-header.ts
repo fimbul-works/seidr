@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_ACCORDION, DATA_PART_HEADER } from "../constants.js";
 import type { AccordionItemInstance } from "./types.js";
 
 export interface AccordionHeaderOptions<T extends keyof SeidrElementTagNameMap = "h3"> {
@@ -35,8 +36,8 @@ export function AccordionHeader<T extends keyof SeidrElementTagNameMap = "h3">(
   return $(
     as,
     {
-      dataComponent: "accordion",
-      dataPart: "header",
+      dataComponent: DATA_COMPONENT_ACCORDION,
+      dataPart: DATA_PART_HEADER,
       ...instance.dataset,
       ...rest,
     } as any,

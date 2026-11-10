@@ -11,6 +11,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_CONTENT } from "../constants.js";
 import { PopperPositioner } from "../popper/popper-positioner.js";
 import type { MenuContentProps } from "./types.js";
 
@@ -24,7 +25,7 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: menu,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     items,
     renderList,
     portalTarget,
@@ -77,7 +78,7 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
         "aria-label": ariaLabel,
         "aria-describedby": ariaDescribedBy,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: menu.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: menu.isOpen.as((o) => (!o ? "" : undefined)),
         style: combinedStyle,
@@ -85,10 +86,7 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
         ...rest,
       } as SeidrElementProps<T>,
       items !== undefined && renderList !== undefined
-        ? [
-            renderList(items),
-            ...(children !== undefined ? (Array.isArray(children) ? children : [children]) : []),
-          ]
+        ? [renderList(items), ...(children !== undefined ? (Array.isArray(children) ? children : [children]) : [])]
         : children,
     );
 
@@ -113,9 +111,5 @@ export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
     return wrapValue(renderMaybePortaled()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
   }
 
-  return Show(
-    menu.isOpen,
-    renderMaybePortaled,
-  ) as DerivedValue<SeidrElementTagNameMap[T] | null>;
+  return Show(menu.isOpen, renderMaybePortaled) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

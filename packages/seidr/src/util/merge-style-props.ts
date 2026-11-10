@@ -22,11 +22,15 @@ import { SeidrError } from "../types.js";
  * @returns Merged reactive style declaration.
  */
 export function mergeStyleProps(
-  oldStyle?: ReactiveStyleDeclaration,
-  newStyle?: ReactiveStyleDeclaration,
+  oldStyle?: ReactiveStyleDeclaration | ReactiveValue<string>,
+  newStyle?: ReactiveStyleDeclaration | ReactiveValue<string>,
 ): ReactiveStyleDeclaration {
-  oldStyle = isObj(oldStyle) ? oldStyle : ({} as ReactiveStyleDeclaration);
-  newStyle = isObj(newStyle) ? newStyle : ({} as ReactiveStyleDeclaration);
+  if (isStr(unwrapValue(oldStyle)) || isStr(unwrapValue(newStyle))) {
+    console.warn('mergeStyleProps cannot be used to merge strings!')
+  }
+
+  oldStyle = (isObj(oldStyle) ? oldStyle : {}) as ReactiveStyleDeclaration;
+  newStyle = (isObj(newStyle) ? newStyle : {}) as ReactiveStyleDeclaration;
 
   const allKeys = new Set([
     ...Object.keys(oldStyle),

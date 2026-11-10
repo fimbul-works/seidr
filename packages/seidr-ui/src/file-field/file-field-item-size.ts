@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_SIZE } from "../constants.js";
 import type { FileFieldItemSizeProps } from "./types.js";
 import { DEFAULT_FILE_FIELD_INTL, formatBytes } from "./util.js";
 
@@ -21,7 +22,7 @@ export function FileFieldItemSize<T extends keyof SeidrElementTagNameMap = "span
     file,
     precision = 2,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     children: propsChildren,
     ...rest
   } = props;
@@ -40,9 +41,7 @@ export function FileFieldItemSize<T extends keyof SeidrElementTagNameMap = "span
 
   if (resolvedChildren.length === 0 && file) {
     if (isValue<File>(file)) {
-      resolvedChildren.push(
-        file.as((f) => (f ? formatBytes(f.size, precision, translations) : "")),
-      );
+      resolvedChildren.push(file.as((f) => (f ? formatBytes(f.size, precision, translations) : "")));
     } else {
       const rawFile = unwrapValue(file);
       if (rawFile) {
@@ -55,10 +54,9 @@ export function FileFieldItemSize<T extends keyof SeidrElementTagNameMap = "span
     as,
     {
       dataComponent,
-      dataPart: "item-size",
+      dataPart: DATA_PART_ITEM_SIZE,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

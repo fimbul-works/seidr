@@ -9,6 +9,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_IMAGE, DATA_PART_FALLBACK } from "../constants.js";
 import type { UseImageResult } from "./use-image.js";
 
 export interface ImageFallbackOptions<T extends keyof SeidrElementTagNameMap = "span"> {
@@ -49,8 +50,8 @@ export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
     $(
       as,
       {
-        dataComponent: "image",
-        dataPart: "fallback",
+        dataComponent: DATA_COMPONENT_IMAGE,
+        dataPart: DATA_PART_FALLBACK,
         ...rest,
       } as SeidrElementProps<T>,
       children,

@@ -1,4 +1,5 @@
 import { $, type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_LISTBOX, DATA_PART_SECTION_LABEL } from "../constants.js";
 import type { ListboxSectionLabelProps } from "./types.js";
 
 /**
@@ -8,14 +9,14 @@ export function ListboxSectionLabel<T extends keyof SeidrElementTagNameMap = "sp
   props: ListboxSectionLabelProps<T> = {} as ListboxSectionLabelProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "span" as T, role = "presentation", dataComponent = "listbox", ...rest } = props;
+  const { as = "span" as T, role = "presentation", dataComponent = DATA_COMPONENT_LISTBOX, ...rest } = props;
 
   return $(
     as,
     {
       role,
       dataComponent,
-      dataPart: "section-label",
+      dataPart: DATA_PART_SECTION_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

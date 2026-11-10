@@ -9,6 +9,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_HOVER_CARD, DATA_PART_TRIGGER } from "../constants.js";
 import type { HoverCardTriggerProps } from "./types.js";
 
 /**
@@ -21,7 +22,7 @@ export function HoverCardTrigger<T extends keyof SeidrElementTagNameMap = "a">(
   const {
     as = "a" as T,
     instance: hoverCard,
-    dataComponent = "hover-card",
+    dataComponent = DATA_COMPONENT_HOVER_CARD,
     href,
     target,
     rel,
@@ -129,7 +130,7 @@ export function HoverCardTrigger<T extends keyof SeidrElementTagNameMap = "a">(
       "aria-labelledby": ariaLabelledBy,
       "aria-describedby": ariaDescribedBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: hoverCard.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: hoverCard.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
@@ -142,4 +143,3 @@ export function HoverCardTrigger<T extends keyof SeidrElementTagNameMap = "a">(
     children,
   );
 }
-

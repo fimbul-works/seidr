@@ -2,7 +2,6 @@ export { Breadcrumbs } from "./breadcrumbs.js";
 export { createBreadcrumbs } from "./create-breadcrumbs.js";
 export type {
   BreadcrumbItemDescriptor,
-  BreadcrumbsDataSet,
   BreadcrumbsInstance,
   BreadcrumbsItemOptions,
   BreadcrumbsItemProps,

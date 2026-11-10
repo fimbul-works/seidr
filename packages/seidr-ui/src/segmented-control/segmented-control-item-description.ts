@@ -1,4 +1,5 @@
 import { type SeidrChild, type SeidrElementProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ITEM_DESCRIPTION } from "../constants.js";
 import {
   RadioGroupItemDescription,
   type RadioGroupItemDescriptionProps,
@@ -38,8 +39,8 @@ export function SegmentedControlItemDescription<T extends keyof SeidrElementTagN
     {
       as,
       instance: item,
-      dataComponent: "segmented-control",
-      dataPart: "item-description",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_ITEM_DESCRIPTION,
       ...rest,
     } as RadioGroupItemDescriptionProps<T>,
     children,

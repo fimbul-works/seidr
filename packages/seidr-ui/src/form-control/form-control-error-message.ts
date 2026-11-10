@@ -10,6 +10,7 @@ import {
   Show,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FORM_CONTROL, DATA_PART_ERROR_MESSAGE } from "../constants.js";
 import type { UseFormControlResult } from "./types.js";
 
 export interface FormControlErrorMessageOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -54,8 +55,8 @@ export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap =
       {
         hidden: form.isInvalid.as((inv: boolean) => !inv),
         id: errorMessageId,
-        dataComponent: "form-control",
-        dataPart: "error-message",
+        dataComponent: DATA_COMPONENT_FORM_CONTROL,
+        dataPart: DATA_PART_ERROR_MESSAGE,
         ...form.dataset,
         ...rest,
       } as SeidrElementProps<T>,

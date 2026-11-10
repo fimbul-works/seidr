@@ -10,6 +10,7 @@ import {
   useId,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_ITEM } from "../constants.js";
 import type { MenuItemProps } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: menu,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     value: userValue,
     disabled: itemDisabledProp,
     textValue,
@@ -107,7 +108,7 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
       tabIndex: -1,
       "aria-disabled": isDisabled.as((d) => (d ? "true" : undefined)),
       dataComponent,
-      dataPart: "item",
+      dataPart: DATA_PART_ITEM,
       dataValue: value,
       dataHighlighted: isHighlighted.as((h) => (h ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
@@ -118,4 +119,3 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
     resolvedChildren,
   );
 }
-

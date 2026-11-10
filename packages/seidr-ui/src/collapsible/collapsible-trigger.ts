@@ -8,6 +8,7 @@ import {
   wrapValue,
 } from "@fimbul-works/seidr";
 import { Button, type ButtonOptions, type ButtonProps } from "../button.js";
+import { DATA_COMPONENT_COLLAPSIBLE, DATA_PART_TRIGGER } from "../constants.js";
 import type { UseCollapsibleResult } from "./types.js";
 
 export interface CollapsibleTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
@@ -55,8 +56,8 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
       onclick: handleClick,
       ariaExpanded: col.isOpen.as((v: boolean) => (v ? "true" : "false")),
       ariaControls,
-      dataComponent: "collapsible",
-      dataPart: "trigger",
+      dataComponent: DATA_COMPONENT_COLLAPSIBLE,
+      dataPart: DATA_PART_TRIGGER,
       ...col.dataset,
       ...rest,
     } as SeidrElementProps<T>,

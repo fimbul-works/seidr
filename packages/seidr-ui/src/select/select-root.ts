@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_ROOT } from "../constants.js";
 import type { SelectRootProps } from "./types.js";
 
 /**
@@ -18,7 +19,7 @@ export function SelectRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as = "div" as T,
     instance: select,
     role = "group",
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     id: userId,
     ...rest
   } = props;
@@ -33,7 +34,7 @@ export function SelectRoot<T extends keyof SeidrElementTagNameMap = "div">(
       id: userId ?? select.id,
       role,
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       dataExpanded: select.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: select.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: select.isDisabled.as((d) => (d ? "" : undefined)),
@@ -46,4 +47,3 @@ export function SelectRoot<T extends keyof SeidrElementTagNameMap = "div">(
     children,
   );
 }
-

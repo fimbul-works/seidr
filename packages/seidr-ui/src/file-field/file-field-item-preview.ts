@@ -9,6 +9,7 @@ import {
   Show,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_PREVIEW } from "../constants.js";
 import type { FileFieldItemPreviewProps } from "./types.js";
 
 /**
@@ -23,7 +24,7 @@ export function FileFieldItemPreview<T extends keyof SeidrElementTagNameMap = "d
     file,
     type = ".*",
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     children: propsChildren,
     ...rest
   } = props;
@@ -52,7 +53,7 @@ export function FileFieldItemPreview<T extends keyof SeidrElementTagNameMap = "d
       as,
       {
         dataComponent,
-        dataPart: "item-preview",
+        dataPart: DATA_PART_ITEM_PREVIEW,
         ...rest,
       } as SeidrElementProps<T>,
       resolvedChildren,
@@ -60,4 +61,3 @@ export function FileFieldItemPreview<T extends keyof SeidrElementTagNameMap = "d
 
   return Show(isMatched, renderEl) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

@@ -1,19 +1,6 @@
-import { createComponent, createValue, List, Show } from "@fimbul-works/seidr";
-import {
-  $button,
-  $div,
-  $h2,
-  $h3,
-  $img,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
-import {
-  createNavigationMenu,
-  RadioGroup,
-  type MenubarOrientation,
-} from "@fimbul-works/seidr-ui";
+import { createComponent, createValue, List, type ReactiveValue, Show } from "@fimbul-works/seidr";
+import { $button, $div, $h2, $h3, $img, $p, $section, $span } from "@fimbul-works/seidr/html";
+import { createNavigationMenu, type MenubarOrientation, RadioGroup } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./navigation-menu.css";
 
@@ -65,9 +52,8 @@ export const NavigationMenuShowcase = createComponent(() => {
     lastAction("Cleared Dynamic Actions");
   };
 
-  // Kobalte-style Fine-Grained Navigation Menu Coordinator
+  // Fine-Grained Navigation Menu Coordinator
   const nav = createNavigationMenu({
-    id: "kobalte-nav",
     orientation,
     delayDuration: 150,
     skipDelayDuration: 250,
@@ -126,9 +112,7 @@ export const NavigationMenuShowcase = createComponent(() => {
             ]),
             $div([
               $span({ style: { opacity: "0.6" } }, "Last Triggered: "),
-              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [
-                lastAction,
-              ]),
+              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [lastAction]),
             ]),
           ],
         ),
@@ -148,244 +132,230 @@ export const NavigationMenuShowcase = createComponent(() => {
               nav.List({ className: "navigation-menu__root" }, [
                 // 1. "Learn" / "Ecosystem" Sub-Menu (Content 1: Callout on Left + Stacked Links on Right)
                 nav.Menu({ value: "learn" }, [
-                  learnMenu.Trigger({ className: "navigation-menu__trigger" }, [
-                    "Learn",
-                    chevronIcon(),
+                  learnMenu.Trigger({ className: "navigation-menu__trigger" }, ["Learn", chevronIcon()]),
+                  learnMenu.Content({ className: "navigation-menu__content content-1" }, [
+                    // Left Column: Hero Callout
+                    learnMenu.Item(
+                      {
+                        as: "a",
+                        href: "https://github.com",
+                        target: "_blank",
+                        className: "navigation-menu__item-callout",
+                        onclick: () => lastAction("Selected Seidr Hero Callout"),
+                      },
+                      [
+                        $img({
+                          src: "/seidr-logo.svg",
+                          alt: "Seidr",
+                          style: { width: "45px", height: "45px" },
+                        }),
+                        learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr"),
+                        learnMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Single-pass reactive framework with fine-grained DOM binding and zero virtual DOM overhead.",
+                        ),
+                      ],
+                    ),
+                    // Right Column: Module Links
+                    learnMenu.Item(
+                      {
+                        as: "a",
+                        href: "#core",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Selected Seidr Core"),
+                      },
+                      [
+                        learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr Core"),
+                        learnMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Fine-grained values, reactive element factories ($), and control flows.",
+                        ),
+                      ],
+                    ),
+                    learnMenu.Item(
+                      {
+                        as: "a",
+                        href: "#ui",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Selected Seidr UI"),
+                      },
+                      [
+                        learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr UI"),
+                        learnMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Headless, accessible UI primitives with strict semantic CSS annotations.",
+                        ),
+                      ],
+                    ),
+                    learnMenu.Item(
+                      {
+                        as: "a",
+                        href: "#examples",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Selected Example Apps"),
+                      },
+                      [
+                        learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Example Apps"),
+                        learnMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Explore TodoMVC, Pomodoro, Particles, and SSR examples.",
+                        ),
+                      ],
+                    ),
                   ]),
-                  learnMenu.Content(
-                    { className: "navigation-menu__content content-1" },
-                    [
-                      // Left Column: Hero Callout
-                      learnMenu.Item(
-                        {
-                          as: "a",
-                          href: "https://github.com",
-                          target: "_blank",
-                          className: "navigation-menu__item-callout",
-                          onclick: () => lastAction("Selected Seidr Hero Callout"),
-                        },
-                        [
-                          $img({
-                            src: "/seidr-logo.svg",
-                            alt: "Seidr",
-                            style: { width: "45px", height: "45px" },
-                          }),
-                          learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr"),
-                          learnMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Single-pass reactive framework with fine-grained DOM binding and zero virtual DOM overhead.",
-                          ),
-                        ],
-                      ),
-                      // Right Column: Module Links
-                      learnMenu.Item(
-                        {
-                          as: "a",
-                          href: "#core",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Selected Seidr Core"),
-                        },
-                        [
-                          learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr Core"),
-                          learnMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Fine-grained values, reactive element factories ($), and control flows.",
-                          ),
-                        ],
-                      ),
-                      learnMenu.Item(
-                        {
-                          as: "a",
-                          href: "#ui",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Selected Seidr UI"),
-                        },
-                        [
-                          learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Seidr UI"),
-                          learnMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Headless, accessible UI primitives with strict semantic CSS annotations.",
-                          ),
-                        ],
-                      ),
-                      learnMenu.Item(
-                        {
-                          as: "a",
-                          href: "#examples",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Selected Example Apps"),
-                        },
-                        [
-                          learnMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Example Apps"),
-                          learnMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Explore TodoMVC, Pomodoro, Particles, and SSR examples.",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ]),
 
                 // 2. "Documentation" Sub-Menu (Content 2: 2-Column Grid)
                 nav.Menu({ value: "docs" }, [
-                  docsMenu.Trigger({ className: "navigation-menu__trigger" }, [
-                    "Documentation",
-                    chevronIcon(),
+                  docsMenu.Trigger({ className: "navigation-menu__trigger" }, ["Documentation", chevronIcon()]),
+                  docsMenu.Content({ className: "navigation-menu__content content-2" }, [
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#intro",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened Introduction"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Introduction"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Build high-quality, accessible design systems and web apps.",
+                        ),
+                      ],
+                    ),
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#getting-started",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened Getting Started"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Getting Started"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "A quick tutorial to get you up and running with Seidr.",
+                        ),
+                      ],
+                    ),
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#reactivity",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened Reactivity"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Reactivity & Values"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Deep dive into Value<T>, DerivedValue, mergeValues, and Show.",
+                        ),
+                      ],
+                    ),
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#dom-binding",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened DOM Data-Binding"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "DOM Data-Binding"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Attribute binding, element factories, and automatic scope cleanup.",
+                        ),
+                      ],
+                    ),
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#ssr",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened SSR & Hydration"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "SSR & Hydration"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Deterministic AppState sequence IDs and isomorphic execution.",
+                        ),
+                      ],
+                    ),
+                    docsMenu.Item(
+                      {
+                        as: "a",
+                        href: "#changelog",
+                        className: "navigation-menu__item",
+                        onclick: () => lastAction("Opened Changelog"),
+                      },
+                      [
+                        docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Changelog"),
+                        docsMenu.ItemDescription(
+                          { className: "navigation-menu__item-description" },
+                          "Seidr releases, bug fixes, and feature additions.",
+                        ),
+                      ],
+                    ),
                   ]),
-                  docsMenu.Content(
-                    { className: "navigation-menu__content content-2" },
-                    [
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#intro",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened Introduction"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Introduction"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Build high-quality, accessible design systems and web apps.",
-                          ),
-                        ],
-                      ),
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#getting-started",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened Getting Started"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Getting Started"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "A quick tutorial to get you up and running with Seidr.",
-                          ),
-                        ],
-                      ),
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#reactivity",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened Reactivity"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Reactivity & Values"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Deep dive into Value<T>, DerivedValue, mergeValues, and Show.",
-                          ),
-                        ],
-                      ),
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#dom-binding",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened DOM Data-Binding"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "DOM Data-Binding"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Attribute binding, element factories, and automatic scope cleanup.",
-                          ),
-                        ],
-                      ),
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#ssr",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened SSR & Hydration"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "SSR & Hydration"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Deterministic AppState sequence IDs and isomorphic execution.",
-                          ),
-                        ],
-                      ),
-                      docsMenu.Item(
-                        {
-                          as: "a",
-                          href: "#changelog",
-                          className: "navigation-menu__item",
-                          onclick: () => lastAction("Opened Changelog"),
-                        },
-                        [
-                          docsMenu.ItemLabel({ className: "navigation-menu__item-label" }, "Changelog"),
-                          docsMenu.ItemDescription(
-                            { className: "navigation-menu__item-description" },
-                            "Seidr releases, bug fixes, and feature additions.",
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ]),
 
                 // 3. "Dynamic Actions" Sub-Menu (Demonstrates Reactive Sub-menu State)
                 nav.Menu({ value: "dynamic" }, [
-                  dynamicMenu.Trigger({ className: "navigation-menu__trigger" }, [
-                    "Actions",
-                    chevronIcon(),
-                  ]),
-                  dynamicMenu.Content(
-                    { className: "navigation-menu__content content-dynamic" },
-                    [
-                      // Dynamic Toolbar
-                      $div({ className: "nav-dynamic-toolbar" }, [
-                        $span(
-                          { style: { fontSize: "0.82rem", fontWeight: "600", opacity: "0.8" } },
-                          dynamicActions.as((items) => `${items.length} Registered Actions`),
+                  dynamicMenu.Trigger({ className: "navigation-menu__trigger" }, ["Actions", chevronIcon()]),
+                  dynamicMenu.Content({ className: "navigation-menu__content content-dynamic" }, [
+                    // Dynamic Toolbar
+                    $div({ className: "nav-dynamic-toolbar" }, [
+                      $span(
+                        { style: { fontSize: "0.82rem", fontWeight: "600", opacity: "0.8" } },
+                        dynamicActions.as((items) => `${items.length} Registered Actions`),
+                      ),
+                      $div({ style: { display: "flex", gap: "0.4rem" } }, [
+                        $button(
+                          {
+                            className: "nav-dynamic-btn",
+                            onclick: (e: MouseEvent) => {
+                              e.stopPropagation();
+                              addAction();
+                            },
+                          },
+                          "+ Add Action",
                         ),
-                        $div({ style: { display: "flex", gap: "0.4rem" } }, [
-                          $button(
-                            {
-                              className: "nav-dynamic-btn",
-                              onclick: (e: MouseEvent) => {
-                                e.stopPropagation();
-                                addAction();
-                              },
+                        $button(
+                          {
+                            className: "nav-dynamic-btn",
+                            style: { color: "#f87171", borderColor: "#f8717140" },
+                            onclick: (e: MouseEvent) => {
+                              e.stopPropagation();
+                              clearActions();
                             },
-                            "+ Add Action",
-                          ),
-                          $button(
-                            {
-                              className: "nav-dynamic-btn",
-                              style: { color: "#f87171", borderColor: "#f8717140" },
-                              onclick: (e: MouseEvent) => {
-                                e.stopPropagation();
-                                clearActions();
-                              },
-                            },
-                            "Clear",
+                          },
+                          "Clear",
+                        ),
+                      ]),
+                    ]),
+
+                    // List of actions or empty state
+                    Show(
+                      dynamicActions.as((items) => items.length === 0),
+                      () =>
+                        $div({ className: "content-empty" }, [
+                          $span({ style: { fontSize: "1.5rem" } }, "📭"),
+                          $span("No custom actions registered."),
+                          $span(
+                            { style: { fontSize: "0.78rem", opacity: "0.6" } },
+                            "Click '+ Add Action' above to populate.",
                           ),
                         ]),
-                      ]),
-
-                      // List of actions or empty state
-                      Show(
-                        dynamicActions.as((items) => items.length === 0),
-                        () =>
-                          $div({ className: "content-empty" }, [
-                            $span({ style: { fontSize: "1.5rem" } }, "📭"),
-                            $span("No custom actions registered."),
-                            $span(
-                              { style: { fontSize: "0.78rem", opacity: "0.6" } },
-                              "Click '+ Add Action' above to populate.",
-                            ),
-                          ]),
-                        () =>
-                          $div(
-                            { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
-                            List(dynamicActions, (item) => item.id, (itemVal) => {
+                      () =>
+                        $div(
+                          { style: { display: "flex", flexDirection: "column", gap: "0.4rem" } },
+                          List(
+                            dynamicActions,
+                            (item) => item.id,
+                            (itemVal) => {
                               const item = itemVal();
                               return dynamicMenu.Item(
                                 {
@@ -417,11 +387,11 @@ export const NavigationMenuShowcase = createComponent(() => {
                                   ),
                                 ],
                               );
-                            }),
+                            },
                           ),
-                      ),
-                    ],
-                  ),
+                        ),
+                    ),
+                  ]),
                 ]),
 
                 // 4. Direct Link: GitHub
@@ -453,10 +423,10 @@ export const NavigationMenuShowcase = createComponent(() => {
           ),
           RadioGroup({
             id: "nav-orientation-group",
-            value: orientation,
+            value: orientation as ReactiveValue<string>,
             orientation: "horizontal",
             onChange: (val) => orientation(val as MenubarOrientation),
-            options: [
+            items: [
               { value: "horizontal", label: "Horizontal" },
               { value: "vertical", label: "Vertical" },
             ],

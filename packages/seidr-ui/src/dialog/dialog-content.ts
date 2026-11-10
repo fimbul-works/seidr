@@ -10,6 +10,7 @@ import {
   SeidrError,
   Show,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_DIALOG, DATA_PART_CONTENT } from "../constants.js";
 import { useEscapeKeyDown } from "../hooks/use-escape-keydown.js";
 import { useFocusScope } from "../hooks/use-focus-scope.js";
 import { useHideOutside } from "../hooks/use-hide-outside.js";
@@ -28,7 +29,7 @@ export function DialogContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: dialog,
-    dataComponent = "dialog",
+    dataComponent = DATA_COMPONENT_DIALOG,
     role = "dialog",
     portalTarget,
     onOpenAutoFocus,
@@ -73,22 +74,19 @@ export function DialogContent<T extends keyof SeidrElementTagNameMap = "div">(
     onInteractOutside,
   });
 
-  useFocusScope(
-    dialog.contentRef,
-    {
-      trapFocus: dialog.isModal,
-      onMountAutoFocus: onOpenAutoFocus,
-      onUnmountAutoFocus: (event) => {
-        onCloseAutoFocus?.(event);
-        if (!event.defaultPrevented) {
-          const trigger = dialog.triggerRef();
-          if (trigger) {
-            trigger.focus();
-          }
+  useFocusScope(dialog.contentRef, {
+    trapFocus: dialog.isModal,
+    onMountAutoFocus: onOpenAutoFocus,
+    onUnmountAutoFocus: (event) => {
+      onCloseAutoFocus?.(event);
+      if (!event.defaultPrevented) {
+        const trigger = dialog.triggerRef();
+        if (trigger) {
+          trigger.focus();
         }
-      },
+      }
     },
-  );
+  });
 
   useHideOutside({
     isDisabled: dialog.isOpen.as((o) => !o || !dialog.isModal()),
@@ -121,7 +119,7 @@ export function DialogContent<T extends keyof SeidrElementTagNameMap = "div">(
         "aria-describedby": ariaDescribedBy ?? dialog.descriptionId,
         "aria-label": ariaLabel,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: dialog.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: dialog.isOpen.as((o) => (!o ? "" : undefined)),
         ...rest,

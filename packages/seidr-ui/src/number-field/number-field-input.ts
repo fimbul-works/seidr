@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_INPUT } from "../constants.js";
 import type { UseNumberFieldResult } from "./types.js";
 
 export interface NumberFieldInputOptions<T extends keyof SeidrElementTagNameMap = "input"> {
@@ -113,8 +114,8 @@ export function NumberFieldInput<T extends keyof SeidrElementTagNameMap = "input
     readOnly: nf.formControl.isReadOnly,
     required: nf.formControl.isRequired,
     ...nf.dataset,
-    dataComponent: "number-field",
-    dataPart: "input",
+    dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+    dataPart: DATA_PART_INPUT,
     oninput: handleInput,
     onkeydown: handleKeyDown,
     onwheel: handleWheel,

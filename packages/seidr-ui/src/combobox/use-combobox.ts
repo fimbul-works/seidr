@@ -4,16 +4,16 @@ import {
   createValue,
   type DerivedValue,
   inClient,
+  isValue,
+  mergeValues,
   type ObservableValue,
   onUnmounted,
+  unwrapValue,
   type Value,
   wrapValue,
-  unwrapValue,
-  mergeValues,
-  isValue,
 } from "@fimbul-works/seidr";
-import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import type { ValidationState } from "../form-control/types.js";
+import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import { useListbox } from "../listbox/use-listbox.js";
 import { usePopper } from "../popper/use-popper.js";
 import type {
@@ -132,15 +132,15 @@ export function useCombobox<Option = any, OptGroup = any>(
   // Form Control state derivations
   const isDisabled: DerivedValue<boolean> = isValue(options.disabled)
     ? (options.disabled as Value<boolean>).as(Boolean)
-    : wrapValue(Boolean(options.disabled)) as DerivedValue<boolean>;
+    : (wrapValue(Boolean(options.disabled)) as DerivedValue<boolean>);
 
   const isReadOnly: DerivedValue<boolean> = isValue(options.readOnly)
     ? (options.readOnly as Value<boolean>).as(Boolean)
-    : wrapValue(Boolean(options.readOnly)) as DerivedValue<boolean>;
+    : (wrapValue(Boolean(options.readOnly)) as DerivedValue<boolean>);
 
   const isRequired: DerivedValue<boolean> = isValue(options.required)
     ? (options.required as Value<boolean>).as(Boolean)
-    : wrapValue(Boolean(options.required)) as DerivedValue<boolean>;
+    : (wrapValue(Boolean(options.required)) as DerivedValue<boolean>);
 
   const validationState: ObservableValue<ValidationState | undefined> = wrapValue(options.validationState);
 

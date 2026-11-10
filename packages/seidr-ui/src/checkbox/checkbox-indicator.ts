@@ -9,6 +9,7 @@ import {
   Show,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CHECKBOX, DATA_PART_INDICATOR } from "../constants.js";
 import type { UseCheckboxResult } from "./types.js";
 
 export interface CheckboxIndicatorOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -43,8 +44,8 @@ export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div"
   const elementProps = {
     id: id ?? cb.id.as((base) => `${base}-indicator`),
     ...cb.dataset,
-    dataComponent: "checkbox",
-    dataPart: "indicator",
+    dataComponent: DATA_COMPONENT_CHECKBOX,
+    dataPart: DATA_PART_INDICATOR,
     ...rest,
   } as SeidrElementProps<T>;
 

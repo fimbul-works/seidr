@@ -12,6 +12,7 @@ import {
   type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_CHECKBOX_ITEM } from "../constants.js";
 import type { MenuCheckboxItemProps } from "./types.js";
 
 /**
@@ -24,7 +25,7 @@ export function MenuCheckboxItem<T extends keyof SeidrElementTagNameMap = "div">
   const {
     as = "div" as T,
     instance: menu,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     value: userValue,
     checked: controlledChecked,
     defaultChecked = false,
@@ -124,7 +125,7 @@ export function MenuCheckboxItem<T extends keyof SeidrElementTagNameMap = "div">
       "aria-checked": ariaChecked,
       "aria-disabled": isDisabled.as((d) => (d ? "true" : undefined)),
       dataComponent,
-      dataPart: "checkbox-item",
+      dataPart: DATA_PART_CHECKBOX_ITEM,
       dataValue: value,
       dataHighlighted: isHighlighted.as((h) => (h ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
@@ -137,4 +138,3 @@ export function MenuCheckboxItem<T extends keyof SeidrElementTagNameMap = "div">
     resolvedChildren,
   );
 }
-

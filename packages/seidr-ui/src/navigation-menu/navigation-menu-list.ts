@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU, DATA_PART_LIST } from "../constants.js";
 import type { NavigationMenuListProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function NavigationMenuList<T extends keyof SeidrElementTagNameMap = "ul"
   const {
     as = "ul" as T,
     instance,
-    dataComponent = "navigation-menu",
+    dataComponent = DATA_COMPONENT_NAVIGATION_MENU,
     ref: userRef,
     onkeydown: userOnKeyDown,
     children: propsChildren,
@@ -65,11 +66,10 @@ export function NavigationMenuList<T extends keyof SeidrElementTagNameMap = "ul"
       "aria-orientation": instance.orientation,
       dataOrientation: instance.orientation,
       dataComponent,
-      dataPart: "list",
+      dataPart: DATA_PART_LIST,
       onkeydown: handleKeyDown,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

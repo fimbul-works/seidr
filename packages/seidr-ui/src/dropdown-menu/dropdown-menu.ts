@@ -1,4 +1,5 @@
 import { createComponent } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_DROPDOWN_MENU } from "../constants.js";
 import { createDropdownMenu } from "./create-dropdown-menu.js";
 import type { DropdownMenuProps, UseDropdownMenuOptions } from "./types.js";
 
@@ -7,56 +8,49 @@ import type { DropdownMenuProps, UseDropdownMenuOptions } from "./types.js";
  * Composes Root, Trigger, Content, and List with full Popper floating
  * positioning, WAI-ARIA dropdown menu semantics, and roving keyboard navigation.
  */
-export const DropdownMenu = createComponent(
-  (props: DropdownMenuProps = {}) => {
-    const {
-      id,
-      open,
-      defaultOpen,
-      onOpenChange,
-      placement = "bottom-start",
-      modal = true,
-      preventScroll = false,
-      forceMount = false,
-      loop = true,
-      closeOnSelect = true,
-      parentMenu = null,
-      portalTarget,
-      as = "div",
-      trigger,
-      items,
-      rootProps = {},
-      triggerProps = {},
-      contentProps = {},
-      children,
-    } = props;
+export const DropdownMenu = createComponent((props: DropdownMenuProps = {}) => {
+  const {
+    id,
+    open,
+    defaultOpen,
+    onOpenChange,
+    placement = "bottom-start",
+    modal = true,
+    preventScroll = false,
+    forceMount = false,
+    loop = true,
+    closeOnSelect = true,
+    parentMenu = null,
+    portalTarget,
+    as = "div",
+    trigger,
+    items,
+    rootProps = {},
+    triggerProps = {},
+    contentProps = {},
+    children,
+  } = props;
 
-    const options: UseDropdownMenuOptions = {
-      id,
-      open,
-      defaultOpen,
-      onOpenChange,
-      placement,
-      modal,
-      preventScroll,
-      forceMount,
-      loop,
-      closeOnSelect,
-      parentMenu,
-      portalTarget,
-      dataComponent: "dropdown-menu",
-    };
+  const options: UseDropdownMenuOptions = {
+    id,
+    open,
+    defaultOpen,
+    onOpenChange,
+    placement,
+    modal,
+    preventScroll,
+    forceMount,
+    loop,
+    closeOnSelect,
+    parentMenu,
+    portalTarget,
+    dataComponent: DATA_COMPONENT_DROPDOWN_MENU,
+  };
 
-    const dropdown = createDropdownMenu(options);
+  const dropdown = createDropdownMenu(options);
 
-    return dropdown.Root(
-      { as, ...rootProps },
-      [
-        trigger ? dropdown.Trigger(triggerProps, trigger) : null,
-        dropdown.Content({ items, ...contentProps }, children),
-      ],
-    );
-  },
-  "DropdownMenu",
-);
-
+  return dropdown.Root({ as, ...rootProps }, [
+    trigger ? dropdown.Trigger(triggerProps, trigger) : null,
+    dropdown.Content({ items, ...contentProps }, children),
+  ]);
+}, "DropdownMenu");

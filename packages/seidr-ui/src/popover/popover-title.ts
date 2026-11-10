@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPOVER, DATA_PART_TITLE } from "../constants.js";
 import type { PopoverTitleProps } from "./types.js";
 
 /**
@@ -14,13 +15,7 @@ export function PopoverTitle<T extends keyof SeidrElementTagNameMap = "h2">(
   props: PopoverTitleProps<T> = {} as PopoverTitleProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "h2" as T,
-    instance: popover,
-    dataComponent = "popover",
-    id: userId,
-    ...rest
-  } = props;
+  const { as = "h2" as T, instance: popover, dataComponent = DATA_COMPONENT_POPOVER, id: userId, ...rest } = props;
 
   if (!popover) {
     throw new SeidrError("PopoverTitle requires an instance coordinator");
@@ -35,7 +30,7 @@ export function PopoverTitle<T extends keyof SeidrElementTagNameMap = "h2">(
     {
       id: userId ?? popover.titleId,
       dataComponent,
-      dataPart: "title",
+      dataPart: DATA_PART_TITLE,
       dataExpanded: popover.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: popover.isOpen.as((o) => (!o ? "" : undefined)),
       ...rest,
@@ -43,4 +38,3 @@ export function PopoverTitle<T extends keyof SeidrElementTagNameMap = "h2">(
     children,
   );
 }
-

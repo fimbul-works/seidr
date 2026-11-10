@@ -9,6 +9,7 @@ import {
   SeidrError,
   Show,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_DIALOG, DATA_PART_OVERLAY } from "../constants.js";
 import type { DialogOverlayProps } from "./types.js";
 
 /**
@@ -21,7 +22,7 @@ export function DialogOverlay<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: dialog,
-    dataComponent = "dialog",
+    dataComponent = DATA_COMPONENT_DIALOG,
     ref: userRef,
     onpointerdown: userOnPointerDown,
     ...rest
@@ -57,7 +58,7 @@ export function DialogOverlay<T extends keyof SeidrElementTagNameMap = "div">(
         ref: internalRef,
         "aria-hidden": "true",
         dataComponent,
-        dataPart: "overlay",
+        dataPart: DATA_PART_OVERLAY,
         dataExpanded: dialog.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: dialog.isOpen.as((o) => (!o ? "" : undefined)),
         onpointerdown: handlePointerDown,
@@ -69,4 +70,3 @@ export function DialogOverlay<T extends keyof SeidrElementTagNameMap = "div">(
 
   return Show(dialog.isOpen, renderOverlay) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

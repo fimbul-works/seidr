@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPOVER, DATA_PART_ROOT } from "../constants.js";
 import type { PopoverRootProps } from "./types.js";
 
 /**
@@ -14,12 +15,7 @@ export function PopoverRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopoverRootProps<T> = {} as PopoverRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "div" as T,
-    instance: popover,
-    dataComponent = "popover",
-    ...rest
-  } = props;
+  const { as = "div" as T, instance: popover, dataComponent = DATA_COMPONENT_POPOVER, ...rest } = props;
 
   if (!popover) {
     throw new SeidrError("PopoverRoot requires an instance coordinator");
@@ -29,7 +25,7 @@ export function PopoverRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       dataExpanded: popover.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: popover.isOpen.as((o) => (!o ? "" : undefined)),
       ...rest,
@@ -37,4 +33,3 @@ export function PopoverRoot<T extends keyof SeidrElementTagNameMap = "div">(
     children,
   );
 }
-

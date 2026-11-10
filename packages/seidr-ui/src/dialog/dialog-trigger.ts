@@ -8,6 +8,7 @@ import {
   SeidrError,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_DIALOG, DATA_PART_TRIGGER } from "../constants.js";
 import type { DialogTriggerProps } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export function DialogTrigger<T extends keyof SeidrElementTagNameMap = "button">
   const {
     as = "button" as T,
     instance: dialog,
-    dataComponent = "dialog",
+    dataComponent = DATA_COMPONENT_DIALOG,
     type,
     disabled: disabledProp,
     ariaLabel,
@@ -71,7 +72,7 @@ export function DialogTrigger<T extends keyof SeidrElementTagNameMap = "button">
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: dialog.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: dialog.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
@@ -81,4 +82,3 @@ export function DialogTrigger<T extends keyof SeidrElementTagNameMap = "button">
     children,
   );
 }
-

@@ -26,7 +26,7 @@
 }
 
 /* Portaled ToastRegion Container */
-[data-component="toast"][data-part="region"] {
+[data-component="Toast"][data-part="Region"] {
   position: fixed;
   bottom: 1.25rem;
   right: 1.25rem;
@@ -35,14 +35,14 @@
   outline: none;
 }
 
-[data-component="toast"][data-part="region"].toast-region-top-right {
+[data-component="Toast"][data-part="Region"].toast-region-top-right {
   bottom: auto;
   top: 1.25rem;
   right: 1.25rem;
 }
 
 /* Toast Ordered List */
-[data-component="toast"][data-part="list"] {
+[data-component="Toast"][data-part="List"] {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -53,7 +53,7 @@
 }
 
 /* Individual Toast Item */
-[data-component="toast"][data-part="root"] {
+[data-component="Toast"][data-part="Root"] {
   position: relative;
   display: grid;
   grid-template-columns: 1fr auto;
@@ -71,13 +71,13 @@
   animation: toast-slide-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-[data-component="toast"][data-part="root"]:focus-visible {
+[data-component="Toast"][data-part="Root"]:focus-visible {
   box-shadow:
     0 0 0 2px var(--accent, #6366f1),
     0 12px 28px -6px rgba(0, 0, 0, 0.45);
 }
 
-[data-component="toast"][data-part="root"][data-swipe="move"] {
+[data-component="Toast"][data-part="Root"][data-swipe="move"] {
   transform: translate3d(
     var(--toast-swipe-move-x, 0px),
     var(--toast-swipe-move-y, 0px),
@@ -86,25 +86,25 @@
   transition: none;
 }
 
-[data-component="toast"][data-part="root"][data-swipe="cancel"] {
+[data-component="Toast"][data-part="Root"][data-swipe="cancel"] {
   transform: translate3d(0, 0, 0);
   transition: transform 0.2s ease-out;
 }
 
-[data-component="toast"][data-part="root"].toast-success {
+[data-component="Toast"][data-part="Root"].toast-success {
   border-left-color: #10b981;
 }
 
-[data-component="toast"][data-part="root"].toast-warning {
+[data-component="Toast"][data-part="Root"].toast-warning {
   border-left-color: #f59e0b;
 }
 
-[data-component="toast"][data-part="root"].toast-error {
+[data-component="Toast"][data-part="Root"].toast-error {
   border-left-color: #ef4444;
 }
 
 /* Toast Title */
-[data-component="toast"][data-part="title"] {
+[data-component="Toast"][data-part="Title"] {
   grid-column: 1;
   font-size: 0.925rem;
   font-weight: 600;
@@ -113,7 +113,7 @@
 }
 
 /* Toast Description */
-[data-component="toast"][data-part="description"] {
+[data-component="Toast"][data-part="Description"] {
   grid-column: 1;
   font-size: 0.825rem;
   line-height: 1.45;
@@ -121,7 +121,7 @@
 }
 
 /* Toast Close Button */
-[data-component="toast"][data-part="close-button"] {
+[data-component="Toast"][data-part="CloseButton"] {
   grid-column: 2;
   grid-row: 1 / span 2;
   display: inline-flex;
@@ -141,13 +141,13 @@
     color 0.15s ease;
 }
 
-[data-component="toast"][data-part="close-button"]:hover {
+[data-component="Toast"][data-part="CloseButton"]:hover {
   background: rgba(255, 255, 255, 0.08);
   color: var(--fg, #f9fafb);
 }
 
 /* Toast Progress Track & Fill */
-[data-component="toast"][data-part="progress-track"] {
+[data-component="Toast"][data-part="ProgressTrack"] {
   position: absolute;
   left: 0;
   right: 0;
@@ -157,24 +157,24 @@
   overflow: hidden;
 }
 
-[data-component="toast"][data-part="progress-fill"] {
+[data-component="Toast"][data-part="ProgressFill"] {
   height: 100%;
   background: var(--accent, #6366f1);
   transition: width 0.08s linear;
 }
 
-[data-component="toast"][data-part="root"].toast-success
-  [data-component="toast"][data-part="progress-fill"] {
+[data-component="Toast"][data-part="Root"].toast-success
+  [data-component="Toast"][data-part="ProgressFill"] {
   background: #10b981;
 }
 
-[data-component="toast"][data-part="root"].toast-warning
-  [data-component="toast"][data-part="progress-fill"] {
+[data-component="Toast"][data-part="Root"].toast-warning
+  [data-component="Toast"][data-part="ProgressFill"] {
   background: #f59e0b;
 }
 
-[data-component="toast"][data-part="root"].toast-error
-  [data-component="toast"][data-part="progress-fill"] {
+[data-component="Toast"][data-part="Root"].toast-error
+  [data-component="Toast"][data-part="ProgressFill"] {
   background: #ef4444;
 }
 

@@ -19,10 +19,11 @@ import { ComboboxLabel } from "../combobox/combobox-label.js";
 import { ComboboxListbox } from "../combobox/combobox-listbox.js";
 import { ComboboxRoot } from "../combobox/combobox-root.js";
 import { ComboboxTrigger } from "../combobox/combobox-trigger.js";
-import { FormControlDescription } from "../form-control/form-control-description.js";
+import { DATA_COMPONENT_SEARCH } from "../constants.js";
 import type { FormControlDescriptionProps } from "../form-control/form-control-description.js";
-import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
+import { FormControlDescription } from "../form-control/form-control-description.js";
 import type { FormControlErrorMessageProps } from "../form-control/form-control-error-message.js";
+import { FormControlErrorMessage } from "../form-control/form-control-error-message.js";
 import { ListboxItem } from "../listbox/listbox-item.js";
 import { ListboxItemDescription } from "../listbox/listbox-item-description.js";
 import { ListboxItemIndicator } from "../listbox/listbox-item-indicator.js";
@@ -63,8 +64,8 @@ import type {
   SearchItemProps,
   SearchLabelProps,
   SearchListboxProps,
-  SearchNoResultProps,
   SearchNode,
+  SearchNoResultProps,
   SearchRootProps,
   SearchSectionData,
   SearchSectionLabelProps,
@@ -94,7 +95,7 @@ export function createSearch<Option = any, OptGroup = any>(
           instance: itemResult,
           listbox: instance.listbox,
           value: itemOptions.value,
-          dataComponent: "search",
+          dataComponent: DATA_COMPONENT_SEARCH,
           id: `${instance.id}-item-${itemOptions.value}`,
           ...itemProps,
         } as ListboxItemProps<T>,
@@ -108,20 +109,23 @@ export function createSearch<Option = any, OptGroup = any>(
       ListboxItemLabel(
         {
           instance: itemResult,
-          dataComponent: "search",
+          dataComponent: DATA_COMPONENT_SEARCH,
           ...labelProps,
         } as ListboxItemLabelProps<T>,
         children,
       );
 
     const Description = <T extends keyof SeidrElementTagNameMap = "div">(
-      descProps: Omit<SearchItemDescriptionProps<T>, "instance"> = {} as Omit<SearchItemDescriptionProps<T>, "instance">,
+      descProps: Omit<SearchItemDescriptionProps<T>, "instance"> = {} as Omit<
+        SearchItemDescriptionProps<T>,
+        "instance"
+      >,
       children?: SeidrChild | SeidrChild[],
     ) =>
       ListboxItemDescription(
         {
           instance: itemResult,
-          dataComponent: "search",
+          dataComponent: DATA_COMPONENT_SEARCH,
           ...descProps,
         } as ListboxItemDescriptionProps<T>,
         children,
@@ -134,7 +138,7 @@ export function createSearch<Option = any, OptGroup = any>(
       ListboxItemIndicator(
         {
           instance: itemResult,
-          dataComponent: "search",
+          dataComponent: DATA_COMPONENT_SEARCH,
           ...indProps,
         } as ListboxItemIndicatorProps<T>,
         children,
@@ -156,51 +160,51 @@ export function createSearch<Option = any, OptGroup = any>(
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchRootProps<T> = {} as SearchRootProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxRoot({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxRoot({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "label">(
     props: SearchLabelProps<T> = {} as SearchLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxLabel({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxLabel({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Control = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchControlProps<T> = {} as SearchControlProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxControl({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxControl({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Input = <T extends keyof SeidrElementTagNameMap = "input">(
     props: SearchInputProps<T> = {} as SearchInputProps<T>,
-  ) => ComboboxInput({ instance, dataComponent: "search", ...props });
+  ) => ComboboxInput({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props });
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: SearchTriggerProps<T> = {} as SearchTriggerProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxTrigger({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxTrigger({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchIconProps<T> = {} as SearchIconProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxIcon({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxIcon({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Indicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchIndicatorProps<T> = {} as SearchIndicatorProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => SearchIndicator({ instance, dataComponent: "search", ...props }, children);
+  ) => SearchIndicator({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const NoResult = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchNoResultProps<T> = {} as SearchNoResultProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => SearchNoResult({ instance, dataComponent: "search", ...props }, children);
+  ) => SearchNoResult({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchContentProps<T> = {} as SearchContentProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxContent({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxContent({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Listbox = <T extends keyof SeidrElementTagNameMap = "ul">(
     props: SearchListboxProps<T> = {} as SearchListboxProps<T>,
     children?: SeidrChild | SeidrChild[],
-  ) => ComboboxListbox({ instance, dataComponent: "search", ...props }, children);
+  ) => ComboboxListbox({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "li">(
     props: SearchItemProps<T>,
@@ -209,7 +213,7 @@ export function createSearch<Option = any, OptGroup = any>(
     ListboxItem(
       {
         listbox: instance.listbox,
-        dataComponent: "search",
+        dataComponent: DATA_COMPONENT_SEARCH,
         id: `${instance.id}-item-${props.value}`,
         ...props,
       },
@@ -224,7 +228,10 @@ export function createSearch<Option = any, OptGroup = any>(
     if (!itemInst) {
       throw new SeidrError("SearchItemLabel requires an item instance");
     }
-    return ListboxItemLabel({ instance: itemInst, dataComponent: "search", ...props } as ListboxItemLabelProps<T>, children);
+    return ListboxItemLabel(
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxItemLabelProps<T>,
+      children,
+    );
   };
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "div">(
@@ -236,7 +243,7 @@ export function createSearch<Option = any, OptGroup = any>(
       throw new SeidrError("SearchItemDescription requires an item instance");
     }
     return ListboxItemDescription(
-      { instance: itemInst, dataComponent: "search", ...props } as ListboxItemDescriptionProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxItemDescriptionProps<T>,
       children,
     );
   };
@@ -250,7 +257,7 @@ export function createSearch<Option = any, OptGroup = any>(
       throw new SeidrError("SearchItemIndicator requires an item instance");
     }
     return ListboxItemIndicator(
-      { instance: itemInst, dataComponent: "search", ...props } as ListboxItemIndicatorProps<T>,
+      { instance: itemInst, dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxItemIndicatorProps<T>,
       children,
     );
   };
@@ -259,21 +266,21 @@ export function createSearch<Option = any, OptGroup = any>(
     props: SearchSectionProps<T> = {} as SearchSectionProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSection<T>({ dataComponent: "search", ...props } as ListboxSectionProps<T>, children);
+    ListboxSection<T>({ dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxSectionProps<T>, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchSectionLabelProps<T> = {} as SearchSectionLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSectionLabel<T>({ dataComponent: "search", ...props } as ListboxSectionLabelProps<T>, children);
+    ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxSectionLabelProps<T>, children);
 
   const HiddenSelect = (props: SearchHiddenSelectProps = {}) =>
-    ComboboxHiddenSelect({ instance, dataComponent: "search", ...props });
+    ComboboxHiddenSelect({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props });
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchArrowProps<T> = {} as SearchArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: "search", ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_SEARCH, ...props } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchDescriptionProps<T> = {} as SearchDescriptionProps<T>,
@@ -282,7 +289,7 @@ export function createSearch<Option = any, OptGroup = any>(
     FormControlDescription<T>(
       {
         id: instance.descriptionId,
-        dataComponent: "search",
+        dataComponent: DATA_COMPONENT_SEARCH,
         ...props,
       } as FormControlDescriptionProps<T>,
       children,
@@ -295,7 +302,7 @@ export function createSearch<Option = any, OptGroup = any>(
     FormControlErrorMessage<T>(
       {
         id: instance.errorMessageId,
-        dataComponent: "search",
+        dataComponent: DATA_COMPONENT_SEARCH,
         ...props,
       } as FormControlErrorMessageProps<T>,
       children,
@@ -325,7 +332,10 @@ export function createSearch<Option = any, OptGroup = any>(
       const secKey = sectionVal().key;
       const sectionItems = sectionVal.as((s) => s.items ?? []) as Value<SearchItemData[]>;
       return Section({ id: secKey }, [
-        SectionLabel({}, sectionVal.as((s) => s.label)),
+        SectionLabel(
+          {},
+          sectionVal.as((s) => s.label),
+        ),
         $("ul", { role: "group" }, [
           List<SearchItemData, string>(
             sectionItems,
@@ -357,7 +367,8 @@ export function createSearch<Option = any, OptGroup = any>(
       },
       (nodeVal) => {
         const initialNode = nodeVal();
-        const isSec = isObj(initialNode) && "items" in initialNode && Array.isArray((initialNode as SearchSectionData).items);
+        const isSec =
+          isObj(initialNode) && "items" in initialNode && Array.isArray((initialNode as SearchSectionData).items);
 
         if (isSec) {
           const secVal = nodeVal as unknown as Value<SearchSectionData>;
@@ -409,4 +420,3 @@ export function createSearch<Option = any, OptGroup = any>(
     List: ListHelper,
   };
 }
-

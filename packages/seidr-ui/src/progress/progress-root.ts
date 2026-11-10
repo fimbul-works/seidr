@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_ROOT } from "../constants.js";
 import { extractAriaProps } from "../utils/aria.js";
 import type { ProgressRootProps } from "./types.js";
 
@@ -42,7 +43,7 @@ export function ProgressRoot<T extends keyof SeidrElementTagNameMap = "div">(
       dataIndeterminate:
         progress.role === "meter" ? undefined : progress.isIndeterminate.as((i) => (i ? "" : undefined)),
       dataComponent: dataComponent ?? progress.dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

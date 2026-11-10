@@ -11,6 +11,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_HOVER_CARD, DATA_PART_CONTENT } from "../constants.js";
 import { useEscapeKeyDown } from "../hooks/use-escape-keydown.js";
 import { useInteractOutside } from "../hooks/use-interact-outside.js";
 import { PopperPositioner } from "../popper/popper-positioner.js";
@@ -26,7 +27,7 @@ export function HoverCardContent<T extends keyof SeidrElementTagNameMap = "div">
   const {
     as = "div" as T,
     instance: hoverCard,
-    dataComponent = "hover-card",
+    dataComponent = DATA_COMPONENT_HOVER_CARD,
     portalTarget,
     onEscapeKeyDown,
     onPointerDownOutside,
@@ -89,7 +90,7 @@ export function HoverCardContent<T extends keyof SeidrElementTagNameMap = "div">
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: hoverCard.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: hoverCard.isOpen.as((o) => (!o ? "" : undefined)),
         style: combinedStyle,

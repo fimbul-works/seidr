@@ -9,6 +9,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TABS, DATA_PART_INDICATOR } from "../constants.js";
 import type { TabsIndicatorProps } from "./types.js";
 
 /**
@@ -76,8 +77,8 @@ export function TabsIndicator<T extends keyof SeidrElementTagNameMap = "div">(
     {
       role: "presentation",
       dataOrientation: tabs.orientation,
-      dataComponent: "tabs",
-      dataPart: "indicator",
+      dataComponent: DATA_COMPONENT_TABS,
+      dataPart: DATA_PART_INDICATOR,
       style: mergeStyleProps(baseStyle, userStyle),
       ...rest,
     } as SeidrElementProps<T>,

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TIME_FIELD, DATA_PART_LABEL, DATA_PART_LINK } from "../constants.js";
 import type { TimeFieldLabelProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function TimeFieldLabel<T extends keyof SeidrElementTagNameMap = "label">
   const {
     as = "label" as T,
     instance,
-    dataComponent = "time-field",
+    dataComponent = DATA_COMPONENT_TIME_FIELD,
     for: userFor,
     htmlFor: userHtmlFor,
     children: propsChildren,
@@ -44,10 +45,9 @@ export function TimeFieldLabel<T extends keyof SeidrElementTagNameMap = "label">
       for: userFor ?? userHtmlFor ?? instance.formControl.fieldId,
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

@@ -49,11 +49,11 @@
 
 /* HoverCard Component Semantic Part Styles */
 
-[data-component="hover-card"][data-part="root"] {
+[data-component="HoverCard"][data-part="Root"] {
   display: inline-flex;
 }
 
-[data-component="hover-card"][data-part="trigger"] {
+[data-component="HoverCard"][data-part="Trigger"] {
   display: inline;
   color: var(--accent, #6366f1);
   font-weight: 600;
@@ -63,21 +63,21 @@
   transition: color 0.15s ease;
 }
 
-[data-component="hover-card"][data-part="trigger"]:hover {
+[data-component="HoverCard"][data-part="Trigger"]:hover {
   color: var(--accent-hover, #818cf8);
 }
 
-[data-component="hover-card"][data-part="trigger"]:focus-visible {
+[data-component="HoverCard"][data-part="Trigger"]:focus-visible {
   outline: 2px solid var(--accent, #6366f1);
   outline-offset: 2px;
   border-radius: 3px;
 }
 
-[data-component="hover-card"][data-part="positioner"] {
+[data-component="HoverCard"][data-part="Positioner"] {
   z-index: 1000;
 }
 
-[data-component="hover-card"][data-part="content"] {
+[data-component="HoverCard"][data-part="Content"] {
   background: #18181b;
   color: #fafafa;
   border: 1px solid #3f3f46;
@@ -90,7 +90,7 @@
   max-width: 90vw;
 }
 
-[data-component="hover-card"][data-part="arrow"] {
+[data-component="HoverCard"][data-part="Arrow"] {
   color: #18181b;
 }
 

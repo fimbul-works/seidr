@@ -2,11 +2,13 @@ import { isFn, isObj, isUndef } from "@fimbul-works/hvat";
 import {
   $,
   createRef,
+  mergeStyleProps,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPPEER, DATA_PART_ARROW } from "../constants.js";
 import type { BasePlacement, PopperArrowProps } from "./types.js";
 import { ARROW_PATH, ROTATION_DEG } from "./utils.js";
 
@@ -23,7 +25,7 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
     size = 30,
     ref: userRef,
     style: userStyle,
-    dataComponent = "popper",
+    dataComponent = DATA_COMPONENT_POPPEER,
     ...rest
   } = props;
 
@@ -50,7 +52,7 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
     pointerEvents: "none",
   };
 
-  const combinedStyle = isObj(userStyle) ? { ...baseStyle, ...userStyle } : baseStyle;
+  const combinedStyle = mergeStyleProps(baseStyle, userStyle)
 
   if (!isUndef(children)) {
     return $(
@@ -59,7 +61,7 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
         ref: internalRef,
         ariaHidden: "true",
         dataComponent,
-        dataPart: "arrow",
+        dataPart: DATA_PART_ARROW,
         dataPlacement: popper.currentPlacement,
         style: combinedStyle,
         ...rest,
@@ -72,12 +74,13 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
     ref: internalRef,
     ariaHidden: "true",
     dataComponent,
-    dataPart: "arrow",
+    dataPart: DATA_PART_ARROW,
     dataPlacement: popper.currentPlacement,
     style: combinedStyle,
     innerHTML: rotation.as(
       (rot) =>
-        `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};transform-origin:top center;display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
+        `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
+//        `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};transform-origin:top center;display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
     ),
     ...rest,
   } as SeidrElementProps<T>);

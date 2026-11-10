@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CHECKBOX, DATA_PART_CONTROL } from "../constants.js";
 import type { UseCheckboxResult } from "./types.js";
 
 export interface CheckboxControlOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -69,8 +70,8 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
       ...cb.dataset,
       onclick: handleClick,
       onkeydown: handleKeyDown,
-      dataComponent: "checkbox",
-      dataPart: "control",
+      dataComponent: DATA_COMPONENT_CHECKBOX,
+      dataPart: DATA_PART_CONTROL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP } from "../constants.js";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -45,7 +46,7 @@ export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = 
       as,
       instance: rg.formControl,
       ...rg.dataset,
-      dataComponent: "radio-group",
+      dataComponent: DATA_COMPONENT_RADIO_GROUP,
       ...rest,
     } as FormControlErrorMessageProps<T>,
     children,

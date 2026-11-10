@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RATING, DATA_PART_LABEL } from "../constants.js";
 import type { RatingLabelProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function RatingLabel<T extends keyof SeidrElementTagNameMap = "span">(
   const {
     as = "span" as T,
     instance,
-    dataComponent = "rating",
+    dataComponent = DATA_COMPONENT_RATING,
     id: customId,
     children: propsChildren,
     ...rest
@@ -45,10 +46,9 @@ export function RatingLabel<T extends keyof SeidrElementTagNameMap = "span">(
       dataDisabled: instance.isDisabled.as((d) => (d ? "" : undefined)),
       dataReadonly: instance.isReadOnly.as((r) => (r ? "" : undefined)),
       dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TEXT_FIELD, DATA_PART_TEXT_AREA } from "../constants.js";
 import { combineAriaDescribedBy, combineAriaLabelledBy, extractAriaProps } from "../utils/aria.js";
 import type { TextFieldTextAreaProps } from "./types.js";
 
@@ -51,8 +52,8 @@ export function TextFieldTextArea<T extends keyof SeidrElementTagNameMap = "text
     ref: userRef,
     oninput,
     onkeydown,
-    dataComponent = "text-field",
-    dataPart = "text-area",
+    dataComponent = DATA_COMPONENT_TEXT_FIELD,
+    dataPart = DATA_PART_TEXT_AREA,
     ...rest
   } = restProps;
 

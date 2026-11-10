@@ -1,5 +1,5 @@
 /* Component Styles: Alert */
-[data-component="alert"] {
+[data-component="Alert"] {
   padding: 1rem 1.25rem;
   border-radius: 8px;
   background: var(--alert-bg);
@@ -10,17 +10,17 @@
   font-size: 0.95rem;
 }
 
-[data-component="alert"].warning,
-[data-component="alert"][data-severity="warning"] {
+[data-component="Alert"].warning,
+[data-component="Alert"][data-severity="warning"] {
   border-left: 4px solid #f59e0b;
 }
 
-[data-component="alert"].info,
-[data-component="alert"][data-severity="info"] {
+[data-component="Alert"].info,
+[data-component="Alert"][data-severity="info"] {
   border-left: 4px solid var(--accent);
 }
 
-[data-component="alert"].error,
-[data-component="alert"][data-severity="error"] {
+[data-component="Alert"].error,
+[data-component="Alert"][data-severity="error"] {
   border-left: 4px solid #ef4444;
 }

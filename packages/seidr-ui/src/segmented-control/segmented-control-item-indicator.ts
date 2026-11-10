@@ -6,6 +6,7 @@ import type {
   SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 import { SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL, DATA_PART_ITEM_INDICATOR } from "../constants.js";
 import {
   RadioGroupItemIndicator,
   type RadioGroupItemIndicatorProps,
@@ -52,11 +53,10 @@ export function SegmentedControlItemIndicator<T extends keyof SeidrElementTagNam
     {
       as,
       instance: item,
-      dataComponent: "segmented-control",
-      dataPart: "item-indicator",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
+      dataPart: DATA_PART_ITEM_INDICATOR,
       ...rest,
     } as RadioGroupItemIndicatorProps<T>,
     children,
   );
 }
-

@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_BREADCRUMBS, DATA_PART_SEPARATOR } from "../constants.js";
 import type { BreadcrumbsSeparatorProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function BreadcrumbsSeparator<T extends keyof SeidrElementTagNameMap = "s
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsSeparatorProps<T>>(propsOrChildren, children);
-  const { as = "span" as T, instance, dataComponent, dataPart, ...rest } = props;
+  const { as = "span" as T, instance, ...rest } = props;
 
   if (!instance) {
     throw new SeidrError("BreadcrumbsSeparator requires an instance coordinator");
@@ -27,8 +28,8 @@ export function BreadcrumbsSeparator<T extends keyof SeidrElementTagNameMap = "s
     as,
     {
       ariaHidden: "true",
-      dataComponent: dataComponent ?? "breadcrumbs",
-      dataPart: dataPart ?? "separator",
+      dataComponent: DATA_COMPONENT_BREADCRUMBS,
+      dataPart: DATA_PART_SEPARATOR,
       ...rest,
     } as SeidrElementProps<T>,
     content !== undefined ? content : instance.separator,

@@ -11,6 +11,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_PART_PROGRESS_FILL } from "../constants.js";
 import type { ToastProgressFillProps } from "./types.js";
 
 /**
@@ -20,13 +21,7 @@ export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div"
   props: ToastProgressFillProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "div" as T,
-    instance: toast,
-    style: userStyle,
-    dataComponent,
-    ...rest
-  } = props;
+  const { as = "div" as T, instance: toast, style: userStyle, dataComponent, ...rest } = props;
 
   if (!toast) {
     throw new SeidrError("ToastProgressFill requires a Toast instance coordinator");
@@ -82,7 +77,7 @@ export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div"
     {
       style: mergeStyleProps({ width }, userStyle),
       dataComponent: dataComponent ?? toast.dataComponent,
-      dataPart: "progress-fill",
+      dataPart: DATA_PART_PROGRESS_FILL,
       ...rest,
     } as SeidrElementProps<T>,
     children,
@@ -90,9 +85,7 @@ export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div"
 
   width.bind((val) => {
     el.style.setProperty("--toast-progress-fill-width", val);
-    el.style.setProperty("--kb-toast-progress-fill-width", val);
   });
 
   return el;
 }
-

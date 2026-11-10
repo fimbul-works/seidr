@@ -7,10 +7,8 @@ import {
   isValue,
   mergeValues,
   onUnmounted,
-  type Ref,
   unwrapValue,
   useId,
-  type Value,
   wrapValue,
 } from "@fimbul-works/seidr";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
@@ -19,7 +17,6 @@ import { usePopper } from "../popper/use-popper.js";
 import type {
   SelectItemData,
   SelectNode,
-  SelectSectionData,
   UseSelectOptions,
   UseSelectResult,
 } from "./types.js";

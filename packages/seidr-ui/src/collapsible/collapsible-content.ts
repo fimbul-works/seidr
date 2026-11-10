@@ -16,6 +16,7 @@ import {
   wrapValue,
   wrapValueObject,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COLLAPSIBLE, DATA_PART_CONTENT } from "../constants.js";
 import type { CollapsibleAnimationOptions, UseCollapsibleResult } from "./types.js";
 
 export interface CollapsibleContentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -272,8 +273,8 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
       as as T,
       {
         hidden: mergeValues(() => !col.isOpen() && !isAnimating(), { parents: [col.isOpen, isAnimating] }),
-        dataComponent: "collapsible",
-        dataPart: "content",
+        dataComponent: DATA_COMPONENT_COLLAPSIBLE,
+        dataPart: DATA_PART_CONTENT,
         ...elementProps,
       } as unknown as SeidrElementProps<T>,
       children,

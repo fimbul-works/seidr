@@ -28,7 +28,7 @@
   margin-bottom: 0.5rem;
 }
 
-[data-component="spin-button"] {
+[data-component="SpinButton"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -53,23 +53,23 @@
     background 0.15s ease;
 }
 
-[data-component="spin-button"]:hover:not([data-disabled]) {
+[data-component="SpinButton"]:hover:not([data-disabled]) {
   background: var(--bg-card-hover, #283548);
   border-color: var(--border-hover, #4b5563);
 }
 
-[data-component="spin-button"]:focus-visible {
+[data-component="SpinButton"]:focus-visible {
   border-color: var(--accent, #6366f1);
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
 }
 
-[data-component="spin-button"][data-disabled] {
+[data-component="SpinButton"][data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
   border-style: dashed;
 }
 
-[data-component="spin-button"][data-readonly] {
+[data-component="SpinButton"][data-readonly] {
   color: var(--fg-muted, #9ca3af);
   cursor: default;
 }

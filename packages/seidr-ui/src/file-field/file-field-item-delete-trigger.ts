@@ -7,6 +7,7 @@ import {
   SeidrError,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_ITEM_DELETE_TRIGGER } from "../constants.js";
 import type { FileFieldItemDeleteTriggerProps } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export function FileFieldItemDeleteTrigger<T extends keyof SeidrElementTagNameMa
     as = "button" as T,
     file,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     onclick: userOnClick,
     children: propsChildren,
     ...rest
@@ -58,11 +59,10 @@ export function FileFieldItemDeleteTrigger<T extends keyof SeidrElementTagNameMa
       type: "button",
       disabled: instance.isDisabled,
       dataComponent,
-      dataPart: "item-delete-trigger",
+      dataPart: DATA_PART_ITEM_DELETE_TRIGGER,
       onclick: handleClick,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

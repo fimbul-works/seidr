@@ -7,6 +7,8 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
+const DATA_COMPONENT_ALERT = "Alert";
+
 export interface AlertOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   /**
    * The HTML element tag name to render.
@@ -42,8 +44,8 @@ export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
 
   const { as = "div" as T, role = "alert", ...rest } = props;
   return $(
-    as as T,
-    { role, dataComponent: "alert", ...rest } as SeidrElementProps<T>,
+    as,
+    { role, dataComponent: DATA_COMPONENT_ALERT, ...rest } as SeidrElementProps<T>,
     content,
   ) as SeidrElementTagNameMap[T];
 }

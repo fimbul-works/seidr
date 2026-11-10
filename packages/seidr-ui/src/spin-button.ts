@@ -9,6 +9,7 @@ import {
   unwrapValue,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SPIN_BUTTON } from "./constants.js";
 import type { ValidationState } from "./form-control/types.js";
 import { useControllableValue } from "./hooks/use-controllable-value.js";
 
@@ -251,7 +252,7 @@ export function SpinButton<T extends keyof SeidrElementTagNameMap = "div">(
     {
       role: "spinbutton",
       tabIndex: effectiveTabIndex,
-      dataComponent: "spin-button",
+      dataComponent: DATA_COMPONENT_SPIN_BUTTON,
       "aria-valuenow": state.as((v) => (!isNullish(v) && !Number.isNaN(v) ? v : undefined)),
       "aria-valuetext": effectiveTextValue,
       "aria-valuemin": !isUndef(minValue)

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_ICON } from "../constants.js";
 import type { ComboboxIconProps } from "./types.js";
 
 /**
@@ -14,7 +15,7 @@ export function ComboboxIcon<T extends keyof SeidrElementTagNameMap = "span">(
   props: ComboboxIconProps<T> = {} as ComboboxIconProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "span" as T, instance: combobox, dataComponent = "combobox", ...rest } = props;
+  const { as = "span" as T, instance: combobox, dataComponent = DATA_COMPONENT_COMBOBOX, ...rest } = props;
 
   if (!combobox) {
     throw new SeidrError("ComboboxIcon requires an instance coordinator");
@@ -25,7 +26,7 @@ export function ComboboxIcon<T extends keyof SeidrElementTagNameMap = "span">(
     {
       ariaHidden: "true",
       dataComponent,
-      dataPart: "icon",
+      dataPart: DATA_PART_ICON,
       dataExpanded: combobox.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: combobox.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: combobox.isDisabled.as((d) => (d ? "" : undefined)),
@@ -34,4 +35,3 @@ export function ComboboxIcon<T extends keyof SeidrElementTagNameMap = "span">(
     children,
   );
 }
-

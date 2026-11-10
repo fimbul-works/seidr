@@ -1,4 +1,5 @@
 import { mergeValues, useId, wrapValue } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PROGRESS } from "../constants.js";
 import type { UseProgressOptions, UseProgressResult } from "./types.js";
 
 /**
@@ -13,7 +14,7 @@ export function useProgress(options: UseProgressOptions = {}): UseProgressResult
     indeterminate: rawIndeterminateProp,
     getValueLabel,
     role = "progressbar",
-    dataComponent = "progress",
+    dataComponent = DATA_COMPONENT_PROGRESS,
   } = options;
 
   const id = customId ?? useId(dataComponent);

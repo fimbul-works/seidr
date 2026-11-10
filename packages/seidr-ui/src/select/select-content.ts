@@ -11,6 +11,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_CONTENT } from "../constants.js";
 import { PopperPositioner } from "../popper/popper-positioner.js";
 import type { SelectContentProps } from "./types.js";
 
@@ -24,7 +25,7 @@ export function SelectContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: select,
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     portalTarget,
     ref: userRef,
     style: userStyle,
@@ -55,7 +56,7 @@ export function SelectContent<T extends keyof SeidrElementTagNameMap = "div">(
       {
         ref: internalRef,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: select.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: select.isOpen.as((o) => (!o ? "" : undefined)),
         style: combinedStyle,

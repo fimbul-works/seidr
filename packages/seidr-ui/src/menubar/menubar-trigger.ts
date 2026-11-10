@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR, DATA_PART_TRIGGER } from "../constants.js";
 import type { MenubarTriggerProps } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function MenubarTrigger<T extends keyof SeidrElementTagNameMap = "button"
     instance: menu,
     menubarInstance: menubar,
     menuValue,
-    dataComponent = "menubar",
+    dataComponent = DATA_COMPONENT_MENUBAR,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -170,7 +171,7 @@ export function MenubarTrigger<T extends keyof SeidrElementTagNameMap = "button"
       "aria-labelledby": ariaLabelledBy,
       "aria-describedby": ariaDescribedBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: isMenuOpen.as((o) => (o ? "" : undefined)),
       dataClosed: isMenuOpen.as((o) => (!o ? "" : undefined)),
       dataHighlighted: isCurrentActive.as((a) => (a ? "" : undefined)),
@@ -183,4 +184,3 @@ export function MenubarTrigger<T extends keyof SeidrElementTagNameMap = "button"
     resolvedChildren,
   );
 }
-

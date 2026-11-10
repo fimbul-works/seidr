@@ -10,6 +10,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_LISTBOX, DATA_PART_ITEM } from "../constants.js";
 import { ListboxItemDescription } from "./listbox-item-description.js";
 import { ListboxItemIndicator } from "./listbox-item-indicator.js";
 import { ListboxItemLabel } from "./listbox-item-label.js";
@@ -30,7 +31,7 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
     value,
     disabled: itemDisabled,
     textValue,
-    dataComponent = "listbox",
+    dataComponent = DATA_COMPONENT_LISTBOX,
     label,
     description,
     indicator,
@@ -188,7 +189,7 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
       id: item.id,
       role: "option",
       dataComponent,
-      dataPart: "item",
+      dataPart: DATA_PART_ITEM,
       dataKey: value,
       dataSelected: item.isSelected.as((s) => (s ? "" : undefined)),
       dataHighlighted: item.isHighlighted.as((h) => (h ? "" : undefined)),

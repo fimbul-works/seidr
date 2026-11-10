@@ -1,4 +1,5 @@
 import { useId, wrapValue } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_BREADCRUMBS } from "../constants.js";
 import type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from "./types.js";
 
 /**
@@ -18,8 +19,5 @@ export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcru
     id,
     separator: separatorObservable,
     ariaLabel: ariaLabelObservable,
-    dataset: {
-      "data-component": "breadcrumbs",
-    },
   };
 }

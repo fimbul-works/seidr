@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_PAGINATTION, DATA_PART_PREVIOUS, DATA_PART_PREVIOUS_WRAPPER } from "../constants.js";
 import type { PaginationPreviousProps } from "./types.js";
 
 /**
@@ -17,8 +18,8 @@ export function PaginationPrevious<T extends keyof SeidrElementTagNameMap = "but
   const {
     as = "button" as T,
     instance: pg,
-    dataComponent = "pagination",
-    dataPart = "previous",
+    dataComponent = DATA_COMPONENT_PAGINATTION,
+    dataPart = DATA_PART_PREVIOUS,
     onclick,
     ...rest
   } = props;
@@ -54,9 +55,8 @@ export function PaginationPrevious<T extends keyof SeidrElementTagNameMap = "but
     "li",
     {
       dataComponent,
-      dataPart: "previous-wrapper",
+      dataPart: DATA_PART_PREVIOUS_WRAPPER,
     },
     button,
   );
 }
-

@@ -1,5 +1,5 @@
 import { $, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { DATA_COMPONENT_RADIO_GROUP, DATA_PART_ITEM_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { UseRadioGroupItemResult } from "./types.js";
 
 export interface RadioGroupItemInputProps extends SeidrElementProps<"input"> {
@@ -115,8 +115,8 @@ export function RadioGroupItemInput(props: RadioGroupItemInputProps = {}): HTMLI
 
   return $("input", {
     ...item.fieldProps,
-    dataComponent: "radio-group",
-    dataPart: "item-input",
+    dataComponent: DATA_COMPONENT_RADIO_GROUP,
+    dataPart: DATA_PART_ITEM_INPUT,
     ref: item.inputRef,
     style: mergedStyle,
     onclick: handleClick,

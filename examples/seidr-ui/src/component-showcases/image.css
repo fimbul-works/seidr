@@ -1,5 +1,5 @@
 /* Component Styles: Image */
-[data-component="image"][data-part="root"] {
+[data-component="Image"][data-part="Root"] {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -18,29 +18,29 @@
     border-color 0.2s ease;
 }
 
-[data-component="image"][data-part="root"]:hover {
+[data-component="Image"][data-part="Root"]:hover {
   transform: scale(1.05);
   border-color: var(--accent);
 }
 
-[data-component="image"][data-part="root"].large {
+[data-component="Image"][data-part="Root"].large {
   width: 64px;
   height: 64px;
 }
 
-[data-component="image"][data-part="root"].small {
+[data-component="Image"][data-part="Root"].small {
   width: 36px;
   height: 36px;
 }
 
-[data-component="image"][data-part="img"] {
+[data-component="Image"][data-part="Image"] {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
 }
 
-[data-component="image"][data-part="fallback"] {
+[data-component="Image"][data-part="Fallback"] {
   width: 100%;
   height: 100%;
   display: flex;
@@ -53,7 +53,7 @@
   letter-spacing: 0.02em;
 }
 
-[data-component="image"][data-part="fallback"].muted {
+[data-component="Image"][data-part="Fallback"].muted {
   background: var(--bg-card-hover);
   color: var(--fg-muted);
 }

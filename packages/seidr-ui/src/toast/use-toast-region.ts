@@ -1,6 +1,7 @@
 import { createValue, mergeValues, useId, wrapValue } from "@fimbul-works/seidr";
-import { toastStore } from "./toast-store.js";
+import { DATA_COMPONENT_TOAST } from "../constants.js";
 import { TOAST_HOTKEY_PLACEHOLDER, TOAST_REGION_INTL_TRANSLATIONS } from "./toast.intl.js";
+import { toastStore } from "./toast-store.js";
 import type { ToastSwipeDirection, UseToastRegionOptions, UseToastRegionResult } from "./types.js";
 
 /**
@@ -20,7 +21,7 @@ export function useToastRegion(options: UseToastRegionOptions = {}): UseToastReg
     pauseOnPageIdle: rawPauseOnPageIdle = true,
     topLayer: rawTopLayer = true,
     regionId,
-    dataComponent = "toast",
+    dataComponent = DATA_COMPONENT_TOAST,
   } = options;
 
   const id = customId ?? useId(`${dataComponent}-region`);
@@ -84,4 +85,3 @@ export function useToastRegion(options: UseToastRegionOptions = {}): UseToastReg
     generateId,
   };
 }
-

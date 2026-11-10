@@ -20,11 +20,11 @@
 
 /* ---------------------------------------------------------------------------
  * Semantic CSS Styles: Menubar Component
- * Target via [data-component="menubar"] and [data-part="..."]
+ * Target via [data-component="Menubar"] and [data-part="..."]
  * --------------------------------------------------------------------------- */
 
 /* Menubar Root Bar */
-[data-component="menubar"][data-part="root"] {
+[data-component="Menubar"][data-part="Root"] {
   display: flex;
   align-items: center;
   gap: 0.25rem;
@@ -39,7 +39,7 @@
 }
 
 /* Menubar Top-Level Trigger */
-[data-component="menubar"][data-part="trigger"] {
+[data-component="Menubar"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -55,31 +55,31 @@
   transition: all 0.15s ease;
 }
 
-[data-component="menubar"][data-part="trigger"]:hover,
-[data-component="menubar"][data-part="trigger"][data-highlighted] {
+[data-component="Menubar"][data-part="Trigger"]:hover,
+[data-component="Menubar"][data-part="Trigger"][data-highlighted] {
   background-color: hsla(220, 20%, 90%, 0.1);
   color: hsl(0, 0%, 100%);
 }
 
-[data-component="menubar"][data-part="trigger"]:focus-visible {
+[data-component="Menubar"][data-part="Trigger"]:focus-visible {
   box-shadow: 0 0 0 2px hsl(217, 91%, 60%);
 }
 
-[data-component="menubar"][data-part="trigger"][data-expanded] {
+[data-component="Menubar"][data-part="Trigger"][data-expanded] {
   background-color: hsla(217, 91%, 60%, 0.18);
   color: hsl(217, 91%, 75%);
   border-color: hsla(217, 91%, 60%, 0.35);
 }
 
-[data-component="menubar"][data-part="trigger"][data-disabled] {
+[data-component="Menubar"][data-part="Trigger"][data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Floating Dropdown Content */
-[data-component="menubar"][data-part="content"],
-[data-component="menubar"][data-part="sub-content"] {
+[data-component="Menubar"][data-part="Content"],
+[data-component="Menubar"][data-part="SubContent"] {
   display: flex;
   flex-direction: column;
   min-width: 220px;
@@ -107,10 +107,10 @@
 }
 
 /* Menu Items */
-[data-component="menubar"][data-part="item"],
-[data-component="menubar"][data-part="checkbox-item"],
-[data-component="menubar"][data-part="radio-item"],
-[data-component="menubar"][data-part="sub-trigger"] {
+[data-component="Menubar"][data-part="Item"],
+[data-component="Menubar"][data-part="CheckboxItem"],
+[data-component="Menubar"][data-part="RadioItem"],
+[data-component="Menubar"][data-part="SubTrigger"] {
   display: flex;
   align-items: center;
   gap: 0.6rem;
@@ -125,43 +125,43 @@
   position: relative;
 }
 
-[data-component="menubar"][data-part="item"]:hover,
-[data-component="menubar"][data-part="item"][data-highlighted],
-[data-component="menubar"][data-part="checkbox-item"]:hover,
-[data-component="menubar"][data-part="checkbox-item"][data-highlighted],
-[data-component="menubar"][data-part="radio-item"]:hover,
-[data-component="menubar"][data-part="radio-item"][data-highlighted],
-[data-component="menubar"][data-part="sub-trigger"]:hover,
-[data-component="menubar"][data-part="sub-trigger"][data-highlighted] {
+[data-component="Menubar"][data-part="Item"]:hover,
+[data-component="Menubar"][data-part="Item"][data-highlighted],
+[data-component="Menubar"][data-part="CheckboxItem"]:hover,
+[data-component="Menubar"][data-part="CheckboxItem"][data-highlighted],
+[data-component="Menubar"][data-part="RadioItem"]:hover,
+[data-component="Menubar"][data-part="RadioItem"][data-highlighted],
+[data-component="Menubar"][data-part="SubTrigger"]:hover,
+[data-component="Menubar"][data-part="SubTrigger"][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
 /* Selected / Checked State */
-[data-component="menubar"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
-[data-component="menubar"][data-part="radio-item"][data-checked]:not([data-highlighted]) {
+[data-component="Menubar"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
+[data-component="Menubar"][data-part="RadioItem"][data-checked]:not([data-highlighted]) {
   background-color: hsla(217, 91%, 60%, 0.15);
   color: hsl(217, 91%, 70%);
   font-weight: 500;
 }
 
-[data-component="menubar"][data-part="checkbox-item"][data-checked][data-highlighted],
-[data-component="menubar"][data-part="radio-item"][data-checked][data-highlighted] {
+[data-component="Menubar"][data-part="CheckboxItem"][data-checked][data-highlighted],
+[data-component="Menubar"][data-part="RadioItem"][data-checked][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
-[data-component="menubar"][data-part="item"][data-disabled],
-[data-component="menubar"][data-part="checkbox-item"][data-disabled],
-[data-component="menubar"][data-part="radio-item"][data-disabled],
-[data-component="menubar"][data-part="sub-trigger"][data-disabled] {
+[data-component="Menubar"][data-part="Item"][data-disabled],
+[data-component="Menubar"][data-part="CheckboxItem"][data-disabled],
+[data-component="Menubar"][data-part="RadioItem"][data-disabled],
+[data-component="Menubar"][data-part="SubTrigger"][data-disabled] {
   opacity: 0.4;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Indicators */
-[data-component="menubar"][data-part="item-indicator"] {
+[data-component="Menubar"][data-part="ItemIndicator"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +171,7 @@
 }
 
 /* Item Icons */
-[data-component="menubar"][data-part="icon"] {
+[data-component="Menubar"][data-part="Icon"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -180,11 +180,11 @@
 }
 
 /* Item Labels & Descriptions */
-[data-component="menubar"][data-part="item-label"] {
+[data-component="Menubar"][data-part="ItemLabel"] {
   flex: 1;
 }
 
-[data-component="menubar"][data-part="item-description"] {
+[data-component="Menubar"][data-part="ItemDescription"] {
   font-size: 0.75rem;
   opacity: 0.6;
   margin-left: auto;
@@ -201,12 +201,12 @@
 }
 
 [data-highlighted] .menubar-shortcut,
-[data-part="item"]:hover .menubar-shortcut {
+[data-part="Item"]:hover .menubar-shortcut {
   opacity: 0.85;
 }
 
 /* Separator */
-[data-component="menubar"][data-part="separator"] {
+[data-component="Menubar"][data-part="Separator"] {
   height: 1px;
   background-color: hsla(222, 16%, 28%, 0.6);
   margin: 0.3rem 0;
@@ -214,12 +214,12 @@
 }
 
 /* Group */
-[data-component="menubar"][data-part="group"] {
+[data-component="Menubar"][data-part="Group"] {
   display: flex;
   flex-direction: column;
 }
 
-[data-component="menubar"][data-part="group-label"] {
+[data-component="Menubar"][data-part="GroupLabel"] {
   padding: 0.4rem 0.65rem 0.2rem;
   font-size: 0.72rem;
   font-weight: 600;
@@ -232,66 +232,66 @@
  * Light Theme Overrides
  * --------------------------------------------------------------------------- */
 
-:root[data-theme="light"] [data-component="menubar"][data-part="root"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Root"] {
   background-color: hsl(210, 20%, 98%);
   border-color: hsl(215, 20%, 82%);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="trigger"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Trigger"] {
   color: hsl(222, 24%, 18%);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="trigger"]:hover,
-:root[data-theme="light"] [data-component="menubar"][data-part="trigger"][data-highlighted] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Trigger"]:hover,
+:root[data-theme="light"] [data-component="Menubar"][data-part="Trigger"][data-highlighted] {
   background-color: hsl(210, 25%, 92%);
   color: hsl(222, 24%, 10%);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="trigger"][data-expanded] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Trigger"][data-expanded] {
   background-color: hsla(217, 91%, 60%, 0.12);
   color: hsl(217, 91%, 50%);
   border-color: hsla(217, 91%, 60%, 0.3);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="content"],
-:root[data-theme="light"] [data-component="menubar"][data-part="sub-content"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Content"],
+:root[data-theme="light"] [data-component="Menubar"][data-part="SubContent"] {
   background-color: #ffffff;
   color: hsl(222, 24%, 13%);
   border-color: hsl(215, 20%, 85%);
   box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.12), 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="item"],
-:root[data-theme="light"] [data-component="menubar"][data-part="checkbox-item"],
-:root[data-theme="light"] [data-component="menubar"][data-part="radio-item"],
-:root[data-theme="light"] [data-component="menubar"][data-part="sub-trigger"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Item"],
+:root[data-theme="light"] [data-component="Menubar"][data-part="CheckboxItem"],
+:root[data-theme="light"] [data-component="Menubar"][data-part="RadioItem"],
+:root[data-theme="light"] [data-component="Menubar"][data-part="SubTrigger"] {
   color: hsl(222, 24%, 18%);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="item"]:hover,
-:root[data-theme="light"] [data-component="menubar"][data-part="item"][data-highlighted],
-:root[data-theme="light"] [data-component="menubar"][data-part="checkbox-item"]:hover,
-:root[data-theme="light"] [data-component="menubar"][data-part="checkbox-item"][data-highlighted],
-:root[data-theme="light"] [data-component="menubar"][data-part="radio-item"]:hover,
-:root[data-theme="light"] [data-component="menubar"][data-part="radio-item"][data-highlighted],
-:root[data-theme="light"] [data-component="menubar"][data-part="sub-trigger"]:hover,
-:root[data-theme="light"] [data-component="menubar"][data-part="sub-trigger"][data-highlighted] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Item"]:hover,
+:root[data-theme="light"] [data-component="Menubar"][data-part="Item"][data-highlighted],
+:root[data-theme="light"] [data-component="Menubar"][data-part="CheckboxItem"]:hover,
+:root[data-theme="light"] [data-component="Menubar"][data-part="CheckboxItem"][data-highlighted],
+:root[data-theme="light"] [data-component="Menubar"][data-part="RadioItem"]:hover,
+:root[data-theme="light"] [data-component="Menubar"][data-part="RadioItem"][data-highlighted],
+:root[data-theme="light"] [data-component="Menubar"][data-part="SubTrigger"]:hover,
+:root[data-theme="light"] [data-component="Menubar"][data-part="SubTrigger"][data-highlighted] {
   background-color: hsl(217, 91%, 60%);
   color: #ffffff;
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="checkbox-item"][data-checked]:not([data-highlighted]),
-:root[data-theme="light"] [data-component="menubar"][data-part="radio-item"][data-checked]:not([data-highlighted]) {
+:root[data-theme="light"] [data-component="Menubar"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"] [data-component="Menubar"][data-part="RadioItem"][data-checked]:not([data-highlighted]) {
   background-color: hsla(217, 91%, 60%, 0.12);
   color: hsl(217, 91%, 50%);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="separator"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="Separator"] {
   background-color: hsl(215, 20%, 90%);
 }
 
-:root[data-theme="light"] [data-component="menubar"][data-part="group-label"] {
+:root[data-theme="light"] [data-component="Menubar"][data-part="GroupLabel"] {
   color: hsl(220, 10%, 45%);
 }
 

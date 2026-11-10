@@ -1,15 +1,16 @@
 import { isNum } from "@fimbul-works/hvat";
-import { mergeValues } from "@fimbul-works/seidr";
-import { mergeStyleProps } from "@fimbul-works/seidr";
-import { wrapValue } from "@fimbul-works/seidr";
 import {
   $,
+  mergeStyleProps,
+  mergeValues,
   type ReactiveValue,
   resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SKELETON } from "./constants.js";
 
 export interface SkeletonOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   /**
@@ -121,7 +122,7 @@ export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       role,
-      dataComponent: "skeleton",
+      dataComponent: DATA_COMPONENT_SKELETON,
       ...rest,
       ariaBusy: wrappedVisible.as((visible) => (visible ? "true" : undefined)),
       dataVisible: wrappedVisible.as((visible) => (visible ? "" : undefined)),

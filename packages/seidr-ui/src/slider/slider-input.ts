@@ -1,6 +1,6 @@
 import { isFn } from "@fimbul-works/hvat";
 import { $, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { VISUALLY_HIDDEN_STYLES } from "../constants.js";
+import { DATA_COMPONENT_SLIDER, DATA_PART_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import { extractAriaProps } from "../utils/aria.js";
 import type { SliderInputProps } from "./types.js";
 
@@ -54,8 +54,8 @@ export function SliderInput(props: SliderInputProps = {}): HTMLInputElement {
     style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, userStyle),
     dataOrientation: slider.orientation,
     dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-    dataComponent: "slider",
-    dataPart: "input",
+    dataComponent: DATA_COMPONENT_SLIDER,
+    dataPart: DATA_PART_INPUT,
     ...rest,
   } as SeidrElementProps<"input">);
 }

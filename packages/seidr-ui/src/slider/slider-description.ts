@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_DESCRIPTION } from "../constants.js";
 import type { SliderDescriptionProps } from "./types.js";
 
 /**
@@ -21,13 +22,13 @@ export function SliderDescription<T extends keyof SeidrElementTagNameMap = "div"
   }
 
   return $(
-    as as T,
+    as,
     {
       id: `${slider.id}-description`,
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "description",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_DESCRIPTION,
       ...rest,
     } as SeidrElementProps<T>,
     children,

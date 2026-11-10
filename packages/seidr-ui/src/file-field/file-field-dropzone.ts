@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_DROPZONE } from "../constants.js";
 import type { FileFieldDropzoneProps } from "./types.js";
 import { isDragEventWithFiles } from "./util.js";
 
@@ -20,7 +21,7 @@ export function FileFieldDropzone<T extends keyof SeidrElementTagNameMap = "div"
   const {
     as = "div" as T,
     instance,
-    dataComponent = "file-field",
+    dataComponent = DATA_COMPONENT_FILE_FIELD,
     ariaLabel = "dropzone",
     role = "button",
     tabIndex: userTabIndex,
@@ -81,11 +82,7 @@ export function FileFieldDropzone<T extends keyof SeidrElementTagNameMap = "div"
     }
     if (e.defaultPrevented) return;
 
-    if (
-      !instance.allowDragAndDrop() ||
-      instance.isDisabled() ||
-      instance.isReadOnly()
-    ) {
+    if (!instance.allowDragAndDrop() || instance.isDisabled() || instance.isReadOnly()) {
       return;
     }
 
@@ -127,11 +124,7 @@ export function FileFieldDropzone<T extends keyof SeidrElementTagNameMap = "div"
 
     instance.setIsDragging(false);
 
-    if (
-      instance.isDisabled() ||
-      instance.isReadOnly() ||
-      !isDragEventWithFiles(e)
-    ) {
+    if (instance.isDisabled() || instance.isReadOnly() || !isDragEventWithFiles(e)) {
       return;
     }
 
@@ -168,7 +161,7 @@ export function FileFieldDropzone<T extends keyof SeidrElementTagNameMap = "div"
       dataDragging: instance.isDragging.as((d) => (d ? "true" : "false")),
       ...instance.formControl.dataset,
       dataComponent,
-      dataPart: "dropzone",
+      dataPart: DATA_PART_DROPZONE,
       onclick: handleClick,
       onkeydown: handleKeyDown,
       ondragover: handleDragOver,

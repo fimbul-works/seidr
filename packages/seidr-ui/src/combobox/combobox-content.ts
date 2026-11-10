@@ -11,6 +11,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_CONTENT } from "../constants.js";
 import { PopperPositioner } from "../popper/popper-positioner.js";
 import type { ComboboxContentProps } from "./types.js";
 
@@ -24,7 +25,7 @@ export function ComboboxContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: combobox,
-    dataComponent = "combobox",
+    dataComponent = DATA_COMPONENT_COMBOBOX,
     portalTarget,
     ref: userRef,
     style: userStyle,
@@ -56,7 +57,7 @@ export function ComboboxContent<T extends keyof SeidrElementTagNameMap = "div">(
       {
         ref: internalRef,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: combobox.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: combobox.isOpen.as((o) => (!o ? "" : undefined)),
         style: combinedStyle,
@@ -88,4 +89,3 @@ export function ComboboxContent<T extends keyof SeidrElementTagNameMap = "div">(
 
   return Show(combobox.isOpen, renderMaybePortaled) as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

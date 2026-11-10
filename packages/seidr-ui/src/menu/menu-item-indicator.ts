@@ -8,6 +8,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_ITEM_INDICATOR } from "../constants.js";
 import type { MenuItemIndicatorProps } from "./types.js";
 
 /**
@@ -23,7 +24,7 @@ export function MenuItemIndicator<T extends keyof SeidrElementTagNameMap = "span
     instance: menu,
     checked,
     forceMount = false,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     ...rest
   } = props;
 
@@ -37,7 +38,7 @@ export function MenuItemIndicator<T extends keyof SeidrElementTagNameMap = "span
       {
         "aria-hidden": "true",
         dataComponent,
-        dataPart: "item-indicator",
+        dataPart: DATA_PART_ITEM_INDICATOR,
         ...rest,
       } as SeidrElementProps<T>,
       children,
@@ -56,4 +57,3 @@ export function MenuItemIndicator<T extends keyof SeidrElementTagNameMap = "span
 
   return wrapValue(renderIndicator()) as unknown as DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
-

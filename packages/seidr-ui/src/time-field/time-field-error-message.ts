@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TIME_FIELD, DATA_PART_ERROR_MESSAGE } from "../constants.js";
 import type { TimeFieldErrorMessageProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function TimeFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "
   const {
     as = "span" as T,
     instance,
-    dataComponent = "time-field",
+    dataComponent = DATA_COMPONENT_TIME_FIELD,
     id: customId,
     children: propsChildren,
     ...rest
@@ -43,10 +44,9 @@ export function TimeFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "
       id: customId ?? instance.formControl.errorMessageId,
       dataDisabled: instance.isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent,
-      dataPart: "error-message",
+      dataPart: DATA_PART_ERROR_MESSAGE,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

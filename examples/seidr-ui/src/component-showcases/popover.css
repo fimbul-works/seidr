@@ -40,11 +40,11 @@
 
 /* Popover Component Semantic Part Styles */
 
-[data-component="popover"][data-part="root"] {
+[data-component="Popover"][data-part="Root"] {
   display: inline-flex;
 }
 
-[data-component="popover"][data-part="trigger"] {
+[data-component="Popover"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -59,16 +59,16 @@
   transition: background-color 0.15s ease, transform 0.1s ease;
 }
 
-[data-component="popover"][data-part="trigger"]:hover {
+[data-component="Popover"][data-part="Trigger"]:hover {
   background: var(--accent-hover, #4f46e5);
 }
 
-[data-component="popover"][data-part="trigger"]:focus-visible {
+[data-component="Popover"][data-part="Trigger"]:focus-visible {
   outline: 2px solid var(--accent-focus, #818cf8);
   outline-offset: 2px;
 }
 
-[data-component="popover"][data-part="anchor"] {
+[data-component="Popover"][data-part="Anchor"] {
   padding: 0.5rem 1rem;
   border-radius: 6px;
   background: var(--bg-subtle, #272730);
@@ -79,7 +79,7 @@
   align-items: center;
 }
 
-[data-component="popover"][data-part="content"] {
+[data-component="Popover"][data-part="Content"] {
   z-index: 1000;
   background: var(--bg-elevated, #24242d);
   color: var(--text-primary, #f0f0f5);
@@ -95,7 +95,7 @@
   animation: popover-fade-in 0.15s ease-out;
 }
 
-[data-component="popover"][data-part="title"] {
+[data-component="Popover"][data-part="Title"] {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary, #f8fafc);
@@ -103,14 +103,14 @@
   padding-right: 1.5rem; /* space for close button */
 }
 
-[data-component="popover"][data-part="description"] {
+[data-component="Popover"][data-part="Description"] {
   font-size: 0.85rem;
   color: var(--text-muted, #94a3b8);
   margin: 0 0 0.75rem 0;
   line-height: 1.4;
 }
 
-[data-component="popover"][data-part="close-button"] {
+[data-component="Popover"][data-part="CloseButton"] {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
@@ -129,17 +129,17 @@
   transition: color 0.15s ease, background-color 0.15s ease;
 }
 
-[data-component="popover"][data-part="close-button"]:hover {
+[data-component="Popover"][data-part="CloseButton"]:hover {
   background: var(--bg-subtle, #2e2e38);
   color: var(--text-primary, #f8fafc);
 }
 
-[data-component="popover"][data-part="close-button"]:focus-visible {
+[data-component="Popover"][data-part="CloseButton"]:focus-visible {
   outline: 2px solid var(--accent, #6366f1);
   outline-offset: 1px;
 }
 
-[data-component="popover"][data-part="arrow"] {
+[data-component="Popover"][data-part="Arrow"] {
   border-color: var(--border-default, #3f3f4e);
 }
 

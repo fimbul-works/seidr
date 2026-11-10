@@ -25,7 +25,7 @@
 }
 
 /* Segmented Control Root */
-[data-component="segmented-control"][data-part="root"] {
+[data-component="SegmentedControl"][data-part="Root"] {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -37,19 +37,19 @@
   width: fit-content;
 }
 
-[data-component="segmented-control"][data-part="root"][aria-orientation="vertical"] {
+[data-component="SegmentedControl"][data-part="Root"][aria-orientation="vertical"] {
   flex-direction: column;
   align-items: stretch;
   border-radius: 12px;
 }
 
-[data-component="segmented-control"][data-part="root"][data-disabled] {
+[data-component="SegmentedControl"][data-part="Root"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Sliding Background Indicator */
-[data-component="segmented-control"][data-part="indicator"] {
+[data-component="SegmentedControl"][data-part="Indicator"] {
   position: absolute;
   top: 4px;
   left: 0;
@@ -64,15 +64,15 @@
   z-index: 0;
 }
 
-[data-component="segmented-control"][data-part="root"][aria-orientation="vertical"]
-  [data-component="segmented-control"][data-part="indicator"] {
+[data-component="SegmentedControl"][data-part="Root"][aria-orientation="vertical"]
+  [data-component="SegmentedControl"][data-part="Indicator"] {
   top: 0;
   left: 4px;
   border-radius: 8px;
 }
 
 /* Segmented Control Item */
-[data-component="segmented-control"][data-part="item"] {
+[data-component="SegmentedControl"][data-part="Item"] {
   position: relative;
   z-index: 1;
   display: inline-flex;
@@ -88,52 +88,52 @@
   white-space: nowrap;
 }
 
-[data-component="segmented-control"][data-part="root"][aria-orientation="vertical"]
-  [data-component="segmented-control"][data-part="item"] {
+[data-component="SegmentedControl"][data-part="Root"][aria-orientation="vertical"]
+  [data-component="SegmentedControl"][data-part="Item"] {
   border-radius: 8px;
   justify-content: flex-start;
   padding: 8px 16px;
 }
 
-[data-component="segmented-control"][data-part="item"]:hover:not([data-disabled]) {
+[data-component="SegmentedControl"][data-part="Item"]:hover:not([data-disabled]) {
   color: var(--fg, #f3f4f6);
 }
 
-[data-component="segmented-control"][data-part="item"][data-checked] {
+[data-component="SegmentedControl"][data-part="Item"][data-checked] {
   color: #ffffff;
   font-weight: 600;
 }
 
-[data-component="segmented-control"][data-part="item"][data-disabled] {
+[data-component="SegmentedControl"][data-part="Item"][data-disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
 
-[data-component="segmented-control"][data-part="item"]:has(input:focus-visible) {
+[data-component="SegmentedControl"][data-part="Item"]:has(input:focus-visible) {
   outline: 2px solid var(--accent, #6366f1);
   outline-offset: 2px;
 }
 
 /* Item Control & Indicator (optional bullet/circle inside segment) */
-[data-component="segmented-control"][data-part="item-control"] {
+[data-component="SegmentedControl"][data-part="ItemControl"] {
   display: none;
 }
 
 /* Labels and Descriptions */
-[data-component="segmented-control"][data-part="label"] {
+[data-component="SegmentedControl"][data-part="Label"] {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--fg, #f3f4f6);
   margin-bottom: 0.25rem;
 }
 
-[data-component="segmented-control"][data-part="description"] {
+[data-component="SegmentedControl"][data-part="Description"] {
   font-size: 0.825rem;
   color: var(--fg-muted, #9ca3af);
   margin-bottom: 0.5rem;
 }
 
-[data-component="segmented-control"][data-part="error-message"] {
+[data-component="SegmentedControl"][data-part="ErrorMessage"] {
   font-size: 0.825rem;
   color: #f87171;
   font-weight: 500;

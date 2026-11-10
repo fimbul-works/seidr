@@ -7,9 +7,10 @@ import {
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
-  useId,
   unwrapValue,
+  useId,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU, DATA_PART_LINK } from "../constants.js";
 import type { NavigationMenuLinkProps } from "./types.js";
 
 /**
@@ -23,7 +24,7 @@ export function NavigationMenuLink<T extends keyof SeidrElementTagNameMap = "a">
     as = "a" as T,
     navigationMenuInstance: navMenu,
     value: userValue,
-    dataComponent = "navigation-menu",
+    dataComponent = DATA_COMPONENT_NAVIGATION_MENU,
     ref: userRef,
     href,
     target,
@@ -104,24 +105,24 @@ export function NavigationMenuLink<T extends keyof SeidrElementTagNameMap = "a">
     else resolvedChildren.push(propsChildren);
   }
 
-    return $(
-      as,
-      {
-        ref: internalRef,
-        role: "menuitem",
-        href,
-        target,
-        rel,
-        "aria-disabled": (ariaDisabled ?? disabled) ? "true" : undefined,
-        tabindex: isCurrentActive ? isCurrentActive.as((a) => (a ? 0 : -1)) : 0,
-        dataComponent,
-        dataPart: "link",
-        dataValue: value,
-        dataDisabled: disabled ? "" : undefined,
-        onfocus: handleFocus,
-        onpointerenter: handlePointerEnter,
-        ...rest,
-      } as SeidrElementProps<T>,
-      resolvedChildren,
-    );
+  return $(
+    as,
+    {
+      ref: internalRef,
+      role: "menuitem",
+      href,
+      target,
+      rel,
+      "aria-disabled": (ariaDisabled ?? disabled) ? "true" : undefined,
+      tabindex: isCurrentActive ? isCurrentActive.as((a) => (a ? 0 : -1)) : 0,
+      dataComponent,
+      dataPart: DATA_PART_LINK,
+      dataValue: value,
+      dataDisabled: disabled ? "" : undefined,
+      onfocus: handleFocus,
+      onpointerenter: handlePointerEnter,
+      ...rest,
+    } as SeidrElementProps<T>,
+    resolvedChildren,
+  );
 }

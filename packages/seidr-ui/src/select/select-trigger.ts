@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_TRIGGER } from "../constants.js";
 import type { SelectTriggerProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function SelectTrigger<T extends keyof SeidrElementTagNameMap = "button">
   const {
     as = "button" as T,
     instance: select,
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -81,7 +82,7 @@ export function SelectTrigger<T extends keyof SeidrElementTagNameMap = "button">
       type: isButton ? "button" : undefined,
       disabled: select.isDisabled,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       ariaHaspopup: "listbox",
       ariaExpanded: select.isOpen.as((o) => (o ? "true" : "false")),
       ariaControls: select.listboxId,

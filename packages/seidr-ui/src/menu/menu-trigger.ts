@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENU, DATA_PART_TRIGGER } from "../constants.js";
 import type { MenuTriggerProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function MenuTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   const {
     as = "button" as T,
     instance: menu,
-    dataComponent = "menu",
+    dataComponent = DATA_COMPONENT_MENU,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -79,7 +80,7 @@ export function MenuTrigger<T extends keyof SeidrElementTagNameMap = "button">(
       "aria-labelledby": ariaLabelledBy,
       "aria-describedby": ariaDescribedBy,
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataExpanded: menu.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: menu.isOpen.as((o) => (!o ? "" : undefined)),
       onclick: handleClick,
@@ -89,4 +90,3 @@ export function MenuTrigger<T extends keyof SeidrElementTagNameMap = "button">(
     children,
   );
 }
-

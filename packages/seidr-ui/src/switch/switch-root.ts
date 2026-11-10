@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SWITCH, DATA_PART_ROOT } from "../constants.js";
 import type { UseSwitchOptions, UseSwitchResult } from "./types.js";
 
 export interface SwitchRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseSwitchOptions {
@@ -62,15 +63,15 @@ export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as T,
+    as,
     {
       role: "group",
       id: sw.id,
       ref: sw.rootRef,
       ...sw.dataset,
       onpointerdown: handlePointerDown,
-      dataComponent: "switch",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_SWITCH,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

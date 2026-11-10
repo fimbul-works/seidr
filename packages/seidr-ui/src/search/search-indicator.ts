@@ -6,6 +6,7 @@ import {
   SeidrError,
   Show,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEARCH, DATA_PART_INDICATOR } from "../constants.js";
 import type { SearchIndicatorProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function SearchIndicator<T extends keyof SeidrElementTagNameMap = "span">
   const {
     as = "span" as T,
     instance: search,
-    dataComponent = "search",
+    dataComponent = DATA_COMPONENT_SEARCH,
     loadingComponent,
     ...rest
   } = props;
@@ -28,24 +29,24 @@ export function SearchIndicator<T extends keyof SeidrElementTagNameMap = "span">
     throw new SeidrError("SearchIndicator requires an instance coordinator");
   }
 
-  const indicatorChild = loadingComponent !== undefined
-    ? Show(
-        search.isLoadingSuggestions,
-        () => loadingComponent,
-        () => children ?? null,
-      )
-    : children;
+  const indicatorChild =
+    loadingComponent !== undefined
+      ? Show(
+          search.isLoadingSuggestions,
+          () => loadingComponent,
+          () => children ?? null,
+        )
+      : children;
 
   return $(
     as,
     {
       ariaHidden: "true",
       dataComponent,
-      dataPart: "indicator",
+      dataPart: DATA_PART_INDICATOR,
       dataLoading: search.isLoadingSuggestions.as((l) => (l ? "" : undefined)),
       ...rest,
     } as SeidrElementProps<T>,
     indicatorChild,
   );
 }
-

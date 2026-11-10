@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SELECT, DATA_PART_LABEL } from "../constants.js";
 import type { SelectLabelProps } from "./types.js";
 
 /**
@@ -17,7 +18,7 @@ export function SelectLabel<T extends keyof SeidrElementTagNameMap = "span">(
   const {
     as = "span" as T,
     instance: select,
-    dataComponent = "select",
+    dataComponent = DATA_COMPONENT_SELECT,
     id: userId,
     onclick: userOnClick,
     ...rest
@@ -41,7 +42,7 @@ export function SelectLabel<T extends keyof SeidrElementTagNameMap = "span">(
     {
       id: userId ?? select.labelId,
       dataComponent,
-      dataPart: "label",
+      dataPart: DATA_PART_LABEL,
       dataDisabled: select.isDisabled.as((d) => (d ? "" : undefined)),
       onclick: handleClick,
       ...rest,

@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_MENUBAR, DATA_PART_MENU } from "../constants.js";
 import type { MenubarMenuProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function MenubarMenu<T extends keyof SeidrElementTagNameMap = "div">(
     value,
     instance: menubar,
     menuInstance,
-    dataComponent = "menubar",
+    dataComponent = DATA_COMPONENT_MENUBAR,
     children: propsChildren,
     ...rest
   } = props;
@@ -42,11 +43,10 @@ export function MenubarMenu<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       dataComponent,
-      dataPart: "menu",
+      dataPart: DATA_PART_MENU,
       dataValue: value,
       ...rest,
     } as SeidrElementProps<T>,
     resolvedChildren,
   );
 }
-

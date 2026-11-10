@@ -1,4 +1,5 @@
 import { createValue, type SeidrChild, type SeidrElementTagNameMap, useId, type Value } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CONTEXT_MENU } from "../constants.js";
 import { createMenu } from "../menu/create-menu.js";
 import type { AnchorRect } from "../popper/types.js";
 import { ContextMenuTrigger } from "./context-menu-trigger.js";
@@ -12,7 +13,7 @@ import type { ContextMenuInstance, ContextMenuTriggerProps, UseContextMenuOption
 export function createContextMenu(options: UseContextMenuOptions = {}): ContextMenuInstance {
   const {
     id = useId("contextmenu"),
-    dataComponent = "context-menu",
+    dataComponent = DATA_COMPONENT_CONTEXT_MENU,
     placement = "right-start",
     getAnchorRect: customGetAnchorRect,
     ...rest
@@ -54,4 +55,3 @@ export function createContextMenu(options: UseContextMenuOptions = {}): ContextM
 
   return instance;
 }
-

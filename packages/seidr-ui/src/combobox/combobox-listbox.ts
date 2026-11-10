@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_LISTBOX } from "../constants.js";
 import type { ComboboxListboxProps } from "./types.js";
 
 /**
@@ -19,7 +20,7 @@ export function ComboboxListbox<T extends keyof SeidrElementTagNameMap = "ul">(
   const {
     as = "ul" as T,
     instance: combobox,
-    dataComponent = "combobox",
+    dataComponent = DATA_COMPONENT_COMBOBOX,
     id: userId,
     ref: userRef,
     onfocusin: userOnFocusIn,
@@ -55,7 +56,7 @@ export function ComboboxListbox<T extends keyof SeidrElementTagNameMap = "ul">(
       id: userId ?? combobox.listboxId,
       role: "listbox",
       dataComponent,
-      dataPart: "listbox",
+      dataPart: DATA_PART_LISTBOX,
       tabindex: -1,
       ariaOrientation: combobox.listbox.orientation,
       ariaMultiselectable: combobox.isMultiple ? "true" : undefined,
@@ -66,4 +67,3 @@ export function ComboboxListbox<T extends keyof SeidrElementTagNameMap = "ul">(
     children,
   );
 }
-

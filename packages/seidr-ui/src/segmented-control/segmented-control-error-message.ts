@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SEGMENTED_CONTROL } from "../constants.js";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -45,10 +46,9 @@ export function SegmentedControlErrorMessage<T extends keyof SeidrElementTagName
       as,
       instance: sc.formControl,
       ...sc.dataset,
-      dataComponent: "segmented-control",
+      dataComponent: DATA_COMPONENT_SEGMENTED_CONTROL,
       ...rest,
     } as FormControlErrorMessageProps<T>,
     children,
   );
 }
-

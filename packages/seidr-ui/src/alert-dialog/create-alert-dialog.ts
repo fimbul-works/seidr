@@ -1,10 +1,11 @@
 import {
+  Portal as createSeidrPortal,
   type DerivedValue,
   isServer,
-  Portal as createSeidrPortal,
   type SeidrChild,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_ALERT_DIALOG } from "../constants.js";
 import { DialogCloseButton } from "../dialog/dialog-close-button.js";
 import { DialogContent } from "../dialog/dialog-content.js";
 import { DialogDescription } from "../dialog/dialog-description.js";
@@ -39,7 +40,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogRoot<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
@@ -52,7 +53,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogTrigger<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
@@ -65,7 +66,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogOverlay<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
@@ -78,7 +79,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogContent<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         role: "alertdialog",
         ...props,
       } as any,
@@ -92,7 +93,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogCloseButton<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
@@ -105,7 +106,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogTitle<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
@@ -118,16 +119,13 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     DialogDescription<T>(
       {
         instance,
-        dataComponent: "alert-dialog",
+        dataComponent: DATA_COMPONENT_ALERT_DIALOG,
         ...props,
       } as any,
       children,
     );
 
-  const Portal = (
-    portalProps: AlertDialogPortalProps = {},
-    children?: SeidrChild | SeidrChild[],
-  ): SeidrChild => {
+  const Portal = (portalProps: AlertDialogPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
     if (portalProps.portal === false || instance.portal === false) {
       return children as SeidrChild;
     }
@@ -154,4 +152,3 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
     Portal,
   };
 }
-

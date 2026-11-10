@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NUMBER_FIELD, DATA_PART_ROOT } from "../constants.js";
 import type { UseNumberFieldOptions, UseNumberFieldResult } from "./types.js";
 
 export interface NumberFieldRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseNumberFieldOptions {
@@ -43,8 +44,8 @@ export function NumberFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
       id: id ?? nf.formControl.id,
       ref: nf.rootRef,
       ...nf.dataset,
-      dataComponent: "number-field",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_NUMBER_FIELD,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

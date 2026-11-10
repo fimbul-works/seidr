@@ -1,5 +1,5 @@
 /* Component Styles: Button */
-[data-component="button"] {
+[data-component="Button"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -14,45 +14,45 @@
   border: 1px solid transparent;
 }
 
-[data-component="button"].primary,
-[data-component="button"][data-variant="primary"] {
+[data-component="Button"].primary,
+[data-component="Button"][data-variant="primary"] {
   background: var(--accent);
   color: #ffffff;
 }
 
-[data-component="button"].primary:hover:not([data-disabled]),
-[data-component="button"][data-variant="primary"]:hover:not([data-disabled]) {
+[data-component="Button"].primary:hover:not([data-disabled]),
+[data-component="Button"][data-variant="primary"]:hover:not([data-disabled]) {
   background: var(--accent-light);
   box-shadow: 0 4px 14px var(--accent-glow);
 }
 
-[data-component="button"].secondary,
-[data-component="button"][data-variant="secondary"] {
+[data-component="Button"].secondary,
+[data-component="Button"][data-variant="secondary"] {
   background: var(--bg-card);
   color: var(--fg);
   border-color: var(--border);
 }
 
-[data-component="button"].secondary:hover:not([data-disabled]),
-[data-component="button"][data-variant="secondary"]:hover:not([data-disabled]) {
+[data-component="Button"].secondary:hover:not([data-disabled]),
+[data-component="Button"][data-variant="secondary"]:hover:not([data-disabled]) {
   background: var(--bg-card-hover);
   border-color: var(--border-focus);
 }
 
-[data-component="button"].destructive,
-[data-component="button"][data-variant="destructive"] {
+[data-component="Button"].destructive,
+[data-component="Button"][data-variant="destructive"] {
   background: rgba(239, 68, 68, 0.15);
   color: #f87171;
   border-color: rgba(239, 68, 68, 0.3);
 }
 
-[data-component="button"].destructive:hover:not([data-disabled]),
-[data-component="button"][data-variant="destructive"]:hover:not([data-disabled]) {
+[data-component="Button"].destructive:hover:not([data-disabled]),
+[data-component="Button"][data-variant="destructive"]:hover:not([data-disabled]) {
   background: rgba(239, 68, 68, 0.25);
   border-color: #ef4444;
 }
 
-[data-component="button"][data-disabled] {
+[data-component="Button"][data-disabled] {
   opacity: 0.5;
   cursor: not-allowed;
 }

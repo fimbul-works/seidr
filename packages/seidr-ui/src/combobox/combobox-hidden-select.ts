@@ -1,19 +1,12 @@
-import {
-  $,
-  List,
-  type ObservableValue,
-  type SeidrElementTagNameMap,
-  SeidrError,
-} from "@fimbul-works/seidr";
+import { $, List, type ObservableValue, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_HIDDEN_SELECT } from "../constants.js";
 import type { ComboboxHiddenSelectProps, ComboboxItemData } from "./types.js";
 
 /**
  * Visually hidden native `<select>` element for standard form submissions.
  */
-export function ComboboxHiddenSelect(
-  props: ComboboxHiddenSelectProps = {},
-): SeidrElementTagNameMap["select"] {
-  const { instance: combobox, dataComponent = "combobox", style: userStyle, ...rest } = props;
+export function ComboboxHiddenSelect(props: ComboboxHiddenSelectProps = {}): SeidrElementTagNameMap["select"] {
+  const { instance: combobox, dataComponent = DATA_COMPONENT_COMBOBOX, style: userStyle, ...rest } = props;
 
   if (!combobox) {
     throw new SeidrError("ComboboxHiddenSelect requires an instance coordinator");
@@ -32,9 +25,10 @@ export function ComboboxHiddenSelect(
     whiteSpace: "nowrap",
   };
 
-  const combinedStyle = typeof userStyle === "object" && userStyle !== null
-    ? { ...visuallyHiddenStyle, ...userStyle }
-    : visuallyHiddenStyle;
+  const combinedStyle =
+    typeof userStyle === "object" && userStyle !== null
+      ? { ...visuallyHiddenStyle, ...userStyle }
+      : visuallyHiddenStyle;
 
   const selectedOptionsObservable = combobox.selectedOptions as unknown as ObservableValue<ComboboxItemData[]>;
 
@@ -48,7 +42,7 @@ export function ComboboxHiddenSelect(
       required: combobox.isRequired,
       multiple: combobox.isMultiple ? true : undefined,
       dataComponent,
-      dataPart: "hidden-select",
+      dataPart: DATA_PART_HIDDEN_SELECT,
       style: combinedStyle,
       ...rest,
     },
@@ -57,10 +51,14 @@ export function ComboboxHiddenSelect(
         selectedOptionsObservable,
         (item) => item.value,
         (itemVal) => {
-          return $("option", {
-            value: itemVal.as((i) => i.value),
-            selected: true,
-          }, [itemVal.as((i) => i.label ?? i.value)]);
+          return $(
+            "option",
+            {
+              value: itemVal.as((i) => i.value),
+              selected: true,
+            },
+            [itemVal.as((i) => i.label ?? i.value)],
+          );
         },
       ),
     ],

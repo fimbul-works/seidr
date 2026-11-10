@@ -11,6 +11,7 @@ import {
   unwrapValue,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_BREADCRUMBS, DATA_PART_LINK } from "../constants.js";
 import type { BreadcrumbsLinkProps } from "./types.js";
 
 /**
@@ -30,8 +31,6 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
     role: customRole,
     tabIndex: customTabIndex,
     instance,
-    dataComponent,
-    dataPart,
     onclick: userOnClick,
     onkeydown: userOnKeyDown,
     ...rest
@@ -112,8 +111,8 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
   return $(
     as,
     {
-      dataComponent: dataComponent ?? "breadcrumbs",
-      dataPart: dataPart ?? "link",
+      dataComponent: DATA_COMPONENT_BREADCRUMBS,
+      dataPart: DATA_PART_LINK,
       role,
       tabIndex,
       href: !isCustom ? resolvedHref : undefined,

@@ -1,4 +1,5 @@
 import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_CHECKBOX } from "../constants.js";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -27,7 +28,7 @@ export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "d
     {
       instance: cb.formControl,
       ...cb.dataset,
-      dataComponent: "checkbox",
+      dataComponent: DATA_COMPONENT_CHECKBOX,
       ...rest,
     } as FormControlErrorMessageProps<T>,
     children,

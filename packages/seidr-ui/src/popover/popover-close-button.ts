@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_POPOVER, DATA_PART_CLOSE_BUTTON } from "../constants.js";
 import type { PopoverCloseButtonProps } from "./types.js";
 
 /**
@@ -18,7 +19,7 @@ export function PopoverCloseButton<T extends keyof SeidrElementTagNameMap = "but
   const {
     as = "button" as T,
     instance: popover,
-    dataComponent = "popover",
+    dataComponent = DATA_COMPONENT_POPOVER,
     type,
     ariaLabel = "Dismiss",
     onclick: userOnClick,
@@ -44,7 +45,7 @@ export function PopoverCloseButton<T extends keyof SeidrElementTagNameMap = "but
       type: as === "button" ? (type ?? "button") : type,
       "aria-label": ariaLabel,
       dataComponent,
-      dataPart: "close-button",
+      dataPart: DATA_PART_CLOSE_BUTTON,
       dataExpanded: popover.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: popover.isOpen.as((o) => (!o ? "" : undefined)),
       onclick: handleClick,
@@ -53,4 +54,3 @@ export function PopoverCloseButton<T extends keyof SeidrElementTagNameMap = "but
     children,
   );
 }
-

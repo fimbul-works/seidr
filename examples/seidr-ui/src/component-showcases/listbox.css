@@ -28,7 +28,7 @@
 }
 
 /* Listbox Root */
-[data-component="listbox"][data-part="root"] {
+[data-component="Listbox"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   list-style: none;
@@ -45,18 +45,18 @@
   box-sizing: border-box;
 }
 
-[data-component="listbox"][data-part="root"]:focus-visible {
+[data-component="Listbox"][data-part="Root"]:focus-visible {
   border-color: hsl(217, 91%, 60%);
   box-shadow: 0 0 0 2px hsla(217, 91%, 60%, 0.2);
 }
 
-[data-component="listbox"][data-part="root"][data-orientation="horizontal"] {
+[data-component="Listbox"][data-part="Root"][data-orientation="horizontal"] {
   flex-direction: row;
   max-width: fit-content;
 }
 
 /* Listbox Item */
-[data-component="listbox"][data-part="item"] {
+[data-component="Listbox"][data-part="Item"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -72,39 +72,39 @@
   box-sizing: border-box;
 }
 
-[data-component="listbox"][data-part="item"]:hover,
-[data-component="listbox"][data-part="item"][data-highlighted] {
+[data-component="Listbox"][data-part="Item"]:hover,
+[data-component="Listbox"][data-part="Item"][data-highlighted] {
   background: rgba(255, 255, 255, 0.08);
 }
 
-[data-component="listbox"][data-part="item"][data-selected] {
+[data-component="Listbox"][data-part="Item"][data-selected] {
   background: hsla(217, 91%, 60%, 0.15);
   color: hsl(217, 91%, 70%);
   font-weight: 500;
 }
 
-[data-component="listbox"][data-part="item"][data-selected][data-highlighted] {
+[data-component="Listbox"][data-part="Item"][data-selected][data-highlighted] {
   background: hsla(217, 91%, 60%, 0.25);
 }
 
-[data-component="listbox"][data-part="item"][data-disabled] {
+[data-component="Listbox"][data-part="Item"][data-disabled] {
   opacity: 0.45;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* Sub-parts */
-[data-component="listbox"][data-part="item-label"] {
+[data-component="Listbox"][data-part="ItemLabel"] {
   flex: 1;
 }
 
-[data-component="listbox"][data-part="item-description"] {
+[data-component="Listbox"][data-part="ItemDescription"] {
   font-size: 0.75rem;
   color: var(--fg-muted, #9ca3af);
   margin-top: 2px;
 }
 
-[data-component="listbox"][data-part="item-indicator"] {
+[data-component="Listbox"][data-part="ItemIndicator"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -115,7 +115,7 @@
 }
 
 /* Sections */
-[data-component="listbox"][data-part="section"] {
+[data-component="Listbox"][data-part="Section"] {
   display: flex;
   flex-direction: column;
   list-style: none;
@@ -123,7 +123,7 @@
   padding: 4px 0;
 }
 
-[data-component="listbox"][data-part="section-label"] {
+[data-component="Listbox"][data-part="SectionLabel"] {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;

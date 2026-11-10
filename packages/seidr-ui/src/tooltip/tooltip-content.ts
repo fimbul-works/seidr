@@ -3,6 +3,7 @@ import {
   $,
   createRef,
   type DerivedValue,
+  mergeStyleProps,
   Portal,
   type SeidrChild,
   type SeidrElementProps,
@@ -11,6 +12,7 @@ import {
   Show,
   wrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TOOLTIP, DATA_PART_CONTENT } from "../constants.js";
 import { useEscapeKeyDown } from "../hooks/use-escape-keydown.js";
 import { useInteractOutside } from "../hooks/use-interact-outside.js";
 import { PopperPositioner } from "../popper/popper-positioner.js";
@@ -26,7 +28,7 @@ export function TooltipContent<T extends keyof SeidrElementTagNameMap = "div">(
   const {
     as = "div" as T,
     instance: tooltip,
-    dataComponent = "tooltip",
+    dataComponent = DATA_COMPONENT_TOOLTIP,
     portalTarget,
     onEscapeKeyDown,
     onPointerDownOutside,
@@ -84,8 +86,7 @@ export function TooltipContent<T extends keyof SeidrElementTagNameMap = "div">(
       position: "relative",
       "--seidr-tooltip-content-transform-origin": "var(--seidr-popper-content-transform-origin)",
     };
-    const combinedStyle = isObj(userStyle) ? { ...baseStyle, ...userStyle } : baseStyle;
-
+    
     const contentEl = $(
       as,
       {
@@ -96,10 +97,10 @@ export function TooltipContent<T extends keyof SeidrElementTagNameMap = "div">(
         "aria-labelledby": ariaLabelledBy,
         "aria-describedby": ariaDescribedBy,
         dataComponent,
-        dataPart: "content",
+        dataPart: DATA_PART_CONTENT,
         dataExpanded: tooltip.isOpen.as((o) => (o ? "" : undefined)),
         dataClosed: tooltip.isOpen.as((o) => (!o ? "" : undefined)),
-        style: combinedStyle,
+        style: mergeStyleProps(baseStyle, userStyle),
         ...rest,
       } as SeidrElementProps<T>,
       children,

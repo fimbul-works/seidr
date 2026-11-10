@@ -25,31 +25,31 @@
 }
 
 /* FileField semantic component styles */
-[data-component="file-field"][data-part="root"] {
+[data-component="FileField"][data-part="Root"] {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   max-width: 540px;
 }
 
-[data-component="file-field"][data-part="label"] {
+[data-component="FileField"][data-part="Label"] {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-heading, #0f172a);
 }
 
-[data-component="file-field"][data-part="description"] {
+[data-component="FileField"][data-part="Description"] {
   font-size: 0.8125rem;
   color: var(--text-muted, #64748b);
 }
 
-[data-component="file-field"][data-part="error-message"] {
+[data-component="FileField"][data-part="ErrorMessage"] {
   font-size: 0.8125rem;
   color: #ef4444;
   font-weight: 500;
 }
 
-[data-component="file-field"][data-part="dropzone"] {
+[data-component="FileField"][data-part="Dropzone"] {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -64,35 +64,35 @@
   outline: none;
 }
 
-[data-theme*="dark"] [data-component="file-field"][data-part="dropzone"] {
+[data-theme*="dark"] [data-component="FileField"][data-part="Dropzone"] {
   border-color: #334155;
   background-color: #0f172a;
 }
 
-[data-component="file-field"][data-part="dropzone"]:hover {
+[data-component="FileField"][data-part="Dropzone"]:hover {
   border-color: #0284c7;
   background-color: #f0f9ff;
 }
 
-[data-theme*="dark"] [data-component="file-field"][data-part="dropzone"]:hover {
+[data-theme*="dark"] [data-component="FileField"][data-part="Dropzone"]:hover {
   border-color: #38bdf8;
   background-color: #0c4a6e25;
 }
 
-[data-component="file-field"][data-part="dropzone"][data-dragging="true"] {
+[data-component="FileField"][data-part="Dropzone"][data-dragging="true"] {
   border-color: #0284c7;
   background-color: #e0f2fe;
   transform: scale(1.01);
   box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
 }
 
-[data-component="file-field"][data-part="dropzone"][aria-disabled="true"] {
+[data-component="FileField"][data-part="Dropzone"][aria-disabled="true"] {
   opacity: 0.55;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-[data-component="file-field"][data-part="trigger"] {
+[data-component="FileField"][data-part="Trigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -108,23 +108,23 @@
   outline: none;
 }
 
-[data-component="file-field"][data-part="trigger"]:hover:not(:disabled) {
+[data-component="FileField"][data-part="Trigger"]:hover:not(:disabled) {
   background-color: #0369a1;
   border-color: #0369a1;
 }
 
-[data-component="file-field"][data-part="trigger"]:focus-visible {
+[data-component="FileField"][data-part="Trigger"]:focus-visible {
   ring: 2px solid #0284c7;
   ring-offset: 2px;
 }
 
-[data-component="file-field"][data-part="trigger"]:disabled {
+[data-component="FileField"][data-part="Trigger"]:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Item List & File Rows */
-[data-component="file-field"][data-part="item-list"] {
+[data-component="FileField"][data-part="ItemList"] {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -133,7 +133,7 @@
   margin: 0;
 }
 
-[data-component="file-field"][data-part="item"] {
+[data-component="FileField"][data-part="Item"] {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -145,7 +145,7 @@
   animation: fileFadeIn 0.2s ease-out;
 }
 
-[data-theme*="dark"] [data-component="file-field"][data-part="item"] {
+[data-theme*="dark"] [data-component="FileField"][data-part="Item"] {
   border-color: #334155;
   background-color: #1e293b;
 }
@@ -168,7 +168,7 @@
   overflow: hidden;
 }
 
-[data-component="file-field"][data-part="item-preview-image"] {
+[data-component="FileField"][data-part="ItemPreviewImage"] {
   width: 44px;
   height: 44px;
   border-radius: 6px;
@@ -178,7 +178,7 @@
   flex-shrink: 0;
 }
 
-[data-theme*="dark"] [data-component="file-field"][data-part="item-preview-image"] {
+[data-theme*="dark"] [data-component="FileField"][data-part="ItemPreviewImage"] {
   border-color: #475569;
   background-color: #334155;
 }
@@ -189,7 +189,7 @@
   overflow: hidden;
 }
 
-[data-component="file-field"][data-part="item-name"] {
+[data-component="FileField"][data-part="ItemName"] {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-heading, #0f172a);
@@ -198,12 +198,12 @@
   text-overflow: ellipsis;
 }
 
-[data-component="file-field"][data-part="item-size"] {
+[data-component="FileField"][data-part="ItemSize"] {
   font-size: 0.75rem;
   color: var(--text-muted, #64748b);
 }
 
-[data-component="file-field"][data-part="item-delete-trigger"] {
+[data-component="FileField"][data-part="ItemDeleteTrigger"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -219,12 +219,12 @@
   flex-shrink: 0;
 }
 
-[data-component="file-field"][data-part="item-delete-trigger"]:hover:not(:disabled) {
+[data-component="FileField"][data-part="ItemDeleteTrigger"]:hover:not(:disabled) {
   background-color: #fee2e2;
   color: #ef4444;
 }
 
-[data-theme*="dark"] [data-component="file-field"][data-part="item-delete-trigger"]:hover:not(:disabled) {
+[data-theme*="dark"] [data-component="FileField"][data-part="ItemDeleteTrigger"]:hover:not(:disabled) {
   background-color: #7f1d1d40;
   color: #f87171;
 }

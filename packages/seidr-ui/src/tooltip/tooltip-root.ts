@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TOOLTIP, DATA_PART_ROOT } from "../constants.js";
 import type { TooltipRootProps } from "./types.js";
 
 /**
@@ -14,12 +15,7 @@ export function TooltipRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: TooltipRootProps<T> = {} as TooltipRootProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const {
-    as = "div" as T,
-    instance: tooltip,
-    dataComponent = "tooltip",
-    ...rest
-  } = props;
+  const { as = "div" as T, instance: tooltip, dataComponent = DATA_COMPONENT_TOOLTIP, ...rest } = props;
 
   if (!tooltip) {
     throw new SeidrError("TooltipRoot requires an instance coordinator");
@@ -29,7 +25,7 @@ export function TooltipRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       dataComponent,
-      dataPart: "root",
+      dataPart: DATA_PART_ROOT,
       dataExpanded: tooltip.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: tooltip.isOpen.as((o) => (!o ? "" : undefined)),
       ...rest,
@@ -37,4 +33,3 @@ export function TooltipRoot<T extends keyof SeidrElementTagNameMap = "div">(
     children,
   );
 }
-

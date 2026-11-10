@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_IMAGE, DATA_PART_ROOT } from "../constants.js";
 import type { UseImageOptions, UseImageResult } from "./use-image.js";
 
 export interface ImageRootOptions<T extends keyof SeidrElementTagNameMap = "span"> extends UseImageOptions {
@@ -48,8 +49,8 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   return $(
     as,
     {
-      dataComponent: "image",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_IMAGE,
+      dataPart: DATA_PART_ROOT,
       "data-status": img.status,
       ...rest,
     } as SeidrElementProps<T>,

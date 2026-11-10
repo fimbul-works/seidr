@@ -8,6 +8,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_NAVIGATION_MENU, DATA_PART_TRIGGER } from "../constants.js";
 import type { NavigationMenuTriggerProps } from "./types.js";
 
 /**
@@ -22,7 +23,7 @@ export function NavigationMenuTrigger<T extends keyof SeidrElementTagNameMap = "
     instance: menu,
     navigationMenuInstance: navMenu,
     menuValue,
-    dataComponent = "navigation-menu",
+    dataComponent = DATA_COMPONENT_NAVIGATION_MENU,
     id: userId,
     ref: userRef,
     ariaLabel,
@@ -154,7 +155,7 @@ export function NavigationMenuTrigger<T extends keyof SeidrElementTagNameMap = "
       "aria-describedby": ariaDescribedBy,
       tabindex: isCurrentActive.as((a) => (a ? 0 : -1)),
       dataComponent,
-      dataPart: "trigger",
+      dataPart: DATA_PART_TRIGGER,
       dataValue: value,
       dataState: isMenuOpen.as((o) => (o ? "open" : "closed")),
       dataExpanded: isMenuOpen.as((o) => (o ? "" : undefined)),
@@ -168,4 +169,3 @@ export function NavigationMenuTrigger<T extends keyof SeidrElementTagNameMap = "
     resolvedChildren,
   );
 }
-

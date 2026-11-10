@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_TABS, DATA_PART_ROOT } from "../constants.js";
 import type { TabsRootProps } from "./types.js";
 
 /**
@@ -21,13 +22,13 @@ export function TabsRoot<T extends keyof SeidrElementTagNameMap = "div">(
   }
 
   return $(
-    as as T,
+    as,
     {
       id: tabs.id,
       "data-orientation": tabs.orientation,
       "data-disabled": tabs.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "tabs",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_TABS,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     children,

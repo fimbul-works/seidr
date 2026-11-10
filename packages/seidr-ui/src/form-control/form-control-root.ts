@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_FORM_CONTROL, DATA_PART_ROOT } from "../constants.js";
 import type { UseFormControlOptions, UseFormControlResult } from "./types.js";
 
 export interface FormControlRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends UseFormControlOptions {
@@ -51,8 +52,8 @@ export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       id: form.id,
-      dataComponent: "form-control",
-      dataPart: "root",
+      dataComponent: DATA_COMPONENT_FORM_CONTROL,
+      dataPart: DATA_PART_ROOT,
       ...form.dataset,
       ...rest,
     } as SeidrElementProps<T>,

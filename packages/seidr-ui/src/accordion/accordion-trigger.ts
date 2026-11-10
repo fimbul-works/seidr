@@ -7,6 +7,7 @@ import {
   SeidrError,
 } from "@fimbul-works/seidr";
 import { Button } from "../button.js";
+import { DATA_COMPONENT_ACCORDION, DATA_PART_TRIGGER } from "../constants.js";
 import type { AccordionItemInstance } from "./types.js";
 
 export interface AccordionTriggerOptions<T extends keyof SeidrElementTagNameMap = "button"> {
@@ -66,8 +67,8 @@ export function AccordionTrigger<T extends keyof SeidrElementTagNameMap = "butto
       ariaControls: instance.contentId,
       ariaDisabled: instance.isDisabled.as((v: boolean) => (v ? "true" : undefined)),
       disabled: instance.isDisabled,
-      dataComponent: "accordion",
-      dataPart: "trigger",
+      dataComponent: DATA_COMPONENT_ACCORDION,
+      dataPart: DATA_PART_TRIGGER,
       dataKey: instance.value,
       ...instance.dataset,
       ...rest,

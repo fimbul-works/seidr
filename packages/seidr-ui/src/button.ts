@@ -2,14 +2,15 @@ import { isStr } from "@fimbul-works/hvat";
 import {
   $,
   isValue,
-  resolvePropsAndChildren,
   type ReactiveValue,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
 const BUTTON_INPUT_TYPES = new Set(["button", "color", "file", "image", "reset", "submit"]);
+export const DATA_COMPONENT_BUTTON = "Button"
 
 /**
  * Checks whether an element tag with the given type is a native button.
@@ -100,7 +101,7 @@ export function Button<T extends keyof SeidrElementTagNameMap = "button">(
   return $(
     as,
     {
-      dataComponent: "button",
+      dataComponent: DATA_COMPONENT_BUTTON,
       ...rest,
       onclick,
       ...(native

@@ -12,16 +12,17 @@ export const SwitchShowcase = createComponent(() => {
   const isMaintenance = createValue(false);
   const maintenanceValidation = isMaintenance.as((val) => (val ? "valid" : "invalid"));
 
+  // --- Section 4: Interactive Disabling ---
+  const isDisabled = createValue(false);
+
   const maintenanceSwitch = createSwitch({
     id: "maintenance-switch",
     checked: isMaintenance,
     onChange: (val: boolean) => isMaintenance(val),
+    disabled: isDisabled,
     required: true,
     validationState: maintenanceValidation,
   });
-
-  // --- Section 4: Interactive Disabling ---
-  const isDisabled = createValue(false);
 
   return $section({ className: "card" }, [
     $div({ className: "card-header" }, [

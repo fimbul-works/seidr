@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_LABEL } from "../constants.js";
 import type { SliderLabelProps } from "./types.js";
 
 /**
@@ -27,8 +28,8 @@ export function SliderLabel<T extends keyof SeidrElementTagNameMap = "label">(
       htmlFor: customFor ?? slider.generateInputId(0),
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "label",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children,

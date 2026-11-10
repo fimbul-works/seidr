@@ -10,6 +10,7 @@ import {
   Show,
   unwrapValue,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_RADIO_GROUP, DATA_PART_ITEM_INDICATOR } from "../constants.js";
 import type { UseRadioGroupItemResult } from "./types.js";
 
 export interface RadioGroupItemIndicatorOptions<T extends keyof SeidrElementTagNameMap = "div"> {
@@ -51,8 +52,8 @@ export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap =
   const elementProps = {
     id: id ?? item.id.as((base: string) => `${base}-indicator`),
     ...item.dataset,
-    dataComponent: "radio-group",
-    dataPart: "item-indicator",
+    dataComponent: DATA_COMPONENT_RADIO_GROUP,
+    dataPart: DATA_PART_ITEM_INDICATOR,
     ...rest,
   };
 

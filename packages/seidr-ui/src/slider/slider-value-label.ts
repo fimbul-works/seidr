@@ -5,6 +5,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SLIDER, DATA_PART_VALUE_LABEL } from "../constants.js";
 import type { SliderValueLabelProps } from "./types.js";
 
 /**
@@ -21,12 +22,12 @@ export function SliderValueLabel<T extends keyof SeidrElementTagNameMap = "div">
   }
 
   return $(
-    as as T,
+    as,
     {
       dataOrientation: slider.orientation,
       dataDisabled: slider.isDisabled.as((d) => (d ? "" : undefined)),
-      dataComponent: "slider",
-      dataPart: "value-label",
+      dataComponent: DATA_COMPONENT_SLIDER,
+      dataPart: DATA_PART_VALUE_LABEL,
       ...rest,
     } as SeidrElementProps<T>,
     children ?? slider.getValueLabel,

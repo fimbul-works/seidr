@@ -6,6 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_BREADCRUMBS } from "../constants.js";
 import type { BreadcrumbsRootProps } from "./types.js";
 
 /**
@@ -16,7 +17,7 @@ export function BreadcrumbsRoot<T extends keyof SeidrElementTagNameMap = "nav">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsRootProps<T>>(propsOrChildren, children);
-  const { as = "nav" as T, instance, ariaLabel, dataComponent, ...rest } = props;
+  const { as = "nav" as T, instance, ariaLabel, ...rest } = props;
 
   if (!instance) {
     throw new SeidrError("BreadcrumbsRoot requires an instance coordinator");
@@ -26,7 +27,7 @@ export function BreadcrumbsRoot<T extends keyof SeidrElementTagNameMap = "nav">(
     as,
     {
       ariaLabel: ariaLabel ?? instance.ariaLabel,
-      dataComponent: dataComponent ?? "breadcrumbs",
+      dataComponent: DATA_COMPONENT_BREADCRUMBS,
       ...rest,
     } as SeidrElementProps<T>,
     content,

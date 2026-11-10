@@ -7,6 +7,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_CONTROL } from "../constants.js";
 import type { ComboboxControlProps } from "./types.js";
 
 /**
@@ -16,7 +17,14 @@ export function ComboboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   props: ComboboxControlProps<T> = {} as ComboboxControlProps<T>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const { as = "div" as T, instance: combobox, dataComponent = "combobox", id: customId, ref: userRef, ...rest } = props;
+  const {
+    as = "div" as T,
+    instance: combobox,
+    dataComponent = DATA_COMPONENT_COMBOBOX,
+    id: customId,
+    ref: userRef,
+    ...rest
+  } = props;
 
   if (!combobox) {
     throw new SeidrError("ComboboxControl requires an instance coordinator");
@@ -37,7 +45,7 @@ export function ComboboxControl<T extends keyof SeidrElementTagNameMap = "div">(
       ref: internalRef,
       id: customId ?? combobox.controlId,
       dataComponent,
-      dataPart: "control",
+      dataPart: DATA_PART_CONTROL,
       dataExpanded: combobox.isOpen.as((o) => (o ? "" : undefined)),
       dataClosed: combobox.isOpen.as((o) => (!o ? "" : undefined)),
       dataDisabled: combobox.isDisabled.as((d) => (d ? "" : undefined)),
@@ -47,4 +55,3 @@ export function ComboboxControl<T extends keyof SeidrElementTagNameMap = "div">(
     children,
   );
 }
-

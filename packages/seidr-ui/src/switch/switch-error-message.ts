@@ -1,4 +1,5 @@
 import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_SWITCH } from "../constants.js";
 import {
   FormControlErrorMessage,
   type FormControlErrorMessageProps,
@@ -25,7 +26,7 @@ export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div
     {
       instance: sw.formControl,
       ...sw.dataset,
-      dataComponent: "switch",
+      dataComponent: DATA_COMPONENT_SWITCH,
       ...rest,
     } as FormControlErrorMessageProps<T>,
     children,
