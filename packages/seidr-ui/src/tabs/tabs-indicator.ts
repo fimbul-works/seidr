@@ -72,7 +72,7 @@ export function TabsIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   return $(
-    as as T,
+    as,
     {
       role: "presentation",
       dataOrientation: tabs.orientation,

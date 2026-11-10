@@ -3,6 +3,7 @@ import {
   $,
   createValue,
   inClient,
+  mergeStyleProps,
   onUnmounted,
   type ReactiveStyleDeclaration,
   type SeidrChild,
@@ -74,17 +75,12 @@ export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div"
     });
   });
 
-  const widthVar = lifeTime.as((pct) => `${pct}%`);
-
-  const fillStyle: ReactiveStyleDeclaration = {
-    width: widthVar,
-    ...(isObj(userStyle) ? userStyle : {}),
-  };
+  const width = lifeTime.as((pct) => `${pct}%`);
 
   const el = $<T>(
     as,
     {
-      style: fillStyle,
+      style: mergeStyleProps({ width }, userStyle),
       dataComponent: dataComponent ?? toast.dataComponent,
       dataPart: "progress-fill",
       ...rest,
@@ -92,7 +88,7 @@ export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div"
     children,
   );
 
-  widthVar.bind((val) => {
+  width.bind((val) => {
     el.style.setProperty("--toast-progress-fill-width", val);
     el.style.setProperty("--kb-toast-progress-fill-width", val);
   });

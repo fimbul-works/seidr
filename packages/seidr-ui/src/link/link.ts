@@ -4,13 +4,13 @@ import {
   isObservable,
   isUrlActive,
   mergeValues,
-  resolvePropsAndChildren,
-  unwrapValue,
-  wrapValue,
   type Observable,
+  resolvePropsAndChildren,
   type SeidrChild,
   type SeidrElementProps,
   type SeidrElementTagNameMap,
+  unwrapValue,
+  wrapValue,
 } from "@fimbul-works/seidr";
 import type { LinkProps } from "./types.js";
 
@@ -107,4 +107,3 @@ export function Link<T extends keyof SeidrElementTagNameMap = "a">(
     content,
   );
 }
-

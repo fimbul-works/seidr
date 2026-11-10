@@ -133,7 +133,11 @@ export function createComponent<P = void>(
         registry.delete(currentComponent);
         currentComponent.parent?.removeChild(currentComponent);
 
+        // Set current component as active
+        const prev = getComponentScope();
+        setComponentScope(currentComponent);
         componentUnmountedFns.forEach((fn) => fn());
+        setComponentScope(prev);
 
         children.forEach((c) => c.unmount());
 

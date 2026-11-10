@@ -11,7 +11,7 @@ import {
   type Value,
 } from "@fimbul-works/seidr";
 import { $div, $footer, $h1, $h2, $li, $main, $p, $span, $ul } from "@fimbul-works/seidr/html";
-import { Link } from "@fimbul-works/seidr-router";
+import { Link } from "@fimbul-works/seidr-ui";
 import { getPosts } from "../blog-api.js";
 import { DateView } from "../components/date.js";
 import { LoadingSpinner } from "../components/loading-spinner.js";
@@ -23,7 +23,7 @@ import type { BlogPost } from "../types.js";
  */
 const PostCard = createComponent((post: Value<BlogPost>) => {
   const { slug, excerpt, date, title, tags } = post();
-  const to = `/post/${slug}`;
+  const href = `/post/${slug}`;
 
   return $li({ className: "post-card" }, [
     $div(
@@ -32,10 +32,10 @@ const PostCard = createComponent((post: Value<BlogPost>) => {
         ? tags.map((tag) => $span({ className: "meta-badge", textContent: tag }))
         : [$span({ className: "meta-badge", textContent: "Article" })],
     ),
-    Link({ to, className: "post-card-title-link" }, [$h2({ className: "post-title", textContent: title })]),
+    Link({ href, className: "post-card-title-link" }, [$h2({ className: "post-title", textContent: title })]),
     $main({ className: "excerpt", innerHTML: excerpt ?? "" }),
     $footer({ className: "post-card-footer" }, [
-      Link({ to, className: "read-more" }, "Read article →"),
+      Link({ href, className: "read-more" }, "Read article →"),
       DateView(date),
     ]),
   ]);

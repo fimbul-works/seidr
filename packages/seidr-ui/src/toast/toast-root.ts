@@ -1,6 +1,6 @@
-import { isObj } from "@fimbul-works/hvat";
 import {
   $,
+  mergeStyleProps,
   type ReactiveStyleDeclaration,
   type SeidrChild,
   type SeidrElementProps,
@@ -203,7 +203,6 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
     animation: toast.isAnimationEnabled.as((enabled) => (enabled ? undefined : "none")),
     userSelect: "none",
     touchAction: "none",
-    ...(isObj(userStyle) ? userStyle : {}),
   };
 
   const el = $<T>(
@@ -212,7 +211,7 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
       id: customId ?? toast.id,
       role,
       tabIndex,
-      style: baseStyle,
+      style: mergeStyleProps(baseStyle, userStyle),
       ariaLive: toast.priority.as((p) => (p === "high" ? "assertive" : "polite")),
       ariaAtomic: "true",
       ariaLabel: ariaLabel ?? ariaLabelHyphen,

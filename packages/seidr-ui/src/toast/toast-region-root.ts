@@ -1,6 +1,7 @@
 import { isObj } from "@fimbul-works/hvat";
 import {
   $,
+  mergeStyleProps,
   mergeValues,
   type ReactiveStyleDeclaration,
   type SeidrChild,
@@ -43,10 +44,6 @@ export function ToastRegionRoot<T extends keyof SeidrElementTagNameMap = "div">(
     { parents: [region.hasToasts, region.topLayer] },
   );
 
-  const combinedStyle: ReactiveStyleDeclaration = isObj(userStyle)
-    ? { pointerEvents, ...userStyle }
-    : { pointerEvents };
-
   const topLayerAttr = region.topLayer.as((isTop) => (isTop ? "" : undefined));
 
   return $<T>(
@@ -62,7 +59,7 @@ export function ToastRegionRoot<T extends keyof SeidrElementTagNameMap = "div">(
       dataKbTopLayer: topLayerAttr,
       dataComponent: dataComponent ?? region.dataComponent,
       dataPart: "region",
-      style: combinedStyle,
+      style: mergeStyleProps({ pointerEvents }, userStyle),
       ...rest,
     } as SeidrElementProps<T>,
     children,

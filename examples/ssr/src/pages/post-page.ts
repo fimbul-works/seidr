@@ -14,8 +14,9 @@ import {
   Switch,
   type Value,
 } from "@fimbul-works/seidr";
-import { $article, $div, $h1, $span } from "@fimbul-works/seidr/html";
-import { interceptLinks, Link, useRouteParams } from "@fimbul-works/seidr-router";
+import { $a, $article, $div, $h1, $span } from "@fimbul-works/seidr/html";
+import { interceptLinks, useRouteParams } from "@fimbul-works/seidr-router";
+import { Link } from "@fimbul-works/seidr-ui";
 import { getPost } from "../blog-api.js";
 import { DateView } from "../components/date.js";
 import { LoadingSpinner } from "../components/loading-spinner.js";
@@ -25,7 +26,7 @@ const PostNotFound = createComponent(() => {
   return $div({ className: "error not-found-card" }, [
     $h1({ className: "error-title" }, "Post Not Found"),
     $div({ className: "error-message" }, "The requested post does not exist or has been relocated."),
-    Link({ href: "/", className: "btn btn-primary", activeClass: "active" }, "← Return to Articles"),
+    $a({ href: "/", className: "btn btn-primary" }, "← Return to Articles"),
   ]);
 }, "PostNotFound");
 
@@ -40,7 +41,7 @@ export const PostContainer = createComponent((post: Value<BlogPost | null>) => {
 
       return $article({ className: "post-page" }, [
         $div({ className: "meta" }, [
-          Link({ href: "/", className: "back-link", activeClass: "active" }, [
+          Link({ href: "/", className: "back-link" }, [
             $span({ className: "long" }, "← Back to Articles"),
             $span({ className: "short" }, "← Back"),
           ]),

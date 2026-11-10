@@ -1,6 +1,7 @@
-import { isObj } from "@fimbul-works/hvat";
+import { isObj, isStr } from "@fimbul-works/hvat";
 import type { ReactiveStyleDeclaration, ReactiveValue } from "../element/types.js";
 import { isValue, mergeValues, unwrapValue } from "../observable/index.js";
+import { SeidrError } from "../types.js";
 
 /**
  * Merges two reactive style declarations, combining static values and reactive `Value` observables
