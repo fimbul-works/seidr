@@ -1,5 +1,4 @@
 import { useId, wrapValue } from "@fimbul-works/seidr";
-import { DATA_COMPONENT_BREADCRUMBS } from "../constants.js";
 import type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from "./types.js";
 
 /**
@@ -11,7 +10,7 @@ import type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from "./types.js";
 export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcrumbsResult {
   const { id: customId, separator = "/", ariaLabel = "Breadcrumbs" } = options;
 
-  const id = customId ?? useId("breadcrumbs");
+  const id = customId ?? useId("Breadcrumbs");
   const separatorObservable = wrapValue(separator);
   const ariaLabelObservable = wrapValue(ariaLabel);
 

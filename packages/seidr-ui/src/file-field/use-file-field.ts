@@ -43,7 +43,7 @@ export function useFileField(options: UseFileFieldOptions = {}): UseFileFieldRes
   };
 
   const formControl = useFormControl(formControlOptions);
-  const inputId = useId("file-field-input");
+  const inputId = useId("FileField");
 
   const multiple = wrapValue(userMultiple).as((m) => !!m);
   const accept = wrapValue(userAccept).as((a) => parseAcceptedTypes(a));

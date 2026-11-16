@@ -40,7 +40,7 @@ export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
     throw new SeidrError("MenuItem requires an instance coordinator");
   }
 
-  const value = userValue ?? useId("menu-item");
+  const value = userValue ?? useId("MenuItem");
   const disabledObservable = wrapValue(itemDisabledProp ?? false);
 
   const isHighlighted = menu.highlightedValue.as((h) => h === value);

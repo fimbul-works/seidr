@@ -40,16 +40,16 @@ describeDualMode("Switch", ({ getDocument, isSSR }) => {
     expect(thumb).not.toBeNull();
     expect(label).not.toBeNull();
 
-    expect(group.getAttribute("data-component")).toBe("switch");
-    expect(group.getAttribute("data-part")).toBe("root");
-    expect(control.getAttribute("data-component")).toBe("switch");
-    expect(control.getAttribute("data-part")).toBe("control");
-    expect(thumb.getAttribute("data-component")).toBe("switch");
-    expect(thumb.getAttribute("data-part")).toBe("thumb");
-    expect(input.getAttribute("data-component")).toBe("switch");
-    expect(input.getAttribute("data-part")).toBe("input");
-    expect(label.getAttribute("data-component")).toBe("switch");
-    expect(label.getAttribute("data-part")).toBe("label");
+    expect(group.getAttribute("data-component")).toBe("Switch");
+    expect(group.getAttribute("data-part")).toBe("Root");
+    expect(control.getAttribute("data-component")).toBe("Switch");
+    expect(control.getAttribute("data-part")).toBe("Control");
+    expect(thumb.getAttribute("data-component")).toBe("Switch");
+    expect(thumb.getAttribute("data-part")).toBe("Thumb");
+    expect(input.getAttribute("data-component")).toBe("Switch");
+    expect(input.getAttribute("data-part")).toBe("Input");
+    expect(label.getAttribute("data-component")).toBe("Switch");
+    expect(label.getAttribute("data-part")).toBe("Label");
 
     expect(input.id).toBe(`${group.id}-input`);
     expect(input.getAttribute("type")).toBe("checkbox");

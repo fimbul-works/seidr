@@ -37,24 +37,24 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       });
     });
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
-    const arrowEl = root.querySelector("[data-part='arrow']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-part='Arrow']") as HTMLElement;
 
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("popper");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
+    expect(rootEl.getAttribute("data-component")).toBe("Popper");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
     expect(rootEl.getAttribute("data-placement")).toBe("bottom");
 
     expect(positionerEl).not.toBeNull();
-    expect(positionerEl.getAttribute("data-component")).toBe("popper");
-    expect(positionerEl.getAttribute("data-part")).toBe("positioner");
+    expect(positionerEl.getAttribute("data-component")).toBe("Popper");
+    expect(positionerEl.getAttribute("data-part")).toBe("Positioner");
     expect(positionerEl.hasAttribute("data-popper-positioner")).toBe(true);
     expect(positionerEl.getAttribute("data-placement")).toBe("bottom");
 
     expect(arrowEl).not.toBeNull();
-    expect(arrowEl.getAttribute("data-component")).toBe("popper");
-    expect(arrowEl.getAttribute("data-part")).toBe("arrow");
+    expect(arrowEl.getAttribute("data-component")).toBe("Popper");
+    expect(arrowEl.getAttribute("data-part")).toBe("Arrow");
     expect(arrowEl.getAttribute("data-placement")).toBe("bottom");
     expect(arrowEl.getAttribute("aria-hidden")).toBe("true");
   });
@@ -73,9 +73,9 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
-    const arrowEl = root.querySelector("[data-part='arrow']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-part='Arrow']") as HTMLElement;
 
     expect(rootEl.getAttribute("data-placement")).toBe("top-start");
     expect(positionerEl.getAttribute("data-placement")).toBe("top-start");
@@ -116,7 +116,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
+    const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;
 
     await popperInstance.updatePosition();
 
@@ -163,7 +163,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
+    const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;
 
     await popperInstance.updatePosition();
     expect(popperInstance.currentPlacement()).toBe("bottom");
@@ -208,7 +208,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const positionerEl = root.querySelector("[data-part='positioner']") as HTMLElement;
+    const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;
 
     await popperInstance.updatePosition();
 

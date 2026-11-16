@@ -66,7 +66,7 @@ export function useTooltip(options: UseTooltipOptions = {}): UseTooltipResult {
     ...popperRest
   } = options;
 
-  const id = customId ?? useId("tooltip");
+  const id = customId ?? useId("Tooltip");
   const tooltipInternalKey = `${++tooltipsCounter}`;
   const contentId = createValue<string>(`${id}-content`);
 

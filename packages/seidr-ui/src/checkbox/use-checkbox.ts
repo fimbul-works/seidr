@@ -17,7 +17,7 @@ import type { CheckboxCombinedDataSet, CheckboxDataSet, UseCheckboxOptions, UseC
  * for an accessible Checkbox component.
  */
 export function useCheckbox(options: UseCheckboxOptions = {}): UseCheckboxResult {
-  const baseId = wrapValue(options.id ?? useId("checkbox"));
+  const baseId = wrapValue(options.id ?? useId("Checkbox"));
 
   const formControl = useFormControl({
     id: baseId,

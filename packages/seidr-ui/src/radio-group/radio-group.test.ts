@@ -43,14 +43,14 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     expect(inputs.length).toBe(2);
     expect(label).not.toBeNull();
 
-    expect(radiogroup.getAttribute("data-component")).toBe("radio-group");
-    expect(radiogroup.getAttribute("data-part")).toBe("root");
-    expect(items[0].getAttribute("data-component")).toBe("radio-group");
-    expect(items[0].getAttribute("data-part")).toBe("item");
-    expect(inputs[0].getAttribute("data-component")).toBe("radio-group");
-    expect(inputs[0].getAttribute("data-part")).toBe("item-input");
-    expect(label.getAttribute("data-component")).toBe("radio-group");
-    expect(label.getAttribute("data-part")).toBe("label");
+    expect(radiogroup.getAttribute("data-component")).toBe("RadioGroup");
+    expect(radiogroup.getAttribute("data-part")).toBe("Root");
+    expect(items[0].getAttribute("data-component")).toBe("RadioGroup");
+    expect(items[0].getAttribute("data-part")).toBe("Item");
+    expect(inputs[0].getAttribute("data-component")).toBe("RadioGroup");
+    expect(inputs[0].getAttribute("data-part")).toBe("ItemInput");
+    expect(label.getAttribute("data-component")).toBe("RadioGroup");
+    expect(label.getAttribute("data-part")).toBe("Label");
 
     expect(radiogroup.getAttribute("aria-orientation")).toBe("vertical");
     expect(radiogroup.getAttribute("aria-labelledby")).toBe(label.id);
@@ -172,8 +172,8 @@ describeDualMode("RadioGroup", ({ getDocument, isSSR }) => {
     const inputs = root.querySelectorAll("input") as NodeListOf<HTMLInputElement>;
     const catControl = root.querySelector(`#${inputs[1].id.replace("-input", "")}-control`) as HTMLElement;
 
-    expect(catControl.getAttribute("data-component")).toBe("radio-group");
-    expect(catControl.getAttribute("data-part")).toBe("item-control");
+    expect(catControl.getAttribute("data-component")).toBe("RadioGroup");
+    expect(catControl.getAttribute("data-part")).toBe("ItemControl");
 
     if (!isSSR) {
       const event = new KeyboardEvent("keydown", { key: " ", bubbles: true });

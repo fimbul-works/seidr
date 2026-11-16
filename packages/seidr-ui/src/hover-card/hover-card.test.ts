@@ -38,17 +38,17 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-component='hover-card'][data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-component='HoverCard'][data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.hasAttribute("data-expanded")).toBe(true);
 
-    const triggerEl = root.querySelector("[data-component='hover-card'][data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-component='HoverCard'][data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName).toBe("A");
     expect(triggerEl.getAttribute("href")).toBe("https://example.com");
     expect(triggerEl.textContent).toBe("@fimbul-works");
 
-    const contentEl = root.querySelector("[data-component='hover-card'][data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-component='HoverCard'][data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.textContent).toContain("Rich profile preview card");
   });
@@ -65,9 +65,9 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
-    const arrowEl = root.querySelector("[data-part='arrow']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-part='Arrow']") as HTMLElement;
 
     expect(triggerEl).not.toBeNull();
     expect(contentEl).not.toBeNull();
@@ -90,20 +90,20 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
             }),
           );
 
-          const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
 
           // Enter and leave before openDelay completes
           triggerEl.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(200);
           triggerEl.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(300);
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
 
           // Enter and stay for full 400ms
           triggerEl.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(400);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
         } finally {
           vi.useRealTimers();
         }
@@ -128,20 +128,20 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
             ]);
           });
 
-          const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+          const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
           triggerEl.dispatchEvent(new FocusEvent("focus"));
           vi.advanceTimersByTime(200);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
           // Blur trigger with relatedTarget inside HoverCardContent -> stays open!
           triggerEl.dispatchEvent(new FocusEvent("blur", { relatedTarget: innerBtn }));
           vi.advanceTimersByTime(300);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
           // Blur trigger with relatedTarget outside -> closes after closeDelay
           triggerEl.dispatchEvent(new FocusEvent("blur", { relatedTarget: getDocument().body }));
           vi.advanceTimersByTime(200);
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
         } finally {
           vi.useRealTimers();
         }
@@ -157,9 +157,9 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
           }),
         );
 
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
         getDocument().dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
       });
 
       it("supports portaling hover card content via portalTarget", () => {
@@ -178,13 +178,13 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
             }),
           );
 
-          const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+          const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
           triggerEl.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(100);
 
-          expect(root.querySelector("[data-part='content']")).toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")?.textContent).toContain(
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")?.textContent).toContain(
             "Portaled HoverCard Preview",
           );
         } finally {

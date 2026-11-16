@@ -9,7 +9,7 @@ import type { RadioGroupDataSet, UseRadioGroupOptions, UseRadioGroupResult } fro
  * bindings for an accessible RadioGroup component.
  */
 export function useRadioGroup(options: UseRadioGroupOptions = {}): UseRadioGroupResult {
-  const id = wrapValue(options.id ?? useId("radiogroup"));
+  const id = wrapValue(options.id ?? useId("RadioGroup"));
   const orientation = options.orientation ?? "vertical";
   const name = wrapValue(options.name ?? id());
 

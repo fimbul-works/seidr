@@ -38,7 +38,7 @@ describeDualMode("Link", ({ getDocument, isSSR }) => {
     expect(anchor).toBeTruthy();
     expect(anchor?.textContent).toBe("Documentation");
     expect(anchor?.getAttribute("href")).toBe("/docs");
-    expect(anchor?.getAttribute("data-component")).toBe("link");
+    expect(anchor?.getAttribute("data-component")).toBe("Link");
   });
 
   it("supports polymorphic element rendering (as='span')", () => {
@@ -47,7 +47,7 @@ describeDualMode("Link", ({ getDocument, isSSR }) => {
 
     const span = container.querySelector("span");
     expect(span).toBeTruthy();
-    expect(span?.getAttribute("data-component")).toBe("link");
+    expect(span?.getAttribute("data-component")).toBe("Link");
     expect(span?.getAttribute("role")).toBe("link");
     expect(String(span?.getAttribute("tabindex"))).toBe("0");
   });

@@ -40,7 +40,7 @@ export interface UseCollapsibleOptions {
 export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsibleResult {
   const { open, defaultOpen, onOpenChange, disabled, forceMount, id: providedId } = options;
 
-  const id = providedId ?? useId("collapsible");
+  const id = providedId ?? useId("Collapsible");
   const contentId = createValue<string>(`${id}-content`);
 
   const registerContentId = (newId: string): CleanupFunction => {

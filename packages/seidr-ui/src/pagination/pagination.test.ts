@@ -34,25 +34,25 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const listEl = root.querySelector("[data-part='list']") as HTMLElement;
-    const prevBtn = root.querySelector("[data-part='previous']") as HTMLButtonElement;
-    const nextBtn = root.querySelector("[data-part='next']") as HTMLButtonElement;
-    const itemButtons = Array.from(root.querySelectorAll("[data-part='item']")) as HTMLButtonElement[];
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const listEl = root.querySelector("[data-part='List']") as HTMLElement;
+    const prevBtn = root.querySelector("[data-part='Previous']") as HTMLButtonElement;
+    const nextBtn = root.querySelector("[data-part='Next']") as HTMLButtonElement;
+    const itemButtons = Array.from(root.querySelectorAll("[data-part='Item']")) as HTMLButtonElement[];
 
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("pagination");
+    expect(rootEl.getAttribute("data-component")).toBe("Pagination");
     expect(rootEl.getAttribute("aria-label")).toBe("Pagination");
 
     expect(listEl).not.toBeNull();
-    expect(listEl.getAttribute("data-component")).toBe("pagination");
+    expect(listEl.getAttribute("data-component")).toBe("Pagination");
 
     expect(prevBtn).not.toBeNull();
-    expect(prevBtn.getAttribute("data-component")).toBe("pagination");
+    expect(prevBtn.getAttribute("data-component")).toBe("Pagination");
     expect(isButtonDisabled(prevBtn)).toBe(true);
 
     expect(nextBtn).not.toBeNull();
-    expect(nextBtn.getAttribute("data-component")).toBe("pagination");
+    expect(nextBtn.getAttribute("data-component")).toBe("Pagination");
     expect(isButtonDisabled(nextBtn)).toBe(false);
 
     expect(itemButtons.length).toBe(5);
@@ -81,9 +81,9 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       return pg.Root({}, [pg.List({}, [pg.Previous({}, "Prev"), pg.Items(), pg.Next({}, "Next")])]);
     });
 
-    const prevBtn = root.querySelector("[data-part='previous']") as HTMLButtonElement;
-    const nextBtn = root.querySelector("[data-part='next']") as HTMLButtonElement;
-    const items = Array.from(root.querySelectorAll("[data-part='item']")) as HTMLButtonElement[];
+    const prevBtn = root.querySelector("[data-part='Previous']") as HTMLButtonElement;
+    const nextBtn = root.querySelector("[data-part='Next']") as HTMLButtonElement;
+    const items = Array.from(root.querySelectorAll("[data-part='Item']")) as HTMLButtonElement[];
 
     expect(prevBtn?.textContent).toBe("Prev");
     expect(nextBtn?.textContent).toBe("Next");
@@ -101,7 +101,7 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const itemButtons = Array.from(root.querySelectorAll("[data-part='item']")) as HTMLButtonElement[];
+    const itemButtons = Array.from(root.querySelectorAll("[data-part='Item']")) as HTMLButtonElement[];
 
     if (isSSR) return;
 
@@ -120,8 +120,8 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const prevBtn = root.querySelector("[data-part='previous']") as HTMLButtonElement;
-    const nextBtn = root.querySelector("[data-part='next']") as HTMLButtonElement;
+    const prevBtn = root.querySelector("[data-part='Previous']") as HTMLButtonElement;
+    const nextBtn = root.querySelector("[data-part='Next']") as HTMLButtonElement;
 
     if (isSSR) return;
 
@@ -150,11 +150,11 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const nextBtn = root.querySelector("[data-part='next']") as HTMLButtonElement;
+    const nextBtn = root.querySelector("[data-part='Next']") as HTMLButtonElement;
 
     // At page 1: [Page 1, Page 2, Ellipsis, Page 7]
-    let items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
-    let ellipses = Array.from(root.querySelectorAll("[data-part='ellipsis']"));
+    let items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
+    let ellipses = Array.from(root.querySelectorAll("[data-part='Ellipsis']"));
     expect(items).toEqual(["1", "2", "7"]);
     expect(ellipses.length).toBe(1);
 
@@ -162,22 +162,22 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
 
     // Step to page 2: [Page 1, Page 2, Page 3, Ellipsis, Page 7]
     nextBtn.click();
-    items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
-    ellipses = Array.from(root.querySelectorAll("[data-part='ellipsis']"));
+    items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
+    ellipses = Array.from(root.querySelectorAll("[data-part='Ellipsis']"));
     expect(items).toEqual(["1", "2", "3", "7"]);
     expect(ellipses.length).toBe(1);
 
     // Step to page 3: [Page 1, Page 2, Page 3, Page 4, Ellipsis, Page 7]
     nextBtn.click();
-    items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
-    ellipses = Array.from(root.querySelectorAll("[data-part='ellipsis']"));
+    items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
+    ellipses = Array.from(root.querySelectorAll("[data-part='Ellipsis']"));
     expect(items).toEqual(["1", "2", "3", "4", "7"]);
     expect(ellipses.length).toBe(1);
 
     // Step to page 4: [Page 1, Ellipsis, Page 3, Page 4, Page 5, Ellipsis, Page 7]
     nextBtn.click();
-    items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
-    ellipses = Array.from(root.querySelectorAll("[data-part='ellipsis']"));
+    items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
+    ellipses = Array.from(root.querySelectorAll("[data-part='Ellipsis']"));
     expect(items).toEqual(["1", "3", "4", "5", "7"]);
     expect(ellipses.length).toBe(2);
   });
@@ -191,8 +191,8 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
-    const ellipses = Array.from(root.querySelectorAll("[data-part='ellipsis']"));
+    const items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
+    const ellipses = Array.from(root.querySelectorAll("[data-part='Ellipsis']"));
 
     // Page 1, Ellipsis, 3, 4, 5, 6, 7, Ellipsis, 10
     expect(items).toEqual(["1", "3", "4", "5", "6", "7", "10"]);
@@ -209,7 +209,7 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
+    const items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
     expect(items).not.toContain("1");
     expect(items).not.toContain("10");
     expect(items).toEqual(["4", "5", "6"]);
@@ -224,7 +224,7 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = Array.from(root.querySelectorAll("[data-part='item']")).map((el) => el.textContent);
+    const items = Array.from(root.querySelectorAll("[data-part='Item']")).map((el) => el.textContent);
     expect(items).toEqual(["1", "2", "3", "4", "5", "10"]);
   });
 
@@ -240,7 +240,7 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const itemButtons = Array.from(root.querySelectorAll("[data-part='item']")) as HTMLButtonElement[];
+    const itemButtons = Array.from(root.querySelectorAll("[data-part='Item']")) as HTMLButtonElement[];
     expect(itemButtons[1].getAttribute("aria-current")).toBe("page");
 
     if (isSSR) return;
@@ -248,7 +248,7 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
     controlledPage(4);
     expect(itemButtons[3].getAttribute("aria-current")).toBe("page");
 
-    const prevBtn = root.querySelector("[data-part='previous']") as HTMLButtonElement;
+    const prevBtn = root.querySelector("[data-part='Previous']") as HTMLButtonElement;
     prevBtn.click();
     expect(onPageChange).toHaveBeenCalledWith(3);
   });
@@ -262,10 +262,10 @@ describeDualMode("Pagination", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const prevBtn = root.querySelector("[data-part='previous']") as HTMLButtonElement;
-    const nextBtn = root.querySelector("[data-part='next']") as HTMLButtonElement;
-    const itemButtons = Array.from(root.querySelectorAll("[data-part='item']")) as HTMLButtonElement[];
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const prevBtn = root.querySelector("[data-part='Previous']") as HTMLButtonElement;
+    const nextBtn = root.querySelector("[data-part='Next']") as HTMLButtonElement;
+    const itemButtons = Array.from(root.querySelectorAll("[data-part='Item']")) as HTMLButtonElement[];
 
     expect(rootEl.hasAttribute("data-disabled")).toBe(true);
     expect(isButtonDisabled(prevBtn)).toBe(true);

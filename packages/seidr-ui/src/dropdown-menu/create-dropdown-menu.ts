@@ -8,7 +8,7 @@ import type { DropdownMenuInstance, UseDropdownMenuOptions } from "./types.js";
  * Returns pre-bound element helpers with `dataComponent="dropdown-menu"` and reactive observables.
  */
 export function createDropdownMenu(options: UseDropdownMenuOptions = {}): DropdownMenuInstance {
-  const { id = useId("dropdownmenu"), dataComponent = DATA_COMPONENT_DROPDOWN_MENU, ...rest } = options;
+  const { id = useId("DropdownMenu"), dataComponent = DATA_COMPONENT_DROPDOWN_MENU, ...rest } = options;
   return createMenu({
     id,
     dataComponent,

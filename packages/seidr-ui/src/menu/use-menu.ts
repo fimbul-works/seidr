@@ -28,7 +28,7 @@ import type {
  * typeahead, and Popper positioning for an accessible WAI-ARIA Menu.
  */
 export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
-  const id = options.id ?? useId("menu");
+  const id = options.id ?? useId("Menu");
   const modal = options.modal ?? true;
   const forceMount = options.forceMount ?? false;
   const loop = options.loop ?? true;

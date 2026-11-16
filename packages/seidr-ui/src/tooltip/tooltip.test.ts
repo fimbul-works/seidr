@@ -43,17 +43,17 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-component='tooltip'][data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-component='Tooltip'][data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.hasAttribute("data-expanded")).toBe(true);
 
-    const triggerEl = root.querySelector("[data-component='tooltip'][data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-component='Tooltip'][data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName).toBe("BUTTON");
     expect(triggerEl.getAttribute("type")).toBe("button");
     expect(triggerEl.getAttribute("aria-describedby")).toBe("test-tooltip-content");
 
-    const contentEl = root.querySelector("[data-component='tooltip'][data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-component='Tooltip'][data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("tooltip");
     expect(contentEl.getAttribute("id")).toBe("test-tooltip-content");
@@ -72,9 +72,9 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
-    const arrowEl = root.querySelector("[data-part='arrow']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-part='Arrow']") as HTMLElement;
 
     expect(triggerEl).not.toBeNull();
     expect(contentEl).not.toBeNull();
@@ -97,24 +97,24 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
             }),
           );
 
-          const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
 
           triggerEl.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(300);
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
 
           vi.advanceTimersByTime(200);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
           expect(triggerEl.getAttribute("aria-describedby")).toBe("hover-tooltip-content");
 
           // Pointer leaves trigger
           triggerEl.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true, pointerType: "mouse" }));
           vi.advanceTimersByTime(100);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
           vi.advanceTimersByTime(100);
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
           expect(triggerEl.getAttribute("aria-describedby")).toBeNull();
         } finally {
           vi.useRealTimers();
@@ -131,14 +131,14 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
           }),
         );
 
-        const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
 
         triggerEl.dispatchEvent(new FocusEvent("focus"));
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
         triggerEl.dispatchEvent(new FocusEvent("blur"));
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
       });
 
       it("closes immediately when trigger is clicked or Escape is pressed", () => {
@@ -151,18 +151,18 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
           }),
         );
 
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
         getDocument().dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
 
         // Reopen via focus, then close via click
-        const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
         triggerEl.dispatchEvent(new FocusEvent("focus"));
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
         triggerEl.click();
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
       });
 
       it("skips openDelay when moving between multiple tooltips within skipDelayDuration", () => {
@@ -221,12 +221,12 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
             }),
           );
 
-          const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+          const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
           triggerEl.dispatchEvent(new FocusEvent("focus"));
 
-          expect(root.querySelector("[data-part='content']")).toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")?.textContent).toContain("Portaled Tooltip Text");
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")?.textContent).toContain("Portaled Tooltip Text");
         } finally {
           portalHost.remove();
         }

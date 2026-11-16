@@ -35,7 +35,7 @@ export function useHoverCard(options: UseHoverCardOptions = {}): UseHoverCardRes
     ...popperRest
   } = options;
 
-  const id = customId ?? useId("hovercard");
+  const id = customId ?? useId("HoverCard");
 
   const triggerRef = createRef<HTMLElement>();
   const contentRef = createRef<HTMLElement>();

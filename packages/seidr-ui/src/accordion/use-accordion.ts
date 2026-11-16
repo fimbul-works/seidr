@@ -32,7 +32,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRes
     id: customId,
   } = options;
 
-  const id = customId ?? useId("accordion");
+  const id = customId ?? useId("Accordion");
 
   const isControlled = !isUndef(value);
   const isControlledValue = isValue(value);

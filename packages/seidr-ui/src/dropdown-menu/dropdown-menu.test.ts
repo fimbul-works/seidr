@@ -34,21 +34,21 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(rootEl.getAttribute("data-component")).toBe("DropdownMenu");
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName.toLowerCase()).toBe("button");
     expect(triggerEl.getAttribute("aria-haspopup")).toBe("menu");
     expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
     expect(triggerEl.getAttribute("aria-controls")).toBe("test-dropdown-content");
-    expect(triggerEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(triggerEl.getAttribute("data-component")).toBe("DropdownMenu");
     expect(triggerEl.textContent).toBe("Actions");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -75,30 +75,30 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.textContent).toBe("Options");
     expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("menu");
-    expect(contentEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(contentEl.getAttribute("data-component")).toBe("DropdownMenu");
 
-    const itemEl = root.querySelector("[data-part='item']") as HTMLElement;
+    const itemEl = root.querySelector("[data-part='Item']") as HTMLElement;
     expect(itemEl).not.toBeNull();
     expect(itemEl.getAttribute("role")).toBe("menuitem");
-    expect(itemEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(itemEl.getAttribute("data-component")).toBe("DropdownMenu");
 
-    const separatorEl = root.querySelector("[data-part='separator']") as HTMLElement;
+    const separatorEl = root.querySelector("[data-part='Separator']") as HTMLElement;
     expect(separatorEl).not.toBeNull();
     expect(separatorEl.getAttribute("role")).toBe("separator");
-    expect(separatorEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(separatorEl.getAttribute("data-component")).toBe("DropdownMenu");
 
-    const checkboxEl = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkboxEl = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkboxEl).not.toBeNull();
     expect(checkboxEl.getAttribute("role")).toBe("menuitemcheckbox");
-    expect(checkboxEl.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(checkboxEl.getAttribute("data-component")).toBe("DropdownMenu");
     expect(checkboxEl.getAttribute("aria-checked")).toBe("true");
   });
 
@@ -111,21 +111,21 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
 
       // Open on click
       triggerEl.click();
       expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
-      expect(root.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
       // Close on second click
       triggerEl.click();
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -139,15 +139,15 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
 
     if (!isSSR) {
-      const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+      const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
       expect(contentEl).not.toBeNull();
 
       contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -164,14 +164,14 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const saveItem = root.querySelector("[data-part='item']") as HTMLElement;
+      const saveItem = root.querySelector("[data-part='Item']") as HTMLElement;
       expect(saveItem).not.toBeNull();
 
       saveItem.click();
       expect(onSelect).toHaveBeenCalledTimes(1);
 
       // Default closeOnSelect is true, so content should be closed
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
     }
   });
@@ -189,14 +189,14 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const stayItem = root.querySelector("[data-part='item']") as HTMLElement;
+      const stayItem = root.querySelector("[data-part='Item']") as HTMLElement;
       stayItem.click();
       expect(onSelect).toHaveBeenCalledTimes(1);
 
       // Should still be open
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
-      expect(root.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).not.toBeNull();
     }
   });
 
@@ -216,8 +216,8 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
-      const items = root.querySelectorAll("[data-part='item']");
+      const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
+      const items = root.querySelectorAll("[data-part='Item']");
 
       // ArrowDown moves to first enabled item ("a")
       contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
@@ -258,7 +258,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const checkboxEl = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkboxEl = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkboxEl.getAttribute("aria-checked")).toBe("false");
     expect(checkboxEl.hasAttribute("data-checked")).toBe(false);
 
@@ -296,7 +296,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const radioItems = root.querySelectorAll("[data-part='radio-item']");
+    const radioItems = root.querySelectorAll("[data-part='RadioItem']");
     expect(radioItems.length).toBe(2);
     expect(radioItems[0]?.getAttribute("aria-checked")).toBe("true");
     expect(radioItems[1]?.getAttribute("aria-checked")).toBe("false");
@@ -331,7 +331,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const items = root.querySelectorAll("[data-part='radio-item']");
+    const items = root.querySelectorAll("[data-part='RadioItem']");
     expect(items.length).toBe(3);
     expect(items[0]?.getAttribute("aria-checked")).toBe("false");
     expect(items[1]?.getAttribute("aria-checked")).toBe("false");
@@ -368,23 +368,23 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const subTrigger = root.querySelector("[data-part='sub-trigger']") as HTMLElement;
+    const subTrigger = root.querySelector("[data-part='SubTrigger']") as HTMLElement;
     expect(subTrigger).not.toBeNull();
     expect(subTrigger.getAttribute("aria-haspopup")).toBe("menu");
     expect(subTrigger.getAttribute("aria-expanded")).toBe("false");
-    expect(subTrigger.getAttribute("data-component")).toBe("dropdown-menu");
+    expect(subTrigger.getAttribute("data-component")).toBe("DropdownMenu");
 
     if (!isSSR) {
       // Submenu content is not mounted initially
-      expect(root.querySelector("[data-part='sub-content']")).toBeNull();
+      expect(root.querySelector("[data-part='SubContent']")).toBeNull();
 
       // Open submenu via click
       subTrigger.click();
       expect(subTrigger.getAttribute("aria-expanded")).toBe("true");
 
-      const subContent = root.querySelector("[data-part='sub-content']") as HTMLElement;
+      const subContent = root.querySelector("[data-part='SubContent']") as HTMLElement;
       expect(subContent).not.toBeNull();
-      expect(subContent.getAttribute("data-component")).toBe("dropdown-menu");
+      expect(subContent.getAttribute("data-component")).toBe("DropdownMenu");
 
       // Close submenu via ArrowLeft inside child content
       subContent.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
@@ -410,7 +410,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(trigger).not.toBeNull();
 
       // Add item while closed
@@ -419,7 +419,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       // Open menu
       trigger.click();
 
-      let items = root.querySelectorAll("[data-part='item']");
+      let items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(3);
       expect(items[2]?.textContent).toContain("Action 3");
 
@@ -432,7 +432,7 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       // Re-open menu
       trigger.click();
 
-      items = root.querySelectorAll("[data-part='item']");
+      items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(4);
       expect(items[3]?.textContent).toContain("Action 4");
     }

@@ -34,11 +34,11 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("menu");
+    expect(rootEl.getAttribute("data-component")).toBe("Menu");
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName.toLowerCase()).toBe("button");
     expect(triggerEl.getAttribute("aria-haspopup")).toBe("menu");
@@ -48,7 +48,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
 
     if (!isSSR) {
       // Content should not be mounted initially when uncontrolled defaultOpen: false
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -75,28 +75,28 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.textContent).toBe("File Options");
     expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("menu");
-    expect(contentEl.getAttribute("data-component")).toBe("menu");
+    expect(contentEl.getAttribute("data-component")).toBe("Menu");
 
-    const itemEl = root.querySelector("[data-part='item']") as HTMLElement;
+    const itemEl = root.querySelector("[data-part='Item']") as HTMLElement;
     expect(itemEl).not.toBeNull();
     expect(itemEl.getAttribute("role")).toBe("menuitem");
     expect(itemEl.getAttribute("data-value")).toBe("save");
 
-    const labelEl = itemEl.querySelector("[data-part='item-label']");
+    const labelEl = itemEl.querySelector("[data-part='ItemLabel']");
     expect(labelEl?.textContent).toBe("Save");
 
-    const descEl = itemEl.querySelector("[data-part='item-description']");
+    const descEl = itemEl.querySelector("[data-part='ItemDescription']");
     expect(descEl?.textContent).toBe("Save current changes");
 
-    const checkboxEl = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkboxEl = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkboxEl).not.toBeNull();
     expect(checkboxEl.getAttribute("role")).toBe("menuitemcheckbox");
     expect(checkboxEl.getAttribute("aria-checked")).toBe("true");
@@ -115,21 +115,21 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
 
       // Open on click
       triggerEl.click();
       expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
-      expect(root.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
       // Close on second click
       triggerEl.click();
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -143,15 +143,15 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
 
     if (!isSSR) {
-      const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+      const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
       expect(contentEl).not.toBeNull();
 
       contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -171,14 +171,14 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const items = root.querySelectorAll("[data-part='item']");
+      const items = root.querySelectorAll("[data-part='Item']");
       const saveItem = items[0] as HTMLElement;
 
       saveItem.click();
       expect(onSelect).toHaveBeenCalledTimes(1);
 
       // Default closeOnSelect is true, so content should be closed
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
     }
   });
@@ -196,14 +196,14 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const pinItem = root.querySelector("[data-part='item']") as HTMLElement;
+      const pinItem = root.querySelector("[data-part='Item']") as HTMLElement;
       pinItem.click();
       expect(onSelect).toHaveBeenCalledTimes(1);
 
       // Should still be open
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
-      expect(root.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).not.toBeNull();
     }
   });
 
@@ -223,8 +223,8 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
-      const items = root.querySelectorAll("[data-part='item']");
+      const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
+      const items = root.querySelectorAll("[data-part='Item']");
 
       // ArrowDown should move to first enabled item ("a")
       contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
@@ -270,7 +270,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const checkboxEl = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkboxEl = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkboxEl).not.toBeNull();
     expect(checkboxEl.getAttribute("role")).toBe("menuitemcheckbox");
     expect(checkboxEl.getAttribute("aria-checked")).toBe("false");
@@ -313,7 +313,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const radioItems = root.querySelectorAll("[data-part='radio-item']");
+    const radioItems = root.querySelectorAll("[data-part='RadioItem']");
     expect(radioItems.length).toBe(3);
 
     // "date" initially selected
@@ -346,7 +346,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const radioItems = root.querySelectorAll("[data-part='radio-item']");
+    const radioItems = root.querySelectorAll("[data-part='RadioItem']");
     expect(radioItems.length).toBe(2);
     expect(radioItems[1]?.getAttribute("aria-checked")).toBe("true");
     expect(radioItems[0]?.getAttribute("aria-checked")).toBe("false");
@@ -379,7 +379,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const subTrigger = root.querySelector("[data-part='sub-trigger']") as HTMLElement;
+    const subTrigger = root.querySelector("[data-part='SubTrigger']") as HTMLElement;
     expect(subTrigger).not.toBeNull();
     expect(subTrigger.getAttribute("aria-haspopup")).toBe("menu");
     expect(subTrigger.getAttribute("aria-expanded")).toBe("false");
@@ -389,7 +389,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       subTrigger.click();
       expect(subTrigger.getAttribute("aria-expanded")).toBe("true");
 
-      const subContent = root.querySelector("[data-part='sub-content']") as HTMLElement;
+      const subContent = root.querySelector("[data-part='SubContent']") as HTMLElement;
       expect(subContent).not.toBeNull();
 
       // Close submenu via ArrowLeft inside child content
@@ -415,7 +415,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const initialItems = root.querySelectorAll("[data-part='item']");
+    const initialItems = root.querySelectorAll("[data-part='Item']");
     expect(initialItems.length).toBe(2);
     expect(initialItems[0]?.textContent).toContain("Option 1");
     expect(initialItems[1]?.textContent).toContain("Option 2");
@@ -428,7 +428,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
         { value: "opt-3", label: "Option 3 (Added)" },
       ]);
 
-      const updatedItems = root.querySelectorAll("[data-part='item']");
+      const updatedItems = root.querySelectorAll("[data-part='Item']");
       expect(updatedItems.length).toBe(3);
       expect(updatedItems[2]?.textContent).toContain("Option 3 (Added)");
     }
@@ -452,7 +452,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(trigger).not.toBeNull();
 
       // Add item while closed
@@ -461,7 +461,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       // Open menu
       trigger.click();
 
-      let items = root.querySelectorAll("[data-part='item']");
+      let items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(3);
 
       // Close menu
@@ -473,7 +473,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       // Re-open menu
       trigger.click();
 
-      items = root.querySelectorAll("[data-part='item']");
+      items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(4);
       expect(items[3]?.textContent).toContain("Action 4");
     }
@@ -505,20 +505,20 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
         }),
       );
 
-      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
       trigger.click();
 
-      expect(root.querySelector("[data-part='content']")).toBeNull();
-      expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
 
       // Open submenu inside portaled content
-      const subTrigger = portalHost.querySelector("[data-part='sub-trigger']") as HTMLElement;
+      const subTrigger = portalHost.querySelector("[data-part='SubTrigger']") as HTMLElement;
       subTrigger.click();
 
-      expect(portalHost.querySelector("[data-part='sub-content']")).not.toBeNull();
+      expect(portalHost.querySelector("[data-part='SubContent']")).not.toBeNull();
 
       // Click submenu item
-      const subItem = portalHost.querySelector("[data-part='sub-content'] [data-part='item']") as HTMLElement;
+      const subItem = portalHost.querySelector("[data-part='SubContent'] [data-part='Item']") as HTMLElement;
       subItem.click();
       expect(onSelect).toHaveBeenCalledTimes(1);
     } finally {

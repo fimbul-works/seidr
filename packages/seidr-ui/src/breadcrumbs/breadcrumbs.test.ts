@@ -44,19 +44,19 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
 
     expect(nav).not.toBeNull();
     expect(nav.getAttribute("aria-label")).toBe("Breadcrumbs");
-    expect(nav.getAttribute("data-component")).toBe("breadcrumbs");
+    expect(nav.getAttribute("data-component")).toBe("Breadcrumbs");
 
-    expect(ol.getAttribute("data-component")).toBe("breadcrumbs");
-    expect(ol.getAttribute("data-part")).toBe("list");
+    expect(ol.getAttribute("data-component")).toBe("Breadcrumbs");
+    expect(ol.getAttribute("data-part")).toBe("List");
 
-    expect(items[0]?.getAttribute("data-component")).toBe("breadcrumbs");
-    expect(items[0]?.getAttribute("data-part")).toBe("item");
+    expect(items[0]?.getAttribute("data-component")).toBe("Breadcrumbs");
+    expect(items[0]?.getAttribute("data-part")).toBe("Item");
 
-    expect(links[0]?.getAttribute("data-component")).toBe("breadcrumbs");
-    expect(links[0]?.getAttribute("data-part")).toBe("link");
+    expect(links[0]?.getAttribute("data-component")).toBe("Breadcrumbs");
+    expect(links[0]?.getAttribute("data-part")).toBe("Link");
 
-    expect(separator.getAttribute("data-component")).toBe("breadcrumbs");
-    expect(separator.getAttribute("data-part")).toBe("separator");
+    expect(separator.getAttribute("data-component")).toBe("Breadcrumbs");
+    expect(separator.getAttribute("data-part")).toBe("Separator");
     expect(separator.getAttribute("aria-hidden")).toBe("true");
     expect(separator.textContent).toBe("/");
   });
@@ -82,7 +82,7 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const separator = root.querySelector("[data-part='separator']");
+    const separator = root.querySelector("[data-part='Separator']");
     expect(separator?.textContent).toBe(">");
   });
 
@@ -133,7 +133,7 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
         ]);
       });
 
-      const spans = root.querySelectorAll("[data-part='link']");
+      const spans = root.querySelectorAll("[data-part='Link']");
       const activeSpan = spans[0];
       const currentSpan = spans[1];
 
@@ -198,11 +198,11 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       const items = root.querySelectorAll("li");
       expect(items.length).toBe(3);
 
-      const separators = root.querySelectorAll("[data-part='separator']");
+      const separators = root.querySelectorAll("[data-part='Separator']");
       // Separator after item 0 and item 1, but NONE after item 2
       expect(separators.length).toBe(2);
 
-      const links = root.querySelectorAll("[data-part='link']");
+      const links = root.querySelectorAll("[data-part='Link']");
       expect(links.length).toBe(3);
       expect(links[0]?.textContent).toBe("Home");
       expect(links[1]?.textContent).toBe("Products");
@@ -224,14 +224,14 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
 
       let items = root.querySelectorAll("li");
       expect(items.length).toBe(2);
-      expect(root.querySelectorAll("[data-part='separator']").length).toBe(1);
+      expect(root.querySelectorAll("[data-part='Separator']").length).toBe(1);
 
       // Mutate reactive value dynamically
       itemsVal((prev) => [...prev, { href: "/blog/post-1", label: "Post 1" }]);
 
       items = root.querySelectorAll("li");
       expect(items.length).toBe(3);
-      expect(root.querySelectorAll("[data-part='separator']").length).toBe(2);
+      expect(root.querySelectorAll("[data-part='Separator']").length).toBe(2);
     });
   });
 

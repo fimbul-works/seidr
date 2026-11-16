@@ -14,13 +14,6 @@ import {
 import type { FormControlDataSet, UseFormControlOptions, UseFormControlResult, ValidationState } from "./types.js";
 
 /**
- * Creates a unique ID for a form control.
- * @param prefix - The prefix to use for the ID.
- * @returns A unique ID for a form control.
- */
-export const createFormControlId = (prefix = "form-control"): string => useId(prefix);
-
-/**
  * Headless hook that provides state management, accessibility coordination,
  * and ARIA wiring for a form control.
  */
@@ -35,7 +28,7 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     fieldId: providedFieldId,
   } = options;
 
-  const id = wrapValue(providedId ?? createFormControlId());
+  const id = wrapValue(providedId ?? useId('FormControl'));
   const name = wrapValue(providedName as string | undefined).as((v) => v);
 
   const validationState: ObservableValue<ValidationState | undefined> = isValue<ValidationState | undefined>(

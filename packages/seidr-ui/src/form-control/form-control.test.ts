@@ -46,12 +46,12 @@ describeDualMode("FormControl", ({ getDocument, isSSR }) => {
     expect(input).not.toBeNull();
     expect(desc).toBeDefined();
 
-    expect(root.querySelector("#test-email")?.getAttribute("data-component")).toBe("form-control");
-    expect(root.querySelector("#test-email")?.getAttribute("data-part")).toBe("root");
-    expect(label.getAttribute("data-component")).toBe("form-control");
-    expect(label.getAttribute("data-part")).toBe("label");
-    expect(desc?.getAttribute("data-component")).toBe("form-control");
-    expect(desc?.getAttribute("data-part")).toBe("description");
+    expect(root.querySelector("#test-email")?.getAttribute("data-component")).toBe("FormControl");
+    expect(root.querySelector("#test-email")?.getAttribute("data-part")).toBe("Root");
+    expect(label.getAttribute("data-component")).toBe("FormControl");
+    expect(label.getAttribute("data-part")).toBe("Label");
+    expect(desc?.getAttribute("data-component")).toBe("FormControl");
+    expect(desc?.getAttribute("data-part")).toBe("Description");
 
     expect(label.getAttribute("for")).toBe(input.id);
     expect(label.id).toBe("test-email-label");

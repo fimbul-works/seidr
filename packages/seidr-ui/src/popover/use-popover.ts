@@ -30,7 +30,7 @@ export function usePopover(options: UsePopoverOptions = {}): UsePopoverResult {
     ...popperRest
   } = options;
 
-  const id = customId ?? useId("popover");
+  const id = customId ?? useId("Popover");
 
   const contentId = createValue<string>(`${id}-content`);
   const titleId = createValue<string>(`${id}-title`);

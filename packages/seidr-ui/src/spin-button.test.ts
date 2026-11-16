@@ -33,7 +33,7 @@ describeDualMode("SpinButton", ({ getDocument, isSSR }) => {
 
     const el = root.querySelector("[role='spinbutton']") as HTMLElement;
     expect(el).not.toBeNull();
-    expect(el.getAttribute("data-component")).toBe("spin-button");
+    expect(el.getAttribute("data-component")).toBe("SpinButton");
     expect(el.getAttribute("data-part")).toBeNull();
     expect(el.tabIndex).toBe(0);
     expect(String(el.getAttribute("aria-valuenow"))).toBe("2");

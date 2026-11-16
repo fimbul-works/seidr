@@ -44,7 +44,7 @@ export function MenuCheckboxItem<T extends keyof SeidrElementTagNameMap = "div">
     throw new SeidrError("MenuCheckboxItem requires an instance coordinator");
   }
 
-  const value = userValue ?? useId("menu-checkbox");
+  const value = userValue ?? useId("MenuCheckbox");
   const disabledObservable = wrapValue(itemDisabledProp ?? false);
 
   const checkedState: Value<boolean | "mixed"> = controlledChecked

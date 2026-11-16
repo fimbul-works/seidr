@@ -41,11 +41,11 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-component='popover'][data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-component='Popover'][data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.hasAttribute("data-expanded")).toBe(true);
 
-    const triggerEl = root.querySelector("[data-component='popover'][data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-component='Popover'][data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName).toBe("BUTTON");
     expect(triggerEl.getAttribute("type")).toBe("button");
@@ -53,7 +53,7 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
     expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
     expect(triggerEl.getAttribute("aria-controls")).toBe("test-popover-content");
 
-    const contentEl = root.querySelector("[data-component='popover'][data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-component='Popover'][data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("dialog");
     expect(contentEl.getAttribute("id")).toBe("test-popover-content");
@@ -61,24 +61,24 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
     expect(contentEl.getAttribute("aria-labelledby")).toBe("test-popover-title");
     expect(contentEl.getAttribute("aria-describedby")).toBe("test-popover-description");
 
-    const titleEl = root.querySelector("[data-component='popover'][data-part='title']") as HTMLElement;
+    const titleEl = root.querySelector("[data-component='Popover'][data-part='Title']") as HTMLElement;
     expect(titleEl).not.toBeNull();
     expect(titleEl.tagName).toBe("H2");
     expect(titleEl.getAttribute("id")).toBe("test-popover-title");
     expect(titleEl.textContent).toBe("Popover Title");
 
-    const descEl = root.querySelector("[data-component='popover'][data-part='description']") as HTMLElement;
+    const descEl = root.querySelector("[data-component='Popover'][data-part='Description']") as HTMLElement;
     expect(descEl).not.toBeNull();
     expect(descEl.tagName).toBe("P");
     expect(descEl.getAttribute("id")).toBe("test-popover-description");
     expect(descEl.textContent).toBe("Popover Description Text");
 
-    const closeBtnEl = root.querySelector("[data-component='popover'][data-part='close-button']") as HTMLElement;
+    const closeBtnEl = root.querySelector("[data-component='Popover'][data-part='CloseButton']") as HTMLElement;
     expect(closeBtnEl).not.toBeNull();
     expect(closeBtnEl.tagName).toBe("BUTTON");
     expect(closeBtnEl.getAttribute("aria-label")).toBe("Dismiss");
 
-    const arrowEl = root.querySelector("[data-component='popover'][data-part='arrow']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-component='Popover'][data-part='Arrow']") as HTMLElement;
     expect(arrowEl).not.toBeNull();
   });
 
@@ -97,12 +97,12 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
-    const titleEl = root.querySelector("[data-part='title']") as HTMLElement;
-    const descEl = root.querySelector("[data-part='description']") as HTMLElement;
-    const closeBtnEl = root.querySelector("[data-part='close-button']") as HTMLElement;
-    const arrowEl = root.querySelector("[data-part='arrow']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
+    const titleEl = root.querySelector("[data-part='Title']") as HTMLElement;
+    const descEl = root.querySelector("[data-part='Description']") as HTMLElement;
+    const closeBtnEl = root.querySelector("[data-part='CloseButton']") as HTMLElement;
+    const arrowEl = root.querySelector("[data-part='Arrow']") as HTMLElement;
 
     expect(triggerEl).not.toBeNull();
     expect(contentEl).not.toBeNull();
@@ -124,18 +124,18 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
           }),
         );
 
-        const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
         expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
 
         // Click to open
         triggerEl.click();
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
         expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
 
         // Click to close
         triggerEl.click();
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
         expect(triggerEl.getAttribute("aria-expanded")).toBe("false");
       });
 
@@ -149,10 +149,10 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
           }),
         );
 
-        expect(root.querySelector("[data-part='content']")).not.toBeNull();
+        expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
         getDocument().dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
       });
 
       it("closes when clicking CloseButton", () => {
@@ -166,11 +166,11 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
           }),
         );
 
-        const closeBtn = root.querySelector("[data-part='close-button']") as HTMLElement;
+        const closeBtn = root.querySelector("[data-part='CloseButton']") as HTMLElement;
         expect(closeBtn).not.toBeNull();
 
         closeBtn.click();
-        expect(root.querySelector("[data-part='content']")).toBeNull();
+        expect(root.querySelector("[data-part='Content']")).toBeNull();
       });
 
       it("closes when clicking outside the popover content", async () => {
@@ -188,13 +188,13 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
             }),
           );
 
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
           // Wait for useInteractOutside pointerdown listener registration
           await new Promise((resolve) => setTimeout(resolve, 10));
 
           outsideTarget.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
         } finally {
           outsideTarget.remove();
         }
@@ -211,8 +211,8 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
         });
 
         const anchorEl = root.querySelector("#custom-anchor") as HTMLElement;
-        const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-        const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+        const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+        const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
 
         expect(anchorEl).not.toBeNull();
         expect(triggerEl).not.toBeNull();
@@ -234,9 +234,9 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
             }),
           );
 
-          expect(root.querySelector("[data-part='content']")).toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
-          expect(portalHost.querySelector("[data-part='content']")?.textContent).toContain(
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
+          expect(portalHost.querySelector("[data-part='Content']")?.textContent).toContain(
             "Portaled Popover Content",
           );
         } finally {

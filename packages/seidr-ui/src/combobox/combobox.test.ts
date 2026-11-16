@@ -35,22 +35,22 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("combobox");
+    expect(rootEl.getAttribute("data-component")).toBe("Combobox");
     expect(rootEl.getAttribute("role")).toBe("group");
     expect(rootEl.hasAttribute("data-closed")).toBe(true);
 
-    const labelEl = root.querySelector("[data-part='label']") as HTMLElement;
+    const labelEl = root.querySelector("[data-part='Label']") as HTMLElement;
     expect(labelEl).not.toBeNull();
     expect(labelEl.textContent).toBe("Favorite Fruit");
     expect(labelEl.id).toBe("fruit-cb-label");
 
-    const controlEl = root.querySelector("[data-part='control']") as HTMLElement;
+    const controlEl = root.querySelector("[data-part='Control']") as HTMLElement;
     expect(controlEl).not.toBeNull();
-    expect(controlEl.getAttribute("data-component")).toBe("combobox");
+    expect(controlEl.getAttribute("data-component")).toBe("Combobox");
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl).not.toBeNull();
     expect(inputEl.getAttribute("role")).toBe("combobox");
     expect(inputEl.getAttribute("aria-haspopup")).toBe("listbox");
@@ -59,12 +59,12 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
     expect(inputEl.getAttribute("placeholder")).toBe("Type to search...");
     expect(inputEl.id).toBe("fruit-cb-input");
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName.toLowerCase()).toBe("button");
     expect(String(triggerEl.getAttribute("tabindex"))).toBe("-1");
 
-    const hiddenSelect = root.querySelector("[data-part='hidden-select']") as HTMLElement;
+    const hiddenSelect = root.querySelector("[data-part='HiddenSelect']") as HTMLElement;
     expect(hiddenSelect).not.toBeNull();
     expect(hiddenSelect.getAttribute("aria-hidden")).toBe("true");
     expect(String(hiddenSelect.getAttribute("tabindex"))).toBe("-1");
@@ -103,11 +103,11 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const rootEl = root.querySelector("[data-part='root']");
+    const rootEl = root.querySelector("[data-part='Root']");
     expect(rootEl).not.toBeNull();
-    expect(rootEl?.getAttribute("data-component")).toBe("combobox");
+    expect(rootEl?.getAttribute("data-component")).toBe("Combobox");
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl).not.toBeNull();
     expect(inputEl.value).toBe("Item 2");
   });
@@ -126,23 +126,23 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl).not.toBeNull();
 
     // Initially closed
-    expect(root.querySelector("[data-part='content']")).toBeNull();
+    expect(root.querySelector("[data-part='Content']")).toBeNull();
 
     // Type "av"
     inputEl.value = "av";
     inputEl.dispatchEvent(new Event("input", { bubbles: true }));
 
     // Dropdown is now open
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(inputEl.getAttribute("aria-expanded")).toBe("true");
 
     // Only Avocado should be visible in the listbox
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(1);
     expect(items[0]?.textContent).toContain("Avocado");
   });
@@ -161,17 +161,17 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
 
     triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
     triggerEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(inputEl.getAttribute("aria-expanded")).toBe("true");
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(3);
   });
 
@@ -190,11 +190,11 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
 
     // ArrowDown while closed opens menu
     inputEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
-    expect(root.querySelector("[data-part='content']")).not.toBeNull();
+    expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
     // ArrowDown highlights banana
     inputEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
@@ -205,7 +205,7 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
     expect(onChange).toHaveBeenCalledWith("banana");
     expect(inputEl.value).toBe("Banana");
     // Menu closes after selection
-    expect(root.querySelector("[data-part='content']")).toBeNull();
+    expect(root.querySelector("[data-part='Content']")).toBeNull();
   });
 
   it("closing with Escape key resets input value to active selection", () => {
@@ -222,13 +222,13 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl.value).toBe("Apple");
 
     // Type "xyz"
     inputEl.value = "xyz";
     inputEl.dispatchEvent(new Event("input", { bubbles: true }));
-    expect(root.querySelector("[data-part='content']")).toBeNull(); // no matches
+    expect(root.querySelector("[data-part='Content']")).toBeNull(); // no matches
 
     // Open and press Escape
     inputEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
@@ -256,7 +256,7 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl.value).toBe("");
 
     // Open dropdown and select banana
@@ -286,17 +286,17 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
     triggerEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-    let items = root.querySelectorAll("[data-part='item']");
+    let items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(2);
 
     // Add bird
     dynamicOptions((prev) => [...prev, { value: "bird", label: "Bird" }]);
 
-    items = root.querySelectorAll("[data-part='item']");
+    items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(3);
     expect(items[2]?.textContent).toContain("Bird");
   });
@@ -324,14 +324,14 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
       triggerEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-      const sections = root.querySelectorAll("[data-part='section']");
+      const sections = root.querySelectorAll("[data-part='Section']");
       expect(sections.length).toBe(2);
 
-      const sectionLabels = root.querySelectorAll("[data-part='section-label']");
+      const sectionLabels = root.querySelectorAll("[data-part='SectionLabel']");
       expect(sectionLabels.length).toBe(2);
       expect(sectionLabels[0]?.textContent).toBe("Fruits");
       expect(sectionLabels[1]?.textContent).toBe("Vegetables");
@@ -369,7 +369,7 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
 
     unmount = mount(App, target);
 
-    const inputEl = form.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = form.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl.value).toBe("Initial Value");
 
     // Select other value
@@ -406,19 +406,19 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
         }),
       );
 
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
       triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
       triggerEl.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 
-      expect(root.querySelector("[data-part='content']")).toBeNull();
-      expect(portalHost.querySelector("[data-part='content']")).not.toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
 
-      const items = portalHost.querySelectorAll("[data-part='item']");
+      const items = portalHost.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(2);
 
       (items[0] as HTMLElement).click();
       expect(onChange).toHaveBeenCalledWith("apple");
-      expect(portalHost.querySelector("[data-part='content']")).toBeNull();
+      expect(portalHost.querySelector("[data-part='Content']")).toBeNull();
     } finally {
       portalHost.remove();
     }

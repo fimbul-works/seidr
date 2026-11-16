@@ -28,10 +28,10 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
     });
 
     const rootEl = root.querySelector("[role='meter']") as HTMLElement;
-    const labelEl = root.querySelector("[data-part='label']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
-    const trackEl = root.querySelector("[data-part='track']") as HTMLElement;
-    const fillEl = root.querySelector("[data-part='fill']") as HTMLElement;
+    const labelEl = root.querySelector("[data-part='Label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
+    const trackEl = root.querySelector("[data-part='Track']") as HTMLElement;
+    const fillEl = root.querySelector("[data-part='Fill']") as HTMLElement;
 
     expect(rootEl).not.toBeNull();
     expect(labelEl).not.toBeNull();
@@ -40,16 +40,16 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
     expect(fillEl).not.toBeNull();
 
     // Semantic data attributes
-    expect(rootEl.getAttribute("data-component")).toBe("meter");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
-    expect(labelEl.getAttribute("data-component")).toBe("meter");
-    expect(labelEl.getAttribute("data-part")).toBe("label");
-    expect(valueLabelEl.getAttribute("data-component")).toBe("meter");
-    expect(valueLabelEl.getAttribute("data-part")).toBe("value-label");
-    expect(trackEl.getAttribute("data-component")).toBe("meter");
-    expect(trackEl.getAttribute("data-part")).toBe("track");
-    expect(fillEl.getAttribute("data-component")).toBe("meter");
-    expect(fillEl.getAttribute("data-part")).toBe("fill");
+    expect(rootEl.getAttribute("data-component")).toBe("Meter");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
+    expect(labelEl.getAttribute("data-component")).toBe("Meter");
+    expect(labelEl.getAttribute("data-part")).toBe("Label");
+    expect(valueLabelEl.getAttribute("data-component")).toBe("Meter");
+    expect(valueLabelEl.getAttribute("data-part")).toBe("ValueLabel");
+    expect(trackEl.getAttribute("data-component")).toBe("Meter");
+    expect(trackEl.getAttribute("data-part")).toBe("Track");
+    expect(fillEl.getAttribute("data-component")).toBe("Meter");
+    expect(fillEl.getAttribute("data-part")).toBe("Fill");
 
     // WAI-ARIA
     expect(String(rootEl.getAttribute("aria-valuemin"))).toBe("0");
@@ -103,7 +103,7 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
     );
 
     const rootEl = root.querySelector("[role='meter']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
 
     expect(rootEl.getAttribute("aria-valuetext")).toBe("64 GB of 128 GB");
     expect(valueLabelEl.textContent).toBe("64 GB of 128 GB");
@@ -120,7 +120,7 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
     );
 
     const rootEl = root.querySelector("[role='meter']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
 
     expect(String(rootEl.getAttribute("aria-valuenow"))).toBe("25");
     expect(valueLabelEl.textContent).toBe("25%");
@@ -157,10 +157,10 @@ describeDualMode("Meter", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const headerEl = root.querySelector("[data-part='header']") as HTMLElement;
+    const headerEl = root.querySelector("[data-part='Header']") as HTMLElement;
     expect(headerEl).not.toBeNull();
-    expect(headerEl.getAttribute("data-component")).toBe("meter");
-    expect(headerEl.querySelector("[data-part='label']")).not.toBeNull();
-    expect(headerEl.querySelector("[data-part='value-label']")).not.toBeNull();
+    expect(headerEl.getAttribute("data-component")).toBe("Meter");
+    expect(headerEl.querySelector("[data-part='Label']")).not.toBeNull();
+    expect(headerEl.querySelector("[data-part='ValueLabel']")).not.toBeNull();
   });
 });

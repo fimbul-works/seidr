@@ -43,7 +43,7 @@ export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
     throw new SeidrError("MenuSubTrigger requires a subInstance coordinator");
   }
 
-  const value = userValue ?? useId("menu-sub-trigger");
+  const value = userValue ?? useId("MenuSubTrigger");
   const disabledObservable = wrapValue(itemDisabledProp ?? false);
 
   const isHighlighted = menu.highlightedValue.as((h) => h === value);

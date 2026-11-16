@@ -35,22 +35,22 @@ describeDualMode("Accordion", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const accordionRoot = root.querySelector('[data-part="root"]')!;
+    const accordionRoot = root.querySelector('[data-part="Root"]')!;
     expect(accordionRoot).not.toBeNull();
-    expect(accordionRoot.getAttribute("data-component")).toBe("accordion");
+    expect(accordionRoot.getAttribute("data-component")).toBe("Accordion");
 
     const headers = root.querySelectorAll("h3");
     expect(headers.length).toBe(3);
-    expect(headers[0].getAttribute("data-component")).toBe("accordion");
-    expect(headers[0].getAttribute("data-part")).toBe("header");
+    expect(headers[0].getAttribute("data-component")).toBe("Accordion");
+    expect(headers[0].getAttribute("data-part")).toBe("Header");
 
     const triggers = root.querySelectorAll("button");
     expect(triggers.length).toBe(3);
 
     const [firstTrigger, secondTrigger, thirdTrigger] = Array.from(triggers);
 
-    expect(firstTrigger.getAttribute("data-component")).toBe("accordion");
-    expect(firstTrigger.getAttribute("data-part")).toBe("trigger");
+    expect(firstTrigger.getAttribute("data-component")).toBe("Accordion");
+    expect(firstTrigger.getAttribute("data-part")).toBe("Trigger");
     expect(firstTrigger.getAttribute("aria-expanded")).toBe("true");
     expect(firstTrigger.hasAttribute("data-expanded")).toBe(true);
     expect(firstTrigger.hasAttribute("data-closed")).toBe(false);
@@ -67,8 +67,8 @@ describeDualMode("Accordion", ({ getDocument, isSSR }) => {
     const contentOne = root.querySelector('[role="region"]')!;
     expect(contentOne).not.toBeNull();
     expect(contentOne.textContent).toBe("Content One");
-    expect(contentOne.getAttribute("data-component")).toBe("accordion");
-    expect(contentOne.getAttribute("data-part")).toBe("content");
+    expect(contentOne.getAttribute("data-component")).toBe("Accordion");
+    expect(contentOne.getAttribute("data-part")).toBe("Content");
     expect(contentOne.getAttribute("aria-labelledby")).toBe(firstTrigger.id);
     expect(firstTrigger.getAttribute("aria-controls")).toBe(contentOne.id);
   });

@@ -33,11 +33,11 @@ describeDualMode("Slider", ({ getDocument, isSSR }) => {
 
     const rootEl = root.querySelector("#test-slider") as HTMLElement;
     const labelEl = root.querySelector("label") as HTMLLabelElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
-    const trackEl = root.querySelector("[data-part='track']") as HTMLElement;
-    const fillEl = root.querySelector("[data-part='fill']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
+    const trackEl = root.querySelector("[data-part='Track']") as HTMLElement;
+    const fillEl = root.querySelector("[data-part='Fill']") as HTMLElement;
     const thumbEl = root.querySelector("[role='slider']") as HTMLElement;
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
 
     expect(rootEl).not.toBeNull();
     expect(labelEl).not.toBeNull();
@@ -48,20 +48,20 @@ describeDualMode("Slider", ({ getDocument, isSSR }) => {
     expect(inputEl).not.toBeNull();
 
     // Semantic data-component and data-part annotations
-    expect(rootEl.getAttribute("data-component")).toBe("slider");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
-    expect(labelEl.getAttribute("data-component")).toBe("slider");
-    expect(labelEl.getAttribute("data-part")).toBe("label");
-    expect(valueLabelEl.getAttribute("data-component")).toBe("slider");
-    expect(valueLabelEl.getAttribute("data-part")).toBe("value-label");
-    expect(trackEl.getAttribute("data-component")).toBe("slider");
-    expect(trackEl.getAttribute("data-part")).toBe("track");
-    expect(fillEl.getAttribute("data-component")).toBe("slider");
-    expect(fillEl.getAttribute("data-part")).toBe("fill");
-    expect(thumbEl.getAttribute("data-component")).toBe("slider");
-    expect(thumbEl.getAttribute("data-part")).toBe("thumb");
-    expect(inputEl.getAttribute("data-component")).toBe("slider");
-    expect(inputEl.getAttribute("data-part")).toBe("input");
+    expect(rootEl.getAttribute("data-component")).toBe("Slider");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
+    expect(labelEl.getAttribute("data-component")).toBe("Slider");
+    expect(labelEl.getAttribute("data-part")).toBe("Label");
+    expect(valueLabelEl.getAttribute("data-component")).toBe("Slider");
+    expect(valueLabelEl.getAttribute("data-part")).toBe("ValueLabel");
+    expect(trackEl.getAttribute("data-component")).toBe("Slider");
+    expect(trackEl.getAttribute("data-part")).toBe("Track");
+    expect(fillEl.getAttribute("data-component")).toBe("Slider");
+    expect(fillEl.getAttribute("data-part")).toBe("Fill");
+    expect(thumbEl.getAttribute("data-component")).toBe("Slider");
+    expect(thumbEl.getAttribute("data-part")).toBe("Thumb");
+    expect(inputEl.getAttribute("data-component")).toBe("Slider");
+    expect(inputEl.getAttribute("data-part")).toBe("Input");
 
     // WAI-ARIA roles & attributes
     expect(rootEl.getAttribute("role")).toBe("group");
@@ -182,8 +182,8 @@ describeDualMode("Slider", ({ getDocument, isSSR }) => {
     const rootEl = root.querySelector("#aio-slider") as HTMLElement;
     const labelEl = root.querySelector("label");
     const thumbEl = root.querySelector("[role='slider']");
-    const valueLabelEl = root.querySelector("[data-part='value-label']");
-    const descEl = root.querySelector("[data-part='description']");
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']");
+    const descEl = root.querySelector("[data-part='Description']");
 
     expect(rootEl).not.toBeNull();
     expect(labelEl?.textContent).toBe("Brightness");

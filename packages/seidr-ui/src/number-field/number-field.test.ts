@@ -52,22 +52,22 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const label = root.querySelector("[data-part='label']") as HTMLLabelElement;
-    const desc = root.querySelector("[data-part='description']") as HTMLElement;
-    const hidden = root.querySelector("[data-part='hidden-input']") as HTMLInputElement;
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
-    const decBtn = root.querySelector("[data-part='decrement-trigger']") as HTMLButtonElement;
+    const label = root.querySelector("[data-part='Label']") as HTMLLabelElement;
+    const desc = root.querySelector("[data-part='Description']") as HTMLElement;
+    const hidden = root.querySelector("[data-part='HiddenInput']") as HTMLInputElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
+    const decBtn = root.querySelector("[data-part='DecrementTrigger']") as HTMLButtonElement;
 
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("number-field");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
+    expect(rootEl.getAttribute("data-component")).toBe("NumberField");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
     expect(rootEl.getAttribute("role")).toBe("group");
 
     expect(input).not.toBeNull();
-    expect(input.getAttribute("data-component")).toBe("number-field");
-    expect(input.getAttribute("data-part")).toBe("input");
+    expect(input.getAttribute("data-component")).toBe("NumberField");
+    expect(input.getAttribute("data-part")).toBe("Input");
     expect(getInputValue(input)).toBe("10");
     expect(input.getAttribute("aria-valuenow")).toBe("10");
     expect(input.getAttribute("aria-valuemin")).toBe("0");
@@ -75,30 +75,30 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
     expect(input.getAttribute("inputmode")).toBe("decimal");
 
     expect(label).not.toBeNull();
-    expect(label.getAttribute("data-component")).toBe("number-field");
-    expect(label.getAttribute("data-part")).toBe("label");
+    expect(label.getAttribute("data-component")).toBe("NumberField");
+    expect(label.getAttribute("data-part")).toBe("Label");
     expect(label.getAttribute("for")).toBe(input.id);
     expect(input.getAttribute("aria-labelledby")).toBe(label.id);
 
     expect(desc).not.toBeNull();
-    expect(desc.getAttribute("data-component")).toBe("number-field");
-    expect(desc.getAttribute("data-part")).toBe("description");
+    expect(desc.getAttribute("data-component")).toBe("NumberField");
+    expect(desc.getAttribute("data-part")).toBe("Description");
     expect(input.getAttribute("aria-describedby")).toBe(desc.id);
 
     expect(hidden).not.toBeNull();
-    expect(hidden.getAttribute("data-component")).toBe("number-field");
-    expect(hidden.getAttribute("data-part")).toBe("hidden-input");
+    expect(hidden.getAttribute("data-component")).toBe("NumberField");
+    expect(hidden.getAttribute("data-part")).toBe("HiddenInput");
     expect(getInputValue(hidden)).toBe("10");
     expect(hidden.getAttribute("aria-hidden")).toBe("true");
 
     expect(incBtn).not.toBeNull();
-    expect(incBtn.getAttribute("data-component")).toBe("number-field");
-    expect(incBtn.getAttribute("data-part")).toBe("increment-trigger");
+    expect(incBtn.getAttribute("data-component")).toBe("NumberField");
+    expect(incBtn.getAttribute("data-part")).toBe("IncrementTrigger");
     expect(incBtn.getAttribute("aria-controls")).toBe(input.id);
 
     expect(decBtn).not.toBeNull();
-    expect(decBtn.getAttribute("data-component")).toBe("number-field");
-    expect(decBtn.getAttribute("data-part")).toBe("decrement-trigger");
+    expect(decBtn.getAttribute("data-component")).toBe("NumberField");
+    expect(decBtn.getAttribute("data-part")).toBe("DecrementTrigger");
     expect(decBtn.getAttribute("aria-controls")).toBe(input.id);
   });
 
@@ -133,8 +133,8 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
     expect(input).not.toBeNull();
     expect(getInputValue(input)).toBe("42");
-    expect(root.querySelector("[data-part='decrement-trigger']")?.textContent).toBe("Minus");
-    expect(root.querySelector("[data-part='increment-trigger']")?.textContent).toBe("Plus");
+    expect(root.querySelector("[data-part='DecrementTrigger']")?.textContent).toBe("Minus");
+    expect(root.querySelector("[data-part='IncrementTrigger']")?.textContent).toBe("Plus");
   });
 
   it("formats value using Intl.NumberFormat options", () => {
@@ -150,7 +150,7 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
     );
 
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const hidden = root.querySelector("[data-part='hidden-input']") as HTMLInputElement;
+    const hidden = root.querySelector("[data-part='HiddenInput']") as HTMLInputElement;
 
     expect(getInputValue(input)).toBe("$1,234.50");
     expect(getInputValue(hidden)).toBe("1234.5");
@@ -169,9 +169,9 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
     );
 
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const hidden = root.querySelector("[data-part='hidden-input']") as HTMLInputElement;
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
-    const decBtn = root.querySelector("[data-part='decrement-trigger']") as HTMLButtonElement;
+    const hidden = root.querySelector("[data-part='HiddenInput']") as HTMLInputElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
+    const decBtn = root.querySelector("[data-part='DecrementTrigger']") as HTMLButtonElement;
 
     if (isSSR) return;
 
@@ -196,8 +196,8 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
-    const decBtn = root.querySelector("[data-part='decrement-trigger']") as HTMLButtonElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
+    const decBtn = root.querySelector("[data-part='DecrementTrigger']") as HTMLButtonElement;
 
     expect(isButtonDisabled(decBtn)).toBe(true);
     expect(isButtonDisabled(incBtn)).toBe(false);
@@ -284,7 +284,7 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
     rawVal(50);
     expect(getInputValue(input)).toBe("50");
 
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
     incBtn.click();
     expect(onRawChange).toHaveBeenCalledWith(51);
   });
@@ -297,10 +297,10 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
-    const decBtn = root.querySelector("[data-part='decrement-trigger']") as HTMLButtonElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
+    const decBtn = root.querySelector("[data-part='DecrementTrigger']") as HTMLButtonElement;
 
     expect(rootEl.hasAttribute("data-disabled")).toBe(true);
     expect(isInputDisabled(input)).toBe(true);
@@ -322,9 +322,9 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const incBtn = root.querySelector("[data-part='increment-trigger']") as HTMLButtonElement;
+    const incBtn = root.querySelector("[data-part='IncrementTrigger']") as HTMLButtonElement;
 
     expect(rootEl.hasAttribute("data-readonly")).toBe(true);
     expect(isInputReadOnly(input)).toBe(true);
@@ -348,9 +348,9 @@ describeDualMode("NumberField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     const input = root.querySelector("[role='spinbutton']") as HTMLInputElement;
-    const errorMsg = root.querySelector("[data-part='error-message']") as HTMLElement;
+    const errorMsg = root.querySelector("[data-part='ErrorMessage']") as HTMLElement;
 
     expect(rootEl.hasAttribute("data-invalid")).toBe(true);
     expect(input.getAttribute("aria-invalid")).toBe("true");

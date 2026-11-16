@@ -19,7 +19,7 @@ import type { UseNavigationMenuOptions, UseNavigationMenuResult } from "./types.
  * Headless coordinator hook for a NavigationMenu system.
  */
 export function useNavigationMenu(options: UseNavigationMenuOptions = {}): UseNavigationMenuResult {
-  const id = options.id ?? useId("nav-menu");
+  const id = options.id ?? useId("NavMenu");
   const dataComponent = options.dataComponent ?? DATA_COMPONENT_NAVIGATION_MENU;
   const delayDuration = options.delayDuration ?? 200;
   const skipDelayDuration = options.skipDelayDuration ?? 300;
@@ -62,7 +62,7 @@ export function useNavigationMenu(options: UseNavigationMenuOptions = {}): UseNa
   const getRegisteredEntries = (): MenubarMenuRegistration[] => {
     const rootEl = rootRef();
     if (rootEl && inClient(() => true)) {
-      const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-part='trigger'], [data-part='link']"));
+      const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-part='Trigger'], [data-part='Link']"));
       if (triggers.length > 0) {
         return Array.from(registrations.values()).sort((a, b) => {
           const elA = a.getTriggerElement();

@@ -9,7 +9,7 @@ import type { SwitchCombinedDataSet, SwitchDataSet, UseSwitchOptions, UseSwitchR
  * for an accessible Switch component.
  */
 export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
-  const baseId = wrapValue(options.id ?? useId("switch"));
+  const baseId = wrapValue(options.id ?? useId("Switch"));
 
   const formControl = useFormControl({
     id: baseId,

@@ -28,10 +28,10 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
     });
 
     const rootEl = root.querySelector("[role='progressbar']") as HTMLElement;
-    const labelEl = root.querySelector("[data-part='label']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
-    const trackEl = root.querySelector("[data-part='track']") as HTMLElement;
-    const fillEl = root.querySelector("[data-part='fill']") as HTMLElement;
+    const labelEl = root.querySelector("[data-part='Label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
+    const trackEl = root.querySelector("[data-part='Track']") as HTMLElement;
+    const fillEl = root.querySelector("[data-part='Fill']") as HTMLElement;
 
     expect(rootEl).not.toBeNull();
     expect(labelEl).not.toBeNull();
@@ -40,16 +40,16 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
     expect(fillEl).not.toBeNull();
 
     // Semantic data attributes
-    expect(rootEl.getAttribute("data-component")).toBe("progress");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
-    expect(labelEl.getAttribute("data-component")).toBe("progress");
-    expect(labelEl.getAttribute("data-part")).toBe("label");
-    expect(valueLabelEl.getAttribute("data-component")).toBe("progress");
-    expect(valueLabelEl.getAttribute("data-part")).toBe("value-label");
-    expect(trackEl.getAttribute("data-component")).toBe("progress");
-    expect(trackEl.getAttribute("data-part")).toBe("track");
-    expect(fillEl.getAttribute("data-component")).toBe("progress");
-    expect(fillEl.getAttribute("data-part")).toBe("fill");
+    expect(rootEl.getAttribute("data-component")).toBe("Progress");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
+    expect(labelEl.getAttribute("data-component")).toBe("Progress");
+    expect(labelEl.getAttribute("data-part")).toBe("Label");
+    expect(valueLabelEl.getAttribute("data-component")).toBe("Progress");
+    expect(valueLabelEl.getAttribute("data-part")).toBe("ValueLabel");
+    expect(trackEl.getAttribute("data-component")).toBe("Progress");
+    expect(trackEl.getAttribute("data-part")).toBe("Track");
+    expect(fillEl.getAttribute("data-component")).toBe("Progress");
+    expect(fillEl.getAttribute("data-part")).toBe("Fill");
 
     // WAI-ARIA
     expect(String(rootEl.getAttribute("aria-valuemin"))).toBe("0");
@@ -104,7 +104,7 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
     );
 
     const rootEl = root.querySelector("[role='progressbar']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
 
     expect(rootEl.getAttribute("aria-valuetext")).toBe("3 of 10 completed");
     expect(valueLabelEl.textContent).toBe("3 of 10 completed");
@@ -121,7 +121,7 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
     );
 
     const rootEl = root.querySelector("[role='progressbar']") as HTMLElement;
-    const fillEl = root.querySelector("[data-part='fill']") as HTMLElement;
+    const fillEl = root.querySelector("[data-part='Fill']") as HTMLElement;
 
     expect(rootEl.hasAttribute("aria-valuenow")).toBe(false);
     expect(rootEl.hasAttribute("aria-valuetext")).toBe(false);
@@ -141,7 +141,7 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
     );
 
     const rootEl = root.querySelector("[role='progressbar']") as HTMLElement;
-    const valueLabelEl = root.querySelector("[data-part='value-label']") as HTMLElement;
+    const valueLabelEl = root.querySelector("[data-part='ValueLabel']") as HTMLElement;
 
     expect(String(rootEl.getAttribute("aria-valuenow"))).toBe("20");
     expect(valueLabelEl.textContent).toBe("20%");
@@ -179,10 +179,10 @@ describeDualMode("Progress", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const headerEl = root.querySelector("[data-part='header']") as HTMLElement;
+    const headerEl = root.querySelector("[data-part='Header']") as HTMLElement;
     expect(headerEl).not.toBeNull();
-    expect(headerEl.getAttribute("data-component")).toBe("progress");
-    expect(headerEl.querySelector("[data-part='label']")).not.toBeNull();
-    expect(headerEl.querySelector("[data-part='value-label']")).not.toBeNull();
+    expect(headerEl.getAttribute("data-component")).toBe("Progress");
+    expect(headerEl.querySelector("[data-part='Label']")).not.toBeNull();
+    expect(headerEl.querySelector("[data-part='ValueLabel']")).not.toBeNull();
   });
 });

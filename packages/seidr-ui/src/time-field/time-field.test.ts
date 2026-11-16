@@ -1,15 +1,8 @@
-import {
-  $,
-  createComponent,
-  createValue,
-  mount,
-  type SeidrChild,
-  type Value,
-} from "@fimbul-works/seidr";
+import { $, createComponent, createValue, mount, type SeidrChild, type Value } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import { createTimeField, TimeField, type Time } from "./index.js";
+import { createTimeField, type Time, TimeField } from "./index.js";
 
 describeDualMode("TimeField", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -47,17 +40,17 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const label = root.querySelector("[data-part='label']") as HTMLLabelElement;
-    const input = root.querySelector("[data-part='input']") as HTMLElement;
-    const segments = root.querySelectorAll("[data-part='segment']");
-    const separators = root.querySelectorAll("[data-part='separator']");
-    const desc = root.querySelector("[data-part='description']") as HTMLElement;
-    const hidden = root.querySelector("[data-part='hidden-input']") as HTMLInputElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const label = root.querySelector("[data-part='Label']") as HTMLLabelElement;
+    const input = root.querySelector("[data-part='Input']") as HTMLElement;
+    const segments = root.querySelectorAll("[data-part='Segment']");
+    const separators = root.querySelectorAll("[data-part='Separator']");
+    const desc = root.querySelector("[data-part='Description']") as HTMLElement;
+    const hidden = root.querySelector("[data-part='HiddenInput']") as HTMLInputElement;
 
     expect(rootEl).toBeTruthy();
     expect(rootEl.getAttribute("role")).toBe("group");
-    expect(rootEl.getAttribute("data-component")).toBe("time-field");
+    expect(rootEl.getAttribute("data-component")).toBe("TimeField");
 
     expect(label).toBeTruthy();
     expect(label.textContent).toBe("Appointment Time");
@@ -96,7 +89,7 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
 
     // Hidden input
     expect(hidden).toBeTruthy();
-    expect(hidden.getAttribute("data-part")).toBe("hidden-input");
+    expect(hidden.getAttribute("data-part")).toBe("HiddenInput");
   });
 
   it("renders 24-hour cycle and second granularity properly", () => {
@@ -108,8 +101,8 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const segments = root.querySelectorAll("[data-part='segment']");
-    const separators = root.querySelectorAll("[data-part='separator']");
+    const segments = root.querySelectorAll("[data-part='Segment']");
+    const separators = root.querySelectorAll("[data-part='Separator']");
 
     // 24-hour with second granularity: hour, minute, second (no dayPeriod)
     expect(segments.length).toBe(3);
@@ -176,7 +169,7 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const segments = root.querySelectorAll("[data-part='segment']");
+    const segments = root.querySelectorAll("[data-part='Segment']");
     for (const seg of segments) {
       expect(seg.getAttribute("aria-disabled")).toBe("true");
       expect(String(seg.getAttribute("tabindex"))).toBe("-1");
@@ -197,7 +190,7 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const segments = root.querySelectorAll("[data-part='segment']");
+    const segments = root.querySelectorAll("[data-part='Segment']");
     for (const seg of segments) {
       expect(seg.getAttribute("aria-readonly")).toBe("true");
     }
@@ -353,7 +346,7 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
         }),
       );
 
-      const input = root.querySelector("[data-part='input']") as HTMLElement;
+      const input = root.querySelector("[data-part='Input']") as HTMLElement;
       const hourSeg = root.querySelector("[data-type='hour']") as HTMLElement;
       const minSeg = root.querySelector("[data-type='minute']") as HTMLElement;
       const periodSeg = root.querySelector("[data-type='dayPeriod']") as HTMLElement;
@@ -431,12 +424,12 @@ describeDualMode("TimeField", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-    const label = root.querySelector("[data-part='label']") as HTMLLabelElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+    const label = root.querySelector("[data-part='Label']") as HTMLLabelElement;
     const hourSeg = root.querySelector("[data-type='hour']") as HTMLElement;
     const minSeg = root.querySelector("[data-type='minute']") as HTMLElement;
     const periodSeg = root.querySelector("[data-type='dayPeriod']") as HTMLElement;
-    const hidden = root.querySelector("[data-part='hidden-input']") as HTMLInputElement;
+    const hidden = root.querySelector("[data-part='HiddenInput']") as HTMLInputElement;
 
     expect(rootEl).toBeTruthy();
     expect(label.textContent).toBe("Start Time");

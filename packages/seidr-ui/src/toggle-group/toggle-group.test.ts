@@ -32,18 +32,18 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
     });
 
     const groupEl = root.querySelector("[role='group']") as HTMLElement;
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
 
     expect(groupEl).not.toBeNull();
     expect(items.length).toBe(3);
 
     // Semantic data attributes
-    expect(groupEl.getAttribute("data-component")).toBe("toggle-group");
-    expect(groupEl.getAttribute("data-part")).toBe("root");
+    expect(groupEl.getAttribute("data-component")).toBe("ToggleGroup");
+    expect(groupEl.getAttribute("data-part")).toBe("Root");
     expect(groupEl.getAttribute("data-orientation")).toBe("horizontal");
 
-    expect(items[0]?.getAttribute("data-component")).toBe("toggle-group");
-    expect(items[0]?.getAttribute("data-part")).toBe("item");
+    expect(items[0]?.getAttribute("data-component")).toBe("ToggleGroup");
+    expect(items[0]?.getAttribute("data-part")).toBe("Item");
     expect(items[0]?.getAttribute("aria-pressed")).toBe("false");
     expect(items[0]?.hasAttribute("data-pressed")).toBe(false);
 
@@ -69,7 +69,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     const dragonsBtn = items[2] as HTMLButtonElement;
     const catsBtn = items[1] as HTMLButtonElement;
 
@@ -104,7 +104,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     const catsBtn = items[1] as HTMLButtonElement;
 
     expect(catsBtn.getAttribute("aria-pressed")).toBe("true");
@@ -132,7 +132,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     const boldBtn = items[0] as HTMLButtonElement;
     const italicBtn = items[1] as HTMLButtonElement;
 
@@ -168,7 +168,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     const centerBtn = items[1] as HTMLButtonElement;
 
     expect(centerBtn.disabled).toBe(true);
@@ -194,7 +194,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']") as NodeListOf<HTMLButtonElement>;
+    const items = root.querySelectorAll("[data-part='Item']") as NodeListOf<HTMLButtonElement>;
     const [dogs, cats, dragons] = Array.from(items);
 
     expect(dogs.tabIndex).toBe(0);
@@ -241,7 +241,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']") as NodeListOf<HTMLButtonElement>;
+    const items = root.querySelectorAll("[data-part='Item']") as NodeListOf<HTMLButtonElement>;
     const [one, two] = Array.from(items);
 
     one.focus();
@@ -270,7 +270,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items[0]?.getAttribute("aria-pressed")).toBe("true");
     expect(items[1]?.getAttribute("aria-pressed")).toBe("false");
 
@@ -317,7 +317,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       });
     });
 
-    let items = root.querySelectorAll("[data-part='item']");
+    let items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(2);
     expect(items[0]?.textContent).toContain("Bold");
     expect(items[0]?.getAttribute("aria-pressed")).toBe("true");
@@ -329,7 +329,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
         { value: "underline", label: "Underline" },
       ]);
 
-      items = root.querySelectorAll("[data-part='item']");
+      items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(3);
       expect(items[0]?.textContent).toContain("Bold (Updated)");
       expect(items[2]?.textContent).toContain("Underline");
@@ -353,7 +353,7 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(2);
     expect(items[0]?.textContent).toContain("Prefixed: Option 1");
     expect(items[1]?.textContent).toContain("Prefixed: Option 2");

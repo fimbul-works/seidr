@@ -12,7 +12,7 @@ import type { ContextMenuInstance, ContextMenuTriggerProps, UseContextMenuOption
  */
 export function createContextMenu(options: UseContextMenuOptions = {}): ContextMenuInstance {
   const {
-    id = useId("contextmenu"),
+    id = useId("ContextMenu"),
     dataComponent = DATA_COMPONENT_CONTEXT_MENU,
     placement = "right-start",
     getAnchorRect: customGetAnchorRect,

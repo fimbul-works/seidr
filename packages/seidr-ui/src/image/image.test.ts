@@ -15,8 +15,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
     });
     const root = component.nodes.at(0) as HTMLElement;
     expect(root.tagName.toLowerCase()).toBe("span");
-    expect(root.getAttribute("data-component")).toBe("image");
-    expect(root.getAttribute("data-part")).toBe("root");
+    expect(root.getAttribute("data-component")).toBe("Image");
+    expect(root.getAttribute("data-part")).toBe("Root");
     expect(root.getAttribute("data-status")).toBe("idle");
     expect(root.textContent).toContain(FALLBACK_TEXT);
   });
@@ -49,8 +49,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
       imgInstance.Img({ alt: IMAGE_ALT_TEXT }),
     ]);
 
-    expect(root.getAttribute("data-component")).toBe("image");
-    expect(root.getAttribute("data-part")).toBe("root");
+    expect(root.getAttribute("data-component")).toBe("Image");
+    expect(root.getAttribute("data-part")).toBe("Root");
     expect(root.textContent).toContain(FALLBACK_TEXT);
     expect(root.querySelector("img")).toBeNull();
   });
@@ -103,8 +103,8 @@ describeDualMode("Image", ({ getDocument, isSSR }) => {
         const imgEl = root.querySelector("img");
         expect(imgEl).not.toBeNull();
         expect(imgEl?.getAttribute("alt")).toBe(IMAGE_ALT_TEXT);
-        expect(imgEl?.getAttribute("data-component")).toBe("image");
-        expect(imgEl?.getAttribute("data-part")).toBe("img");
+        expect(imgEl?.getAttribute("data-component")).toBe("Image");
+        expect(imgEl?.getAttribute("data-part")).toBe("Image");
         expect(root.textContent).not.toContain(FALLBACK_TEXT);
         expect(root.getAttribute("data-status")).toBe("loaded");
         expect(statusChanges).toContain("loading");

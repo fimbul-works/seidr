@@ -39,14 +39,14 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
-    expect(triggerEl.getAttribute("data-component")).toBe("dialog");
+    expect(triggerEl.getAttribute("data-component")).toBe("Dialog");
     expect(triggerEl.getAttribute("aria-haspopup")).toBe("dialog");
     expect(triggerEl.getAttribute("aria-expanded")).toBe("true");
 
     const contentEl = (isSSR ? root : getDocument()).querySelector(
-      "[data-component='dialog'][data-part='content']",
+      "[data-component='Dialog'][data-part='Content']",
     ) as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("dialog");
@@ -56,7 +56,7 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
     expect(contentEl.getAttribute("aria-describedby")).toBe("test-dialog-description");
 
     const overlayEl = (isSSR ? root : getDocument()).querySelector(
-      "[data-component='dialog'][data-part='overlay']",
+      "[data-component='Dialog'][data-part='Overlay']",
     ) as HTMLElement;
     expect(overlayEl).not.toBeNull();
     expect(overlayEl.getAttribute("aria-hidden")).toBe("true");
@@ -67,17 +67,17 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
       expect(root.contains(contentEl)).toBe(false);
     }
 
-    const titleEl = contentEl.querySelector("[data-part='title']") as HTMLElement;
+    const titleEl = contentEl.querySelector("[data-part='Title']") as HTMLElement;
     expect(titleEl).not.toBeNull();
     expect(titleEl.getAttribute("id")).toBe("test-dialog-title");
     expect(titleEl.textContent).toBe("Test Dialog Title");
 
-    const descEl = contentEl.querySelector("[data-part='description']") as HTMLElement;
+    const descEl = contentEl.querySelector("[data-part='Description']") as HTMLElement;
     expect(descEl).not.toBeNull();
     expect(descEl.getAttribute("id")).toBe("test-dialog-description");
     expect(descEl.textContent).toBe("Test Dialog Description");
 
-    const closeBtn = contentEl.querySelector("[data-part='close-button']") as HTMLElement;
+    const closeBtn = contentEl.querySelector("[data-part='CloseButton']") as HTMLElement;
     expect(closeBtn).not.toBeNull();
     expect(closeBtn.getAttribute("aria-label")).toBe("Close");
   });
@@ -119,16 +119,16 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
           }),
         );
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLButtonElement;
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).toBeNull();
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLButtonElement;
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).toBeNull();
         expect(trigger.getAttribute("aria-expanded")).toBe("false");
 
         trigger.click();
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).not.toBeNull();
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).not.toBeNull();
         expect(trigger.getAttribute("aria-expanded")).toBe("true");
 
         trigger.click();
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).toBeNull();
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).toBeNull();
         expect(trigger.getAttribute("aria-expanded")).toBe("false");
       });
 
@@ -142,10 +142,10 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
           }),
         );
 
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).not.toBeNull();
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).not.toBeNull();
 
         getDocument().dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).toBeNull();
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).toBeNull();
       });
 
       it("closes when clicking CloseButton", () => {
@@ -159,12 +159,12 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
         );
 
         const closeBtn = getDocument().querySelector(
-          "[data-component='dialog'][data-part='close-button']",
+          "[data-component='Dialog'][data-part='CloseButton']",
         ) as HTMLButtonElement;
         expect(closeBtn).not.toBeNull();
 
         closeBtn.click();
-        expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).toBeNull();
+        expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).toBeNull();
       });
 
       it("closes when clicking outside the dialog content", async () => {
@@ -182,13 +182,13 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
             }),
           );
 
-          expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).not.toBeNull();
+          expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).not.toBeNull();
 
           // Wait for useInteractOutside pointerdown listener registration
           await new Promise((resolve) => setTimeout(resolve, 10));
 
           outsideTarget.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true }));
-          expect(getDocument().querySelector("[data-component='dialog'][data-part='content']")).toBeNull();
+          expect(getDocument().querySelector("[data-component='Dialog'][data-part='Content']")).toBeNull();
         } finally {
           outsideTarget.remove();
         }

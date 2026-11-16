@@ -38,15 +38,15 @@ describeDualMode("Listbox", ({ getDocument, isSSR }) => {
     const items = Array.from(root.querySelectorAll("[role='option']")) as HTMLElement[];
 
     expect(listboxEl).not.toBeNull();
-    expect(listboxEl.getAttribute("data-component")).toBe("listbox");
-    expect(listboxEl.getAttribute("data-part")).toBe("root");
+    expect(listboxEl.getAttribute("data-component")).toBe("Listbox");
+    expect(listboxEl.getAttribute("data-part")).toBe("Root");
     expect(listboxEl.getAttribute("data-orientation")).toBe("vertical");
     expect(listboxEl.getAttribute("aria-orientation")).toBe("vertical");
 
     expect(items.length).toBe(3);
 
-    expect(items[0]?.getAttribute("data-component")).toBe("listbox");
-    expect(items[0]?.getAttribute("data-part")).toBe("item");
+    expect(items[0]?.getAttribute("data-component")).toBe("Listbox");
+    expect(items[0]?.getAttribute("data-part")).toBe("Item");
     expect(items[0]?.getAttribute("data-key")).toBe("react");
     expect(items[0]?.getAttribute("aria-selected")).toBe("false");
     expect(items[0]?.getAttribute("aria-disabled")).toBe("false");
@@ -81,21 +81,21 @@ describeDualMode("Listbox", ({ getDocument, isSSR }) => {
     });
 
     const rootEl = root.querySelector("[role='listbox']") as HTMLElement;
-    const sectionEl = root.querySelector("[data-part='section']") as HTMLElement;
-    const sectionLabelEl = root.querySelector("[data-part='section-label']") as HTMLElement;
+    const sectionEl = root.querySelector("[data-part='Section']") as HTMLElement;
+    const sectionLabelEl = root.querySelector("[data-part='SectionLabel']") as HTMLElement;
     const items = Array.from(root.querySelectorAll("[role='option']")) as HTMLElement[];
-    const itemLabelEl = root.querySelector("[data-part='item-label']") as HTMLElement;
-    const itemDescEl = root.querySelector("[data-part='item-description']") as HTMLElement;
-    const indicatorEl = root.querySelector("[data-part='item-indicator']") as HTMLElement;
+    const itemLabelEl = root.querySelector("[data-part='ItemLabel']") as HTMLElement;
+    const itemDescEl = root.querySelector("[data-part='ItemDescription']") as HTMLElement;
+    const indicatorEl = root.querySelector("[data-part='ItemIndicator']") as HTMLElement;
 
     expect(rootEl).not.toBeNull();
     expect(sectionEl).not.toBeNull();
-    expect(sectionEl.getAttribute("data-component")).toBe("listbox");
-    expect(sectionEl.getAttribute("data-part")).toBe("section");
+    expect(sectionEl.getAttribute("data-component")).toBe("Listbox");
+    expect(sectionEl.getAttribute("data-part")).toBe("Section");
 
     expect(sectionLabelEl).not.toBeNull();
-    expect(sectionLabelEl.getAttribute("data-component")).toBe("listbox");
-    expect(sectionLabelEl.getAttribute("data-part")).toBe("section-label");
+    expect(sectionLabelEl.getAttribute("data-component")).toBe("Listbox");
+    expect(sectionLabelEl.getAttribute("data-part")).toBe("SectionLabel");
 
     expect(items.length).toBe(2);
     expect(items[0]?.getAttribute("aria-selected")).toBe("true");
@@ -455,10 +455,10 @@ describeDualMode("Listbox", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const sections = Array.from(root.querySelectorAll("[data-part='section']"));
+    const sections = Array.from(root.querySelectorAll("[data-part='Section']"));
     expect(sections).toHaveLength(2);
 
-    const labels = Array.from(root.querySelectorAll("[data-part='section-label']"));
+    const labels = Array.from(root.querySelectorAll("[data-part='SectionLabel']"));
     expect(labels).toHaveLength(2);
     expect(labels[0]?.textContent).toContain("Fruits");
     expect(labels[1]?.textContent).toContain("Vegetables");

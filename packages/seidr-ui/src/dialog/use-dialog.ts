@@ -25,7 +25,7 @@ export function useDialog(props: UseDialogProps = {}): UseDialogResult {
     portalTarget,
   } = props;
 
-  const id = customId ?? useId("dialog");
+  const id = customId ?? useId("Dialog");
 
   const contentId = createValue<string>(`${id}-content`).as((v) => v);
   const titleId = createValue<string>(`${id}-title`).as((v) => v);

@@ -29,7 +29,7 @@ export function useToggleGroup(options: UseToggleGroupOptions = {}): UseToggleGr
     loop = true,
   } = options;
 
-  const id = customId ?? useId("toggle-group");
+  const id = customId ?? useId("ToggleGroup");
   const disabledObservable = wrapValue(options.disabled ?? false);
   const isDisabled: DerivedValue<boolean> = disabledObservable.as(Boolean);
 

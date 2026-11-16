@@ -34,21 +34,21 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("search");
+    expect(rootEl.getAttribute("data-component")).toBe("Search");
     expect(rootEl.getAttribute("role")).toBe("group");
 
-    const labelEl = root.querySelector("[data-part='label']") as HTMLElement;
+    const labelEl = root.querySelector("[data-part='Label']") as HTMLElement;
     expect(labelEl).not.toBeNull();
     expect(labelEl.textContent).toBe("Search Products");
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl).not.toBeNull();
     expect(inputEl.getAttribute("role")).toBe("combobox");
     expect(inputEl.getAttribute("placeholder")).toBe("Type to query...");
 
-    const indicatorEl = root.querySelector("[data-part='indicator']") as HTMLElement;
+    const indicatorEl = root.querySelector("[data-part='Indicator']") as HTMLElement;
     expect(indicatorEl).not.toBeNull();
   });
 
@@ -78,11 +78,11 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const rootEl = root.querySelector("[data-part='root']");
+    const rootEl = root.querySelector("[data-part='Root']");
     expect(rootEl).not.toBeNull();
-    expect(rootEl?.getAttribute("data-component")).toBe("search");
+    expect(rootEl?.getAttribute("data-component")).toBe("Search");
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
     expect(inputEl.value).toBe("Option 1");
   });
 
@@ -109,8 +109,8 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const inputEl = root.querySelector("[data-part='input']") as HTMLInputElement;
-    const indicatorEl = root.querySelector("[data-part='indicator']") as HTMLElement;
+    const inputEl = root.querySelector("[data-part='Input']") as HTMLInputElement;
+    const indicatorEl = root.querySelector("[data-part='Indicator']") as HTMLElement;
 
     expect(indicatorEl.textContent).toContain("🔍");
 
@@ -149,10 +149,10 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     triggerEl.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, cancelable: true }));
 
-    const noResultEl = root.querySelector("[data-part='no-result']") as HTMLElement;
+    const noResultEl = root.querySelector("[data-part='NoResult']") as HTMLElement;
     expect(noResultEl).not.toBeNull();
     expect(noResultEl.textContent).toBe("No items match your query");
   });

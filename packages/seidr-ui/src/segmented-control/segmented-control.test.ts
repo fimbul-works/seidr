@@ -51,16 +51,16 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
     expect(label).not.toBeNull();
 
     // Semantic data-component and data-part annotations
-    expect(radiogroup.getAttribute("data-component")).toBe("segmented-control");
-    expect(radiogroup.getAttribute("data-part")).toBe("root");
-    expect(indicator.getAttribute("data-component")).toBe("segmented-control");
-    expect(indicator.getAttribute("data-part")).toBe("indicator");
-    expect(items[0]?.getAttribute("data-component")).toBe("segmented-control");
-    expect(items[0]?.getAttribute("data-part")).toBe("item");
-    expect(inputs[0]?.getAttribute("data-component")).toBe("segmented-control");
-    expect(inputs[0]?.getAttribute("data-part")).toBe("item-input");
-    expect(label.getAttribute("data-component")).toBe("segmented-control");
-    expect(label.getAttribute("data-part")).toBe("label");
+    expect(radiogroup.getAttribute("data-component")).toBe("SegmentedControl");
+    expect(radiogroup.getAttribute("data-part")).toBe("Root");
+    expect(indicator.getAttribute("data-component")).toBe("SegmentedControl");
+    expect(indicator.getAttribute("data-part")).toBe("Indicator");
+    expect(items[0]?.getAttribute("data-component")).toBe("SegmentedControl");
+    expect(items[0]?.getAttribute("data-part")).toBe("Item");
+    expect(inputs[0]?.getAttribute("data-component")).toBe("SegmentedControl");
+    expect(inputs[0]?.getAttribute("data-part")).toBe("ItemInput");
+    expect(label.getAttribute("data-component")).toBe("SegmentedControl");
+    expect(label.getAttribute("data-part")).toBe("Label");
 
     // Default orientation is horizontal
     expect(radiogroup.getAttribute("aria-orientation")).toBe("horizontal");

@@ -18,7 +18,7 @@ import { handleDecimalOperation, isValidPartialNumber, parseNumberString, snapVa
  * and keyboard interaction for an accessible NumberField component.
  */
 export function useNumberField(options: UseNumberFieldOptions = {}): UseNumberFieldResult {
-  const id = wrapValue(options.id ?? useId("number-field"));
+  const id = wrapValue(options.id ?? useId("NumberField"));
   const name = wrapValue(options.name ?? id());
 
   const formControl = useFormControl({

@@ -1,6 +1,6 @@
 import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
 import {
   createNavigationMenu,
@@ -46,22 +46,22 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.tagName.toLowerCase()).toBe("nav");
-    expect(rootEl.getAttribute("data-component")).toBe("navigation-menu");
+    expect(rootEl.getAttribute("data-component")).toBe("NavigationMenu");
 
-    const listEl = root.querySelector("[data-part='list']") as HTMLElement;
+    const listEl = root.querySelector("[data-part='List']") as HTMLElement;
     expect(listEl).not.toBeNull();
     expect(listEl.tagName.toLowerCase()).toBe("ul");
     expect(listEl.getAttribute("role")).toBe("menubar");
     expect(listEl.getAttribute("aria-orientation")).toBe("horizontal");
 
-    const menus = root.querySelectorAll("[data-part='menu']");
+    const menus = root.querySelectorAll("[data-part='Menu']");
     expect(menus.length).toBe(2);
     expect(menus[0].getAttribute("role")).toBe("none");
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(trigger).not.toBeNull();
     expect(trigger.getAttribute("role")).toBe("menuitem");
     expect(trigger.getAttribute("aria-haspopup")).toBe("menu");
@@ -69,7 +69,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
     expect(trigger.textContent).toBe("Products");
     expect(String(trigger.getAttribute("tabindex"))).toBe("0");
 
-    const link = root.querySelector("[data-part='link']") as HTMLElement;
+    const link = root.querySelector("[data-part='Link']") as HTMLElement;
     expect(link).not.toBeNull();
     expect(link.getAttribute("role")).toBe("menuitem");
     expect(link.getAttribute("href")).toBe("https://example.com/docs");
@@ -77,7 +77,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
     expect(String(link.getAttribute("tabindex"))).toBe("-1");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -105,13 +105,13 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(trigger).not.toBeNull();
     expect(trigger.textContent).toBe("Explore Products");
 
-    const viewport = root.querySelector("[data-part='viewport']") as HTMLElement;
+    const viewport = root.querySelector("[data-part='Viewport']") as HTMLElement;
     expect(viewport).not.toBeNull();
-    expect(viewport.getAttribute("data-component")).toBe("navigation-menu");
+    expect(viewport.getAttribute("data-component")).toBe("NavigationMenu");
   });
 
   if (!isSSR) {
@@ -139,8 +139,8 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
             ]);
           });
 
-          const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
-          expect(root.querySelector("[data-part='content']")).toBeNull();
+          const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
+          expect(root.querySelector("[data-part='Content']")).toBeNull();
 
           // 1. Pointer enters trigger -> starts hover timer
           trigger.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true }));
@@ -153,7 +153,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           // Advance remaining 50ms: opens!
           vi.advanceTimersByTime(50);
           expect(navInstance.isOpen()).toBe(true);
-          expect(root.querySelector("[data-part='content']")).not.toBeNull();
+          expect(root.querySelector("[data-part='Content']")).not.toBeNull();
 
           // 2. Pointer leaves trigger -> starts leave timer (250ms)
           trigger.dispatchEvent(new PointerEvent("pointerleave", { bubbles: true }));
@@ -198,7 +198,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
             ]);
           });
 
-          const triggers = root.querySelectorAll("[data-part='trigger']");
+          const triggers = root.querySelectorAll("[data-part='Trigger']");
           const trigger1 = triggers[0] as HTMLElement;
           const trigger2 = triggers[1] as HTMLElement;
 
@@ -238,7 +238,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
             ]);
           });
 
-          const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+          const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
           trigger.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true }));
           vi.advanceTimersByTime(100);
           expect(navInstance.isOpen()).toBe(true);
@@ -248,7 +248,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           vi.advanceTimersByTime(100);
 
           // Enter Content -> cancels leave timer!
-          const content = root.querySelector("[data-part='content']") as HTMLElement;
+          const content = root.querySelector("[data-part='Content']") as HTMLElement;
           content.dispatchEvent(new PointerEvent("pointerenter", { bubbles: true }));
 
           // Advance 200ms: still open because timer was cancelled!
@@ -281,7 +281,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
         expect(navInstance.isOpen()).toBe(false);
 
         trigger.click();
@@ -316,10 +316,10 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const list = root.querySelector("[data-part='list']") as HTMLElement;
-        const trigger1 = root.querySelectorAll("[data-part='trigger']")[0] as HTMLElement;
-        const link = root.querySelector("[data-part='link']") as HTMLElement;
-        const trigger2 = root.querySelectorAll("[data-part='trigger']")[1] as HTMLElement;
+        const list = root.querySelector("[data-part='List']") as HTMLElement;
+        const trigger1 = root.querySelectorAll("[data-part='Trigger']")[0] as HTMLElement;
+        const link = root.querySelector("[data-part='Link']") as HTMLElement;
+        const trigger2 = root.querySelectorAll("[data-part='Trigger']")[1] as HTMLElement;
 
         expect(String(trigger1.getAttribute("tabindex"))).toBe("0");
         expect(String(link.getAttribute("tabindex"))).toBe("-1");
@@ -365,11 +365,11 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
         trigger.click();
         expect(navInstance.isOpen()).toBe(true);
 
-        const list = root.querySelector("[data-part='list']") as HTMLElement;
+        const list = root.querySelector("[data-part='List']") as HTMLElement;
         list.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
         expect(navInstance.isOpen()).toBe(false);
       });
@@ -391,7 +391,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
         trigger.click();
         expect(navInstance.isOpen()).toBe(true);
 
@@ -481,16 +481,16 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
         trigger.click();
         expect(navInstance.isOpen()).toBe(true);
 
-        const chk = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+        const chk = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
         expect(chk.getAttribute("aria-checked")).toBe("false");
         chk.click();
         expect(checkedVal()).toBe(true);
 
-        const radios = root.querySelectorAll("[data-part='radio-item']");
+        const radios = root.querySelectorAll("[data-part='RadioItem']");
         expect(radios[1].getAttribute("aria-checked")).toBe("true");
         (radios[0] as HTMLElement).click();
         expect(radioVal()).toBe("compact");
@@ -521,7 +521,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const list = root.querySelector("[data-part='list']") as HTMLElement;
+        const list = root.querySelector("[data-part='List']") as HTMLElement;
         expect(list.getAttribute("aria-orientation")).toBe("vertical");
 
         // ArrowDown navigates vertically to next menu
@@ -553,13 +553,13 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
-        const viewport = root.querySelector("[data-part='viewport']") as HTMLElement;
-        expect(viewport.querySelector("[data-part='content']")).toBeNull();
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
+        const viewport = root.querySelector("[data-part='Viewport']") as HTMLElement;
+        expect(viewport.querySelector("[data-part='Content']")).toBeNull();
 
         trigger.click();
         expect(navInstance.isOpen()).toBe(true);
-        expect(viewport.querySelector("[data-part='content']")).not.toBeNull();
+        expect(viewport.querySelector("[data-part='Content']")).not.toBeNull();
       });
 
       it("has no accessibility violations (axe)", async () => {

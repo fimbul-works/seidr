@@ -19,7 +19,7 @@ import type { MenubarMenuRegistration, MenubarOrientation, UseMenubarOptions, Us
  * Headless coordinator hook for a Menubar system.
  */
 export function useMenubar(options: UseMenubarOptions = {}): UseMenubarResult {
-  const id = options.id ?? useId("menubar");
+  const id = options.id ?? useId("Menubar");
   const dataComponent = options.dataComponent ?? DATA_COMPONENT_MENUBAR;
   const loop = options.loop ?? true;
   const orientation: MenubarOrientation = options.orientation ?? "horizontal";
@@ -45,7 +45,7 @@ export function useMenubar(options: UseMenubarOptions = {}): UseMenubarResult {
     // If root element is mounted in DOM, sort registrations according to DOM order
     const rootEl = rootRef();
     if (rootEl && inClient(() => true)) {
-      const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-part='trigger']"));
+      const triggers = Array.from(rootEl.querySelectorAll<HTMLElement>("[data-part='Trigger']"));
       if (triggers.length > 0) {
         return Array.from(registrations.values()).sort((a, b) => {
           const elA = a.getTriggerElement();

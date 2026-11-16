@@ -50,13 +50,13 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.getAttribute("role")).toBe("menubar");
     expect(rootEl.getAttribute("aria-orientation")).toBe("horizontal");
-    expect(rootEl.getAttribute("data-component")).toBe("menubar");
+    expect(rootEl.getAttribute("data-component")).toBe("Menubar");
 
-    const triggers = root.querySelectorAll("[data-part='trigger']");
+    const triggers = root.querySelectorAll("[data-part='Trigger']");
     expect(triggers.length).toBe(2);
 
     const trigger1 = triggers[0] as HTMLElement;
@@ -72,7 +72,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
     expect(String(trigger2.getAttribute("tabindex"))).toBe("-1");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -101,10 +101,10 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
 
-    const triggers = root.querySelectorAll("[data-part='trigger']");
+    const triggers = root.querySelectorAll("[data-part='Trigger']");
     expect(triggers.length).toBe(2);
     expect(triggers[0]?.textContent).toBe("Custom File");
     expect(triggers[1]?.textContent).toBe("Custom Edit");
@@ -129,7 +129,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(menubarInstance.isOpen()).toBe(false);
 
     // Click to open
@@ -138,7 +138,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
     expect(menubarInstance.value()).toBe("file");
     expect(trigger.getAttribute("aria-expanded")).toBe("true");
 
-    const content = root.querySelector("[data-part='content']") as HTMLElement;
+    const content = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(content).not.toBeNull();
     expect(content.getAttribute("role")).toBe("menu");
 
@@ -167,7 +167,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggers = root.querySelectorAll("[data-part='trigger']");
+    const triggers = root.querySelectorAll("[data-part='Trigger']");
     const tFile = triggers[0] as HTMLElement;
     const tEdit = triggers[1] as HTMLElement;
     const tView = triggers[2] as HTMLElement;
@@ -228,14 +228,14 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
 
     // ArrowDown opens menu
     trigger.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     expect(menubarInstance.isOpen()).toBe(true);
     expect(menubarInstance.value()).toBe("file");
 
-    const content = root.querySelector("[data-part='content']") as HTMLElement;
+    const content = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(content).not.toBeNull();
   });
 
@@ -261,7 +261,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggers = root.querySelectorAll("[data-part='trigger']");
+    const triggers = root.querySelectorAll("[data-part='Trigger']");
     const tFile = triggers[0] as HTMLElement;
     const tEdit = triggers[1] as HTMLElement;
 
@@ -304,18 +304,18 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggers = root.querySelectorAll("[data-part='trigger']");
+    const triggers = root.querySelectorAll("[data-part='Trigger']");
     const tFile = triggers[0] as HTMLElement;
 
     tFile.click();
     expect(menubarInstance.value()).toBe("file");
 
-    const content = root.querySelector("[data-part='content']") as HTMLElement;
+    const content = root.querySelector("[data-part='Content']") as HTMLElement;
     content.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
 
     expect(menubarInstance.value()).toBe("edit");
 
-    const editContent = root.querySelector("[data-part='content']") as HTMLElement;
+    const editContent = root.querySelector("[data-part='Content']") as HTMLElement;
     editContent.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
 
     expect(menubarInstance.value()).toBe("file");
@@ -338,11 +338,11 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     trigger.click();
     expect(menubarInstance.isOpen()).toBe(true);
 
-    const content = root.querySelector("[data-part='content']") as HTMLElement;
+    const content = root.querySelector("[data-part='Content']") as HTMLElement;
     content.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
     expect(menubarInstance.isOpen()).toBe(false);
 
@@ -382,10 +382,10 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     trigger.click();
 
-    const item = root.querySelector("[data-part='item']") as HTMLElement;
+    const item = root.querySelector("[data-part='Item']") as HTMLElement;
     item.click();
 
     expect(onSelectAction).toHaveBeenCalled();
@@ -435,15 +435,15 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     trigger.click();
 
-    const checkbox = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkbox = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkbox.getAttribute("aria-checked")).toBe("false");
     checkbox.click();
     expect(checkedVal()).toBe(true);
 
-    const radioItems = root.querySelectorAll("[data-part='radio-item']");
+    const radioItems = root.querySelectorAll("[data-part='RadioItem']");
     expect(radioItems[0]?.getAttribute("aria-checked")).toBe("true");
     (radioItems[1] as HTMLElement).click();
     expect(radioVal()).toBe("2");

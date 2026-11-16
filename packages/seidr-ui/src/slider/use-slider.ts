@@ -27,7 +27,7 @@ export function useSlider(options: UseSliderOptions = {}): UseSliderResult {
     name,
   } = options;
 
-  const id = customId ?? useId("slider");
+  const id = customId ?? useId("Slider");
 
   const disabledObservable = wrapValue(options.disabled ?? false);
   const isDisabled: DerivedValue<boolean> = disabledObservable.as((d) => !!d);

@@ -32,21 +32,21 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.getAttribute("role")).toBe("radiogroup");
-    expect(rootEl.getAttribute("data-component")).toBe("rating");
+    expect(rootEl.getAttribute("data-component")).toBe("Rating");
     expect(rootEl.getAttribute("data-orientation")).toBe("horizontal");
 
-    const label = root.querySelector("[data-part='label']") as HTMLElement;
+    const label = root.querySelector("[data-part='Label']") as HTMLElement;
     expect(label).not.toBeNull();
     expect(label.textContent).toBe("Product Rating");
 
-    const desc = root.querySelector("[data-part='description']") as HTMLElement;
+    const desc = root.querySelector("[data-part='Description']") as HTMLElement;
     expect(desc).not.toBeNull();
     expect(desc.textContent).toBe("Choose a score between 1 and 5");
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(5);
 
     // Initial value is 3: items 1, 2, 3 checked, 4 and 5 unchecked
@@ -85,7 +85,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const items = root.querySelectorAll("[data-part='item']");
+    const items = root.querySelectorAll("[data-part='Item']");
     expect(items.length).toBe(3);
     expect(items[0].getAttribute("data-state")).toBe("checked");
     expect(items[1].getAttribute("data-state")).toBe("checked");
@@ -115,7 +115,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const items = root.querySelectorAll("[data-part='item']");
+        const items = root.querySelectorAll("[data-part='Item']");
         const item4 = items[3] as HTMLElement;
 
         item4.click();
@@ -145,7 +145,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const items = root.querySelectorAll("[data-part='item']");
+        const items = root.querySelectorAll("[data-part='Item']");
         const item3 = items[2] as HTMLElement;
 
         expect(ratingInst.value()).toBe(3);
@@ -174,8 +174,8 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
-        const items = root.querySelectorAll("[data-part='item']");
+        const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
+        const items = root.querySelectorAll("[data-part='Item']");
         const item3 = items[2] as HTMLElement;
 
         // Hover over item 3
@@ -209,7 +209,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const items = root.querySelectorAll("[data-part='item']");
+        const items = root.querySelectorAll("[data-part='Item']");
         const item2 = items[1] as HTMLElement;
 
         // Mock getBoundingClientRect
@@ -256,7 +256,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+        const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
 
         // ArrowRight increments
         rootEl.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true }));
@@ -292,10 +292,10 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+        const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
         expect(rootEl.getAttribute("data-disabled")).toBe("");
 
-        const items = root.querySelectorAll("[data-part='item']");
+        const items = root.querySelectorAll("[data-part='Item']");
         (items[0] as HTMLElement).click();
         expect(ratingInst.value()).toBe(3);
 

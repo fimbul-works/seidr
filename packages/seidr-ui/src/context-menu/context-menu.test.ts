@@ -38,19 +38,19 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
-    expect(rootEl.getAttribute("data-component")).toBe("context-menu");
+    expect(rootEl.getAttribute("data-component")).toBe("ContextMenu");
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.tagName.toLowerCase()).toBe("div");
-    expect(triggerEl.getAttribute("data-component")).toBe("context-menu");
+    expect(triggerEl.getAttribute("data-component")).toBe("ContextMenu");
     expect(triggerEl.getAttribute("data-state")).toBe("closed");
     expect(triggerEl.textContent).toBe("Right click here");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
     }
   });
 
@@ -77,30 +77,30 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl).not.toBeNull();
     expect(triggerEl.textContent).toBe("Context Area");
     expect(triggerEl.getAttribute("data-state")).toBe("open");
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
     expect(contentEl.getAttribute("role")).toBe("menu");
-    expect(contentEl.getAttribute("data-component")).toBe("context-menu");
+    expect(contentEl.getAttribute("data-component")).toBe("ContextMenu");
 
-    const itemEl = root.querySelector("[data-part='item']") as HTMLElement;
+    const itemEl = root.querySelector("[data-part='Item']") as HTMLElement;
     expect(itemEl).not.toBeNull();
     expect(itemEl.getAttribute("role")).toBe("menuitem");
-    expect(itemEl.getAttribute("data-component")).toBe("context-menu");
+    expect(itemEl.getAttribute("data-component")).toBe("ContextMenu");
 
-    const separatorEl = root.querySelector("[data-part='separator']") as HTMLElement;
+    const separatorEl = root.querySelector("[data-part='Separator']") as HTMLElement;
     expect(separatorEl).not.toBeNull();
     expect(separatorEl.getAttribute("role")).toBe("separator");
-    expect(separatorEl.getAttribute("data-component")).toBe("context-menu");
+    expect(separatorEl.getAttribute("data-component")).toBe("ContextMenu");
 
-    const checkboxEl = root.querySelector("[data-part='checkbox-item']") as HTMLElement;
+    const checkboxEl = root.querySelector("[data-part='CheckboxItem']") as HTMLElement;
     expect(checkboxEl).not.toBeNull();
     expect(checkboxEl.getAttribute("role")).toBe("menuitemcheckbox");
-    expect(checkboxEl.getAttribute("data-component")).toBe("context-menu");
+    expect(checkboxEl.getAttribute("data-component")).toBe("ContextMenu");
     expect(checkboxEl.getAttribute("aria-checked")).toBe("true");
   });
 
@@ -120,8 +120,8 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-    expect(root.querySelector("[data-part='content']")).toBeNull();
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+    expect(root.querySelector("[data-part='Content']")).toBeNull();
 
     const mouseEvent = new MouseEvent("contextmenu", {
       bubbles: true,
@@ -141,7 +141,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       height: 0,
     });
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     expect(contentEl).not.toBeNull();
   });
 
@@ -163,8 +163,8 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         ]);
       });
 
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
-      expect(root.querySelector("[data-part='content']")).toBeNull();
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
+      expect(root.querySelector("[data-part='Content']")).toBeNull();
 
       const pointerDownEvent = new Event("pointerdown", { bubbles: true, cancelable: true });
       Object.assign(pointerDownEvent, {
@@ -211,7 +211,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         ]);
       });
 
-      const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
 
       const pointerDownEvent = new Event("pointerdown", { bubbles: true, cancelable: true });
       Object.assign(pointerDownEvent, { pointerType: "touch", clientX: 50, clientY: 50 });
@@ -246,7 +246,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const triggerEl = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(triggerEl.hasAttribute("data-disabled")).toBe(true);
 
     const mouseEvent = new MouseEvent("contextmenu", {
@@ -281,7 +281,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
     expect(cmInstance.isOpen()).toBe(true);
 
-    const itemEl = root.querySelector("[data-part='item']") as HTMLElement;
+    const itemEl = root.querySelector("[data-part='Item']") as HTMLElement;
     itemEl.click();
 
     expect(onSelect).toHaveBeenCalledTimes(1);
@@ -306,7 +306,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
     expect(cmInstance.isOpen()).toBe(true);
 
-    const contentEl = root.querySelector("[data-part='content']") as HTMLElement;
+    const contentEl = root.querySelector("[data-part='Content']") as HTMLElement;
     contentEl.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
 
     expect(cmInstance.isOpen()).toBe(false);
@@ -364,7 +364,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const radioItems = root.querySelectorAll("[data-part='radio-item']");
+    const radioItems = root.querySelectorAll("[data-part='RadioItem']");
     expect(radioItems.length).toBe(2);
     expect(radioItems[1].getAttribute("aria-checked")).toBe("true");
 
@@ -396,21 +396,21 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const subTrigger = root.querySelector("[data-part='sub-trigger']") as HTMLElement;
+    const subTrigger = root.querySelector("[data-part='SubTrigger']") as HTMLElement;
     expect(subTrigger).not.toBeNull();
-    expect(subTrigger.getAttribute("data-component")).toBe("context-menu");
+    expect(subTrigger.getAttribute("data-component")).toBe("ContextMenu");
 
     if (!isSSR) {
-      expect(root.querySelector("[data-part='sub-content']")).toBeNull();
+      expect(root.querySelector("[data-part='SubContent']")).toBeNull();
 
       subTrigger.click();
       expect(subTrigger.getAttribute("aria-expanded")).toBe("true");
 
-      const subContent = root.querySelector("[data-part='sub-content']") as HTMLElement;
+      const subContent = root.querySelector("[data-part='SubContent']") as HTMLElement;
       expect(subContent).not.toBeNull();
-      expect(subContent.getAttribute("data-component")).toBe("context-menu");
+      expect(subContent.getAttribute("data-component")).toBe("ContextMenu");
 
-      const nestedItem = subContent.querySelector("[data-part='item']") as HTMLElement;
+      const nestedItem = subContent.querySelector("[data-part='Item']") as HTMLElement;
       nestedItem.click();
       expect(onNested).toHaveBeenCalledTimes(1);
     }
@@ -434,7 +434,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
     );
 
     if (!isSSR) {
-      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(trigger).not.toBeNull();
 
       // Add item while closed
@@ -450,12 +450,12 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         }),
       );
 
-      let items = root.querySelectorAll("[data-part='item']");
+      let items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(3);
       expect(items[2]?.textContent).toContain("Action 3");
 
       // Close context menu via Escape
-      const content = root.querySelector("[data-part='content']") as HTMLElement;
+      const content = root.querySelector("[data-part='Content']") as HTMLElement;
       content.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }));
 
       // Add 4th item while closed
@@ -471,7 +471,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         }),
       );
 
-      items = root.querySelectorAll("[data-part='item']");
+      items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(4);
       expect(items[3]?.textContent).toContain("Action 4");
     }
@@ -520,7 +520,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
     });
 
     if (!isSSR) {
-      const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+      const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
       expect(() => {
         trigger.dispatchEvent(
           new MouseEvent("contextmenu", {
@@ -532,7 +532,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         );
       }).not.toThrow();
 
-      const items = root.querySelectorAll("[data-part='item']");
+      const items = root.querySelectorAll("[data-part='Item']");
       expect(items.length).toBe(2);
       expect(items[0]?.textContent).toContain("Ctrl+R shortcut");
       expect(items[1]?.textContent).toContain("Alt+Left shortcut");

@@ -16,7 +16,7 @@ import type { UseTextFieldOptions, UseTextFieldResult } from "./types.js";
  * and form control integration for an accessible TextField component.
  */
 export function useTextField(options: UseTextFieldOptions = {}): UseTextFieldResult {
-  const baseId = wrapValue(options.id ?? useId("textfield"));
+  const baseId = wrapValue(options.id ?? useId("TextField"));
 
   const formControl = useFormControl({
     id: baseId,

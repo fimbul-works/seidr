@@ -37,7 +37,7 @@ export function usePopper(options: UsePopperOptions = {}): UsePopperResult {
     getAnchorRect,
   } = options;
 
-  const id = customId ?? useId("popper");
+  const id = customId ?? useId("Popper");
   const preferredPlacement: ObservableValue<Placement> = wrapValue(options.placement ?? "bottom");
   const currentPlacement: Value<Placement> = createValue<Placement>(preferredPlacement());
 

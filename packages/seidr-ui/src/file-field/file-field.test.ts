@@ -36,26 +36,26 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     expect(rootEl).not.toBeNull();
     expect(rootEl.getAttribute("role")).toBe("group");
-    expect(rootEl.getAttribute("data-component")).toBe("file-field");
+    expect(rootEl.getAttribute("data-component")).toBe("FileField");
 
-    const label = root.querySelector("[data-part='label']") as HTMLElement;
+    const label = root.querySelector("[data-part='Label']") as HTMLElement;
     expect(label).not.toBeNull();
     expect(label.textContent).toBe("Upload Document");
 
-    const desc = root.querySelector("[data-part='description']") as HTMLElement;
+    const desc = root.querySelector("[data-part='Description']") as HTMLElement;
     expect(desc).not.toBeNull();
     expect(desc.textContent).toBe("PDF or PNG up to 5MB");
 
-    const dropzone = root.querySelector("[data-part='dropzone']") as HTMLElement;
+    const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;
     expect(dropzone).not.toBeNull();
     expect(dropzone.getAttribute("role")).toBe("region");
     expect(dropzone.getAttribute("aria-label")).toBe("dropzone");
     expect(dropzone.getAttribute("data-dragging")).toBe("false");
 
-    const trigger = root.querySelector("[data-part='trigger']") as HTMLElement;
+    const trigger = root.querySelector("[data-part='Trigger']") as HTMLElement;
     expect(trigger).not.toBeNull();
     expect(trigger.textContent).toBe("Browse Files");
 
@@ -86,11 +86,11 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    const dropzone = root.querySelector("[data-part='dropzone']") as HTMLElement;
+    const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;
     expect(dropzone).not.toBeNull();
     expect(dropzone.getAttribute("role")).toBe("button");
     expect(String(dropzone.getAttribute("tabindex"))).toBe("0");
-    expect(root.querySelector("[data-part='trigger']")).not.toBeNull();
+    expect(root.querySelector("[data-part='Trigger']")).not.toBeNull();
     expect(root.querySelector("input")).not.toBeNull();
     expect(ffInst.multiple()).toBe(true);
   });
@@ -146,7 +146,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const dropzone = root.querySelector("[data-part='dropzone']") as HTMLElement;
+        const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;
 
         const dragOverEvent = new Event("dragover", {
           bubbles: true,
@@ -295,7 +295,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
         ffInst.processFiles([fileA, fileB]);
         expect(ffInst.files().length).toBe(2);
 
-        const deleteBtn = root.querySelector("[data-part='item-delete-trigger']") as HTMLButtonElement;
+        const deleteBtn = root.querySelector("[data-part='ItemDeleteTrigger']") as HTMLButtonElement;
         expect(deleteBtn).not.toBeNull();
         deleteBtn.click();
 
@@ -355,11 +355,11 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
           ]);
         });
 
-        const dropzone = root.querySelector("[data-part='dropzone']") as HTMLElement;
+        const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;
         expect(dropzone.getAttribute("aria-disabled")).toBe("true");
         expect(dropzone.getAttribute("tabindex")).toBe("-1");
 
-        const trigger = root.querySelector("[data-part='trigger']") as HTMLButtonElement;
+        const trigger = root.querySelector("[data-part='Trigger']") as HTMLButtonElement;
         expect(trigger.disabled).toBe(true);
 
         const input = root.querySelector("input") as HTMLInputElement;

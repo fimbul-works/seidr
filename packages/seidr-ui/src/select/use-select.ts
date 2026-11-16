@@ -168,7 +168,7 @@ export function useSelect<Option = any, OptGroup = any>(
     overflowPadding = 8,
   } = options;
 
-  const id = customId ?? useId("select");
+  const id = customId ?? useId("Select");
   const triggerId = `${id}-trigger`;
   const valueId = `${id}-value`;
   const listboxId = `${id}-listbox`;

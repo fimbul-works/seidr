@@ -48,16 +48,16 @@ describeDualMode("Tabs", ({ getDocument, isSSR }) => {
     expect(content1).not.toBeNull();
 
     // Semantic dataComponent and dataPart annotations
-    expect(rootEl.getAttribute("data-component")).toBe("tabs");
-    expect(rootEl.getAttribute("data-part")).toBe("root");
-    expect(listEl.getAttribute("data-component")).toBe("tabs");
-    expect(listEl.getAttribute("data-part")).toBe("list");
-    expect(triggers[0]?.getAttribute("data-component")).toBe("tabs");
-    expect(triggers[0]?.getAttribute("data-part")).toBe("trigger");
-    expect(indicator?.getAttribute("data-component")).toBe("tabs");
-    expect(indicator?.getAttribute("data-part")).toBe("indicator");
-    expect(content1?.getAttribute("data-component")).toBe("tabs");
-    expect(content1?.getAttribute("data-part")).toBe("content");
+    expect(rootEl.getAttribute("data-component")).toBe("Tabs");
+    expect(rootEl.getAttribute("data-part")).toBe("Root");
+    expect(listEl.getAttribute("data-component")).toBe("Tabs");
+    expect(listEl.getAttribute("data-part")).toBe("List");
+    expect(triggers[0]?.getAttribute("data-component")).toBe("Tabs");
+    expect(triggers[0]?.getAttribute("data-part")).toBe("Trigger");
+    expect(indicator?.getAttribute("data-component")).toBe("Tabs");
+    expect(indicator?.getAttribute("data-part")).toBe("Indicator");
+    expect(content1?.getAttribute("data-component")).toBe("Tabs");
+    expect(content1?.getAttribute("data-part")).toBe("Content");
 
     // WAI-ARIA and orientation
     expect(listEl.getAttribute("aria-orientation")).toBe("horizontal");
@@ -278,7 +278,7 @@ describeDualMode("Tabs", ({ getDocument, isSSR }) => {
     const rootEl = root.querySelector("#aio-tabs");
     const listEl = root.querySelector("[role='tablist']");
     const triggers = root.querySelectorAll("[role='tab']");
-    const indicator = root.querySelector("[data-part='indicator']");
+    const indicator = root.querySelector("[data-part='Indicator']");
     const content = root.querySelector("#aio-tabs-content-music");
 
     expect(rootEl).not.toBeNull();

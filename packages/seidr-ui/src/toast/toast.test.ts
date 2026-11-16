@@ -60,14 +60,14 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
 
     expect(regionEl).not.toBeNull();
     expect(listEl).not.toBeNull();
-    expect(regionEl.getAttribute("data-component")).toBe("toast");
-    expect(regionEl.getAttribute("data-part")).toBe("region");
+    expect(regionEl.getAttribute("data-component")).toBe("Toast");
+    expect(regionEl.getAttribute("data-part")).toBe("Region");
     expect(regionEl.getAttribute("aria-label")).toBe("Notifications (alt+T)");
     expect(regionEl.hasAttribute("data-top-layer")).toBe(true);
     expect(regionEl.style.pointerEvents).toBe("none");
 
-    expect(listEl.getAttribute("data-component")).toBe("toast");
-    expect(listEl.getAttribute("data-part")).toBe("list");
+    expect(listEl.getAttribute("data-component")).toBe("Toast");
+    expect(listEl.getAttribute("data-part")).toBe("List");
   });
 
   it("should support custom ariaLabel with {hotkey} replacement", () => {
@@ -88,16 +88,16 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
     showTestToast({ priority: "high" });
 
     const toastEl = root.querySelector("[role='status']") as HTMLElement;
-    const titleEl = root.querySelector("[data-part='title']") as HTMLElement;
-    const descEl = root.querySelector("[data-part='description']") as HTMLElement;
-    const closeBtn = root.querySelector("[data-part='close-button']") as HTMLButtonElement;
-    const trackEl = root.querySelector("[data-part='progress-track']") as HTMLElement;
-    const fillEl = root.querySelector("[data-part='progress-fill']") as HTMLElement;
+    const titleEl = root.querySelector("[data-part='Title']") as HTMLElement;
+    const descEl = root.querySelector("[data-part='Description']") as HTMLElement;
+    const closeBtn = root.querySelector("[data-part='CloseButton']") as HTMLButtonElement;
+    const trackEl = root.querySelector("[data-part='ProgressTrack']") as HTMLElement;
+    const fillEl = root.querySelector("[data-part='ProgressFill']") as HTMLElement;
     const regionEl = root.querySelector("[role='region']") as HTMLElement;
 
     expect(toastEl).not.toBeNull();
-    expect(toastEl.getAttribute("data-component")).toBe("toast");
-    expect(toastEl.getAttribute("data-part")).toBe("root");
+    expect(toastEl.getAttribute("data-component")).toBe("Toast");
+    expect(toastEl.getAttribute("data-part")).toBe("Root");
     expect(toastEl.getAttribute("aria-live")).toBe("assertive");
     expect(toastEl.getAttribute("aria-atomic")).toBe("true");
     expect(toastEl.getAttribute("aria-labelledby")).toBe(titleEl.id);
@@ -152,7 +152,7 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
     const root = setup(() => ToastRegion({}));
 
     showTestToast();
-    const closeBtn = root.querySelector("[data-part='close-button']") as HTMLButtonElement;
+    const closeBtn = root.querySelector("[data-part='CloseButton']") as HTMLButtonElement;
     expect(closeBtn).not.toBeNull();
 
     closeBtn.dispatchEvent(new Event("click", { bubbles: true }));
@@ -184,12 +184,12 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
     const id = toaster.show(({ toastId, region }) =>
       Toast({ toastId, region, title: "Initial Toast" }),
     );
-    expect(root.querySelector("[data-part='title']")?.textContent).toBe("Initial Toast");
+    expect(root.querySelector("[data-part='Title']")?.textContent).toBe("Initial Toast");
 
     toaster.update(id, ({ toastId, region }) =>
       Toast({ toastId, region, title: "Updated Toast" }),
     );
-    expect(root.querySelector("[data-part='title']")?.textContent).toBe("Updated Toast");
+    expect(root.querySelector("[data-part='Title']")?.textContent).toBe("Updated Toast");
 
     toaster.clear();
 
@@ -206,13 +206,13 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
       }),
     );
 
-    expect(root.querySelector("[data-part='title']")?.textContent).toBe("pending: loading");
+    expect(root.querySelector("[data-part='Title']")?.textContent).toBe("pending: loading");
 
     resolvePromise("done");
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(root.querySelector("[data-part='title']")?.textContent).toBe("fulfilled: done");
+    expect(root.querySelector("[data-part='Title']")?.textContent).toBe("fulfilled: done");
   });
 
   it("should enforce region limit and support multiple regions via regionId", () => {
@@ -239,7 +239,7 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
     const root = setup(() => ToastRegion({ duration: 1000, pauseOnInteraction: true }));
     showTestToast();
 
-    const listEl = root.querySelector("[data-part='list']") as HTMLElement;
+    const listEl = root.querySelector("[data-part='List']") as HTMLElement;
     expect(root.querySelectorAll("[role='status']").length).toBe(1);
 
     listEl.dispatchEvent(new Event("focusin", { bubbles: true }));
@@ -267,9 +267,9 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
       ]);
     });
 
-    expect(root.querySelector("[data-part='title']")?.textContent).toBe("Custom Title");
-    expect(root.querySelector("[data-part='description']")?.textContent).toBe("Custom Description");
-    expect(root.querySelector("[data-part='close-button']")?.textContent).toBe("Dismiss");
+    expect(root.querySelector("[data-part='Title']")?.textContent).toBe("Custom Title");
+    expect(root.querySelector("[data-part='Description']")?.textContent).toBe("Custom Description");
+    expect(root.querySelector("[data-part='CloseButton']")?.textContent).toBe("Dismiss");
   });
 
   it("should portal ToastRegion into getDocument().body when portalTarget is provided", () => {

@@ -37,7 +37,7 @@ export function NavigationMenuLink<T extends keyof SeidrElementTagNameMap = "a">
     ...rest
   } = props;
 
-  const autoId = useId("nav-link");
+  const autoId = useId("NavLink");
   const value = userValue !== undefined ? unwrapValue(userValue) : autoId;
 
   const internalRef = createRef<SeidrElementTagNameMap[T]>();

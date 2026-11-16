@@ -40,7 +40,7 @@ export function useListbox(options: UseListboxOptions = {}): UseListboxResult {
     autoFocus = false,
   } = options;
 
-  const id = customId ?? useId("listbox");
+  const id = customId ?? useId("Listbox");
   const disabledObservable = wrapValue(options.disabled ?? false);
   const isDisabled: DerivedValue<boolean> = disabledObservable.as(Boolean);
 

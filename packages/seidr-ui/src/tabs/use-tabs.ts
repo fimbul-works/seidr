@@ -25,7 +25,7 @@ interface TriggerEntry {
 export function useTabs(options: UseTabsOptions = {}): UseTabsResult {
   const { id: customId, orientation = "horizontal", activationMode = "automatic", shouldFocusWrap = true } = options;
 
-  const id = customId ?? useId("tabs");
+  const id = customId ?? useId("Tabs");
   const disabledObservable = wrapValue(options.disabled ?? false);
   const isDisabled: DerivedValue<boolean> = disabledObservable.as((d) => !!d);
 

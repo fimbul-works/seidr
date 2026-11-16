@@ -17,7 +17,7 @@ import type { RatingItemState, UseRatingOptions, UseRatingResult } from "./types
  * roving tabindex focus, and form submission synchronization.
  */
 export function useRating(options: UseRatingOptions = {}): UseRatingResult {
-  const autoId = useId("rating");
+  const autoId = useId("Rating");
   const id = options.id ?? autoId;
   const dataComponent = options.dataComponent ?? DATA_COMPONENT_RATING;
   const max = options.max ?? 5;
