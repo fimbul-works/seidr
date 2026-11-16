@@ -95,6 +95,26 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
     expect(input.value).toBe("dogs");
   });
 
+  it("value can be controlled directly on Tier 2 Input subcomponent", () => {
+    const reactiveVal = createValue("initial");
+
+    const root = setup(() => {
+      const field = createTextField();
+      return field.Root({}, [field.Label({}, "Pet"), field.Input({ value: reactiveVal })]);
+    });
+
+    const input = root.querySelector("input") as HTMLInputElement;
+    expect(input.value).toBe("initial");
+
+    if (isSSR) return;
+
+    input.value = "updated";
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+
+    expect(reactiveVal()).toBe("updated");
+    expect(input.value).toBe("updated");
+  });
+
   it("supports controlled name attribute", () => {
     const root = setup(() =>
       TextField({
@@ -157,7 +177,7 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
     );
 
     const input = root.querySelector("input") as HTMLInputElement;
-    const description = root.querySelector("[data-part='description']") as HTMLElement;
+    const description = root.querySelector("[data-part='Description']") as HTMLElement;
 
     expect(description).not.toBeNull();
     expect(input.getAttribute("aria-describedby")).toBe(description.id);
@@ -170,7 +190,7 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
     });
 
     const input = root.querySelector("input") as HTMLInputElement;
-    const description = root.querySelector("[data-part='description']") as HTMLElement;
+    const description = root.querySelector("[data-part='Description']") as HTMLElement;
 
     expect(input.getAttribute("aria-describedby")).toBe(`${description.id} extra-help`);
   });
@@ -185,7 +205,7 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
     );
 
     const input = root.querySelector("input") as HTMLInputElement;
-    const errorMessage = root.querySelector("[data-part='error-message']") as HTMLElement;
+    const errorMessage = root.querySelector("[data-part='ErrorMessage']") as HTMLElement;
 
     expect(errorMessage).not.toBeNull();
     expect(input.getAttribute("aria-describedby")).toBe(errorMessage.id);
@@ -217,8 +237,8 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
     );
 
     const input = root.querySelector("input") as HTMLInputElement;
-    const description = root.querySelector("[data-part='description']") as HTMLElement;
-    const errorMessage = root.querySelector("[data-part='error-message']") as HTMLElement;
+    const description = root.querySelector("[data-part='Description']") as HTMLElement;
+    const errorMessage = root.querySelector("[data-part='ErrorMessage']") as HTMLElement;
 
     expect(input.getAttribute("aria-describedby")).toBe(`${description.id} ${errorMessage.id}`);
   });
@@ -234,7 +254,7 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
       }),
     );
 
-    const rootEl = root.querySelector("[data-part='root']") as HTMLElement;
+    const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
     const input = root.querySelector("input") as HTMLInputElement;
 
     for (const el of [rootEl, input]) {
@@ -263,7 +283,7 @@ describeDualMode("TextField", ({ getDocument, isSSR }) => {
 
     const textarea = root.querySelector("textarea") as HTMLTextAreaElement;
     expect(textarea).not.toBeNull();
-    expect(textarea.getAttribute("data-part")).toBe("text-area");
+    expect(textarea.getAttribute("data-part")).toBe("TextArea");
     expect(textarea.getAttribute("aria-multiline")).toBe("false");
   });
 

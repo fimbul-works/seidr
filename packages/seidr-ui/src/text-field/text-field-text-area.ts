@@ -1,6 +1,7 @@
 import {
   $,
   inClient,
+  isValue,
   onMounted,
   onUnmounted,
   type Ref,
@@ -86,7 +87,20 @@ export function TextFieldTextArea<T extends keyof SeidrElementTagNameMap = "text
 
   const handleInput = (e: Event) => {
     tf.onInput(e);
-    if (typeof oninput === "function") {
+    if (
+      value !== undefined &&
+      value !== tf.value &&
+      isValue(value) &&
+      !value.isDerived &&
+      !tf.formControl.isDisabled() &&
+      !tf.formControl.isReadOnly()
+    ) {
+      const target = e.target as HTMLTextAreaElement | null;
+      if (target) {
+        (value as (val: string) => void)(target.value);
+      }
+    }
+    if (typeof oninput === "function" && oninput !== tf.onInput) {
       Reflect.apply(oninput, e.currentTarget, [e]);
     }
   };

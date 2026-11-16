@@ -1,5 +1,6 @@
 import { getComponentScope } from "../component/component-scope.js";
 import { getDocument } from "../dom/get-document.js";
+import { $template } from "../elements/template.js";
 import type { Ref } from "../observable/types.js";
 import { getHydrationContext } from "../ssr/hydrate/hydration-context.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
@@ -93,9 +94,7 @@ export function createSvgIcon(rawSvgMarkup: string): SvgIconFactory {
 
     // 3. Client Normal Render (cloneNode from pre-parsed template)
     if (!template && isClient()) {
-      const doc = getDocument();
-      template = doc.createElement("template");
-      template.innerHTML = cleaned;
+      template = $template({ innerHTML: cleaned });
     }
 
     const node = template?.content?.firstElementChild;
