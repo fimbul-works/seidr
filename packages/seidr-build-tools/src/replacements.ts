@@ -22,7 +22,7 @@ export const serverReplace = {
   "import.meta.env.SSR": "true",
   "import.meta.env?.SSR": "true",
   "typeof window": "'undefined'",
-  "typeof process": "{}",
+  "typeof process": "'object'",
 };
 
 /**
@@ -35,7 +35,7 @@ export const clientReplace = {
   [IS_SERVER]: "false",
   "import.meta.env.SSR": "false",
   "import.meta.env?.SSR": "false",
-  "typeof window": "{}",
+  "typeof window": "'object'",
   "typeof process": "'undefined'",
 };
 
