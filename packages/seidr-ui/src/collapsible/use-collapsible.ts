@@ -94,9 +94,9 @@ export function useCollapsible(options: UseCollapsibleOptions = {}): UseCollapsi
   };
 
   const dataset: CollapsibleDataSet = {
-    "data-expanded": state.as((v) => (v ? "" : undefined)),
-    "data-closed": state.as((v) => (!v ? "" : undefined)),
-    "data-disabled": isDisabled.as((v) => (v ? "" : undefined)),
+    dataExpanded: state.as((v) => (v ? "" : undefined)),
+    dataClosed: state.as((v) => (!v ? "" : undefined)),
+    dataDisabled: isDisabled.as((v) => (v ? "" : undefined)),
   };
 
   return {

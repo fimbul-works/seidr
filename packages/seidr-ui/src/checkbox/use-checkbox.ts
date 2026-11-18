@@ -65,8 +65,8 @@ export function useCheckbox(options: UseCheckboxOptions = {}): UseCheckboxResult
   });
 
   const checkboxDataset: CheckboxDataSet = {
-    "data-checked": toggleState.isSelected.as((v) => (v ? "" : undefined)),
-    "data-indeterminate": indeterminate.as((v) => (v ? "" : undefined)),
+    dataChecked: toggleState.isSelected.as((v) => (v ? "" : undefined)),
+    dataIndeterminate: indeterminate.as((v) => (v ? "" : undefined)),
   };
 
   const dataset: CheckboxCombinedDataSet = {

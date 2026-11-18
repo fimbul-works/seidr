@@ -16,9 +16,9 @@ export function useAccordionItem(accordion: UseAccordionResult, options: Accordi
   const isDisabled: ObservableValue<boolean> = isValue(disabled) ? disabled.as((d) => !!d) : createValue(!!disabled);
 
   const dataset: AccordionDataSet = {
-    "data-expanded": isOpen.as((v) => (v ? "" : undefined)),
-    "data-closed": isOpen.as((v) => (!v ? "" : undefined)),
-    "data-disabled": isDisabled.as((v) => (v ? "" : undefined)),
+    dataExpanded: isOpen.as((v) => (v ? "" : undefined)),
+    dataClosed: isOpen.as((v) => (!v ? "" : undefined)),
+    dataDisabled: isDisabled.as((v) => (v ? "" : undefined)),
   };
 
   const collapsibleInstance = useCollapsible({

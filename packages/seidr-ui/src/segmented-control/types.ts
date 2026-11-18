@@ -28,7 +28,7 @@ export type SegmentedControlOrientation = "horizontal" | "vertical";
 export interface SegmentedControlDataSet extends FormControlDataSet {}
 
 export interface SegmentedControlItemDataSet extends SegmentedControlDataSet {
-  "data-checked"?: ObservableValue<string | undefined>;
+  dataChecked?: ObservableValue<string | undefined>;
 }
 
 export interface UseSegmentedControlOptions extends Omit<UseFormControlOptions, "fieldId"> {

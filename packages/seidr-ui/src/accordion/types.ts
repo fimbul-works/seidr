@@ -10,9 +10,9 @@ import type {
 import type { CollapsibleAnimationOptions, UseCollapsibleResult } from "../collapsible/types.js";
 
 export interface AccordionDataSet {
-  "data-expanded": ObservableValue<string | undefined>;
-  "data-closed": ObservableValue<string | undefined>;
-  "data-disabled": ObservableValue<string | undefined>;
+  dataExpanded: ObservableValue<string | undefined>;
+  dataClosed: ObservableValue<string | undefined>;
+  dataDisabled: ObservableValue<string | undefined>;
 }
 
 export interface UseAccordionOptions {

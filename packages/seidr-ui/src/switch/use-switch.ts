@@ -43,7 +43,7 @@ export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
   });
 
   const switchDataset: SwitchDataSet = {
-    "data-checked": toggleState.isSelected.as((v) => (v ? "" : undefined)),
+    dataChecked: toggleState.isSelected.as((v) => (v ? "" : undefined)),
   };
 
   const dataset: SwitchCombinedDataSet = {

@@ -26,7 +26,7 @@ export function TabsList<T extends keyof SeidrElementTagNameMap = "div">(
     {
       role: "tablist",
       "aria-orientation": tabs.orientation,
-      "data-orientation": tabs.orientation,
+      dataOrientation: tabs.orientation,
       dataComponent: DATA_COMPONENT_TABS,
       dataPart: DATA_PART_LIST,
       ...rest,

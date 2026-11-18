@@ -28,7 +28,7 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
     fieldId: providedFieldId,
   } = options;
 
-  const id = wrapValue(providedId ?? useId('FormControl'));
+  const id = wrapValue(providedId ?? useId("FormControl"));
   const name = wrapValue(providedName as string | undefined).as((v) => v);
 
   const validationState: ObservableValue<ValidationState | undefined> = isValue<ValidationState | undefined>(
@@ -110,11 +110,11 @@ export function useFormControl(options: UseFormControlOptions = {}): UseFormCont
   );
 
   const dataset: FormControlDataSet = {
-    "data-valid": isValid.as((v) => (v ? "" : undefined)),
-    "data-invalid": isInvalid.as((inv) => (inv ? "" : undefined)),
-    "data-required": isRequired.as((r) => (r ? "" : undefined)),
-    "data-disabled": isDisabled.as((d) => (d ? "" : undefined)),
-    "data-readonly": isReadOnly.as((ro) => (ro ? "" : undefined)),
+    dataValid: isValid.as((v) => (v ? "" : undefined)),
+    dataInvalid: isInvalid.as((inv) => (inv ? "" : undefined)),
+    dataRequired: isRequired.as((r) => (r ? "" : undefined)),
+    dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
+    dataReadonly: isReadOnly.as((ro) => (ro ? "" : undefined)),
   };
 
   const fieldProps: SeidrElementProps<"input"> = {

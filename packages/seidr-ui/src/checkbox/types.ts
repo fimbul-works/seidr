@@ -16,8 +16,8 @@ import type { CheckboxIndicatorProps } from "./checkbox-indicator.js";
 import type { CheckboxRootProps } from "./checkbox-root.js";
 
 export interface CheckboxDataSet {
-  "data-checked": ObservableValue<string | undefined>;
-  "data-indeterminate": ObservableValue<string | undefined>;
+  dataChecked: ObservableValue<string | undefined>;
+  dataIndeterminate: ObservableValue<string | undefined>;
 }
 
 export type CheckboxCombinedDataSet = CheckboxDataSet & FormControlDataSet;

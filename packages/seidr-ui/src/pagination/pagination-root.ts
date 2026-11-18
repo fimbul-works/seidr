@@ -33,7 +33,7 @@ export function PaginationRoot<T extends keyof SeidrElementTagNameMap = "nav">(
     {
       "aria-label": ariaLabel,
       ref: pg.rootRef,
-      "data-disabled": pg.isDisabled.as((d) => (d ? "" : undefined)),
+      dataDisabled: pg.isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent,
       dataPart,
       ...rest,

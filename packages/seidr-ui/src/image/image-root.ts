@@ -51,7 +51,7 @@ export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
     {
       dataComponent: DATA_COMPONENT_IMAGE,
       dataPart: DATA_PART_ROOT,
-      "data-status": img.status,
+      dataStatus: img.status,
       ...rest,
     } as SeidrElementProps<T>,
     children,

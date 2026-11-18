@@ -26,7 +26,7 @@ export type RadioGroupOrientation = "horizontal" | "vertical";
 export interface RadioGroupDataSet extends FormControlDataSet {}
 
 export interface RadioGroupItemDataSet extends RadioGroupDataSet {
-  "data-checked"?: ObservableValue<string | undefined>;
+  dataChecked?: ObservableValue<string | undefined>;
 }
 
 export interface UseRadioGroupOptions extends Omit<UseFormControlOptions, "fieldId"> {

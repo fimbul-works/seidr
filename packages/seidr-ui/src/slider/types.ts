@@ -83,9 +83,9 @@ export interface UseSliderOptions {
 }
 
 export interface SliderDataSet {
-  "data-orientation": SliderOrientation;
-  "data-disabled"?: "";
-  "data-readonly"?: "";
+  dataOrientation: SliderOrientation;
+  dataDisabled?: "";
+  dataReadonly?: "";
 }
 
 export interface UseSliderResult {

@@ -18,7 +18,7 @@ import type { SwitchThumbProps } from "./switch-thumb.js";
 
 export interface SwitchDataSet {
   /** Applied when the switch is checked. Empty string if true, undefined if false. */
-  "data-checked": ObservableValue<string | undefined>;
+  dataChecked: ObservableValue<string | undefined>;
 }
 
 export type SwitchCombinedDataSet = SwitchDataSet & FormControlDataSet;

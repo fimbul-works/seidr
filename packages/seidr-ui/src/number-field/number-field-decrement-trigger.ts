@@ -64,7 +64,7 @@ export function NumberFieldDecrementTrigger<T extends keyof SeidrElementTagNameM
       tabIndex,
       disabled: isDisabled,
       "aria-controls": nf.formControl.fieldId,
-      "data-disabled": isDisabled.as((d) => (d ? "" : undefined)),
+      dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent: DATA_COMPONENT_NUMBER_FIELD,
       dataPart: DATA_PART_DECREMENT_TRIGGER,
       onclick: handleClick,

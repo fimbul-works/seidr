@@ -48,7 +48,7 @@ export function MenuRadioGroup<T extends keyof SeidrElementTagNameMap = "div">(
       role: "group",
       dataComponent,
       dataPart: DATA_PART_RADIO_GROUP,
-      "data-disabled": group.isDisabled.as((d) => (d ? "" : undefined)),
+      dataDisabled: group.isDisabled.as((d) => (d ? "" : undefined)),
       ...rest,
     } as SeidrElementProps<T>,
     children,

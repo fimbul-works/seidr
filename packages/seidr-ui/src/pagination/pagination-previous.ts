@@ -42,7 +42,7 @@ export function PaginationPrevious<T extends keyof SeidrElementTagNameMap = "but
       disabled: pg.isPreviousDisabled,
       "aria-disabled": pg.isPreviousDisabled.as((d) => (d ? "true" : undefined)),
       "aria-label": "Previous Page",
-      "data-disabled": pg.isPreviousDisabled.as((d) => (d ? "" : undefined)),
+      dataDisabled: pg.isPreviousDisabled.as((d) => (d ? "" : undefined)),
       dataComponent,
       dataPart,
       onclick: handleClick,

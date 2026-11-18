@@ -230,9 +230,9 @@ export function useSlider(options: UseSliderOptions = {}): UseSliderResult {
   const generateInputId = (index: number) => `${id}-input-${index}`;
 
   const dataset: SliderDataSet = {
-    "data-orientation": orientation,
-    ...(isDisabled() ? { "data-disabled": "" } : {}),
-    ...(isReadOnly() ? { "data-readonly": "" } : {}),
+    dataOrientation: orientation,
+    ...(isDisabled() ? { dataDisabled: "" } : {}),
+    ...(isReadOnly() ? { dataReadonly: "" } : {}),
   };
 
   return {

@@ -9,11 +9,11 @@ import type {
 export type ValidationState = "valid" | "invalid";
 
 export interface FormControlDataSet {
-  "data-valid": ObservableValue<string | undefined>;
-  "data-invalid": ObservableValue<string | undefined>;
-  "data-required": ObservableValue<string | undefined>;
-  "data-disabled": ObservableValue<string | undefined>;
-  "data-readonly": ObservableValue<string | undefined>;
+  dataValid: ObservableValue<string | undefined>;
+  dataInvalid: ObservableValue<string | undefined>;
+  dataRequired: ObservableValue<string | undefined>;
+  dataDisabled: ObservableValue<string | undefined>;
+  dataReadonly: ObservableValue<string | undefined>;
 }
 
 export interface UseFormControlOptions {

@@ -1,9 +1,9 @@
 import type { CleanupFunction, DerivedValue, ObservableValue } from "@fimbul-works/seidr";
 
 export interface CollapsibleDataSet {
-  "data-expanded": ObservableValue<string | undefined>;
-  "data-closed": ObservableValue<string | undefined>;
-  "data-disabled": ObservableValue<string | undefined>;
+  dataExpanded: ObservableValue<string | undefined>;
+  dataClosed: ObservableValue<string | undefined>;
+  dataDisabled: ObservableValue<string | undefined>;
 }
 
 export interface CollapsibleAnimationOptions {

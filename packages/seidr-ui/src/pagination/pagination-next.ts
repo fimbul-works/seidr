@@ -42,7 +42,7 @@ export function PaginationNext<T extends keyof SeidrElementTagNameMap = "button"
       disabled: pg.isNextDisabled,
       "aria-disabled": pg.isNextDisabled.as((d) => (d ? "true" : undefined)),
       "aria-label": "Next Page",
-      "data-disabled": pg.isNextDisabled.as((d) => (d ? "" : undefined)),
+      dataDisabled: pg.isNextDisabled.as((d) => (d ? "" : undefined)),
       dataComponent,
       dataPart,
       onclick: handleClick,

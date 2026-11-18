@@ -127,7 +127,7 @@ export function useFocusScope<T extends HTMLElement = HTMLElement>(ref: Ref<T>, 
 
   const createSentinel = () => {
     return $("span", {
-      "data-focus-trap": "",
+      dataFocusTrap: "",
       tabIndex: 0,
       style: VISUALLY_HIDDEN_STYLES,
     });

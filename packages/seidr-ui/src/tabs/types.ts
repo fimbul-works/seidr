@@ -13,8 +13,8 @@ export type TabsOrientation = "horizontal" | "vertical";
 export type TabsActivationMode = "automatic" | "manual";
 
 export interface TabsDataSet {
-  "data-orientation": TabsOrientation;
-  "data-disabled"?: "";
+  dataOrientation: TabsOrientation;
+  dataDisabled?: "";
 }
 
 export interface UseTabsOptions {

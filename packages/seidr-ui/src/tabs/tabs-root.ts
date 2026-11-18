@@ -25,8 +25,8 @@ export function TabsRoot<T extends keyof SeidrElementTagNameMap = "div">(
     as,
     {
       id: tabs.id,
-      "data-orientation": tabs.orientation,
-      "data-disabled": tabs.isDisabled.as((d) => (d ? "" : undefined)),
+      dataOrientation: tabs.orientation,
+      dataDisabled: tabs.isDisabled.as((d) => (d ? "" : undefined)),
       dataComponent: DATA_COMPONENT_TABS,
       dataPart: DATA_PART_ROOT,
       ...rest,

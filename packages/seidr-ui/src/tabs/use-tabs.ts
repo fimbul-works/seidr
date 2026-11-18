@@ -182,8 +182,8 @@ export function useTabs(options: UseTabsOptions = {}): UseTabsResult {
   };
 
   const dataset: TabsDataSet = {
-    "data-orientation": orientation,
-    ...(isDisabled() ? { "data-disabled": "" } : {}),
+    dataOrientation: orientation,
+    ...(isDisabled() ? { dataDisabled: "" } : {}),
   };
 
   return {

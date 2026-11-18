@@ -27,10 +27,9 @@ export function useRadioGroupItem(
   const isSelected = group.value.as((curr) => curr === value);
 
   const itemDisabled = wrapValue(options.disabled ?? false);
-  const isDisabled = mergeValues(
-    () => Boolean(group.formControl.isDisabled() || itemDisabled()),
-    { parents: [group.formControl.isDisabled, itemDisabled] },
-  );
+  const isDisabled = mergeValues(() => Boolean(group.formControl.isDisabled() || itemDisabled()), {
+    parents: [group.formControl.isDisabled, itemDisabled],
+  });
 
   const select = () => {
     if (isDisabled() || group.formControl.isReadOnly()) {
@@ -41,8 +40,8 @@ export function useRadioGroupItem(
 
   const dataset: RadioGroupItemDataSet = {
     ...group.dataset,
-    "data-disabled": isDisabled.as((d) => (d ? "" : undefined)),
-    "data-checked": isSelected.as((s) => (s ? "" : undefined)),
+    dataDisabled: isDisabled.as((d) => (d ? "" : undefined)),
+    dataChecked: isSelected.as((s) => (s ? "" : undefined)),
   };
 
   const ariaDescribedBy = mergeValues(
