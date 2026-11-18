@@ -3,6 +3,7 @@ import { AccordionShowcase } from "./accordion.js";
 import { AlertShowcase } from "./alert.js";
 import { AlertDialogShowcase } from "./alert-dialog.js";
 import { BadgeShowcase } from "./badge.js";
+import { BreadcrumbsShowcase } from "./breadcrumbs.js";
 import { ButtonShowcase } from "./button.js";
 import { CheckboxShowcase } from "./checkbox.js";
 import { CollapsibleShowcase } from "./collapsible.js";
@@ -48,6 +49,7 @@ export * from "./accordion.js";
 export * from "./alert.js";
 export * from "./alert-dialog.js";
 export * from "./badge.js";
+export * from "./breadcrumbs.js";
 export * from "./button.js";
 export * from "./checkbox.js";
 export * from "./collapsible.js";
@@ -102,6 +104,7 @@ export const componentShowcases: ComponentShowcase[] = [
   { id: "alert", title: "Alert", badge: "Atom", category: "Atom", component: AlertShowcase },
   { id: "alert-dialog", title: "AlertDialog", badge: "Widget", category: "Widget", component: AlertDialogShowcase },
   { id: "badge", title: "Badge", badge: "Atom", category: "Atom", component: BadgeShowcase },
+  { id: "breadcrumbs", title: "Breadcrumbs", badge: "Widget", category: "Widget", component: BreadcrumbsShowcase },
   { id: "button", title: "Button", badge: "Atom", category: "Atom", component: ButtonShowcase },
   { id: "checkbox", title: "Checkbox", badge: "Form", category: "Form", component: CheckboxShowcase },
   { id: "collapsible", title: "Collapsible", badge: "Widget", category: "Widget", component: CollapsibleShowcase },

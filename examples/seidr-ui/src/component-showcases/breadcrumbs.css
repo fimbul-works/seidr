@@ -1,0 +1,105 @@
+/* Breadcrumbs Showcase Styling */
+.breadcrumbs-showcase {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.breadcrumbs-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--surface-2, rgba(255, 255, 255, 0.03));
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: 0.75rem;
+}
+
+.breadcrumbs-heading {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.breadcrumbs-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted, #94a3b8);
+  line-height: 1.4;
+}
+
+/* Breadcrumbs Semantic Selectors */
+[data-component="Breadcrumbs"] {
+  box-sizing: border-box;
+}
+
+nav[data-component="Breadcrumbs"] {
+  display: flex;
+  align-items: center;
+}
+
+ol[data-component="Breadcrumbs"][data-part="List"] {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+}
+
+li[data-component="Breadcrumbs"][data-part="Item"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+a[data-component="Breadcrumbs"][data-part="Link"],
+span[data-component="Breadcrumbs"][data-part="Link"] {
+  color: var(--text-secondary, #94a3b8);
+  text-decoration: none;
+  font-weight: 500;
+  border-radius: 4px;
+  padding: 0.125rem 0.25rem;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+a[data-component="Breadcrumbs"][data-part="Link"]:hover:not([data-disabled]) {
+  color: var(--text-primary, #f1f5f9);
+  text-decoration: underline;
+}
+
+[data-component="Breadcrumbs"][data-part="Link"][data-current] {
+  color: var(--text-primary, #f1f5f9);
+  font-weight: 600;
+  cursor: default;
+  pointer-events: none;
+  text-decoration: none;
+}
+
+[data-component="Breadcrumbs"][data-part="Separator"] {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted, #64748b);
+  user-select: none;
+}
+
+.breadcrumb-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--text-muted, #64748b);
+}
+
+.breadcrumb-home-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.breadcrumb-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+

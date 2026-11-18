@@ -192,10 +192,6 @@ export const AccordionShowcase = createComponent(() => {
           ),
           Accordion({
             collapsible: true,
-            animation: {
-              duration: 400,
-              easing: easeOutBack,
-            },
             items: [
               {
                 value: "spring-1",
