@@ -1,4 +1,5 @@
 import { getAppState } from "../app-state/get-app-state.js";
+import { SEIDR_BASE_URL } from "../constants.js";
 import type { Value } from "../observable/types.js";
 import { createValue } from "../observable/value.js";
 import { isClient } from "../util/environment/is-client.js";
@@ -15,8 +16,7 @@ export const getCurrentUrl = (): Value<URL> => {
   let url = appState.getData<Value<URL>>(DATA_KEY_CURRENT_URL);
 
   if (!url) {
-    const initialHref =
-      isClient() && window.location.href !== "about:blank" ? window.location.href : "http://localhost/";
+    const initialHref = isClient() && window.location.href !== "about:blank" ? window.location.href : SEIDR_BASE_URL;
     url = createValue<URL>(new URL(initialHref), { id: DATA_KEY_CURRENT_URL });
     appState.setData(DATA_KEY_CURRENT_URL, url);
 

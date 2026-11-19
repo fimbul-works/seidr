@@ -11,7 +11,7 @@ import { seidrWebpackPlugin } from "./webpack.js";
 
 describe("seidr-build-tools transformSource", () => {
   const sampleCode = `
-import { inClient, inServer, isClient, isServer } from "@fimbul-works/seidr";
+import { inClient, inServer, isClient, isServer, SEIDR_BASE_URL } from "@fimbul-works/seidr";
 import { serverSecret } from "./server-secret";
 import { clientStorage } from "./client-storage";
 

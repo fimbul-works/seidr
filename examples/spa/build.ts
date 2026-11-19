@@ -78,7 +78,7 @@ for (const app of exampleDirs) {
         input: resolve(rootDir, app, "index.html"),
         output: {
           format: "es",
-          entryFileNames: `assets/${app}-[hash].js`,
+          entryFileNames: `assets/${app}.js`,
           chunkFileNames: `assets/${app}-[name]-[hash].js`,
           assetFileNames: `assets/${app}-[name]-[hash][extname]`,
           codeSplitting: false,

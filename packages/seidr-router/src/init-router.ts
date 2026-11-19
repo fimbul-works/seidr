@@ -2,11 +2,11 @@ import { isNullish, isNum, isObj, isStr } from "@fimbul-works/hvat";
 import {
   createValue,
   DATA_KEY_CURRENT_URL,
-  DEFAULT_BASE_URL,
   getAppState,
   isClient,
   isValue,
   registerNavigationHandler,
+  SEIDR_BASE_URL,
   SeidrError,
   type Value,
 } from "@fimbul-works/seidr";
@@ -18,11 +18,11 @@ import type { PopstateListener, RouterState, RouterTreeNode } from "./types.js";
  * Initialize the router state.
  *
  * @param {string | URL | Location} [initialUrl] - Initial URL for the router (default: current window location pathname or "/")
- * @param {string} [base] - Base URL for resolving relative URLs, default `DEFAULT_BASE_URL`
+ * @param {string} [base] - Base URL for resolving relative URLs, default `SEIDR_BASE_URL`
  */
 export const initRouter = (
   initialUrl?: string | URL | Location,
-  base: string = isClient() && window.location.href !== "about:blank" ? window.location.href : DEFAULT_BASE_URL,
+  base: string = isClient() && window.location.href !== "about:blank" ? window.location.href : SEIDR_BASE_URL,
 ) => {
   /**
    * Normalize the initial URL input to a URL object.
@@ -92,7 +92,7 @@ export const initRouter = (
     appState.defineDataStrategy<string, string>(
       DATA_KEY_ROUTER,
       // Capture function: store current URL and other serializable state
-      () => (url().origin !== DEFAULT_BASE_URL ? url().href : url().pathname + url().search + url().hash),
+      () => (url().origin !== SEIDR_BASE_URL ? url().href : url().pathname + url().search + url().hash),
       // Restore function: restore URL from captured data
       (urlStr: string) => url(new URL(urlStr, base)),
     );

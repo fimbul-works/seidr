@@ -31,6 +31,7 @@ export function cleanId(id: string): string {
  * @param {string} code - The source code to transform.
  * @param {SeidrBuildTarget} [target="browser"] - The target environment for the build.
  * @param {boolean} [disableSSR=false] - Whether SSR is disabled.
+ * @param {string} [baseURL] - The base URL for the build, ie. `"http://example.com"`
  * @returns {SeidrTransformResult} The transformed source code and source map.
  */
 export function transformSource(
@@ -38,6 +39,7 @@ export function transformSource(
   code: string,
   target: SeidrBuildTarget = "browser",
   disableSSR = false,
+  baseUrl?: string,
 ): SeidrTransformResult {
   if (target === "ssr" && disableSSR) {
     throw new Error("Cannot build for SSR with SSR disabled");
@@ -51,7 +53,18 @@ export function transformSource(
   transformInEnvironment(ms, normalizedId, disableSSR || isClient);
 
   // Apply environment-specific string replacements
-  replace(ms, disableSSR ? clientOnlyReplacements : isClient ? clientReplace : serverReplace);
+  const replacements: Record<string, string> = disableSSR
+    ? clientOnlyReplacements
+    : isClient
+      ? clientReplace
+      : serverReplace;
+
+  // Add SEIDR_BASE_URL to environment variables if provided
+  if (baseUrl) {
+    replacements["process.env.SEIDR_BASE_URL"] = `"${baseUrl}"`;
+  }
+
+  replace(ms, replacements);
 
   // Remove orphaned imports that are no longer referenced after replacements and pruning
   removeOrphanedImports(ms, normalizedId);

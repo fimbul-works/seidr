@@ -89,5 +89,5 @@ export const BOOL_ATTRIBUTES = new Set([
   "truespeed",
 ]);
 
-/** Default base URL for SSR. */
-export const DEFAULT_BASE_URL = import.meta.env.SEIDR_BASE_URL || "http://localhost";
+/** Default base URL for SSR and routing. */
+export const SEIDR_BASE_URL = process.env.SEIDR_BASE_URL || "http://localhost";

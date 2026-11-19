@@ -47,7 +47,7 @@ export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, fal
   SeidrBuildPluginOptions | undefined,
   false
 >((options: SeidrBuildPluginOptions = {}, _meta) => {
-  const { disableSSR = false, target = "browser", include, exclude, svg = true } = options;
+  const { disableSSR = false, target = "browser", include, exclude, svg = true, baseURL } = options;
   const filter = createFilter(include, exclude);
   const isSvgEnabled = svg !== false && (!isObj(svg) || svg.enabled !== false);
 
@@ -77,7 +77,7 @@ export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, fal
         }
       }
 
-      return transformSource(id, code, envTarget, disableSSR);
+      return transformSource(id, code, envTarget, disableSSR, baseURL);
     },
     vite: {
       applyToEnvironment(env) {
@@ -90,7 +90,7 @@ export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, fal
           transform(code: string, id: string) {
             if (!filter(id)) return null;
             const envTarget = options.target ?? (env.config.consumer === "client" ? "browser" : "ssr");
-            return transformSource(id, code, envTarget, disableSSR);
+            return transformSource(id, code, envTarget, disableSSR, baseURL);
           },
         };
       },

@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV !== "production";
 
 export default defineConfig({
   publicDir: resolve(import.meta.dirname, "../../public"),
-  plugins: [seidrVitePlugin()],
+  plugins: [seidrVitePlugin({ baseURL: "https://fimbul.works" })],
   ssr: {
     noExternal: ["@fimbul-works/seidr", "@fimbul-works/seidr-router", "@fimbul-works/seidr-ui"],
   },

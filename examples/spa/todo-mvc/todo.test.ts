@@ -1,4 +1,4 @@
-import { type CleanupFunction, mount } from "@fimbul-works/seidr";
+import { type CleanupFunction, mount, SEIDR_BASE_URL } from "@fimbul-works/seidr";
 import { clearTestAppState } from "@fimbul-works/seidr/testing";
 import { JSDOM } from "jsdom";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
@@ -10,7 +10,7 @@ describe("TodoMVC", () => {
   let unmount: CleanupFunction;
 
   beforeEach(() => {
-    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", { url: "http://localhost" });
+    dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", { url: SEIDR_BASE_URL });
     doc = dom.window.document;
     dom.window.localStorage.clear();
     clearTestAppState();

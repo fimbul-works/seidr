@@ -6,7 +6,7 @@ const isDev = process.env.NODE_ENV !== "production";
 
 export default defineConfig({
   publicDir: resolve(import.meta.dirname, "../../public"),
-  plugins: [seidrVitePlugin({ disableSSR: true })],
+  plugins: [seidrVitePlugin({ disableSSR: true, baseURL: "https://fimbul.works" })],
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -20,7 +20,7 @@ export default defineConfig({
       },
       output: {
         format: "es",
-        entryFileNames: "assets/[name]-[hash].js",
+        entryFileNames: "assets/[name].js",
         assetFileNames: "assets/[name]-[hash][extname]",
         codeSplitting: false,
         comments: false,

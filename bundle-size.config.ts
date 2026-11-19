@@ -13,7 +13,7 @@ const config: BundleSizeOptions = {
     },
     {
       name: "SPA Examples",
-      include: "examples/spa/dist/*.js",
+      include: "examples/spa/dist/assets/*.js",
       exclude: "examples/spa/dist/particles.js",
     },
     // {

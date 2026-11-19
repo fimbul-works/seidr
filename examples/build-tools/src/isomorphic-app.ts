@@ -1,7 +1,7 @@
-import { createValue, inClient, inServer, isClient, isServer } from "@fimbul-works/seidr";
-import { $button, $div, $h1, $p, $span } from "@fimbul-works/seidr/html";
+import { createValue, inClient, inServer, isClient, isServer, SEIDR_BASE_URL } from "@fimbul-works/seidr";
+import { $a, $button, $div, $h1, $p, $span } from "@fimbul-works/seidr/html";
 import { getClientLocalStorageItem } from "./client-only-storage.js";
-import { SERVER_SECRET_DATABASE_KEY, loadServerDatabaseData } from "./server-only-secret.js";
+import { loadServerDatabaseData, SERVER_SECRET_DATABASE_KEY } from "./server-only-secret.js";
 
 /**
  * Isomorphic Seidr component demonstrating cross-bundler AST branch pruning.
@@ -35,7 +35,7 @@ export function createIsomorphicApp(initialCount = 0) {
     $h1({ textContent: "Seidr Cross-Bundler Isomorphic App" }),
     $p({}, [
       $span({ textContent: "Running Environment: " }),
-      $span({ id: "env-indicator", textContent: envName.as((val: string) => val) }),
+      $a({ href: SEIDR_BASE_URL, id: "env-indicator", textContent: envName.as((val: string) => val) }),
     ]),
     $p({}, [
       $span({ textContent: "Data Payload: " }),

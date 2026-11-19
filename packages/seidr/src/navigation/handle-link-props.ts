@@ -1,6 +1,6 @@
 import { isFn, isNullish, isStr } from "@fimbul-works/hvat";
 import { getAppState } from "../app-state/get-app-state.js";
-import { DEFAULT_BASE_URL } from "../constants.js";
+import { SEIDR_BASE_URL } from "../constants.js";
 import type { ReactiveValue, SeidrElementProps, SeidrElementTagNameMap } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
 import type { ObservableValue } from "../observable/types.js";
@@ -191,8 +191,8 @@ export const handleLinkProps = <
 
     // 6. Check if external link
     const hasWindowLocation = isClient() && window.location.origin !== "null" && window.location.href !== "about:blank";
-    const baseHref = hasWindowLocation ? window.location.href : DEFAULT_BASE_URL;
-    const currentOrigin = hasWindowLocation ? window.location.origin : new URL(DEFAULT_BASE_URL).origin;
+    const baseHref = hasWindowLocation ? window.location.href : SEIDR_BASE_URL;
+    const currentOrigin = hasWindowLocation ? window.location.origin : new URL(SEIDR_BASE_URL).origin;
 
     const isRelative = !/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(rawHref) && !rawHref.startsWith("//");
     let isSameOrigin = false;

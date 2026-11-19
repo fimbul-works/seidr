@@ -46,6 +46,13 @@ export interface SeidrBuildPluginOptions {
    * @default true
    */
   svg?: boolean | SeidrSvgPluginOptions;
+
+  /**
+   * Default base URL for routing.
+   * Replaces `process.env.SEIDR_BASE_URL`.
+   * @example "http://localhost"
+   */
+  baseURL?: string;
 }
 
 export type SeidrVitePluginOptions = SeidrBuildPluginOptions;

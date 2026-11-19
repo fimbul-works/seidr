@@ -12,7 +12,7 @@ import type { SeidrBabelPluginOptions } from "./types.js";
  * @returns {object} Configured Babel plugin
  */
 export function seidrBabelPlugin(_api: any, options: SeidrBabelPluginOptions = {}): object {
-  const { disableSSR = false, target = "browser" } = options;
+  const { disableSSR = false, target = "browser", baseURL } = options;
 
   return {
     name: "babel-plugin-seidr",
@@ -22,7 +22,7 @@ export function seidrBabelPlugin(_api: any, options: SeidrBabelPluginOptions = {
 
       if (/\.[cm]?[jt]sx?(\?.*)?$/.test(filename)) {
         try {
-          const result = transformSource(filename, code, target, disableSSR);
+          const result = transformSource(filename, code, target, disableSSR, baseURL);
           if (result?.code) {
             transformedCode = result.code;
           }
