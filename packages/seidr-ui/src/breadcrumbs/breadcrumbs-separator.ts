@@ -32,6 +32,6 @@ export function BreadcrumbsSeparator<T extends keyof SeidrElementTagNameMap = "s
       dataPart: DATA_PART_SEPARATOR,
       ...rest,
     } as SeidrElementProps<T>,
-    content !== undefined ? content : instance.separator,
+    content ?? instance.separator,
   );
 }

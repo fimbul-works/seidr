@@ -6,7 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
-import { DATA_COMPONENT_BREADCRUMBS } from "../constants.js";
+import { DATA_COMPONENT_BREADCRUMBS, DATA_PART_ROOT } from "../constants.js";
 import type { BreadcrumbsRootProps } from "./types.js";
 
 /**
@@ -28,6 +28,7 @@ export function BreadcrumbsRoot<T extends keyof SeidrElementTagNameMap = "nav">(
     {
       ariaLabel: ariaLabel ?? instance.ariaLabel,
       dataComponent: DATA_COMPONENT_BREADCRUMBS,
+      dataPart: DATA_PART_ROOT,
       ...rest,
     } as SeidrElementProps<T>,
     content,

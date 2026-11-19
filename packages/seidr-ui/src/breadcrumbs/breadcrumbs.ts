@@ -12,7 +12,7 @@ import type {
  * Unified all-in-one Breadcrumbs component.
  * Creates an accessible breadcrumb navigation hierarchy with WAI-ARIA compliance.
  */
-export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, children?: SeidrChild | SeidrChild[]) => {
+export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}) => {
   const { id, separator = "/", ariaLabel = "Breadcrumbs", items, className, rootProps = {}, listProps = {} } = props;
 
   const breadcrumbs = createBreadcrumbs({
@@ -20,16 +20,6 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
     separator,
     ariaLabel,
   });
-
-  if (children !== undefined) {
-    return breadcrumbs.Root(
-      {
-        className,
-        ...rootProps,
-      } as BreadcrumbsRootProps<"nav">,
-      children,
-    );
-  }
 
   let listChildren: SeidrChild | SeidrChild[] = [];
 
@@ -43,7 +33,7 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
       const isLast = mergeValues(
         () => {
           const arr = items();
-          if (!arr || arr.length === 0) return true;
+          if (!arr?.length) return true;
           return getKey(arr[arr.length - 1]) === getKey(itemVal());
         },
         {
@@ -67,10 +57,13 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
       const linkEl = breadcrumbs.Link(
         {
           as: itemVal().as,
-          href: itemVal.as((item) => unwrapValue(item.href)),
+          //          href: itemVal.as((item) => unwrapValue(item.href)),
+          href: itemVal().href,
           current: currentVal,
-          disabled: itemVal.as((item) => Boolean(unwrapValue(item.disabled))),
-          ariaCurrent: itemVal.as((item) => unwrapValue(item.ariaCurrent)),
+          //          disabled: itemVal.as((item) => !!unwrapValue(item.disabled)),
+          disabled: itemVal().disabled,
+          //          ariaCurrent: itemVal.as((item) => unwrapValue(item.ariaCurrent)),
+          ariaCurrent: itemVal().ariaCurrent,
           onclick: itemVal().onclick,
           ...(itemVal().linkProps ?? {}),
         } as BreadcrumbsLinkProps,
@@ -82,7 +75,7 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
         () => breadcrumbs.Separator(),
       );
 
-      return breadcrumbs.Item(itemVal().itemProps ?? {}, [linkEl, separatorEl as SeidrChild]);
+      return breadcrumbs.Item(itemVal().itemProps ?? {}, [linkEl, separatorEl]);
     });
   } else if (isArr(items)) {
     listChildren = items.map((item, index) => {

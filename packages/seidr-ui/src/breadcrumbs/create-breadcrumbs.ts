@@ -31,35 +31,35 @@ export function createBreadcrumbs(options: UseBreadcrumbsOptions = {}): Breadcru
       children?: SeidrChild | SeidrChild[],
     ) => {
       const [props, content] = resolvePropsAndChildren<BreadcrumbsRootProps<T>>(propsOrChildren, children);
-      return BreadcrumbsRoot({ instance, ...props }, content);
+      return BreadcrumbsRoot({ instance, ...props } as BreadcrumbsRootProps<T>, content);
     },
     List: <T extends keyof SeidrElementTagNameMap = "ol">(
       propsOrChildren?: BreadcrumbsListProps<T> | SeidrChild | SeidrChild[],
       children?: SeidrChild | SeidrChild[],
     ) => {
       const [props, content] = resolvePropsAndChildren<BreadcrumbsListProps<T>>(propsOrChildren, children);
-      return BreadcrumbsList({ instance, ...props }, content);
+      return BreadcrumbsList({ instance, ...props } as BreadcrumbsListProps<T>, content);
     },
     Item: <T extends keyof SeidrElementTagNameMap = "li">(
       propsOrChildren?: BreadcrumbsItemProps<T> | SeidrChild | SeidrChild[],
       children?: SeidrChild | SeidrChild[],
     ) => {
       const [props, content] = resolvePropsAndChildren<BreadcrumbsItemProps<T>>(propsOrChildren, children);
-      return BreadcrumbsItem({ instance, ...props }, content);
+      return BreadcrumbsItem({ instance, ...props } as BreadcrumbsItemProps<T>, content);
     },
     Link: <T extends keyof SeidrElementTagNameMap = "a">(
       propsOrChildren?: BreadcrumbsLinkProps<T> | SeidrChild | SeidrChild[],
       children?: SeidrChild | SeidrChild[],
     ) => {
       const [props, content] = resolvePropsAndChildren<BreadcrumbsLinkProps<T>>(propsOrChildren, children);
-      return BreadcrumbsLink({ instance, ...props }, content);
+      return BreadcrumbsLink({ instance, ...props } as BreadcrumbsLinkProps<T>, content);
     },
     Separator: <T extends keyof SeidrElementTagNameMap = "span">(
       propsOrChildren?: BreadcrumbsSeparatorProps<T> | SeidrChild | SeidrChild[],
       children?: SeidrChild | SeidrChild[],
     ) => {
       const [props, content] = resolvePropsAndChildren<BreadcrumbsSeparatorProps<T>>(propsOrChildren, children);
-      return BreadcrumbsSeparator({ instance, ...props }, content);
+      return BreadcrumbsSeparator({ instance, ...props } as BreadcrumbsSeparatorProps<T>, content);
     },
   };
 }

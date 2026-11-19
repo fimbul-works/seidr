@@ -1,3 +1,4 @@
+import { isUndef } from "@fimbul-works/hvat";
 import {
   $,
   type DerivedValue,
@@ -43,18 +44,18 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
 
   const currentObs = isValue<boolean | undefined>(current) ? current : undefined;
   const disabledObs = isValue<boolean | undefined>(disabled) ? disabled : undefined;
-  const isCurrentStatic = !currentObs && Boolean(current);
-  const isDisabledStatic = !disabledObs && Boolean(disabled);
+  const isCurrentStatic = !currentObs && !!current;
+  const isDisabledStatic = !disabledObs && !!disabled;
 
   let isEffectivelyDisabled: boolean | DerivedValue<boolean>;
   if (currentObs && disabledObs) {
-    isEffectivelyDisabled = mergeValues(() => Boolean(currentObs()) || Boolean(disabledObs()), {
+    isEffectivelyDisabled = mergeValues(() => !!currentObs() || !!disabledObs(), {
       parents: [currentObs, disabledObs],
     });
   } else if (currentObs) {
-    isEffectivelyDisabled = isDisabledStatic ? true : currentObs.as((c) => Boolean(c));
+    isEffectivelyDisabled = isDisabledStatic ? true : currentObs.as((c) => !!c);
   } else if (disabledObs) {
-    isEffectivelyDisabled = isCurrentStatic ? true : disabledObs.as((d) => Boolean(d));
+    isEffectivelyDisabled = isCurrentStatic ? true : disabledObs.as((d) => !!d);
   } else {
     isEffectivelyDisabled = isCurrentStatic || isDisabledStatic;
   }
@@ -63,6 +64,7 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
 
   const ariaCurrentObs = isValue<string | undefined>(ariaCurrent) ? ariaCurrent : undefined;
   let resolvedARIACurrent: string | DerivedValue<string | undefined> | undefined;
+
   if (currentObs || (isCurrentStatic && ariaCurrentObs)) {
     resolvedARIACurrent = mergeValues(
       () => (!unwrapValue(current) ? undefined : (unwrapValue(ariaCurrent) ?? "page")),
@@ -78,12 +80,12 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
     dataComponent,
     dataPart,
     ...rest,
-    ...(href !== undefined ? { href } : {}),
+    ...(!isUndef(href) ? { href } : {}),
     ...(isEffectivelyDisabled !== false ? { disabled: isEffectivelyDisabled } : {}),
-    ...(customRole !== undefined ? { role: customRole } : {}),
-    ...(customTabIndex !== undefined ? { tabIndex: customTabIndex } : {}),
-    ...(resolvedARIACurrent !== undefined ? { ariaCurrent: resolvedARIACurrent } : {}),
-    ...(dataCurrent !== undefined ? { dataCurrent } : {}),
+    ...(!isUndef(customRole) ? { role: customRole } : {}),
+    ...(!isUndef(customTabIndex) ? { tabIndex: customTabIndex } : {}),
+    ...(!isUndef(resolvedARIACurrent) ? { ariaCurrent: resolvedARIACurrent } : {}),
+    ...(!isUndef(dataCurrent) ? { dataCurrent } : {}),
   } as LinkElementProps<T>);
 
   return $(as, processedProps, content);
