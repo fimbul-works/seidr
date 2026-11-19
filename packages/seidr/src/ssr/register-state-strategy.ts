@@ -11,6 +11,7 @@ import { type HydrationStateTuple, packHydrationState, unpackHydrationState } fr
  */
 export const registerStateStrategy = (): void => {
   const appState = getAppState();
+
   appState.defineDataStrategy(
     DATA_KEY_STATE,
     // Capture function: extracts serializable values from all root Value instances into a deduplicated tuple array
@@ -50,4 +51,7 @@ export const registerStateStrategy = (): void => {
       appState.setData(DATA_KEY_STATE, values);
     },
   );
+
+  // Register cleanup
+  appState.onDestroy(() => appState.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy()));
 };

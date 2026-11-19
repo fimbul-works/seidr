@@ -155,7 +155,7 @@ export class AppState {
     this.cleanups.forEach((cleanupFn) => cleanupFn());
     this.cleanups.length = 0;
 
-    this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
+    // this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
     this.data.forEach((value) => isValue(value) && value.destroy());
     this.data.clear();
     this.strategies.clear();

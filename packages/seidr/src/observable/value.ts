@@ -67,7 +67,7 @@ export function createValue<T>(initialValue?: T, options: ValueOptions = {}): Va
 
   try {
     appState = getAppState();
-    states = appState.getData<Map<string, Value>>(DATA_KEY_STATE) ?? new Map<string, Value>();
+    states = appState.getData<Map<string, Value>>(DATA_KEY_STATE, new Map<string, Value>());
 
     // Check for existing Value instance with same ID when an ID is explicitly specified
     if (options.id && states.has(id)) {

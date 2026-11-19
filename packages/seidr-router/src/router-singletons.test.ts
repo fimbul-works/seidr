@@ -20,7 +20,7 @@ describeDualMode("Router Singletons", ({ getDocument }) => {
   });
 
   afterEach(() => {
-    cleanup();
+    cleanup?.();
   });
 
   it("browserRouter should return the same instance", () => {

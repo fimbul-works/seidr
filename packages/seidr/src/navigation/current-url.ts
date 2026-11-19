@@ -1,6 +1,6 @@
 import { getAppState } from "../app-state/get-app-state.js";
-import { createValue } from "../observable/value.js";
 import type { Value } from "../observable/types.js";
+import { createValue } from "../observable/value.js";
 import { isClient } from "../util/environment/is-client.js";
 import { DATA_KEY_CURRENT_URL } from "./constants.js";
 
@@ -44,4 +44,3 @@ export const setCurrentUrl = (target: URL | string): void => {
   const next = target instanceof URL ? target : new URL(target, current().href);
   current(next);
 };
-

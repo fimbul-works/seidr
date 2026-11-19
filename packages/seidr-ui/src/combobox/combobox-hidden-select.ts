@@ -1,5 +1,5 @@
-import { $, List, type ObservableValue, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
-import { DATA_COMPONENT_COMBOBOX, DATA_PART_HIDDEN_SELECT } from "../constants.js";
+import { $, List, mergeStyleProps, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
+import { DATA_COMPONENT_COMBOBOX, DATA_PART_HIDDEN_SELECT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { ComboboxHiddenSelectProps, ComboboxItemData } from "./types.js";
 
 /**
@@ -12,25 +12,7 @@ export function ComboboxHiddenSelect(props: ComboboxHiddenSelectProps = {}): Sei
     throw new SeidrError("ComboboxHiddenSelect requires an instance coordinator");
   }
 
-  const visuallyHiddenStyle: Record<string, string | number> = {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: "1px",
-    margin: "-1px",
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    width: "1px",
-    whiteSpace: "nowrap",
-  };
-
-  const combinedStyle =
-    typeof userStyle === "object" && userStyle !== null
-      ? { ...visuallyHiddenStyle, ...userStyle }
-      : visuallyHiddenStyle;
-
-  const selectedOptionsObservable = combobox.selectedOptions as unknown as ObservableValue<ComboboxItemData[]>;
+  const selectedOptionsObservable = combobox.selectedOptions;
 
   return $(
     "select",
@@ -43,7 +25,7 @@ export function ComboboxHiddenSelect(props: ComboboxHiddenSelectProps = {}): Sei
       multiple: combobox.isMultiple ? true : undefined,
       dataComponent,
       dataPart: DATA_PART_HIDDEN_SELECT,
-      style: combinedStyle,
+      style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, userStyle),
       ...rest,
     },
     [

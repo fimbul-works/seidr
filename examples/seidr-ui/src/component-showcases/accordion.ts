@@ -1,4 +1,3 @@
-import { easeOutBack } from "@fimbul-works/flaedi";
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
 import { Accordion, createAccordion } from "@fimbul-works/seidr-ui";

@@ -1,7 +1,7 @@
 import type { ReactiveValue } from "../element/types.js";
 import type { DerivedValue } from "../observable/types.js";
+import { unwrapValue } from "../observable/unwrap-value.js";
 import { mergeValues } from "../observable/value.js";
-import { wrapValue } from "../observable/wrap-value.js";
 import { getCurrentUrl } from "./current-url.js";
 
 /**
@@ -16,22 +16,21 @@ export interface IsUrlActiveOptions {
  * Checks whether a given target URL or path is currently active relative to getCurrentUrl().
  * Returns a DerivedValue that reactively updates whenever the current URL changes.
  *
- * @param {ReactiveValue<string | URL>} href - Target link path or URL
+ * @param {ReactiveValue<string> | ReactiveValue<URL> | ReactiveValue<string | URL>} href - Target link path or URL
  * @param {IsUrlActiveOptions} [options] - Matching options
  * @returns {DerivedValue<boolean>} Reactive boolean indicating if the target URL is active
  */
 export const isUrlActive = (
-  href: ReactiveValue<string | URL>,
+  href: ReactiveValue<string> | ReactiveValue<URL> | ReactiveValue<string | URL>,
   options?: IsUrlActiveOptions,
 ): DerivedValue<boolean> => {
   const currentUrlValue = getCurrentUrl();
-  const wrappedHref = wrapValue(href);
   const exact = options?.exact ?? false;
 
   return mergeValues(
     () => {
       const current = currentUrlValue();
-      const rawHref = wrappedHref();
+      const rawHref = unwrapValue(href);
       if (!rawHref) {
         return false;
       }
@@ -88,6 +87,6 @@ export const isUrlActive = (
 
       return currentPath === targetPath || currentPath.startsWith(`${targetPath}/`);
     },
-    { parents: [currentUrlValue, wrappedHref] },
+    { parents: [currentUrlValue, href] },
   );
 };

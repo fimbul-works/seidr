@@ -1,5 +1,10 @@
 import { $, createRef, inClient, type SeidrElementTagNameMap, SeidrError } from "@fimbul-works/seidr";
-import { DATA_COMPONENT_SELECT, DATA_PART_HIDDEN_INPUT, DATA_PART_HIDDEN_SELECT } from "../constants.js";
+import {
+  DATA_COMPONENT_SELECT,
+  DATA_PART_HIDDEN_INPUT,
+  DATA_PART_HIDDEN_SELECT,
+  VISUALLY_HIDDEN_STYLES,
+} from "../constants.js";
 import type { SelectHiddenSelectProps, SelectItemData, SelectNode } from "./types.js";
 
 function flattenItems(nodes: SelectNode[]): SelectItemData[] {
@@ -40,19 +45,6 @@ export function SelectHiddenSelect(props: SelectHiddenSelectProps = {}): SeidrEl
     });
   });
 
-  const visuallyHiddenStyle: Record<string, string | number> = {
-    border: 0,
-    clip: "rect(0 0 0 0)",
-    clipPath: "inset(50%)",
-    height: "1px",
-    margin: "-1px",
-    overflow: "hidden",
-    padding: 0,
-    position: "absolute",
-    width: "1px",
-    whiteSpace: "nowrap",
-  };
-
   const renderOptions = (nodes: SelectNode[]) => {
     const flat = flattenItems(nodes);
     return flat.map((item) =>
@@ -89,7 +81,7 @@ export function SelectHiddenSelect(props: SelectHiddenSelectProps = {}): SeidrEl
       ariaHidden: "true",
       dataComponent,
       dataPart: DATA_PART_HIDDEN_SELECT,
-      style: visuallyHiddenStyle,
+      style: VISUALLY_HIDDEN_STYLES,
       ...rest,
     },
     renderOptions(select.normalizedOptions()),

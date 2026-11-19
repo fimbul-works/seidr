@@ -1,4 +1,4 @@
-import { isStr } from "@fimbul-works/hvat";
+import { isObj, isStr } from "@fimbul-works/hvat";
 import { createUnplugin, type UnpluginInstance } from "unplugin";
 import { isSvgComponent, loadSvgFile } from "./svg.js";
 import { transformSource } from "./transform.js";
@@ -49,7 +49,7 @@ export const unplugin: UnpluginInstance<SeidrBuildPluginOptions | undefined, fal
 >((options: SeidrBuildPluginOptions = {}, _meta) => {
   const { disableSSR = false, target = "browser", include, exclude, svg = true } = options;
   const filter = createFilter(include, exclude);
-  const isSvgEnabled = svg !== false && (typeof svg !== "object" || svg.enabled !== false);
+  const isSvgEnabled = svg !== false && (!isObj(svg) || svg.enabled !== false);
 
   return {
     name: "seidr",

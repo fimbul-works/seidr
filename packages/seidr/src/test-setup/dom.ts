@@ -1,5 +1,6 @@
 import { isArr, isFn, isNullish, isObj } from "@fimbul-works/hvat";
 import { expect } from "vitest";
+import { isCommentNode, isElementNode, isTextNode } from "../dom/type-guards.js";
 import { escapeHTML } from "../ssr/util/escape-string.js";
 
 /**
@@ -24,13 +25,13 @@ export function renderToHtml(node: any, depth = 0): string {
 
   // Handle Browser/JSDOM nodes
   if (typeof window !== "undefined") {
-    if (node instanceof Element) {
+    if (isElementNode(node)) {
       return node.outerHTML;
     }
-    if (node instanceof Text) {
+    if (isTextNode(node)) {
       return escapeHTML(node.textContent || "");
     }
-    if (node instanceof Comment) {
+    if (isCommentNode(node)) {
       return `<!--${node.nodeValue}-->`;
     }
   }

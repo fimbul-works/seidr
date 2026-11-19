@@ -1,11 +1,4 @@
-import {
-  createComponent,
-  createValue,
-  getCurrentUrl,
-  mount,
-  registerNavigationHandler,
-  setCurrentUrl,
-} from "@fimbul-works/seidr";
+import { createComponent, createValue, mount, registerNavigationHandler, setCurrentUrl } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { Link } from "./link.js";
@@ -50,6 +43,22 @@ describeDualMode("Link", ({ getDocument, isSSR }) => {
     expect(span?.getAttribute("data-component")).toBe("Link");
     expect(span?.getAttribute("role")).toBe("link");
     expect(String(span?.getAttribute("tabindex"))).toBe("0");
+    expect(span?.hasAttribute("href")).toBe(false);
+  });
+
+  it("supports reactive href updates and URL objects", () => {
+    const href = createValue<string | URL>("/docs");
+    const App = createComponent(() => Link({ href }, "Docs"));
+    unmount = mount(App, container);
+
+    const anchor = container.querySelector("a");
+    expect(anchor?.getAttribute("href")).toBe("/docs");
+
+    href("/guides");
+    expect(anchor?.getAttribute("href")).toBe("/guides");
+
+    href(new URL("http://localhost/docs?page=2"));
+    expect(anchor?.getAttribute("href")).toBe("http://localhost/docs?page=2");
   });
 
   it("applies active attributes when current URL matches href", () => {
@@ -215,6 +224,57 @@ describeDualMode("Link", ({ getDocument, isSSR }) => {
       anchor.click();
 
       expect(handler).not.toHaveBeenCalled();
+      unregister();
+    });
+
+    it("does not trigger navigation on Enter key for disabled custom element", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const onclick = vi.fn();
+      const unregister = registerNavigationHandler(handler);
+
+      const App = createComponent(() => Link({ as: "span", href: "/profile", disabled: true, onclick }, "Profile"));
+      unmount = mount(App, container);
+
+      const span = container.querySelector("span")!;
+      span.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+
+      expect(onclick).not.toHaveBeenCalled();
+      expect(handler).not.toHaveBeenCalled();
+      unregister();
+    });
+
+    it("does not double-invoke navigate when navigation handler returns false", () => {
+      const handler = vi.fn().mockReturnValue(false);
+      const unregister = registerNavigationHandler(handler);
+
+      const App = createComponent(() => Link({ href: "/profile" }, "Profile"));
+      unmount = mount(App, container);
+
+      const anchor = container.querySelector("a")!;
+      anchor.addEventListener("click", (e) => e.preventDefault());
+      anchor.click();
+
+      expect(handler).toHaveBeenCalledTimes(1);
+      unregister();
+    });
+
+    it("navigates with reactive href and URL instances", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      const href = createValue<string | URL>("/first");
+      const App = createComponent(() => Link({ href }, "Dynamic"));
+      unmount = mount(App, container);
+
+      const anchor = container.querySelector("a")!;
+      anchor.click();
+      expect(handler).toHaveBeenLastCalledWith("/first", undefined);
+
+      const baseOrigin = window.location.origin !== "null" ? window.location.origin : "http://localhost";
+      href(new URL("/second?tab=1", baseOrigin));
+      anchor.click();
+      expect(handler).toHaveBeenLastCalledWith("/second?tab=1", undefined);
+
       unregister();
     });
   }

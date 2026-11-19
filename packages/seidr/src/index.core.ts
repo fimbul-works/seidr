@@ -1,6 +1,7 @@
 export * from "./app-state/index.js";
 export * from "./component/index.js";
 export * from "./components/index.js";
+export { DEFAULT_BASE_URL } from "./constants.js";
 export * from "./dom/index.js";
 export * from "./element/index.js";
 export * from "./hooks/index.js";

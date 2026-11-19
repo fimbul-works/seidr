@@ -1,4 +1,5 @@
 import { easeInOutCubic, tween } from "@fimbul-works/flaedi";
+import { isObj } from "@fimbul-works/hvat";
 import {
   $,
   createValue,
@@ -65,7 +66,7 @@ export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div
   }
 
   const isAnimationEnabled = animation !== false;
-  const animOptions = typeof animation === "object" ? animation : {};
+  const animOptions = isObj(animation) ? animation : {};
   const durationMs = animOptions.duration ?? 250;
   const easingFn = animOptions.easing ?? easeInOutCubic;
 

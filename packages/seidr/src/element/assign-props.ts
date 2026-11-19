@@ -1,6 +1,5 @@
-import { isNullish } from "@fimbul-works/hvat";
-import { handleLinkProps } from "../navigation/handle-link-props.js";
 import { assignProp } from "./assign-prop.js";
+import { applyPropMutators } from "./prop-mutators.js";
 import type { SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -18,10 +17,8 @@ export const assignProps = <
   el: E,
   props: SeidrElementProps<K>,
 ): void => {
-  // Handle links
-  if (el.tagName.toLowerCase() === "a" || !isNullish((props as Record<string, unknown>).href)) {
-    props = handleLinkProps(el, props);
-  }
+  // Handle optional prop mutators
+  props = applyPropMutators(el, props);
 
   Object.entries(props).forEach(([prop, value]) => assignProp(el, prop, value));
 };

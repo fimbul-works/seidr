@@ -1,16 +1,17 @@
-import { isTruthy, isUndef } from "@fimbul-works/hvat";
+import { isNullish, isTruthy, isUndef } from "@fimbul-works/hvat";
 import {
   $,
+  type DerivedValue,
+  handleLinkProps,
   isObservable,
   isUrlActive,
+  type LinkElementProps,
   mergeValues,
   type Observable,
   resolvePropsAndChildren,
   type SeidrChild,
-  type SeidrElementProps,
   type SeidrElementTagNameMap,
   unwrapValue,
-  wrapValue,
 } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_LINK } from "../constants.js";
 import type { LinkProps } from "./types.js";
@@ -44,67 +45,61 @@ export function Link<T extends keyof SeidrElementTagNameMap = "a">(
     activeClass: activeClassName,
     inactiveClass: inactiveClassName,
     ariaCurrent = "page",
-    onkeydown: userOnKeyDown,
     ...restProps
   } = props;
 
-  const isCustomElement = as !== "a";
-  const wrappedHref = wrapValue(href);
-  const isActive = isUrlActive(wrappedHref, { exact });
+  const isActive = isNullish(href) ? undefined : isUrlActive(href, { exact });
 
   // Class name resolution based on active/inactive states
   const hasDynamicClass = !isUndef(activeClassName) || !isUndef(inactiveClassName);
   const classNameParents = [isActive, activeClassName, inactiveClassName, rawClassName].filter(isObservable);
 
-  const className = hasDynamicClass
-    ? mergeValues(
+  let className = rawClassName;
+  if (hasDynamicClass) {
+    if (classNameParents.length > 0) {
+      className = mergeValues(
         () => {
           const classes = [
             unwrapValue(rawClassName),
-            isActive() ? unwrapValue(activeClassName) : unwrapValue(inactiveClassName),
+            isActive?.() ? unwrapValue(activeClassName) : unwrapValue(inactiveClassName),
           ].filter(isTruthy);
           return classes.length > 0 ? classes.join(" ") : undefined;
         },
         { parents: classNameParents },
-      )
-    : rawClassName;
+      );
+    } else {
+      const classes = [unwrapValue(rawClassName), unwrapValue(inactiveClassName)].filter(isTruthy);
+      className = classes.length > 0 ? classes.join(" ") : undefined;
+    }
+  }
 
   // ARIA current attribute resolution when active
-  const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
-  const resolvedAriaCurrent = mergeValues(
-    () => {
-      if (!isActive()) {
-        return undefined;
-      }
-      const val = unwrapValue(ariaCurrent);
-      return val === false ? undefined : val === true || isUndef(val) ? "page" : val;
-    },
-    { parents: ariaCurrentParents },
-  );
-
-  // Keydown handler for custom non-anchor elements
-  const onkeydown = isCustomElement
-    ? (e: KeyboardEvent) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          (e.currentTarget as HTMLElement).click();
+  let resolvedAriaCurrent: DerivedValue<string | undefined> | undefined;
+  if (isActive) {
+    const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
+    resolvedAriaCurrent = mergeValues(
+      () => {
+        if (!isActive()) {
+          return undefined;
         }
-        (userOnKeyDown as any)?.(e);
-      }
-    : userOnKeyDown;
+        const val = unwrapValue(ariaCurrent);
+        return val === false ? undefined : val === true || isNullish(val) ? "page" : val;
+      },
+      { parents: ariaCurrentParents },
+    );
+  }
 
-  return $(
-    as,
-    {
-      dataComponent: DATA_COMPONENT_LINK,
-      dataCurrent: isActive.as((a) => (a ? "" : undefined)),
-      ...restProps,
-      href: wrappedHref,
-      disabled,
-      className,
-      ariaCurrent: resolvedAriaCurrent,
-      onkeydown,
-    } as unknown as SeidrElementProps<T>,
-    content,
-  );
+  const dataCurrent = isActive?.as((a) => (a ? "" : undefined));
+
+  const processedProps = handleLinkProps(as, {
+    dataComponent: DATA_COMPONENT_LINK,
+    ...restProps,
+    ...(dataCurrent !== undefined ? { dataCurrent } : {}),
+    ...(href !== undefined ? { href } : {}),
+    ...(disabled !== undefined ? { disabled } : {}),
+    ...(className !== undefined ? { className } : {}),
+    ...(resolvedAriaCurrent !== undefined ? { ariaCurrent: resolvedAriaCurrent } : {}),
+  } as LinkElementProps<T>);
+
+  return $(as, processedProps, content);
 }

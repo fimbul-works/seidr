@@ -1,3 +1,5 @@
+import { isStr } from "@fimbul-works/hvat";
+
 /** Node is an element. */
 export const TYPE_ELEMENT = 1;
 
@@ -86,3 +88,6 @@ export const BOOL_ATTRIBUTES = new Set([
   "selected",
   "truespeed",
 ]);
+
+/** Default base URL for SSR. */
+export const DEFAULT_BASE_URL = import.meta.env.SEIDR_BASE_URL || "http://localhost";

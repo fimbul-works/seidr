@@ -1,7 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getAppState } from "../app-state/get-app-state.js";
-import { createValue } from "../observable/value.js";
+import { $ } from "../element/create-element.js";
+import { getPropMutators } from "../element/prop-mutators.js";
+import type { SeidrElementProps } from "../element/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
+import { createValue } from "../observable/value.js";
 import { DATA_KEY_CURRENT_URL, DATA_KEY_NAVIGATION_HANDLERS } from "./constants.js";
 import { getCurrentUrl, setCurrentUrl } from "./current-url.js";
 import { getNavigationHandlers } from "./get-navigation-handlers.js";
@@ -294,10 +297,10 @@ describe("Navigation Utilities", () => {
 
       expect(handler).not.toHaveBeenCalled();
       expect(preventDefaultSpy).toHaveBeenCalled();
-      expect((props as any).href()).toBeUndefined();
-      expect((props as any).ariaDisabled()).toBe("true");
-      expect((props as any).dataDisabled()).toBe("");
-      expect((props as any).role()).toBe("link");
+      expect(unwrapValue((props as any).href)).toBeUndefined();
+      expect(unwrapValue((props as any).ariaDisabled)).toBe("true");
+      expect(unwrapValue((props as any).dataDisabled)).toBe("");
+      expect(unwrapValue((props as any).role)).toBe("link");
     });
 
     it("handles reactive disabled value changes", () => {
@@ -316,12 +319,159 @@ describe("Navigation Utilities", () => {
       expect((props as any).role()).toBe("link");
     });
 
-    it("assigns role=link and tabIndex=0 for non-anchor elements", () => {
+    it("assigns role=link and tabIndex=0 for non-anchor elements and omits href", () => {
       const el = document.createElement("span");
       const props = handleLinkProps(el, { href: "/about" });
 
       expect(unwrapValue((props as any).role)).toBe("link");
-      expect((props as any).tabIndex()).toBe(0);
+      expect(unwrapValue((props as any).tabIndex)).toBe(0);
+      expect((props as any).href).toBeUndefined();
+    });
+
+    it("handles reactive href updates alone and combined with reactive disabled", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      const href = createValue("/initial");
+      const el = document.createElement("a");
+      const props = handleLinkProps(el, { href });
+
+      expect((props as any).href()).toBe("/initial");
+      href("/updated");
+      expect((props as any).href()).toBe("/updated");
+
+      (props as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledWith("/updated", undefined);
+
+      const disabled = createValue(false);
+      const combined = handleLinkProps(el, { href, disabled });
+      expect((combined as any).href()).toBe("/updated");
+      href("/next");
+      expect((combined as any).href()).toBe("/next");
+      disabled(true);
+      expect((combined as any).href()).toBeUndefined();
+      disabled(false);
+      expect((combined as any).href()).toBe("/next");
+
+      unregister();
+    });
+
+    it("handles URL objects for href", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      const el = document.createElement("a");
+      const baseOrigin = window.location.origin !== "null" ? window.location.origin : "http://localhost";
+      const sameOriginUrl = new URL("/docs?q=1#sec", baseOrigin);
+      const sameOrigin = handleLinkProps(el, { href: sameOriginUrl });
+      expect((sameOrigin as any).href).toBe(sameOriginUrl.href);
+
+      (sameOrigin as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledWith("/docs?q=1#sec", undefined);
+
+      handler.mockClear();
+      const external = handleLinkProps(el, { href: new URL("https://example.com/docs") });
+      (external as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).not.toHaveBeenCalled();
+
+      unregister();
+    });
+
+    it("unwraps reactive target and download values", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      const el = document.createElement("a");
+      const target = createValue("_self");
+      const download = createValue(false);
+      const props = handleLinkProps(el, { href: "/file", target, download });
+
+      (props as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      target("_blank");
+      (props as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      target("_self");
+      download(true);
+      (props as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      unregister();
+    });
+
+    it("handles Enter key activation on non-anchor elements and blocks when disabled", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      const span = $("span", { href: "/profile" } as SeidrElementProps<any>, "Profile");
+      span.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(handler).toHaveBeenCalledWith("/profile", undefined);
+
+      handler.mockClear();
+      const disabledSpan = $("span", { href: "/profile", disabled: true } as SeidrElementProps<any>, "Profile");
+      expect(disabledSpan.hasAttribute("tabindex")).toBe(false);
+      disabledSpan.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(handler).not.toHaveBeenCalled();
+
+      const userKeydown = vi.fn((e: KeyboardEvent) => e.preventDefault());
+      const cancelledSpan = $(
+        "span",
+        { href: "/profile", onkeydown: userKeydown } as SeidrElementProps<any>,
+        "Profile",
+      );
+      cancelledSpan.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(userKeydown).toHaveBeenCalledTimes(1);
+      expect(handler).not.toHaveBeenCalled();
+
+      unregister();
+    });
+
+    it("leaves metadata tags <link> and <base> unchanged", () => {
+      const linkEl = document.createElement("link");
+      const linkProps = { rel: "stylesheet", href: "/app.css" };
+      expect(handleLinkProps(linkEl, linkProps as any)).toBe(linkProps);
+
+      const baseEl = document.createElement("base");
+      const baseProps = { href: "/" };
+      expect(handleLinkProps(baseEl, baseProps as any)).toBe(baseProps);
+    });
+
+    it("is idempotent when called multiple times on already handled props", () => {
+      const handler = vi.fn().mockReturnValue(false);
+      const unregister = registerNavigationHandler(handler);
+
+      const el = document.createElement("a");
+      const first = handleLinkProps(el, { href: "/about" });
+      const second = handleLinkProps(el, first);
+
+      expect(second).toBe(first);
+      (second as any).onclick(new MouseEvent("click", { cancelable: true }));
+      expect(handler).toHaveBeenCalledTimes(1);
+
+      unregister();
+    });
+
+    it("registers and unregisters the href prop mutator cleanly via registerNavigationHandler", () => {
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+
+      expect(getPropMutators("href")).toContain(handleLinkProps);
+
+      const span = $("span", { href: "/span-route" } as SeidrElementProps<any>, "Go");
+      expect(span.getAttribute("role")).toBe("link");
+      expect(span.getAttribute("tabindex")).toBe("0");
+      expect(span.hasAttribute("href")).toBe(false);
+      span.click();
+      expect(handler).toHaveBeenCalledWith("/span-route", undefined);
+
+      const metaLink = $("link", { rel: "stylesheet", href: "/app.css" });
+      expect(metaLink.hasAttribute("role")).toBe(false);
+      expect(metaLink.getAttribute("href")).toBe("/app.css");
+
+      unregister();
+      expect(getPropMutators("href")).toEqual([]);
     });
   });
 });

@@ -1,20 +1,7 @@
 import { isFn } from "@fimbul-works/hvat";
 import { $, createRef, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
-import { DATA_COMPONENT_FILE_FIELD, DATA_PART_HIDDEN_INPUT } from "../constants.js";
+import { DATA_COMPONENT_FILE_FIELD, DATA_PART_HIDDEN_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
 import type { FileFieldHiddenInputProps } from "./types.js";
-
-const HIDDEN_STYLES: Record<string, string | number> = {
-  border: 0,
-  clip: "rect(0 0 0 0)",
-  clipPath: "inset(50%)",
-  height: "1px",
-  margin: "-1px",
-  overflow: "hidden",
-  padding: 0,
-  position: "absolute",
-  width: "1px",
-  whiteSpace: "nowrap",
-};
 
 /**
  * Visually hidden native `<input type="file">` element.
@@ -71,7 +58,7 @@ export function FileFieldHiddenInput(
     readOnly: instance.isReadOnly,
     tabIndex: -1,
     ariaHidden: "true",
-    style: mergeStyleProps(HIDDEN_STYLES, userStyle),
+    style: mergeStyleProps(VISUALLY_HIDDEN_STYLES, userStyle),
     dataComponent,
     dataPart: DATA_PART_HIDDEN_INPUT,
     onchange: handleChange,
