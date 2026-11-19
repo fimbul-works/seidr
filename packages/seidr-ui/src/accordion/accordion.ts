@@ -30,7 +30,7 @@ export interface AccordionProps extends UseAccordionOptions {
  * Creates an accessible accordion with WAI-ARIA roving keyboard navigation,
  * single or multiple selection modes, and collapsible disclosure panels.
  */
-export const Accordion = createComponent((props: AccordionProps = {}, children?: SeidrChild | SeidrChild[]) => {
+export const Accordion = createComponent((props: AccordionProps = {}) => {
   const {
     className,
     items,
@@ -56,20 +56,15 @@ export const Accordion = createComponent((props: AccordionProps = {}, children?:
     id,
   });
 
-  const itemElements: SeidrChild | SeidrChild[] =
-    children !== undefined
-      ? children
-      : isValue<AccordionItemDescriptor[]>(items)
-        ? List(
-            items,
-            (item) => item.value,
-            (itemVal) => accordion.Item({ animation, ...itemVal() }),
-          )
-        : isArr(items)
-          ? items.map((item) => accordion.Item({ animation, ...item }))
-          : [];
-
-  const renderedItems = isArr(itemElements) ? itemElements : [itemElements];
+  const itemElements: SeidrChild | SeidrChild[] = isValue<AccordionItemDescriptor[]>(items)
+    ? List(
+        items,
+        (item) => item.value,
+        (itemVal) => accordion.Item({ animation, ...itemVal() }),
+      )
+    : isArr(items)
+      ? items.map((item) => accordion.Item({ animation, ...item }))
+      : [];
 
   return accordion.Root(
     {
@@ -77,6 +72,6 @@ export const Accordion = createComponent((props: AccordionProps = {}, children?:
       ...rootProps,
       ...rest,
     },
-    renderedItems,
+    itemElements,
   );
 }, "Accordion");
