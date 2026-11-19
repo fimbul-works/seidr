@@ -106,6 +106,8 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       expect(currentLink?.getAttribute("aria-disabled")).toBe("true");
       expect(currentLink?.hasAttribute("data-disabled")).toBe(true);
       expect(currentLink?.hasAttribute("href")).toBe(false);
+      expect(currentLink?.getAttribute("role")).toBe("link");
+      expect(currentLink?.hasAttribute("disabled")).toBe(false);
     });
 
     it("should be disabled and omit href when disabled is true", () => {
@@ -120,6 +122,8 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       expect(link?.getAttribute("aria-disabled")).toBe("true");
       expect(link?.hasAttribute("data-disabled")).toBe(true);
       expect(link?.hasAttribute("href")).toBe(false);
+      expect(link?.getAttribute("role")).toBe("link");
+      expect(link?.hasAttribute("disabled")).toBe(false);
     });
 
     it("should support custom element with role='link' and tabIndex", () => {
@@ -139,9 +143,65 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
 
       expect(activeSpan?.getAttribute("role")).toBe("link");
       expect(String(activeSpan?.getAttribute("tabindex"))).toBe("0");
+      expect(activeSpan?.hasAttribute("href")).toBe(false);
 
       expect(currentSpan?.getAttribute("role")).toBe("link");
       expect(currentSpan?.hasAttribute("tabindex")).toBe(false);
+      expect(currentSpan?.hasAttribute("href")).toBe(false);
+    });
+
+    it("updates href, current, and disabled states reactively", () => {
+      const href = createValue<string | URL>("/initial");
+      const current = createValue(false);
+      const disabled = createValue(false);
+
+      const root = setup(() => {
+        const breadcrumbs = createBreadcrumbs();
+        return breadcrumbs.Root([
+          breadcrumbs.List([breadcrumbs.Item([breadcrumbs.Link({ href, current, disabled }, "Dynamic")])]),
+        ]);
+      });
+
+      const link = root.querySelector("a");
+      expect(link?.getAttribute("href")).toBe("/initial");
+      expect(link?.hasAttribute("role")).toBe(false);
+      expect(link?.hasAttribute("aria-current")).toBe(false);
+      expect(link?.hasAttribute("aria-disabled")).toBe(false);
+
+      href("/updated");
+      expect(link?.getAttribute("href")).toBe("/updated");
+
+      disabled(true);
+      expect(link?.hasAttribute("href")).toBe(false);
+      expect(link?.getAttribute("role")).toBe("link");
+      expect(link?.getAttribute("aria-disabled")).toBe("true");
+      expect(link?.hasAttribute("data-disabled")).toBe(true);
+
+      disabled(false);
+      expect(link?.getAttribute("href")).toBe("/updated");
+      expect(link?.hasAttribute("aria-disabled")).toBe(false);
+
+      current(true);
+      expect(link?.hasAttribute("href")).toBe(false);
+      expect(link?.getAttribute("role")).toBe("link");
+      expect(link?.getAttribute("aria-current")).toBe("page");
+      expect(link?.hasAttribute("data-current")).toBe(true);
+      expect(link?.getAttribute("aria-disabled")).toBe("true");
+      expect(link?.hasAttribute("data-disabled")).toBe(true);
+    });
+
+    it("supports URL instances as href", () => {
+      const root = setup(() => {
+        const breadcrumbs = createBreadcrumbs();
+        return breadcrumbs.Root([
+          breadcrumbs.List([
+            breadcrumbs.Item([breadcrumbs.Link({ href: new URL("http://localhost/docs?page=3") }, "Docs")]),
+          ]),
+        ]);
+      });
+
+      const link = root.querySelector("a");
+      expect(link?.getAttribute("href")).toBe("http://localhost/docs?page=3");
     });
 
     it("navigates via core navigate() on click", () => {
@@ -173,6 +233,80 @@ describeDualMode("Breadcrumbs", ({ getDocument, isSSR }) => {
       // Clicking current link does not trigger navigation
       link2.click();
       expect(navigatedUrls).toEqual(["/dashboard"]);
+
+      unregister();
+    });
+
+    it("does not intercept external URLs or target=_blank and supports URL navigation without double-calling", () => {
+      if (isSSR) return;
+
+      const handler = vi.fn().mockReturnValue(false);
+      const unregister = registerNavigationHandler(handler);
+
+      const baseOrigin = window.location.origin !== "null" ? window.location.origin : "http://localhost";
+      const sameOriginUrl = new URL("/catalog/items?sort=asc", baseOrigin);
+
+      const root = setup(() => {
+        const breadcrumbs = createBreadcrumbs();
+        return breadcrumbs.Root([
+          breadcrumbs.List([
+            breadcrumbs.Item([breadcrumbs.Link({ href: "https://example.com/external" }, "External")]),
+            breadcrumbs.Item([breadcrumbs.Link({ href: "/blank", target: "_blank" }, "Blank")]),
+            breadcrumbs.Item([breadcrumbs.Link({ href: sameOriginUrl }, "SameOrigin")]),
+          ]),
+        ]);
+      });
+
+      const links = root.querySelectorAll("a");
+      for (const l of links) {
+        l.addEventListener("click", (e) => e.preventDefault());
+      }
+
+      (links[0] as HTMLAnchorElement).click();
+      (links[1] as HTMLAnchorElement).click();
+      expect(handler).not.toHaveBeenCalled();
+
+      (links[2] as HTMLAnchorElement).click();
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(handler).toHaveBeenCalledWith("/catalog/items?sort=asc", undefined);
+
+      unregister();
+    });
+
+    it("handles Enter activation on custom elements and respects disabled, current, and user onkeydown", () => {
+      if (isSSR) return;
+
+      const handler = vi.fn().mockReturnValue(true);
+      const unregister = registerNavigationHandler(handler);
+      const userKeydown = vi.fn((e: KeyboardEvent) => e.preventDefault());
+
+      const root = setup(() => {
+        const breadcrumbs = createBreadcrumbs();
+        return breadcrumbs.Root([
+          breadcrumbs.List([
+            breadcrumbs.Item([breadcrumbs.Link({ as: "span", href: "/active" }, "Active")]),
+            breadcrumbs.Item([breadcrumbs.Link({ as: "span", href: "/disabled", disabled: true }, "Disabled")]),
+            breadcrumbs.Item([breadcrumbs.Link({ as: "span", href: "/current", current: true }, "Current")]),
+            breadcrumbs.Item([
+              breadcrumbs.Link({ as: "span", href: "/cancelled", onkeydown: userKeydown }, "Cancelled"),
+            ]),
+          ]),
+        ]);
+      });
+
+      const spans = root.querySelectorAll("[data-part='Link']");
+      spans[0]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(handler).toHaveBeenCalledTimes(1);
+      expect(handler).toHaveBeenCalledWith("/active", undefined);
+
+      handler.mockClear();
+      spans[1]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      spans[2]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(handler).not.toHaveBeenCalled();
+
+      spans[3]?.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+      expect(userKeydown).toHaveBeenCalledTimes(1);
+      expect(handler).not.toHaveBeenCalled();
 
       unregister();
     });

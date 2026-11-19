@@ -1,15 +1,16 @@
 import {
   $,
+  type DerivedValue,
+  handleLinkProps,
   isObservable,
+  isValue,
+  type LinkElementProps,
   mergeValues,
-  navigate,
   resolvePropsAndChildren,
   type SeidrChild,
-  type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
   unwrapValue,
-  wrapValue,
 } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_BREADCRUMBS, DATA_PART_LINK } from "../constants.js";
 import type { BreadcrumbsLinkProps } from "./types.js";
@@ -30,9 +31,9 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
     ariaCurrent = "page",
     role: customRole,
     tabIndex: customTabIndex,
+    dataComponent = DATA_COMPONENT_BREADCRUMBS,
+    dataPart = DATA_PART_LINK,
     instance,
-    onclick: userOnClick,
-    onkeydown: userOnKeyDown,
     ...rest
   } = props;
 
@@ -40,91 +41,50 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
     throw new SeidrError("BreadcrumbsLink requires an instance coordinator");
   }
 
-  const currentVal = wrapValue(current);
-  const disabledVal = wrapValue(disabled);
+  const currentObs = isValue<boolean | undefined>(current) ? current : undefined;
+  const disabledObs = isValue<boolean | undefined>(disabled) ? disabled : undefined;
+  const isCurrentStatic = !currentObs && Boolean(current);
+  const isDisabledStatic = !disabledObs && Boolean(disabled);
 
-  const isEffectivelyDisabled = mergeValues(() => currentVal() || disabledVal(), {
-    parents: [currentVal, disabledVal],
-  });
+  let isEffectivelyDisabled: boolean | DerivedValue<boolean>;
+  if (currentObs && disabledObs) {
+    isEffectivelyDisabled = mergeValues(() => Boolean(currentObs()) || Boolean(disabledObs()), {
+      parents: [currentObs, disabledObs],
+    });
+  } else if (currentObs) {
+    isEffectivelyDisabled = isDisabledStatic ? true : currentObs.as((c) => Boolean(c));
+  } else if (disabledObs) {
+    isEffectivelyDisabled = isCurrentStatic ? true : disabledObs.as((d) => Boolean(d));
+  } else {
+    isEffectivelyDisabled = isCurrentStatic || isDisabledStatic;
+  }
 
-  const resolvedAriaCurrent = mergeValues(
-    () => {
-      if (!currentVal()) return undefined;
-      const custom = unwrapValue(ariaCurrent);
-      return custom ?? "page";
-    },
-    {
-      parents: [currentVal, ariaCurrent].filter(isObservable),
-    },
-  );
+  const dataCurrent = currentObs ? currentObs.as((c) => (c ? "" : undefined)) : isCurrentStatic ? "" : undefined;
 
-  const dataCurrent = currentVal.as((c) => (c ? "" : undefined));
-  const ariaDisabled = isEffectivelyDisabled.as((d) => (d ? "true" : undefined));
-  const dataDisabled = isEffectivelyDisabled.as((d) => (d ? "" : undefined));
+  const ariaCurrentObs = isValue<string | undefined>(ariaCurrent) ? ariaCurrent : undefined;
+  let resolvedAriaCurrent: string | DerivedValue<string | undefined> | undefined;
+  if (currentObs || (isCurrentStatic && ariaCurrentObs)) {
+    resolvedAriaCurrent = mergeValues(
+      () => (!unwrapValue(current) ? undefined : (unwrapValue(ariaCurrent) ?? "page")),
+      {
+        parents: [currentObs, ariaCurrentObs].filter(isObservable),
+      },
+    );
+  } else {
+    resolvedAriaCurrent = isCurrentStatic ? (unwrapValue(ariaCurrent) ?? "page") : undefined;
+  }
 
-  const isCustom = as !== "a";
-  const role = isCustom ? (customRole ?? "link") : customRole;
-  const tabIndex = isCustom ? (customTabIndex ?? isEffectivelyDisabled.as((d) => (d ? undefined : 0))) : customTabIndex;
+  const processedProps = handleLinkProps(as, {
+    dataComponent,
+    dataPart,
+    ...rest,
+    ...(href !== undefined ? { href } : {}),
+    ...(isEffectivelyDisabled !== false ? { disabled: isEffectivelyDisabled } : {}),
+    ...(customRole !== undefined ? { role: customRole } : {}),
+    ...(customTabIndex !== undefined ? { tabIndex: customTabIndex } : {}),
+    ...(resolvedAriaCurrent !== undefined ? { ariaCurrent: resolvedAriaCurrent } : {}),
+    ...(dataCurrent !== undefined ? { dataCurrent } : {}),
+  } as LinkElementProps<T>);
 
-  const onclick = (e: MouseEvent) => {
-    if (isEffectivelyDisabled()) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
-      return;
-    }
-
-    if (userOnClick) {
-      (userOnClick as (ev: MouseEvent) => void)(e);
-      if (e.defaultPrevented) return;
-    }
-
-    // Pass through modifier keys or non-primary clicks (middle-click, new tab, etc.)
-    if (e.button !== 0 || e.metaKey || e.altKey || e.ctrlKey || e.shiftKey) {
-      return;
-    }
-
-    const targetHref = unwrapValue(href);
-    if (targetHref) {
-      const handled = navigate(targetHref);
-      if (handled) {
-        e.preventDefault();
-        return;
-      }
-    }
-  };
-
-  const onkeydown = (e: KeyboardEvent) => {
-    if (isCustom && e.key === "Enter") {
-      if (isEffectivelyDisabled()) {
-        e.preventDefault();
-        return;
-      }
-      (e.currentTarget as HTMLElement).click();
-    }
-    if (userOnKeyDown) {
-      (userOnKeyDown as (ev: KeyboardEvent) => void)(e);
-    }
-  };
-
-  const resolvedHref = isEffectivelyDisabled.as((d) => (d ? undefined : unwrapValue(href)));
-
-  return $(
-    as,
-    {
-      dataComponent: DATA_COMPONENT_BREADCRUMBS,
-      dataPart: DATA_PART_LINK,
-      role,
-      tabIndex,
-      href: !isCustom ? resolvedHref : undefined,
-      disabled: isEffectivelyDisabled,
-      ariaCurrent: resolvedAriaCurrent,
-      ariaDisabled,
-      dataDisabled,
-      dataCurrent,
-      onclick,
-      onkeydown,
-      ...rest,
-    } as SeidrElementProps<T>,
-    content,
-  );
+  return $(as, processedProps, content);
 }

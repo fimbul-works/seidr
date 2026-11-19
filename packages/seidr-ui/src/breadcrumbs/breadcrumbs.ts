@@ -34,7 +34,10 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
   let listChildren: SeidrChild | SeidrChild[] = [];
 
   if (isValue<BreadcrumbItemDescriptor[]>(items)) {
-    const getKey = (item: BreadcrumbItemDescriptor) => unwrapValue(item.href) ?? String(item.label);
+    const getKey = (item: BreadcrumbItemDescriptor) => {
+      const rawHref = unwrapValue(item.href);
+      return rawHref instanceof URL ? rawHref.href : (rawHref ?? String(item.label));
+    };
 
     listChildren = List(items, getKey, (itemVal) => {
       const isLast = mergeValues(
@@ -64,13 +67,13 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
       const linkEl = breadcrumbs.Link(
         {
           as: itemVal().as,
-          href: itemVal().href,
+          href: itemVal.as((item) => unwrapValue(item.href)),
           current: currentVal,
-          disabled: itemVal().disabled,
-          ariaCurrent: itemVal().ariaCurrent,
+          disabled: itemVal.as((item) => Boolean(unwrapValue(item.disabled))),
+          ariaCurrent: itemVal.as((item) => unwrapValue(item.ariaCurrent)),
           onclick: itemVal().onclick,
           ...(itemVal().linkProps ?? {}),
-        } as BreadcrumbsLinkProps<any>,
+        } as BreadcrumbsLinkProps,
         itemVal().label,
       );
 
@@ -95,7 +98,7 @@ export const Breadcrumbs = createComponent((props: BreadcrumbsProps = {}, childr
           ariaCurrent,
           onclick,
           ...(linkProps ?? {}),
-        } as BreadcrumbsLinkProps<any>,
+        } as BreadcrumbsLinkProps,
         label,
       );
 

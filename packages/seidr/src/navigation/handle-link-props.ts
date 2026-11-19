@@ -1,4 +1,5 @@
 import { isFn, isNullish, isStr } from "@fimbul-works/hvat";
+import { getAppState } from "../app-state/get-app-state.js";
 import { DEFAULT_BASE_URL } from "../constants.js";
 import type { ReactiveValue, SeidrElementProps, SeidrElementTagNameMap } from "../element/types.js";
 import { isValue } from "../observable/type-guards.js";
@@ -6,9 +7,8 @@ import type { ObservableValue } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { mergeValues } from "../observable/value.js";
 import { isClient } from "../util/environment/is-client.js";
+import { DATA_KEY_HANDLED_LINK_PROPS } from "./constants.js";
 import { navigate } from "./navigate.js";
-
-const handledProps = new WeakSet<object>();
 
 /**
  * Extended link element properties accepted by {@link handleLinkProps}.
@@ -54,7 +54,9 @@ export const handleLinkProps = <
   link: E | K,
   props: LinkElementProps<K> | SeidrElementProps<K>,
 ): SeidrElementProps<K> => {
-  if (handledProps.has(props)) {
+  const appState = getAppState();
+  const existingHandled = appState.getData<WeakSet<object>>(DATA_KEY_HANDLED_LINK_PROPS);
+  if (existingHandled?.has(props)) {
     return props as SeidrElementProps<K>;
   }
 
@@ -265,6 +267,11 @@ export const handleLinkProps = <
     onclick,
   } as SeidrElementProps<K>;
 
-  handledProps.add(result);
+  let handled = existingHandled;
+  if (!handled) {
+    handled = new WeakSet<object>();
+    appState.setData(DATA_KEY_HANDLED_LINK_PROPS, handled);
+  }
+  handled.add(result);
   return result;
 };

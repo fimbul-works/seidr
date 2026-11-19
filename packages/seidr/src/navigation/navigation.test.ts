@@ -1,11 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { getAppState } from "../app-state/get-app-state.js";
+import { AppState } from "../app-state/class-app-state.js";
+import { getAppState, setAppStateProvider } from "../app-state/get-app-state.js";
 import { $ } from "../element/create-element.js";
 import { getPropMutators } from "../element/prop-mutators.js";
 import type { SeidrElementProps } from "../element/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
 import { createValue } from "../observable/value.js";
-import { DATA_KEY_CURRENT_URL, DATA_KEY_NAVIGATION_HANDLERS } from "./constants.js";
+import { DATA_KEY_CURRENT_URL, DATA_KEY_HANDLED_LINK_PROPS, DATA_KEY_NAVIGATION_HANDLERS } from "./constants.js";
 import { getCurrentUrl, setCurrentUrl } from "./current-url.js";
 import { getNavigationHandlers } from "./get-navigation-handlers.js";
 import { handleLinkProps } from "./handle-link-props.js";
@@ -18,6 +19,7 @@ describe("Navigation Utilities", () => {
   beforeEach(() => {
     getAppState().deleteData(DATA_KEY_NAVIGATION_HANDLERS);
     getAppState().deleteData(DATA_KEY_CURRENT_URL);
+    getAppState().deleteData(DATA_KEY_HANDLED_LINK_PROPS);
     vi.restoreAllMocks();
   });
 
@@ -472,6 +474,32 @@ describe("Navigation Utilities", () => {
 
       unregister();
       expect(getPropMutators("href")).toEqual([]);
+    });
+
+    it("stores handled props WeakSet in AppState for cross-request isolation", () => {
+      const prevProvider = getAppState;
+      const appStateA = new AppState(1);
+      const appStateB = new AppState(2);
+
+      try {
+        setAppStateProvider(() => appStateA);
+        const el = document.createElement("a");
+        expect(appStateA.hasData(DATA_KEY_HANDLED_LINK_PROPS)).toBe(false);
+
+        const handled = handleLinkProps(el, { href: "/about" });
+        expect(appStateA.hasData(DATA_KEY_HANDLED_LINK_PROPS)).toBe(true);
+        expect(appStateA.getData<WeakSet<object>>(DATA_KEY_HANDLED_LINK_PROPS).has(handled)).toBe(true);
+        expect(handleLinkProps(el, handled)).toBe(handled);
+
+        // Switching AppState does not leak handledProps tracking across requests
+        setAppStateProvider(() => appStateB);
+        expect(appStateB.hasData(DATA_KEY_HANDLED_LINK_PROPS)).toBe(false);
+        const rehandled = handleLinkProps(el, handled);
+        expect(rehandled).not.toBe(handled);
+        expect(appStateB.getData<WeakSet<object>>(DATA_KEY_HANDLED_LINK_PROPS).has(rehandled)).toBe(true);
+      } finally {
+        setAppStateProvider(prevProvider);
+      }
     });
   });
 });

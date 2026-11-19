@@ -12,15 +12,21 @@ import type {
  */
 export interface BreadcrumbItemDescriptor<T extends keyof SeidrElementTagNameMap = "a"> {
   /** The URL or path to navigate to */
-  href?: ReactiveValue<string>;
+  href?:
+    | ReactiveValue<string>
+    | ReactiveValue<URL>
+    | ReactiveValue<string | URL>
+    | ObservableValue<string | undefined>
+    | ObservableValue<URL | undefined>
+    | ObservableValue<string | URL | undefined>;
   /** The visible label of the breadcrumb item */
   label: SeidrChild;
   /** Whether this breadcrumb item represents the current page */
   current?: ReactiveValue<boolean>;
   /** Whether the breadcrumb item is disabled */
-  disabled?: ReactiveValue<boolean>;
+  disabled?: ReactiveValue<boolean> | ObservableValue<boolean | undefined>;
   /** Custom aria-current attribute (defaults to "page" when current) */
-  ariaCurrent?: ReactiveValue<string>;
+  ariaCurrent?: ReactiveValue<string> | ObservableValue<string | undefined>;
   /** Element tag name */
   as?: T;
   /** Props passed to the wrapper <li> element */
@@ -98,10 +104,16 @@ export type BreadcrumbsItemProps<T extends keyof SeidrElementTagNameMap = "li"> 
 
 export interface BreadcrumbsLinkOptions<T extends keyof SeidrElementTagNameMap = "a"> {
   as?: T;
-  href?: ReactiveValue<string>;
+  href?:
+    | ReactiveValue<string>
+    | ReactiveValue<URL>
+    | ReactiveValue<string | URL>
+    | ObservableValue<string | undefined>
+    | ObservableValue<URL | undefined>
+    | ObservableValue<string | URL | undefined>;
   current?: ReactiveValue<boolean>;
-  disabled?: ReactiveValue<boolean>;
-  ariaCurrent?: ReactiveValue<string>;
+  disabled?: ReactiveValue<boolean> | ObservableValue<boolean | undefined>;
+  ariaCurrent?: ReactiveValue<string> | ObservableValue<string | undefined>;
   role?: ReactiveValue<string>;
   tabIndex?: ReactiveValue<number>;
 }
