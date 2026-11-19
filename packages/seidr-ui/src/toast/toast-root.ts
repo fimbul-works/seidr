@@ -129,13 +129,13 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
     if (hasSwipeMoveStarted) {
       swipeDelta = delta;
       dispatchSwipeEvent(rootEl, TOAST_SWIPE_MOVE_EVENT, toast.onSwipeMove, eventDetail);
-      rootEl.setAttribute(dataSwipe, "move");
+      rootEl.setAttribute("data-swipe", "move");
       rootEl.style.setProperty("--toast-swipe-move-x", `${delta.x}px`);
       rootEl.style.setProperty("--toast-swipe-move-y", `${delta.y}px`);
     } else if (isDeltaInDirection(delta, direction, moveStartBuffer)) {
       swipeDelta = delta;
       dispatchSwipeEvent(rootEl, TOAST_SWIPE_START_EVENT, toast.onSwipeStart, eventDetail);
-      rootEl.setAttribute(dataSwipe, "start");
+      rootEl.setAttribute("data-swipe", "start");
       const target = e.target as HTMLElement | null;
       if (target && typeof target.setPointerCapture === "function") {
         target.setPointerCapture(e.pointerId);
@@ -166,7 +166,7 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
 
       if (isDeltaInDirection(delta, direction, threshold)) {
         dispatchSwipeEvent(rootEl, TOAST_SWIPE_END_EVENT, toast.onSwipeEnd, eventDetail);
-        rootEl.setAttribute(dataSwipe, "end");
+        rootEl.setAttribute("data-swipe", "end");
         rootEl.style.removeProperty("--toast-swipe-move-x");
         rootEl.style.removeProperty("--toast-swipe-move-y");
         rootEl.style.setProperty("--toast-swipe-end-x", `${delta.x}px`);
@@ -174,7 +174,7 @@ export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
         toast.close();
       } else {
         dispatchSwipeEvent(rootEl, TOAST_SWIPE_CANCEL_EVENT, toast.onSwipeCancel, eventDetail);
-        rootEl.setAttribute(dataSwipe, "cancel");
+        rootEl.setAttribute("data-swipe", "cancel");
         rootEl.style.removeProperty("--toast-swipe-move-x");
         rootEl.style.removeProperty("--toast-swipe-move-y");
         rootEl.style.removeProperty("--toast-swipe-end-x");
