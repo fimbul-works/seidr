@@ -16,14 +16,19 @@ const config: BundleSizeOptions = {
       include: "examples/spa/dist/*.js",
       exclude: "examples/spa/dist/particles.js",
     },
-    {
-      name: "Loiske Particle Shader",
-      include: "public/particles.js",
-    },
+    // {
+    //   name: "Loiske Particle Shader",
+    //   include: "public/particles.js",
+    // },
     {
       name: "SSR Examples",
       include: "examples/ssr/dist/**/*.js",
       exclude: "examples/ssr/dist/particles.js",
+    },
+    {
+      name: "Seidr UI Showcase",
+      include: "examples/seidr-ui/dist/**/*.js",
+      exclude: "examples/seidr-ui/dist/particles.js",
     },
   ],
   json: "bundle-sizes/@date-@time.json",

@@ -3,6 +3,8 @@ import { resolve } from "node:path";
 import { seidrVitePlugin } from "@fimbul-works/seidr-build-tools/vite";
 import { build } from "vite";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 const rootDir = import.meta.dirname;
 const outDir = resolve(rootDir, "dist");
 
@@ -68,25 +70,26 @@ for (const app of exampleDirs) {
     build: {
       outDir,
       emptyOutDir: false,
-      minify: false,
-      sourcemap: false,
-      target: "chrome107",
+      sourcemap: isDev ? "inline" : false,
       modulePreload: { polyfill: false },
+      minify: isDev ? false : "esbuild",
+      target: "esnext",
       rollupOptions: {
         input: resolve(rootDir, app, "index.html"),
         output: {
           format: "es",
-          entryFileNames: `${app}.js`,
-          chunkFileNames: `${app}/[name]-[hash].js`,
-          assetFileNames: "assets/[name]-[hash][extname]",
+          entryFileNames: `assets/${app}-[hash].js`,
+          chunkFileNames: `assets/${app}-[name]-[hash].js`,
+          assetFileNames: `assets/${app}-[name]-[hash][extname]`,
           codeSplitting: false,
+          comments: false,
         },
         treeshake: true,
         external: ["node:fs", "node:path", "node:async_hooks"],
       },
     },
     esbuild: {
-      drop: ["console", "debugger"],
+      drop: isDev ? [] : ["console", "debugger"],
     },
   });
 }

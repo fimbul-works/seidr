@@ -8,30 +8,31 @@ export default defineConfig({
   publicDir: resolve(import.meta.dirname, "../../public"),
   plugins: [seidrVitePlugin()],
   ssr: {
-    noExternal: ["@fimbul-works/seidr", "@fimbul-works/seidr-router", "@fimbul-works/seidr-random"],
+    noExternal: ["@fimbul-works/seidr", "@fimbul-works/seidr-router", "@fimbul-works/seidr-ui"],
   },
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    sourcemap: isDev,
+    sourcemap: isDev ? "inline" : false,
     modulePreload: { polyfill: false },
-    minify: false,
+    minify: isDev ? false : "esbuild",
     target: "esnext",
     rollupOptions: {
       input: {
-        blog: resolve(import.meta.dirname, "index.html"),
+        "blog-client": resolve(import.meta.dirname, "index.html"),
       },
       output: {
         format: "es",
-        entryFileNames: () => "[name].js",
+        entryFileNames: "assets/[name].js",
+        assetFileNames: "assets/[name]-[hash][extname]",
+        codeSplitting: false,
+        comments: false,
       },
       treeshake: true,
-      inputOptions: {
-        experimental: {
-          attachDebugInfo: "none",
-        },
-      },
       external: ["node:fs", "node:path", "node:async_hooks"],
     },
+  },
+  esbuild: {
+    drop: isDev ? [] : ["console", "debugger"],
   },
 } as UserConfig);
