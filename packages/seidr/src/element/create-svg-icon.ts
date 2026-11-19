@@ -8,7 +8,7 @@ import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isClient } from "../util/environment/is-client.js";
 import { isServer } from "../util/environment/is-server.js";
 import { assignProps } from "./assign-props.js";
-import type { ReactiveStyleDeclaration, ReactiveValue } from "./types.js";
+import type { ReactiveStyleDeclaration, ReactiveValue, SeidrElementProps } from "./types.js";
 import type { SVGAttributes } from "./types.svg.js";
 
 export type SvgIconProps = Omit<Partial<SVGAttributes>, "className" | "style" | "ref"> & {
@@ -66,28 +66,28 @@ export function createSvgIcon(rawSvgMarkup: string): SvgIconFactory {
     // 1. Server-Side Rendering
     if (isServer()) {
       const doc = getDocument();
-      const el = doc.createElement("svg") as unknown as SVGSVGElement;
+      const el = doc.createElement("svg");
 
       const scope = getComponentScope();
-      scope?.trackChild?.(el as any);
+      scope?.trackChild?.(el);
 
       const mergedProps = props ? { ...baseAttrs, ...props } : baseAttrs;
-      assignProps(el as any, mergedProps as any);
-      (el as any).innerHTML = innerContent;
+      assignProps(el, mergedProps as SeidrElementProps<any>);
+      el.innerHTML = innerContent;
 
-      return el;
+      return el as unknown as SVGSVGElement;
     }
 
     // 2. Client Hydration
     if (isHydrating()) {
       const hydrationContext = getHydrationContext();
       if (hydrationContext && !hydrationContext.isMismatched()) {
-        const claimed = hydrationContext.claim<SVGSVGElement>("svg");
+        const claimed = hydrationContext.claim("svg");
         if (claimed && !(claimed as unknown as HydrationMismatchNode).isHydrationMismatch) {
           if (props) {
-            assignProps(claimed as any, props as any);
+            assignProps(claimed, props as SeidrElementProps<any>);
           }
-          return claimed;
+          return claimed as SVGSVGElement;
         }
       }
     }
@@ -98,14 +98,12 @@ export function createSvgIcon(rawSvgMarkup: string): SvgIconFactory {
     }
 
     const node = template?.content?.firstElementChild;
-    const el = node
-      ? (node.cloneNode(true) as SVGSVGElement)
-      : (getDocument().createElement("svg") as unknown as SVGSVGElement);
+    const el = node ? (node.cloneNode(true) as HTMLElement) : getDocument().createElement("svg");
 
     if (props) {
-      assignProps(el as any, props as any);
+      assignProps(el, props as SeidrElementProps<any>);
     }
 
-    return el;
+    return el as unknown as SVGSVGElement;
   };
 }
