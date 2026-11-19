@@ -23,8 +23,8 @@ export function setAppStateID(id: number) {
 export function clearTestAppState() {
   // Clean up data
   try {
+    testAppState.onDestroy(clearComponentRegistry);
     testAppState.destroy();
-    clearComponentRegistry();
   } catch {}
 }
 

@@ -29,7 +29,7 @@ export const setAppStateProvider = (fn: () => AppState) => {
  */
 export const setAppStateID = (id: number) => {
   const state = getAppState();
+  state.onDestroy(clearComponentRegistry);
   state.destroy();
-  clearComponentRegistry();
   (state as any).ctxID = id;
 };

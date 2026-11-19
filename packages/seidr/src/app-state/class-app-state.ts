@@ -3,6 +3,7 @@ import { DATA_KEY_HYDRATION_DATA } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
+import type { CleanupFunction } from "../types.js";
 import type { CaptureDataFn, DataStrategy, RestoreDataFn } from "./types.js";
 
 /**
@@ -35,6 +36,11 @@ export class AppState {
    * @public
    */
   public readonly strategies = new Map<string, DataStrategy>();
+
+  /**
+   * Cleanup functions to be called when the app state is destroyed.
+   */
+  private readonly cleanups: CleanupFunction[] = [];
 
   /**
    * Creates a new AppState instance.
@@ -128,11 +134,26 @@ export class AppState {
   }
 
   /**
+   * Register a cleanup function to be called when the app state is destroyed.
+   *
+   * @param cleanupFn - The cleanup function to register.
+   */
+  onDestroy(cleanupFn: CleanupFunction): void {
+    if (process.env.SEIDR_DISABLE_SSR) return;
+
+    if (this.cleanups.includes(cleanupFn)) return;
+    this.cleanups.push(cleanupFn);
+  }
+
+  /**
    * Destroy the application state.
    * @internal
    */
   destroy(): void {
     if (process.env.SEIDR_DISABLE_SSR) return;
+
+    this.cleanups.forEach((cleanupFn) => cleanupFn());
+    this.cleanups.length = 0;
 
     this.getData<Map<string, Value>>(DATA_KEY_STATE)?.forEach((value) => value.destroy());
     this.data.forEach((value) => isValue(value) && value.destroy());

@@ -37,6 +37,7 @@ export async function renderToString(
   try {
     return await runWithAppState(async () => {
       const appState = getAppState();
+      appState.onDestroy(clearComponentRegistry);
       initSSRDocument();
 
       const activeScope = new SSRScope(appState);
@@ -59,7 +60,6 @@ export async function renderToString(
         comp.unmount();
         container.remove();
         appState.destroy();
-        clearComponentRegistry();
         activeScope.clear();
 
         return { html, hydrationData };
