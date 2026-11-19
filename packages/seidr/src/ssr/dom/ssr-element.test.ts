@@ -161,7 +161,22 @@ describe("ServerElement", () => {
     el.ariaLabel = "test";
     expect(el.getAttribute("aria-label")).toBe("test");
     expect(el.ariaLabel).toBe("test");
-    expect(el.toString()).toBe('<div aria-label="test"></div>');
+
+    el.ariaDescribedBy = "desc-id";
+    expect(el.getAttribute("aria-describedby")).toBe("desc-id");
+    expect(el.ariaDescribedBy).toBe("desc-id");
+
+    el.ariaReadOnly = "true";
+    expect(el.getAttribute("aria-readonly")).toBe("true");
+    expect(el.ariaReadOnly).toBe("true");
+
+    el.ariaValueNow = "42";
+    expect(el.getAttribute("aria-valuenow")).toBe("42");
+    expect(el.ariaValueNow).toBe("42");
+
+    expect(el.toString()).toBe(
+      '<div aria-label="test" aria-describedby="desc-id" aria-readonly="true" aria-valuenow="42"></div>',
+    );
   });
 
   it("should handle nextSibling and previousSibling", () => {

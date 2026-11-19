@@ -1,5 +1,6 @@
 import { resolvePropsAndChildren } from "../util/resolve-props-and-children.js";
 import { $ } from "./create-element.js";
+import type { ValidateARIAProps } from "./types.aria.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -7,7 +8,10 @@ import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./ty
  */
 export interface SeidrElementFactory<K extends keyof SeidrElementTagNameMap> {
   (children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
-  (props: SeidrElementProps<K>, children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
+  <P extends SeidrElementProps<K> = SeidrElementProps<K>>(
+    props: P & ValidateARIAProps<K, P, SeidrElementProps<K>>,
+    children?: SeidrChild | SeidrChild[],
+  ): SeidrElementTagNameMap[K];
 }
 
 /**

@@ -1,6 +1,7 @@
 import type * as CSS from "csstype";
 import type { SeidrComponent } from "../component/types.js";
 import type { ObservableValue, Ref, Value } from "../observable/types.js";
+import type { ARIAProps } from "./types.aria.js";
 
 // import type { SVGAttributes } from "./types.svg.js";
 
@@ -22,18 +23,6 @@ type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
 type WritableKeys<T> = {
   [K in keyof T]-?: IfEquals<{ [Q in K]: T[K] }, { -readonly [Q in K]: T[K] }, K>;
 }[keyof T];
-
-/**
- * Converts the given string from camel-case to kebab-case.
- *
- * @template S - The string to convert.
- * @returns The kebab-case version of the string.
- */
-type CamelToKebab<S extends string> = S extends `${infer T}${infer U}`
-  ? U extends Uncapitalize<U>
-    ? `${Uncapitalize<T>}${CamelToKebab<U>}`
-    : `${Uncapitalize<T>}-${CamelToKebab<U>}`
-  : "";
 
 /**
  * Tag name map for HTML elements in Seidr.
@@ -62,11 +51,7 @@ export type ReactiveValue<T> = 0 extends 1 & T
 /**
  * Type definition for reactive ARIA mixin properties.
  */
-export type ReactiveARIAMixin = Partial<
-  { [K in keyof ARIAMixin]-?: ReactiveValue<ARIAMixin[K]> } & {
-    [key: `aria-${string}`]: ReactiveValue<string | undefined> | ObservableValue<string | undefined> | undefined;
-  }
->;
+export type ReactiveARIAMixin = ARIAProps;
 
 /**
  * Type definition for reactive HTML element properties.
@@ -78,7 +63,7 @@ export type ReactiveProps<
   K extends keyof SeidrElementTagNameMap,
   T extends SeidrElementTagNameMap[K] = SeidrElementTagNameMap[K],
 > = {
-  [K in WritableKeys<Omit<T, "style">>]?: ReactiveValue<T[K]> | ObservableValue<T[K] | undefined>;
+  [P in WritableKeys<Omit<T, "style" | keyof ARIAMixin>>]?: ReactiveValue<T[P]> | ObservableValue<T[P] | undefined>;
 };
 
 /**
@@ -100,38 +85,34 @@ export type ReactiveStyleDeclaration = Partial<{
  */
 export type SeidrElementProps<K extends keyof SeidrElementTagNameMap = keyof SeidrElementTagNameMap> = Partial<
   ReactiveProps<K, SeidrElementTagNameMap[K]> & GlobalEventHandlers
-> & {
-  /**
-   * ID attribute.
-   */
-  id?: ReactiveValue<string>;
+> &
+  ARIAProps & {
+    /**
+     * ID attribute.
+     */
+    id?: ReactiveValue<string>;
 
-  /**
-   * Ref handle.
-   */
-  ref?: Ref<SeidrElementTagNameMap[K]>;
+    /**
+     * Ref handle.
+     */
+    ref?: Ref<SeidrElementTagNameMap[K]>;
 
-  /**
-   * Used to force mounting when more control is needed (e.g. for CSS transitions).
-   * When true or reactive truthy, the element is always rendered.
-   */
-  forceMount?: Value<boolean>;
+    /**
+     * Used to force mounting when more control is needed (e.g. for CSS transitions).
+     * When true or reactive truthy, the element is always rendered.
+     */
+    forceMount?: Value<boolean>;
 
-  /**
-   * Reactive styles.
-   */
-  style?: ReactiveStyleDeclaration | ReactiveValue<string>;
+    /**
+     * Reactive styles.
+     */
+    style?: ReactiveStyleDeclaration | ReactiveValue<string>;
 
-  /**
-   * Reactive data attributes.
-   */
-  [key: `data${string}`]: ReactiveValue<string> | ObservableValue<string | undefined> | undefined;
-
-  /**
-   * Reactive aria attributes.
-   */
-  [key: `aria-${string}`]: ReactiveValue<string> | ObservableValue<string | undefined> | undefined;
-};
+    /**
+     * Reactive data attributes.
+     */
+    [key: `data${string}`]: ReactiveValue<string> | ObservableValue<string | undefined> | undefined;
+  };
 
 /**
  * Union type representing allowed nodes for Seidr elements.
@@ -153,15 +134,16 @@ export type SeidrChild =
   | SeidrChild[];
 
 /**
- * Namee of a property
+ * Name of a property
  */
-export type PropName<K extends keyof SeidrElementTagNameMap = any> =
+export type PropName<K extends keyof SeidrElementTagNameMap = any> = (
   | keyof HTMLElement
   | keyof SeidrElementTagNameMap[K]
-  | keyof ARIAMixin
-  | CamelToKebab<keyof ARIAMixin>
+  | keyof ARIAProps
   | `data${string}`
   | "class"
   | "for"
   | "ref"
-  | "htmlFor";
+  | "htmlFor"
+) &
+  string;

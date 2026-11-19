@@ -8,6 +8,7 @@ import type { HydrationMismatchNode } from "../ssr/hydrate/types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { resolvePropsAndChildren } from "../util/resolve-props-and-children.js";
 import { assignProps } from "./assign-props.js";
+import type { ValidateARIAProps } from "./types.aria.js";
 import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
@@ -33,9 +34,9 @@ export function $<K extends keyof SeidrElementTagNameMap>(
  * @param {SeidrChild | SeidrChild[]} [children] - Child elements
  * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
-export function $<K extends keyof SeidrElementTagNameMap>(
+export function $<K extends keyof SeidrElementTagNameMap, P extends SeidrElementProps<K> = SeidrElementProps<K>>(
   tagName: K,
-  props: SeidrElementProps<K>,
+  props: P & ValidateARIAProps<K, P, SeidrElementProps<K>>,
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[K];
 

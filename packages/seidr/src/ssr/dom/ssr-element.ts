@@ -75,9 +75,9 @@ export class SSRElement<
 
         const sProp = prop as string;
 
-        // Handle aria- properties: el.ariaLabel -> aria-label
+        // Handle aria- properties: el.ariaLabel -> aria-label, el.ariaDescribedBy -> aria-describedby
         if (sProp.startsWith("aria") && sProp.length > 4 && sProp[4] === sProp[4].toUpperCase()) {
-          return target.getAttribute(camelToKebab(sProp));
+          return target.getAttribute(`aria-${sProp.slice(4).toLowerCase()}`);
         }
 
         // Handle boolean attributes: return boolean instead of string
@@ -100,7 +100,7 @@ export class SSRElement<
 
         // Handle aria- properties
         if (sProp.startsWith("aria") && sProp.length > 4 && sProp[4] === sProp[4].toUpperCase()) {
-          target.setAttribute(camelToKebab(sProp), value);
+          target.setAttribute(`aria-${sProp.slice(4).toLowerCase()}`, value);
           return true;
         }
 

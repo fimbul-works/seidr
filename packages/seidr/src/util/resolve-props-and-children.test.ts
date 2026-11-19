@@ -110,10 +110,7 @@ describe("resolvePropsAndChildren", () => {
     expect(props1).toEqual({ id: "my-id" });
     expect(children1).toBe("Hello from props");
 
-    const [props2, children2] = resolvePropsAndChildren(
-      { id: "my-id", children: ["from props"] },
-      "from argument",
-    );
+    const [props2, children2] = resolvePropsAndChildren({ id: "my-id", children: ["from props"] }, "from argument");
     expect(props2).toEqual({ id: "my-id" });
     expect(children2).toEqual(["from argument", "from props"]);
   });

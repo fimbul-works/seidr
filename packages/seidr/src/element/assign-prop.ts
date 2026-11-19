@@ -5,7 +5,7 @@ import { isRef, isValue } from "../observable/type-guards.js";
 import { SeidrError } from "../types.js";
 import { isServer } from "../util/environment/is-server.js";
 import { camelToKebab } from "../util/string.js";
-import type { CSSProperties, PropName, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
+import type { CSSProperties, SeidrElementProps, SeidrElementTagNameMap } from "./types.js";
 
 /**
  * Assigns a property to an element, handling reactive Value bindings.
@@ -47,7 +47,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
     return;
   }
 
-  let effectiveProp: PropName<any> = prop;
+  let effectiveProp: string = prop;
   let useAttribute = propStartsWith("aria-") || propStartsWith("data-") || ["form", "value"].includes(prop);
 
   if (!useAttribute) {
@@ -55,7 +55,7 @@ export const assignProp = <K extends keyof SeidrElementTagNameMap, P extends Sei
       effectiveProp = camelToKebab(prop);
       useAttribute = true;
     } else if (propStartsWith("aria") && matchUpperCasePosition(4)) {
-      effectiveProp = camelToKebab(prop);
+      effectiveProp = `aria-${prop.slice(4).toLowerCase()}`;
       useAttribute = true;
     } else if (prop === "htmlFor") {
       effectiveProp = "for";

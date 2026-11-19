@@ -100,14 +100,35 @@ describeDualMode("assignProp", ({ getDocument }) => {
       expect(el.dataset.userRole).toBe("editor");
     });
 
-    it("should convert camelCase aria* to kebab-case aria-* when not in element", () => {
+    it("should convert camelCase aria* to canonical single-hyphen aria-* attributes", () => {
       const el = getDocument().createElement("div");
 
-      assignProp(el, "ariaCustomProp", "custom-value");
-      expect(el.getAttribute("aria-custom-prop")).toBe("custom-value");
+      assignProp(el, "ariaCustomProp", "customprop");
+      expect(el.getAttribute("aria-customprop")).toBe("customprop");
 
       assignProp(el, "ariaDescribedBy", "desc-1");
-      expect(el.getAttribute("aria-described-by")).toBe("desc-1");
+      expect(el.getAttribute("aria-describedby")).toBe("desc-1");
+
+      assignProp(el, "ariaLabelledBy", "lbl-1");
+      expect(el.getAttribute("aria-labelledby")).toBe("lbl-1");
+
+      assignProp(el, "ariaLabelledby", "lbl-2");
+      expect(el.getAttribute("aria-labelledby")).toBe("lbl-2");
+
+      assignProp(el, "ariaReadOnly", "true");
+      expect(el.getAttribute("aria-readonly")).toBe("true");
+
+      assignProp(el, "ariaValueNow", 50);
+      expect(String(el.getAttribute("aria-valuenow"))).toBe("50");
+
+      assignProp(el, "ariaMultiLine", "true");
+      expect(el.getAttribute("aria-multiline")).toBe("true");
+
+      assignProp(el, "ariaHasPopup", "menu");
+      expect(el.getAttribute("aria-haspopup")).toBe("menu");
+
+      assignProp(el, "ariaActiveDescendant", "opt-1");
+      expect(el.getAttribute("aria-activedescendant")).toBe("opt-1");
     });
 
     it("should convert htmlFor to 'for' attribute", () => {

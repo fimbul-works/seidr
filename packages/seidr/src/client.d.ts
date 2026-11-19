@@ -9,4 +9,3 @@ declare module "*.svg?component" {
   const icon: SvgIconFactory;
   export default icon;
 }
-

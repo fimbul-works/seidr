@@ -163,10 +163,7 @@ describeDualMode("Portal Component", ({ getDocument, isSSR }) => {
     });
 
     unmount = mount(
-      () =>
-        $("div", { className: "app" }, [
-          Show(isOpen, () => Portal(portalTarget, ModalContent)),
-        ]),
+      () => $("div", { className: "app" }, [Show(isOpen, () => Portal(portalTarget, ModalContent))]),
       container,
     );
 
@@ -194,10 +191,7 @@ describeDualMode("Portal Component", ({ getDocument, isSSR }) => {
 
     const ItemView = (item: Value<Item>) => $("span", { textContent: item.as((i) => i.text) });
 
-    unmount = mount(
-      () => Portal(portalTarget, () => List(items, (i) => i.id, ItemView)),
-      container,
-    );
+    unmount = mount(() => Portal(portalTarget, () => List(items, (i) => i.id, ItemView)), container);
 
     expect(container.textContent).toBe("");
     expect(portalTarget.textContent).toBe("AB");
@@ -302,10 +296,7 @@ describeDualMode("Portal Component", ({ getDocument, isSSR }) => {
         error: () => $("div", { textContent: `Error: ${error()?.message}` }),
       });
 
-    unmount = mount(
-      () => Portal(portalTarget, () => Suspense(promise, renderSuspense)),
-      container,
-    );
+    unmount = mount(() => Portal(portalTarget, () => Suspense(promise, renderSuspense)), container);
 
     expect(container.textContent).toBe("");
     expect(portalTarget.textContent).toBe("Loading in Portal...");
@@ -330,10 +321,7 @@ describeDualMode("Portal Component", ({ getDocument, isSSR }) => {
       fallback: () => $("div", { textContent: "Lazy Loading..." }),
     });
 
-    unmount = mount(
-      () => Portal(portalTarget, () => LazyModal()),
-      container,
-    );
+    unmount = mount(() => Portal(portalTarget, () => LazyModal()), container);
 
     expect(container.textContent).toBe("");
     expect(portalTarget.textContent).toBe("Lazy Loading...");
@@ -389,4 +377,3 @@ describe("Portal SSR & Hydration", () => {
     cleanupClient();
   });
 });
-

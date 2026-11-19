@@ -99,7 +99,7 @@ export const withStorage = <T extends Value, V = Unwrapped<T>>(
   value.watch((value) => {
     try {
       if (isNullish(value)) {
-        storage.removeItem(key)
+        storage.removeItem(key);
       } else {
         storage.setItem(key, JSON.stringify(value));
       }

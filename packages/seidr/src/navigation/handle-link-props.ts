@@ -74,7 +74,7 @@ export const handleLinkProps = <
   const originalDownload = rawProps.download as ReactiveValue<string | boolean | undefined> | undefined;
   const originalRole = rawProps.role;
   const originalTabIndex = rawProps.tabIndex ?? rawProps.tabindex;
-  const originalAriaDisabled = rawProps.ariaDisabled ?? rawProps["aria-disabled"];
+  const originalARIADisabled = rawProps.ariaDisabled ?? rawProps["aria-disabled"];
   const originalDataDisabled = rawProps.dataDisabled ?? rawProps["data-disabled"];
 
   // If there's no href at all and no disabled prop, return props unchanged
@@ -113,8 +113,8 @@ export const handleLinkProps = <
 
   // Disabled attributes (preserve if already provided)
   const ariaDisabled =
-    originalAriaDisabled !== undefined
-      ? originalAriaDisabled
+    originalARIADisabled !== undefined
+      ? originalARIADisabled
       : disabledObs
         ? disabledObs.as((disabled) => (disabled ? "true" : undefined))
         : isDisabledStatic

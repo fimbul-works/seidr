@@ -4,4 +4,5 @@ export * from "./create-svg-icon.js";
 export * from "./element-factory.js";
 export { getPropMutators, type PropMutator, registerPropMutator } from "./prop-mutators.js";
 export * from "./type-guards.js";
+export * from "./types.aria.js";
 export * from "./types.js";

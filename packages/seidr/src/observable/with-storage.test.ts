@@ -54,7 +54,7 @@ describe("withStorage", () => {
     // Seidr updates are usually scheduled, but withStorage observer is called
     // We might need to wait for a tick or use sync: true
     expect(JSON.parse(storage.getItem(STORAGE_KEY)!)).toEqual({});
-  })
+  });
 
   it("should remove 'undefined' values entirely", () => {
     const s = createValue("holmgang");
@@ -65,7 +65,7 @@ describe("withStorage", () => {
     // Seidr updates are usually scheduled, but withStorage observer is called
     // We might need to wait for a tick or use sync: true
     expect(storage.getItem(STORAGE_KEY)).toEqual(null);
-  })
+  });
 
   it("should handle invalid JSON in storage (read error)", () => {
     storage.setItem(STORAGE_KEY, "not-json");

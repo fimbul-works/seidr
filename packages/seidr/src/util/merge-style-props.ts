@@ -26,7 +26,7 @@ export function mergeStyleProps(
   newStyle?: ReactiveStyleDeclaration | ReactiveValue<string>,
 ): ReactiveStyleDeclaration {
   if (isStr(unwrapValue(oldStyle)) || isStr(unwrapValue(newStyle))) {
-    console.warn('mergeStyleProps cannot be used to merge strings!')
+    console.warn("mergeStyleProps cannot be used to merge strings!");
   }
 
   oldStyle = (isObj(oldStyle) ? oldStyle : {}) as ReactiveStyleDeclaration;
