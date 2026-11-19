@@ -1,9 +1,11 @@
 ---
+
 title: SSR should be pretty straightforward...
 date: 2025-12-24
 tags: [Rendering, SSR, Tech]
 ---
-Now that Seidr's core functionality is in a pretty good shape, I've set my sights on *Server-Side Rendering*.
+
+Now that Seidr's core functionality is in a pretty good shape, I've set my sights on _Server-Side Rendering_.
 
 Components render in a single pass - similar to [SolidJS](https://www.solidjs.com) - avoiding React's funky lifecycle weirdness. This means that the client and server should produce identical outputs given the same state.
 

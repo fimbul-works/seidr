@@ -2,11 +2,7 @@ import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-wo
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import {
-  ContextMenu,
-  type ContextMenuItemDescriptor,
-  createContextMenu,
-} from "./index.js";
+import { ContextMenu, type ContextMenuItemDescriptor, createContextMenu } from "./index.js";
 
 describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -114,9 +110,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
       return cmInstance.Root({}, [
         cmInstance.Trigger({}, "Right Click Target"),
-        cmInstance.Content({}, [
-          cmInstance.Item({ value: "item1" }, "Option 1"),
-        ]),
+        cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Option 1")]),
       ]);
     });
 
@@ -157,9 +151,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
         return cmInstance.Root({}, [
           cmInstance.Trigger({}, "Touch Area"),
-          cmInstance.Content({}, [
-            cmInstance.Item({ value: "item1" }, "Touch Option"),
-          ]),
+          cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Touch Option")]),
         ]);
       });
 
@@ -205,9 +197,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
         return cmInstance.Root({}, [
           cmInstance.Trigger({}, "Touch Area"),
-          cmInstance.Content({}, [
-            cmInstance.Item({ value: "item1" }, "Touch Option"),
-          ]),
+          cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Touch Option")]),
         ]);
       });
 
@@ -240,9 +230,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
       return cmInstance.Root({}, [
         cmInstance.Trigger({ disabled: true }, "Disabled Area"),
-        cmInstance.Content({}, [
-          cmInstance.Item({ value: "item1" }, "Item"),
-        ]),
+        cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Item")]),
       ]);
     });
 
@@ -273,9 +261,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
       return cmInstance.Root({}, [
         cmInstance.Trigger({}, "Target"),
-        cmInstance.Content({}, [
-          cmInstance.Item({ value: "action", onSelect }, "Perform Action"),
-        ]),
+        cmInstance.Content({}, [cmInstance.Item({ value: "action", onSelect }, "Perform Action")]),
       ]);
     });
 
@@ -298,9 +284,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
       return cmInstance.Root({}, [
         cmInstance.Trigger({}, "Target"),
-        cmInstance.Content({}, [
-          cmInstance.Item({ value: "item1" }, "Option"),
-        ]),
+        cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Option")]),
       ]);
     });
 
@@ -322,9 +306,7 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
 
       return cmInstance.Root({}, [
         cmInstance.Trigger({}, "Target"),
-        cmInstance.Content({}, [
-          cmInstance.Item({ value: "item1" }, "Option"),
-        ]),
+        cmInstance.Content({}, [cmInstance.Item({ value: "item1" }, "Option")]),
       ]);
     });
 
@@ -351,14 +333,8 @@ describeDualMode("ContextMenu", ({ getDocument, isSSR }) => {
         cm.Trigger({}, "Settings"),
         cm.Content({}, [
           group.Root({}, [
-            group.Item({ value: "light" }, [
-              cm.ItemIndicator({}, "•"),
-              cm.ItemLabel({}, "Light"),
-            ]),
-            group.Item({ value: "dark" }, [
-              cm.ItemIndicator({}, "•"),
-              cm.ItemLabel({}, "Dark"),
-            ]),
+            group.Item({ value: "light" }, [cm.ItemIndicator({}, "•"), cm.ItemLabel({}, "Light")]),
+            group.Item({ value: "dark" }, [cm.ItemIndicator({}, "•"), cm.ItemLabel({}, "Dark")]),
           ]),
         ]),
       ]);

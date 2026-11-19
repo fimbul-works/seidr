@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -202,10 +198,7 @@ describeDualMode("AlertDialog", ({ getDocument, isSSR }) => {
         let alertInstance!: ReturnType<typeof createAlertDialog>;
         setup(() => {
           alertInstance = createAlertDialog({ id: "scroll-alert", defaultOpen: false });
-          return alertInstance.Root({}, [
-            alertInstance.Trigger({}, "Trigger"),
-            alertInstance.Content({}, "Content"),
-          ]);
+          return alertInstance.Root({}, [alertInstance.Trigger({}, "Trigger"), alertInstance.Content({}, "Content")]);
         });
 
         expect(getDocument().body.style.overflow).toBe("visible");
@@ -235,4 +228,3 @@ describeDualMode("AlertDialog", ({ getDocument, isSSR }) => {
     });
   }
 });
-

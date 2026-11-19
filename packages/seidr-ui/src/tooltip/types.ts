@@ -214,4 +214,3 @@ export interface TooltipProps<T extends keyof SeidrElementTagNameMap = "div"> ex
   /** Children rendered inside TooltipContent (when `content` is not provided). */
   children?: SeidrChild | SeidrChild[];
 }
-

@@ -63,7 +63,7 @@ export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button"
     e.preventDefault();
   };
 
-  const computedAriaControls = popover.isOpen.as((open) => (open ? popover.contentId() : undefined));
+  const computedARIAControls = popover.isOpen.as((open) => (open ? popover.contentId() : undefined));
 
   return $(
     as,
@@ -73,7 +73,7 @@ export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button"
       disabled: as === "button" ? isTriggerDisabled : undefined,
       "aria-haspopup": "dialog",
       "aria-expanded": popover.isOpen.as((o) => String(o)),
-      "aria-controls": computedAriaControls,
+      "aria-controls": computedARIAControls,
       "aria-label": ariaLabel,
       "aria-labelledby": ariaLabelledBy,
       dataComponent,

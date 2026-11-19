@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -58,10 +54,7 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
       const hc = createHoverCard({ id: "tier2-hc", defaultOpen: true });
       return hc.Root({}, [
         hc.Trigger({ href: "#shader" }, "Shader Preview"),
-        hc.Content({}, [
-          "GLSL Fragment Shader Preview",
-          hc.Arrow(),
-        ]),
+        hc.Content({}, ["GLSL Fragment Shader Preview", hc.Arrow()]),
       ]);
     });
 
@@ -122,10 +115,7 @@ describeDualMode("HoverCard", ({ getDocument, isSSR }) => {
             innerBtn = getDocument().createElement("button");
             innerBtn.textContent = "Follow";
 
-            return hc.Root({}, [
-              hc.Trigger({ href: "#profile" }, "@seidr"),
-              hc.Content({}, [innerBtn]),
-            ]);
+            return hc.Root({}, [hc.Trigger({ href: "#profile" }, "@seidr"), hc.Content({}, [innerBtn])]);
           });
 
           const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;

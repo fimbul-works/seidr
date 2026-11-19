@@ -1,10 +1,4 @@
-import {
-  createComponent,
-  createRef,
-  createValue,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, createRef, createValue, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -65,12 +59,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
         placement: "top-start",
       });
 
-      return popper.Root({}, [
-        popper.Positioner({}, [
-          popper.Arrow(),
-          getDocument().createElement("div"),
-        ]),
-      ]);
+      return popper.Root({}, [popper.Positioner({}, [popper.Arrow(), getDocument().createElement("div")])]);
     });
 
     const rootEl = root.querySelector("[data-part='Root']") as HTMLElement;
@@ -109,10 +98,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       });
 
       return popperInstance.Root({}, [
-        popperInstance.Positioner({}, [
-          popperInstance.Arrow(),
-          getDocument().createElement("div"),
-        ]),
+        popperInstance.Positioner({}, [popperInstance.Arrow(), getDocument().createElement("div")]),
       ]);
     });
 
@@ -156,10 +142,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
       });
 
       return popperInstance.Root({}, [
-        popperInstance.Positioner({}, [
-          popperInstance.Arrow(),
-          getDocument().createElement("div"),
-        ]),
+        popperInstance.Positioner({}, [popperInstance.Arrow(), getDocument().createElement("div")]),
       ]);
     });
 
@@ -201,11 +184,7 @@ describeDualMode("Popper", ({ getDocument, isSSR }) => {
         sameWidth: true,
       });
 
-      return popperInstance.Root({}, [
-        popperInstance.Positioner({}, [
-          getDocument().createElement("div"),
-        ]),
-      ]);
+      return popperInstance.Root({}, [popperInstance.Positioner({}, [getDocument().createElement("div")])]);
     });
 
     const positionerEl = root.querySelector("[data-part='Positioner']") as HTMLElement;

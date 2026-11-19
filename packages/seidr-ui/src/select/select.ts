@@ -34,10 +34,7 @@ export function SelectFactory<Option = any, OptGroup = any>(
 
   return sel.Root(rootProps, [
     label ? sel.Label(labelProps, label) : null,
-    sel.Trigger(triggerProps, [
-      sel.Value(valueProps),
-      sel.Icon(iconProps),
-    ]),
+    sel.Trigger(triggerProps, [sel.Value(valueProps), sel.Icon(iconProps)]),
     sel.Content(contentProps, [
       sel.Listbox(listboxProps, [
         sel.List(sel.normalizedOptions, {
@@ -56,4 +53,3 @@ export function SelectFactory<Option = any, OptGroup = any>(
  * Accessible Select component (`role="group"`, Tier 1).
  */
 export const Select = createComponent(SelectFactory, "Select");
-

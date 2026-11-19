@@ -45,10 +45,7 @@ export const ToastRegion = createComponent((props: ToastRegionProps = {}) => {
   });
 
   const renderRegion = () =>
-    region.Region({ as, ...regionProps } as ToastRegionRootProps<"div">, [
-      region.List(listProps),
-      children,
-    ]);
+    region.Region({ as, ...regionProps } as ToastRegionRootProps<"div">, [region.List(listProps), children]);
 
   if (portalTarget) {
     return Portal(portalTarget, renderRegion, "ToastRegionPortal");
@@ -56,4 +53,3 @@ export const ToastRegion = createComponent((props: ToastRegionProps = {}) => {
 
   return renderRegion();
 }, "ToastRegion");
-

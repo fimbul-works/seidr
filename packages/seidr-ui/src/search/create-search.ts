@@ -280,7 +280,11 @@ export function createSearch<Option = any, OptGroup = any>(
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchArrowProps<T> = {} as SearchArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_SEARCH, ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({
+      instance: instance.popper,
+      dataComponent: DATA_COMPONENT_SEARCH,
+      ...props,
+    } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchDescriptionProps<T> = {} as SearchDescriptionProps<T>,

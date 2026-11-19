@@ -1,9 +1,4 @@
-import type {
-  DerivedValue,
-  SeidrChild,
-  SeidrElementProps,
-  SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import type { DerivedValue, SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import type {
   DialogCloseButtonOptions,
   DialogContentOptions,
@@ -31,8 +26,7 @@ export interface UseAlertDialogResult extends UseDialogResult {}
 // Subcomponent Options & Props
 // ---------------------------------------------------------------------------
 
-export interface AlertDialogRootOptions<T extends keyof SeidrElementTagNameMap = "div">
-  extends DialogRootOptions<T> {}
+export interface AlertDialogRootOptions<T extends keyof SeidrElementTagNameMap = "div"> extends DialogRootOptions<T> {}
 
 export type AlertDialogRootProps<T extends keyof SeidrElementTagNameMap = "div"> = AlertDialogRootOptions<T> &
   Omit<SeidrElementProps<T>, keyof AlertDialogRootOptions<T>>;
@@ -63,8 +57,7 @@ export interface AlertDialogCloseButtonOptions<T extends keyof SeidrElementTagNa
 export type AlertDialogCloseButtonProps<T extends keyof SeidrElementTagNameMap = "button"> =
   AlertDialogCloseButtonOptions<T> & Omit<SeidrElementProps<T>, keyof AlertDialogCloseButtonOptions<T>>;
 
-export interface AlertDialogTitleOptions<T extends keyof SeidrElementTagNameMap = "h2">
-  extends DialogTitleOptions<T> {}
+export interface AlertDialogTitleOptions<T extends keyof SeidrElementTagNameMap = "h2"> extends DialogTitleOptions<T> {}
 
 export type AlertDialogTitleProps<T extends keyof SeidrElementTagNameMap = "h2"> = AlertDialogTitleOptions<T> &
   Omit<SeidrElementProps<T>, keyof AlertDialogTitleOptions<T>>;
@@ -72,8 +65,8 @@ export type AlertDialogTitleProps<T extends keyof SeidrElementTagNameMap = "h2">
 export interface AlertDialogDescriptionOptions<T extends keyof SeidrElementTagNameMap = "p">
   extends DialogDescriptionOptions<T> {}
 
-export type AlertDialogDescriptionProps<T extends keyof SeidrElementTagNameMap = "p"> = AlertDialogDescriptionOptions<T> &
-  Omit<SeidrElementProps<T>, keyof AlertDialogDescriptionOptions<T>>;
+export type AlertDialogDescriptionProps<T extends keyof SeidrElementTagNameMap = "p"> =
+  AlertDialogDescriptionOptions<T> & Omit<SeidrElementProps<T>, keyof AlertDialogDescriptionOptions<T>>;
 
 export interface AlertDialogPortalProps extends DialogPortalProps {}
 
@@ -145,4 +138,3 @@ export interface AlertDialogProps<
   /** Props forwarded to the close button element. */
   closeButtonProps?: AlertDialogCloseButtonProps<"button">;
 }
-

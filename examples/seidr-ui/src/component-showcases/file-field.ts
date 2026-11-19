@@ -1,22 +1,6 @@
-import {
-  createComponent,
-  createValue,
-  List,
-  Show,
-} from "@fimbul-works/seidr";
-import {
-  $div,
-  $h2,
-  $h3,
-  $p,
-  $section,
-  $span,
-} from "@fimbul-works/seidr/html";
-import {
-  createFileField,
-  FileField,
-  type FileRejection,
-} from "@fimbul-works/seidr-ui";
+import { createComponent, createValue, List, Show } from "@fimbul-works/seidr";
+import { $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
+import { createFileField, FileField, type FileRejection } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./file-field.css";
 
@@ -55,10 +39,7 @@ export const FileFieldShowcase = createComponent(() => {
       $div({ className: "file-field-showcase" }, [
         // 1. Basic Single Document Upload (Tier 1)
         $div({ className: "file-field-section" }, [
-          $h3(
-            { className: "file-field-heading" },
-            "1. Single Document Upload (Tier 1 All-in-One)",
-          ),
+          $h3({ className: "file-field-heading" }, "1. Single Document Upload (Tier 1 All-in-One)"),
           $p(
             { className: "file-field-subtext" },
             "Accepts a single document (PDF or DOCX). Selecting a new document replaces the previous one.",
@@ -80,18 +61,13 @@ export const FileFieldShowcase = createComponent(() => {
               className: "file-status-badge",
               dataActive: docFilesCount.as((c) => (c > 0 ? "true" : "false")),
             },
-            docFilesCount.as((c) =>
-              c > 0 ? "✓ 1 document uploaded" : "No document uploaded yet",
-            ),
+            docFilesCount.as((c) => (c > 0 ? "✓ 1 document uploaded" : "No document uploaded yet")),
           ),
         ]),
 
         // 2. Multiple Images with Previews (Tier 1)
         $div({ className: "file-field-section" }, [
-          $h3(
-            { className: "file-field-heading" },
-            "2. Gallery Image Upload (Tier 1 with Previews)",
-          ),
+          $h3({ className: "file-field-heading" }, "2. Gallery Image Upload (Tier 1 with Previews)"),
           $p(
             { className: "file-field-subtext" },
             "Accepts up to 4 images (JPG, PNG, WebP) with automatic thumbnail previews and object-URL revoking.",
@@ -120,25 +96,16 @@ export const FileFieldShowcase = createComponent(() => {
 
         // 3. Fine-Grained Sculpting with Rejections Alert (Tier 2)
         $div({ className: "file-field-section" }, [
-          $h3(
-            { className: "file-field-heading" },
-            "3. Fine-Grained Coordinator with Validation (Tier 2)",
-          ),
+          $h3({ className: "file-field-heading" }, "3. Fine-Grained Coordinator with Validation (Tier 2)"),
           $p(
             { className: "file-field-subtext" },
             "Strict 2MB limit per file. Rejections are captured reactively and surfaced in a custom alert.",
           ),
           customFileField.Root({}, [
             customFileField.Label({}, "Profile Media"),
-            customFileField.Description(
-              {},
-              "Images or PDFs only · Max 2MB per file · Max 3 files",
-            ),
+            customFileField.Description({}, "Images or PDFs only · Max 2MB per file · Max 3 files"),
             customFileField.Dropzone({}, [
-              $p(
-                { style: { margin: 0, marginBottom: "0.5rem" } },
-                "Drop files here or click to open picker",
-              ),
+              $p({ style: { margin: 0, marginBottom: "0.5rem" } }, "Drop files here or click to open picker"),
               customFileField.Trigger({}, "Choose Media"),
             ]),
             customFileField.HiddenInput(),
@@ -150,12 +117,7 @@ export const FileFieldShowcase = createComponent(() => {
                 $div(
                   { className: "rejection-alert" },
                   rejections.as((rejList) =>
-                    rejList.map((rej) =>
-                      $span(
-                        {},
-                        `⚠️ "${rej.file.name}" rejected: ${rej.errors.join(", ")}`,
-                      ),
-                    ),
+                    rejList.map((rej) => $span({}, `⚠️ "${rej.file.name}" rejected: ${rej.errors.join(", ")}`)),
                   ),
                 ),
             ),
@@ -177,10 +139,7 @@ export const FileFieldShowcase = createComponent(() => {
                         }),
                       ]),
                     ]),
-                    customFileField.ItemDeleteTrigger(
-                      { file: fileVal },
-                      "✕",
-                    ),
+                    customFileField.ItemDeleteTrigger({ file: fileVal }, "✕"),
                   ]),
               ),
             ]),
@@ -235,4 +194,3 @@ const CustomUploader = () =>
     }),
   ]);
 });
-

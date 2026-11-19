@@ -113,7 +113,7 @@ export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
 
   // Determine aria-current when active
   const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
-  const resolvedAriaCurrent =
+  const resolvedARIACurrent =
     ariaCurrentParents.length > 0
       ? mergeValues(
           () => {
@@ -164,7 +164,7 @@ export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
     ...restProps,
     role,
     tabIndex,
-    ariaCurrent: resolvedAriaCurrent,
+    ariaCurrent: resolvedARIACurrent,
     ariaDisabled,
     dataDisabled,
     onclick,

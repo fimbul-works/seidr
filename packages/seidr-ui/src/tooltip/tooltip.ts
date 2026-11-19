@@ -25,20 +25,13 @@ export function TooltipFactory<T extends keyof SeidrElementTagNameMap = "div">(
   const tooltip = createTooltip(tooltipOptions);
   const resolvedContent = content ?? children ?? propsChildren;
 
-  return tooltip.Root<T>(
-    { as, ...rootProps } as Omit<TooltipRootProps<T>, "instance">,
-    [
-      trigger !== undefined ? tooltip.Trigger(triggerProps, trigger) : null,
-      tooltip.Content(contentProps, [
-        resolvedContent,
-        showArrow ? tooltip.Arrow(arrowProps) : null,
-      ]),
-    ],
-  );
+  return tooltip.Root<T>({ as, ...rootProps } as Omit<TooltipRootProps<T>, "instance">, [
+    trigger !== undefined ? tooltip.Trigger(triggerProps, trigger) : null,
+    tooltip.Content(contentProps, [resolvedContent, showArrow ? tooltip.Arrow(arrowProps) : null]),
+  ]);
 }
 
 /**
  * Accessible Tooltip component (`role="tooltip"`, Tier 1).
  */
 export const Tooltip = createComponent(TooltipFactory, "Tooltip");
-

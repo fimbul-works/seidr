@@ -354,8 +354,7 @@ export type ComboboxHiddenSelectProps = ComboboxHiddenSelectOptions &
   Omit<SeidrElementProps<"select">, keyof ComboboxHiddenSelectOptions>;
 
 export type ComboboxDescriptionProps<T extends keyof SeidrElementTagNameMap = "div"> = FormControlDescriptionProps<T>;
-export type ComboboxErrorMessageProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  FormControlErrorMessageProps<T>;
+export type ComboboxErrorMessageProps<T extends keyof SeidrElementTagNameMap = "div"> = FormControlErrorMessageProps<T>;
 export type ComboboxArrowProps<T extends keyof SeidrElementTagNameMap = "div"> = PopperArrowProps<T>;
 
 // ---------------------------------------------------------------------------
@@ -385,9 +384,7 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
-  Input: <T extends keyof SeidrElementTagNameMap = "input">(
-    props?: ComboboxInputProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Input: <T extends keyof SeidrElementTagNameMap = "input">(props?: ComboboxInputProps<T>) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: ComboboxTriggerProps<T>,
@@ -443,9 +440,7 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
 
   HiddenSelect: (props?: ComboboxHiddenSelectProps) => SeidrElementTagNameMap["select"];
 
-  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
-    props?: ComboboxArrowProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: ComboboxArrowProps<T>) => SeidrElementTagNameMap[T];
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxDescriptionProps<T>,
@@ -457,10 +452,7 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
-  List: (
-    items: ReactiveValue<ComboboxNode<Option>[]>,
-    options?: ListboxListRenderOptions,
-  ) => SeidrChild;
+  List: (items: ReactiveValue<ComboboxNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;
 }
 
 // ---------------------------------------------------------------------------
@@ -481,4 +473,3 @@ export interface ComboboxProps<Option = any, OptGroup = any> extends UseCombobox
   hiddenSelectProps?: Omit<ComboboxHiddenSelectProps, "instance">;
   itemProps?: Partial<ComboboxItemProps<"li">>;
 }
-

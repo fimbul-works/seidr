@@ -67,7 +67,10 @@ export const TimeFieldShowcase = createComponent(() => {
           }),
           $div({ className: "time-field-readout" }, [
             $strong({}, "Reactive State: "),
-            $span({}, time24.as((t) => (t ? JSON.stringify(t) : "undefined"))),
+            $span(
+              {},
+              time24.as((t) => (t ? JSON.stringify(t) : "undefined")),
+            ),
           ]),
         ]),
 
@@ -158,4 +161,3 @@ const SculptedTime = timeField.Root([
     }),
   ]);
 });
-

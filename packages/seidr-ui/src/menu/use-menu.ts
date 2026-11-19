@@ -212,10 +212,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
     const currentIndex = currentKey ? enabled.findIndex((i) => i.value === currentKey) : -1;
 
     // Search wrap-around starting from next item
-    const orderedSearch = [
-      ...enabled.slice(currentIndex + 1),
-      ...enabled.slice(0, Math.max(0, currentIndex + 1)),
-    ];
+    const orderedSearch = [...enabled.slice(currentIndex + 1), ...enabled.slice(0, Math.max(0, currentIndex + 1))];
 
     const match = orderedSearch.find((item) => {
       const text = item.getTextValue().trim().toLowerCase();
@@ -373,9 +370,7 @@ export function useMenu(options: UseMenuOptions = {}): UseMenuResult {
  */
 export function useMenuRadioGroup(options: UseMenuRadioGroupOptions = {}): UseMenuRadioGroupResult {
   const rawValue = options.value;
-  const state: Value<string> = createValue<string>(
-    unwrapValue(rawValue) ?? options.defaultValue ?? "",
-  );
+  const state: Value<string> = createValue<string>(unwrapValue(rawValue) ?? options.defaultValue ?? "");
   if (rawValue !== undefined && isValue(rawValue)) {
     rawValue.watch((next: string) => state(next ?? ""));
   }
@@ -400,4 +395,3 @@ export function useMenuRadioGroup(options: UseMenuRadioGroupOptions = {}): UseMe
     isDisabled,
   };
 }
-

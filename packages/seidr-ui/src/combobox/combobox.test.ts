@@ -86,17 +86,11 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
 
       return cb.Root({}, [
         cb.Label({}, "Custom Combobox"),
-        cb.Control({}, [
-          cb.Input(),
-          cb.Trigger({}, [cb.Icon({}, "▼")]),
-        ]),
+        cb.Control({}, [cb.Input(), cb.Trigger({}, [cb.Icon({}, "▼")])]),
         cb.Content({}, [
           cb.Listbox({}, [
             item1.Root({}, [item1.Label({}, "Item 1")]),
-            item2.Root({}, [
-              item2.Label({}, "Item 2"),
-              item2.Indicator({}, "✓"),
-            ]),
+            item2.Root({}, [item2.Label({}, "Item 2"), item2.Indicator({}, "✓")]),
           ]),
         ]),
         cb.HiddenSelect(),
@@ -359,10 +353,7 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
       });
 
       return cbInstance.Root({}, [
-        cbInstance.Control({}, [
-          cbInstance.Input(),
-          cbInstance.Trigger(),
-        ]),
+        cbInstance.Control({}, [cbInstance.Input(), cbInstance.Trigger()]),
         cbInstance.HiddenSelect(),
       ]);
     });
@@ -442,4 +433,3 @@ describeDualMode("Combobox", ({ getDocument, isSSR }) => {
     expect(results).toHaveNoViolations();
   });
 });
-

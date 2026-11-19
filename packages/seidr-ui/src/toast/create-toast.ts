@@ -52,4 +52,3 @@ export function createToast(options: UseToastOptions): ToastInstance {
     ) => ToastProgressFill<T>({ instance, ...props } as ToastProgressFillProps<T>, children),
   };
 }
-

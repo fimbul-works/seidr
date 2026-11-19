@@ -87,8 +87,7 @@
 [data-component="RadioGroup"][data-part="Root"].horizontal > [data-component="RadioGroup"][data-part="Description"],
 [data-component="RadioGroup"][data-part="Root"][aria-orientation="horizontal"]
   > [data-component="RadioGroup"][data-part="ErrorMessage"],
-[data-component="RadioGroup"][data-part="Root"].horizontal
-  > [data-component="RadioGroup"][data-part="ErrorMessage"] {
+[data-component="RadioGroup"][data-part="Root"].horizontal > [data-component="RadioGroup"][data-part="ErrorMessage"] {
   width: 100%;
   flex-basis: 100%;
 }

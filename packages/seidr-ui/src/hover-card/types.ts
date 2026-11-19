@@ -204,4 +204,3 @@ export interface HoverCardProps<T extends keyof SeidrElementTagNameMap = "div"> 
   /** Children rendered inside HoverCardContent (when `content` is not provided). */
   children?: SeidrChild | SeidrChild[];
 }
-

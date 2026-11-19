@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -78,9 +74,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
 
       return ffInst.Root({}, [
         ffInst.Label({}, "Select Images"),
-        ffInst.Dropzone({}, [
-          ffInst.Trigger({}, "Choose"),
-        ]),
+        ffInst.Dropzone({}, [ffInst.Trigger({}, "Choose")]),
         ffInst.HiddenInput(),
         ffInst.Description({}, "Multiple files supported"),
       ]);
@@ -140,10 +134,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
             multiple: true,
           });
 
-          return ffInst.Root({}, [
-            ffInst.Dropzone({}, [ffInst.Trigger({}, "Browse")]),
-            ffInst.HiddenInput(),
-          ]);
+          return ffInst.Root({}, [ffInst.Dropzone({}, [ffInst.Trigger({}, "Browse")]), ffInst.HiddenInput()]);
         });
 
         const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;
@@ -197,10 +188,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
             onFileReject: rejectSpy,
           });
 
-          return ffInst.Root({}, [
-            ffInst.Dropzone(),
-            ffInst.HiddenInput(),
-          ]);
+          return ffInst.Root({}, [ffInst.Dropzone(), ffInst.HiddenInput()]);
         });
 
         const textFile = new File(["plain text"], "notes.txt", {
@@ -226,10 +214,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
             onFileReject: rejectSpy,
           });
 
-          return ffInst.Root({}, [
-            ffInst.Dropzone(),
-            ffInst.HiddenInput(),
-          ]);
+          return ffInst.Root({}, [ffInst.Dropzone(), ffInst.HiddenInput()]);
         });
 
         const tooSmall = new File(["tiny"], "tiny.txt", { type: "text/plain" }); // 4 bytes
@@ -253,10 +238,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
             maxFiles: 1,
           });
 
-          return ffInst.Root({}, [
-            ffInst.Dropzone(),
-            ffInst.HiddenInput(),
-          ]);
+          return ffInst.Root({}, [ffInst.Dropzone(), ffInst.HiddenInput()]);
         });
 
         const file1 = new File(["a"], "a.txt", { type: "text/plain" });
@@ -349,10 +331,7 @@ describeDualMode("FileField", ({ getDocument, isSSR }) => {
             disabled: true,
           });
 
-          return ffInst.Root({}, [
-            ffInst.Dropzone({}, [ffInst.Trigger({}, "Upload")]),
-            ffInst.HiddenInput(),
-          ]);
+          return ffInst.Root({}, [ffInst.Dropzone({}, [ffInst.Trigger({}, "Upload")]), ffInst.HiddenInput()]);
         });
 
         const dropzone = root.querySelector("[data-part='Dropzone']") as HTMLElement;

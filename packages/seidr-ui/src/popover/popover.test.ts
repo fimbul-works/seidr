@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -236,9 +232,7 @@ describeDualMode("Popover", ({ getDocument, isSSR }) => {
 
           expect(root.querySelector("[data-part='Content']")).toBeNull();
           expect(portalHost.querySelector("[data-part='Content']")).not.toBeNull();
-          expect(portalHost.querySelector("[data-part='Content']")?.textContent).toContain(
-            "Portaled Popover Content",
-          );
+          expect(portalHost.querySelector("[data-part='Content']")?.textContent).toContain("Portaled Popover Content");
         } finally {
           portalHost.remove();
         }

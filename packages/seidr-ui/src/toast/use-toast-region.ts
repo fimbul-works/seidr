@@ -11,7 +11,7 @@ export function useToastRegion(options: UseToastRegionOptions = {}): UseToastReg
   const {
     id: customId,
     translations = TOAST_REGION_INTL_TRANSLATIONS,
-    ariaLabel: rawAriaLabel,
+    ariaLabel: rawARIALabel,
     hotkey = ["altKey", "KeyT"],
     duration: rawDuration = 5000,
     limit: rawLimit = 3,
@@ -49,7 +49,7 @@ export function useToastRegion(options: UseToastRegionOptions = {}): UseToastReg
 
   const hotkeyLabel = hotkey.join("+").replace(/Key/g, "").replace(/Digit/g, "");
 
-  const ariaLabelSource = wrapValue(rawAriaLabel);
+  const ariaLabelSource = wrapValue(rawARIALabel);
   const ariaLabel = ariaLabelSource.as((customLabel) => {
     const template = customLabel || translations.notifications(TOAST_HOTKEY_PLACEHOLDER);
     return template.replace(TOAST_HOTKEY_PLACEHOLDER, hotkeyLabel);

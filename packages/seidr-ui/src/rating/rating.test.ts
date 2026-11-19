@@ -299,9 +299,7 @@ describeDualMode("Rating", ({ getDocument, isSSR }) => {
         (items[0] as HTMLElement).click();
         expect(ratingInst.value()).toBe(3);
 
-        (items[0] as HTMLElement).dispatchEvent(
-          new PointerEvent("pointermove", { bubbles: true, clientX: 10 }),
-        );
+        (items[0] as HTMLElement).dispatchEvent(new PointerEvent("pointermove", { bubbles: true, clientX: 10 }));
         expect(ratingInst.hoveredValue()).toBeNull();
       });
 

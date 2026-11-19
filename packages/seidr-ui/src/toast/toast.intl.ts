@@ -11,4 +11,3 @@ export const TOAST_REGION_INTL_TRANSLATIONS = {
 };
 
 export type ToastRegionIntlTranslations = typeof TOAST_REGION_INTL_TRANSLATIONS;
-

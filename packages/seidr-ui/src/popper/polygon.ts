@@ -82,4 +82,3 @@ export function getSafePolygon(placement: Placement, anchorEl: Element, floating
 
   return polygon;
 }
-

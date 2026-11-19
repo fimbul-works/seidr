@@ -20,10 +20,7 @@ export const MenuShowcase = createComponent(() => {
 
   const addAction = () => {
     const id = nextActionId++;
-    dynamicItems((prev) => [
-      ...prev,
-      { value: `action-` + id, label: `Quick Action ` + id, icon: "✨" },
-    ]);
+    dynamicItems((prev) => [...prev, { value: `action-` + id, label: `Quick Action ` + id, icon: "✨" }]);
   };
 
   const removeAction = () => {
@@ -124,7 +121,10 @@ export const MenuShowcase = createComponent(() => {
                     onChange: (val) => autosave(val),
                   },
                   [
-                    customMenu.ItemIndicator({}, autosave.as((checked) => (checked ? "✓" : ""))),
+                    customMenu.ItemIndicator(
+                      {},
+                      autosave.as((checked) => (checked ? "✓" : "")),
+                    ),
                     customMenu.ItemLabel({}, "Autosave changes"),
                   ],
                 ),
@@ -132,15 +132,24 @@ export const MenuShowcase = createComponent(() => {
                 customMenu.GroupLabel({}, "Theme Mode"),
                 themeRadio.Root({}, [
                   themeRadio.Item({ value: "light" }, [
-                    customMenu.ItemIndicator({}, theme.as((t) => (t === "light" ? "●" : "○"))),
+                    customMenu.ItemIndicator(
+                      {},
+                      theme.as((t) => (t === "light" ? "●" : "○")),
+                    ),
                     customMenu.ItemLabel({}, "Light Theme"),
                   ]),
                   themeRadio.Item({ value: "dark" }, [
-                    customMenu.ItemIndicator({}, theme.as((t) => (t === "dark" ? "●" : "○"))),
+                    customMenu.ItemIndicator(
+                      {},
+                      theme.as((t) => (t === "dark" ? "●" : "○")),
+                    ),
                     customMenu.ItemLabel({}, "Dark Theme"),
                   ]),
                   themeRadio.Item({ value: "system" }, [
-                    customMenu.ItemIndicator({}, theme.as((t) => (t === "system" ? "●" : "○"))),
+                    customMenu.ItemIndicator(
+                      {},
+                      theme.as((t) => (t === "system" ? "●" : "○")),
+                    ),
                     customMenu.ItemLabel({}, "System Default"),
                   ]),
                 ]),
@@ -161,7 +170,10 @@ export const MenuShowcase = createComponent(() => {
         // Section 3: Nested Submenus
         $div({ className: "menu-section" }, [
           $h3({ className: "menu-section-title" }, "3. Multi-Level Submenus"),
-          $p({ className: "card-desc" }, "Cascading nested submenus with keyboard navigation (ArrowRight / ArrowLeft):"),
+          $p(
+            { className: "card-desc" },
+            "Cascading nested submenus with keyboard navigation (ArrowRight / ArrowLeft):",
+          ),
           $div({ className: "menu-row" }, [
             parentMenu.Root({}, [
               parentMenu.Trigger({}, "File Options ▾"),
@@ -274,4 +286,3 @@ const App = () =>
     ]),
   ]);
 });
-

@@ -51,4 +51,3 @@ export type {
   UseNavigationMenuOptions,
   UseNavigationMenuResult,
 } from "./types.js";
-

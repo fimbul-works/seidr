@@ -1,11 +1,4 @@
-import {
-  createRef,
-  createValue,
-  isValue,
-  mergeValues,
-  unwrapValue,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createRef, createValue, isValue, mergeValues, unwrapValue, wrapValue } from "@fimbul-works/seidr";
 import { useFormControl } from "../form-control/use-form-control.js";
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import type { ValidationState } from "../form-control/types.js";
@@ -18,18 +11,12 @@ import type {
   UseTimeFieldOptions,
   UseTimeFieldResult,
 } from "./types.js";
-import {
-  DEFAULT_TIME_FIELD_INTL,
-  formatTime,
-  isTimeInRange,
-} from "./util.js";
+import { DEFAULT_TIME_FIELD_INTL, formatTime, isTimeInRange } from "./util.js";
 
 /**
  * Headless state and interaction coordinator for TimeField.
  */
-export function useTimeField(
-  options: UseTimeFieldOptions = {},
-): UseTimeFieldResult {
+export function useTimeField(options: UseTimeFieldOptions = {}): UseTimeFieldResult {
   const {
     value: userValue,
     defaultValue,
@@ -50,15 +37,9 @@ export function useTimeField(
     ...userTranslations,
   };
 
-  const hourCycle = wrapValue(userHourCycle as TimeFieldHourCycle | undefined).as(
-    (hc) => (hc === 24 ? 24 : 12),
-  );
-  const granularity = wrapValue(
-    userGranularity as TimeFieldGranularity | undefined,
-  ).as((g) => g ?? "minute");
-  const forceLeadingZeros = wrapValue(
-    userForceLeadingZeros as boolean | undefined,
-  ).as((flz) => !!flz);
+  const hourCycle = wrapValue(userHourCycle as TimeFieldHourCycle | undefined).as((hc) => (hc === 24 ? 24 : 12));
+  const granularity = wrapValue(userGranularity as TimeFieldGranularity | undefined).as((g) => g ?? "minute");
+  const forceLeadingZeros = wrapValue(userForceLeadingZeros as boolean | undefined).as((flz) => !!flz);
 
   const initial = unwrapValue(userValue) ?? defaultValue;
   const internalValue = createValue<Time | undefined>(initial);
@@ -78,9 +59,7 @@ export function useTimeField(
       return unwrapValue(userValidationState);
     },
     {
-      parents: isValue(userValidationState)
-        ? [internalValue, userValidationState]
-        : [internalValue],
+      parents: isValue(userValidationState) ? [internalValue, userValidationState] : [internalValue],
     },
   );
 
@@ -110,24 +89,14 @@ export function useTimeField(
   );
 
   const formattedValue = mergeValues(
-    () =>
-      formatTime(
-        internalValue(),
-        hourCycle(),
-        granularity(),
-        forceLeadingZeros(),
-        translations,
-      ),
+    () => formatTime(internalValue(), hourCycle(), granularity(), forceLeadingZeros(), translations),
     { parents: [internalValue, hourCycle, granularity, forceLeadingZeros] },
   );
 
   const segmentElements = new Map<SegmentType, HTMLElement>();
   const enteredKeys = new Map<SegmentType, string>();
 
-  const registerSegmentRef = (
-    segment: SegmentType,
-    el: HTMLElement | null,
-  ) => {
+  const registerSegmentRef = (segment: SegmentType, el: HTMLElement | null) => {
     if (el) segmentElements.set(segment, el);
     else segmentElements.delete(segment);
   };
@@ -202,12 +171,7 @@ export function useTimeField(
       return "--";
     }
 
-    const pad =
-      segment !== "hour"
-        ? 2
-        : forceLeadingZeros() || hourCycle() === 24
-          ? 2
-          : 1;
+    const pad = segment !== "hour" ? 2 : forceLeadingZeros() || hourCycle() === 24 ? 2 : 1;
 
     return String(val).padStart(pad, "0");
   };
@@ -240,7 +204,7 @@ export function useTimeField(
       return;
     }
 
-    const curVal = (time[segment] ?? 0);
+    const curVal = time[segment] ?? 0;
     const nextVal = (curVal + delta + 60) % 60;
     setValue({ [segment]: nextVal });
   };

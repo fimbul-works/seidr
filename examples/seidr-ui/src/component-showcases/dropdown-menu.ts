@@ -1,10 +1,6 @@
 import { createComponent, createValue, getDocument } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
-import {
-  createDropdownMenu,
-  DropdownMenu,
-  type DropdownMenuItemDescriptor,
-} from "@fimbul-works/seidr-ui";
+import { createDropdownMenu, DropdownMenu, type DropdownMenuItemDescriptor } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./dropdown-menu.css";
 
@@ -24,10 +20,7 @@ export const DropdownMenuShowcase = createComponent(() => {
 
   const addAction = () => {
     const id = nextActionId++;
-    dynamicItems((prev) => [
-      ...prev,
-      { value: `action-${id}`, label: `Quick Action ${id}`, icon: "✨" },
-    ]);
+    dynamicItems((prev) => [...prev, { value: `action-${id}`, label: `Quick Action ${id}`, icon: "✨" }]);
   };
 
   const removeAction = () => {
@@ -111,7 +104,10 @@ export const DropdownMenuShowcase = createComponent(() => {
 
         // Section 2: Fine-Grained Coordinator (Tier 2) with Checkbox & Radio
         $div({ className: "dropdown-menu-section" }, [
-          $h3({ className: "dropdown-menu-section-title" }, "2. Fine-Grained Coordinator (Tier 2) with Checkbox & Radio"),
+          $h3(
+            { className: "dropdown-menu-section-title" },
+            "2. Fine-Grained Coordinator (Tier 2) with Checkbox & Radio",
+          ),
           $p({ className: "card-desc" }, "Custom DOM sculpting with CheckboxItem and RadioGroup helpers:"),
           $div({ className: "dropdown-menu-row" }, [
             customDropdown.Root({}, [
@@ -125,7 +121,10 @@ export const DropdownMenuShowcase = createComponent(() => {
                     onChange: (val) => notifications(val),
                   },
                   [
-                    customDropdown.ItemIndicator({}, notifications.as((checked) => (checked ? "✓" : ""))),
+                    customDropdown.ItemIndicator(
+                      {},
+                      notifications.as((checked) => (checked ? "✓" : "")),
+                    ),
                     customDropdown.ItemLabel({}, "Enable notifications"),
                   ],
                 ),
@@ -133,15 +132,24 @@ export const DropdownMenuShowcase = createComponent(() => {
                 customDropdown.GroupLabel({}, "Sort By"),
                 sortRadio.Root({}, [
                   sortRadio.Item({ value: "date" }, [
-                    customDropdown.ItemIndicator({}, sortOrder.as((s) => (s === "date" ? "●" : "○"))),
+                    customDropdown.ItemIndicator(
+                      {},
+                      sortOrder.as((s) => (s === "date" ? "●" : "○")),
+                    ),
                     customDropdown.ItemLabel({}, "Date Added"),
                   ]),
                   sortRadio.Item({ value: "name" }, [
-                    customDropdown.ItemIndicator({}, sortOrder.as((s) => (s === "name" ? "●" : "○"))),
+                    customDropdown.ItemIndicator(
+                      {},
+                      sortOrder.as((s) => (s === "name" ? "●" : "○")),
+                    ),
                     customDropdown.ItemLabel({}, "Alphabetical"),
                   ]),
                   sortRadio.Item({ value: "size" }, [
-                    customDropdown.ItemIndicator({}, sortOrder.as((s) => (s === "size" ? "●" : "○"))),
+                    customDropdown.ItemIndicator(
+                      {},
+                      sortOrder.as((s) => (s === "size" ? "●" : "○")),
+                    ),
                     customDropdown.ItemLabel({}, "File Size"),
                   ]),
                 ]),
@@ -230,7 +238,10 @@ export const DropdownMenuShowcase = createComponent(() => {
 
         // Section 5: Portaled Dropdown & Submenus (Escaping overflow: hidden)
         $div({ className: "dropdown-menu-section" }, [
-          $h3({ className: "dropdown-menu-section-title" }, "5. Portaled Menu & Submenus (portalTarget: document.body)"),
+          $h3(
+            { className: "dropdown-menu-section-title" },
+            "5. Portaled Menu & Submenus (portalTarget: document.body)",
+          ),
           $p(
             { className: "card-desc" },
             "Renders menu and submenu overlays into document.body to escape clipped parent containers:",
@@ -319,4 +330,3 @@ dropdown.Root({}, [
     ]),
   ]);
 });
-

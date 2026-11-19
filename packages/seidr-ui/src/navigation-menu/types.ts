@@ -152,14 +152,10 @@ export interface NavigationMenuInstance extends UseNavigationMenuResult {
   ) => NavigationMenuMenuInstance;
 
   /** Creates a scoped RadioGroup coordinator inside the currently active menu. */
-  createRadioGroup: (
-    radioOptions?: UseMenuRadioGroupOptions,
-  ) => MenuRadioGroupInstance;
+  createRadioGroup: (radioOptions?: UseMenuRadioGroupOptions) => MenuRadioGroupInstance;
 
   /** Creates a scoped Submenu coordinator inside the currently active menu. */
-  createSub: (
-    subOptions?: Omit<UseMenuOptions, "parentMenu">,
-  ) => MenuInstance;
+  createSub: (subOptions?: Omit<UseMenuOptions, "parentMenu">) => MenuInstance;
 
   /** NavigationMenu root <nav> container factory. */
   Root: <T extends keyof SeidrElementTagNameMap = "nav">(
@@ -305,8 +301,8 @@ export interface NavigationMenuRootOptions<T extends keyof SeidrElementTagNameMa
   instance?: UseNavigationMenuResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type NavigationMenuRootProps<T extends keyof SeidrElementTagNameMap = "nav"> =
-  NavigationMenuRootOptions<T> & SeidrElementProps<T>;
+export type NavigationMenuRootProps<T extends keyof SeidrElementTagNameMap = "nav"> = NavigationMenuRootOptions<T> &
+  SeidrElementProps<T>;
 
 export interface NavigationMenuListOptions<T extends keyof SeidrElementTagNameMap = "ul"> {
   as?: T;
@@ -314,8 +310,8 @@ export interface NavigationMenuListOptions<T extends keyof SeidrElementTagNameMa
   instance?: UseNavigationMenuResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type NavigationMenuListProps<T extends keyof SeidrElementTagNameMap = "ul"> =
-  NavigationMenuListOptions<T> & SeidrElementProps<T>;
+export type NavigationMenuListProps<T extends keyof SeidrElementTagNameMap = "ul"> = NavigationMenuListOptions<T> &
+  SeidrElementProps<T>;
 
 export interface NavigationMenuMenuOptions<T extends keyof SeidrElementTagNameMap = "li"> {
   as?: T;
@@ -325,8 +321,8 @@ export interface NavigationMenuMenuOptions<T extends keyof SeidrElementTagNameMa
   menuInstance?: NavigationMenuMenuInstance;
   children?: SeidrChild | SeidrChild[];
 }
-export type NavigationMenuMenuProps<T extends keyof SeidrElementTagNameMap = "li"> =
-  NavigationMenuMenuOptions<T> & Omit<SeidrElementProps<T>, "value">;
+export type NavigationMenuMenuProps<T extends keyof SeidrElementTagNameMap = "li"> = NavigationMenuMenuOptions<T> &
+  Omit<SeidrElementProps<T>, "value">;
 
 export interface NavigationMenuTriggerOptions<T extends keyof SeidrElementTagNameMap = "button">
   extends MenuTriggerOptions<T> {
@@ -349,8 +345,8 @@ export interface NavigationMenuLinkOptions<T extends keyof SeidrElementTagNameMa
   navigationMenuInstance?: UseNavigationMenuResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type NavigationMenuLinkProps<T extends keyof SeidrElementTagNameMap = "a"> =
-  NavigationMenuLinkOptions<T> & Omit<SeidrElementProps<T>, "value">;
+export type NavigationMenuLinkProps<T extends keyof SeidrElementTagNameMap = "a"> = NavigationMenuLinkOptions<T> &
+  Omit<SeidrElementProps<T>, "value">;
 
 export interface NavigationMenuViewportOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -370,13 +366,10 @@ export type NavigationMenuItemProps<T extends keyof SeidrElementTagNameMap = "di
 
 export type NavigationMenuCheckboxItemOptions<T extends keyof SeidrElementTagNameMap = "div"> =
   MenuCheckboxItemOptions<T>;
-export type NavigationMenuCheckboxItemProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuCheckboxItemProps<T>;
+export type NavigationMenuCheckboxItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuCheckboxItemProps<T>;
 
-export type NavigationMenuRadioGroupOptions<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuRadioGroupOptions<T>;
-export type NavigationMenuRadioGroupProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuRadioGroupProps<T>;
+export type NavigationMenuRadioGroupOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuRadioGroupOptions<T>;
+export type NavigationMenuRadioGroupProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuRadioGroupProps<T>;
 
 export type NavigationMenuRadioItemOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuRadioItemOptions<T>;
 export type NavigationMenuRadioItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuRadioItemProps<T>;
@@ -384,15 +377,11 @@ export type NavigationMenuRadioItemProps<T extends keyof SeidrElementTagNameMap 
 export type NavigationMenuSubOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubOptions<T>;
 export type NavigationMenuSubProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubProps<T>;
 
-export type NavigationMenuSubTriggerOptions<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuSubTriggerOptions<T>;
-export type NavigationMenuSubTriggerProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuSubTriggerProps<T>;
+export type NavigationMenuSubTriggerOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubTriggerOptions<T>;
+export type NavigationMenuSubTriggerProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubTriggerProps<T>;
 
-export type NavigationMenuSubContentOptions<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuSubContentOptions<T>;
-export type NavigationMenuSubContentProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  MenuSubContentProps<T>;
+export type NavigationMenuSubContentOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubContentOptions<T>;
+export type NavigationMenuSubContentProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuSubContentProps<T>;
 
 export type NavigationMenuSeparatorOptions<T extends keyof SeidrElementTagNameMap = "hr"> = MenuSeparatorOptions<T>;
 export type NavigationMenuSeparatorProps<T extends keyof SeidrElementTagNameMap = "hr"> = MenuSeparatorProps<T>;
@@ -400,15 +389,11 @@ export type NavigationMenuSeparatorProps<T extends keyof SeidrElementTagNameMap 
 export type NavigationMenuGroupOptions<T extends keyof SeidrElementTagNameMap = "div"> = MenuGroupOptions<T>;
 export type NavigationMenuGroupProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuGroupProps<T>;
 
-export type NavigationMenuGroupLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuGroupLabelOptions<T>;
-export type NavigationMenuGroupLabelProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuGroupLabelProps<T>;
+export type NavigationMenuGroupLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> = MenuGroupLabelOptions<T>;
+export type NavigationMenuGroupLabelProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuGroupLabelProps<T>;
 
-export type NavigationMenuItemLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemLabelOptions<T>;
-export type NavigationMenuItemLabelProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemLabelProps<T>;
+export type NavigationMenuItemLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemLabelOptions<T>;
+export type NavigationMenuItemLabelProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemLabelProps<T>;
 
 export type NavigationMenuItemDescriptionOptions<T extends keyof SeidrElementTagNameMap = "span"> =
   MenuItemDescriptionOptions<T>;
@@ -458,8 +443,7 @@ export interface NavigationMenuItemDescriptor {
 /**
  * High-level unified props for Tier 1 NavigationMenu component.
  */
-export interface NavigationMenuProps<T extends keyof SeidrElementTagNameMap = "nav">
-  extends UseNavigationMenuOptions {
+export interface NavigationMenuProps<T extends keyof SeidrElementTagNameMap = "nav"> extends UseNavigationMenuOptions {
   /** Underlying HTML tag for root container element. Defaults to "nav". */
   as?: T;
   /** Declarative list of navigation items / menus. */

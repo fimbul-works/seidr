@@ -8,7 +8,11 @@ import type {
   SeidrElementTagNameMap,
   Value,
 } from "@fimbul-works/seidr";
-import type { FocusOutsideEvent, InteractOutsideEvent, PointerDownOutsideEvent } from "../hooks/use-interact-outside.js";
+import type {
+  FocusOutsideEvent,
+  InteractOutsideEvent,
+  PointerDownOutsideEvent,
+} from "../hooks/use-interact-outside.js";
 
 export interface UseDialogProps {
   /** Explicit identifier for the dialog instance. Defaults to auto-generated ID. */

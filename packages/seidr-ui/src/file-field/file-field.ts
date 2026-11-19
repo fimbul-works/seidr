@@ -38,10 +38,7 @@ export const FileField = createComponent(
     const fileField = createFileField(fileFieldOptions);
 
     if (children) {
-      return fileField.Root(
-        { as, ...rootProps } as FileFieldRootProps<T>,
-        children,
-      );
+      return fileField.Root({ as, ...rootProps } as FileFieldRootProps<T>, children);
     }
 
     const content: (SeidrChild | undefined)[] = [];
@@ -52,19 +49,14 @@ export const FileField = createComponent(
 
     const dropzoneChildren: (SeidrChild | undefined)[] = [];
     if (dropzoneText) {
-      dropzoneChildren.push(
-        $("p", { style: { margin: 0, marginBottom: "0.5rem" } }, dropzoneText),
-      );
+      dropzoneChildren.push($("p", { style: { margin: 0, marginBottom: "0.5rem" } }, dropzoneText));
     }
     dropzoneChildren.push(fileField.Trigger(triggerProps, triggerText));
 
     const dropzoneRole = dropzoneProps?.role ?? "region";
 
     content.push(
-      fileField.Dropzone(
-        { role: dropzoneRole, ...dropzoneProps },
-        dropzoneChildren,
-      ),
+      fileField.Dropzone({ role: dropzoneRole, ...dropzoneProps }, dropzoneChildren),
       fileField.HiddenInput(hiddenInputProps),
     );
 
@@ -91,10 +83,7 @@ export const FileField = createComponent(
       content.push(fileField.ItemList(itemListProps, [listItems]));
     }
 
-    return fileField.Root(
-      { as, ...rootProps } as FileFieldRootProps<T>,
-      content,
-    );
+    return fileField.Root({ as, ...rootProps } as FileFieldRootProps<T>, content);
   },
   "FileField",
 );

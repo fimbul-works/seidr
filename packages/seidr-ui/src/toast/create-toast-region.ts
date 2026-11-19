@@ -1,12 +1,7 @@
 import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { ToastList } from "./toast-list.js";
 import { ToastRegionRoot } from "./toast-region-root.js";
-import type {
-  ToastListProps,
-  ToastRegionInstance,
-  ToastRegionRootProps,
-  UseToastRegionOptions,
-} from "./types.js";
+import type { ToastListProps, ToastRegionInstance, ToastRegionRootProps, UseToastRegionOptions } from "./types.js";
 import { useToastRegion } from "./use-toast-region.js";
 
 /**
@@ -28,4 +23,3 @@ export function createToastRegion(options: UseToastRegionOptions = {}): ToastReg
     ) => ToastList<T>({ instance, ...props } as ToastListProps<T>, children),
   };
 }
-

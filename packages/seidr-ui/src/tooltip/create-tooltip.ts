@@ -53,7 +53,7 @@ export function createTooltip(options: UseTooltipOptions = {}): TooltipInstance 
     if (instance.forceMount) {
       return renderPortal();
     }
-    
+
     return Show(instance.isOpen, renderPortal);
   };
 
@@ -61,12 +61,19 @@ export function createTooltip(options: UseTooltipOptions = {}): TooltipInstance 
     props: Omit<TooltipContentProps<T>, "instance"> = {} as Omit<TooltipContentProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
-    TooltipContent<T>({ instance, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as TooltipContentProps<T>, children);
+    TooltipContent<T>(
+      { instance, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as TooltipContentProps<T>,
+      children,
+    );
 
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<TooltipArrowProps<T>, "instance"> = {} as Omit<TooltipArrowProps<T>, "instance">,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({
+      instance: instance.popper,
+      dataComponent: DATA_COMPONENT_TOOLTIP,
+      ...props,
+    } as PopperArrowProps<T>);
 
   return {
     ...instance,

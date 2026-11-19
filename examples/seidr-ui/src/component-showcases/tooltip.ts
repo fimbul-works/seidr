@@ -28,7 +28,10 @@ export const TooltipShowcase = createComponent(() => {
         // Section 1: Standard Placements
         $div({ className: "tooltip-section-box" }, [
           $h3({ className: "tooltip-heading" }, "Tier 1: Multi-Directional Placements & Arrows"),
-          $p({ className: "tooltip-desc" }, "All-in-One Tooltip instances with automatic Popper positioning and arrows."),
+          $p(
+            { className: "tooltip-desc" },
+            "All-in-One Tooltip instances with automatic Popper positioning and arrows.",
+          ),
           $div({ className: "tooltip-row" }, [
             Tooltip({
               id: "tip-top",
@@ -190,4 +193,3 @@ tip.Root({}, [
     }),
   ]);
 }, "TooltipShowcase");
-

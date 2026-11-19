@@ -62,7 +62,9 @@ span[data-component="Breadcrumbs"][data-part="Link"] {
   font-weight: 500;
   border-radius: 4px;
   padding: 0.125rem 0.25rem;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 a[data-component="Breadcrumbs"][data-part="Link"]:hover:not([data-disabled]) {
@@ -102,4 +104,3 @@ a[data-component="Breadcrumbs"][data-part="Link"]:hover:not([data-disabled]) {
   height: 16px;
   vertical-align: middle;
 }
-

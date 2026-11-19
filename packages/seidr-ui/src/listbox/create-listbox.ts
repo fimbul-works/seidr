@@ -182,7 +182,10 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
       const secKey = sectionVal().key;
       const sectionItems = sectionVal.as((s) => s.items ?? []) as Value<ListboxItemData[]>;
       return Section({ id: secKey }, [
-        SectionLabel({}, sectionVal.as((s) => s.label)),
+        SectionLabel(
+          {},
+          sectionVal.as((s) => s.label),
+        ),
         $("ul", { role: "group" }, [
           List<ListboxItemData, string>(
             sectionItems,

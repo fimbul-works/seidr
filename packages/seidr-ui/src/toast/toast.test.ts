@@ -2,14 +2,7 @@ import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import {
-  createToast,
-  createToastRegion,
-  Toast,
-  ToastRegion,
-  toaster,
-  type UseToastOptions,
-} from "./index.js";
+import { createToast, createToastRegion, Toast, ToastRegion, toaster, type UseToastOptions } from "./index.js";
 
 describeDualMode("Toast", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -181,14 +174,10 @@ describeDualMode("Toast", ({ getDocument, isSSR }) => {
   it("should update toast in-place via toaster.update and support toaster.promise", async () => {
     const root = setup(() => ToastRegion({}));
 
-    const id = toaster.show(({ toastId, region }) =>
-      Toast({ toastId, region, title: "Initial Toast" }),
-    );
+    const id = toaster.show(({ toastId, region }) => Toast({ toastId, region, title: "Initial Toast" }));
     expect(root.querySelector("[data-part='Title']")?.textContent).toBe("Initial Toast");
 
-    toaster.update(id, ({ toastId, region }) =>
-      Toast({ toastId, region, title: "Updated Toast" }),
-    );
+    toaster.update(id, ({ toastId, region }) => Toast({ toastId, region, title: "Updated Toast" }));
     expect(root.querySelector("[data-part='Title']")?.textContent).toBe("Updated Toast");
 
     toaster.clear();

@@ -1,9 +1,4 @@
-import {
-  $,
-  createComponent,
-  type SeidrChild,
-  type SeidrElementTagNameMap,
-} from "@fimbul-works/seidr";
+import { $, createComponent, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { createTimeField } from "./create-time-field.js";
 import type { TimeFieldProps, TimeFieldRootProps } from "./types.js";
 
@@ -32,10 +27,7 @@ export const TimeField = createComponent(
     const timeField = createTimeField(timeFieldOptions);
 
     if (children) {
-      return timeField.Root(
-        { as, ...rootProps } as TimeFieldRootProps<T>,
-        children,
-      );
+      return timeField.Root({ as, ...rootProps } as TimeFieldRootProps<T>, children);
     }
 
     const content: (SeidrChild | undefined)[] = [];
@@ -50,17 +42,11 @@ export const TimeField = createComponent(
     inputChildren.push(timeField.Segment({ segment: "hour" }));
 
     if (segs.includes("minute")) {
-      inputChildren.push(
-        timeField.Separator({}, ":"),
-        timeField.Segment({ segment: "minute" }),
-      );
+      inputChildren.push(timeField.Separator({}, ":"), timeField.Segment({ segment: "minute" }));
     }
 
     if (segs.includes("second")) {
-      inputChildren.push(
-        timeField.Separator({}, ":"),
-        timeField.Segment({ segment: "second" }),
-      );
+      inputChildren.push(timeField.Separator({}, ":"), timeField.Segment({ segment: "second" }));
     }
 
     if (segs.includes("dayPeriod")) {
@@ -84,11 +70,7 @@ export const TimeField = createComponent(
       content.push(timeField.ErrorMessage({}, errorMessage));
     }
 
-    return timeField.Root(
-      { as, ...rootProps } as TimeFieldRootProps<T>,
-      content,
-    );
+    return timeField.Root({ as, ...rootProps } as TimeFieldRootProps<T>, content);
   },
   "TimeField",
 );
-

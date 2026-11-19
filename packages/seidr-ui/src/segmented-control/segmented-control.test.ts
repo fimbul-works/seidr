@@ -382,7 +382,10 @@ describeDualMode("SegmentedControl", ({ getDocument, isSSR }) => {
           renderItem: (itemVal, key, inst) =>
             inst.Root({}, [
               inst.Input(),
-              inst.Label({}, itemVal.as((i) => `Custom: ${i.label}`)),
+              inst.Label(
+                {},
+                itemVal.as((i) => `Custom: ${i.label}`),
+              ),
             ]),
         }),
       ]);

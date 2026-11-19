@@ -338,10 +338,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
       return menu.Root({}, [
         menu.Trigger({}, "Options"),
         menu.Content({}, [
-          group.Root({}, [
-            group.Item({ value: "opt-a" }, "Option A"),
-            group.Item({ value: "opt-b" }, "Option B"),
-          ]),
+          group.Root({}, [group.Item({ value: "opt-a" }, "Option A"), group.Item({ value: "opt-b" }, "Option B")]),
         ]),
       ]);
     });
@@ -409,10 +406,7 @@ describeDualMode("Menu", ({ getDocument, isSSR }) => {
 
     const root = setup(() => {
       const menu = createMenu({ id: "dynamic-menu", defaultOpen: true });
-      return menu.Root({}, [
-        menu.Trigger({}, "Dynamic"),
-        menu.Content({}, [menu.List(itemsValue)]),
-      ]);
+      return menu.Root({}, [menu.Trigger({}, "Dynamic"), menu.Content({}, [menu.List(itemsValue)])]);
     });
 
     const initialItems = root.querySelectorAll("[data-part='Item']");

@@ -1,8 +1,8 @@
 import { createValue } from "@fimbul-works/seidr";
 import { describe, expect, it } from "vitest";
-import { combineAriaDescribedBy, combineAriaLabelledBy, extractAriaProps } from "./aria.js";
+import { combineARIADescribedBy, combineARIALabelledBy, extractARIAProps } from "./aria.js";
 
-describe("extractAriaProps", () => {
+describe("extractARIAProps", () => {
   it("returns a tuple with extracted aria props and clean rest props", () => {
     const props = {
       id: "input-1",
@@ -12,7 +12,7 @@ describe("extractAriaProps", () => {
       dataCustom: "value",
     };
 
-    const [aria, rest] = extractAriaProps(props);
+    const [aria, rest] = extractARIAProps(props);
 
     expect(aria.ariaLabel).toBe("User Name");
     expect(aria.ariaDescribedBy).toBe("help-1");
@@ -38,7 +38,7 @@ describe("extractAriaProps", () => {
       otherProp: 42,
     };
 
-    const [aria, rest] = extractAriaProps(props);
+    const [aria, rest] = extractARIAProps(props);
 
     expect(aria.ariaLabel).toBe("Camel Label");
     expect(aria.ariaLabelledBy).toBe("id-by-camel");
@@ -55,15 +55,15 @@ describe("extractAriaProps", () => {
       ariaLabelledby: "lower-id",
     };
 
-    const [aria, rest] = extractAriaProps(props);
+    const [aria, rest] = extractARIAProps(props);
     expect(aria.ariaLabelledBy).toBe("kebab-id");
     expect(Object.keys(rest)).toHaveLength(0);
   });
 });
 
-describe("combineAriaLabelledBy", () => {
+describe("combineARIALabelledBy", () => {
   it("returns internalLabelId when no custom labelledBy or label is provided", () => {
-    const combined = combineAriaLabelledBy({
+    const combined = combineARIALabelledBy({
       internalLabelId: "form-label-id",
     });
 
@@ -71,7 +71,7 @@ describe("combineAriaLabelledBy", () => {
   });
 
   it("combines user ariaLabelledBy and internalLabelId", () => {
-    const combined = combineAriaLabelledBy({
+    const combined = combineARIALabelledBy({
       ariaLabelledBy: "custom-id",
       internalLabelId: "form-label-id",
     });
@@ -80,7 +80,7 @@ describe("combineAriaLabelledBy", () => {
   });
 
   it("includes fieldId when both custom ariaLabelledBy and explicit ariaLabel are provided", () => {
-    const combined = combineAriaLabelledBy({
+    const combined = combineARIALabelledBy({
       ariaLabelledBy: "custom-id",
       ariaLabel: "Self Label",
       internalLabelId: "form-label-id",
@@ -94,7 +94,7 @@ describe("combineAriaLabelledBy", () => {
     const customLabelledBy = createValue<string | undefined>("initial-custom");
     const internalLabel = createValue<string | undefined>("label-1");
 
-    const combined = combineAriaLabelledBy({
+    const combined = combineARIALabelledBy({
       ariaLabelledBy: customLabelledBy,
       internalLabelId: internalLabel,
     });
@@ -109,9 +109,9 @@ describe("combineAriaLabelledBy", () => {
   });
 });
 
-describe("combineAriaDescribedBy", () => {
+describe("combineARIADescribedBy", () => {
   it("combines internalDescribedBy with user-provided ariaDescribedBy", () => {
-    const combined = combineAriaDescribedBy({
+    const combined = combineARIADescribedBy({
       internalDescribedBy: "desc-1 err-1",
       ariaDescribedBy: "user-desc",
     });
@@ -120,7 +120,7 @@ describe("combineAriaDescribedBy", () => {
   });
 
   it("handles undefined sources cleanly", () => {
-    const combined = combineAriaDescribedBy({
+    const combined = combineARIADescribedBy({
       internalDescribedBy: undefined,
       ariaDescribedBy: undefined,
     });
@@ -132,7 +132,7 @@ describe("combineAriaDescribedBy", () => {
     const internal = createValue<string | undefined>("internal-desc");
     const user = createValue<string | undefined>(undefined);
 
-    const combined = combineAriaDescribedBy({
+    const combined = combineARIADescribedBy({
       internalDescribedBy: internal,
       ariaDescribedBy: user,
     });

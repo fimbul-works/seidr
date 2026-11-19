@@ -1,11 +1,4 @@
-import {
-  createRef,
-  createValue,
-  isValue,
-  unwrapValue,
-  useId,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createRef, createValue, isValue, unwrapValue, useId, wrapValue } from "@fimbul-works/seidr";
 import type { UseDialogProps, UseDialogResult } from "./types.js";
 
 /**
@@ -78,4 +71,3 @@ export function useDialog(props: UseDialogProps = {}): UseDialogResult {
     toggle,
   };
 }
-

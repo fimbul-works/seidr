@@ -1,12 +1,5 @@
 import { isFn } from "@fimbul-works/hvat";
-import {
-  mergeValues,
-  type SeidrChild,
-  type SeidrElementProps,
-  type SeidrElementTagNameMap,
-  SeidrError,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { mergeValues, type SeidrChild, type SeidrElementTagNameMap, SeidrError, wrapValue } from "@fimbul-works/seidr";
 import { Button, type ButtonOptions, type ButtonProps } from "../button.js";
 import { DATA_COMPONENT_COLLAPSIBLE, DATA_PART_TRIGGER } from "../constants.js";
 import type { UseCollapsibleResult } from "./types.js";
@@ -54,13 +47,13 @@ export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "but
     {
       disabled: effectiveDisabled,
       onclick: handleClick,
-      ariaExpanded: col.isOpen.as((v: boolean) => (v ? "true" : "false")),
+      ariaExpanded: col.isOpen.as((v: boolean) => !!v),
       ariaControls,
       dataComponent: DATA_COMPONENT_COLLAPSIBLE,
       dataPart: DATA_PART_TRIGGER,
       ...col.dataset,
       ...rest,
-    } as SeidrElementProps<T>,
+    } as ButtonProps<T>,
     children,
   );
 }

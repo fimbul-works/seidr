@@ -29,7 +29,7 @@ export const CheckboxShowcase = createComponent(() => {
   // --- Section 4: Interactive Disabling ---
   const isDisabled = createValue(false);
 
-    // Checkbox.create instance pattern for the terms agreement
+  // Checkbox.create instance pattern for the terms agreement
   const termsCheckbox = createCheckbox({
     id: "terms-checkbox",
     checked: agreedToTerms,

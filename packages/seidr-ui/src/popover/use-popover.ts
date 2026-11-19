@@ -1,13 +1,5 @@
 import { isFn } from "@fimbul-works/hvat";
-import {
-  createRef,
-  createValue,
-  isRef,
-  isValue,
-  unwrapValue,
-  useId,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createRef, createValue, isRef, isValue, unwrapValue, useId, wrapValue } from "@fimbul-works/seidr";
 import { usePopper } from "../popper/use-popper.js";
 import type { UsePopoverOptions, UsePopoverResult } from "./types.js";
 
@@ -101,4 +93,3 @@ export function usePopover(options: UsePopoverOptions = {}): UsePopoverResult {
     toggle,
   };
 }
-

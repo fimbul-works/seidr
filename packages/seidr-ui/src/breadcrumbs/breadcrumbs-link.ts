@@ -62,16 +62,16 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
   const dataCurrent = currentObs ? currentObs.as((c) => (c ? "" : undefined)) : isCurrentStatic ? "" : undefined;
 
   const ariaCurrentObs = isValue<string | undefined>(ariaCurrent) ? ariaCurrent : undefined;
-  let resolvedAriaCurrent: string | DerivedValue<string | undefined> | undefined;
+  let resolvedARIACurrent: string | DerivedValue<string | undefined> | undefined;
   if (currentObs || (isCurrentStatic && ariaCurrentObs)) {
-    resolvedAriaCurrent = mergeValues(
+    resolvedARIACurrent = mergeValues(
       () => (!unwrapValue(current) ? undefined : (unwrapValue(ariaCurrent) ?? "page")),
       {
         parents: [currentObs, ariaCurrentObs].filter(isObservable),
       },
     );
   } else {
-    resolvedAriaCurrent = isCurrentStatic ? (unwrapValue(ariaCurrent) ?? "page") : undefined;
+    resolvedARIACurrent = isCurrentStatic ? (unwrapValue(ariaCurrent) ?? "page") : undefined;
   }
 
   const processedProps = handleLinkProps(as, {
@@ -82,7 +82,7 @@ export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
     ...(isEffectivelyDisabled !== false ? { disabled: isEffectivelyDisabled } : {}),
     ...(customRole !== undefined ? { role: customRole } : {}),
     ...(customTabIndex !== undefined ? { tabIndex: customTabIndex } : {}),
-    ...(resolvedAriaCurrent !== undefined ? { ariaCurrent: resolvedAriaCurrent } : {}),
+    ...(resolvedARIACurrent !== undefined ? { ariaCurrent: resolvedARIACurrent } : {}),
     ...(dataCurrent !== undefined ? { dataCurrent } : {}),
   } as LinkElementProps<T>);
 

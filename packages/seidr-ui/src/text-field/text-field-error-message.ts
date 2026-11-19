@@ -13,7 +13,12 @@ export function TextFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "
   props: TextFieldErrorMessageProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
-  const { instance: tf, dataComponent = DATA_COMPONENT_TEXT_FIELD, dataPart = DATA_PART_ERROR_MESSAGE, ...rest } = props;
+  const {
+    instance: tf,
+    dataComponent = DATA_COMPONENT_TEXT_FIELD,
+    dataPart = DATA_PART_ERROR_MESSAGE,
+    ...rest
+  } = props;
 
   if (!tf) {
     throw new SeidrError("TextFieldErrorMessage requires an instance coordinator");

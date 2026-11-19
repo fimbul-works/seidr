@@ -7,11 +7,7 @@ import type {
   SeidrElementProps,
   SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
-import type {
-  UseFormControlOptions,
-  UseFormControlResult,
-  ValidationState,
-} from "../form-control/types.js";
+import type { UseFormControlOptions, UseFormControlResult, ValidationState } from "../form-control/types.js";
 
 export type TimeFieldGranularity = "hour" | "minute" | "second";
 
@@ -126,8 +122,8 @@ export interface TimeFieldRootOptions<T extends keyof SeidrElementTagNameMap = "
   dataComponent?: string;
   children?: SeidrChild | SeidrChild[];
 }
-export type TimeFieldRootProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  TimeFieldRootOptions<T> & SeidrElementProps<T>;
+export type TimeFieldRootProps<T extends keyof SeidrElementTagNameMap = "div"> = TimeFieldRootOptions<T> &
+  SeidrElementProps<T>;
 
 export interface TimeFieldLabelOptions<T extends keyof SeidrElementTagNameMap = "label"> {
   as?: T;
@@ -137,8 +133,8 @@ export interface TimeFieldLabelOptions<T extends keyof SeidrElementTagNameMap = 
   htmlFor?: string;
   children?: SeidrChild | SeidrChild[];
 }
-export type TimeFieldLabelProps<T extends keyof SeidrElementTagNameMap = "label"> =
-  TimeFieldLabelOptions<T> & SeidrElementProps<T>;
+export type TimeFieldLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = TimeFieldLabelOptions<T> &
+  SeidrElementProps<T>;
 
 export interface TimeFieldInputOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -146,8 +142,8 @@ export interface TimeFieldInputOptions<T extends keyof SeidrElementTagNameMap = 
   dataComponent?: string;
   children?: SeidrChild | SeidrChild[];
 }
-export type TimeFieldInputProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  TimeFieldInputOptions<T> & SeidrElementProps<T>;
+export type TimeFieldInputProps<T extends keyof SeidrElementTagNameMap = "div"> = TimeFieldInputOptions<T> &
+  SeidrElementProps<T>;
 
 export interface TimeFieldSegmentOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -156,8 +152,8 @@ export interface TimeFieldSegmentOptions<T extends keyof SeidrElementTagNameMap 
   dataComponent?: string;
   children?: SeidrChild | SeidrChild[];
 }
-export type TimeFieldSegmentProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  TimeFieldSegmentOptions<T> & SeidrElementProps<T>;
+export type TimeFieldSegmentProps<T extends keyof SeidrElementTagNameMap = "div"> = TimeFieldSegmentOptions<T> &
+  SeidrElementProps<T>;
 
 export interface TimeFieldSeparatorOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -165,15 +161,14 @@ export interface TimeFieldSeparatorOptions<T extends keyof SeidrElementTagNameMa
   dataComponent?: string;
   children?: SeidrChild | SeidrChild[];
 }
-export type TimeFieldSeparatorProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  TimeFieldSeparatorOptions<T> & SeidrElementProps<T>;
+export type TimeFieldSeparatorProps<T extends keyof SeidrElementTagNameMap = "span"> = TimeFieldSeparatorOptions<T> &
+  SeidrElementProps<T>;
 
 export interface TimeFieldHiddenInputOptions {
   instance?: UseTimeFieldResult;
   dataComponent?: string;
 }
-export type TimeFieldHiddenInputProps = TimeFieldHiddenInputOptions &
-  Omit<SeidrElementProps<"input">, "type">;
+export type TimeFieldHiddenInputProps = TimeFieldHiddenInputOptions & Omit<SeidrElementProps<"input">, "type">;
 
 export interface TimeFieldValueDescriptionOptions<T extends keyof SeidrElementTagNameMap = "div"> {
   as?: T;
@@ -227,9 +222,7 @@ export interface TimeFieldInstance extends UseTimeFieldResult {
     props?: TimeFieldSeparatorProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
-  HiddenInput: (
-    props?: TimeFieldHiddenInputProps,
-  ) => HTMLInputElement;
+  HiddenInput: (props?: TimeFieldHiddenInputProps) => HTMLInputElement;
   ValueDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: TimeFieldValueDescriptionProps<T>,
     children?: SeidrChild | SeidrChild[],
@@ -244,16 +237,14 @@ export interface TimeFieldInstance extends UseTimeFieldResult {
   ) => SeidrElementTagNameMap[T];
 }
 
-export type TimeFieldProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  UseTimeFieldOptions & {
-    as?: T;
-    label?: SeidrChild;
-    description?: SeidrChild;
-    errorMessage?: SeidrChild;
-    rootProps?: TimeFieldRootProps<T>;
-    labelProps?: TimeFieldLabelProps<"label">;
-    inputProps?: TimeFieldInputProps<"div">;
-    hiddenInputProps?: TimeFieldHiddenInputProps;
-    children?: SeidrChild | SeidrChild[];
-  } & Omit<SeidrElementProps<T>, "children" | "id">;
-
+export type TimeFieldProps<T extends keyof SeidrElementTagNameMap = "div"> = UseTimeFieldOptions & {
+  as?: T;
+  label?: SeidrChild;
+  description?: SeidrChild;
+  errorMessage?: SeidrChild;
+  rootProps?: TimeFieldRootProps<T>;
+  labelProps?: TimeFieldLabelProps<"label">;
+  inputProps?: TimeFieldInputProps<"div">;
+  hiddenInputProps?: TimeFieldHiddenInputProps;
+  children?: SeidrChild | SeidrChild[];
+} & Omit<SeidrElementProps<T>, "children" | "id">;

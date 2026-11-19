@@ -8,20 +8,20 @@ import {
   unwrapValue,
 } from "@fimbul-works/seidr";
 
-export type AriaValue = ReactiveValue<string> | ReactiveValue<string | undefined>;
+export type ARIAValue = ReactiveValue<string> | ReactiveValue<string | undefined>;
 
-export interface ExtractedAriaProps {
+export interface ExtractedARIAProps {
   /** Normalized aria-label value. */
-  ariaLabel?: AriaValue;
+  ariaLabel?: ARIAValue;
   /** Normalized aria-labelledby value. */
-  ariaLabelledBy?: AriaValue;
+  ariaLabelledBy?: ARIAValue;
   /** Normalized aria-describedby value. */
-  ariaDescribedBy?: AriaValue;
+  ariaDescribedBy?: ARIAValue;
   /** Normalized aria-errormessage value. */
-  ariaErrorMessage?: AriaValue;
+  ariaErrorMessage?: ARIAValue;
 }
 
-export type AriaPropKeys =
+export type ARIAPropKeys =
   | "aria-label"
   | "ariaLabel"
   | "aria-labelledby"
@@ -34,14 +34,14 @@ export type AriaPropKeys =
   | "ariaErrormessage"
   | "ariaErrorMessage";
 
-export type AriaPropsTuple<T> = [aria: ExtractedAriaProps, rest: Omit<T, AriaPropKeys>];
+export type ARIAPropsTuple<T> = [aria: ExtractedARIAProps, rest: Omit<T, ARIAPropKeys>];
 
 /**
  * Extracts and normalizes ARIA labeling and description props across all naming casing
  * variants (kebab-case, camelCase, lowercase), returning a tuple [ariaProps, restProps]
  * so no ARIA keys leak into the clean rest props.
  */
-export function extractAriaProps<T extends Record<string, any>>(props: T = {} as T): AriaPropsTuple<T> {
+export function extractARIAProps<T extends Record<string, any>>(props: T = {} as T): ARIAPropsTuple<T> {
   const {
     "aria-label": ariaLabelKebab,
     ariaLabel,
@@ -56,45 +56,45 @@ export function extractAriaProps<T extends Record<string, any>>(props: T = {} as
     ariaErrorMessage: ariaErrorMessageCamel,
     ...rest
   } = props as T & {
-    "aria-label"?: AriaValue;
-    ariaLabel?: AriaValue;
-    "aria-labelledby"?: AriaValue;
-    ariaLabelledby?: AriaValue;
-    ariaLabelledBy?: AriaValue;
-    "aria-describedby"?: AriaValue;
-    ariaDescribedby?: AriaValue;
-    ariaDescribedBy?: AriaValue;
-    "aria-errormessage"?: AriaValue;
-    ariaErrormessage?: AriaValue;
-    ariaErrorMessage?: AriaValue;
+    "aria-label"?: ARIAValue;
+    ariaLabel?: ARIAValue;
+    "aria-labelledby"?: ARIAValue;
+    ariaLabelledby?: ARIAValue;
+    ariaLabelledBy?: ARIAValue;
+    "aria-describedby"?: ARIAValue;
+    ariaDescribedby?: ARIAValue;
+    ariaDescribedBy?: ARIAValue;
+    "aria-errormessage"?: ARIAValue;
+    ariaErrormessage?: ARIAValue;
+    ariaErrorMessage?: ARIAValue;
   };
 
-  const extracted: ExtractedAriaProps = {
+  const extracted: ExtractedARIAProps = {
     ariaLabel: ariaLabelKebab ?? ariaLabel,
     ariaLabelledBy: ariaLabelledByKebab ?? ariaLabelledByCamel ?? ariaLabelledByLower,
     ariaDescribedBy: ariaDescribedByKebab ?? ariaDescribedByCamel ?? ariaDescribedByLower,
     ariaErrorMessage: ariaErrorMessageKebab ?? ariaErrorMessageCamel ?? ariaErrorMessageLower,
   };
 
-  return [extracted, rest as Omit<T, AriaPropKeys>];
+  return [extracted, rest as Omit<T, ARIAPropKeys>];
 }
 
-export interface CombineAriaLabelledByOptions {
+export interface CombineARIALabelledByOptions {
   /** User-provided or explicit aria-labelledby (reactive or scalar). */
-  ariaLabelledBy?: AriaValue;
+  ariaLabelledBy?: ARIAValue;
   /** User-provided or explicit aria-label (reactive or scalar). */
-  ariaLabel?: AriaValue;
+  ariaLabel?: ARIAValue;
   /** Internal component or form control label ID (reactive or scalar). */
-  internalLabelId?: AriaValue;
+  internalLabelId?: ARIAValue;
   /** Associated field ID (reactive or scalar), attached if both custom aria-labelledby and aria-label are present. */
-  fieldId?: AriaValue;
+  fieldId?: ARIAValue;
 }
 
 /**
  * Reactively combines user-provided `aria-labelledby`, internal label IDs, and the field ID
  * following WAI-ARIA and Kobalte accessibility contracts.
  */
-export function combineAriaLabelledBy(options: CombineAriaLabelledByOptions): DerivedValue<string | undefined> {
+export function combineARIALabelledBy(options: CombineARIALabelledByOptions): DerivedValue<string | undefined> {
   const { ariaLabelledBy, ariaLabel, internalLabelId, fieldId } = options;
 
   return mergeValues(
@@ -120,18 +120,18 @@ export function combineAriaLabelledBy(options: CombineAriaLabelledByOptions): De
   );
 }
 
-export interface CombineAriaDescribedByOptions {
+export interface CombineARIADescribedByOptions {
   /** User-provided or explicit aria-describedby (reactive or scalar). */
-  ariaDescribedBy?: AriaValue;
+  ariaDescribedBy?: ARIAValue;
   /** Internal component or form control describedBy ID list (reactive or scalar). */
-  internalDescribedBy?: AriaValue;
+  internalDescribedBy?: ARIAValue;
 }
 
 /**
  * Reactively combines internal describedby IDs (descriptions and error messages) with user-provided
  * `aria-describedby` IDs into a space-separated attribute string.
  */
-export function combineAriaDescribedBy(options: CombineAriaDescribedByOptions): DerivedValue<string | undefined> {
+export function combineARIADescribedBy(options: CombineARIADescribedByOptions): DerivedValue<string | undefined> {
   const { ariaDescribedBy, internalDescribedBy } = options;
 
   return mergeValues(

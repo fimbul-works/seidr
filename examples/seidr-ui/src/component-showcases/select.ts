@@ -76,9 +76,7 @@ export const SelectShowcase = createComponent(() => {
           }),
           $p({ className: "select-value-text" }, [
             "Current Value: ",
-            $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [
-              singleValue.as((v) => v ?? "none"),
-            ]),
+            $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 65%)" } }, [singleValue.as((v) => v ?? "none")]),
           ]),
         ]),
 
@@ -241,4 +239,3 @@ sel.Root({}, [
     }),
   ]);
 });
-

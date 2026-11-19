@@ -52,4 +52,3 @@ export function useSegmentedControl(options: UseSegmentedControlOptions = {}): U
     registerItem,
   };
 }
-

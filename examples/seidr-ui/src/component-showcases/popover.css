@@ -56,7 +56,9 @@
   color: #ffffff;
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
 }
 
 [data-component="Popover"][data-part="Trigger"]:hover {
@@ -86,7 +88,9 @@
   border: 1px solid var(--border-default, #3f3f4e);
   border-radius: 8px;
   padding: 1rem 1.25rem;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.4),
+    0 8px 10px -6px rgba(0, 0, 0, 0.3);
   font-size: 0.875rem;
   line-height: 1.5;
   outline: none;
@@ -126,7 +130,9 @@
   cursor: pointer;
   font-size: 0.875rem;
   line-height: 1;
-  transition: color 0.15s ease, background-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background-color 0.15s ease;
 }
 
 [data-component="Popover"][data-part="CloseButton"]:hover {
@@ -187,4 +193,3 @@
     transform: scale(1);
   }
 }
-

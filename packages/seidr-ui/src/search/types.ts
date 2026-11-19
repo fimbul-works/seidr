@@ -121,9 +121,7 @@ export interface SearchInstance<Option = any> extends UseSearchResult<Option> {
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
-  Input: <T extends keyof SeidrElementTagNameMap = "input">(
-    props?: SearchInputProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Input: <T extends keyof SeidrElementTagNameMap = "input">(props?: SearchInputProps<T>) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: SearchTriggerProps<T>,
@@ -187,9 +185,7 @@ export interface SearchInstance<Option = any> extends UseSearchResult<Option> {
 
   HiddenSelect: (props?: SearchHiddenSelectProps) => SeidrElementTagNameMap["select"];
 
-  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
-    props?: SearchArrowProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: SearchArrowProps<T>) => SeidrElementTagNameMap[T];
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchDescriptionProps<T>,
@@ -201,10 +197,7 @@ export interface SearchInstance<Option = any> extends UseSearchResult<Option> {
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
-  List: (
-    items: ReactiveValue<SearchNode<Option>[]>,
-    options?: ListboxListRenderOptions,
-  ) => SeidrChild;
+  List: (items: ReactiveValue<SearchNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;
 }
 
 // ---------------------------------------------------------------------------
@@ -227,4 +220,3 @@ export interface SearchProps<Option = any, OptGroup = any> extends UseSearchOpti
   hiddenSelectProps?: Omit<SearchHiddenSelectProps, "instance">;
   itemProps?: Partial<SearchItemProps<"li">>;
 }
-

@@ -5,4 +5,3 @@ export { ToastRegion } from "./toast-region.js";
 export { toastStore } from "./toast-store.js";
 export { toaster } from "./toaster.js";
 export type * from "./types.js";
-

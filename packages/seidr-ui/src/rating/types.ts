@@ -89,8 +89,8 @@ export interface RatingRootOptions<T extends keyof SeidrElementTagNameMap = "div
   instance?: UseRatingResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingRootProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  RatingRootOptions<T> & SeidrElementProps<T>;
+export type RatingRootProps<T extends keyof SeidrElementTagNameMap = "div"> = RatingRootOptions<T> &
+  SeidrElementProps<T>;
 
 export interface RatingLabelOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -98,8 +98,8 @@ export interface RatingLabelOptions<T extends keyof SeidrElementTagNameMap = "sp
   instance?: UseRatingResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingLabelProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  RatingLabelOptions<T> & SeidrElementProps<T>;
+export type RatingLabelProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingLabelOptions<T> &
+  SeidrElementProps<T>;
 
 export interface RatingItemOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -108,8 +108,8 @@ export interface RatingItemOptions<T extends keyof SeidrElementTagNameMap = "spa
   instance?: UseRatingResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingItemProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  RatingItemOptions<T> & Omit<SeidrElementProps<T>, "value">;
+export type RatingItemProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingItemOptions<T> &
+  Omit<SeidrElementProps<T>, "value">;
 
 export interface RatingItemIndicatorOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -121,8 +121,8 @@ export interface RatingItemIndicatorOptions<T extends keyof SeidrElementTagNameM
   emptyIcon?: SeidrChild;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  RatingItemIndicatorOptions<T> & SeidrElementProps<T>;
+export type RatingItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingItemIndicatorOptions<T> &
+  SeidrElementProps<T>;
 
 export interface RatingDescriptionOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -130,8 +130,8 @@ export interface RatingDescriptionOptions<T extends keyof SeidrElementTagNameMap
   instance?: UseRatingResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  RatingDescriptionOptions<T> & SeidrElementProps<T>;
+export type RatingDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingDescriptionOptions<T> &
+  SeidrElementProps<T>;
 
 export interface RatingErrorMessageOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   as?: T;
@@ -139,8 +139,8 @@ export interface RatingErrorMessageOptions<T extends keyof SeidrElementTagNameMa
   instance?: UseRatingResult;
   children?: SeidrChild | SeidrChild[];
 }
-export type RatingErrorMessageProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  RatingErrorMessageOptions<T> & SeidrElementProps<T>;
+export type RatingErrorMessageProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingErrorMessageOptions<T> &
+  SeidrElementProps<T>;
 
 export interface RatingHiddenInputOptions {
   instance?: UseRatingResult;
@@ -191,8 +191,7 @@ export interface RatingInstance extends UseRatingResult {
   HiddenInput: (props?: RatingHiddenInputOptions) => SeidrElementTagNameMap["input"];
 }
 
-export interface RatingProps<T extends keyof SeidrElementTagNameMap = "div">
-  extends UseRatingOptions {
+export interface RatingProps<T extends keyof SeidrElementTagNameMap = "div"> extends UseRatingOptions {
   /** Underlying HTML tag for root container. Defaults to "div". */
   as?: T;
   /** High-level label text or element. */
@@ -214,4 +213,3 @@ export interface RatingProps<T extends keyof SeidrElementTagNameMap = "div">
   /** Direct children when composing manually. */
   children?: SeidrChild | SeidrChild[];
 }
-

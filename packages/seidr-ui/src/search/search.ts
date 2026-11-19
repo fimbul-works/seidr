@@ -31,37 +31,27 @@ export const Search = createComponent(function Search<Option = any, OptGroup = a
 
   const search = createSearch(options);
 
-  const indicatorChild = search.Indicator(
-    { loadingComponent: loadingIndicator },
-    indicator ?? search.Icon(),
-  );
+  const indicatorChild = search.Indicator({ loadingComponent: loadingIndicator }, indicator ?? search.Icon());
 
   const children: (SeidrChild | null)[] = [
     label !== undefined ? search.Label({}, label) : null,
-    search.Control(
-      controlProps,
-      [
-        search.Input(inputProps),
-        search.Trigger(triggerProps, [indicatorChild]),
-      ],
-    ),
-    search.Content(
-      contentProps,
-      [
-        search.Listbox(
-          listboxProps,
-          [
-            noResult !== undefined ? search.NoResult({}, noResult) : null,
-            search.List(search.displayedOptions, { indicator, itemProps }),
-          ].filter(Boolean),
-        ),
-      ],
-    ),
+    search.Control(controlProps, [search.Input(inputProps), search.Trigger(triggerProps, [indicatorChild])]),
+    search.Content(contentProps, [
+      search.Listbox(
+        listboxProps,
+        [
+          noResult !== undefined ? search.NoResult({}, noResult) : null,
+          search.List(search.displayedOptions, { indicator, itemProps }),
+        ].filter(Boolean),
+      ),
+    ]),
     description !== undefined ? search.Description({}, description) : null,
     errorMessage !== undefined ? search.ErrorMessage({}, errorMessage) : null,
     search.HiddenSelect(hiddenSelectProps),
   ];
 
-  return search.Root(rootProps, children.filter((c): c is SeidrChild => c !== null));
+  return search.Root(
+    rootProps,
+    children.filter((c): c is SeidrChild => c !== null),
+  );
 }, "Search");
-

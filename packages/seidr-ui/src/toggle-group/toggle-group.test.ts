@@ -348,7 +348,10 @@ describeDualMode("ToggleGroup", ({ getDocument, isSSR }) => {
       return group.Root({}, [
         group.List(dynamicItems, {
           renderItem: (itemVal, key, inst) =>
-            inst.Item({ value: key, className: "custom-item" }, itemVal.as((i) => `Prefixed: ${i.label}`)),
+            inst.Item(
+              { value: key, className: "custom-item" },
+              itemVal.as((i) => `Prefixed: ${i.label}`),
+            ),
         }),
       ]);
     });

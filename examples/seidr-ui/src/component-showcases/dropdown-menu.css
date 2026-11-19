@@ -77,7 +77,9 @@
   background-color: hsl(222, 24%, 13%);
   border: 1px solid hsl(222, 16%, 26%);
   border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4);
   z-index: 50;
   display: flex;
   flex-direction: column;
@@ -89,7 +91,9 @@
 :root[data-theme="light"] [data-component="DropdownMenu"][data-part="SubContent"] {
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.12),
+    0 8px 10px -6px rgba(0, 0, 0, 0.08);
 }
 
 /* Items (standard, checkbox, radio, sub-trigger) */
@@ -107,7 +111,9 @@
   cursor: pointer;
   user-select: none;
   outline: none;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
 }
 
 :root[data-theme="light"] [data-component="DropdownMenu"][data-part="Item"],
@@ -139,7 +145,8 @@
   font-weight: 500;
 }
 
-:root[data-theme="light"] [data-component="DropdownMenu"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
+:root[data-theme="light"]
+  [data-component="DropdownMenu"][data-part="CheckboxItem"][data-checked]:not([data-highlighted]),
 :root[data-theme="light"] [data-component="DropdownMenu"][data-part="RadioItem"][data-checked]:not([data-highlighted]),
 :root[data-theme="light"] [data-component="DropdownMenu"][data-part="Item"][data-checked]:not([data-highlighted]) {
   background-color: rgba(79, 70, 229, 0.1);
@@ -194,7 +201,8 @@
   margin-left: auto;
 }
 
-[data-component="DropdownMenu"][data-part="Item"][data-highlighted] [data-component="DropdownMenu"][data-part="ItemDescription"] {
+[data-component="DropdownMenu"][data-part="Item"][data-highlighted]
+  [data-component="DropdownMenu"][data-part="ItemDescription"] {
   color: rgba(255, 255, 255, 0.8);
 }
 
@@ -251,4 +259,3 @@
 .dropdown-menu-status-badge strong {
   color: hsl(217, 91%, 60%);
 }
-

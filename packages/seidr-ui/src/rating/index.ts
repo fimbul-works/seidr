@@ -20,4 +20,3 @@ export type {
   UseRatingOptions,
   UseRatingResult,
 } from "./types.js";
-

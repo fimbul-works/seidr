@@ -277,7 +277,11 @@ export function createSelect<Option = any, OptGroup = any>(
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectArrowProps<T> = {} as SelectArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_SELECT, ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({
+      instance: instance.popper,
+      dataComponent: DATA_COMPONENT_SELECT,
+      ...props,
+    } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectDescriptionProps<T> = {} as SelectDescriptionProps<T>,

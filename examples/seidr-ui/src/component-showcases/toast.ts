@@ -1,12 +1,6 @@
 import { createComponent, getDocument } from "@fimbul-works/seidr";
 import { $div, $h2, $p, $section, $span } from "@fimbul-works/seidr/html";
-import {
-  Button,
-  createToast,
-  Toast,
-  ToastRegion,
-  toaster,
-} from "@fimbul-works/seidr-ui";
+import { Button, createToast, Toast, ToastRegion, toaster } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./toast.css";
 
@@ -14,11 +8,7 @@ export const ToastShowcase = createComponent(() => {
   let updatableToastId: number | undefined;
   let counter = 1;
 
-  const showVariantToast = (
-    variant: "info" | "success" | "warning" | "error",
-    title: string,
-    description: string,
-  ) => {
+  const showVariantToast = (variant: "info" | "success" | "warning" | "error", title: string, description: string) => {
     toaster.show(({ toastId, region }) =>
       Toast({
         toastId,
@@ -64,22 +54,14 @@ export const ToastShowcase = createComponent(() => {
               ? data
               : error?.message,
         rootProps: {
-          className:
-            state === "fulfilled"
-              ? "toast-success"
-              : state === "rejected"
-                ? "toast-error"
-                : undefined,
+          className: state === "fulfilled" ? "toast-success" : state === "rejected" ? "toast-error" : undefined,
         },
       }),
     );
   };
 
   const showOrUpdatePersistentToast = () => {
-    if (
-      updatableToastId !== undefined &&
-      toaster.isActive(updatableToastId)
-    ) {
+    if (updatableToastId !== undefined && toaster.isActive(updatableToastId)) {
       counter += 1;
       toaster.update(updatableToastId, ({ toastId, region }) =>
         Toast({
@@ -87,8 +69,7 @@ export const ToastShowcase = createComponent(() => {
           region,
           persistent: true,
           title: `📌 Persistent Notification (Updated #${counter})`,
-          description:
-            "Updated in-place via toaster.update() without re-triggering entrance animations.",
+          description: "Updated in-place via toaster.update() without re-triggering entrance animations.",
         }),
       );
       return;
@@ -101,8 +82,7 @@ export const ToastShowcase = createComponent(() => {
         region,
         persistent: true,
         title: "📌 Persistent Notification (#1)",
-        description:
-          "Stays open until manually closed or dismissed. Click the button again to update in-place.",
+        description: "Stays open until manually closed or dismissed. Click the button again to update in-place.",
       }),
     );
   };
@@ -161,11 +141,7 @@ export const ToastShowcase = createComponent(() => {
             Button(
               {
                 onclick: () =>
-                  showVariantToast(
-                    "success",
-                    "Changes saved",
-                    "Your workspace preferences have been synchronized.",
-                  ),
+                  showVariantToast("success", "Changes saved", "Your workspace preferences have been synchronized."),
               },
               "Show Success Toast",
             ),
@@ -183,11 +159,7 @@ export const ToastShowcase = createComponent(() => {
             Button(
               {
                 onclick: () =>
-                  showVariantToast(
-                    "error",
-                    "Build failed",
-                    "Type check encountered 2 errors in src/index.ts.",
-                  ),
+                  showVariantToast("error", "Build failed", "Type check encountered 2 errors in src/index.ts."),
               },
               "Show Error Toast",
             ),
@@ -198,14 +170,8 @@ export const ToastShowcase = createComponent(() => {
         $div({ className: "toast-showcase-section" }, [
           $span({ className: "toast-showcase-label" }, "2. Async Promise Lifecycle (toaster.promise)"),
           $div({ className: "toast-showcase-actions" }, [
-            Button(
-              { onclick: () => showPromiseToast(true) },
-              "Trigger Promise (Resolve)",
-            ),
-            Button(
-              { onclick: () => showPromiseToast(false) },
-              "Trigger Promise (Reject)",
-            ),
+            Button({ onclick: () => showPromiseToast(true) }, "Trigger Promise (Resolve)"),
+            Button({ onclick: () => showPromiseToast(false) }, "Trigger Promise (Reject)"),
           ]),
         ]),
 
@@ -213,18 +179,9 @@ export const ToastShowcase = createComponent(() => {
         $div({ className: "toast-showcase-section" }, [
           $span({ className: "toast-showcase-label" }, "3. Persistent Update, Multi-Region & Queue Control"),
           $div({ className: "toast-showcase-actions" }, [
-            Button(
-              { onclick: showOrUpdatePersistentToast },
-              "Show / Update Persistent Toast",
-            ),
-            Button(
-              { onclick: showTier2ToastInTopRight },
-              "Show in Top-Right Region (Tier 2)",
-            ),
-            Button(
-              { onclick: () => toaster.clear() },
-              "Clear All Toasts",
-            ),
+            Button({ onclick: showOrUpdatePersistentToast }, "Show / Update Persistent Toast"),
+            Button({ onclick: showTier2ToastInTopRight }, "Show in Top-Right Region (Tier 2)"),
+            Button({ onclick: () => toaster.clear() }, "Clear All Toasts"),
           ]),
         ]),
       ]),
@@ -296,4 +253,3 @@ toaster.show(({ toastId, region }) => {
     }),
   ]);
 }, "ToastShowcase");
-

@@ -78,11 +78,7 @@
 }
 
 [data-component="Toast"][data-part="Root"][data-swipe="move"] {
-  transform: translate3d(
-    var(--toast-swipe-move-x, 0px),
-    var(--toast-swipe-move-y, 0px),
-    0
-  );
+  transform: translate3d(var(--toast-swipe-move-x, 0px), var(--toast-swipe-move-y, 0px), 0);
   transition: none;
 }
 
@@ -163,18 +159,15 @@
   transition: width 0.08s linear;
 }
 
-[data-component="Toast"][data-part="Root"].toast-success
-  [data-component="Toast"][data-part="ProgressFill"] {
+[data-component="Toast"][data-part="Root"].toast-success [data-component="Toast"][data-part="ProgressFill"] {
   background: #10b981;
 }
 
-[data-component="Toast"][data-part="Root"].toast-warning
-  [data-component="Toast"][data-part="ProgressFill"] {
+[data-component="Toast"][data-part="Root"].toast-warning [data-component="Toast"][data-part="ProgressFill"] {
   background: #f59e0b;
 }
 
-[data-component="Toast"][data-part="Root"].toast-error
-  [data-component="Toast"][data-part="ProgressFill"] {
+[data-component="Toast"][data-part="Root"].toast-error [data-component="Toast"][data-part="ProgressFill"] {
   background: #ef4444;
 }
 
@@ -188,4 +181,3 @@
     transform: translateY(0) scale(1);
   }
 }
-

@@ -57,7 +57,7 @@ export function useSwitch(options: UseSwitchOptions = {}): UseSwitchResult {
     role: "switch",
     value,
     checked: toggleState.isSelected,
-    "aria-checked": toggleState.isSelected.as((v) => String(v)),
+    ariaChecked: toggleState.isSelected.as((v) => !!v),
     ...switchDataset,
   };
 

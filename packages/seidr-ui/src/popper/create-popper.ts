@@ -35,4 +35,3 @@ export function createPopper(options: UsePopperOptions = {}): PopperInstance {
     ) => PopperArrow({ instance, ...props } as PopperArrowProps<T>, children),
   };
 }
-

@@ -53,7 +53,9 @@
   border-radius: 8px;
   border: 1px solid hsl(220, 15%, 25%);
   background-color: hsl(220, 15%, 12%);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 [data-component="Combobox"][data-part="Control"]:focus-within {
@@ -111,7 +113,9 @@
   background-color: hsl(220, 15%, 14%);
   border: 1px solid hsl(220, 15%, 22%);
   border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4);
   padding: 0.35rem;
   z-index: 50;
   box-sizing: border-box;
@@ -141,7 +145,9 @@
   user-select: none;
   cursor: pointer;
   outline: none;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
 }
 
 [data-component="Combobox"][data-part="Item"][data-highlighted] {
@@ -194,4 +200,3 @@
   font-size: 0.8rem;
   color: hsl(0, 85%, 65%);
 }
-

@@ -1,4 +1,6 @@
 import type {
+  ARIAProps,
+  ARIARole,
   DerivedValue,
   ReactiveStyleDeclaration,
   ReactiveValue,
@@ -333,7 +335,7 @@ export interface ToastSubcomponentProps {
   instance?: UseToastResult;
   id?: string;
   style?: ReactiveStyleDeclaration;
-  role?: string;
+  role?: ARIAProps["role"];
   tabIndex?: ReactiveValue<number>;
   dataComponent?: string;
   ariaLabel?: ReactiveValue<string | undefined>;
@@ -434,4 +436,3 @@ export interface ToastProps extends UseToastOptions {
   /** Additional children rendered inside Toast.Root. */
   children?: SeidrChild | SeidrChild[];
 }
-

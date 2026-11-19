@@ -2,11 +2,7 @@ import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-wo
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import {
-  createNavigationMenu,
-  NavigationMenu,
-  type NavigationMenuItemDescriptor,
-} from "./index.js";
+import { createNavigationMenu, NavigationMenu, type NavigationMenuItemDescriptor } from "./index.js";
 
 describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -97,9 +93,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
               productsMenu.Item({ value: "api" }, "Developer API"),
             ]),
           ]),
-          navInstance.Menu({ value: "pricing" }, [
-            navInstance.Link({ href: "/pricing" }, "Pricing"),
-          ]),
+          navInstance.Menu({ value: "pricing" }, [navInstance.Link({ href: "/pricing" }, "Pricing")]),
         ]),
         navInstance.Viewport(),
       ]);
@@ -305,9 +299,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
                 menu1.Trigger({}, "Trigger 1"),
                 menu1.Content({}, [menu1.Item({ value: "i1" }, "Item 1")]),
               ]),
-              navInstance.Menu({ value: "link" }, [
-                navInstance.Link({ value: "link", href: "/docs" }, "Direct Link"),
-              ]),
+              navInstance.Menu({ value: "link" }, [navInstance.Link({ value: "link", href: "/docs" }, "Direct Link")]),
               navInstance.Menu({ value: "m2" }, [
                 menu2.Trigger({}, "Trigger 2"),
                 menu2.Content({}, [menu2.Item({ value: "i2" }, "Item 2")]),
@@ -544,9 +536,7 @@ describeDualMode("NavigationMenu", ({ getDocument, isSSR }) => {
             navInstance.List({}, [
               navInstance.Menu({ value: "m1" }, [
                 m1.Trigger({}, "Products"),
-                m1.Portal({}, [
-                  m1.Content({}, [m1.Item({ value: "p1" }, "Product 1")]),
-                ]),
+                m1.Portal({}, [m1.Content({}, [m1.Item({ value: "p1" }, "Product 1")])]),
               ]),
             ]),
             navInstance.Viewport(),

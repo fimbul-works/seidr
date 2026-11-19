@@ -1,6 +1,6 @@
 import type { ObservableValue, ReactiveValue, SeidrElementProps, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 
-export type AriaCurrentType = "page" | "step" | "location" | "date" | "time" | "true" | "false" | boolean;
+export type ARIACurrentType = "page" | "step" | "location" | "date" | "time" | "true" | "false" | boolean;
 
 export interface LinkOptions<T extends keyof SeidrElementTagNameMap = "a"> {
   /**
@@ -47,7 +47,7 @@ export interface LinkOptions<T extends keyof SeidrElementTagNameMap = "a"> {
    * Set to false to disable.
    * @default "page"
    */
-  ariaCurrent?: AriaCurrentType | ObservableValue<AriaCurrentType | undefined | null>;
+  ariaCurrent?: ARIACurrentType | ObservableValue<ARIACurrentType | undefined | null>;
 }
 
 export type LinkProps<T extends keyof SeidrElementTagNameMap = "a"> = LinkOptions<T> &

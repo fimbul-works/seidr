@@ -89,10 +89,7 @@ describeDualMode("Select", ({ getDocument, isSSR }) => {
         sel.Content({}, [
           sel.Listbox({}, [
             item1.Root({}, [item1.Label({}, "Item 1")]),
-            item2.Root({}, [
-              item2.Label({}, "Item 2"),
-              item2.Indicator({}, "✓"),
-            ]),
+            item2.Root({}, [item2.Label({}, "Item 2"), item2.Indicator({}, "✓")]),
           ]),
         ]),
         sel.HiddenSelect(),
@@ -439,10 +436,7 @@ describeDualMode("Select", ({ getDocument, isSSR }) => {
       const selEl = sel.Root({}, [
         sel.Trigger({}, [sel.Value()]),
         sel.Content({}, [
-          sel.Listbox({}, [
-            sel.Item({ value: "red", label: "Red" }),
-            sel.Item({ value: "green", label: "Green" }),
-          ]),
+          sel.Listbox({}, [sel.Item({ value: "red", label: "Red" }), sel.Item({ value: "green", label: "Green" })]),
         ]),
         sel.HiddenSelect(),
       ]);

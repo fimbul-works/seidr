@@ -87,4 +87,3 @@ export function usePreventScroll(props: UsePreventScrollProps = {}): void {
     };
   }, deps);
 }
-

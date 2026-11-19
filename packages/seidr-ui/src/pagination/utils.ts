@@ -142,4 +142,3 @@ export function calculatePaginationTokens(options: CalculatePaginationOptions): 
 
   return tokens;
 }
-

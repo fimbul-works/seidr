@@ -17,7 +17,7 @@ export function BreadcrumbsList<T extends keyof SeidrElementTagNameMap = "ol">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsListProps<T>>(propsOrChildren, children);
-  const { as = "ol" as T, instance,...rest } = props;
+  const { as = "ol" as T, instance, ...rest } = props;
 
   if (!instance) {
     throw new SeidrError("BreadcrumbsList requires an instance coordinator");

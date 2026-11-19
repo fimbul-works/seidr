@@ -34,7 +34,8 @@ export const AlertDialogShowcase = createComponent(() => {
               id: "delete-repo-alert",
               trigger: "Delete Repository ⚠️",
               title: "Delete Repository?",
-              description: "This will permanently remove the repository 'fimbul-works/seidr' and all associated branches, issues, and pull requests.",
+              description:
+                "This will permanently remove the repository 'fimbul-works/seidr' and all associated branches, issues, and pull requests.",
               content: $div({ className: "alert-dialog-actions" }, [
                 $button(
                   {
@@ -42,7 +43,9 @@ export const AlertDialogShowcase = createComponent(() => {
                     className: "alert-dialog-btn-cancel",
                     onclick: (e) => {
                       // Close using closest or data attribute
-                      const closeBtn = document.querySelector("#delete-repo-alert-content [data-part='CloseButton']") as HTMLButtonElement;
+                      const closeBtn = document.querySelector(
+                        "#delete-repo-alert-content [data-part='CloseButton']",
+                      ) as HTMLButtonElement;
                       closeBtn?.click();
                     },
                   },
@@ -54,7 +57,9 @@ export const AlertDialogShowcase = createComponent(() => {
                     className: "alert-dialog-btn-confirm",
                     onclick: () => {
                       alert("Repository deletion confirmed!");
-                      const closeBtn = document.querySelector("#delete-repo-alert-content [data-part='CloseButton']") as HTMLButtonElement;
+                      const closeBtn = document.querySelector(
+                        "#delete-repo-alert-content [data-part='CloseButton']",
+                      ) as HTMLButtonElement;
                       closeBtn?.click();
                     },
                   },
@@ -79,7 +84,10 @@ export const AlertDialogShowcase = createComponent(() => {
                 discardDialog.Overlay({}),
                 discardDialog.Content({ style: "border-color: rgba(217, 119, 6, 0.4);" }, [
                   discardDialog.Title({ style: "color: #fcd34d;" }, "Discard Draft?"),
-                  discardDialog.Description({}, "You have unsaved shader code in LoiskeToy. If you leave now, your changes will be lost forever."),
+                  discardDialog.Description(
+                    {},
+                    "You have unsaved shader code in LoiskeToy. If you leave now, your changes will be lost forever.",
+                  ),
                   $div({ className: "alert-dialog-actions" }, [
                     $button(
                       {
@@ -142,4 +150,3 @@ alertDlg.Root({}, [
     }),
   ]);
 });
-

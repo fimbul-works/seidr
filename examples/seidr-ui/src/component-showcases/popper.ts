@@ -59,34 +59,52 @@ export const PopperShowcase = createComponent(() => {
           ),
         ]),
 
-        $div({ className: "popper-section-box", style: { minHeight: "260px", position: "relative", width: "100%", display: "flex", alignItems: "center", justifyContent: "center" } }, [
-          $button(
-            {
-              ref: anchorRef,
-              className: "popper-anchor-button",
-              onclick: () => {
-                isVisible(!isVisible());
-                void popper.updatePosition();
-              },
+        $div(
+          {
+            className: "popper-section-box",
+            style: {
+              minHeight: "260px",
+              position: "relative",
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             },
-            "Anchor Element (Click to Toggle)",
-          ),
+          },
+          [
+            $button(
+              {
+                ref: anchorRef,
+                className: "popper-anchor-button",
+                onclick: () => {
+                  isVisible(!isVisible());
+                  void popper.updatePosition();
+                },
+              },
+              "Anchor Element (Click to Toggle)",
+            ),
 
-          popper.Root({ style: { position: "absolute", inset: "0", pointerEvents: "none", display: isVisible.as((v) => (v ? "block" : "none")) } }, [
-            popper.Positioner({}, [
-              popper.Arrow(),
-              $div(
-                { className: "popper-tooltip-content" },
-                [
-                  "Popper Positioned: ",
-                  $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [
-                    popper.currentPlacement,
+            popper.Root(
+              {
+                style: {
+                  position: "absolute",
+                  inset: "0",
+                  pointerEvents: "none",
+                  display: isVisible.as((v) => (v ? "block" : "none")),
+                },
+              },
+              [
+                popper.Positioner({}, [
+                  popper.Arrow(),
+                  $div({ className: "popper-tooltip-content" }, [
+                    "Popper Positioned: ",
+                    $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [popper.currentPlacement]),
                   ]),
-                ],
-              ),
-            ]),
-          ]),
-        ]),
+                ]),
+              ],
+            ),
+          ],
+        ),
       ]),
     ]),
 
@@ -124,4 +142,3 @@ popper.Root({}, [
     }),
   ]);
 }, "PopperShowcase");
-

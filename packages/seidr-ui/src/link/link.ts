@@ -74,10 +74,10 @@ export function Link<T extends keyof SeidrElementTagNameMap = "a">(
   }
 
   // ARIA current attribute resolution when active
-  let resolvedAriaCurrent: DerivedValue<string | undefined> | undefined;
+  let resolvedARIACurrent: DerivedValue<string | undefined> | undefined;
   if (isActive) {
     const ariaCurrentParents = [isActive, ariaCurrent].filter(isObservable) as Observable[];
-    resolvedAriaCurrent = mergeValues(
+    resolvedARIACurrent = mergeValues(
       () => {
         if (!isActive()) {
           return undefined;
@@ -98,7 +98,7 @@ export function Link<T extends keyof SeidrElementTagNameMap = "a">(
     ...(href !== undefined ? { href } : {}),
     ...(disabled !== undefined ? { disabled } : {}),
     ...(className !== undefined ? { className } : {}),
-    ...(resolvedAriaCurrent !== undefined ? { ariaCurrent: resolvedAriaCurrent } : {}),
+    ...(resolvedARIACurrent !== undefined ? { ariaCurrent: resolvedARIACurrent } : {}),
   } as LinkElementProps<T>);
 
   return $(as, processedProps, content);

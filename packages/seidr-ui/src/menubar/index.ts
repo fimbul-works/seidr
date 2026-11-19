@@ -46,4 +46,3 @@ export type {
   UseMenubarOptions,
   UseMenubarResult,
 } from "./types.js";
-

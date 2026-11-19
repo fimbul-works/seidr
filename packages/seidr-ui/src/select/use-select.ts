@@ -14,12 +14,7 @@ import {
 import { useFormResetListener } from "../hooks/use-form-reset-listener.js";
 import { useListbox } from "../listbox/use-listbox.js";
 import { usePopper } from "../popper/use-popper.js";
-import type {
-  SelectItemData,
-  SelectNode,
-  UseSelectOptions,
-  UseSelectResult,
-} from "./types.js";
+import type { SelectItemData, SelectNode, UseSelectOptions, UseSelectResult } from "./types.js";
 
 function normalizeOptions<Option, OptGroup>(
   rawList: Array<Option | OptGroup | SelectNode<Option>>,
@@ -79,7 +74,11 @@ function normalizeOptions<Option, OptGroup>(
       // Single item
       let val: string;
       if (config.optionValue) {
-        val = String(isFn(config.optionValue) ? config.optionValue(item as unknown as Option) : asAny[config.optionValue as string]);
+        val = String(
+          isFn(config.optionValue)
+            ? config.optionValue(item as unknown as Option)
+            : asAny[config.optionValue as string],
+        );
       } else if ("value" in asAny) {
         val = String(asAny.value);
       } else {
@@ -88,7 +87,11 @@ function normalizeOptions<Option, OptGroup>(
 
       let txt: string;
       if (config.optionTextValue) {
-        txt = String(isFn(config.optionTextValue) ? config.optionTextValue(item as unknown as Option) : asAny[config.optionTextValue as string]);
+        txt = String(
+          isFn(config.optionTextValue)
+            ? config.optionTextValue(item as unknown as Option)
+            : asAny[config.optionTextValue as string],
+        );
       } else if ("textValue" in asAny && isStr(asAny.textValue)) {
         txt = asAny.textValue;
       } else if ("label" in asAny && (isStr(asAny.label) || isNum(asAny.label))) {
@@ -99,7 +102,11 @@ function normalizeOptions<Option, OptGroup>(
 
       let dis = false;
       if (config.optionDisabled) {
-        dis = Boolean(isFn(config.optionDisabled) ? config.optionDisabled(item as unknown as Option) : asAny[config.optionDisabled as string]);
+        dis = Boolean(
+          isFn(config.optionDisabled)
+            ? config.optionDisabled(item as unknown as Option)
+            : asAny[config.optionDisabled as string],
+        );
       } else if ("disabled" in asAny) {
         dis = Boolean(asAny.disabled);
       }
@@ -190,9 +197,7 @@ export function useSelect<Option = any, OptGroup = any>(
   const isRequired: DerivedValue<boolean> = requiredObservable.as(Boolean);
 
   // Controlled or uncontrolled open state
-  const isOpenInternal = createValue<boolean>(
-    Boolean(unwrapValue(options.open) ?? defaultOpen),
-  );
+  const isOpenInternal = createValue<boolean>(Boolean(unwrapValue(options.open) ?? defaultOpen));
   if (isValue(options.open)) {
     options.open.watch((next) => isOpenInternal(Boolean(next)));
   }
@@ -458,7 +463,8 @@ export function useSelect<Option = any, OptGroup = any>(
         if (e.key === "ArrowLeft") {
           nextIndex = currentIndex <= 0 ? (shouldFocusWrap ? allItems.length - 1 : 0) : currentIndex - 1;
         } else {
-          nextIndex = currentIndex >= allItems.length - 1 ? (shouldFocusWrap ? 0 : allItems.length - 1) : currentIndex + 1;
+          nextIndex =
+            currentIndex >= allItems.length - 1 ? (shouldFocusWrap ? 0 : allItems.length - 1) : currentIndex + 1;
         }
 
         const nextItem = allItems[nextIndex];

@@ -217,12 +217,7 @@ export function useTooltip(options: UseTooltipOptions = {}): UseTooltipResult {
   const openTooltip = (immediate = false) => {
     if (isServer() || isDisabled()) return;
 
-    if (
-      !immediate &&
-      openDelay > 0 &&
-      closeTimeoutId === undefined &&
-      globalSkipDelayTimeout === undefined
-    ) {
+    if (!immediate && openDelay > 0 && closeTimeoutId === undefined && globalSkipDelayTimeout === undefined) {
       warmupTooltip();
     } else {
       showTooltip();
@@ -318,4 +313,3 @@ export function useTooltip(options: UseTooltipOptions = {}): UseTooltipResult {
     isTargetOnTooltip,
   };
 }
-

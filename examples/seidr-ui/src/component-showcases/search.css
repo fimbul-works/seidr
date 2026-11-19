@@ -58,7 +58,9 @@
   border-radius: 8px;
   border: 1px solid hsl(220, 15%, 25%);
   background-color: hsl(220, 15%, 12%);
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
 :root[data-theme="light"] [data-component="Search"][data-part="Control"] {
@@ -148,7 +150,9 @@
   background-color: hsl(222, 24%, 13%);
   border: 1px solid hsl(222, 16%, 26%);
   border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.5),
+    0 8px 10px -6px rgba(0, 0, 0, 0.4);
   padding: 0.35rem;
   z-index: 50;
   box-sizing: border-box;
@@ -157,7 +161,9 @@
 :root[data-theme="light"] [data-component="Search"][data-part="Content"] {
   background-color: #ffffff;
   border-color: rgba(0, 0, 0, 0.12);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.12),
+    0 8px 10px -6px rgba(0, 0, 0, 0.08);
 }
 
 [data-component="Search"][data-part="Listbox"] {
@@ -192,7 +198,9 @@
   cursor: pointer;
   user-select: none;
   outline: none;
-  transition: background-color 0.1s ease, color 0.1s ease;
+  transition:
+    background-color 0.1s ease,
+    color 0.1s ease;
 }
 
 :root[data-theme="light"] [data-component="Search"][data-part="Item"] {
@@ -253,4 +261,3 @@
   font-size: 0.8rem;
   color: hsl(0, 80%, 65%);
 }
-

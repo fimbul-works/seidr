@@ -31,29 +31,15 @@ export const Combobox = createComponent(function Combobox<Option = any, OptGroup
 
   const children: (SeidrChild | null)[] = [
     label !== undefined ? cb.Label({}, label) : null,
-    cb.Control(
-      controlProps,
-      [
-        cb.Input(inputProps),
-        cb.Trigger(triggerProps, [cb.Icon()]),
-      ],
-    ),
-    cb.Content(
-      contentProps,
-      [
-        cb.Listbox(
-          listboxProps,
-          [
-            cb.List(cb.displayedOptions, { indicator, itemProps }),
-          ],
-        ),
-      ],
-    ),
+    cb.Control(controlProps, [cb.Input(inputProps), cb.Trigger(triggerProps, [cb.Icon()])]),
+    cb.Content(contentProps, [cb.Listbox(listboxProps, [cb.List(cb.displayedOptions, { indicator, itemProps })])]),
     description !== undefined ? cb.Description({}, description) : null,
     errorMessage !== undefined ? cb.ErrorMessage({}, errorMessage) : null,
     cb.HiddenSelect(hiddenSelectProps),
   ];
 
-  return cb.Root(rootProps, children.filter((c): c is SeidrChild => c !== null));
+  return cb.Root(
+    rootProps,
+    children.filter((c): c is SeidrChild => c !== null),
+  );
 }, "Combobox");
-

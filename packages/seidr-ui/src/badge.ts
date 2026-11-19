@@ -7,7 +7,7 @@ import {
   type SeidrElementTagNameMap,
 } from "@fimbul-works/seidr";
 
-export const DATA_COMPONENT_BADGE = "Badge"
+export const DATA_COMPONENT_BADGE = "Badge";
 
 export interface BadgeOptions<T extends keyof SeidrElementTagNameMap = "span"> {
   /**
@@ -49,13 +49,13 @@ export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BadgeProps<T>>(propsOrChildren, children);
   const { as = "span" as T, role = "status", textValue, ariaLabel, ...rest } = props;
-  const resolvedAriaLabel = ariaLabel ?? textValue;
+  const resolvedARIALabel = ariaLabel ?? textValue;
 
   return $(
     as,
     {
       role,
-      ariaLabel: resolvedAriaLabel,
+      ariaLabel: resolvedARIALabel,
       dataComponent: DATA_COMPONENT_BADGE,
       ...rest,
     } as SeidrElementProps<T>,

@@ -10,7 +10,7 @@ import {
 } from "@fimbul-works/seidr";
 
 const BUTTON_INPUT_TYPES = new Set(["button", "color", "file", "image", "reset", "submit"]);
-export const DATA_COMPONENT_BUTTON = "Button"
+export const DATA_COMPONENT_BUTTON = "Button";
 
 /**
  * Checks whether an element tag with the given type is a native button.

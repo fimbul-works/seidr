@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, describe, expect, it } from "vitest";
 import { axe } from "vitest-axe";
@@ -200,10 +196,7 @@ describeDualMode("Dialog", ({ getDocument, isSSR }) => {
         let dlgInstance!: ReturnType<typeof createDialog>;
         setup(() => {
           dlgInstance = createDialog({ id: "scroll-dialog", defaultOpen: false });
-          return dlgInstance.Root({}, [
-            dlgInstance.Trigger({}, "Trigger"),
-            dlgInstance.Content({}, "Content"),
-          ]);
+          return dlgInstance.Root({}, [dlgInstance.Trigger({}, "Trigger"), dlgInstance.Content({}, "Content")]);
         });
 
         expect(getDocument().body.style.overflow).toBe("visible");

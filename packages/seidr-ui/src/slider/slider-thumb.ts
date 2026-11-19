@@ -9,7 +9,7 @@ import {
   SeidrError,
 } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_SLIDER, DATA_PART_THUMB } from "../constants.js";
-import { extractAriaProps } from "../utils/aria.js";
+import { extractARIAProps } from "../utils/aria.js";
 import type { SliderThumbProps } from "./types.js";
 
 /**
@@ -19,7 +19,7 @@ export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
   props: SliderThumbProps<T> = {},
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
-  const [aria, restProps] = extractAriaProps(props);
+  const [aria, restProps] = extractARIAProps(props);
 
   const {
     as = "span" as T,

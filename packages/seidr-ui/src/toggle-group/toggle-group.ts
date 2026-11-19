@@ -53,8 +53,6 @@ export const ToggleGroup = createComponent((props: ToggleGroupProps = {}) => {
 
   return group.Root(
     { as, ...rootProps } as Omit<ToggleGroupRootProps<"div">, "instance">,
-    children !== undefined && renderedItems !== null
-      ? [renderedItems, children]
-      : (renderedItems ?? children ?? []),
+    children !== undefined && renderedItems !== null ? [renderedItems, children] : (renderedItems ?? children ?? []),
   );
 }, "ToggleGroup");

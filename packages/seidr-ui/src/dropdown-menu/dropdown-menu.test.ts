@@ -250,10 +250,9 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
       return dropdown.Root({}, [
         dropdown.Trigger({}, "Checkboxes"),
         dropdown.Content({}, [
-          dropdown.CheckboxItem(
-            { value: "show-line-numbers", defaultChecked: false, onChange: onCheckedChange },
-            [dropdown.ItemLabel({}, "Line Numbers")],
-          ),
+          dropdown.CheckboxItem({ value: "show-line-numbers", defaultChecked: false, onChange: onCheckedChange }, [
+            dropdown.ItemLabel({}, "Line Numbers"),
+          ]),
         ]),
       ]);
     });
@@ -457,4 +456,3 @@ describeDualMode("DropdownMenu", ({ getDocument, isSSR }) => {
     expect(results).toHaveNoViolations();
   });
 });
-

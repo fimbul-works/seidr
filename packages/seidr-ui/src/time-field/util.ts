@@ -1,9 +1,4 @@
-import type {
-  Time,
-  TimeFieldGranularity,
-  TimeFieldHourCycle,
-  TimeFieldIntlTranslations,
-} from "./types.js";
+import type { Time, TimeFieldGranularity, TimeFieldHourCycle, TimeFieldIntlTranslations } from "./types.js";
 
 export const DEFAULT_TIME_FIELD_INTL: TimeFieldIntlTranslations = {
   hour: "hour",
@@ -30,11 +25,7 @@ export function timeToNumber(t?: Time): number {
   return h * 10000 + m * 100 + s;
 }
 
-export function isTimeInRange(
-  time: Time | undefined,
-  min?: Time,
-  max?: Time,
-): boolean {
+export function isTimeInRange(time: Time | undefined, min?: Time, max?: Time): boolean {
   if (!time) return true;
   const val = timeToNumber(time);
   if (min !== undefined && val < timeToNumber(min)) return false;
@@ -107,4 +98,3 @@ export function parseTime(timeStr: string): Time | undefined {
     second: Number.isNaN(second) ? undefined : second,
   };
 }
-

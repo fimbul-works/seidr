@@ -46,9 +46,7 @@ export const MenubarShowcase = createComponent(() => {
           [
             $div([
               $span({ style: { opacity: "0.6" } }, "Last Triggered: "),
-              $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [
-                lastAction,
-              ]),
+              $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [lastAction]),
             ]),
             $div([
               $span({ style: { opacity: "0.6" } }, "Bookmarks: "),
@@ -64,9 +62,7 @@ export const MenubarShowcase = createComponent(() => {
             ]),
             $div([
               $span({ style: { opacity: "0.6" } }, "Zoom: "),
-              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [
-                zoomLevel.as((v) => `${v}%`),
-              ]),
+              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [zoomLevel.as((v) => `${v}%`)]),
             ]),
           ],
         ),
@@ -270,44 +266,38 @@ export const MenubarShowcase = createComponent(() => {
           ),
           customMb.Root({}, [
             customMb.Menu({ value: "custom-file" }, [
-              customFile.Trigger({}, [
-                $span({ style: { marginRight: "0.35rem" } }, "📁"),
-                "Project",
-              ]),
+              customFile.Trigger({}, [$span({ style: { marginRight: "0.35rem" } }, "📁"), "Project"]),
               customFile.Content({}, [
-                customFile.Item(
-                  { onSelect: () => lastAction("New Project Created") },
-                  [customFile.Icon({}, "✨"), "New Project"],
-                ),
-                customFile.Item(
-                  { onSelect: () => lastAction("Project Saved") },
-                  [customFile.Icon({}, "💾"), "Save Project"],
-                ),
+                customFile.Item({ onSelect: () => lastAction("New Project Created") }, [
+                  customFile.Icon({}, "✨"),
+                  "New Project",
+                ]),
+                customFile.Item({ onSelect: () => lastAction("Project Saved") }, [
+                  customFile.Icon({}, "💾"),
+                  "Save Project",
+                ]),
                 customFile.Separator(),
-                customFile.Item(
-                  { onSelect: () => lastAction("Project Closed") },
-                  [customFile.Icon({}, "✖️"), "Close Project"],
-                ),
+                customFile.Item({ onSelect: () => lastAction("Project Closed") }, [
+                  customFile.Icon({}, "✖️"),
+                  "Close Project",
+                ]),
               ]),
             ]),
             customMb.Menu({ value: "custom-edit" }, [
-              customEdit.Trigger({}, [
-                $span({ style: { marginRight: "0.35rem" } }, "⚡"),
-                "Actions",
-              ]),
+              customEdit.Trigger({}, [$span({ style: { marginRight: "0.35rem" } }, "⚡"), "Actions"]),
               customEdit.Content({}, [
-                customEdit.Item(
-                  { onSelect: () => lastAction("Quick Build Executed") },
-                  [customEdit.Icon({}, "🚀"), "Run Build"],
-                ),
-                customEdit.Item(
-                  { onSelect: () => lastAction("Tests Executed") },
-                  [customEdit.Icon({}, "🧪"), "Run Tests"],
-                ),
-                customEdit.Item(
-                  { onSelect: () => lastAction("Deployment Triggered") },
-                  [customEdit.Icon({}, "☁️"), "Deploy to Cloud"],
-                ),
+                customEdit.Item({ onSelect: () => lastAction("Quick Build Executed") }, [
+                  customEdit.Icon({}, "🚀"),
+                  "Run Build",
+                ]),
+                customEdit.Item({ onSelect: () => lastAction("Tests Executed") }, [
+                  customEdit.Icon({}, "🧪"),
+                  "Run Tests",
+                ]),
+                customEdit.Item({ onSelect: () => lastAction("Deployment Triggered") }, [
+                  customEdit.Icon({}, "☁️"),
+                  "Deploy to Cloud",
+                ]),
               ]),
             ]),
           ]),
@@ -368,4 +358,3 @@ mb.Root({}, [
     }),
   ]);
 });
-

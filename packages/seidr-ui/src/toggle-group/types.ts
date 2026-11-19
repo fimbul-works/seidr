@@ -84,11 +84,7 @@ export interface UseToggleGroupResult {
 
 export interface ToggleGroupListRenderOptions {
   /** Optional custom item render function receiving reactive item Value, item key, and ToggleGroup instance. */
-  renderItem?: (
-    itemVal: Value<ToggleGroupItemData>,
-    key: string,
-    instance: ToggleGroupInstance,
-  ) => SeidrChild;
+  renderItem?: (itemVal: Value<ToggleGroupItemData>, key: string, instance: ToggleGroupInstance) => SeidrChild;
   /** Common props applied to each item. */
   itemProps?: Partial<Omit<ToggleGroupItemProps<"button">, "instance" | "value">>;
 }
@@ -105,10 +101,7 @@ export type ToggleGroupInstance = UseToggleGroupResult & {
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
   /** Pre-bound reactive keyed list renderer for dynamic items. */
-  List: (
-    items: ReactiveValue<ToggleGroupItemData[]>,
-    options?: ToggleGroupListRenderOptions,
-  ) => SeidrChild;
+  List: (items: ReactiveValue<ToggleGroupItemData[]>, options?: ToggleGroupListRenderOptions) => SeidrChild;
 };
 
 export interface ToggleGroupSubcomponentProps {

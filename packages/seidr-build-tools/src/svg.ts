@@ -48,4 +48,3 @@ export function loadSvgFile(id: string): string | null {
     return null;
   }
 }
-

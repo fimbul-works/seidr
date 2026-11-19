@@ -64,10 +64,7 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
 
       return search.Root({}, [
         search.Label({}, "Custom Search"),
-        search.Control({}, [
-          search.Input(),
-          search.Trigger({}, [search.Indicator({ loadingComponent: "..." }, "🔍")]),
-        ]),
+        search.Control({}, [search.Input(), search.Trigger({}, [search.Indicator({ loadingComponent: "..." }, "🔍")])]),
         search.Content({}, [
           search.Listbox({}, [
             item1.Root({}, [item1.Label({}, "Option 1")]),
@@ -175,4 +172,3 @@ describeDualMode("Search", ({ getDocument, isSSR }) => {
     expect(results).toHaveNoViolations();
   });
 });
-

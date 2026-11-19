@@ -277,7 +277,10 @@ export function createCombobox<Option = any, OptGroup = any>(
     props: ComboboxSectionLabelProps<T> = {} as ComboboxSectionLabelProps<T>,
     children?: SeidrChild | SeidrChild[],
   ): SeidrElementTagNameMap[T] =>
-    ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxSectionLabelProps<T>, children);
+    ListboxSectionLabel<T>(
+      { dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as ListboxSectionLabelProps<T>,
+      children,
+    );
 
   const HiddenSelect = (props: ComboboxHiddenSelectProps = {}) =>
     ComboboxHiddenSelect({ instance, dataComponent: DATA_COMPONENT_COMBOBOX, ...props });
@@ -285,7 +288,11 @@ export function createCombobox<Option = any, OptGroup = any>(
   const Arrow = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxArrowProps<T> = {} as ComboboxArrowProps<T>,
   ): SeidrElementTagNameMap[T] =>
-    PopperArrow<T>({ instance: instance.popper, dataComponent: DATA_COMPONENT_COMBOBOX, ...props } as PopperArrowProps<T>);
+    PopperArrow<T>({
+      instance: instance.popper,
+      dataComponent: DATA_COMPONENT_COMBOBOX,
+      ...props,
+    } as PopperArrowProps<T>);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: ComboboxDescriptionProps<T> = {} as ComboboxDescriptionProps<T>,

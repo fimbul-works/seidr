@@ -304,11 +304,7 @@ export interface ListboxBoundItemHelpers {
 export interface ListboxItemInstance extends UseListboxItemResult, ListboxBoundItemHelpers {}
 
 export interface ListboxListRenderOptions {
-  renderItem?: (
-    itemValue: Value<ListboxItemData>,
-    key: string,
-    item: ListboxItemInstance,
-  ) => SeidrChild;
+  renderItem?: (itemValue: Value<ListboxItemData>, key: string, item: ListboxItemInstance) => SeidrChild;
   renderSection?: (sectionValue: Value<ListboxSectionData>, key: string) => SeidrChild;
   indicator?: SeidrChild;
   itemProps?: Record<string, any>;
@@ -353,10 +349,7 @@ export interface ListboxInstance extends UseListboxResult {
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 
-  List: (
-    items: ReactiveValue<ListboxNode[]>,
-    options?: ListboxListRenderOptions,
-  ) => SeidrChild;
+  List: (items: ReactiveValue<ListboxNode[]>, options?: ListboxListRenderOptions) => SeidrChild;
 }
 
 /** Tier 1 All-in-One Component Props. */

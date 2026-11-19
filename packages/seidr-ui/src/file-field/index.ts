@@ -26,4 +26,3 @@ export type {
   UseFileFieldOptions,
   UseFileFieldResult,
 } from "./types.js";
-

@@ -29,31 +29,24 @@ export function HoverCardFactory<T extends keyof SeidrElementTagNameMap = "div">
   const hoverCard = createHoverCard(hoverCardOptions);
   const resolvedContent = content ?? children ?? propsChildren;
 
-  return hoverCard.Root<T>(
-    { as, ...rootProps } as Omit<HoverCardRootProps<T>, "instance">,
-    [
-      trigger !== undefined
-        ? hoverCard.Trigger(
-            {
-              href,
-              target,
-              rel,
-              disabled,
-              ...triggerProps,
-            },
-            trigger,
-          )
-        : null,
-      hoverCard.Content(contentProps, [
-        resolvedContent,
-        showArrow ? hoverCard.Arrow(arrowProps) : null,
-      ]),
-    ],
-  );
+  return hoverCard.Root<T>({ as, ...rootProps } as Omit<HoverCardRootProps<T>, "instance">, [
+    trigger !== undefined
+      ? hoverCard.Trigger(
+          {
+            href,
+            target,
+            rel,
+            disabled,
+            ...triggerProps,
+          },
+          trigger,
+        )
+      : null,
+    hoverCard.Content(contentProps, [resolvedContent, showArrow ? hoverCard.Arrow(arrowProps) : null]),
+  ]);
 }
 
 /**
  * Accessible HoverCard preview component (Tier 1).
  */
 export const HoverCard = createComponent(HoverCardFactory, "HoverCard");
-

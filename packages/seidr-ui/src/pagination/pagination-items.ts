@@ -31,4 +31,3 @@ export function PaginationItems(props: PaginationItemsProps = {}): DerivedValue<
     }),
   );
 }
-

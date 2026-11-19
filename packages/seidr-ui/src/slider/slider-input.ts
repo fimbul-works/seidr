@@ -1,14 +1,14 @@
 import { isFn } from "@fimbul-works/hvat";
 import { $, mergeStyleProps, type SeidrElementProps, SeidrError } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_SLIDER, DATA_PART_INPUT, VISUALLY_HIDDEN_STYLES } from "../constants.js";
-import { extractAriaProps } from "../utils/aria.js";
+import { extractARIAProps } from "../utils/aria.js";
 import type { SliderInputProps } from "./types.js";
 
 /**
  * Visually hidden native HTML input for form integration and accessibility.
  */
 export function SliderInput(props: SliderInputProps = {}): HTMLInputElement {
-  const [aria, restProps] = extractAriaProps(props);
+  const [aria, restProps] = extractARIAProps(props);
 
   const {
     instance: slider,

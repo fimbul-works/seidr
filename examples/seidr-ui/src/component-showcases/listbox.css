@@ -68,7 +68,9 @@
   border-radius: 6px;
   cursor: pointer;
   outline: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
   box-sizing: border-box;
 }
 
@@ -131,4 +133,3 @@
   color: var(--fg-muted, #9ca3af);
   padding: 0.25rem 0.75rem;
 }
-

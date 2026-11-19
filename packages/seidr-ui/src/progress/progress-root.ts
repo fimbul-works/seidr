@@ -6,7 +6,7 @@ import {
   SeidrError,
 } from "@fimbul-works/seidr";
 import { DATA_PART_ROOT } from "../constants.js";
-import { extractAriaProps } from "../utils/aria.js";
+import { extractARIAProps } from "../utils/aria.js";
 import type { ProgressRootProps } from "./types.js";
 
 /**
@@ -17,7 +17,7 @@ export function ProgressRoot<T extends keyof SeidrElementTagNameMap = "div">(
   children?: SeidrChild | SeidrChild[],
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T } = props;
-  const [aria, restProps] = extractAriaProps(props);
+  const [aria, restProps] = extractARIAProps(props);
 
   const { instance: progress, id: customId, role, dataComponent, ...rest } = restProps;
 
@@ -25,8 +25,8 @@ export function ProgressRoot<T extends keyof SeidrElementTagNameMap = "div">(
     throw new SeidrError("ProgressRoot requires an instance coordinator");
   }
 
-  const effectiveAriaLabel = aria.ariaLabel;
-  const effectiveAriaLabelledby = aria.ariaLabelledBy ?? (effectiveAriaLabel ? undefined : `${progress.id}-label`);
+  const effectiveARIALabel = aria.ariaLabel;
+  const effectiveARIALabelledby = aria.ariaLabelledBy ?? (effectiveARIALabel ? undefined : `${progress.id}-label`);
 
   return $<T>(
     as,
@@ -37,8 +37,8 @@ export function ProgressRoot<T extends keyof SeidrElementTagNameMap = "div">(
       ariaValuemax: progress.maxValue,
       ariaValuenow: progress.isIndeterminate.as((i) => (i ? undefined : progress.value())),
       ariaValuetext: progress.valueLabel,
-      ariaLabel: effectiveAriaLabel,
-      ariaLabelledby: effectiveAriaLabelledby,
+      ariaLabel: effectiveARIALabel,
+      ariaLabelledby: effectiveARIALabelledby,
       dataProgress: progress.role === "meter" ? undefined : progress.progressState,
       dataIndeterminate:
         progress.role === "meter" ? undefined : progress.isIndeterminate.as((i) => (i ? "" : undefined)),

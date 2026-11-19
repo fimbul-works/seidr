@@ -73,4 +73,3 @@ export const Toast = createComponent((props: ToastProps) => {
     progressEl,
   ]);
 }, "Toast");
-

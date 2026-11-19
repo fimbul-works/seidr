@@ -60,7 +60,9 @@
   color: var(--text-primary, #e2e8f0);
   font-size: 1.15rem;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .tooltip-icon-btn:hover,
@@ -97,7 +99,9 @@
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
 }
 
 [data-component="Tooltip"][data-part="Trigger"]:hover {
@@ -122,7 +126,9 @@
   padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
   line-height: 1.35;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.4),
+    0 4px 6px -4px rgba(0, 0, 0, 0.3);
   transform-origin: var(--seidr-tooltip-content-transform-origin, center);
   animation: tooltip-fade-in 0.15s cubic-bezier(0.16, 1, 0.3, 1);
   max-width: 260px;
@@ -142,4 +148,3 @@
     transform: scale(1);
   }
 }
-

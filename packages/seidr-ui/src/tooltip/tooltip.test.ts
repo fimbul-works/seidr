@@ -1,8 +1,4 @@
-import {
-  createComponent,
-  mount,
-  type SeidrChild,
-} from "@fimbul-works/seidr";
+import { createComponent, mount, type SeidrChild } from "@fimbul-works/seidr";
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
@@ -63,13 +59,7 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
   it("supports fine-grained composition via createTooltip (Tier 2)", () => {
     const root = setup(() => {
       const tip = createTooltip({ id: "tier2-tooltip", defaultOpen: true });
-      return tip.Root({}, [
-        tip.Trigger({}, "Button Trigger"),
-        tip.Content({}, [
-          "Custom tooltip body",
-          tip.Arrow(),
-        ]),
-      ]);
+      return tip.Root({}, [tip.Trigger({}, "Button Trigger"), tip.Content({}, ["Custom tooltip body", tip.Arrow()])]);
     });
 
     const triggerEl = root.querySelector("[data-part='Trigger']") as HTMLElement;
@@ -243,7 +233,7 @@ describeDualMode("Tooltip", ({ getDocument, isSSR }) => {
         );
 
         // @ts-expect-error vitest-axe
-        expect( await axe(root)).toHaveNoViolations();
+        expect(await axe(root)).toHaveNoViolations();
       });
     });
   }

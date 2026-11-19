@@ -66,28 +66,37 @@ export const DialogShowcase = createComponent(() => {
                 },
                 [
                   $div({ style: "display: flex; flex-direction: column; gap: 0.25rem;" }, [
-                    $label({ for: "dlg-username", style: "font-size: 0.8125rem; font-weight: 500; color: #94a3b8;" }, "Username"),
+                    $label(
+                      { for: "dlg-username", style: "font-size: 0.8125rem; font-weight: 500; color: #94a3b8;" },
+                      "Username",
+                    ),
                     $input({
                       id: "dlg-username",
                       value: usernameVal,
-                      style: "background: #18181b; border: 1px solid #3f3f46; border-radius: 6px; padding: 0.5rem; color: #f4f4f5;",
+                      style:
+                        "background: #18181b; border: 1px solid #3f3f46; border-radius: 6px; padding: 0.5rem; color: #f4f4f5;",
                       oninput: (e) => usernameVal((e.target as HTMLInputElement).value),
                     }),
                   ]),
                   $div({ style: "display: flex; flex-direction: column; gap: 0.25rem;" }, [
-                    $label({ for: "dlg-email", style: "font-size: 0.8125rem; font-weight: 500; color: #94a3b8;" }, "Email Address"),
+                    $label(
+                      { for: "dlg-email", style: "font-size: 0.8125rem; font-weight: 500; color: #94a3b8;" },
+                      "Email Address",
+                    ),
                     $input({
                       id: "dlg-email",
                       type: "email",
                       value: emailVal,
-                      style: "background: #18181b; border: 1px solid #3f3f46; border-radius: 6px; padding: 0.5rem; color: #f4f4f5;",
+                      style:
+                        "background: #18181b; border: 1px solid #3f3f46; border-radius: 6px; padding: 0.5rem; color: #f4f4f5;",
                       oninput: (e) => emailVal((e.target as HTMLInputElement).value),
                     }),
                   ]),
                   $button(
                     {
                       type: "button",
-                      style: "margin-top: 0.5rem; padding: 0.625rem; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;",
+                      style:
+                        "margin-top: 0.5rem; padding: 0.625rem; background: var(--accent); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 500;",
                       onclick: () => alert(`Saved: ${usernameVal()} (${emailVal()})`),
                     },
                     "Save Changes",
@@ -113,7 +122,10 @@ export const DialogShowcase = createComponent(() => {
                 fgDialog.Content({ style: "border-color: #6366f1;" }, [
                   fgDialog.Title({}, "Sculpted Architecture"),
                   fgDialog.Description({}, "Composed using pre-bound compound element factories."),
-                  $p({ style: "margin: 0 0 1rem 0; color: #cbd5e1;" }, "Each sub-element maintains full reactive state and strict accessibility semantics."),
+                  $p(
+                    { style: "margin: 0 0 1rem 0; color: #cbd5e1;" },
+                    "Each sub-element maintains full reactive state and strict accessibility semantics.",
+                  ),
                   fgDialog.CloseButton({}, "Close"),
                 ]),
               ]),
@@ -151,4 +163,3 @@ dialog.Root({}, [
     }),
   ]);
 });
-

@@ -263,9 +263,7 @@ export interface MenubarInstance extends UseMenubarResult {
   ) => SeidrElementTagNameMap[T];
 
   /** Arrow element factory. */
-  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
-    props?: MenubarArrowProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: MenubarArrowProps<T>) => SeidrElementTagNameMap[T];
 }
 
 // ---------------------------------------------------------------------------
@@ -340,13 +338,10 @@ export type MenubarItemLabelProps<T extends keyof SeidrElementTagNameMap = "span
 
 export type MenubarItemDescriptionOptions<T extends keyof SeidrElementTagNameMap = "span"> =
   MenuItemDescriptionOptions<T>;
-export type MenubarItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemDescriptionProps<T>;
+export type MenubarItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemDescriptionProps<T>;
 
-export type MenubarItemIndicatorOptions<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemIndicatorOptions<T>;
-export type MenubarItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> =
-  MenuItemIndicatorProps<T>;
+export type MenubarItemIndicatorOptions<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemIndicatorOptions<T>;
+export type MenubarItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuItemIndicatorProps<T>;
 
 export type MenubarIconOptions<T extends keyof SeidrElementTagNameMap = "span"> = MenuIconOptions<T>;
 export type MenubarIconProps<T extends keyof SeidrElementTagNameMap = "span"> = MenuIconProps<T>;
@@ -378,8 +373,7 @@ export interface MenubarMenuDescriptor {
 /**
  * High-level unified props for Tier 1 Menubar component.
  */
-export interface MenubarProps<T extends keyof SeidrElementTagNameMap = "div">
-  extends UseMenubarOptions {
+export interface MenubarProps<T extends keyof SeidrElementTagNameMap = "div"> extends UseMenubarOptions {
   /** Underlying HTML tag for root container element. Defaults to "div". */
   as?: T;
   /** Declarative list of menus in the menubar. */

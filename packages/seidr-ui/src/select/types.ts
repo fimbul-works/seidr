@@ -284,8 +284,7 @@ export type SelectListboxProps<T extends keyof SeidrElementTagNameMap = "ul"> = 
 
 export type SelectItemProps<T extends keyof SeidrElementTagNameMap = "li"> = ListboxItemProps<T>;
 export type SelectItemLabelProps<T extends keyof SeidrElementTagNameMap = "div"> = ListboxItemLabelProps<T>;
-export type SelectItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "div"> =
-  ListboxItemDescriptionProps<T>;
+export type SelectItemDescriptionProps<T extends keyof SeidrElementTagNameMap = "div"> = ListboxItemDescriptionProps<T>;
 export type SelectItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "div"> = ListboxItemIndicatorProps<T>;
 export type SelectSectionProps<T extends keyof SeidrElementTagNameMap = "li"> = ListboxSectionProps<T>;
 export type SelectSectionLabelProps<T extends keyof SeidrElementTagNameMap = "span"> = ListboxSectionLabelProps<T>;
@@ -378,9 +377,7 @@ export interface SelectInstance<Option = any> extends UseSelectResult<Option> {
 
   HiddenSelect: (props?: SelectHiddenSelectProps) => SeidrElementTagNameMap["select"];
 
-  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
-    props?: SelectArrowProps<T>,
-  ) => SeidrElementTagNameMap[T];
+  Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: SelectArrowProps<T>) => SeidrElementTagNameMap[T];
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SelectDescriptionProps<T>,
@@ -392,10 +389,7 @@ export interface SelectInstance<Option = any> extends UseSelectResult<Option> {
     children?: SeidrChild | SeidrChild[],
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
-  List: (
-    items: ReactiveValue<SelectNode<Option>[]>,
-    options?: ListboxListRenderOptions,
-  ) => SeidrChild;
+  List: (items: ReactiveValue<SelectNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;
 }
 
 // ---------------------------------------------------------------------------

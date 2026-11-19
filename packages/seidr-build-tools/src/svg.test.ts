@@ -27,4 +27,3 @@ describe("SVG Loader", () => {
     expect(code).toContain(`export default createSvgIcon(${JSON.stringify(rawSvg)});`);
   });
 });
-

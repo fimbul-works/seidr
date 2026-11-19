@@ -1,9 +1,4 @@
-import type {
-  Accept,
-  FileError,
-  FileFieldIntlTranslations,
-  FileRejection,
-} from "./types.js";
+import type { Accept, FileError, FileFieldIntlTranslations, FileRejection } from "./types.js";
 
 export const DEFAULT_FILE_FIELD_INTL: FileFieldIntlTranslations = {
   bytes: "Bytes",
@@ -23,10 +18,7 @@ export function parseAcceptedTypes(accept: Accept): string | undefined {
   return undefined;
 }
 
-export function isFileAccepted(
-  file: File | null,
-  accept: string | undefined,
-): boolean {
+export function isFileAccepted(file: File | null, accept: string | undefined): boolean {
   if (!file || !accept) {
     return true;
   }
@@ -69,20 +61,12 @@ export function isValidFileSize(
   return [true, null];
 }
 
-export function isValidFileType(
-  file: File,
-  accept: string | undefined,
-): [boolean, FileError | null] {
-  const isAcceptable =
-    file.type === "application/x-moz-file" || isFileAccepted(file, accept);
+export function isValidFileType(file: File, accept: string | undefined): [boolean, FileError | null] {
+  const isAcceptable = file.type === "application/x-moz-file" || isFileAccepted(file, accept);
   return [isAcceptable, isAcceptable ? null : "FILE_INVALID_TYPE"];
 }
 
-export function isFilesWithinMaxRange(
-  count: number,
-  multiple: boolean,
-  maxFiles: number,
-): boolean {
+export function isFilesWithinMaxRange(count: number, multiple: boolean, maxFiles: number): boolean {
   if (!multiple && count > 1) {
     return false;
   }
@@ -133,9 +117,7 @@ export function isDragEventWithFiles(event: DragEvent): boolean {
   if (!event.dataTransfer) {
     return !!event.target && "files" in event.target;
   }
-  return Array.from(event.dataTransfer.types).some(
-    (type) => type === "Files" || type === "application/x-moz-file",
-  );
+  return Array.from(event.dataTransfer.types).some((type) => type === "Files" || type === "application/x-moz-file");
 }
 
 export function formatBytes(
@@ -144,17 +126,10 @@ export function formatBytes(
   translations: FileFieldIntlTranslations = DEFAULT_FILE_FIELD_INTL,
 ): string {
   if (bytes === 0) return `0 ${translations.bytes}`;
-  const sizes = [
-    translations.bytes,
-    translations.kb,
-    translations.mb,
-    translations.gb,
-    translations.tb,
-  ];
+  const sizes = [translations.bytes, translations.kb, translations.mb, translations.gb, translations.tb];
   const k = 1024;
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   const unitIndex = Math.min(i, sizes.length - 1);
   const formatted = Number.parseFloat((bytes / k ** unitIndex).toFixed(precision));
   return `${formatted} ${sizes[unitIndex]}`;
 }
-

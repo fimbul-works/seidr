@@ -43,8 +43,8 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
     onpointerdown: userOnPointerDown,
     onpointerup: userOnPointerUp,
     ariaLabel,
-    ariaLabelledBy: userAriaLabelledBy,
-    ariaDescribedBy: userAriaDescribedBy,
+    ariaLabelledBy: userARIALabelledBy,
+    ariaDescribedBy: userARIADescribedBy,
     ...rest
   } = props;
 
@@ -151,7 +151,7 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
 
   const ariaLabelledBy = mergeValues(
     () => {
-      if (userAriaLabelledBy) return userAriaLabelledBy;
+      if (userARIALabelledBy) return userARIALabelledBy;
       const registeredId = item.labelId();
       return registeredId || undefined;
     },
@@ -160,7 +160,7 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
 
   const ariaDescribedBy = mergeValues(
     () => {
-      if (userAriaDescribedBy) return userAriaDescribedBy;
+      if (userARIADescribedBy) return userARIADescribedBy;
       const registeredId = item.descriptionId();
       return registeredId || undefined;
     },

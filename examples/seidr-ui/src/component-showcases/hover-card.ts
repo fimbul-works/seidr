@@ -179,4 +179,3 @@ hc.Root({}, [
     }),
   ]);
 }, "HoverCardShowcase");
-

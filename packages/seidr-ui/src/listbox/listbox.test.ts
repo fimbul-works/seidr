@@ -479,7 +479,10 @@ describeDualMode("Listbox", ({ getDocument, isSSR }) => {
           {
             renderItem: (itemVal, key, item) =>
               item.Root({ className: "custom-item" }, [
-                item.Label({}, itemVal.as((i) => `Prefix: ${i.label}`)),
+                item.Label(
+                  {},
+                  itemVal.as((i) => `Prefix: ${i.label}`),
+                ),
               ]),
           },
         ),

@@ -43,7 +43,10 @@ export const PopoverShowcase = createComponent(() => {
               trigger: "Open Information Popover",
               title: "Layer Details",
               description: "Configuration properties for the currently selected canvas layer.",
-              content: $p({ style: "margin: 0; font-size: 0.8125rem; color: #cbd5e1;" }, "Dimensions: 1920x1080 @ 60fps, RGB color space with alpha channel."),
+              content: $p(
+                { style: "margin: 0; font-size: 0.8125rem; color: #cbd5e1;" },
+                "Dimensions: 1920x1080 @ 60fps, RGB color space with alpha channel.",
+              ),
             }),
           ]),
         ]),
@@ -119,7 +122,10 @@ export const PopoverShowcase = createComponent(() => {
               anchorPopover.Content({}, [
                 anchorPopover.Arrow(),
                 anchorPopover.Title({}, "Anchored Note"),
-                anchorPopover.Description({}, "Positioned relative to the target anchor element, not the trigger button."),
+                anchorPopover.Description(
+                  {},
+                  "Positioned relative to the target anchor element, not the trigger button.",
+                ),
                 anchorPopover.CloseButton({}, "✕"),
               ]),
             ]),
@@ -156,4 +162,3 @@ pop.Root({}, [
     }),
   ]);
 });
-

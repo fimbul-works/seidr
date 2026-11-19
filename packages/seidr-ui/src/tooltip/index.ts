@@ -14,4 +14,3 @@ export type {
   UseTooltipOptions,
   UseTooltipResult,
 } from "./types.js";
-

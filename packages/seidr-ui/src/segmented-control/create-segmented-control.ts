@@ -1,12 +1,5 @@
 import { isUndef } from "@fimbul-works/hvat";
-import {
-  $,
-  List,
-  type ReactiveValue,
-  type SeidrChild,
-  type Value,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { $, List, type ReactiveValue, type SeidrChild, type Value, wrapValue } from "@fimbul-works/seidr";
 import { SegmentedControlDescription } from "./segmented-control-description.js";
 import { SegmentedControlErrorMessage } from "./segmented-control-error-message.js";
 import { SegmentedControlIndicator } from "./segmented-control-indicator.js";
@@ -113,9 +106,7 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
       ]);
     }
 
-    const labelEl = label
-      ? SegmentedControlItemLabel({ instance: itemInstance, ...(labelProps ?? {}) }, label)
-      : null;
+    const labelEl = label ? SegmentedControlItemLabel({ instance: itemInstance, ...(labelProps ?? {}) }, label) : null;
     const descEl = description
       ? SegmentedControlItemDescription({ instance: itemInstance, ...(descriptionProps ?? {}) }, description)
       : null;

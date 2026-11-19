@@ -86,7 +86,7 @@ export function TooltipContent<T extends keyof SeidrElementTagNameMap = "div">(
       position: "relative",
       "--seidr-tooltip-content-transform-origin": "var(--seidr-popper-content-transform-origin)",
     };
-    
+
     const contentEl = $(
       as,
       {

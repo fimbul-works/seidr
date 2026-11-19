@@ -2,7 +2,7 @@
  * Portions of this file are based on code from ariakit.
  * MIT Licensed, Copyright (c) Diego Haz.
  *
- * Credits to the Ariakit team:
+ * Credits to the ARIAkit team:
  * https://github.com/ariakit/ariakit/blob/232bc79018ec20967fec1e097a9474aba3bb5be7/packages/ariakit-utils/src/dom.ts
  */
 import { getDocument, isClient, SeidrError } from "@fimbul-works/seidr";

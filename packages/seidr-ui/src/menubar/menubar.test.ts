@@ -2,11 +2,7 @@ import { createComponent, createValue, mount, type SeidrChild } from "@fimbul-wo
 import { describeDualMode } from "@fimbul-works/seidr/testing";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { axe } from "vitest-axe";
-import {
-  createMenubar,
-  Menubar,
-  type MenubarMenuDescriptor,
-} from "./index.js";
+import { createMenubar, Menubar, type MenubarMenuDescriptor } from "./index.js";
 
 describeDualMode("Menubar", ({ getDocument, isSSR }) => {
   let target: HTMLElement;
@@ -87,16 +83,11 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       return menubarInstance.Root({}, [
         menubarInstance.Menu({ value: "file" }, [
           fileMenu.Trigger({}, "Custom File"),
-          fileMenu.Content({}, [
-            fileMenu.Item({ value: "new" }, "New"),
-            fileMenu.Item({ value: "exit" }, "Exit"),
-          ]),
+          fileMenu.Content({}, [fileMenu.Item({ value: "new" }, "New"), fileMenu.Item({ value: "exit" }, "Exit")]),
         ]),
         menubarInstance.Menu({ value: "edit" }, [
           editMenu.Trigger({}, "Custom Edit"),
-          editMenu.Content({}, [
-            editMenu.Item({ value: "cut" }, "Cut"),
-          ]),
+          editMenu.Content({}, [editMenu.Item({ value: "cut" }, "Cut")]),
         ]),
       ]);
     });
@@ -122,9 +113,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       return menubarInstance.Root({}, [
         menubarInstance.Menu({ value: "file" }, [
           fileMenu.Trigger({}, "File"),
-          fileMenu.Content({}, [
-            fileMenu.Item({ value: "new" }, "New"),
-          ]),
+          fileMenu.Content({}, [fileMenu.Item({ value: "new" }, "New")]),
         ]),
       ]);
     });
@@ -375,9 +364,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
       return menubarInstance.Root({}, [
         menubarInstance.Menu({ value: "file" }, [
           fileMenu.Trigger({}, "File"),
-          fileMenu.Content({}, [
-            fileMenu.Item({ value: "act", onSelect: onSelectAction }, "Perform Action"),
-          ]),
+          fileMenu.Content({}, [fileMenu.Item({ value: "act", onSelect: onSelectAction }, "Perform Action")]),
         ]),
       ]);
     });
@@ -426,9 +413,7 @@ describeDualMode("Menubar", ({ getDocument, isSSR }) => {
             ]),
             viewMenu.Sub({ subInstance: sub }, [
               viewMenu.SubTrigger({ subInstance: sub, value: "more" }, "More >"),
-              viewMenu.SubContent({ subInstance: sub }, [
-                sub.Item({ value: "deep" }, "Deep Action"),
-              ]),
+              viewMenu.SubContent({ subInstance: sub }, [sub.Item({ value: "deep" }, "Deep Action")]),
             ]),
           ]),
         ]),

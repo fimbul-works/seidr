@@ -1,22 +1,7 @@
-import {
-  createRef,
-  createValue,
-  unwrapValue,
-  useId,
-  wrapValue,
-} from "@fimbul-works/seidr";
+import { createRef, createValue, unwrapValue, useId, wrapValue } from "@fimbul-works/seidr";
 import { useFormControl } from "../form-control/use-form-control.js";
-import type {
-  FileDetails,
-  FileFieldIntlTranslations,
-  UseFileFieldOptions,
-  UseFileFieldResult,
-} from "./types.js";
-import {
-  DEFAULT_FILE_FIELD_INTL,
-  getFiles,
-  parseAcceptedTypes,
-} from "./util.js";
+import type { FileDetails, FileFieldIntlTranslations, UseFileFieldOptions, UseFileFieldResult } from "./types.js";
+import { DEFAULT_FILE_FIELD_INTL, getFiles, parseAcceptedTypes } from "./util.js";
 
 /**
  * Headless state and coordination hook for FileField.
@@ -49,9 +34,7 @@ export function useFileField(options: UseFileFieldOptions = {}): UseFileFieldRes
   const accept = wrapValue(userAccept).as((a) => parseAcceptedTypes(a));
   const allowDragAndDrop = wrapValue(userAllowDragAndDrop).as((d) => !!d);
   const minFileSize = wrapValue(userMinFileSize).as((s) => s ?? 0);
-  const maxFileSize = wrapValue(userMaxFileSize).as(
-    (s) => s ?? Number.POSITIVE_INFINITY,
-  );
+  const maxFileSize = wrapValue(userMaxFileSize).as((s) => s ?? Number.POSITIVE_INFINITY);
   const maxFiles = wrapValue(userMaxFiles as number | undefined).as((m) => {
     if (m !== undefined) return m;
     return multiple() ? Number.POSITIVE_INFINITY : 1;
@@ -89,15 +72,7 @@ export function useFileField(options: UseFileFieldOptions = {}): UseFileFieldRes
     const maxSize = maxFileSize();
     const acceptTypes = accept();
 
-    const { acceptedFiles, rejectedFiles } = getFiles(
-      newFiles,
-      acceptTypes,
-      isMulti,
-      max,
-      minSize,
-      maxSize,
-      validate,
-    );
+    const { acceptedFiles, rejectedFiles } = getFiles(newFiles, acceptTypes, isMulti, max, minSize, maxSize, validate);
 
     if (isMulti) {
       const current = acceptedFilesState();

@@ -1,5 +1,18 @@
 import { createComponent, createValue, mergeValues, Show } from "@fimbul-works/seidr";
-import { $button, $code, $div, $form, $h2, $h3, $li, $p, $section, $span, $strong, $ul } from "@fimbul-works/seidr/html";
+import {
+  $button,
+  $code,
+  $div,
+  $form,
+  $h2,
+  $h3,
+  $li,
+  $p,
+  $section,
+  $span,
+  $strong,
+  $ul,
+} from "@fimbul-works/seidr/html";
 import { createTextField, TextField } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./text-field.css";
@@ -149,7 +162,8 @@ export const TextFieldShowcase = createComponent(() => {
             onChange: (v) => notesPreview(v),
             disabled: isFieldDisabled,
             readOnly: isFieldReadOnly,
-            description: "Auto-resize dynamically adjusts the height as content expands; onChange receives string values.",
+            description:
+              "Auto-resize dynamically adjusts the height as content expands; onChange receives string values.",
           }),
           $div(
             { className: "text-field-value-display" },
@@ -209,7 +223,10 @@ export const TextFieldShowcase = createComponent(() => {
                   type: "password",
                   placeholder: "At least 6 characters...",
                 }),
-                passwordField.Description({}, "Controlled at coordinator level so native form reset restores defaultValue."),
+                passwordField.Description(
+                  {},
+                  "Controlled at coordinator level so native form reset restores defaultValue.",
+                ),
                 passwordField.ErrorMessage({}, "Password must be at least 6 characters."),
               ]),
               $div({ className: "controls-row" }, [

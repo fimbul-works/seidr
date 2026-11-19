@@ -32,28 +32,19 @@ export function PopoverFactory<T extends keyof SeidrElementTagNameMap = "div">(
   const popover = createPopover(popoverOptions);
   const resolvedContent = content ?? children ?? propsChildren;
 
-  return popover.Root<T>(
-    { as, ...rootProps } as Omit<PopoverRootProps<T>, "instance">,
-    [
-      trigger !== undefined ? popover.Trigger(triggerProps, trigger) : null,
-      popover.Content(contentProps, [
-        title !== undefined ? popover.Title(titleProps, title) : null,
-        description !== undefined ? popover.Description(descriptionProps, description) : null,
-        resolvedContent,
-        closeButton
-          ? popover.CloseButton(
-              closeButtonProps,
-              closeButton === true ? "✕" : closeButton,
-            )
-          : null,
-        showArrow ? popover.Arrow(arrowProps) : null,
-      ]),
-    ],
-  );
+  return popover.Root<T>({ as, ...rootProps } as Omit<PopoverRootProps<T>, "instance">, [
+    trigger !== undefined ? popover.Trigger(triggerProps, trigger) : null,
+    popover.Content(contentProps, [
+      title !== undefined ? popover.Title(titleProps, title) : null,
+      description !== undefined ? popover.Description(descriptionProps, description) : null,
+      resolvedContent,
+      closeButton ? popover.CloseButton(closeButtonProps, closeButton === true ? "✕" : closeButton) : null,
+      showArrow ? popover.Arrow(arrowProps) : null,
+    ]),
+  ]);
 }
 
 /**
  * Accessible Popover component (`role="dialog"`, Tier 1).
  */
 export const Popover = createComponent(PopoverFactory, "Popover");
-

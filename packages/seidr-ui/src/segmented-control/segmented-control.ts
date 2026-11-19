@@ -64,11 +64,7 @@ export const SegmentedControl = createComponent(
     const sc = createSegmentedControl(segmentedControlOptions);
 
     const itemElements: SeidrChild | SeidrChild[] =
-      children !== undefined
-        ? children
-        : items !== undefined
-          ? sc.List(items)
-          : [];
+      children !== undefined ? children : items !== undefined ? sc.List(items) : [];
 
     const renderedItems = Array.isArray(itemElements) ? itemElements : [itemElements];
 

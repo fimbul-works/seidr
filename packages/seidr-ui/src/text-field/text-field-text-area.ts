@@ -10,7 +10,7 @@ import {
   SeidrError,
 } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_TEXT_FIELD, DATA_PART_TEXT_AREA } from "../constants.js";
-import { combineAriaDescribedBy, combineAriaLabelledBy, extractAriaProps } from "../utils/aria.js";
+import { combineARIADescribedBy, combineARIALabelledBy, extractARIAProps } from "../utils/aria.js";
 import type { TextFieldTextAreaProps } from "./types.js";
 
 function adjustHeight(el: HTMLTextAreaElement): void {
@@ -37,7 +37,7 @@ export function TextFieldTextArea<T extends keyof SeidrElementTagNameMap = "text
   props: TextFieldTextAreaProps<T> = {},
 ): SeidrElementTagNameMap[T] {
   const { as = "textarea" as T } = props;
-  const [aria, restProps] = extractAriaProps(props);
+  const [aria, restProps] = extractARIAProps(props);
 
   const {
     instance: tf,
@@ -65,14 +65,14 @@ export function TextFieldTextArea<T extends keyof SeidrElementTagNameMap = "text
   const effectiveId = customId ?? tf.formControl.fieldId;
   onUnmounted(tf.formControl.registerField(effectiveId));
 
-  const effectiveAriaLabelledBy = combineAriaLabelledBy({
+  const effectiveARIALabelledBy = combineARIALabelledBy({
     ariaLabelledBy: aria.ariaLabelledBy,
     ariaLabel: aria.ariaLabel,
     internalLabelId: tf.formControl.labelId,
     fieldId: effectiveId,
   });
 
-  const effectiveAriaDescribedBy = combineAriaDescribedBy({
+  const effectiveARIADescribedBy = combineARIADescribedBy({
     ariaDescribedBy: aria.ariaDescribedBy,
     internalDescribedBy: tf.formControl.ariaDescribedBy,
   });
@@ -147,8 +147,8 @@ export function TextFieldTextArea<T extends keyof SeidrElementTagNameMap = "text
     "aria-required": tf.formControl.isRequired.as((req) => (req ? "true" : undefined)),
     "aria-disabled": tf.formControl.isDisabled.as((dis) => (dis ? "true" : undefined)),
     "aria-readonly": tf.formControl.isReadOnly.as((ro) => (ro ? "true" : undefined)),
-    "aria-labelledby": effectiveAriaLabelledBy,
-    "aria-describedby": effectiveAriaDescribedBy,
+    "aria-labelledby": effectiveARIALabelledBy,
+    "aria-describedby": effectiveARIADescribedBy,
     dataComponent,
     dataPart,
     ...tf.dataset,

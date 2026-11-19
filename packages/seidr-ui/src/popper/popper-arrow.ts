@@ -52,7 +52,7 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
     pointerEvents: "none",
   };
 
-  const combinedStyle = mergeStyleProps(baseStyle, userStyle)
+  const combinedStyle = mergeStyleProps(baseStyle, userStyle);
 
   if (!isUndef(children)) {
     return $(
@@ -80,7 +80,7 @@ export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
     innerHTML: rotation.as(
       (rot) =>
         `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
-//        `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};transform-origin:top center;display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
+      //        `<svg viewBox="0 0 30 30" width="${size}" height="${size}" style="transform:${rot};transform-origin:top center;display:block;"><path d="${ARROW_PATH}" fill="currentColor" /></svg>`,
     ),
     ...rest,
   } as SeidrElementProps<T>);

@@ -35,14 +35,12 @@ export function createDialog(options: UseDialogProps = {}): DialogInstance {
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<DialogRootProps<T>, "instance"> = {} as Omit<DialogRootProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] =>
-    DialogRoot<T>({ instance, ...props } as DialogRootProps<T>, children);
+  ): SeidrElementTagNameMap[T] => DialogRoot<T>({ instance, ...props } as DialogRootProps<T>, children);
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<DialogTriggerProps<T>, "instance"> = {} as Omit<DialogTriggerProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] =>
-    DialogTrigger<T>({ instance, ...props } as DialogTriggerProps<T>, children);
+  ): SeidrElementTagNameMap[T] => DialogTrigger<T>({ instance, ...props } as DialogTriggerProps<T>, children);
 
   const Overlay = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<DialogOverlayProps<T>, "instance"> = {} as Omit<DialogOverlayProps<T>, "instance">,
@@ -59,25 +57,19 @@ export function createDialog(options: UseDialogProps = {}): DialogInstance {
   const CloseButton = <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<DialogCloseButtonProps<T>, "instance"> = {} as Omit<DialogCloseButtonProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] =>
-    DialogCloseButton<T>({ instance, ...props } as DialogCloseButtonProps<T>, children);
+  ): SeidrElementTagNameMap[T] => DialogCloseButton<T>({ instance, ...props } as DialogCloseButtonProps<T>, children);
 
   const Title = <T extends keyof SeidrElementTagNameMap = "h2">(
     props: Omit<DialogTitleProps<T>, "instance"> = {} as Omit<DialogTitleProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] =>
-    DialogTitle<T>({ instance, ...props } as DialogTitleProps<T>, children);
+  ): SeidrElementTagNameMap[T] => DialogTitle<T>({ instance, ...props } as DialogTitleProps<T>, children);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "p">(
     props: Omit<DialogDescriptionProps<T>, "instance"> = {} as Omit<DialogDescriptionProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[T] =>
-    DialogDescription<T>({ instance, ...props } as DialogDescriptionProps<T>, children);
+  ): SeidrElementTagNameMap[T] => DialogDescription<T>({ instance, ...props } as DialogDescriptionProps<T>, children);
 
-  const Portal = (
-    portalProps: DialogPortalProps = {},
-    children?: SeidrChild | SeidrChild[],
-  ): SeidrChild => {
+  const Portal = (portalProps: DialogPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
     if (portalProps.portal === false || instance.portal === false) {
       return children as SeidrChild;
     }

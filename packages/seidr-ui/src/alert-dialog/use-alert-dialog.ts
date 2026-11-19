@@ -12,4 +12,3 @@ export function useAlertDialog(props: UseAlertDialogProps = {}): UseAlertDialogR
     ...rest,
   });
 }
-

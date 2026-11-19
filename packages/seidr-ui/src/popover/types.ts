@@ -217,14 +217,10 @@ export interface PopoverInstance extends UsePopoverResult {
     props?: Omit<PopperArrowProps<T>, "instance">,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
-  Portal: (
-    props: PopoverPortalProps,
-    children: SeidrChild | SeidrChild[],
-  ) => SeidrChild | SeidrChild[];
+  Portal: (props: PopoverPortalProps, children: SeidrChild | SeidrChild[]) => SeidrChild | SeidrChild[];
 }
 
-export interface PopoverProps<T extends keyof SeidrElementTagNameMap = "div">
-  extends UsePopoverOptions {
+export interface PopoverProps<T extends keyof SeidrElementTagNameMap = "div"> extends UsePopoverOptions {
   as?: T;
   trigger?: SeidrChild | SeidrChild[];
   title?: SeidrChild | SeidrChild[];

@@ -14,4 +14,3 @@ export type {
   UseHoverCardOptions,
   UseHoverCardResult,
 } from "./types.js";
-

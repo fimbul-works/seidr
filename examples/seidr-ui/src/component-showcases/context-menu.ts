@@ -1,10 +1,6 @@
 import { createComponent, createValue } from "@fimbul-works/seidr";
 import { $button, $div, $h2, $h3, $p, $section, $span } from "@fimbul-works/seidr/html";
-import {
-  ContextMenu,
-  type ContextMenuItemDescriptor,
-  createContextMenu,
-} from "@fimbul-works/seidr-ui";
+import { ContextMenu, type ContextMenuItemDescriptor, createContextMenu } from "@fimbul-works/seidr-ui";
 import { CodeBlock } from "../components/code-block.js";
 import "./context-menu.css";
 
@@ -79,9 +75,7 @@ export const ContextMenuShowcase = createComponent(() => {
           [
             $div([
               $span({ style: { opacity: "0.6" } }, "Last Triggered: "),
-              $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [
-                lastAction,
-              ]),
+              $span({ style: { fontWeight: "600", color: "hsl(217, 91%, 70%)" } }, [lastAction]),
             ]),
             $div([
               $span({ style: { opacity: "0.6" } }, "Bookmarks Bar: "),
@@ -91,9 +85,7 @@ export const ContextMenuShowcase = createComponent(() => {
             ]),
             $div([
               $span({ style: { opacity: "0.6" } }, "Zoom Level: "),
-              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [
-                zoomLevel.as((v) => `${v}%`),
-              ]),
+              $span({ style: { fontWeight: "600", color: "hsl(45, 93%, 67%)" } }, [zoomLevel.as((v) => `${v}%`)]),
             ]),
           ],
         ),
@@ -246,37 +238,37 @@ export const ContextMenuShowcase = createComponent(() => {
             { style: { fontSize: "0.85rem", opacity: "0.75", margin: "0 0 0.5rem 0" } },
             "Demonstrates dynamic reactive collections inside a context menu using Seidr's fine-grained reactive items.",
           ),
-          $div(
-            { style: { display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "0.5rem" } },
-            [
-              $button(
-                {
-                  className: "btn",
-                  style: { padding: "0.4rem 0.8rem", fontSize: "0.825rem" },
-                  onclick: addAction,
-                },
-                "➕ Add Dynamic Action",
-              ),
-              $button(
-                {
-                  className: "btn btn-secondary",
-                  style: { padding: "0.4rem 0.8rem", fontSize: "0.825rem" },
-                  onclick: removeAction,
-                },
-                "➖ Remove Action",
-              ),
-              $span({ style: { fontSize: "0.825rem", opacity: "0.7" } }, [
-                "Total Actions: ",
-                dynamicItems.as((arr) => arr.length),
-              ]),
-            ],
-          ),
+          $div({ style: { display: "flex", gap: "0.75rem", alignItems: "center", marginBottom: "0.5rem" } }, [
+            $button(
+              {
+                className: "btn",
+                style: { padding: "0.4rem 0.8rem", fontSize: "0.825rem" },
+                onclick: addAction,
+              },
+              "➕ Add Dynamic Action",
+            ),
+            $button(
+              {
+                className: "btn btn-secondary",
+                style: { padding: "0.4rem 0.8rem", fontSize: "0.825rem" },
+                onclick: removeAction,
+              },
+              "➖ Remove Action",
+            ),
+            $span({ style: { fontSize: "0.825rem", opacity: "0.7" } }, [
+              "Total Actions: ",
+              dynamicItems.as((arr) => arr.length),
+            ]),
+          ]),
           ContextMenu({
             id: "dynamic-cm",
             trigger: [
               $span({ style: { fontSize: "1.75rem" } }, "⚡"),
               $span({ style: { fontWeight: "600" } }, "Dynamic Actions Target Area"),
-              $span({ className: "context-menu-target-hint" }, "Right-click to view the dynamically updated action list"),
+              $span(
+                { className: "context-menu-target-hint" },
+                "Right-click to view the dynamically updated action list",
+              ),
             ],
             items: dynamicItems,
           }),
@@ -328,4 +320,3 @@ const FineGrained = cm.Root({}, [
     }),
   ]);
 });
-
