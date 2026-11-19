@@ -1,4 +1,4 @@
-import { createValue, type DerivedValue, isValue, type ObservableValue, useId } from "@fimbul-works/seidr";
+import { createValue, type DerivedValue, isValue, type ObservableValue } from "@fimbul-works/seidr";
 import { useCollapsible } from "../collapsible/use-collapsible.js";
 import type { AccordionDataSet, AccordionItemInstance, AccordionItemOptions, UseAccordionResult } from "./types.js";
 

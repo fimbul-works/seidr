@@ -63,10 +63,10 @@ export const Accordion = createComponent((props: AccordionProps = {}, children?:
         ? List(
             items,
             (item) => item.value,
-            (itemVal) => accordion.Item({ animation, ...itemVal() } as any),
+            (itemVal) => accordion.Item({ animation, ...itemVal() }),
           )
         : isArr(items)
-          ? items.map((item) => accordion.Item({ animation, ...item } as any))
+          ? items.map((item) => accordion.Item({ animation, ...item }))
           : [];
 
   const renderedItems = isArr(itemElements) ? itemElements : [itemElements];

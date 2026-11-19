@@ -40,7 +40,7 @@ export function AccordionHeader<T extends keyof SeidrElementTagNameMap = "h3">(
       dataPart: DATA_PART_HEADER,
       ...instance.dataset,
       ...rest,
-    } as any,
+    } as SeidrElementProps<T>,
     children,
   );
 }

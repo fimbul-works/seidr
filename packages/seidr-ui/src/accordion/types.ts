@@ -199,16 +199,7 @@ export interface AccordionInstance extends UseAccordionResult {
    * or accepts custom children for fine-grained sculpting.
    */
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
-    optionsOrProps: AccordionItemOptions & {
-      trigger?: SeidrChild | SeidrChild[];
-      content?: SeidrChild | SeidrChild[];
-      headerAs?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
-      itemProps?: SeidrElementProps<T>;
-      headerProps?: SeidrElementProps<"h3">;
-      triggerProps?: SeidrElementProps<"button">;
-      contentProps?: SeidrElementProps<"div">;
-      animation?: boolean | CollapsibleAnimationOptions;
-    } & SeidrElementProps<T>,
+    optionsOrProps: AccordionItemOptions & AccordionItemDescriptor & SeidrElementProps<T>,
     children?: SeidrChild | SeidrChild[],
   ) => SeidrElementTagNameMap[T];
 

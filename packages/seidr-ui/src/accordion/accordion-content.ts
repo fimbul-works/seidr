@@ -6,7 +6,7 @@ import {
   type SeidrElementTagNameMap,
   SeidrError,
 } from "@fimbul-works/seidr";
-import { CollapsibleContent } from "../collapsible/collapsible-content.js";
+import { CollapsibleContent, type CollapsibleContentProps } from "../collapsible/collapsible-content.js";
 import type { CollapsibleAnimationOptions } from "../collapsible/types.js";
 import { DATA_COMPONENT_ACCORDION, DATA_PART_CONTENT } from "../constants.js";
 import type { AccordionItemInstance } from "./types.js";
@@ -52,9 +52,9 @@ export function AccordionContent<T extends keyof SeidrElementTagNameMap = "div">
       dataComponent: DATA_COMPONENT_ACCORDION,
       dataPart: DATA_PART_CONTENT,
       animation,
-      style: mergeStyleProps(dynamicStyles, style as any),
+      style: mergeStyleProps(dynamicStyles, style),
       ...rest,
-    } as any,
+    } as CollapsibleContentProps<T>,
     children,
   );
 }

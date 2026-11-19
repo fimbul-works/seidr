@@ -2,7 +2,6 @@ import { isArr, isFn, isUndef } from "@fimbul-works/hvat";
 import {
   type CleanupFunction,
   createValue,
-  type DerivedValue,
   inClient,
   isValue,
   type ObservableValue,
@@ -48,7 +47,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRes
     state.watch((next) => onChange(next));
   }
 
-  const derivedValue: DerivedValue<string[]> = state.as((v) => (isArr(v) ? v : []));
+  const derivedValue = state.as((v) => (isArr(v) ? v : []));
 
   const setValue = (nextKeys: string[]) => {
     // In single, non-collapsible mode, empty selection is not allowed.
@@ -68,9 +67,7 @@ export function useAccordion(options: UseAccordionOptions = {}): UseAccordionRes
     }
   };
 
-  const isOpen = (key: string): DerivedValue<boolean> => {
-    return state.as((keys) => (isArr(keys) ? keys.includes(key) : false));
-  };
+  const isOpen = (key: string) => state.as((keys) => (isArr(keys) ? keys.includes(key) : false));
 
   const toggle = (key: string) => {
     const current = state();

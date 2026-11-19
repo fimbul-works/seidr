@@ -39,7 +39,7 @@ export function AccordionItem<T extends keyof SeidrElementTagNameMap = "div">(
       dataPart: DATA_PART_ITEM,
       ...instance.dataset,
       ...rest,
-    } as any,
+    } as SeidrElementProps<T>,
     children,
   );
 }

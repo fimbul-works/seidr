@@ -1,13 +1,14 @@
 import { isUndef } from "@fimbul-works/hvat";
-import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
-import { AccordionContent } from "./accordion-content.js";
-import { AccordionHeader } from "./accordion-header.js";
-import { AccordionItem } from "./accordion-item.js";
-import { AccordionRoot } from "./accordion-root.js";
-import { AccordionTrigger } from "./accordion-trigger.js";
+import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import { AccordionContent, type AccordionContentProps } from "./accordion-content.js";
+import { AccordionHeader, type AccordionHeaderProps } from "./accordion-header.js";
+import { AccordionItem, type AccordionItemProps } from "./accordion-item.js";
+import { AccordionRoot, type AccordionRootProps } from "./accordion-root.js";
+import { AccordionTrigger, type AccordionTriggerProps } from "./accordion-trigger.js";
 import type {
   AccordionInstance,
   AccordionItemBoundHelpers,
+  AccordionItemDescriptor,
   AccordionItemInstance,
   AccordionItemOptions,
   UseAccordionOptions,
@@ -27,21 +28,29 @@ export function createAccordion(options: UseAccordionOptions = {}): AccordionIns
   const createItem = (itemOptions: AccordionItemOptions): AccordionItemInstance & AccordionItemBoundHelpers => {
     const itemInstance = useAccordionItem(instance, itemOptions);
 
-    const Root = <T extends keyof SeidrElementTagNameMap = "div">(props = {}, children?: SeidrChild | SeidrChild[]) =>
-      AccordionItem<T>({ instance: itemInstance, ...props } as any, children);
+    const Root = <T extends keyof SeidrElementTagNameMap = "div">(
+      props: AccordionItemProps<T> = {},
+      children?: SeidrChild | SeidrChild[],
+    ) => AccordionItem<T>({ instance: itemInstance, ...props } as AccordionItemProps<T>, children);
 
-    const Header = <T extends keyof SeidrElementTagNameMap = "h3">(props = {}, children?: SeidrChild | SeidrChild[]) =>
-      AccordionHeader<T>({ instance: itemInstance, ...props } as any, children);
+    const Header = <T extends keyof SeidrElementTagNameMap = "h3">(
+      props: AccordionHeaderProps<T> = {},
+      children?: SeidrChild | SeidrChild[],
+    ) => AccordionHeader<T>({ instance: itemInstance, ...props } as AccordionHeaderProps<T>, children);
 
     const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
-      props = {},
+      props: AccordionTriggerProps<T> = {},
       children?: SeidrChild | SeidrChild[],
-    ) => AccordionTrigger<T>({ instance: itemInstance, ...props } as any, children);
+    ) => AccordionTrigger<T>({ instance: itemInstance, ...props } as AccordionTriggerProps<T>, children);
 
     const Content = <T extends keyof SeidrElementTagNameMap = "div">(
-      props = {},
+      props: AccordionContentProps<T> = {},
       children?: SeidrChild | SeidrChild[],
-    ) => AccordionContent<T>({ instance: itemInstance, animation: defaultAnimation, ...props } as any, children);
+    ) =>
+      AccordionContent<T>(
+        { instance: itemInstance, animation: defaultAnimation, ...props } as AccordionContentProps<T>,
+        children,
+      );
 
     return {
       ...itemInstance,
@@ -53,11 +62,13 @@ export function createAccordion(options: UseAccordionOptions = {}): AccordionIns
     };
   };
 
-  const Root = <T extends keyof SeidrElementTagNameMap = "div">(props = {}, children?: SeidrChild | SeidrChild[]) =>
-    AccordionRoot<T>({ instance, ...props } as any, children);
+  const Root = <T extends keyof SeidrElementTagNameMap = "div">(
+    props: AccordionRootProps<T> = {},
+    children?: SeidrChild | SeidrChild[],
+  ) => AccordionRoot<T>({ instance, ...props } as AccordionRootProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "div">(
-    optionsOrProps: any,
+    optionsOrProps: SeidrElementProps<T> & AccordionItemDescriptor, // No specific type can be distinguished
     children?: SeidrChild | SeidrChild[],
   ) => {
     const {
@@ -76,56 +87,71 @@ export function createAccordion(options: UseAccordionOptions = {}): AccordionIns
       ...rootProps
     } = optionsOrProps;
 
-    const itemInstance = useAccordionItem(instance, { value, disabled, forceMount, id });
+    const itemInstance = useAccordionItem(instance, { value, disabled, forceMount, id: id as string });
 
     if (!isUndef(children)) {
       const prev = currentItemInstance;
       currentItemInstance = itemInstance;
       try {
-        return AccordionItem<T>({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps } as any, children);
+        return AccordionItem<T>(
+          { instance: itemInstance, ...(itemProps ?? {}), ...rootProps } as AccordionItemProps<T>,
+          children,
+        );
       } finally {
         currentItemInstance = prev;
       }
     }
 
-    const headerEl = AccordionHeader({ instance: itemInstance, as: headerAs, ...(headerProps ?? {}) }, [
-      AccordionTrigger({ instance: itemInstance, ...(triggerProps ?? {}) }, trigger),
-    ]);
+    const headerEl = AccordionHeader<T>(
+      { instance: itemInstance, as: headerAs, ...(headerProps ?? {}) } as AccordionHeaderProps<T>,
+      AccordionTrigger<T>({ instance: itemInstance, ...(triggerProps ?? {}) } as AccordionTriggerProps<T>, trigger),
+    );
 
-    const contentEl = AccordionContent(
-      { instance: itemInstance, animation: animation ?? defaultAnimation, ...(contentProps ?? {}) },
+    const contentEl = AccordionContent<T>(
+      {
+        instance: itemInstance,
+        animation: animation ?? defaultAnimation,
+        ...(contentProps ?? {}),
+      } as AccordionContentProps<T>,
       content,
     );
 
-    return AccordionItem<T>({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps } as any, [
-      headerEl,
-      contentEl as any,
+    return AccordionItem<T>({ instance: itemInstance, ...(itemProps ?? {}), ...rootProps } as AccordionItemProps<T>, [
+      headerEl as typeof headerEl,
+      contentEl as typeof contentEl,
     ]);
   };
 
   const Header = <T extends keyof SeidrElementTagNameMap = "h3">(
-    props: any = {},
+    props: AccordionHeaderProps<T> = {},
     children?: SeidrChild | SeidrChild[],
-  ) => {
-    const inst = props.instance ?? currentItemInstance;
-    return AccordionHeader<T>({ instance: inst, ...props }, children);
-  };
+  ) =>
+    AccordionHeader<T>(
+      { instance: props.instance ?? currentItemInstance, ...props } as AccordionHeaderProps<T>,
+      children,
+    );
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
-    props: any = {},
+    props: AccordionTriggerProps<T> = {},
     children?: SeidrChild | SeidrChild[],
-  ) => {
-    const inst = props.instance ?? currentItemInstance;
-    return AccordionTrigger<T>({ instance: inst, ...props }, children);
-  };
+  ) =>
+    AccordionTrigger<T>(
+      { instance: props.instance ?? currentItemInstance, ...props } as AccordionTriggerProps<T>,
+      children,
+    );
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
-    props: any = {},
+    props: AccordionContentProps<T> = {},
     children?: SeidrChild | SeidrChild[],
-  ) => {
-    const inst = props.instance ?? currentItemInstance;
-    return AccordionContent<T>({ instance: inst, animation: props.animation ?? defaultAnimation, ...props }, children);
-  };
+  ) =>
+    AccordionContent<T>(
+      {
+        instance: props.instance ?? currentItemInstance,
+        animation: props.animation ?? defaultAnimation,
+        ...props,
+      } as AccordionContentProps<T>,
+      children,
+    );
 
   return {
     ...instance,
