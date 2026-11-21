@@ -1,4 +1,5 @@
-import { isFn, isNullish, isStr, isUndef } from "@fimbul-works/hvat";
+import { isFn, isNullish, isStr } from "@fimbul-works/hvat";
+import { getAppState } from "../app-state/get-app-state.js";
 import { isHydrating } from "../ssr/hydrate/storage.js";
 import { SeidrError } from "../types.js";
 import { isClient } from "../util/environment/is-client.js";
@@ -36,6 +37,8 @@ export interface WithStorageOptions<T = any> {
   onHydrated?: OnHydratedValueHandler<T>;
 }
 
+const DATA_KEY_WITH_STORAGE = "seidr.with-storage";
+
 /**
  * Synchronizes a Value observable with browser storage (localStorage or sessionStorage).
  *
@@ -63,16 +66,34 @@ export interface WithStorageOptions<T = any> {
  * @returns {T} The same Value instance, now with storage synchronization enabled
  * @throws {SeidrError} If storage read/write fails and no onError handler is provided
  */
-export const withStorage = <T extends Value, V = Unwrapped<T>>(
+export function withStorage<T extends Value, V = Unwrapped<T>>(
   key: string,
   value: T,
   options: WithStorageOptions<V> = {},
-): T => {
+): T {
+  if (value.isDerived) {
+    throw new SeidrError(`Derived values cannot be storaged (key="${key}")`);
+  }
+
   // Server-side rendering: storage APIs don't exist, so return Value unchanged
   if (!isClient()) {
     return value;
   }
+
   const { storage = window.localStorage, onError, onHydrated } = options;
+
+  // Ensure that we don't wrap the same Value instance more than once for the same key
+  const storageId = `${key}:${value.id}`;
+  const valueStorageMap = getAppState().getData<Map<string, Storage[]>>(
+    DATA_KEY_WITH_STORAGE,
+    new Map<string, Storage[]>(),
+  );
+  const storages = valueStorageMap.get(storageId) ?? [];
+  if (storages.includes(storage)) {
+    return value;
+  } else {
+    valueStorageMap.set(storageId, [...storages, storage]);
+  }
 
   // Load initial value from storage
   try {
@@ -87,7 +108,7 @@ export const withStorage = <T extends Value, V = Unwrapped<T>>(
       }
     }
   } catch (error) {
-    const err = wrapError(error);
+    const err = wrapError(error, SeidrError);
     if (onError) {
       onError(err, "read");
     } else {
@@ -104,7 +125,7 @@ export const withStorage = <T extends Value, V = Unwrapped<T>>(
         storage.setItem(key, JSON.stringify(value));
       }
     } catch (error) {
-      const err = wrapError(error);
+      const err = wrapError(error, SeidrError);
       if (onError) {
         onError(err, "write");
       } else {
@@ -114,4 +135,4 @@ export const withStorage = <T extends Value, V = Unwrapped<T>>(
   });
 
   return value;
-};
+}

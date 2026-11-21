@@ -1,14 +1,4 @@
-import {
-  createValue,
-  inClient,
-  isClient,
-  List,
-  mergeValues,
-  onUnmounted,
-  Show,
-  type Value,
-  withStorage,
-} from "@fimbul-works/seidr";
+import { createValue, inClient, isClient, List, mergeValues, onUnmounted, Show, type Value } from "@fimbul-works/seidr";
 import {
   $a,
   $button,
@@ -33,7 +23,7 @@ const ENTER_KEY = "Enter";
 
 export const TodoApp = (initialTodos: Todo[] = []) => {
   // Store state in Seidr observables
-  const todos = withStorage("todos", createValue<Todo[]>(initialTodos));
+  const todos = createValue<Todo[]>(initialTodos);
   const showMode = createValue<Filter>(isClient() ? (window.location.hash.slice(2) as Filter) || "all" : "all");
   const editingTodoId = createValue<number | null>(null);
 
