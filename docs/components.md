@@ -35,7 +35,7 @@ export const Counter = createComponent<CounterProps>(({ initialCount = 0, step =
 ```
 
 **Parameters:**
-- `factory: (props: P) => SeidrChild | SeidrChild[]` — Pure function receiving props and returning elements.
+- `factory: (props: P) => SeidrChild` — Pure function receiving props and returning elements.
 - `name?: string` (default: `"Component"`) — Component name used for debugging and deterministic SSR ID namespacing.
 
 **Returns:** `SeidrComponentFactory<P>`

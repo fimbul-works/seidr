@@ -17,13 +17,10 @@ import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./ty
  * @template {keyof SeidrElementTagNameMap} K - Element tag name type
  *
  * @param {K} tagName - The HTML tag name to create
- * @param {SeidrChild | SeidrChild[]} [children] - Child elements when omitting props
+ * @param {SeidrChild} [children] - Child elements when omitting props
  * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
-export function $<K extends keyof SeidrElementTagNameMap>(
-  tagName: K,
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[K];
+export function $<K extends keyof SeidrElementTagNameMap>(tagName: K, children?: SeidrChild): SeidrElementTagNameMap[K];
 /**
  * Creates an HTML element with automatic reactive binding capabilities.
  *
@@ -31,19 +28,19 @@ export function $<K extends keyof SeidrElementTagNameMap>(
  *
  * @param {K} tagName - The HTML tag name to create
  * @param {SeidrElementProps<K>} props - Element properties supporting reactive bindings
- * @param {SeidrChild | SeidrChild[]} [children] - Child elements
+ * @param {SeidrChild} [children] - Child elements
  * @returns {SeidrElementTagNameMap[K]} A Seidr-enhanced HTML element
  */
 export function $<K extends keyof SeidrElementTagNameMap, P extends SeidrElementProps<K> = SeidrElementProps<K>>(
   tagName: K,
   props: P & ValidateARIAProps<K, P, SeidrElementProps<K>>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[K];
 
 export function $<K extends keyof SeidrElementTagNameMap>(
   tagName: K,
-  propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: SeidrElementProps<K> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[K] {
   const doc = getDocument();
 

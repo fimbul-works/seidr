@@ -32,7 +32,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
   - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
   - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)`.
 - **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
-  - Take `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+  - Take `(props: Props<T>, children?: SeidrChild) => SeidrElementTagNameMap[T]`.
   - Expect an internal `instance` coordinator passed by `create<Component>` (throws `SeidrError` if missing).
 - **Semantic CSS Style System Annotations**:
   - Every component element MUST provide `dataComponent: "<kebab-name>"` (`data-component="..."` in DOM).
@@ -76,7 +76,7 @@ When implementing, refactoring, or porting any component, primitive, or hook for
 - **Avoid Casting with `as Value`**: Never cast derived values as mutable `Value<T>` or `as any`. Use `DerivedValue<T>` or `ObservableValue<T>`.
 - **The Function-Children Trap**: Because `Value<T>` _is a function_, using `typeof x === "function"` or typing `children?: SeidrChild | ((state) => SeidrChild)` creates severe bugs by misclassifying reactive values and reactive child getters (`() => SeidrChild`) as render props.
 - **Use Type Guards**: Use `isValue(x)` from `@fimbul-works/seidr` to verify reactive values.
-- **FORBID Mixed Render Props**: Never accept a function as `children` or mix render-props with standard `SeidrChild | SeidrChild[]`. If a custom render function is strictly required, use a separate named prop with a distinct type (e.g. `RenderContent`).
+- **FORBID Mixed Render Props**: Never accept a function as `children` or mix render-props with standard `SeidrChild`. If a custom render function is strictly required, use a separate named prop with a distinct type (e.g. `RenderContent`).
 - **Reference Docs**: [docs/Value.md](file:///home/claus/code/TypeScript/seidr/docs/Value.md#createvalue), [docs/type-guards.md](file:///home/claus/code/TypeScript/seidr/docs/type-guards.md#isvalue)
 
 ### Rule 3: Automatic Component Scope Cleanup vs. Manual Unwatch

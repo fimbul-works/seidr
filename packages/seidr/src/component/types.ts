@@ -92,7 +92,7 @@ interface SeidrComponentFactoryInterface {
 /**
  * Type representing the return values of a component factory.
  */
-export type SeidrComponentReturnValue = SeidrChild | SeidrChild[] | null | undefined;
+export type SeidrComponentReturnValue = SeidrChild | null | undefined;
 
 /**
  * Seidr component pure function type.

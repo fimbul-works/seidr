@@ -187,14 +187,10 @@ export const mountConnectedComponents = (node: Node) => {
  * Appends or inserts a child node into a parent node.
  *
  * @param {ParentNode} parent - The parent node to insert the child into
- * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to insert
+ * @param {SeidrChild} child - The child node to insert
  * @param {ChildNode | null} [anchor=null] - Optional reference child node in `parent` to insert before
  */
-export const appendChild = (
-  parent: ParentNode,
-  child: SeidrChild | SeidrChild[] | null | undefined,
-  anchor: ChildNode | null = null,
-) => {
+export const appendChild = (parent: ParentNode, child: SeidrChild, anchor: ChildNode | null = null) => {
   if (child === parent) {
     if (process.env.NODE_ENV !== "production")
       console.log(`Parent and child are the same, skipping append child. ${parent}`);

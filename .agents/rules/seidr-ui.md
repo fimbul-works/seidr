@@ -22,7 +22,7 @@ Before implementing, refactoring, or porting any component, primitive, or hook f
 3. **No Functions as Children / No Mixed Render Props**:
    - In Seidr, `Value<T>` and reactive child getters `() => SeidrChild` are functions, and both are valid `SeidrChild`ren.
    - Mixing render props with children (e.g. `children?: SeidrChild | ((state) => SeidrChild)` or checking `typeof content === 'function'`) misclassifies reactive getters and breaks Seidr reactivity.
-   - Avoid JSX function-as-child patterns. Component content must strictly be `SeidrChild | SeidrChild[]`.
+   - Avoid JSX function-as-child patterns. Component content must strictly be `SeidrChild`.
 
 4. **Minimal Architecture (No Unneeded Context Stacks)**:
    - Focus on DOM behavior rather than porting complex framework context hierarchies.
@@ -42,7 +42,7 @@ Before implementing, refactoring, or porting any component, primitive, or hook f
      - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
      - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)` without `resolvePropsAndChildren` overhead.
    - **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
-     - Standardized signature: `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+     - Standardized signature: `(props: Props<T>, children?: SeidrChild) => SeidrElementTagNameMap[T]`.
      - Receives `instance` passed by `create<Component>` (throws `SeidrError` if missing).
    - **Semantic CSS Style System Annotations (`dataComponent` & `dataPart`)**:
      - Every element must specify `dataComponent: "<kebab-name>"` (e.g. `"button"`, `"checkbox"`, `"collapsible"`, `"form-control"`).

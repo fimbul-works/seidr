@@ -80,7 +80,7 @@ Before writing ANY code in `packages/seidr-ui`:
   - Allowing `children?: SeidrChild | ((state) => SeidrChild)` or checking `typeof content === "function"` misinterprets reactive child getters as render functions!
 - **The Rule**:
   - Never allow functions as `children`.
-  - Content must strictly accept `SeidrChild | SeidrChild[]`.
+  - Content must strictly accept `SeidrChild`.
   - Avoid JSX render-prop patterns or mixing them with component children.
   - If a render-function is required for a specific prop, use a separate named prop (e.g. `RenderContent`).
 
@@ -112,7 +112,7 @@ When implementing or refactoring components:
      - Returns `{ ...instance, Root, Control, Indicator, ... }` with pre-bound compound element helpers.
      - Pre-bound helpers use clean signatures: `(props, children) => ComponentPart({ instance, ...props }, children)` without `resolvePropsAndChildren`.
    - **Internal Subcomponent Primitives (Non-Exported Implementation Details)**:
-     - Standardized signature: `(props: Props<T>, children?: SeidrChild | SeidrChild[]) => SeidrElementTagNameMap[T]`.
+     - Standardized signature: `(props: Props<T>, children?: SeidrChild) => SeidrElementTagNameMap[T]`.
      - Receives `instance` passed by `create<Component>` (throws `SeidrError` if missing).
 
 2. **Semantic CSS Style System Annotations**:

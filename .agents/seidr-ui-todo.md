@@ -29,7 +29,7 @@ Before implementing or modifying ANYTHING for `seidr-ui`:
 - **NO Functions-as-Children / NO Render Props Mixed with `SeidrChild`**:
   - In Seidr, `Value<T>` and reactive child getters `() => SeidrChild` are functions, and both are valid `SeidrChild`ren.
   - Never accept a function as `children` or mix `render` functions with `SeidrChild` / `props` (e.g. `children?: SeidrChild | ((state) => SeidrChild)` or checking `typeof content === 'function'`).
-  - Content must strictly be `SeidrChild | SeidrChild[]`.
+  - Content must strictly be `SeidrChild`.
 - **Behavior-First / Minimal Architecture (No Unneeded Context Stacks)**:
   - Do not replicate framework context hierarchies when simple state or props suffice (e.g., `Image` only needs `Value<ImageLoadingStatus>`, an immediate fallback for SSR / timer for delay via `inClient()`, and `Show`).
 - **Seidr Lifecycle Cleanup Pattern**:

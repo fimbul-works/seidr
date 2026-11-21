@@ -7,10 +7,10 @@ import type { SeidrChild, SeidrElementProps, SeidrElementTagNameMap } from "./ty
  * Specialized HTML element creator function interface.
  */
 export interface SeidrElementFactory<K extends keyof SeidrElementTagNameMap> {
-  (children?: SeidrChild | SeidrChild[]): SeidrElementTagNameMap[K];
+  (children?: SeidrChild): SeidrElementTagNameMap[K];
   <P extends SeidrElementProps<K> = SeidrElementProps<K>>(
     props: P & ValidateARIAProps<K, P, SeidrElementProps<K>>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[K];
 }
 
@@ -35,10 +35,7 @@ export const $factory =
     tagName: K,
     defaultProps: SeidrElementProps<K> = {},
   ): SeidrElementFactory<K> =>
-  (
-    propsOrChildren?: SeidrElementProps<K> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
-  ): SeidrElementTagNameMap[K] => {
+  (propsOrChildren?: SeidrElementProps<K> | SeidrChild, children?: SeidrChild): SeidrElementTagNameMap[K] => {
     const [props, resolvedChildren] = resolvePropsAndChildren(propsOrChildren, children, defaultProps);
     return $(tagName, props, resolvedChildren);
   };

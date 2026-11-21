@@ -17,7 +17,7 @@ Creates a DOM element with reactive props, attributes, event handlers, and child
 **Parameters:**
 - `tag: string` — HTML tag name (e.g. `'div'`, `'button'`, `'input'`).
 - `props?: ElementProps | null` — Object with element properties, attributes, and event handlers (can include [`Value`](Value.md) observables).
-- `children?: SeidrChild | SeidrChild[]` — Array or single child element, string, number, reactive [`Value`](Value.md) observable, or [`SeidrComponent`](components.md).
+- `children?: SeidrChild` — Array or single child element, string, number, reactive [`Value`](Value.md) observable, or [`SeidrComponent`](components.md).
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 
@@ -53,7 +53,7 @@ Creates a reusable element factory function with optional predefined default pro
 - `tag: string` — HTML tag name.
 - `defaultProps?: ElementProps` — Default properties to apply to all created elements.
 
-**Returns:** `(props?: ElementProps, children?: SeidrChild | SeidrChild[]) => HTMLElement`
+**Returns:** `(props?: ElementProps, children?: SeidrChild) => HTMLElement`
 
 ```typescript
 import { $factory } from "@fimbul-works/seidr";
@@ -82,7 +82,7 @@ For convenience, Seidr provides ready-to-use element creator functions for all s
 
 **Parameters:**
 - `props?: ElementProps` — Element properties, attributes, event handlers, and [`Value`](Value.md) observables.
-- `children?: SeidrChild | SeidrChild[]` — Child elements, strings, numbers, or reactive Values.
+- `children?: SeidrChild` — Child elements, strings, numbers, or reactive Values.
 
 **Returns:** [`HTMLElement`](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement)
 

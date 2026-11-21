@@ -128,7 +128,7 @@ const buttonLink = Link({ href: "/dashboard", tagName: "button" }, "Go to Dashbo
   - `inactiveClass?: string | Value<string>` — CSS class to apply when the link is inactive.
   - `exact?: boolean | Value<boolean>` (default: `false`) — Whether the link is exact. When `true`, requires the pathname parts to match the pattern parts exactly in length.
   - All standard HTML element properties, attributes, and event handlers.
-- `children?: SeidrChild | SeidrChild[]` — Child nodes or components.
+- `children?: SeidrChild` — Child nodes or components.
 
 **Returns:** `HTMLElementTagNameMap[K]`
 

@@ -49,7 +49,7 @@ export type LinkProps<K extends keyof HTMLElementTagNameMap = "a"> = LinkOptions
  * @deprecated Use `Link` from `@fimbul-works/seidr-ui` or standard anchor tags (`$a({ href: ... })`) with Seidr navigation instead.
  * @template T - Key from the HTMLElementTagNameMap interface
  * @param {LinkProps<T>} props - Link props with reactive bindings
- * @param {SeidrChild | SeidrChild[]} [children] - Optional child nodes
+ * @param {SeidrChild} [children] - Optional child nodes
  * @returns {HTMLElementTagNameMap[T]} Element that wraps an anchor element
  */
 export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
@@ -64,7 +64,7 @@ export const Link = <T extends keyof HTMLElementTagNameMap = "a">(
     disabled,
     ...restProps
   }: LinkProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): HTMLElementTagNameMap[T] => {
   initRouter();
 

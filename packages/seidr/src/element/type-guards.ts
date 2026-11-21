@@ -8,7 +8,7 @@ import type { SeidrChild } from "./types.js";
  * Check if a value is a valid child for a Seidr element or component.
  *
  * @param {any} v - Value to check
- * @returns {v is SeidrChild | SeidrChild[]} `true` if the value is a valid child, `false` otherwise
+ * @returns {v is SeidrChild} `true` if the value is a valid child, `false` otherwise
  */
-export const isValidSeidrChild = (v: any): v is SeidrChild | SeidrChild[] =>
+export const isValidSeidrChild = (v: any): v is SeidrChild =>
   isStr(v) || isArr(v) || isDOMNode(v) || isComponent(v) || isValue(v);
