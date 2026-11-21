@@ -16,7 +16,7 @@ import { isDragEventWithFiles } from "./util.js";
  */
 export function FileFieldDropzone<T extends keyof SeidrElementTagNameMap = "div">(
   props: FileFieldDropzoneProps<T> = {} as FileFieldDropzoneProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

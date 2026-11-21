@@ -13,7 +13,7 @@ import type { TimeFieldDescriptionProps } from "./types.js";
  */
 export function TimeFieldDescription<T extends keyof SeidrElementTagNameMap = "span">(
   props: TimeFieldDescriptionProps<T> = {} as TimeFieldDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

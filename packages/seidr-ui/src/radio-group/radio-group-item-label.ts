@@ -35,7 +35,7 @@ export type RadioGroupItemLabelProps<T extends keyof SeidrElementTagNameMap = "l
  */
 export function RadioGroupItemLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: RadioGroupItemLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "label" as T, instance: item, id, htmlFor, ...rest } = props;
 

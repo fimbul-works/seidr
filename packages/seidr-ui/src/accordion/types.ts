@@ -126,31 +126,31 @@ export interface AccordionItemBoundHelpers {
   /** Pre-bound AccordionItem container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SeidrElementProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionItem container (alias for Root). */
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SeidrElementProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionHeader element. */
   Header: <T extends keyof SeidrElementTagNameMap = "h3">(
     props?: SeidrElementProps<T> & { as?: T },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionTrigger button. */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: SeidrElementProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionContent disclosure region. */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SeidrElementProps<T> & { as?: T },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
@@ -159,10 +159,10 @@ export interface AccordionItemDescriptor {
   value: string;
 
   /** The header trigger content. */
-  trigger: SeidrChild | SeidrChild[];
+  trigger: SeidrChild;
 
   /** The expandable panel content. */
-  content: SeidrChild | SeidrChild[];
+  content: SeidrChild;
 
   /** Whether the item is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
@@ -190,7 +190,7 @@ export interface AccordionInstance extends UseAccordionResult {
   /** Pre-bound AccordionRoot container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SeidrElementProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /**
@@ -200,25 +200,25 @@ export interface AccordionInstance extends UseAccordionResult {
    */
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     optionsOrProps: AccordionItemOptions & AccordionItemDescriptor & SeidrElementProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionHeader element. */
   Header: <T extends keyof SeidrElementTagNameMap = "h3">(
     props?: SeidrElementProps<T> & { instance?: AccordionItemInstance; as?: T },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionTrigger button. */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: SeidrElementProps<T> & { instance?: AccordionItemInstance },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound AccordionContent disclosure region. */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SeidrElementProps<T> & { instance?: AccordionItemInstance; as?: T },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /** Creates an item-level coordinator with pre-bound item helpers for fine-grained DOM sculpting. */

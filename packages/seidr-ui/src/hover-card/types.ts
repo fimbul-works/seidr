@@ -152,19 +152,19 @@ export type HoverCardArrowProps<T extends keyof SeidrElementTagNameMap = "div"> 
 export interface HoverCardInstance extends UseHoverCardResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<HoverCardRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "a">(
     props?: Omit<HoverCardTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
-  Portal: (props?: HoverCardPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: HoverCardPortalProps, children?: SeidrChild) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<HoverCardContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -180,7 +180,7 @@ export interface HoverCardProps<T extends keyof SeidrElementTagNameMap = "div"> 
   /** Polymorphic tag name for the root wrapper. Defaults to `"div"`. */
   as?: T;
   /** Trigger element or label content. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Optional href for the trigger link. */
   href?: string;
   /** Optional target for the trigger link. */
@@ -190,7 +190,7 @@ export interface HoverCardProps<T extends keyof SeidrElementTagNameMap = "div"> 
   /** Whether the trigger is disabled. */
   disabled?: ReactiveValue<boolean>;
   /** HoverCard body content (can also be passed as `children`). */
-  content?: SeidrChild | SeidrChild[];
+  content?: SeidrChild;
   /** Whether to render a PopperArrow inside the hover card content. */
   showArrow?: boolean;
   /** Props forwarded to HoverCardRoot. */
@@ -202,5 +202,5 @@ export interface HoverCardProps<T extends keyof SeidrElementTagNameMap = "div"> 
   /** Props forwarded to HoverCardArrow. */
   arrowProps?: Omit<HoverCardArrowProps<"div">, "instance">;
   /** Children rendered inside HoverCardContent (when `content` is not provided). */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

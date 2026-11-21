@@ -17,7 +17,7 @@ import { ARROW_PATH, ROTATION_DEG } from "./utils.js";
  */
 export function PopperArrow<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopperArrowProps<T> = {} as PopperArrowProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

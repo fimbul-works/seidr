@@ -13,7 +13,7 @@ import type { FileFieldErrorMessageProps } from "./types.js";
  */
 export function FileFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
   props: FileFieldErrorMessageProps<T> = {} as FileFieldErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

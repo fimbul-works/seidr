@@ -18,7 +18,7 @@ import type { MenuRadioItemProps } from "./types.js";
  */
 export function MenuRadioItem<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuRadioItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

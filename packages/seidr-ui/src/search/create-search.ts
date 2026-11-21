@@ -88,7 +88,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
     const Root = <T extends keyof SeidrElementTagNameMap = "li">(
       itemProps: Omit<SearchItemProps<T>, "instance" | "value"> = {} as Omit<SearchItemProps<T>, "instance" | "value">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItem(
         {
@@ -104,7 +104,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
     const Label = <T extends keyof SeidrElementTagNameMap = "div">(
       labelProps: Omit<SearchItemLabelProps<T>, "instance"> = {} as Omit<SearchItemLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemLabel(
         {
@@ -120,7 +120,7 @@ export function createSearch<Option = any, OptGroup = any>(
         SearchItemDescriptionProps<T>,
         "instance"
       >,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemDescription(
         {
@@ -133,7 +133,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
     const Indicator = <T extends keyof SeidrElementTagNameMap = "div">(
       indProps: Omit<SearchItemIndicatorProps<T>, "instance"> = {} as Omit<SearchItemIndicatorProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemIndicator(
         {
@@ -159,17 +159,17 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchRootProps<T> = {} as SearchRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxRoot({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "label">(
     props: SearchLabelProps<T> = {} as SearchLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxLabel({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Control = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchControlProps<T> = {} as SearchControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxControl({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Input = <T extends keyof SeidrElementTagNameMap = "input">(
@@ -178,38 +178,35 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: SearchTriggerProps<T> = {} as SearchTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxTrigger({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchIconProps<T> = {} as SearchIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxIcon({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Indicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchIndicatorProps<T> = {} as SearchIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SearchIndicator({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const NoResult = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchNoResultProps<T> = {} as SearchNoResultProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SearchNoResult({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchContentProps<T> = {} as SearchContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxContent({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
   const Listbox = <T extends keyof SeidrElementTagNameMap = "ul">(
     props: SearchListboxProps<T> = {} as SearchListboxProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ComboboxListbox({ instance, dataComponent: DATA_COMPONENT_SEARCH, ...props }, children);
 
-  const Item = <T extends keyof SeidrElementTagNameMap = "li">(
-    props: SearchItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
-  ) =>
+  const Item = <T extends keyof SeidrElementTagNameMap = "li">(props: SearchItemProps<T>, children?: SeidrChild) =>
     ListboxItem(
       {
         listbox: instance.listbox,
@@ -222,7 +219,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const ItemLabel = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchItemLabelProps<T> = {} as SearchItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance;
     if (!itemInst) {
@@ -236,7 +233,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchItemDescriptionProps<T> = {} as SearchItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance;
     if (!itemInst) {
@@ -250,7 +247,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const ItemIndicator = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchItemIndicatorProps<T> = {} as SearchItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance;
     if (!itemInst) {
@@ -264,13 +261,13 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const Section = <T extends keyof SeidrElementTagNameMap = "li">(
     props: SearchSectionProps<T> = {} as SearchSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     ListboxSection<T>({ dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxSectionProps<T>, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SearchSectionLabelProps<T> = {} as SearchSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_SEARCH, ...props } as ListboxSectionLabelProps<T>, children);
 
@@ -288,7 +285,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchDescriptionProps<T> = {} as SearchDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FormControlDescription<T>(
       {
@@ -301,7 +298,7 @@ export function createSearch<Option = any, OptGroup = any>(
 
   const ErrorMessage = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SearchErrorMessageProps<T> = {} as SearchErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     FormControlErrorMessage<T>(
       {

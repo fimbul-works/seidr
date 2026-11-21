@@ -13,7 +13,7 @@ import type { MenuIconProps } from "./types.js";
  */
 export function MenuIcon<T extends keyof SeidrElementTagNameMap = "span">(
   props: MenuIconProps<T> = {} as MenuIconProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance: menu, dataComponent = DATA_COMPONENT_MENU, ...rest } = props;
 

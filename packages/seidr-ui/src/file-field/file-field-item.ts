@@ -13,7 +13,7 @@ import type { FileFieldItemProps } from "./types.js";
  */
 export function FileFieldItem<T extends keyof SeidrElementTagNameMap = "li">(
   props: FileFieldItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "li" as T,

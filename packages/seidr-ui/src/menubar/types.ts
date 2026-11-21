@@ -21,6 +21,7 @@ import type {
   MenuGroupProps,
   MenuIconOptions,
   MenuIconProps,
+  MenuInstance,
   MenuItemData,
   MenuItemDescriptionOptions,
   MenuItemDescriptionProps,
@@ -32,7 +33,6 @@ import type {
   MenuItemOptions,
   MenuItemProps,
   MenuItemRegistration,
-  MenuInstance,
   MenuLeafDescriptor,
   MenuListRenderOptions,
   MenuPortalProps,
@@ -138,7 +138,7 @@ export interface MenubarMenuInstance extends MenuInstance {
   /** Pre-bound trigger helper wired to the parent menubar coordinator. */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: MenubarTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -155,70 +155,70 @@ export interface MenubarInstance extends UseMenubarResult {
   /** Menubar root container factory. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Menu root element factory. */
   Menu: <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenubarMenuProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Top-level menu trigger button factory. */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: MenubarTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Portal helper for the active menu dropdown. */
-  Portal: (props?: MenubarPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: MenubarPortalProps, children?: SeidrChild) => SeidrChild;
 
   /** Menu floating dropdown content factory. */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /** Selectable menu item element factory. */
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Checkbox toggle menu item factory. */
   CheckboxItem: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarCheckboxItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Radio group container factory. */
   RadioGroup: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarRadioGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Radio selection item factory. */
   RadioItem: <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenubarRadioItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Submenu container factory. */
   Sub: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarSubProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Submenu trigger element factory. */
   SubTrigger: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarSubTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Submenu floating dropdown content factory. */
   SubContent: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarSubContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /** Separator divider factory. */
@@ -229,37 +229,37 @@ export interface MenubarInstance extends UseMenubarResult {
   /** Group container factory. */
   Group: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Group label factory. */
   GroupLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenubarGroupLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Item label factory. */
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenubarItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Item description factory. */
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenubarItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Item indicator factory. */
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenubarItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /** Icon element factory. */
   Icon: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenubarIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Arrow element factory. */
@@ -274,7 +274,7 @@ export interface MenubarRootOptions<T extends keyof SeidrElementTagNameMap = "di
   as?: T;
   dataComponent?: string;
   instance?: UseMenubarResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type MenubarRootProps<T extends keyof SeidrElementTagNameMap = "div"> = MenubarRootOptions<T> &
   SeidrElementProps<T>;
@@ -285,7 +285,7 @@ export interface MenubarMenuOptions<T extends keyof SeidrElementTagNameMap = "di
   dataComponent?: string;
   instance?: UseMenubarResult;
   menuInstance?: MenubarMenuInstance;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type MenubarMenuProps<T extends keyof SeidrElementTagNameMap = "div"> = MenubarMenuOptions<T> &
   SeidrElementProps<T>;
@@ -294,7 +294,7 @@ export interface MenubarTriggerOptions<T extends keyof SeidrElementTagNameMap = 
   extends MenuTriggerOptions<T> {
   menubarInstance?: UseMenubarResult;
   menuValue?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type MenubarTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> = MenubarTriggerOptions<T> &
   SeidrElementProps<T>;
@@ -355,11 +355,11 @@ export interface MenubarMenuDescriptor {
   /** Unique identifier for the menu. */
   value: string;
   /** Trigger content or element. */
-  trigger: SeidrChild | SeidrChild[];
+  trigger: SeidrChild;
   /** Child menu items rendered inside the dropdown content. */
   items?: ReactiveValue<MenuItemDescriptor[]>;
   /** Optional custom child elements rendered inside the dropdown content. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   /** Whether this entire menu is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Custom element props forwarded to the menu container element. */
@@ -379,5 +379,5 @@ export interface MenubarProps<T extends keyof SeidrElementTagNameMap = "div"> ex
   /** Declarative list of menus in the menubar. */
   menus?: ReactiveValue<MenubarMenuDescriptor[]>;
   /** Direct children when composing manually. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

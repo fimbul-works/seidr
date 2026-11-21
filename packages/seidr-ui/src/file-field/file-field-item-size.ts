@@ -15,7 +15,7 @@ import { DEFAULT_FILE_FIELD_INTL, formatBytes } from "./util.js";
  */
 export function FileFieldItemSize<T extends keyof SeidrElementTagNameMap = "span">(
   props: FileFieldItemSizeProps<T> = {} as FileFieldItemSizeProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

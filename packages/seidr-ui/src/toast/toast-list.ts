@@ -20,7 +20,7 @@ import type { ToastConfig, ToastListProps } from "./types.js";
  */
 export function ToastList<T extends keyof SeidrElementTagNameMap = "ol">(
   props: ToastListProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ol" as T,

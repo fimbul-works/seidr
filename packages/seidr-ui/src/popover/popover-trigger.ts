@@ -16,7 +16,7 @@ import type { PopoverTriggerProps } from "./types.js";
  */
 export function PopoverTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: PopoverTriggerProps<T> = {} as PopoverTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

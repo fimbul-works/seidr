@@ -30,7 +30,7 @@ export type RadioGroupItemProps<T extends keyof SeidrElementTagNameMap = "div"> 
  */
 export function RadioGroupItem<T extends keyof SeidrElementTagNameMap = "div">(
   props: RadioGroupItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: item, onpointerdown, ...rest } = props;
 

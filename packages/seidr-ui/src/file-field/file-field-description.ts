@@ -13,7 +13,7 @@ import type { FileFieldDescriptionProps } from "./types.js";
  */
 export function FileFieldDescription<T extends keyof SeidrElementTagNameMap = "span">(
   props: FileFieldDescriptionProps<T> = {} as FileFieldDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

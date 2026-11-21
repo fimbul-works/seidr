@@ -13,7 +13,7 @@ import type { DialogDescriptionProps } from "./types.js";
  */
 export function DialogDescription<T extends keyof SeidrElementTagNameMap = "p">(
   props: DialogDescriptionProps<T> = {} as DialogDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "p" as T, instance: dialog, dataComponent = DATA_COMPONENT_DIALOG, ...rest } = props;
 

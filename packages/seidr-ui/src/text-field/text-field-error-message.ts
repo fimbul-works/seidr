@@ -11,7 +11,7 @@ import type { TextFieldErrorMessageProps } from "./types.js";
  */
 export function TextFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: TextFieldErrorMessageProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     instance: tf,

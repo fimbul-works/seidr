@@ -25,7 +25,7 @@ import type { PopoverContentProps } from "./types.js";
  */
 export function PopoverContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopoverContentProps<T> = {} as PopoverContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

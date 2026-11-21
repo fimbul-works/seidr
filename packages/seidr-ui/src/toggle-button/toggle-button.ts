@@ -10,7 +10,7 @@ export interface ToggleButtonRootState {
   state: UseToggleStateResult;
 }
 
-export type ToggleButtonRenderContent = (state: ToggleButtonRootState) => SeidrChild | SeidrChild[];
+export type ToggleButtonRenderContent = (state: ToggleButtonRootState) => SeidrChild;
 
 export interface ToggleButtonRootOptions<T extends keyof SeidrElementTagNameMap = "button"> extends ButtonOptions<T> {
   /** The controlled pressed state of the toggle button. */
@@ -37,15 +37,15 @@ export type ToggleButtonRootProps<T extends keyof SeidrElementTagNameMap = "butt
  * Based on the WAI-ARIA Button Pattern (aria-pressed).
  */
 export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
   props?: ToggleButtonRootProps<T> | null,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function ToggleButton<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ToggleButtonRootProps<T> | SeidrChild | SeidrChild[] | null,
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: ToggleButtonRootProps<T> | SeidrChild | null,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<ToggleButtonRootProps<T>>(propsOrChildren, children);
   const { pressed, defaultPressed, onChange, disabled, renderContent, onclick: userOnClick, ...rest } = props as any;

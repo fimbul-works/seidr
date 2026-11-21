@@ -31,7 +31,7 @@ export type AccordionContentProps<T extends keyof SeidrElementTagNameMap = "div"
  */
 export function AccordionContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: AccordionContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { instance, style, animation, ...rest } = props;
 

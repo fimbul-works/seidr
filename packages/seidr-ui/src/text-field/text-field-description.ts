@@ -8,7 +8,7 @@ import type { TextFieldDescriptionProps } from "./types.js";
  */
 export function TextFieldDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: TextFieldDescriptionProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: tf, dataComponent = DATA_COMPONENT_TEXT_FIELD, dataPart = DATA_PART_DESCRIPTION, ...rest } = props;
 

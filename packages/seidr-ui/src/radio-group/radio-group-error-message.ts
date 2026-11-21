@@ -33,7 +33,7 @@ export type RadioGroupErrorMessageProps<T extends keyof SeidrElementTagNameMap =
  */
 export function RadioGroupErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
   props: RadioGroupErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "span" as T, instance: rg, ...rest } = props;
 

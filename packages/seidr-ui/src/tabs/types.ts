@@ -145,31 +145,31 @@ export interface TabsInstance extends UseTabsResult {
   /** Pre-bound Tabs.Root container element. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TabsRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Tabs.List container element (role="tablist"). */
   List: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TabsListProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Tabs.Trigger button element (role="tab"). */
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<TabsTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Tabs.Content panel element (role="tabpanel"). */
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<TabsContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 
   /** Pre-bound Tabs.Indicator visual active indicator (role="presentation"). */
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TabsIndicatorProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -178,10 +178,10 @@ export interface TabsItemDescriptor {
   value: string;
 
   /** Content rendered inside the trigger button. */
-  trigger: SeidrChild | SeidrChild[];
+  trigger: SeidrChild;
 
   /** Content rendered inside the tab panel. */
-  content: SeidrChild | SeidrChild[];
+  content: SeidrChild;
 
   /** Whether this specific tab is disabled. */
   disabled?: boolean;
@@ -210,5 +210,5 @@ export interface TabsProps<TRoot extends keyof SeidrElementTagNameMap = "div"> e
   indicator?: boolean | Partial<TabsIndicatorProps<any>>;
 
   /** Children passed to the Root element (for compound composition). */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

@@ -24,19 +24,19 @@ export function createNumberField(options: UseNumberFieldOptions = {}): NumberFi
 
   return {
     ...instance,
-    Root: (props: NumberFieldRootProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Root: (props: NumberFieldRootProps<any> = {}, children?: SeidrChild) =>
       NumberFieldRoot({ instance, ...props }, children),
     Input: (props: NumberFieldInputProps<any> = {}) => NumberFieldInput({ instance, ...props }),
-    IncrementTrigger: (props: NumberFieldIncrementTriggerProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    IncrementTrigger: (props: NumberFieldIncrementTriggerProps<any> = {}, children?: SeidrChild) =>
       NumberFieldIncrementTrigger({ instance, ...props }, children),
-    DecrementTrigger: (props: NumberFieldDecrementTriggerProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    DecrementTrigger: (props: NumberFieldDecrementTriggerProps<any> = {}, children?: SeidrChild) =>
       NumberFieldDecrementTrigger({ instance, ...props }, children),
     HiddenInput: (props: NumberFieldHiddenInputProps = {}) => NumberFieldHiddenInput({ instance, ...props }),
-    Label: (props: NumberFieldLabelProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Label: (props: NumberFieldLabelProps<any> = {}, children?: SeidrChild) =>
       NumberFieldLabel({ instance, ...props }, children),
-    Description: (props: NumberFieldDescriptionProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Description: (props: NumberFieldDescriptionProps<any> = {}, children?: SeidrChild) =>
       NumberFieldDescription({ instance, ...props }, children),
-    ErrorMessage: (props: NumberFieldErrorMessageProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    ErrorMessage: (props: NumberFieldErrorMessageProps<any> = {}, children?: SeidrChild) =>
       NumberFieldErrorMessage({ instance, ...props }, children),
   };
 }

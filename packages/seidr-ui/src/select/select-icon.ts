@@ -13,7 +13,7 @@ import type { SelectIconProps } from "./types.js";
  */
 export function SelectIcon<T extends keyof SeidrElementTagNameMap = "span">(
   props: SelectIconProps<T> = {} as SelectIconProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance: select, dataComponent = DATA_COMPONENT_SELECT, ...rest } = props;
 

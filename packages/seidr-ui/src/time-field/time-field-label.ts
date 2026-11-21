@@ -13,7 +13,7 @@ import type { TimeFieldLabelProps } from "./types.js";
  */
 export function TimeFieldLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: TimeFieldLabelProps<T> = {} as TimeFieldLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "label" as T,

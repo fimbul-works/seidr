@@ -13,7 +13,7 @@ import type { HoverCardRootProps } from "./types.js";
  */
 export function HoverCardRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: HoverCardRootProps<T> = {} as HoverCardRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: hoverCard, dataComponent = DATA_COMPONENT_HOVER_CARD, ...rest } = props;
 

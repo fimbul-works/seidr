@@ -158,16 +158,16 @@ export interface RadioGroupItemDescriptor {
   value: string;
 
   /** The accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Whether this individual item is disabled. */
   disabled?: boolean;
 
   /** Optional custom indicator element. */
-  indicator?: SeidrChild | SeidrChild[];
+  indicator?: SeidrChild;
 
   /** Props passed to Item container. */
   itemProps?: RadioGroupItemProps;
@@ -194,90 +194,90 @@ export interface RadioGroupItemDescriptor {
 export interface RadioGroupItemInstance extends UseRadioGroupItemResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Input: (props?: RadioGroupItemInputProps) => HTMLInputElement;
   ItemInput: (props?: RadioGroupItemInputProps) => HTMLInputElement;
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemControl: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: RadioGroupItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: RadioGroupItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
 export interface RadioGroupInstance extends UseRadioGroupResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Label: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Item: (
     optionsOrProps: UseRadioGroupItemOptions & {
-      label?: SeidrChild | SeidrChild[];
-      description?: SeidrChild | SeidrChild[];
-      indicator?: SeidrChild | SeidrChild[];
+      label?: SeidrChild;
+      description?: SeidrChild;
+      indicator?: SeidrChild;
       [key: string]: any;
     },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => HTMLElement;
   createItem: (options: UseRadioGroupItemOptions) => RadioGroupItemInstance;
   ItemInput: (props?: RadioGroupItemInputProps) => HTMLInputElement;
   ItemControl: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RadioGroupItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: RadioGroupItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RadioGroupItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }

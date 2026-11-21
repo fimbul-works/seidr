@@ -216,37 +216,37 @@ export interface PaginationInstance extends UsePaginationResult {
   /** Root `<nav>` container element. */
   Root: <T extends keyof SeidrElementTagNameMap = "nav">(
     props?: PaginationRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** `<ul>` list container element. */
   List: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: PaginationListProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Page item element: `<li><button ...>page</button></li>`. */
   Item: <T extends keyof SeidrElementTagNameMap = "button">(
     props: PaginationItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => HTMLLIElement;
 
   /** Ellipsis element: `<li><span ...>…</span></li>`. */
   Ellipsis: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: PaginationEllipsisProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => HTMLLIElement;
 
   /** Previous page button: `<li><button ...>Previous</button></li>`. */
   Previous: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: PaginationPreviousProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => HTMLLIElement;
 
   /** Next page button: `<li><button ...>Next</button></li>`. */
   Next: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: PaginationNextProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => HTMLLIElement;
 
   /** Automatically renders the calculated page items and ellipses. */
@@ -264,13 +264,13 @@ export interface PaginationProps<T extends keyof SeidrElementTagNameMap = "nav">
   showControls?: boolean;
 
   /** Custom previous button label or element. @default "Previous" */
-  previousLabel?: SeidrChild | SeidrChild[];
+  previousLabel?: SeidrChild;
 
   /** Custom next button label or element. @default "Next" */
-  nextLabel?: SeidrChild | SeidrChild[];
+  nextLabel?: SeidrChild;
 
   /** Custom ellipsis content. @default "…" */
-  ellipsisContent?: SeidrChild | SeidrChild[];
+  ellipsisContent?: SeidrChild;
 
   /** Props passed to Pagination.Root. */
   rootProps?: Record<string, any>;
@@ -291,5 +291,5 @@ export interface PaginationProps<T extends keyof SeidrElementTagNameMap = "nav">
   nextProps?: Record<string, any>;
 
   /** Custom children to render inside root. If provided, replaces default composition. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

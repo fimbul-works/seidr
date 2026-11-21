@@ -24,7 +24,7 @@ import type { DialogContentProps } from "./types.js";
  */
 export function DialogContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: DialogContentProps<T> = {} as DialogContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

@@ -13,7 +13,7 @@ import type { SliderErrorMessageProps } from "./types.js";
  */
 export function SliderErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: SliderErrorMessageProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: slider, ...rest } = props;
 

@@ -371,71 +371,71 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
 
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: ComboboxLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Input: <T extends keyof SeidrElementTagNameMap = "input">(props?: ComboboxInputProps<T>) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: ComboboxTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Icon: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: ComboboxIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
-  Portal: (props?: ComboboxPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: ComboboxPortalProps, children?: SeidrChild) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Listbox: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: ComboboxListboxProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props: ComboboxItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Section: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: ComboboxSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   SectionLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: ComboboxSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   HiddenSelect: (props?: ComboboxHiddenSelectProps) => SeidrElementTagNameMap["select"];
@@ -444,12 +444,12 @@ export interface ComboboxInstance<Option = any> extends UseComboboxResult<Option
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ComboboxErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   List: (items: ReactiveValue<ComboboxNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;

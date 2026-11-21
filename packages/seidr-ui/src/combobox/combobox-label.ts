@@ -13,7 +13,7 @@ import type { ComboboxLabelProps } from "./types.js";
  */
 export function ComboboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: ComboboxLabelProps<T> = {} as ComboboxLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "label" as T,

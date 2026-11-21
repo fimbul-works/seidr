@@ -28,21 +28,21 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
   const createItem = (itemOptions: UseRadioGroupItemOptions): RadioGroupItemInstance => {
     const itemInstance = useRadioGroupItem(instance, itemOptions);
 
-    const Root = (props: RadioGroupItemProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Root = (props: RadioGroupItemProps<any> = {}, children?: SeidrChild) =>
       RadioGroupItem({ instance: itemInstance, ...props }, children);
 
     const Input = (props: RadioGroupItemInputProps = {}) => RadioGroupItemInput({ instance: itemInstance, ...props });
 
-    const Control = (props: RadioGroupItemControlProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Control = (props: RadioGroupItemControlProps<any> = {}, children?: SeidrChild) =>
       RadioGroupItemControl({ instance: itemInstance, ...props }, children);
 
-    const Indicator = (props: RadioGroupItemIndicatorProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Indicator = (props: RadioGroupItemIndicatorProps<any> = {}, children?: SeidrChild) =>
       RadioGroupItemIndicator({ instance: itemInstance, ...props }, children);
 
-    const Label = (props: RadioGroupItemLabelProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Label = (props: RadioGroupItemLabelProps<any> = {}, children?: SeidrChild) =>
       RadioGroupItemLabel({ instance: itemInstance, ...props }, children);
 
-    const Description = (props: RadioGroupItemDescriptionProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Description = (props: RadioGroupItemDescriptionProps<any> = {}, children?: SeidrChild) =>
       RadioGroupItemDescription({ instance: itemInstance, ...props }, children);
 
     return {
@@ -70,7 +70,7 @@ export function createRadioGroup(options: UseRadioGroupOptions = {}): RadioGroup
     Description: (props = {}, children) => RadioGroupDescription({ instance, ...instance.dataset, ...props }, children),
     ErrorMessage: (props = {}, children) =>
       RadioGroupErrorMessage({ instance, ...instance.dataset, ...props }, children),
-    Item: (itemOptionsOrProps, children?: SeidrChild | SeidrChild[]) => {
+    Item: (itemOptionsOrProps, children?: SeidrChild) => {
       const {
         value,
         disabled,

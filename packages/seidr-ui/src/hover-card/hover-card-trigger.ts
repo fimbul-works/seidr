@@ -17,7 +17,7 @@ import type { HoverCardTriggerProps } from "./types.js";
  */
 export function HoverCardTrigger<T extends keyof SeidrElementTagNameMap = "a">(
   props: HoverCardTriggerProps<T> = {} as HoverCardTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "a" as T,

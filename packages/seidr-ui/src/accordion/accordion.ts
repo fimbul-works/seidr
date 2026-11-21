@@ -56,7 +56,7 @@ export const Accordion = createComponent((props: AccordionProps = {}) => {
     id,
   });
 
-  const itemElements: SeidrChild | SeidrChild[] = isValue<AccordionItemDescriptor[]>(items)
+  const itemElements: SeidrChild = isValue<AccordionItemDescriptor[]>(items)
     ? List(
         items,
         (item) => item.value,

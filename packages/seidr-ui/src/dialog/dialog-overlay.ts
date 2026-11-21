@@ -17,7 +17,7 @@ import type { DialogOverlayProps } from "./types.js";
  */
 export function DialogOverlay<T extends keyof SeidrElementTagNameMap = "div">(
   props: DialogOverlayProps<T> = {} as DialogOverlayProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

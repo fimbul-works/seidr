@@ -16,7 +16,7 @@ import type { ListboxItemIndicatorProps } from "./types.js";
  */
 export function ListboxItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: ListboxItemIndicatorProps<T> = {} as ListboxItemIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

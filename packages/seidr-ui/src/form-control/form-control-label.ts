@@ -36,7 +36,7 @@ export type FormControlLabelProps<T extends keyof SeidrElementTagNameMap = "labe
  */
 export function FormControlLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: FormControlLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "label" as T, instance: form, id: customId, htmlFor, ...rest } = props;
 

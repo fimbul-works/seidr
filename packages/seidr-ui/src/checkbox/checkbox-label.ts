@@ -14,7 +14,7 @@ export type CheckboxLabelProps<T extends keyof SeidrElementTagNameMap = "label">
  */
 export function CheckboxLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: CheckboxLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: cb, ...rest } = props;
 

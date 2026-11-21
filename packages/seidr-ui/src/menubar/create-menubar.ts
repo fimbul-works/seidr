@@ -114,7 +114,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
     const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
       props?: MenubarTriggerProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): SeidrElementTagNameMap[T] =>
       MenubarTrigger<T>(
         {
@@ -129,7 +129,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
     const Content = <T extends keyof SeidrElementTagNameMap = "div">(
       props?: MenubarContentProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
       const { onkeydown: userOnKeyDown, ...restProps } = props ?? {};
 
@@ -182,13 +182,13 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     MenubarRoot<T>({ dataComponent, instance: menubar, ...props } as MenubarRootProps<T>, children);
 
   const Menu = <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenubarMenuProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     let menuInst = createdMenus.get(props.value);
     if (!menuInst) {
@@ -208,7 +208,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props?: MenubarTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = props?.menuValue
       ? (createdMenus.get(props.menuValue) ?? createMenu(props.menuValue))
@@ -221,7 +221,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
     return targetMenu.Trigger<T>(props, children);
   };
 
-  const Portal = (props?: MenubarPortalProps, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const Portal = (props?: MenubarPortalProps, children?: SeidrChild): SeidrChild => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
       throw new SeidrError("MenubarPortal requires an active MenubarMenu context");
@@ -231,7 +231,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenubarContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -242,7 +242,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Item = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -253,7 +253,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const CheckboxItem = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuCheckboxItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -264,7 +264,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const RadioGroup = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRadioGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -275,7 +275,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const RadioItem = <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenuRadioItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -286,7 +286,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Sub = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -297,7 +297,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const SubTrigger = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -308,7 +308,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const SubContent = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -329,14 +329,14 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Group = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuGroup<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>, children);
   };
 
   const GroupLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuGroupLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuGroupLabel<T>(
       {
@@ -350,7 +350,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const ItemLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuItemLabel<T>(
       {
@@ -364,7 +364,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuItemDescription<T>(
       {
@@ -378,7 +378,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const ItemIndicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     return MenuItemIndicator<T>(
       {
@@ -392,7 +392,7 @@ export function createMenubar(options: UseMenubarOptions = {}): MenubarInstance 
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuIcon<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>, children);
   };

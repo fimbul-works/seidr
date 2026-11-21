@@ -13,7 +13,7 @@ import type { RatingLabelProps } from "./types.js";
  */
 export function RatingLabel<T extends keyof SeidrElementTagNameMap = "span">(
   props: RatingLabelProps<T> = {} as RatingLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

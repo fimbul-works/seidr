@@ -269,35 +269,35 @@ export type ListboxSectionLabelProps<T extends keyof SeidrElementTagNameMap = "s
 export interface ListboxBoundItemHelpers {
   Root: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: Omit<ListboxItemProps<T>, "instance" | "value">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: Omit<ListboxItemProps<T>, "instance" | "value">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Label: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemIndicatorProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemIndicatorProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
@@ -316,37 +316,37 @@ export interface ListboxInstance extends UseListboxResult {
 
   Root: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: Omit<ListboxRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props: Omit<ListboxItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemLabelProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemDescriptionProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ListboxItemIndicatorProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Section: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: ListboxSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   SectionLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: ListboxSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   List: (items: ReactiveValue<ListboxNode[]>, options?: ListboxListRenderOptions) => SeidrChild;

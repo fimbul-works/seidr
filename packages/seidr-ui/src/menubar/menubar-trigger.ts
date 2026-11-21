@@ -16,7 +16,7 @@ import type { MenubarTriggerProps } from "./types.js";
  */
 export function MenubarTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: MenubarTriggerProps<T> = {} as MenubarTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

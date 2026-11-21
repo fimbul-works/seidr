@@ -15,7 +15,7 @@ import type { ProgressFillProps } from "./types.js";
  */
 export function ProgressFill<T extends keyof SeidrElementTagNameMap = "div">(
   props: ProgressFillProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: progress, style: userStyle, dataComponent, ...rest } = props;
 

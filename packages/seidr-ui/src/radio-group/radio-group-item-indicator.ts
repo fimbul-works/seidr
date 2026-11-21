@@ -41,7 +41,7 @@ export type RadioGroupItemIndicatorProps<T extends keyof SeidrElementTagNameMap 
  */
 export function RadioGroupItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: RadioGroupItemIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: item, forceMount = false, id, ...rest } = props;
 

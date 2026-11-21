@@ -18,7 +18,7 @@ import type { MenuSubTriggerProps } from "./types.js";
  */
 export function MenuSubTrigger<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuSubTriggerProps<T> = {} as MenuSubTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

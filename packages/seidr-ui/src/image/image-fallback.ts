@@ -38,7 +38,7 @@ export type ImageFallbackProps<T extends keyof SeidrElementTagNameMap = "span"> 
  */
 export function ImageFallback<T extends keyof SeidrElementTagNameMap = "span">(
   props: ImageFallbackProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "span" as T, instance, canRender, ...rest } = props;
 

@@ -24,7 +24,7 @@ export type AccordionItemProps<T extends keyof SeidrElementTagNameMap = "div"> =
  */
 export function AccordionItem<T extends keyof SeidrElementTagNameMap = "div">(
   props: AccordionItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance, ...rest } = props;
 

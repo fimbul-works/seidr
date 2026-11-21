@@ -24,7 +24,7 @@ export type NumberFieldDescriptionProps<T extends keyof SeidrElementTagNameMap =
  */
 export function NumberFieldDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: NumberFieldDescriptionProps<T> = {} as NumberFieldDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     instance: nf,

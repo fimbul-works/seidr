@@ -7,7 +7,7 @@ import type { PopperProps, PopperRootProps } from "./types.js";
  */
 export function PopperFactory<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopperProps<T> = {} as PopperProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

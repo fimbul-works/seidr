@@ -14,7 +14,7 @@ import type { FileFieldTriggerProps } from "./types.js";
  */
 export function FileFieldTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: FileFieldTriggerProps<T> = {} as FileFieldTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

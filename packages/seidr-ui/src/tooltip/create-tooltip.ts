@@ -31,20 +31,20 @@ export function createTooltip(options: UseTooltipOptions = {}): TooltipInstance 
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<TooltipRootProps<T>, "instance"> = {} as Omit<TooltipRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TooltipRoot<T>({ instance, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as TooltipRootProps<T>, children);
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<TooltipTriggerProps<T>, "instance"> = {} as Omit<TooltipTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TooltipTrigger<T>(
       { instance, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as TooltipTriggerProps<T>,
       children,
     );
 
-  const PortalHelper = (props: TooltipPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const PortalHelper = (props: TooltipPortalProps = {}, children?: SeidrChild): SeidrChild => {
     const target = props.target ?? instance.portalTarget ?? getDocument().body;
     instance.portalTarget = undefined;
 
@@ -59,7 +59,7 @@ export function createTooltip(options: UseTooltipOptions = {}): TooltipInstance 
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<TooltipContentProps<T>, "instance"> = {} as Omit<TooltipContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     TooltipContent<T>(
       { instance, dataComponent: DATA_COMPONENT_TOOLTIP, ...props } as TooltipContentProps<T>,

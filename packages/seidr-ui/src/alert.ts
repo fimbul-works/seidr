@@ -29,16 +29,14 @@ export type AlertProps<T extends keyof SeidrElementTagNameMap = "div"> = AlertOp
  * Alert displays a brief, important message in a way that attracts the user's attention
  * without interrupting the user's task.
  */
-export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
+export function Alert<T extends keyof SeidrElementTagNameMap = "div">(children?: SeidrChild): SeidrElementTagNameMap[T];
 export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
   props: AlertProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Alert<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: AlertProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: AlertProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<AlertProps<T>>(propsOrChildren, children);
 

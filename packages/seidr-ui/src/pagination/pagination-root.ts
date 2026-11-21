@@ -13,7 +13,7 @@ import type { PaginationRootProps } from "./types.js";
  */
 export function PaginationRoot<T extends keyof SeidrElementTagNameMap = "nav">(
   props: PaginationRootProps<T> = {} as PaginationRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "nav" as T,

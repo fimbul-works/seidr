@@ -29,7 +29,7 @@ export type FormControlRootProps<T extends keyof SeidrElementTagNameMap = "div">
  */
 export function FormControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: FormControlRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

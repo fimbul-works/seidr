@@ -17,7 +17,7 @@ import type { TabsIndicatorProps } from "./types.js";
  */
 export function TabsIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: TabsIndicatorProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: tabs, style: userStyle, ...rest } = props;
 

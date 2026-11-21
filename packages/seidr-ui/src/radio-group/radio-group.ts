@@ -11,13 +11,13 @@ export interface RadioGroupProps extends UseRadioGroupOptions {
   className?: ReactiveValue<string>;
 
   /** Accessible group label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional group description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Optional group error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Declarative list of items to render, supports static arrays or reactive observable arrays. */
   items?: ReactiveValue<RadioGroupItemDescriptor[]>;
@@ -40,7 +40,7 @@ export interface RadioGroupProps extends UseRadioGroupOptions {
  * Creates an accessible radio group with full WAI-ARIA and form-control integration in one call.
  * Supports static item arrays, reactive observable arrays (dynamic radio groups), or custom children.
  */
-export const RadioGroup = createComponent((props: RadioGroupProps = {}, children?: SeidrChild | SeidrChild[]) => {
+export const RadioGroup = createComponent((props: RadioGroupProps = {}, children?: SeidrChild) => {
   const {
     className,
     label,
@@ -56,7 +56,7 @@ export const RadioGroup = createComponent((props: RadioGroupProps = {}, children
 
   const rg = createRadioGroup(radioGroupOptions);
 
-  const itemElements: SeidrChild | SeidrChild[] =
+  const itemElements: SeidrChild =
     children !== undefined
       ? children
       : isValue<RadioGroupItemDescriptor[]>(items)

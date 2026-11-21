@@ -27,17 +27,16 @@ export function createPagination(options: UsePaginationOptions = {}): Pagination
 
   return {
     ...instance,
-    Root: (props: PaginationRootProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Root: (props: PaginationRootProps<any> = {}, children?: SeidrChild) =>
       PaginationRoot({ instance, ...props }, children),
-    List: (props: PaginationListProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    List: (props: PaginationListProps<any> = {}, children?: SeidrChild) =>
       PaginationList({ instance, ...props }, children),
-    Item: (props: PaginationItemProps<any>, children?: SeidrChild | SeidrChild[]) =>
-      PaginationItem({ instance, ...props }, children),
-    Ellipsis: (props: PaginationEllipsisProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Item: (props: PaginationItemProps<any>, children?: SeidrChild) => PaginationItem({ instance, ...props }, children),
+    Ellipsis: (props: PaginationEllipsisProps<any> = {}, children?: SeidrChild) =>
       PaginationEllipsis({ instance, ...props }, children),
-    Previous: (props: PaginationPreviousProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Previous: (props: PaginationPreviousProps<any> = {}, children?: SeidrChild) =>
       PaginationPrevious({ instance, ...props }, children),
-    Next: (props: PaginationNextProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    Next: (props: PaginationNextProps<any> = {}, children?: SeidrChild) =>
       PaginationNext({ instance, ...props }, children),
     Items: (props: PaginationItemsProps = {}) => PaginationItems({ instance, ...props }),
   };

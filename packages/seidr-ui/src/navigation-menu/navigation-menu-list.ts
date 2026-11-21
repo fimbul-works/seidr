@@ -15,7 +15,7 @@ import type { NavigationMenuListProps } from "./types.js";
  */
 export function NavigationMenuList<T extends keyof SeidrElementTagNameMap = "ul">(
   props: NavigationMenuListProps<T> = {} as NavigationMenuListProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ul" as T,

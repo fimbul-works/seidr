@@ -24,7 +24,7 @@ export type NumberFieldLabelProps<T extends keyof SeidrElementTagNameMap = "labe
  */
 export function NumberFieldLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: NumberFieldLabelProps<T> = {} as NumberFieldLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: nf, dataComponent = DATA_COMPONENT_NUMBER_FIELD, dataPart = DATA_PART_LABEL, ...rest } = props;
 

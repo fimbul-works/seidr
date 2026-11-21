@@ -13,7 +13,7 @@ import type { ProgressLabelProps } from "./types.js";
  */
 export function ProgressLabel<T extends keyof SeidrElementTagNameMap = "span">(
   props: ProgressLabelProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance: progress, id: customId, dataComponent, ...rest } = props;
 

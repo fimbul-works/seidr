@@ -32,31 +32,31 @@ export function createTimeField(options: UseTimeFieldOptions = {}): TimeFieldIns
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: TimeFieldRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldRoot<T>({ instance: timeField, ...props } as TimeFieldRootProps<T>, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "label">(
     props?: TimeFieldLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldLabel<T>({ instance: timeField, ...props } as TimeFieldLabelProps<T>, children);
 
   const Input = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: TimeFieldInputProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldInput<T>({ instance: timeField, ...props } as TimeFieldInputProps<T>, children);
 
   const Segment = <T extends keyof SeidrElementTagNameMap = "div">(
     props: TimeFieldSegmentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldSegment<T>({ instance: timeField, ...props } as TimeFieldSegmentProps<T>, children);
 
   const Separator = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: TimeFieldSeparatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldSeparator<T>({ instance: timeField, ...props } as TimeFieldSeparatorProps<T>, children);
 
@@ -68,19 +68,19 @@ export function createTimeField(options: UseTimeFieldOptions = {}): TimeFieldIns
 
   const ValueDescription = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: TimeFieldValueDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldValueDescription<T>({ instance: timeField, ...props } as TimeFieldValueDescriptionProps<T>, children);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: TimeFieldDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldDescription<T>({ instance: timeField, ...props } as TimeFieldDescriptionProps<T>, children);
 
   const ErrorMessage = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: TimeFieldErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     TimeFieldErrorMessage<T>({ instance: timeField, ...props } as TimeFieldErrorMessageProps<T>, children);
 

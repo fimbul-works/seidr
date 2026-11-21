@@ -92,27 +92,27 @@ export interface UseProgressResult {
 export type ProgressInstance = UseProgressResult & {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ProgressRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Header: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ProgressHeaderProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Track: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ProgressTrackProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Fill: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ProgressFillProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Label: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<ProgressLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ValueLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<ProgressValueLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 };
 
@@ -162,13 +162,13 @@ export interface ProgressProps extends UseProgressOptions {
   as?: keyof SeidrElementTagNameMap;
 
   /** Accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /**
    * Whether to display the value label, or custom value label children.
    * When true, displays default percentage text (e.g. "45%").
    */
-  valueLabel?: boolean | SeidrChild | SeidrChild[];
+  valueLabel?: boolean | SeidrChild;
 
   /** Props passed directly to Progress.Root. */
   rootProps?: Omit<ProgressRootProps<"div">, "instance">;
@@ -189,5 +189,5 @@ export interface ProgressProps extends UseProgressOptions {
   valueLabelProps?: Omit<ProgressValueLabelProps<"span">, "instance">;
 
   /** Additional children rendered inside Progress.Root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

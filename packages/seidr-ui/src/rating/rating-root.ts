@@ -15,7 +15,7 @@ import type { RatingRootProps } from "./types.js";
  */
 export function RatingRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: RatingRootProps<T> = {} as RatingRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

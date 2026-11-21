@@ -13,7 +13,7 @@ import type { TooltipRootProps } from "./types.js";
  */
 export function TooltipRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: TooltipRootProps<T> = {} as TooltipRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: tooltip, dataComponent = DATA_COMPONENT_TOOLTIP, ...rest } = props;
 

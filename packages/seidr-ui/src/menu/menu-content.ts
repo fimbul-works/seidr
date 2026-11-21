@@ -20,7 +20,7 @@ import type { MenuContentProps } from "./types.js";
  */
 export function MenuContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuContentProps<T> = {} as MenuContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

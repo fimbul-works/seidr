@@ -5,6 +5,7 @@ import {
   type SeidrElementProps,
   type SeidrElementTagNameMap,
   SeidrError,
+  unwrapValue,
 } from "@fimbul-works/seidr";
 import { DATA_COMPONENT_CHECKBOX, DATA_PART_CONTROL } from "../constants.js";
 import type { UseCheckboxResult } from "./types.js";
@@ -31,7 +32,7 @@ export type CheckboxControlProps<T extends keyof SeidrElementTagNameMap = "div">
  */
 export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxControlProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: cb, id, onclick, onkeydown, ...rest } = props;
 
@@ -40,7 +41,7 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   }
 
   const handleClick = (e: MouseEvent) => {
-    (onclick as any)?.(e);
+    unwrapValue(onclick)?.(e);
     if (e.defaultPrevented) return;
 
     cb.toggle();
@@ -50,7 +51,7 @@ export function CheckboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    (onkeydown as any)?.(e);
+    unwrapValue(onkeydown)?.(e);
     if (e.defaultPrevented) return;
 
     if (e.key === " ") {

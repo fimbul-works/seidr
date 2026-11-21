@@ -27,13 +27,13 @@ export interface MenuItemData {
   /** Unique identifier for the menu item. */
   value: string;
   /** Display label or child content. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Optional secondary description text or elements. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** Optional icon or leading element. */
-  icon?: SeidrChild | SeidrChild[];
+  icon?: SeidrChild;
   /** Optional trailing content or child elements. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   /** Whether this individual item is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Optional text representation for typeahead searches. */
@@ -51,9 +51,9 @@ export interface MenuCheckboxItemData {
   /** Unique identifier for the checkbox item. */
   value: string;
   /** Display label or child content. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Optional secondary description. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** Controlled or uncontrolled checked state. */
   checked?: ReactiveValue<boolean | "mixed">;
   /** Default checked state. */
@@ -65,9 +65,9 @@ export interface MenuCheckboxItemData {
   /** Whether the menu closes upon toggling this item. Defaults to false. */
   closeOnSelect?: boolean;
   /** Custom indicator element (e.g. checkmark). */
-  indicator?: SeidrChild | SeidrChild[];
+  indicator?: SeidrChild;
   /** Optional trailing content or child elements. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   /** Callback fired when the item is activated. */
   onSelect?: () => void;
   /** Custom element props forwarded to the item element. */
@@ -78,15 +78,15 @@ export interface MenuRadioItemDescriptor {
   /** Unique string value for this radio option. */
   value: string;
   /** Display label or child content. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Optional secondary description. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** Whether this option is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Custom indicator element (e.g. dot or checkmark). */
-  indicator?: SeidrChild | SeidrChild[];
+  indicator?: SeidrChild;
   /** Optional trailing content or child elements. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   /** Custom element props forwarded to the radio item element. */
   props?: Record<string, any>;
 }
@@ -102,7 +102,7 @@ export interface MenuRadioGroupData {
   /** Whether the entire radio group is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Optional accessible group label. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Child radio items. */
   items: MenuRadioItemDescriptor[];
 }
@@ -114,7 +114,7 @@ export interface MenuSubMenuData {
   /** Unique identifier for the submenu. */
   value: string;
   /** Display label or trigger content. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Whether this submenu trigger is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Child menu items rendered inside the submenu content. */
@@ -128,7 +128,7 @@ export interface MenuSeparatorData {
 export interface MenuGroupData {
   type: "group";
   /** Optional accessible group label. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Child menu items inside this group. */
   items: MenuLeafDescriptor[];
 }
@@ -248,11 +248,11 @@ export interface UseMenuRadioGroupResult {
 export interface MenuRadioGroupInstance extends UseMenuRadioGroupResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRadioGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenuRadioItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -311,7 +311,7 @@ export interface MenuItemOptions<T extends keyof SeidrElementTagNameMap = "div">
   textValue?: string;
   closeOnSelect?: boolean;
   onSelect?: () => void;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   instance?: UseMenuResult;
 }
 export type MenuItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuItemOptions<T> & SeidrElementProps<T>;
@@ -326,7 +326,7 @@ export interface MenuCheckboxItemOptions<T extends keyof SeidrElementTagNameMap 
   disabled?: boolean | ObservableValue<boolean>;
   closeOnSelect?: boolean;
   onSelect?: () => void;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   instance?: UseMenuResult;
 }
 export type MenuCheckboxItemProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuCheckboxItemOptions<T> &
@@ -349,7 +349,7 @@ export interface MenuRadioItemOptions<T extends keyof SeidrElementTagNameMap = "
   disabled?: boolean | ObservableValue<boolean>;
   closeOnSelect?: boolean;
   onSelect?: () => void;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   instance?: UseMenuResult;
   radioGroupInstance?: UseMenuRadioGroupResult;
 }
@@ -370,7 +370,7 @@ export interface MenuSubTriggerOptions<T extends keyof SeidrElementTagNameMap = 
   value?: string;
   disabled?: boolean | ObservableValue<boolean>;
   textValue?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   instance?: UseMenuResult;
   subInstance?: UseMenuResult;
 }
@@ -467,73 +467,73 @@ export interface MenuListRenderOptions {
 export interface MenuInstance extends UseMenuResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: MenuTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
-  Portal: (props?: MenuPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: MenuPortalProps, children?: SeidrChild) => SeidrChild;
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   CheckboxItem: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuCheckboxItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   RadioGroup: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRadioGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   RadioItem: <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenuRadioItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   createRadioGroup: (options?: UseMenuRadioGroupOptions) => MenuRadioGroupInstance;
   createSub: (options?: Omit<UseMenuOptions, "parentMenu">) => MenuInstance;
   Sub: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   SubTrigger: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   SubContent: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Separator: <T extends keyof SeidrElementTagNameMap = "hr">(
     props?: MenuSeparatorProps<T>,
   ) => SeidrElementTagNameMap[T];
   Group: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   GroupLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuGroupLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Icon: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Arrow: <T extends keyof SeidrElementTagNameMap = "div">(props?: MenuArrowProps<T>) => SeidrElementTagNameMap[T];
   List: (items: ReactiveValue<MenuItemDescriptor[]>, options?: MenuListRenderOptions) => SeidrChild;
@@ -543,7 +543,7 @@ export interface MenuOptions<T extends keyof SeidrElementTagNameMap = "div"> ext
   /** Polymorphic tag name for the root element. Defaults to "div". */
   as?: T;
   /** Trigger content or element. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Declarative array or reactive observable of menu item descriptors. */
   items?: ReactiveValue<MenuItemDescriptor[]>;
   /** Props passed to Menu.Root. */
@@ -553,7 +553,7 @@ export interface MenuOptions<T extends keyof SeidrElementTagNameMap = "div"> ext
   /** Props passed to Menu.Content. */
   contentProps?: MenuContentOptions<"div"> & SeidrElementProps<"div">;
   /** Children elements rendered directly inside Menu.Content or Root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 
 export type MenuProps<T extends keyof SeidrElementTagNameMap = "div"> = MenuOptions<T>;

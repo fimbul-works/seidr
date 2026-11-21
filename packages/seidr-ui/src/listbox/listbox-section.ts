@@ -7,7 +7,7 @@ import type { ListboxSectionProps } from "./types.js";
  */
 export function ListboxSection<T extends keyof SeidrElementTagNameMap = "li">(
   props: ListboxSectionProps<T> = {} as ListboxSectionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "li" as T, role = "presentation", dataComponent = DATA_COMPONENT_LISTBOX, ...rest } = props;
 

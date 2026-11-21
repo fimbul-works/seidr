@@ -13,7 +13,7 @@ import type { MenuGroupProps } from "./types.js";
  */
 export function MenuGroup<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuGroupProps<T> = {} as MenuGroupProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: menu, dataComponent = DATA_COMPONENT_MENU, ...rest } = props;
 

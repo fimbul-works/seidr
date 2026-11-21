@@ -29,7 +29,7 @@ export type NumberFieldRootProps<T extends keyof SeidrElementTagNameMap = "div">
  */
 export function NumberFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: NumberFieldRootProps<T> = {} as NumberFieldRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: nf, id, ...rest } = props;
 

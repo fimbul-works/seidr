@@ -15,7 +15,7 @@ export interface ToggleGroupItemData {
   /** Unique string value identifying this item. */
   value: string;
   /** Display label or child content. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Whether this individual item is disabled. */
   disabled?: boolean | ObservableValue<boolean>;
   /** Optional custom props forwarded to the item element. */
@@ -93,12 +93,12 @@ export type ToggleGroupInstance = UseToggleGroupResult & {
   /** Pre-bound ToggleGroup.Root element (role="group"). */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ToggleGroupRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   /** Pre-bound ToggleGroup.Item toggle button element. */
   Item: <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<ToggleGroupItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   /** Pre-bound reactive keyed list renderer for dynamic items. */
   List: (items: ReactiveValue<ToggleGroupItemData[]>, options?: ToggleGroupListRenderOptions) => SeidrChild;
@@ -132,5 +132,5 @@ export type ToggleGroupProps<T extends keyof SeidrElementTagNameMap = "button"> 
   /** Props passed directly to ToggleGroup.Root. */
   rootProps?: Omit<ToggleGroupRootProps<T>, "instance">;
   /** Children elements rendered inside ToggleGroup.Root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 } & ReactiveARIAMixin;

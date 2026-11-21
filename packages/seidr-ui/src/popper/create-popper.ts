@@ -21,17 +21,17 @@ export function createPopper(options: UsePopperOptions = {}): PopperInstance {
     ...instance,
     Root: <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<PopperRootProps<T>, "instance"> = {} as Omit<PopperRootProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => PopperRoot({ instance, ...props } as PopperRootProps<T>, children),
 
     Positioner: <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<PopperPositionerProps<T>, "instance"> = {} as Omit<PopperPositionerProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => PopperPositioner({ instance, ...props } as PopperPositionerProps<T>, children),
 
     Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<PopperArrowProps<T>, "instance"> = {} as Omit<PopperArrowProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => PopperArrow({ instance, ...props } as PopperArrowProps<T>, children),
   };
 }

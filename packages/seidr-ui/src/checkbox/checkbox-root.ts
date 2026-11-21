@@ -29,7 +29,7 @@ export type CheckboxRootProps<T extends keyof SeidrElementTagNameMap = "div"> = 
  */
 export function CheckboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

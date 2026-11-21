@@ -7,7 +7,7 @@ import type { TooltipProps, TooltipRootProps } from "./types.js";
  */
 export function TooltipFactory<T extends keyof SeidrElementTagNameMap = "div">(
   props: TooltipProps<T> = {} as TooltipProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

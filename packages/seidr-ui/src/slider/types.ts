@@ -227,25 +227,25 @@ export interface SliderInstance extends UseSliderResult {
   /** Pre-bound Slider.Root container element (role="group"). */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.Track element. */
   Track: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderTrackProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.Fill range/progress fill element. */
   Fill: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderFillProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.Thumb draggable handle element (role="slider"). */
   Thumb: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<SliderThumbProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.Input hidden range input for HTML form submission. */
@@ -254,25 +254,25 @@ export interface SliderInstance extends UseSliderResult {
   /** Pre-bound Slider.Label label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: Omit<SliderLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.ValueLabel text element showing current value. */
   ValueLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderValueLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Slider.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SliderErrorMessageProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -281,16 +281,16 @@ export interface SliderProps<TRoot extends keyof SeidrElementTagNameMap = "div">
   as?: TRoot;
 
   /** Accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Whether to render the current value label, or custom value label content. */
-  valueLabel?: boolean | SeidrChild | SeidrChild[];
+  valueLabel?: boolean | SeidrChild;
 
   /** Optional description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Optional error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Number of thumbs to render (default 1, or matching defaultValue/value array length). */
   thumbs?: number;
@@ -311,5 +311,5 @@ export interface SliderProps<TRoot extends keyof SeidrElementTagNameMap = "div">
   inputProps?: Partial<SliderInputProps>;
 
   /** Custom children for composite layout sculpting. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

@@ -31,7 +31,7 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<HoverCardRootProps<T>, "instance"> = {} as Omit<HoverCardRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     HoverCardRoot<T>(
       { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardRootProps<T>,
@@ -40,14 +40,14 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "a">(
     props: Omit<HoverCardTriggerProps<T>, "instance"> = {} as Omit<HoverCardTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     HoverCardTrigger<T>(
       { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardTriggerProps<T>,
       children,
     );
 
-  const PortalHelper = (props: HoverCardPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const PortalHelper = (props: HoverCardPortalProps = {}, children?: SeidrChild): SeidrChild => {
     const target = props.target ?? instance.portalTarget ?? getDocument().body;
     instance.portalTarget = undefined;
     const renderPortal = () => Portal(target, () => children ?? null, "HoverCardPortal");
@@ -59,7 +59,7 @@ export function createHoverCard(options: UseHoverCardOptions = {}): HoverCardIns
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<HoverCardContentProps<T>, "instance"> = {} as Omit<HoverCardContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     HoverCardContent<T>(
       { instance, dataComponent: DATA_COMPONENT_HOVER_CARD, ...props } as HoverCardContentProps<T>,

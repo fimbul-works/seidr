@@ -13,7 +13,7 @@ import type { PaginationItemProps } from "./types.js";
  */
 export function PaginationItem<T extends keyof SeidrElementTagNameMap = "button">(
   props: PaginationItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): HTMLLIElement {
   const {
     as = "button" as T,

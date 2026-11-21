@@ -13,7 +13,7 @@ import type { PopoverTitleProps } from "./types.js";
  */
 export function PopoverTitle<T extends keyof SeidrElementTagNameMap = "h2">(
   props: PopoverTitleProps<T> = {} as PopoverTitleProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "h2" as T, instance: popover, dataComponent = DATA_COMPONENT_POPOVER, id: userId, ...rest } = props;
 

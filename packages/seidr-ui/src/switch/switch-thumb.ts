@@ -30,7 +30,7 @@ export type SwitchThumbProps<T extends keyof SeidrElementTagNameMap = "div"> = S
  */
 export function SwitchThumb<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchThumbProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: sw, id, ...rest } = props;
 

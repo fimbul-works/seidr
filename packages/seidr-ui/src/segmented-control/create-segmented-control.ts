@@ -40,22 +40,22 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
   const createItem = (itemOptions: UseSegmentedControlItemOptions): SegmentedControlItemInstance => {
     const itemInstance = useSegmentedControlItem(instance, itemOptions);
 
-    const Root = (props: SegmentedControlItemProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Root = (props: SegmentedControlItemProps<any> = {}, children?: SeidrChild) =>
       SegmentedControlItem({ instance: itemInstance, ...props }, children);
 
     const Input = (props: SegmentedControlItemInputProps = {}) =>
       SegmentedControlItemInput({ instance: itemInstance, ...props });
 
-    const Control = (props: SegmentedControlItemControlProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Control = (props: SegmentedControlItemControlProps<any> = {}, children?: SeidrChild) =>
       SegmentedControlItemControl({ instance: itemInstance, ...props }, children);
 
-    const Indicator = (props: SegmentedControlItemIndicatorProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Indicator = (props: SegmentedControlItemIndicatorProps<any> = {}, children?: SeidrChild) =>
       SegmentedControlItemIndicator({ instance: itemInstance, ...props }, children);
 
-    const Label = (props: SegmentedControlItemLabelProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Label = (props: SegmentedControlItemLabelProps<any> = {}, children?: SeidrChild) =>
       SegmentedControlItemLabel({ instance: itemInstance, ...props }, children);
 
-    const Description = (props: SegmentedControlItemDescriptionProps<any> = {}, children?: SeidrChild | SeidrChild[]) =>
+    const Description = (props: SegmentedControlItemDescriptionProps<any> = {}, children?: SeidrChild) =>
       SegmentedControlItemDescription({ instance: itemInstance, ...props }, children);
 
     return {
@@ -75,10 +75,7 @@ export function createSegmentedControl(options: UseSegmentedControlOptions = {})
     };
   };
 
-  const Item = (
-    itemOptionsOrProps: SegmentedControlItemDescriptor & Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
-  ) => {
+  const Item = (itemOptionsOrProps: SegmentedControlItemDescriptor & Record<string, any>, children?: SeidrChild) => {
     const {
       value,
       disabled,

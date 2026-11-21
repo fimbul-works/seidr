@@ -24,16 +24,14 @@ import type { LinkProps } from "./types.js";
  * supports active states (`data-current`, `aria-current`, `activeClass`),
  * and polymorphic elements (`as="span"`, `as="button"`, etc.).
  */
-export function Link<T extends keyof SeidrElementTagNameMap = "a">(
-  children?: SeidrChild | SeidrChild[],
-): SeidrElementTagNameMap[T];
+export function Link<T extends keyof SeidrElementTagNameMap = "a">(children?: SeidrChild): SeidrElementTagNameMap[T];
 export function Link<T extends keyof SeidrElementTagNameMap = "a">(
   props: LinkProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Link<T extends keyof SeidrElementTagNameMap = "a">(
-  propsOrChildren?: LinkProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: LinkProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<LinkProps<T>>(propsOrChildren, children);
   const {

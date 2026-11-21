@@ -28,7 +28,7 @@ export type AccordionTriggerProps<T extends keyof SeidrElementTagNameMap = "butt
  */
 export function AccordionTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: AccordionTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

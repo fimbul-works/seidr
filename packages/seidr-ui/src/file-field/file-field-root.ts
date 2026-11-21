@@ -13,7 +13,7 @@ import type { FileFieldRootProps } from "./types.js";
  */
 export function FileFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: FileFieldRootProps<T> = {} as FileFieldRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

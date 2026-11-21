@@ -22,7 +22,7 @@ import type { HoverCardContentProps } from "./types.js";
  */
 export function HoverCardContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: HoverCardContentProps<T> = {} as HoverCardContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

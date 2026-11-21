@@ -1,12 +1,12 @@
 import { createComponent, type SeidrChild } from "@fimbul-works/seidr";
 import { createSwitch } from "./create-switch.js";
-import { type SwitchControlProps } from "./switch-control.js";
-import { type SwitchDescriptionProps } from "./switch-description.js";
-import { type SwitchErrorMessageProps } from "./switch-error-message.js";
-import { type SwitchInputProps } from "./switch-input.js";
-import { type SwitchLabelProps } from "./switch-label.js";
-import { type SwitchRootProps } from "./switch-root.js";
-import { type SwitchThumbProps } from "./switch-thumb.js";
+import type { SwitchControlProps } from "./switch-control.js";
+import type { SwitchDescriptionProps } from "./switch-description.js";
+import type { SwitchErrorMessageProps } from "./switch-error-message.js";
+import type { SwitchInputProps } from "./switch-input.js";
+import type { SwitchLabelProps } from "./switch-label.js";
+import type { SwitchRootProps } from "./switch-root.js";
+import type { SwitchThumbProps } from "./switch-thumb.js";
 import type { UseSwitchOptions } from "./types.js";
 
 export interface SwitchProps extends UseSwitchOptions {
@@ -14,16 +14,16 @@ export interface SwitchProps extends UseSwitchOptions {
   className?: string;
 
   /** Accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Optional error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Optional custom thumb element or content. */
-  thumb?: SeidrChild | SeidrChild[];
+  thumb?: SeidrChild;
 
   /** Props passed to Switch.Root. */
   rootProps?: SwitchRootProps;

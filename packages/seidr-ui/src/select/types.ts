@@ -310,69 +310,69 @@ export interface SelectInstance<Option = any> extends UseSelectResult<Option> {
 
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Label: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<SelectLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<SelectTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Value: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<SelectValueProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Icon: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: Omit<SelectIconProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
-  Portal: (props?: SelectPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: SelectPortalProps, children?: SeidrChild) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Listbox: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: Omit<SelectListboxProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props: Omit<SelectItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectItemLabelProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectItemDescriptionProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<SelectItemIndicatorProps<T>, "instance"> & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Section: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: SelectSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   SectionLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SelectSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   HiddenSelect: (props?: SelectHiddenSelectProps) => SeidrElementTagNameMap["select"];
@@ -381,12 +381,12 @@ export interface SelectInstance<Option = any> extends UseSelectResult<Option> {
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SelectDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SelectErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   List: (items: ReactiveValue<SelectNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;

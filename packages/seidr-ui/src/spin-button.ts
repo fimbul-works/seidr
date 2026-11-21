@@ -92,15 +92,15 @@ export type SpinButtonProps<T extends keyof SeidrElementTagNameMap = "div"> = Sp
  * keyboard navigation (ArrowUp, ArrowDown, PageUp, PageDown, Home, End).
  */
 export function SpinButton<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function SpinButton<T extends keyof SeidrElementTagNameMap = "div">(
   props: SpinButtonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function SpinButton<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SpinButtonProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: SpinButtonProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SpinButtonProps<T>>(propsOrChildren, children);
 

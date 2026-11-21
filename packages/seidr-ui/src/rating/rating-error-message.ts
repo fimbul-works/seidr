@@ -15,7 +15,7 @@ import type { RatingErrorMessageProps } from "./types.js";
  */
 export function RatingErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
   props: RatingErrorMessageProps<T> = {} as RatingErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "span" as T,

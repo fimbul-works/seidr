@@ -37,15 +37,15 @@ export type BadgeProps<T extends keyof SeidrElementTagNameMap = "span"> = BadgeO
  * Badge generates a small badge element, useful for status, counts, or categories.
  */
 export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
   props: BadgeProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Badge<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: BadgeProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: BadgeProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BadgeProps<T>>(propsOrChildren, children);
   const { as = "span" as T, role = "status", textValue, ariaLabel, ...rest } = props;

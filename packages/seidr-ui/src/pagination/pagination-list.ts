@@ -13,7 +13,7 @@ import type { PaginationListProps } from "./types.js";
  */
 export function PaginationList<T extends keyof SeidrElementTagNameMap = "ul">(
   props: PaginationListProps<T> = {} as PaginationListProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ul" as T,

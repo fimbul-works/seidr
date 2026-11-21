@@ -31,7 +31,7 @@ export interface ImageOptions<
   /**
    * Content to display while the image is loading or on error.
    */
-  fallback?: SeidrChild | SeidrChild[];
+  fallback?: SeidrChild;
 
   /**
    * Tag name for the fallback container.

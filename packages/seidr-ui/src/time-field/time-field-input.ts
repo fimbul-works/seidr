@@ -15,7 +15,7 @@ import type { SegmentType, TimeFieldInputProps } from "./types.js";
  */
 export function TimeFieldInput<T extends keyof SeidrElementTagNameMap = "div">(
   props: TimeFieldInputProps<T> = {} as TimeFieldInputProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

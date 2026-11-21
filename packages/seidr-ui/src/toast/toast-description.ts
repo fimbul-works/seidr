@@ -14,7 +14,7 @@ import type { ToastDescriptionProps } from "./types.js";
  */
 export function ToastDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToastDescriptionProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: toast, id: customId, dataComponent, ...rest } = props;
 

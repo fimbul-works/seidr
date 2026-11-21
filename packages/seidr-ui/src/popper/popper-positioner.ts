@@ -16,7 +16,7 @@ import type { PopperPositionerProps } from "./types.js";
  */
 export function PopperPositioner<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopperPositionerProps<T> = {} as PopperPositionerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

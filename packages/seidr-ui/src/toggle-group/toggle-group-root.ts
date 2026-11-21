@@ -13,7 +13,7 @@ import type { ToggleGroupRootProps } from "./types.js";
  */
 export function ToggleGroupRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToggleGroupRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: toggleGroup, ...rest } = props;
 

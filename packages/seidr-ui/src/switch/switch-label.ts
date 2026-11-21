@@ -12,7 +12,7 @@ export type SwitchLabelProps<T extends keyof SeidrElementTagNameMap = "label"> =
  */
 export function SwitchLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: SwitchLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: sw, ...rest } = props;
 

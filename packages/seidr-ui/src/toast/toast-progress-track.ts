@@ -13,7 +13,7 @@ import type { ToastProgressTrackProps } from "./types.js";
  */
 export function ToastProgressTrack<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToastProgressTrackProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: toast, role = "presentation", dataComponent, ...rest } = props;
 

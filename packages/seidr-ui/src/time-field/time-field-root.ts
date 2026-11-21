@@ -13,7 +13,7 @@ import type { TimeFieldRootProps } from "./types.js";
  */
 export function TimeFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: TimeFieldRootProps<T> = {} as TimeFieldRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

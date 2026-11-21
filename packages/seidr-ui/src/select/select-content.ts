@@ -20,7 +20,7 @@ import type { SelectContentProps } from "./types.js";
  */
 export function SelectContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: SelectContentProps<T> = {} as SelectContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

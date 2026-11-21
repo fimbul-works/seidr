@@ -20,6 +20,7 @@ import type {
   MenuGroupProps,
   MenuIconOptions,
   MenuIconProps,
+  MenuInstance,
   MenuItemData,
   MenuItemDescriptionOptions,
   MenuItemDescriptionProps,
@@ -31,7 +32,6 @@ import type {
   MenuItemOptions,
   MenuItemProps,
   MenuItemRegistration,
-  MenuInstance,
   MenuLeafDescriptor,
   MenuListRenderOptions,
   MenuRadioGroupData,
@@ -95,7 +95,7 @@ export interface ContextMenuInstance extends Omit<MenuInstance, "Trigger"> {
   /** Context area trigger element helper. */
   Trigger: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ContextMenuTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -170,7 +170,7 @@ export interface ContextMenuProps<T extends keyof SeidrElementTagNameMap = "div"
   /** Underlying HTML tag for root container element. Defaults to "div". */
   as?: T;
   /** Content or trigger target area element responding to right-click or long-press. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Whether the context menu trigger is disabled. */
   disabled?: boolean;
   /** Declarative list of items or groups rendered dynamically inside the content. */
@@ -182,5 +182,5 @@ export interface ContextMenuProps<T extends keyof SeidrElementTagNameMap = "div"
   /** Props forwarded to the content dropdown element. */
   contentProps?: Omit<ContextMenuContentProps, "instance" | "dataComponent">;
   /** Child elements or custom composition rendered inside the menu content. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

@@ -1,4 +1,4 @@
-import { useId, wrapValue } from "@fimbul-works/seidr";
+import { useId } from "@fimbul-works/seidr";
 import type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from "./types.js";
 
 /**
@@ -8,15 +8,11 @@ import type { UseBreadcrumbsOptions, UseBreadcrumbsResult } from "./types.js";
  * @returns {UseBreadcrumbsResult} Coordinator instance
  */
 export function useBreadcrumbs(options: UseBreadcrumbsOptions = {}): UseBreadcrumbsResult {
-  const { id: customId, separator = "/", ariaLabel = "Breadcrumbs" } = options;
-
-  const id = customId ?? useId("Breadcrumbs");
-  const separatorObservable = wrapValue(separator);
-  const ariaLabelObservable = wrapValue(ariaLabel);
+  const { id, separator = "/", ariaLabel = "Breadcrumbs" } = options;
 
   return {
-    id,
-    separator: separatorObservable,
-    ariaLabel: ariaLabelObservable,
+    id: id ?? useId("Breadcrumbs"),
+    separator,
+    ariaLabel,
   };
 }

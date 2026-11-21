@@ -13,7 +13,7 @@ import type { SliderLabelProps } from "./types.js";
  */
 export function SliderLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: SliderLabelProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "label" as T, instance: slider, htmlFor: customFor, id: customId, ...rest } = props;
 

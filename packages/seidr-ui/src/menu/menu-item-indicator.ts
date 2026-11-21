@@ -17,7 +17,7 @@ import type { MenuItemIndicatorProps } from "./types.js";
  */
 export function MenuItemIndicator<T extends keyof SeidrElementTagNameMap = "span">(
   props: MenuItemIndicatorProps<T> = {} as MenuItemIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "span" as T,

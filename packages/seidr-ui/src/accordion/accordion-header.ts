@@ -25,7 +25,7 @@ export type AccordionHeaderProps<T extends keyof SeidrElementTagNameMap = "h3"> 
  */
 export function AccordionHeader<T extends keyof SeidrElementTagNameMap = "h3">(
   props: AccordionHeaderProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "h3" as T, instance, ...rest } = props;
 

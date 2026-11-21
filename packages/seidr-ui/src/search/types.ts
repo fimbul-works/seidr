@@ -108,79 +108,79 @@ export interface SearchInstance<Option = any> extends UseSearchResult<Option> {
 
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: SearchLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Input: <T extends keyof SeidrElementTagNameMap = "input">(props?: SearchInputProps<T>) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: SearchTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Icon: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SearchIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Indicator: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SearchIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   NoResult: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchNoResultProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Listbox: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: SearchListboxProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props: SearchItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Section: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: SearchSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   SectionLabel: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SearchSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   HiddenSelect: (props?: SearchHiddenSelectProps) => SeidrElementTagNameMap["select"];
@@ -189,12 +189,12 @@ export interface SearchInstance<Option = any> extends UseSearchResult<Option> {
 
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SearchErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   List: (items: ReactiveValue<SearchNode<Option>[]>, options?: ListboxListRenderOptions) => SeidrChild;

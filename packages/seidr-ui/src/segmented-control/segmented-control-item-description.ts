@@ -27,7 +27,7 @@ export type SegmentedControlItemDescriptionProps<T extends keyof SeidrElementTag
  */
 export function SegmentedControlItemDescription<T extends keyof SeidrElementTagNameMap = "span">(
   props: SegmentedControlItemDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance: item, ...rest } = props;
 

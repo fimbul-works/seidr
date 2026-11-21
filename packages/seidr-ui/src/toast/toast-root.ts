@@ -50,7 +50,7 @@ function dispatchSwipeEvent(
  */
 export function ToastRoot<T extends keyof SeidrElementTagNameMap = "li">(
   props: ToastRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "li" as T,

@@ -27,12 +27,12 @@ export function createToggleGroup(options: UseToggleGroupOptions = {}): ToggleGr
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<ToggleGroupRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ToggleGroupRoot({ instance, ...props } as ToggleGroupRootProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<ToggleGroupItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ToggleGroupItem({ instance, ...props } as ToggleGroupItemProps<T>, children);
 
   const ListHelper = (

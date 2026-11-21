@@ -15,16 +15,16 @@ export interface CheckboxProps extends UseCheckboxOptions {
   className?: string;
 
   /** Accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Optional error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Optional custom indicator element. Defaults to checkmark. */
-  indicator?: SeidrChild | SeidrChild[];
+  indicator?: SeidrChild;
 
   /** Props passed to Checkbox.Root. */
   rootProps?: CheckboxRootProps;

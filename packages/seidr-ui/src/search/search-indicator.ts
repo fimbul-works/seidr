@@ -15,7 +15,7 @@ import type { SearchIndicatorProps } from "./types.js";
  */
 export function SearchIndicator<T extends keyof SeidrElementTagNameMap = "span">(
   props: SearchIndicatorProps<T> = {} as SearchIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

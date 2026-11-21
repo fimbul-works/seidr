@@ -15,7 +15,7 @@ import type { ComboboxControlProps } from "./types.js";
  */
 export function ComboboxControl<T extends keyof SeidrElementTagNameMap = "div">(
   props: ComboboxControlProps<T> = {} as ComboboxControlProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

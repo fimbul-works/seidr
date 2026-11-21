@@ -13,7 +13,7 @@ import type { MenuSeparatorProps } from "./types.js";
  */
 export function MenuSeparator<T extends keyof SeidrElementTagNameMap = "hr">(
   props: MenuSeparatorProps<T> = {} as MenuSeparatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "hr" as T, instance: menu, dataComponent = DATA_COMPONENT_MENU, ...rest } = props;
 

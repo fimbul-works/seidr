@@ -48,7 +48,7 @@ export type CollapsibleContentProps<T extends keyof SeidrElementTagNameMap = "di
  */
 export function CollapsibleContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: CollapsibleContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

@@ -13,7 +13,7 @@ import type { TimeFieldErrorMessageProps } from "./types.js";
  */
 export function TimeFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
   props: TimeFieldErrorMessageProps<T> = {} as TimeFieldErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

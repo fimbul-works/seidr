@@ -30,7 +30,7 @@ export type SegmentedControlRootProps<T extends keyof SeidrElementTagNameMap = "
  */
 export function SegmentedControlRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: SegmentedControlRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

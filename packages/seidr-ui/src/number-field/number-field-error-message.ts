@@ -33,7 +33,7 @@ export type NumberFieldErrorMessageProps<T extends keyof SeidrElementTagNameMap 
  */
 export function NumberFieldErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: NumberFieldErrorMessageProps<T> = {} as NumberFieldErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     instance: nf,

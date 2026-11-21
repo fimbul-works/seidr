@@ -34,7 +34,7 @@ export type FormControlErrorMessageProps<T extends keyof SeidrElementTagNameMap 
  */
 export function FormControlErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: FormControlErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: form, id: customId, forceMount, ...rest } = props;
 

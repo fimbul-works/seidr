@@ -3,13 +3,13 @@ import { FileFieldDescription } from "./file-field-description.js";
 import { FileFieldDropzone } from "./file-field-dropzone.js";
 import { FileFieldErrorMessage } from "./file-field-error-message.js";
 import { FileFieldHiddenInput } from "./file-field-hidden-input.js";
+import { FileFieldItem } from "./file-field-item.js";
 import { FileFieldItemDeleteTrigger } from "./file-field-item-delete-trigger.js";
 import { FileFieldItemList } from "./file-field-item-list.js";
 import { FileFieldItemName } from "./file-field-item-name.js";
-import { FileFieldItemPreviewImage } from "./file-field-item-preview-image.js";
 import { FileFieldItemPreview } from "./file-field-item-preview.js";
+import { FileFieldItemPreviewImage } from "./file-field-item-preview-image.js";
 import { FileFieldItemSize } from "./file-field-item-size.js";
-import { FileFieldItem } from "./file-field-item.js";
 import { FileFieldLabel } from "./file-field-label.js";
 import { FileFieldRoot } from "./file-field-root.js";
 import { FileFieldTrigger } from "./file-field-trigger.js";
@@ -42,13 +42,13 @@ export function createFileField(options: UseFileFieldOptions = {}): FileFieldIns
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldRoot<T>({ instance: fileField, ...props } as FileFieldRootProps<T>, children);
 
   const Dropzone = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldDropzoneProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldDropzone<T>({ instance: fileField, ...props } as FileFieldDropzoneProps<T>, children);
 
@@ -60,43 +60,43 @@ export function createFileField(options: UseFileFieldOptions = {}): FileFieldIns
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props?: FileFieldTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldTrigger<T>({ instance: fileField, ...props } as FileFieldTriggerProps<T>, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "label">(
     props?: FileFieldLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldLabel<T>({ instance: fileField, ...props } as FileFieldLabelProps<T>, children);
 
   const ItemList = <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: FileFieldItemListProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldItemList<T>({ instance: fileField, ...props } as FileFieldItemListProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "li">(
     props: FileFieldItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldItem<T>({ instance: fileField, ...props } as FileFieldItemProps<T>, children);
 
   const ItemName = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldItemNameProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldItemName<T>({ instance: fileField, ...props } as FileFieldItemNameProps<T>, children);
 
   const ItemSize = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldItemSizeProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldItemSize<T>({ instance: fileField, ...props } as FileFieldItemSizeProps<T>, children);
 
   const ItemPreview = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldItemPreviewProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     FileFieldItemPreview<T>({ instance: fileField, ...props } as FileFieldItemPreviewProps<T>, children);
 
@@ -108,19 +108,19 @@ export function createFileField(options: UseFileFieldOptions = {}): FileFieldIns
 
   const ItemDeleteTrigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: FileFieldItemDeleteTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldItemDeleteTrigger<T>({ instance: fileField, ...props } as FileFieldItemDeleteTriggerProps<T>, children);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldDescription<T>({ instance: fileField, ...props } as FileFieldDescriptionProps<T>, children);
 
   const ErrorMessage = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FileFieldErrorMessage<T>({ instance: fileField, ...props } as FileFieldErrorMessageProps<T>, children);
 

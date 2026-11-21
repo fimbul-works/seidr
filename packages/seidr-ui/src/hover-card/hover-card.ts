@@ -7,7 +7,7 @@ import type { HoverCardProps, HoverCardRootProps } from "./types.js";
  */
 export function HoverCardFactory<T extends keyof SeidrElementTagNameMap = "div">(
   props: HoverCardProps<T> = {} as HoverCardProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

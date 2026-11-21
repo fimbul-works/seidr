@@ -49,7 +49,7 @@ export function createContextMenu(options: UseContextMenuOptions = {}): ContextM
     setAnchorRect,
     Trigger: <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<ContextMenuTriggerProps<T>, "instance"> = {} as Omit<ContextMenuTriggerProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ContextMenuTrigger({ instance, ...props } as ContextMenuTriggerProps<T>, children),
   };
 

@@ -15,7 +15,7 @@ import type { PopoverAnchorProps } from "./types.js";
  */
 export function PopoverAnchor<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopoverAnchorProps<T> = {} as PopoverAnchorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: popover, dataComponent = DATA_COMPONENT_POPOVER, ref: userRef, ...rest } = props;
 

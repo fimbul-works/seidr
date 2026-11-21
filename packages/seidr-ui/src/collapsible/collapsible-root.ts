@@ -30,7 +30,7 @@ export type CollapsibleRootProps<T extends keyof SeidrElementTagNameMap = "div">
  */
 export function CollapsibleRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: CollapsibleRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, open, defaultOpen, onOpenChange, disabled, forceMount, id, instance: col, ...rest } = props;
 

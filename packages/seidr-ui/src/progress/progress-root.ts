@@ -14,7 +14,7 @@ import type { ProgressRootProps } from "./types.js";
  */
 export function ProgressRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: ProgressRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T } = props;
   const [aria, restProps] = extractARIAProps(props);

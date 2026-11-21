@@ -24,7 +24,7 @@ export type AccordionRootProps<T extends keyof SeidrElementTagNameMap = "div"> =
  */
 export function AccordionRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: AccordionRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance, id, ...rest } = props;
 

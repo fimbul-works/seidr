@@ -20,7 +20,7 @@ import type { TooltipTriggerProps } from "./types.js";
  */
 export function TooltipTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: TooltipTriggerProps<T> = {} as TooltipTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

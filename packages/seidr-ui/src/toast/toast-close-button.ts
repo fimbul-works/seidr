@@ -8,7 +8,7 @@ import type { ToastCloseButtonProps } from "./types.js";
  */
 export function ToastCloseButton<T extends keyof SeidrElementTagNameMap = "button">(
   props?: ToastCloseButtonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

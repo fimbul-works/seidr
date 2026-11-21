@@ -8,7 +8,7 @@ import type { TextFieldLabelProps } from "./types.js";
  */
 export function TextFieldLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: TextFieldLabelProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: tf, dataComponent = DATA_COMPONENT_TEXT_FIELD, dataPart = DATA_PART_LABEL, ...rest } = props;
 

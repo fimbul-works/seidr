@@ -87,7 +87,7 @@ export interface RatingRootOptions<T extends keyof SeidrElementTagNameMap = "div
   as?: T;
   dataComponent?: string;
   instance?: UseRatingResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingRootProps<T extends keyof SeidrElementTagNameMap = "div"> = RatingRootOptions<T> &
   SeidrElementProps<T>;
@@ -96,7 +96,7 @@ export interface RatingLabelOptions<T extends keyof SeidrElementTagNameMap = "sp
   as?: T;
   dataComponent?: string;
   instance?: UseRatingResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingLabelProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingLabelOptions<T> &
   SeidrElementProps<T>;
@@ -106,7 +106,7 @@ export interface RatingItemOptions<T extends keyof SeidrElementTagNameMap = "spa
   value: number;
   dataComponent?: string;
   instance?: UseRatingResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingItemProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingItemOptions<T> &
   Omit<SeidrElementProps<T>, "value">;
@@ -119,7 +119,7 @@ export interface RatingItemIndicatorOptions<T extends keyof SeidrElementTagNameM
   fullIcon?: SeidrChild;
   halfIcon?: SeidrChild;
   emptyIcon?: SeidrChild;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingItemIndicatorProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingItemIndicatorOptions<T> &
   SeidrElementProps<T>;
@@ -128,7 +128,7 @@ export interface RatingDescriptionOptions<T extends keyof SeidrElementTagNameMap
   as?: T;
   dataComponent?: string;
   instance?: UseRatingResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingDescriptionOptions<T> &
   SeidrElementProps<T>;
@@ -137,7 +137,7 @@ export interface RatingErrorMessageOptions<T extends keyof SeidrElementTagNameMa
   as?: T;
   dataComponent?: string;
   instance?: UseRatingResult;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type RatingErrorMessageProps<T extends keyof SeidrElementTagNameMap = "span"> = RatingErrorMessageOptions<T> &
   SeidrElementProps<T>;
@@ -154,37 +154,37 @@ export interface RatingInstance extends UseRatingResult {
   /** Root container element factory (role="radiogroup"). */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RatingRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Accessible label element factory. */
   Label: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Individual rating score item factory (role="radio"). */
   Item: <T extends keyof SeidrElementTagNameMap = "span">(
     props: RatingItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Score item indicator factory rendering full/half/empty states. */
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Helper description text element factory. */
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Error message element factory (rendered when invalid). */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   /** Hidden input for standard native HTML form submissions. */
@@ -195,11 +195,11 @@ export interface RatingProps<T extends keyof SeidrElementTagNameMap = "div"> ext
   /** Underlying HTML tag for root container. Defaults to "div". */
   as?: T;
   /** High-level label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** High-level description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** High-level error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
   /** Custom full star icon. */
   fullIcon?: SeidrChild;
   /** Custom half star icon. */
@@ -211,5 +211,5 @@ export interface RatingProps<T extends keyof SeidrElementTagNameMap = "div"> ext
   /** Custom element props for each item element. */
   itemProps?: Partial<RatingItemProps>;
   /** Direct children when composing manually. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

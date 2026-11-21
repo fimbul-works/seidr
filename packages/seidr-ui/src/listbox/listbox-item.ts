@@ -22,7 +22,7 @@ import { useListboxItem } from "./use-listbox-item.js";
  */
 export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
   props: ListboxItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "li" as T,
@@ -167,7 +167,7 @@ export function ListboxItem<T extends keyof SeidrElementTagNameMap = "li">(
     { parents: [item.descriptionId] },
   );
 
-  let itemContent: SeidrChild | SeidrChild[] = children ?? [];
+  let itemContent: SeidrChild = children ?? [];
   if (isUndef(children) && (label || description || indicator)) {
     const parts: SeidrChild[] = [];
     if (label) {

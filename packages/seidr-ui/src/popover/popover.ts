@@ -7,7 +7,7 @@ import type { PopoverProps, PopoverRootProps } from "./types.js";
  */
 export function PopoverFactory<T extends keyof SeidrElementTagNameMap = "div">(
   props: PopoverProps<T> = {} as PopoverProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

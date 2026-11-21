@@ -13,7 +13,7 @@ import type { SelectLabelProps } from "./types.js";
  */
 export function SelectLabel<T extends keyof SeidrElementTagNameMap = "span">(
   props: SelectLabelProps<T> = {} as SelectLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

@@ -29,7 +29,7 @@ export type SwitchRootProps<T extends keyof SeidrElementTagNameMap = "div"> = Sw
  */
 export function SwitchRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

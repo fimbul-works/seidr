@@ -17,7 +17,7 @@ import type { FileFieldItemPreviewProps } from "./types.js";
  */
 export function FileFieldItemPreview<T extends keyof SeidrElementTagNameMap = "div">(
   props: FileFieldItemPreviewProps<T> = {} as FileFieldItemPreviewProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

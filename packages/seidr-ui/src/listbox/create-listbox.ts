@@ -51,22 +51,22 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
 
     const Root = <T extends keyof SeidrElementTagNameMap = "li">(
       props: Omit<ListboxItemProps<T>, "instance" | "value"> = {} as Omit<ListboxItemProps<T>, "instance" | "value">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ListboxItem({ instance: itemInstance, value: itemOptions.value, ...props } as ListboxItemProps<T>, children);
 
     const Label = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<ListboxItemLabelProps<T>, "instance"> = {} as Omit<ListboxItemLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ListboxItemLabel({ instance: itemInstance, ...props } as ListboxItemLabelProps<T>, children);
 
     const Description = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<ListboxItemDescriptionProps<T>, "instance"> = {} as Omit<ListboxItemDescriptionProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ListboxItemDescription({ instance: itemInstance, ...props } as ListboxItemDescriptionProps<T>, children);
 
     const Indicator = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<ListboxItemIndicatorProps<T>, "instance"> = {} as Omit<ListboxItemIndicatorProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ListboxItemIndicator({ instance: itemInstance, ...props } as ListboxItemIndicatorProps<T>, children);
 
     return {
@@ -84,12 +84,12 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
 
   const Root = <T extends keyof SeidrElementTagNameMap = "ul">(
     props: Omit<ListboxRootProps<T>, "instance"> = {} as Omit<ListboxRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ListboxRoot({ instance, ...props } as ListboxRootProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "li">(
     props: Omit<ListboxItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInstance = useListboxItem(instance, {
       value: props.value,
@@ -111,7 +111,7 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
       ListboxItemLabelProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -125,7 +125,7 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
       ListboxItemDescriptionProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -139,7 +139,7 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
       ListboxItemIndicatorProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -150,12 +150,12 @@ export function createListbox(options: UseListboxOptions = {}): ListboxInstance 
 
   const Section = <T extends keyof SeidrElementTagNameMap = "li">(
     props: ListboxSectionProps<T> = {} as ListboxSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ListboxSection(props, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: ListboxSectionLabelProps<T> = {} as ListboxSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => ListboxSectionLabel(props, children);
 
   const ListHelper = (

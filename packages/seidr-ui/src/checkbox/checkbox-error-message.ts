@@ -16,7 +16,7 @@ export type CheckboxErrorMessageProps<T extends keyof SeidrElementTagNameMap = "
  */
 export function CheckboxErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { instance: cb, ...rest } = props;
 

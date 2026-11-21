@@ -187,46 +187,46 @@ export interface PopoverPortalProps {
 export interface PopoverInstance extends UsePopoverResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopoverRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<PopoverTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Anchor: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopoverAnchorProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopoverContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   CloseButton: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<PopoverCloseButtonProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Title: <T extends keyof SeidrElementTagNameMap = "h2">(
     props?: Omit<PopoverTitleProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "p">(
     props?: Omit<PopoverDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopperArrowProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
-  Portal: (props: PopoverPortalProps, children: SeidrChild | SeidrChild[]) => SeidrChild | SeidrChild[];
+  Portal: (props: PopoverPortalProps, children: SeidrChild) => SeidrChild;
 }
 
 export interface PopoverProps<T extends keyof SeidrElementTagNameMap = "div"> extends UsePopoverOptions {
   as?: T;
-  trigger?: SeidrChild | SeidrChild[];
-  title?: SeidrChild | SeidrChild[];
-  description?: SeidrChild | SeidrChild[];
-  closeButton?: boolean | SeidrChild | SeidrChild[];
-  content?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
+  title?: SeidrChild;
+  description?: SeidrChild;
+  closeButton?: boolean | SeidrChild;
+  content?: SeidrChild;
   showArrow?: boolean;
   rootProps?: Omit<PopoverRootProps<T>, "instance">;
   triggerProps?: Omit<PopoverTriggerProps<"button">, "instance">;
@@ -236,5 +236,5 @@ export interface PopoverProps<T extends keyof SeidrElementTagNameMap = "div"> ex
   descriptionProps?: Omit<PopoverDescriptionProps<"p">, "instance">;
   closeButtonProps?: Omit<PopoverCloseButtonProps<"button">, "instance">;
   arrowProps?: Omit<PopperArrowProps<"div">, "instance">;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

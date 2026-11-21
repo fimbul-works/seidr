@@ -20,8 +20,8 @@ import type { BreadcrumbsLinkProps } from "./types.js";
  * An accessible breadcrumb link representing an ancestor or the current page.
  */
 export function BreadcrumbsLink<T extends keyof SeidrElementTagNameMap = "a">(
-  propsOrChildren?: BreadcrumbsLinkProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: BreadcrumbsLinkProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsLinkProps<T>>(propsOrChildren, children);
   const {

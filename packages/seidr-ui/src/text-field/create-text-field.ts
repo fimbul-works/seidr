@@ -28,12 +28,12 @@ export function createTextField(options: UseTextFieldOptions = {}): TextFieldIns
     ...instance,
     Root: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<TextFieldRootProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): SeidrElementTagNameMap[T] => TextFieldRoot({ instance, ...props } as TextFieldRootProps<T>, children),
 
     Label: <T extends keyof SeidrElementTagNameMap = "label">(
       props?: Omit<TextFieldLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): SeidrElementTagNameMap[T] => TextFieldLabel({ instance, ...props } as TextFieldLabelProps<T>, children),
 
     Input: <T extends keyof SeidrElementTagNameMap = "input">(
@@ -46,13 +46,13 @@ export function createTextField(options: UseTextFieldOptions = {}): TextFieldIns
 
     Description: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<TextFieldDescriptionProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): SeidrElementTagNameMap[T] =>
       TextFieldDescription({ instance, ...props } as TextFieldDescriptionProps<T>, children),
 
     ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<TextFieldErrorMessageProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
       TextFieldErrorMessage({ instance, ...props } as TextFieldErrorMessageProps<T>, children),
   };

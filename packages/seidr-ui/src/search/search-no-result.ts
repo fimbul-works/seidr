@@ -15,7 +15,7 @@ import type { SearchNoResultProps } from "./types.js";
  */
 export function SearchNoResult<T extends keyof SeidrElementTagNameMap = "div">(
   props: SearchNoResultProps<T> = {} as SearchNoResultProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: search, dataComponent = "search", ...rest } = props;
 

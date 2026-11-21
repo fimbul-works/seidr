@@ -12,7 +12,7 @@ export interface FormControlInstance extends UseFormControlResult {
    */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FormControlRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /**
@@ -20,7 +20,7 @@ export interface FormControlInstance extends UseFormControlResult {
    */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: FormControlLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /**
@@ -28,7 +28,7 @@ export interface FormControlInstance extends UseFormControlResult {
    */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FormControlDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /**
@@ -36,7 +36,7 @@ export interface FormControlInstance extends UseFormControlResult {
    */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FormControlErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 

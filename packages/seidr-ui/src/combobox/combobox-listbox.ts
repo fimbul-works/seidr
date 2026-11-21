@@ -15,7 +15,7 @@ import type { ComboboxListboxProps } from "./types.js";
  */
 export function ComboboxListbox<T extends keyof SeidrElementTagNameMap = "ul">(
   props: ComboboxListboxProps<T> = {} as ComboboxListboxProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ul" as T,

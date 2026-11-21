@@ -16,7 +16,7 @@ import type { RatingItemProps, RatingItemState } from "./types.js";
  */
 export function RatingItem<T extends keyof SeidrElementTagNameMap = "span">(
   props: RatingItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

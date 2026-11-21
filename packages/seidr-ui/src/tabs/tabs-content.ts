@@ -18,7 +18,7 @@ import type { TabsContentProps } from "./types.js";
  */
 export function TabsContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: TabsContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: tabs, value, forceMount, id: customId, tabIndex = 0, ...rest } = props;
 

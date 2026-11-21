@@ -13,13 +13,9 @@ export function createToastRegion(options: UseToastRegionOptions = {}): ToastReg
 
   return {
     ...instance,
-    Region: <T extends keyof SeidrElementTagNameMap = "div">(
-      props?: ToastRegionRootProps<T>,
-      children?: SeidrChild | SeidrChild[],
-    ) => ToastRegionRoot<T>({ instance, ...props } as ToastRegionRootProps<T>, children),
-    List: <T extends keyof SeidrElementTagNameMap = "ol">(
-      props?: ToastListProps<T>,
-      children?: SeidrChild | SeidrChild[],
-    ) => ToastList<T>({ instance, ...props } as ToastListProps<T>, children),
+    Region: <T extends keyof SeidrElementTagNameMap = "div">(props?: ToastRegionRootProps<T>, children?: SeidrChild) =>
+      ToastRegionRoot<T>({ instance, ...props } as ToastRegionRootProps<T>, children),
+    List: <T extends keyof SeidrElementTagNameMap = "ol">(props?: ToastListProps<T>, children?: SeidrChild) =>
+      ToastList<T>({ instance, ...props } as ToastListProps<T>, children),
   };
 }

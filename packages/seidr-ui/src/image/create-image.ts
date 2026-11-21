@@ -1,4 +1,4 @@
-import { type DerivedValue, type SeidrChild, type SeidrElementTagNameMap } from "@fimbul-works/seidr";
+import type { DerivedValue, SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
 import { ImageFallback, type ImageFallbackProps } from "./image-fallback.js";
 import { ImageImg, type ImageImgProps } from "./image-img.js";
 import { ImageRoot, type ImageRootProps } from "./image-root.js";
@@ -10,7 +10,7 @@ export interface ImageInstance extends UseImageResult {
    */
   Root: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: ImageRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /**
@@ -25,7 +25,7 @@ export interface ImageInstance extends UseImageResult {
    */
   Fallback: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: ImageFallbackProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 

@@ -16,7 +16,7 @@ import type { ListboxRootProps } from "./types.js";
  */
 export function ListboxRoot<T extends keyof SeidrElementTagNameMap = "ul">(
   props: ListboxRootProps<T> = {} as ListboxRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ul" as T,

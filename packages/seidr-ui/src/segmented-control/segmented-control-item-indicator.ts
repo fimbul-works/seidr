@@ -41,7 +41,7 @@ export type SegmentedControlItemIndicatorProps<T extends keyof SeidrElementTagNa
  */
 export function SegmentedControlItemIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: SegmentedControlItemIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: item, ...rest } = props;
 

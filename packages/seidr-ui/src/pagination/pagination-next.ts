@@ -13,7 +13,7 @@ import type { PaginationNextProps } from "./types.js";
  */
 export function PaginationNext<T extends keyof SeidrElementTagNameMap = "button">(
   props: PaginationNextProps<T> = {} as PaginationNextProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): HTMLLIElement {
   const {
     as = "button" as T,

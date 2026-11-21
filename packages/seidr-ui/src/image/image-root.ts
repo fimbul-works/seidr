@@ -29,7 +29,7 @@ export type ImageRootProps<T extends keyof SeidrElementTagNameMap = "span"> = Im
  */
 export function ImageRoot<T extends keyof SeidrElementTagNameMap = "span">(
   props: ImageRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

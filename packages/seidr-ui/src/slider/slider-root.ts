@@ -13,7 +13,7 @@ import type { SliderRootProps } from "./types.js";
  */
 export function SliderRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: SliderRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: slider, ...rest } = props;
 

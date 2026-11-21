@@ -210,11 +210,11 @@ export type ToastListProps<T extends keyof SeidrElementTagNameMap = "ol"> = Seid
 export type ToastRegionInstance = UseToastRegionResult & {
   Region: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ToastRegionRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   List: <T extends keyof SeidrElementTagNameMap = "ol">(
     props?: ToastListProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 };
 
@@ -228,7 +228,7 @@ export interface ToastRegionProps extends UseToastRegionOptions {
   /** Props passed directly to ToastRegion.List. */
   listProps?: ToastListProps<"ol">;
   /** Additional children rendered inside ToastRegion.Region. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 
 // ============================================================================
@@ -380,27 +380,27 @@ export type ToastProgressFillProps<T extends keyof SeidrElementTagNameMap = "div
 export type ToastInstance = UseToastResult & {
   Root: <T extends keyof SeidrElementTagNameMap = "li">(
     props?: ToastRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Title: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ToastTitleProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ToastDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   CloseButton: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: ToastCloseButtonProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ProgressTrack: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ToastProgressTrackProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ProgressFill: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: ToastProgressFillProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 };
 
@@ -408,14 +408,14 @@ export interface ToastProps extends UseToastOptions {
   /** Polymorphic tag name for the root element. Defaults to "li". */
   as?: keyof SeidrElementTagNameMap;
   /** Accessible title content for the toast. */
-  title?: SeidrChild | SeidrChild[];
+  title?: SeidrChild;
   /** Optional description content for the toast. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /**
    * Whether to render a close button, or custom close button label/icon content.
    * @default true
    */
-  closeButton?: boolean | SeidrChild | SeidrChild[];
+  closeButton?: boolean | SeidrChild;
   /**
    * Whether to render the progress track and fill bar.
    * @default false
@@ -434,5 +434,5 @@ export interface ToastProps extends UseToastOptions {
   /** Props passed directly to Toast.ProgressFill. */
   progressFillProps?: ToastProgressFillProps<"div">;
   /** Additional children rendered inside Toast.Root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

@@ -96,7 +96,7 @@ export interface CheckboxInstance extends UseCheckboxResult {
   /** Pre-bound Checkbox.Root container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props: CheckboxRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Input element. */
@@ -105,30 +105,30 @@ export interface CheckboxInstance extends UseCheckboxResult {
   /** Pre-bound Checkbox.Control visual box. */
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props: CheckboxControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Indicator checkmark. */
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props: CheckboxIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 
   /** Pre-bound Checkbox.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props: FormControlLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props: CheckboxDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Checkbox.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props: CheckboxErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 }

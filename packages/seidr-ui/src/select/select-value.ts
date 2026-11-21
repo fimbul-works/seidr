@@ -26,7 +26,7 @@ function flattenItems(nodes: SelectNode[]): SelectItemData[] {
  */
 export function SelectValue<T extends keyof SeidrElementTagNameMap = "span">(
   props: SelectValueProps<T> = {} as SelectValueProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,
@@ -42,7 +42,7 @@ export function SelectValue<T extends keyof SeidrElementTagNameMap = "span">(
     throw new SeidrError("SelectValue requires an instance coordinator");
   }
 
-  let content: SeidrChild | SeidrChild[];
+  let content: SeidrChild;
 
   if (children !== undefined && children !== null) {
     content = children;

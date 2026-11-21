@@ -18,7 +18,7 @@ import type { ToggleGroupItemProps } from "./types.js";
  */
 export function ToggleGroupItem<T extends keyof SeidrElementTagNameMap = "button">(
   props: ToggleGroupItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

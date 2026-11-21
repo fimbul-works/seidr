@@ -13,7 +13,7 @@ import type { MenubarMenuProps } from "./types.js";
  */
 export function MenubarMenu<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenubarMenuProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

@@ -13,7 +13,7 @@ import type { PaginationEllipsisProps } from "./types.js";
  */
 export function PaginationEllipsis<T extends keyof SeidrElementTagNameMap = "span">(
   props: PaginationEllipsisProps<T> = {} as PaginationEllipsisProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): HTMLLIElement {
   const {
     as = "span" as T,

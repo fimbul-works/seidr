@@ -166,33 +166,33 @@ export interface DialogPortalProps {
 export interface DialogInstance extends UseDialogResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<DialogRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<DialogTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Overlay: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<DialogOverlayProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<DialogContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   CloseButton: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<DialogCloseButtonProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Title: <T extends keyof SeidrElementTagNameMap = "h2">(
     props?: Omit<DialogTitleProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "p">(
     props?: Omit<DialogDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
-  Portal: (props?: DialogPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: DialogPortalProps, children?: SeidrChild) => SeidrChild;
 }
 
 // ---------------------------------------------------------------------------
@@ -207,19 +207,19 @@ export interface DialogProps<
   as?: TRoot;
   dataComponent?: string;
   /** Trigger button label or custom element. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Props forwarded to the trigger button. */
   triggerProps?: DialogTriggerProps<TTrigger>;
   /** Title text or custom element for the dialog. */
-  title?: SeidrChild | SeidrChild[];
+  title?: SeidrChild;
   /** Props forwarded to the dialog title element. */
   titleProps?: DialogTitleProps<"h2">;
   /** Optional description text or custom element for the dialog. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** Props forwarded to the dialog description element. */
   descriptionProps?: DialogDescriptionProps<"p">;
   /** Dialog content body. */
-  content: SeidrChild | SeidrChild[];
+  content: SeidrChild;
   /** Props forwarded to the dialog content container. */
   contentProps?: DialogContentProps<TContent>;
   /** Whether to render a backdrop overlay. Defaults to true. */
@@ -227,7 +227,7 @@ export interface DialogProps<
   /** Props forwarded to the dialog overlay backdrop element. */
   overlayProps?: DialogOverlayProps<"div">;
   /** Close button text, icon, or custom element. Defaults to "✕". Set to false to omit. */
-  closeButton?: SeidrChild | SeidrChild[] | boolean;
+  closeButton?: SeidrChild | boolean;
   /** Props forwarded to the close button element. */
   closeButtonProps?: DialogCloseButtonProps<"button">;
 }

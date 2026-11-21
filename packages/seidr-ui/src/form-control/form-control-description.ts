@@ -30,7 +30,7 @@ export type FormControlDescriptionProps<T extends keyof SeidrElementTagNameMap =
  */
 export function FormControlDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: FormControlDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: form, id: customId, ...rest } = props;
 

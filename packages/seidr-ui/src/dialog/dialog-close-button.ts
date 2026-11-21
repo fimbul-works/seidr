@@ -14,7 +14,7 @@ import type { DialogCloseButtonProps } from "./types.js";
  */
 export function DialogCloseButton<T extends keyof SeidrElementTagNameMap = "button">(
   props: DialogCloseButtonProps<T> = {} as DialogCloseButtonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

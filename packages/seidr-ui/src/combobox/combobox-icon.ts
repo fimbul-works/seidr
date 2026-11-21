@@ -13,7 +13,7 @@ import type { ComboboxIconProps } from "./types.js";
  */
 export function ComboboxIcon<T extends keyof SeidrElementTagNameMap = "span">(
   props: ComboboxIconProps<T> = {} as ComboboxIconProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance: combobox, dataComponent = DATA_COMPONENT_COMBOBOX, ...rest } = props;
 

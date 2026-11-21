@@ -45,7 +45,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props = {} as Omit<AlertDialogRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     DialogRoot<T>(
       {
@@ -58,7 +58,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props = {} as Omit<AlertDialogTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     DialogTrigger<T>(
       {
@@ -71,7 +71,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Overlay = <T extends keyof SeidrElementTagNameMap = "div">(
     props = {} as Omit<AlertDialogOverlayProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     DialogOverlay<T>(
       {
@@ -84,7 +84,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props = {} as Omit<AlertDialogContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     DialogContent<T>(
       {
@@ -98,7 +98,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const CloseButton = <T extends keyof SeidrElementTagNameMap = "button">(
     props = {} as Omit<AlertDialogCloseButtonProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     DialogCloseButton<T>(
       {
@@ -111,7 +111,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Title = <T extends keyof SeidrElementTagNameMap = "h2">(
     props = {} as Omit<AlertDialogTitleProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     DialogTitle<T>(
       {
@@ -124,7 +124,7 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
 
   const Description = <T extends keyof SeidrElementTagNameMap = "p">(
     props = {} as Omit<AlertDialogDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     DialogDescription<T>(
       {
@@ -135,12 +135,11 @@ export function createAlertDialog(options: UseAlertDialogProps = {}): AlertDialo
       children,
     );
 
-  const Portal = (portalProps: AlertDialogPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const Portal = (portalProps: AlertDialogPortalProps = {}, children?: SeidrChild): SeidrChild => {
     if (portalProps.portal === false || instance.portal === false || isServer()) {
       return children;
     }
-    const doc = getDocument();
-    const target = portalProps.target ?? instance.portalTarget ?? doc?.body;
+    const target = portalProps.target ?? instance.portalTarget ?? getDocument().body;
     if (!target) {
       return children;
     }

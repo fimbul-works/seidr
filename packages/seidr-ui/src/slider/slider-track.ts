@@ -15,7 +15,7 @@ import type { SliderTrackProps } from "./types.js";
  */
 export function SliderTrack<T extends keyof SeidrElementTagNameMap = "div">(
   props: SliderTrackProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: slider, ref: userRef, onpointerdown: userOnPointerDown, ...rest } = props;
 

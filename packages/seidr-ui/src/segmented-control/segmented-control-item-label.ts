@@ -35,7 +35,7 @@ export type SegmentedControlItemLabelProps<T extends keyof SeidrElementTagNameMa
  */
 export function SegmentedControlItemLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: SegmentedControlItemLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "label" as T, instance: item, ...rest } = props;
 

@@ -127,7 +127,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
     const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
       props?: NavigationMenuTriggerProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): SeidrElementTagNameMap[T] =>
       NavigationMenuTrigger<T>(
         {
@@ -142,7 +142,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
     const Content = <T extends keyof SeidrElementTagNameMap = "div">(
       props?: NavigationMenuContentProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
       const {
         onkeydown: userOnKeyDown,
@@ -203,7 +203,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
       );
     };
 
-    const Portal = (props: NavigationMenuPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+    const Portal = (props: NavigationMenuPortalProps = {}, children?: SeidrChild): SeidrChild => {
       const configuredTarget = props.target ?? underlyingMenu.portalTarget ?? navMenu.portalTarget;
       underlyingMenu.portalTarget = undefined;
       const renderPortal = () => {
@@ -231,19 +231,19 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Root = <T extends keyof SeidrElementTagNameMap = "nav">(
     props?: NavigationMenuRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     NavigationMenuRoot<T>({ dataComponent, instance: navMenu, ...props } as NavigationMenuRootProps<T>, children);
 
   const List = <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: NavigationMenuListProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     NavigationMenuList<T>({ dataComponent, instance: navMenu, ...props } as NavigationMenuListProps<T>, children);
 
   const Menu = <T extends keyof SeidrElementTagNameMap = "li">(
     props: NavigationMenuMenuProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     let menuInst = createdMenus.get(props.value);
     if (!menuInst) {
@@ -263,7 +263,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props?: NavigationMenuTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = props?.menuValue
       ? (createdMenus.get(props.menuValue) ?? createMenu(props.menuValue))
@@ -278,7 +278,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
     return targetMenu.Trigger<T>(props, children);
   };
 
-  const Portal = (props?: NavigationMenuPortalProps, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const Portal = (props?: NavigationMenuPortalProps, children?: SeidrChild): SeidrChild => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
       throw new SeidrError("NavigationMenuPortal requires an active NavigationMenuMenu context");
@@ -288,7 +288,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: NavigationMenuContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -299,7 +299,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Link = <T extends keyof SeidrElementTagNameMap = "a">(
     props?: NavigationMenuLinkProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     NavigationMenuLink<T>(
       {
@@ -312,7 +312,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Viewport = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: NavigationMenuViewportProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     NavigationMenuViewport<T>(
       {
@@ -325,7 +325,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Item = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -336,7 +336,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const CheckboxItem = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuCheckboxItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -347,7 +347,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const RadioGroup = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuRadioGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -358,7 +358,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const RadioItem = <T extends keyof SeidrElementTagNameMap = "div">(
     props: MenuRadioItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -369,7 +369,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Sub = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -380,7 +380,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const SubTrigger = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -391,7 +391,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const SubContent = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuSubContentProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     const targetMenu = activeCreatedMenu;
     if (!targetMenu) {
@@ -412,14 +412,14 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Group = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: MenuGroupProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuGroup<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuGroupProps<T>, children);
   };
 
   const GroupLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuGroupLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuGroupLabel<T>(
       {
@@ -433,7 +433,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const ItemLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuItemLabel<T>(
       {
@@ -447,7 +447,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const ItemDescription = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuItemDescription<T>(
       {
@@ -461,7 +461,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const ItemIndicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> => {
     return MenuItemIndicator<T>(
       {
@@ -475,7 +475,7 @@ export function createNavigationMenu(options: UseNavigationMenuOptions = {}): Na
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: MenuIconProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => {
     return MenuIcon<T>({ dataComponent, ...props, instance: activeCreatedMenu } as MenuIconProps<T>, children);
   };

@@ -7,7 +7,7 @@ import type { TimeFieldSeparatorProps } from "./types.js";
  */
 export function TimeFieldSeparator<T extends keyof SeidrElementTagNameMap = "span">(
   props: TimeFieldSeparatorProps<T> = {} as TimeFieldSeparatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, instance, dataComponent = "time-field", children: propsChildren, ...rest } = props;
 

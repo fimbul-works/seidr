@@ -15,7 +15,7 @@ import type { FileFieldItemDeleteTriggerProps } from "./types.js";
  */
 export function FileFieldItemDeleteTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: FileFieldItemDeleteTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

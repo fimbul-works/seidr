@@ -13,8 +13,8 @@ import type { BreadcrumbsItemProps } from "./types.js";
  * List item container for a single breadcrumb link and optional separator.
  */
 export function BreadcrumbsItem<T extends keyof SeidrElementTagNameMap = "li">(
-  propsOrChildren?: BreadcrumbsItemProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: BreadcrumbsItemProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsItemProps<T>>(propsOrChildren, children);
   const { as = "li" as T, instance, ...rest } = props;

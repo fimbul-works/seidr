@@ -13,7 +13,7 @@ import type { NavigationMenuMenuProps } from "./types.js";
  */
 export function NavigationMenuMenu<T extends keyof SeidrElementTagNameMap = "li">(
   props: NavigationMenuMenuProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "li" as T,

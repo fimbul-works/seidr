@@ -33,7 +33,7 @@ export type CheckboxIndicatorProps<T extends keyof SeidrElementTagNameMap = "div
  */
 export function CheckboxIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: CheckboxIndicatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "div" as T, instance: cb, forceMount, id, ...rest } = props;
 

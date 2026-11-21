@@ -15,7 +15,7 @@ import type { NavigationMenuRootProps } from "./types.js";
  */
 export function NavigationMenuRoot<T extends keyof SeidrElementTagNameMap = "nav">(
   props: NavigationMenuRootProps<T> = {} as NavigationMenuRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "nav" as T,

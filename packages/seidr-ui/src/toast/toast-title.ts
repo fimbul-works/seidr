@@ -14,7 +14,7 @@ import type { ToastTitleProps } from "./types.js";
  */
 export function ToastTitle<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToastTitleProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: toast, id: customId, dataComponent, ...rest } = props;
 

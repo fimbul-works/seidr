@@ -65,8 +65,8 @@ export interface UseBreadcrumbsOptions {
  */
 export interface UseBreadcrumbsResult {
   id: string;
-  separator: ObservableValue<SeidrChild>;
-  ariaLabel: ObservableValue<string>;
+  separator: ReactiveValue<SeidrChild>;
+  ariaLabel: ReactiveValue<string>;
 }
 
 export interface BreadcrumbsRootOptions<T extends keyof SeidrElementTagNameMap = "nav"> {
@@ -142,24 +142,24 @@ export type BreadcrumbsSeparatorProps<T extends keyof SeidrElementTagNameMap = "
  */
 export interface BreadcrumbsInstance extends UseBreadcrumbsResult {
   Root: <T extends keyof SeidrElementTagNameMap = "nav">(
-    propsOrChildren?: BreadcrumbsRootProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    propsOrChildren?: BreadcrumbsRootProps<T> | SeidrChild,
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   List: <T extends keyof SeidrElementTagNameMap = "ol">(
-    propsOrChildren?: BreadcrumbsListProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    propsOrChildren?: BreadcrumbsListProps<T> | SeidrChild,
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
-    propsOrChildren?: BreadcrumbsItemProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    propsOrChildren?: BreadcrumbsItemProps<T> | SeidrChild,
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Link: <T extends keyof SeidrElementTagNameMap = "a">(
-    propsOrChildren?: BreadcrumbsLinkProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    propsOrChildren?: BreadcrumbsLinkProps<T> | SeidrChild,
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Separator: <T extends keyof SeidrElementTagNameMap = "span">(
-    propsOrChildren?: BreadcrumbsSeparatorProps<T> | SeidrChild | SeidrChild[],
-    children?: SeidrChild | SeidrChild[],
+    propsOrChildren?: BreadcrumbsSeparatorProps<T> | SeidrChild,
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 

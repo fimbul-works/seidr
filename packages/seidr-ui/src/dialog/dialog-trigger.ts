@@ -16,7 +16,7 @@ import type { DialogTriggerProps } from "./types.js";
  */
 export function DialogTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: DialogTriggerProps<T> = {} as DialogTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

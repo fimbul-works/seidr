@@ -88,7 +88,7 @@ export interface SwitchInstance extends UseSwitchResult {
   /** Pre-bound Switch.Root container. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props: SwitchRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Input native hidden element. */
@@ -97,30 +97,30 @@ export interface SwitchInstance extends UseSwitchResult {
   /** Pre-bound Switch.Control visual track element. */
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props: SwitchControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Thumb sliding thumb element. */
   Thumb: <T extends keyof SeidrElementTagNameMap = "div">(
     props: SwitchThumbProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props: FormControlLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props: FormControlDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound Switch.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props: FormControlErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }

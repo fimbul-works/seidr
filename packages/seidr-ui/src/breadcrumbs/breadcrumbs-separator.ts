@@ -14,8 +14,8 @@ import type { BreadcrumbsSeparatorProps } from "./types.js";
  * Marked with aria-hidden="true" so screen readers ignore it.
  */
 export function BreadcrumbsSeparator<T extends keyof SeidrElementTagNameMap = "span">(
-  propsOrChildren?: BreadcrumbsSeparatorProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: BreadcrumbsSeparatorProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsSeparatorProps<T>>(propsOrChildren, children);
   const { as = "span" as T, instance, ...rest } = props;

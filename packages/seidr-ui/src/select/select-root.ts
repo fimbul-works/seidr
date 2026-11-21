@@ -13,7 +13,7 @@ import type { SelectRootProps } from "./types.js";
  */
 export function SelectRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: SelectRootProps<T> = {} as SelectRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

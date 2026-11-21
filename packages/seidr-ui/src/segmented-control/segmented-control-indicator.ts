@@ -33,7 +33,7 @@ export type SegmentedControlIndicatorProps<T extends keyof SeidrElementTagNameMa
  */
 export function SegmentedControlIndicator<T extends keyof SeidrElementTagNameMap = "div">(
   props: SegmentedControlIndicatorProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: sc, style: userStyle, ...rest } = props;
 

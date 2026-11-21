@@ -1,11 +1,11 @@
 import type { SeidrChild, SeidrElementTagNameMap } from "@fimbul-works/seidr";
-import { type CollapsibleContentProps } from "./collapsible-content.js";
-import { type CollapsibleRootProps } from "./collapsible-root.js";
-import { type CollapsibleTriggerProps } from "./collapsible-trigger.js";
-import { createCollapsible } from "./create-collapsible.js";
-import type { UseCollapsibleOptions } from "./use-collapsible.js";
 import { createComponent } from "@fimbul-works/seidr";
-import { CollapsibleAnimationOptions } from "./types.js";
+import type { CollapsibleContentProps } from "./collapsible-content.js";
+import type { CollapsibleRootProps } from "./collapsible-root.js";
+import type { CollapsibleTriggerProps } from "./collapsible-trigger.js";
+import { createCollapsible } from "./create-collapsible.js";
+import type { CollapsibleAnimationOptions } from "./types.js";
+import type { UseCollapsibleOptions } from "./use-collapsible.js";
 
 export interface CollapsibleProps<
   TRoot extends keyof SeidrElementTagNameMap = "div",
@@ -20,11 +20,11 @@ export interface CollapsibleProps<
     "open" | "defaultOpen" | "onOpenChange" | "disabled" | "forceMount" | "id"
   >;
   /** Content for trigger. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Props for trigger button. */
   triggerProps?: CollapsibleTriggerProps<TTrigger>;
   /** Content for the collapsible panel. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
   /** Animation configuration using Flaedi. */
   animation?: boolean | CollapsibleAnimationOptions;
   /** Props for content panel. */

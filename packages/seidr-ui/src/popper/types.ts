@@ -187,17 +187,17 @@ export type PopperArrowProps<T extends keyof SeidrElementTagNameMap = "div"> = P
 export interface PopperInstance extends UsePopperResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopperRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Positioner: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopperPositionerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<PopperArrowProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 

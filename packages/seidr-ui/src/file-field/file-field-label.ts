@@ -13,7 +13,7 @@ import type { FileFieldLabelProps } from "./types.js";
  */
 export function FileFieldLabel<T extends keyof SeidrElementTagNameMap = "label">(
   props: FileFieldLabelProps<T> = {} as FileFieldLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "label" as T,

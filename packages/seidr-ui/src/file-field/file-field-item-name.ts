@@ -14,7 +14,7 @@ import type { FileFieldItemNameProps } from "./types.js";
  */
 export function FileFieldItemName<T extends keyof SeidrElementTagNameMap = "span">(
   props: FileFieldItemNameProps<T> = {} as FileFieldItemNameProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "span" as T,

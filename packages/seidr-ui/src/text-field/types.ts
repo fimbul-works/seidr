@@ -181,13 +181,13 @@ export interface TextFieldInstance extends UseTextFieldResult {
   /** Pre-bound TextField.Root container element. */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TextFieldRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound TextField.Label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: Omit<TextFieldLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound TextField.Input single-line input element. */
@@ -203,13 +203,13 @@ export interface TextFieldInstance extends UseTextFieldResult {
   /** Pre-bound TextField.Description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TextFieldDescriptionProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Pre-bound TextField.ErrorMessage element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TextFieldErrorMessageProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T] | ObservableValue<SeidrElementTagNameMap[T] | null>;
 }
 
@@ -257,5 +257,5 @@ export interface TextFieldProps<T extends keyof SeidrElementTagNameMap = "div"> 
   errorMessageProps?: Omit<TextFieldErrorMessageProps<"div">, "instance">;
 
   /** Additional child elements placed in the Root container. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

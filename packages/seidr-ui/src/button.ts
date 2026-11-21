@@ -61,15 +61,15 @@ export type ButtonProps<T extends keyof SeidrElementTagNameMap = "button"> = But
  * Based on the WAI-ARIA Button Pattern.
  */
 export function Button<T extends keyof SeidrElementTagNameMap = "button">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Button<T extends keyof SeidrElementTagNameMap = "button">(
   props: ButtonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Button<T extends keyof SeidrElementTagNameMap = "button">(
-  propsOrChildren?: ButtonProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: ButtonProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<ButtonProps<T>>(propsOrChildren, children);
   const {

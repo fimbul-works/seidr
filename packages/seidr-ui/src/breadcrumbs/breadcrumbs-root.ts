@@ -13,8 +13,8 @@ import type { BreadcrumbsRootProps } from "./types.js";
  * Navigation landmark container for breadcrumbs.
  */
 export function BreadcrumbsRoot<T extends keyof SeidrElementTagNameMap = "nav">(
-  propsOrChildren?: BreadcrumbsRootProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: BreadcrumbsRootProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<BreadcrumbsRootProps<T>>(propsOrChildren, children);
   const { as = "nav" as T, instance, ariaLabel, ...rest } = props;

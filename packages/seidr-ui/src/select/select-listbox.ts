@@ -15,7 +15,7 @@ import type { SelectListboxProps } from "./types.js";
  */
 export function SelectListbox<T extends keyof SeidrElementTagNameMap = "ul">(
   props: SelectListboxProps<T> = {} as SelectListboxProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "ul" as T,

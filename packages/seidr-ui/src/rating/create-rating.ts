@@ -33,34 +33,34 @@ export function createRating(options: UseRatingOptions = {}): RatingInstance {
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props?: RatingRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => RatingRoot<T>({ instance: rating, ...props } as RatingRootProps<T>, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => RatingLabel<T>({ instance: rating, ...props } as RatingLabelProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "span">(
     props: RatingItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] => RatingItem<T>({ instance: rating, ...props } as RatingItemProps<T>, children);
 
   const ItemIndicator = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     RatingItemIndicator<T>({ instance: rating, ...props } as RatingItemIndicatorProps<T>, children);
 
   const Description = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     RatingDescription<T>({ instance: rating, ...props } as RatingDescriptionProps<T>, children);
 
   const ErrorMessage = <T extends keyof SeidrElementTagNameMap = "span">(
     props?: RatingErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     RatingErrorMessage<T>({ instance: rating, ...props } as RatingErrorMessageProps<T>, children);
 

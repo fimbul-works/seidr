@@ -12,13 +12,13 @@ export interface SegmentedControlProps extends UseSegmentedControlOptions {
   className?: ReactiveValue<string>;
 
   /** Accessible group label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional group description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Optional group error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Declarative list of items to render, supports static arrays or reactive observable arrays. */
   items?: ReactiveValue<SegmentedControlItemDescriptor[]>;
@@ -45,36 +45,32 @@ export interface SegmentedControlProps extends UseSegmentedControlOptions {
  * and form-control integration in one call.
  * Supports static item arrays, reactive observable arrays (dynamic lists), or custom children.
  */
-export const SegmentedControl = createComponent(
-  (props: SegmentedControlProps = {}, children?: SeidrChild | SeidrChild[]) => {
-    const {
-      className,
-      label,
-      description,
-      errorMessage,
-      items,
-      rootProps = {},
-      indicatorProps = {},
-      labelProps = {},
-      descriptionProps = {},
-      errorMessageProps = {},
-      ...segmentedControlOptions
-    } = props;
+export const SegmentedControl = createComponent((props: SegmentedControlProps = {}, children?: SeidrChild) => {
+  const {
+    className,
+    label,
+    description,
+    errorMessage,
+    items,
+    rootProps = {},
+    indicatorProps = {},
+    labelProps = {},
+    descriptionProps = {},
+    errorMessageProps = {},
+    ...segmentedControlOptions
+  } = props;
 
-    const sc = createSegmentedControl(segmentedControlOptions);
+  const sc = createSegmentedControl(segmentedControlOptions);
 
-    const itemElements: SeidrChild | SeidrChild[] =
-      children !== undefined ? children : items !== undefined ? sc.List(items) : [];
+  const itemElements: SeidrChild = children !== undefined ? children : items !== undefined ? sc.List(items) : [];
 
-    const renderedItems = Array.isArray(itemElements) ? itemElements : [itemElements];
+  const renderedItems = Array.isArray(itemElements) ? itemElements : [itemElements];
 
-    return sc.Root({ className, ...rootProps } as SegmentedControlRootProps, [
-      label ? sc.Label(labelProps, label) : null,
-      description ? sc.Description(descriptionProps, description) : null,
-      errorMessage ? sc.ErrorMessage(errorMessageProps, errorMessage) : null,
-      sc.Indicator(indicatorProps),
-      ...renderedItems,
-    ]);
-  },
-  "SegmentedControl",
-);
+  return sc.Root({ className, ...rootProps } as SegmentedControlRootProps, [
+    label ? sc.Label(labelProps, label) : null,
+    description ? sc.Description(descriptionProps, description) : null,
+    errorMessage ? sc.ErrorMessage(errorMessageProps, errorMessage) : null,
+    sc.Indicator(indicatorProps),
+    ...renderedItems,
+  ]);
+}, "SegmentedControl");

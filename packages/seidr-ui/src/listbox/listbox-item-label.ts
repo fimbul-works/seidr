@@ -14,7 +14,7 @@ import type { ListboxItemLabelProps } from "./types.js";
  */
 export function ListboxItemLabel<T extends keyof SeidrElementTagNameMap = "div">(
   props: ListboxItemLabelProps<T> = {} as ListboxItemLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: item, id: customId, dataComponent = DATA_COMPONENT_LISTBOX, ...rest } = props;
 

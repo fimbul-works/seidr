@@ -37,7 +37,7 @@ export type NumberFieldDecrementTriggerProps<T extends keyof SeidrElementTagName
  */
 export function NumberFieldDecrementTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: NumberFieldDecrementTriggerProps<T> = {} as NumberFieldDecrementTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "button" as T, instance: nf, tabIndex = -1, onclick, ...rest } = props;
 

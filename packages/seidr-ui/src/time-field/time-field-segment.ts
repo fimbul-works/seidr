@@ -17,7 +17,7 @@ import { PAGE_STEP } from "./util.js";
  */
 export function TimeFieldSegment<T extends keyof SeidrElementTagNameMap = "div">(
   props: TimeFieldSegmentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

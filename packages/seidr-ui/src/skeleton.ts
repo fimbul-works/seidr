@@ -61,15 +61,15 @@ export type SkeletonProps<T extends keyof SeidrElementTagNameMap = "div"> = Skel
  * Skeleton is a placeholder for content while data is loading.
  */
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
   props: SkeletonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Skeleton<T extends keyof SeidrElementTagNameMap = "div">(
-  propsOrChildren?: SkeletonProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: SkeletonProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SkeletonProps<T>>(propsOrChildren, children);
   const {

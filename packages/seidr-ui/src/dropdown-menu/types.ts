@@ -12,6 +12,7 @@ import type {
   MenuGroupProps,
   MenuIconOptions,
   MenuIconProps,
+  MenuInstance,
   MenuItemData,
   MenuItemDescriptionOptions,
   MenuItemDescriptionProps,
@@ -23,7 +24,6 @@ import type {
   MenuItemOptions,
   MenuItemProps,
   MenuItemRegistration,
-  MenuInstance,
   MenuLeafDescriptor,
   MenuListRenderOptions,
   MenuRadioGroupData,
@@ -137,7 +137,7 @@ export interface DropdownMenuProps<T extends keyof SeidrElementTagNameMap = "div
   /** Underlying HTML tag for root container element. Defaults to "div". */
   as?: T;
   /** Content or trigger element to activate the dropdown menu. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Declarative list of items or groups rendered dynamically inside the content. */
   items?: ReactiveValue<MenuItemDescriptor[]>;
   /** Props forwarded to the root element. */
@@ -147,5 +147,5 @@ export interface DropdownMenuProps<T extends keyof SeidrElementTagNameMap = "div
   /** Props forwarded to the content dropdown element. */
   contentProps?: Omit<DropdownMenuContentProps, "instance" | "dataComponent">;
   /** Child elements or custom composition rendered inside the menu content. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

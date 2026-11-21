@@ -17,7 +17,7 @@ import type { ContextMenuTriggerProps } from "./types.js";
  */
 export function ContextMenuTrigger<T extends keyof SeidrElementTagNameMap = "div">(
   props: ContextMenuTriggerProps<T> = {} as ContextMenuTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

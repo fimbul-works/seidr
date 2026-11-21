@@ -13,7 +13,7 @@ import type { ComboboxRootProps } from "./types.js";
  */
 export function ComboboxRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: ComboboxRootProps<T> = {} as ComboboxRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: combobox, dataComponent = DATA_COMPONENT_COMBOBOX, id: customId, ...rest } = props;
 

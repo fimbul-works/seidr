@@ -19,7 +19,7 @@ import type { ToastProgressFillProps } from "./types.js";
  */
 export function ToastProgressFill<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToastProgressFillProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: toast, style: userStyle, dataComponent, ...rest } = props;
 

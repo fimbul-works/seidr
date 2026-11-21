@@ -15,7 +15,7 @@ import type { SelectTriggerProps } from "./types.js";
  */
 export function SelectTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: SelectTriggerProps<T> = {} as SelectTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

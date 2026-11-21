@@ -22,21 +22,21 @@ export interface FormControlProps<
     "id" | "name" | "validationState" | "required" | "disabled" | "readOnly" | "fieldId"
   >;
   /** Content for the label. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
   /** Props for label element. */
   labelProps?: FormControlLabelProps<TLabel>;
   /** The form field element (e.g. $input(...)). */
-  field?: SeidrChild | SeidrChild[];
+  field?: SeidrChild;
   /** Helper description text. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
   /** Props for description element. */
   descriptionProps?: FormControlDescriptionProps<TDescription>;
   /** Validation error message text. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
   /** Props for error message element. */
   errorMessageProps?: FormControlErrorMessageProps<TErrorMessage>;
   /** Additional children to render in root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 
 /**

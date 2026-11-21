@@ -13,7 +13,7 @@ import type { TabsRootProps } from "./types.js";
  */
 export function TabsRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: TabsRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: tabs, ...rest } = props;
 

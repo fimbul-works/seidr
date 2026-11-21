@@ -17,7 +17,7 @@ import type { SliderThumbProps } from "./types.js";
  */
 export function SliderThumb<T extends keyof SeidrElementTagNameMap = "span">(
   props: SliderThumbProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [aria, restProps] = extractARIAProps(props);
 

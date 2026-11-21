@@ -12,7 +12,7 @@ export type SwitchDescriptionProps<T extends keyof SeidrElementTagNameMap = "div
  */
 export function SwitchDescription<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchDescriptionProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: sw, ...rest } = props;
 

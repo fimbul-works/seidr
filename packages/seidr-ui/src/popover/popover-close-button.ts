@@ -14,7 +14,7 @@ import type { PopoverCloseButtonProps } from "./types.js";
  */
 export function PopoverCloseButton<T extends keyof SeidrElementTagNameMap = "button">(
   props: PopoverCloseButtonProps<T> = {} as PopoverCloseButtonProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

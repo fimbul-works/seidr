@@ -107,7 +107,7 @@ export interface FileFieldRootOptions<T extends keyof SeidrElementTagNameMap = "
   as?: T;
   instance?: UseFileFieldResult;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldRootProps<T extends keyof SeidrElementTagNameMap = "div"> = FileFieldRootOptions<T> &
   SeidrElementProps<T>;
@@ -120,7 +120,7 @@ export interface FileFieldDropzoneOptions<T extends keyof SeidrElementTagNameMap
   role?: string;
   tabIndex?: number | ObservableValue<number>;
   tabindex?: number | ObservableValue<number>;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldDropzoneProps<T extends keyof SeidrElementTagNameMap = "div"> = FileFieldDropzoneOptions<T> &
   SeidrElementProps<T>;
@@ -136,7 +136,7 @@ export interface FileFieldTriggerOptions<T extends keyof SeidrElementTagNameMap 
   as?: T;
   instance?: UseFileFieldResult;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> = FileFieldTriggerOptions<T> &
   SeidrElementProps<T>;
@@ -147,7 +147,7 @@ export interface FileFieldLabelOptions<T extends keyof SeidrElementTagNameMap = 
   dataComponent?: string;
   for?: string;
   htmlFor?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldLabelProps<T extends keyof SeidrElementTagNameMap = "label"> = FileFieldLabelOptions<T> &
   SeidrElementProps<T>;
@@ -156,7 +156,7 @@ export interface FileFieldItemListOptions<T extends keyof SeidrElementTagNameMap
   as?: T;
   instance?: UseFileFieldResult;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemListProps<T extends keyof SeidrElementTagNameMap = "ul"> = FileFieldItemListOptions<T> &
   SeidrElementProps<T>;
@@ -166,7 +166,7 @@ export interface FileFieldItemOptions<T extends keyof SeidrElementTagNameMap = "
   instance?: UseFileFieldResult;
   file: File | ObservableValue<File>;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemProps<T extends keyof SeidrElementTagNameMap = "li"> = FileFieldItemOptions<T> &
   SeidrElementProps<T>;
@@ -176,7 +176,7 @@ export interface FileFieldItemNameOptions<T extends keyof SeidrElementTagNameMap
   instance?: UseFileFieldResult;
   file?: File | ObservableValue<File>;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemNameProps<T extends keyof SeidrElementTagNameMap = "span"> = FileFieldItemNameOptions<T> &
   SeidrElementProps<T>;
@@ -187,7 +187,7 @@ export interface FileFieldItemSizeOptions<T extends keyof SeidrElementTagNameMap
   file?: File | ObservableValue<File>;
   precision?: number;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemSizeProps<T extends keyof SeidrElementTagNameMap = "span"> = FileFieldItemSizeOptions<T> &
   SeidrElementProps<T>;
@@ -198,7 +198,7 @@ export interface FileFieldItemPreviewOptions<T extends keyof SeidrElementTagName
   file?: File | ObservableValue<File>;
   type?: string;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemPreviewProps<T extends keyof SeidrElementTagNameMap = "div"> = FileFieldItemPreviewOptions<T> &
   SeidrElementProps<T>;
@@ -218,7 +218,7 @@ export interface FileFieldItemDeleteTriggerOptions<T extends keyof SeidrElementT
   instance?: UseFileFieldResult;
   file: File | ObservableValue<File>;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldItemDeleteTriggerProps<T extends keyof SeidrElementTagNameMap = "button"> =
   FileFieldItemDeleteTriggerOptions<T> & SeidrElementProps<T>;
@@ -227,7 +227,7 @@ export interface FileFieldDescriptionOptions<T extends keyof SeidrElementTagName
   as?: T;
   instance?: UseFileFieldResult;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldDescriptionProps<T extends keyof SeidrElementTagNameMap = "span"> =
   FileFieldDescriptionOptions<T> & SeidrElementProps<T>;
@@ -236,7 +236,7 @@ export interface FileFieldErrorMessageOptions<T extends keyof SeidrElementTagNam
   as?: T;
   instance?: UseFileFieldResult;
   dataComponent?: string;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }
 export type FileFieldErrorMessageProps<T extends keyof SeidrElementTagNameMap = "span"> =
   FileFieldErrorMessageOptions<T> & SeidrElementProps<T>;
@@ -248,53 +248,53 @@ export type FileFieldErrorMessageProps<T extends keyof SeidrElementTagNameMap = 
 export interface FileFieldInstance extends UseFileFieldResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Dropzone: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldDropzoneProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   HiddenInput: (props?: FileFieldHiddenInputProps) => HTMLInputElement;
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: FileFieldTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: FileFieldLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemList: <T extends keyof SeidrElementTagNameMap = "ul">(
     props?: FileFieldItemListProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "li">(
     props: FileFieldItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemName: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldItemNameProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemSize: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldItemSizeProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemPreview: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: FileFieldItemPreviewProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemPreviewImage: (props?: FileFieldItemPreviewImageProps) => SeidrChild;
   ItemDeleteTrigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props: FileFieldItemDeleteTriggerProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: FileFieldErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -311,5 +311,5 @@ export type FileFieldProps<T extends keyof SeidrElementTagNameMap = "div"> = Use
   hiddenInputProps?: FileFieldHiddenInputProps;
   triggerProps?: FileFieldTriggerProps<"button">;
   itemListProps?: FileFieldItemListProps<"ul">;
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 } & Omit<SeidrElementProps<T>, "children" | "id">;

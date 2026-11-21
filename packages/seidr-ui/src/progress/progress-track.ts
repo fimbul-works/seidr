@@ -13,7 +13,7 @@ import type { ProgressTrackProps } from "./types.js";
  */
 export function ProgressTrack<T extends keyof SeidrElementTagNameMap = "div">(
   props: ProgressTrackProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: progress, dataComponent, ...rest } = props;
 

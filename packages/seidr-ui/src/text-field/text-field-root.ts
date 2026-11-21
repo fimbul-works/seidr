@@ -13,7 +13,7 @@ import type { TextFieldRootProps } from "./types.js";
  */
 export function TextFieldRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: TextFieldRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

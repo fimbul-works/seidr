@@ -14,7 +14,7 @@ import { useMenuRadioGroup } from "./use-menu.js";
  */
 export function MenuRadioGroup<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuRadioGroupProps<T> = {} as MenuRadioGroupProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

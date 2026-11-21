@@ -23,7 +23,7 @@ import type { TooltipContentProps } from "./types.js";
  */
 export function TooltipContent<T extends keyof SeidrElementTagNameMap = "div">(
   props: TooltipContentProps<T> = {} as TooltipContentProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const {
     as = "div" as T,

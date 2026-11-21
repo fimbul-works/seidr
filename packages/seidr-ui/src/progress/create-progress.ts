@@ -28,27 +28,27 @@ export function createProgress(options: UseProgressOptions = {}): ProgressInstan
     ...instance,
     Root: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<ProgressRootProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressRoot({ instance, ...props } as ProgressRootProps<T>, children),
     Header: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<ProgressHeaderProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressHeader({ instance, ...props } as ProgressHeaderProps<T>, children),
     Track: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<ProgressTrackProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressTrack({ instance, ...props } as ProgressTrackProps<T>, children),
     Fill: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: Omit<ProgressFillProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressFill({ instance, ...props } as ProgressFillProps<T>, children),
     Label: <T extends keyof SeidrElementTagNameMap = "span">(
       props?: Omit<ProgressLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressLabel({ instance, ...props } as ProgressLabelProps<T>, children),
     ValueLabel: <T extends keyof SeidrElementTagNameMap = "span">(
       props?: Omit<ProgressValueLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ProgressValueLabel({ instance, ...props } as ProgressValueLabelProps<T>, children),
   };
 }

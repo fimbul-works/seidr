@@ -17,7 +17,7 @@ import type { ToastRegionRootProps } from "./types.js";
  */
 export function ToastRegionRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: ToastRegionRootProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

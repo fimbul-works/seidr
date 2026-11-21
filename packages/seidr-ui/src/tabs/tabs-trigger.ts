@@ -17,7 +17,7 @@ import type { TabsTriggerProps } from "./types.js";
  */
 export function TabsTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: TabsTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

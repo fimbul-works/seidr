@@ -35,15 +35,15 @@ export type SeparatorProps<T extends keyof SeidrElementTagNameMap = "hr"> = Sepa
  * A separator visually or semantically separates content.
  */
 export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
   props: SeparatorProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T];
 export function Separator<T extends keyof SeidrElementTagNameMap = "hr">(
-  propsOrChildren?: SeparatorProps<T> | SeidrChild | SeidrChild[],
-  children?: SeidrChild | SeidrChild[],
+  propsOrChildren?: SeparatorProps<T> | SeidrChild,
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const [props, content] = resolvePropsAndChildren<SeparatorProps<T>>(propsOrChildren, children);
   const { as = "hr" as T, orientation = "horizontal", role, ...rest } = props;

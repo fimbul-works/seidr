@@ -15,7 +15,7 @@ import type { ComboboxTriggerProps } from "./types.js";
  */
 export function ComboboxTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: ComboboxTriggerProps<T> = {} as ComboboxTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "button" as T,

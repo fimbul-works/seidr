@@ -16,7 +16,7 @@ import type { SliderFillProps } from "./types.js";
  */
 export function SliderFill<T extends keyof SeidrElementTagNameMap = "div">(
   props: SliderFillProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: slider, style: userStyle, ...rest } = props;
 

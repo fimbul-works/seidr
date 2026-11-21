@@ -89,7 +89,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
     const Root = <T extends keyof SeidrElementTagNameMap = "li">(
       props: Omit<SelectItemProps<T>, "instance" | "value"> = {} as Omit<SelectItemProps<T>, "instance" | "value">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItem(
         {
@@ -103,7 +103,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
     const Label = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<SelectItemLabelProps<T>, "instance"> = {} as Omit<SelectItemLabelProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemLabel(
         { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemLabelProps<T>,
@@ -112,7 +112,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
     const Description = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<SelectItemDescriptionProps<T>, "instance"> = {} as Omit<SelectItemDescriptionProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemDescription(
         { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemDescriptionProps<T>,
@@ -121,7 +121,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
     const Indicator = <T extends keyof SeidrElementTagNameMap = "div">(
       props: Omit<SelectItemIndicatorProps<T>, "instance"> = {} as Omit<SelectItemIndicatorProps<T>, "instance">,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) =>
       ListboxItemIndicator(
         { instance: itemInstance, dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxItemIndicatorProps<T>,
@@ -143,30 +143,30 @@ export function createSelect<Option = any, OptGroup = any>(
 
   const Root = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<SelectRootProps<T>, "instance"> = {} as Omit<SelectRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectRoot({ instance, ...props } as SelectRootProps<T>, children);
 
   const Label = <T extends keyof SeidrElementTagNameMap = "span">(
     props: Omit<SelectLabelProps<T>, "instance"> = {} as Omit<SelectLabelProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectLabel({ instance, ...props } as SelectLabelProps<T>, children);
 
   const Trigger = <T extends keyof SeidrElementTagNameMap = "button">(
     props: Omit<SelectTriggerProps<T>, "instance"> = {} as Omit<SelectTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectTrigger({ instance, ...props } as SelectTriggerProps<T>, children);
 
   const Value = <T extends keyof SeidrElementTagNameMap = "span">(
     props: Omit<SelectValueProps<T>, "instance"> = {} as Omit<SelectValueProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectValue({ instance, ...props } as SelectValueProps<T>, children);
 
   const Icon = <T extends keyof SeidrElementTagNameMap = "span">(
     props: Omit<SelectIconProps<T>, "instance"> = {} as Omit<SelectIconProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectIcon({ instance, ...props } as SelectIconProps<T>, children);
 
-  const PortalHelper = (props: SelectPortalProps = {}, children?: SeidrChild | SeidrChild[]): SeidrChild => {
+  const PortalHelper = (props: SelectPortalProps = {}, children?: SeidrChild): SeidrChild => {
     const target = props.target ?? instance.portalTarget ?? getDocument().body;
     instance.portalTarget = undefined;
     const renderPortal = () => Portal(target, () => children ?? null, "SelectPortal");
@@ -178,17 +178,17 @@ export function createSelect<Option = any, OptGroup = any>(
 
   const Content = <T extends keyof SeidrElementTagNameMap = "div">(
     props: Omit<SelectContentProps<T>, "instance"> = {} as Omit<SelectContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectContent({ instance, ...props } as SelectContentProps<T>, children);
 
   const Listbox = <T extends keyof SeidrElementTagNameMap = "ul">(
     props: Omit<SelectListboxProps<T>, "instance"> = {} as Omit<SelectListboxProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SelectListbox({ instance, ...props } as SelectListboxProps<T>, children);
 
   const Item = <T extends keyof SeidrElementTagNameMap = "li">(
     props: Omit<SelectItemProps<T>, "instance"> & { value: string },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInstance = useListboxItem(instance.listbox, {
       value: props.value,
@@ -213,7 +213,7 @@ export function createSelect<Option = any, OptGroup = any>(
       SelectItemLabelProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -230,7 +230,7 @@ export function createSelect<Option = any, OptGroup = any>(
       SelectItemDescriptionProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -247,7 +247,7 @@ export function createSelect<Option = any, OptGroup = any>(
       SelectItemIndicatorProps<T>,
       "instance"
     > & { instance?: UseListboxItemResult },
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => {
     const itemInst = props.instance ?? currentItemInstance;
     if (!itemInst) {
@@ -261,13 +261,13 @@ export function createSelect<Option = any, OptGroup = any>(
 
   const Section = <T extends keyof SeidrElementTagNameMap = "li">(
     props: SelectSectionProps<T> = {} as SelectSectionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     ListboxSection<T>({ dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxSectionProps<T>, children);
 
   const SectionLabel = <T extends keyof SeidrElementTagNameMap = "span">(
     props: SelectSectionLabelProps<T> = {} as SelectSectionLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     ListboxSectionLabel<T>({ dataComponent: DATA_COMPONENT_SELECT, ...props } as ListboxSectionLabelProps<T>, children);
 
@@ -285,7 +285,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
   const Description = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectDescriptionProps<T> = {} as SelectDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): SeidrElementTagNameMap[T] =>
     FormControlDescription<T>(
       {
@@ -298,7 +298,7 @@ export function createSelect<Option = any, OptGroup = any>(
 
   const ErrorMessage = <T extends keyof SeidrElementTagNameMap = "div">(
     props: SelectErrorMessageProps<T> = {} as SelectErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ): DerivedValue<SeidrElementTagNameMap[T] | null> =>
     FormControlErrorMessage<T>(
       {

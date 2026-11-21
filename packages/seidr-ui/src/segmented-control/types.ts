@@ -133,16 +133,16 @@ export interface SegmentedControlItemDescriptor {
   value: string;
 
   /** The accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Optional description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Whether this individual item is disabled. */
   disabled?: ReactiveValue<boolean>;
 
   /** Optional custom indicator element. */
-  indicator?: SeidrChild | SeidrChild[];
+  indicator?: SeidrChild;
 
   /** Whether to render the visual control pill. Defaults to true. */
   control?: boolean;
@@ -172,45 +172,45 @@ export interface SegmentedControlItemDescriptor {
 export interface SegmentedControlItemInstance extends UseSegmentedControlItemResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Item: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Input: (props?: SegmentedControlItemInputProps) => HTMLInputElement;
   ItemInput: (props?: SegmentedControlItemInputProps) => HTMLInputElement;
   Control: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemControl: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: SegmentedControlItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: SegmentedControlItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 }
 
@@ -227,44 +227,41 @@ export interface SegmentedControlInstance extends UseSegmentedControlResult {
   createItem: (options: UseSegmentedControlItemOptions) => SegmentedControlItemInstance;
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlRootProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Indicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Label: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   Description: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlErrorMessageProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
-  Item: (
-    optionsOrProps: SegmentedControlItemDescriptor & Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
-  ) => HTMLElement;
+  Item: (optionsOrProps: SegmentedControlItemDescriptor & Record<string, any>, children?: SeidrChild) => HTMLElement;
   ItemInput: (props?: SegmentedControlItemInputProps) => HTMLInputElement;
   ItemControl: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemControlProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemIndicator: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: SegmentedControlItemIndicatorProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
   ItemLabel: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: SegmentedControlItemLabelProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   ItemDescription: <T extends keyof SeidrElementTagNameMap = "span">(
     props?: SegmentedControlItemDescriptionProps<T>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
   List: (
     items: ReactiveValue<SegmentedControlItemDescriptor[]>,

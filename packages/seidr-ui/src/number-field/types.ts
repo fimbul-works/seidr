@@ -151,7 +151,7 @@ export interface NumberFieldInstance extends UseNumberFieldResult {
   /** Root container element (role="group"). */
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Main interactive text input (role="spinbutton"). */
@@ -160,13 +160,13 @@ export interface NumberFieldInstance extends UseNumberFieldResult {
   /** Increment stepper trigger button. */
   IncrementTrigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Decrement stepper trigger button. */
   DecrementTrigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Hidden input for native HTML form submission. */
@@ -175,19 +175,19 @@ export interface NumberFieldInstance extends UseNumberFieldResult {
   /** Accessible label element. */
   Label: <T extends keyof SeidrElementTagNameMap = "label">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Accessible description element. */
   Description: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   /** Accessible error message element. */
   ErrorMessage: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Record<string, any>,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 }
 
@@ -196,13 +196,13 @@ export interface NumberFieldProps<T extends keyof SeidrElementTagNameMap = "div"
   as?: T;
 
   /** Accessible label text or element. */
-  label?: SeidrChild | SeidrChild[];
+  label?: SeidrChild;
 
   /** Accessible description text or element. */
-  description?: SeidrChild | SeidrChild[];
+  description?: SeidrChild;
 
   /** Accessible error message text or element. */
-  errorMessage?: SeidrChild | SeidrChild[];
+  errorMessage?: SeidrChild;
 
   /** Placeholder text for the input. */
   placeholder?: ReactiveValue<string>;
@@ -211,7 +211,7 @@ export interface NumberFieldProps<T extends keyof SeidrElementTagNameMap = "div"
   controls?: boolean;
 
   /** Custom children to render inside root. */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 
   /** Props passed to NumberField.Root. */
   rootProps?: Record<string, any>;

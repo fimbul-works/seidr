@@ -37,7 +37,7 @@ export type NumberFieldIncrementTriggerProps<T extends keyof SeidrElementTagName
  */
 export function NumberFieldIncrementTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: NumberFieldIncrementTriggerProps<T> = {} as NumberFieldIncrementTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "button" as T, instance: nf, tabIndex = -1, onclick, ...rest } = props;
 

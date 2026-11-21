@@ -170,19 +170,19 @@ export type TooltipArrowProps<T extends keyof SeidrElementTagNameMap = "div"> = 
 export interface TooltipInstance extends UseTooltipResult {
   Root: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TooltipRootProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
   Trigger: <T extends keyof SeidrElementTagNameMap = "button">(
     props?: Omit<TooltipTriggerProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => SeidrElementTagNameMap[T];
 
-  Portal: (props?: TooltipPortalProps, children?: SeidrChild | SeidrChild[]) => SeidrChild;
+  Portal: (props?: TooltipPortalProps, children?: SeidrChild) => SeidrChild;
 
   Content: <T extends keyof SeidrElementTagNameMap = "div">(
     props?: Omit<TooltipContentProps<T>, "instance">,
-    children?: SeidrChild | SeidrChild[],
+    children?: SeidrChild,
   ) => DerivedValue<SeidrElementTagNameMap[T] | null>;
 
   Arrow: <T extends keyof SeidrElementTagNameMap = "div">(
@@ -198,9 +198,9 @@ export interface TooltipProps<T extends keyof SeidrElementTagNameMap = "div"> ex
   /** Polymorphic tag name for the root wrapper. Defaults to `"div"`. */
   as?: T;
   /** Trigger element or label content. */
-  trigger?: SeidrChild | SeidrChild[];
+  trigger?: SeidrChild;
   /** Tooltip body content (can also be passed as `children`). */
-  content?: SeidrChild | SeidrChild[];
+  content?: SeidrChild;
   /** Whether to render a PopperArrow inside the tooltip content. */
   showArrow?: boolean;
   /** Props forwarded to TooltipRoot. */
@@ -212,5 +212,5 @@ export interface TooltipProps<T extends keyof SeidrElementTagNameMap = "div"> ex
   /** Props forwarded to TooltipArrow. */
   arrowProps?: Omit<TooltipArrowProps<"div">, "instance">;
   /** Children rendered inside TooltipContent (when `content` is not provided). */
-  children?: SeidrChild | SeidrChild[];
+  children?: SeidrChild;
 }

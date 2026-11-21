@@ -7,7 +7,7 @@ import type { ProgressHeaderProps } from "./types.js";
  */
 export function ProgressHeader<T extends keyof SeidrElementTagNameMap = "div">(
   props: ProgressHeaderProps<T> = {},
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

@@ -7,7 +7,7 @@ import type { ListboxSectionLabelProps } from "./types.js";
  */
 export function ListboxSectionLabel<T extends keyof SeidrElementTagNameMap = "span">(
   props: ListboxSectionLabelProps<T> = {} as ListboxSectionLabelProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "span" as T, role = "presentation", dataComponent = DATA_COMPONENT_LISTBOX, ...rest } = props;
 

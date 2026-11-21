@@ -18,7 +18,7 @@ import type { MenuItemProps } from "./types.js";
  */
 export function MenuItem<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenuItemProps<T> = {} as MenuItemProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

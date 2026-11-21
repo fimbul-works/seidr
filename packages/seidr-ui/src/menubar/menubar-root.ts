@@ -15,7 +15,7 @@ import type { MenubarRootProps } from "./types.js";
  */
 export function MenubarRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: MenubarRootProps<T> = {} as MenubarRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const {
     as = "div" as T,

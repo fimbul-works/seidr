@@ -13,7 +13,7 @@ import type { DialogRootProps } from "./types.js";
  */
 export function DialogRoot<T extends keyof SeidrElementTagNameMap = "div">(
   props: DialogRootProps<T> = {} as DialogRootProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { as = "div" as T, instance: dialog, dataComponent = DATA_COMPONENT_DIALOG, ...rest } = props;
 

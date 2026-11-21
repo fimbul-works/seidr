@@ -14,7 +14,7 @@ export type SwitchErrorMessageProps<T extends keyof SeidrElementTagNameMap = "di
  */
 export function SwitchErrorMessage<T extends keyof SeidrElementTagNameMap = "div">(
   props: SwitchErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { instance: sw, ...rest } = props;
 

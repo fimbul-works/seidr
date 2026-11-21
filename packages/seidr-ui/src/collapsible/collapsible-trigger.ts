@@ -18,7 +18,7 @@ export type CollapsibleTriggerProps<T extends keyof SeidrElementTagNameMap = "bu
  */
 export function CollapsibleTrigger<T extends keyof SeidrElementTagNameMap = "button">(
   props: CollapsibleTriggerProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): SeidrElementTagNameMap[T] {
   const { instance: col, disabled, onclick: userOnClick, ...rest } = props;
 

@@ -26,29 +26,25 @@ export function createToast(options: UseToastOptions): ToastInstance {
 
   return {
     ...instance,
-    Root: <T extends keyof SeidrElementTagNameMap = "li">(
-      props?: ToastRootProps<T>,
-      children?: SeidrChild | SeidrChild[],
-    ) => ToastRoot<T>({ instance, ...props } as ToastRootProps<T>, children),
-    Title: <T extends keyof SeidrElementTagNameMap = "div">(
-      props?: ToastTitleProps<T>,
-      children?: SeidrChild | SeidrChild[],
-    ) => ToastTitle<T>({ instance, ...props } as ToastTitleProps<T>, children),
+    Root: <T extends keyof SeidrElementTagNameMap = "li">(props?: ToastRootProps<T>, children?: SeidrChild) =>
+      ToastRoot<T>({ instance, ...props } as ToastRootProps<T>, children),
+    Title: <T extends keyof SeidrElementTagNameMap = "div">(props?: ToastTitleProps<T>, children?: SeidrChild) =>
+      ToastTitle<T>({ instance, ...props } as ToastTitleProps<T>, children),
     Description: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: ToastDescriptionProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ToastDescription<T>({ instance, ...props } as ToastDescriptionProps<T>, children),
     CloseButton: <T extends keyof SeidrElementTagNameMap = "button">(
       props?: ToastCloseButtonProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ToastCloseButton<T>({ instance, ...props } as ToastCloseButtonProps<T>, children),
     ProgressTrack: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: ToastProgressTrackProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ToastProgressTrack<T>({ instance, ...props } as ToastProgressTrackProps<T>, children),
     ProgressFill: <T extends keyof SeidrElementTagNameMap = "div">(
       props?: ToastProgressFillProps<T>,
-      children?: SeidrChild | SeidrChild[],
+      children?: SeidrChild,
     ) => ToastProgressFill<T>({ instance, ...props } as ToastProgressFillProps<T>, children),
   };
 }

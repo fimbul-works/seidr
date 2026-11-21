@@ -33,7 +33,7 @@ export type SegmentedControlErrorMessageProps<T extends keyof SeidrElementTagNam
  */
 export function SegmentedControlErrorMessage<T extends keyof SeidrElementTagNameMap = "span">(
   props: SegmentedControlErrorMessageProps<T>,
-  children?: SeidrChild | SeidrChild[],
+  children?: SeidrChild,
 ): DerivedValue<SeidrElementTagNameMap[T] | null> {
   const { as = "span" as T, instance: sc, ...rest } = props;
 
