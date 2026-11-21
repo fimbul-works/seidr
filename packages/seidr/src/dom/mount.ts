@@ -1,5 +1,4 @@
-import { isComponent } from "../component/type-guards.js";
-import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
+import type { SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
 import { type CleanupFunction, SeidrError } from "../types.js";
 import { appendChild } from "./append-child.js";
@@ -24,7 +23,7 @@ import { appendChild } from "./append-child.js";
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} If passed a null parent.
  */
-export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponentFactoryOrFunction>(
+export const mount = <C extends SeidrComponentFactoryOrFunction<void>>(
   componentOrFactory: C,
   container: HTMLElement,
 ): CleanupFunction => {
@@ -32,14 +31,8 @@ export const mount = <C extends SeidrComponentFactoryOrFunction = SeidrComponent
     throw new SeidrError("Cannot mount to null parent");
   }
 
-  // Create the component
-  const rootComponent: SeidrComponent = isComponent(componentOrFactory)
-    ? componentOrFactory
-    : wrapComponent(componentOrFactory, "Root")();
-
-  // Append the component to the container
+  const rootComponent = wrapComponent(componentOrFactory, "Root")();
   appendChild(container, rootComponent);
 
-  // Return cleanup function
   return () => rootComponent.unmount();
 };

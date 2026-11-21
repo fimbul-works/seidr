@@ -136,7 +136,7 @@ export type SeidrChild =
 /**
  * Name of a property
  */
-export type PropName<K extends keyof SeidrElementTagNameMap = any> = (
+export type PropName<K extends keyof SeidrElementTagNameMap = any> =
   | keyof HTMLElement
   | keyof SeidrElementTagNameMap[K]
   | keyof ARIAProps
@@ -144,6 +144,4 @@ export type PropName<K extends keyof SeidrElementTagNameMap = any> = (
   | "class"
   | "for"
   | "ref"
-  | "htmlFor"
-) &
-  string;
+  | "htmlFor";
