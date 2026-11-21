@@ -1,3 +1,4 @@
+import { isUndef } from "@fimbul-works/hvat";
 import { getComponentScope, setComponentScope } from "../component/component-scope.js";
 import type { SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
@@ -31,6 +32,7 @@ export const Switch = <K extends string | number, B extends SwitchBranches<K> = 
   name: string = "Switch",
 ): DerivedValue<SeidrChild | null> => {
   const scope = getComponentScope();
+  const slot = scope?.nextChildId;
 
   const getBranch = (key: K, currentBranches: B): SeidrChild => {
     const rawFactory =
@@ -46,8 +48,18 @@ export const Switch = <K extends string | number, B extends SwitchBranches<K> = 
       setComponentScope(scope);
     }
 
+    const branchId = factory
+      ? !isUndef(slot)
+        ? `${slot}:case:${String(key)}`
+        : `case:${String(key)}`
+      : !isUndef(slot)
+        ? `${slot}:fallback`
+        : "fallback";
+
     try {
-      return untrack(() => (factory ? factory(undefined, key) : fallbackComp ? fallbackComp() : null));
+      return untrack(() =>
+        factory ? factory(undefined, branchId) : fallbackComp ? fallbackComp(undefined, branchId) : null,
+      );
     } finally {
       setComponentScope(prevScope);
     }

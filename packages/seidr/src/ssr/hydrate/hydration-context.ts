@@ -1,10 +1,13 @@
-import { encodeBase62 } from "@fimbul-works/futhark";
 import { getAppState } from "../../app-state/get-app-state.js";
+import { getMarkerRegistry } from "../../component/component-registry.js";
 import { isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
+import { getMarkerText } from "../../component/util/get-marker-comments.js";
 import {
   DATA_KEY_HYDRATION_CTX,
-  ROOT_ATTRIBUTE,
+  SEIDR_COMPONENT_END_PREFIX,
+  SEIDR_COMPONENT_START_PREFIX,
+  SEIDR_ROOT_MARKER_PREFIX,
   TAG_COMMENT,
   TAG_COMPONENT_PREFIX,
   TAG_TEXT,
@@ -51,23 +54,48 @@ export function initHydrationContext(container: Element): HydrationContext {
     components[componentId] = hydrationData.components[key];
   }
 
-  // Find the actual root nodes rendered by SSR
+  // Find the actual root nodes rendered by SSR via ctxID boundary markers
   const allNodes = Array.from(container.childNodes);
-  let firstIdx = -1;
-  let lastIdx = -1;
+  const startMarkerText = `${SEIDR_COMPONENT_START_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${hydrationData.ctxID}`;
+  const endMarkerText = `${SEIDR_COMPONENT_END_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${hydrationData.ctxID}`;
+
+  let startIdx = -1;
+  let endIdx = -1;
 
   for (let i = 0; i < allNodes.length; i++) {
     const node = allNodes[i];
-    if (
-      isMarkerComment(node) ||
-      (isElementNode(node) && node.getAttribute(ROOT_ATTRIBUTE) === String(hydrationData.ctxID))
-    ) {
-      if (firstIdx === -1) firstIdx = i;
-      lastIdx = i;
+    if (isCommentNode(node)) {
+      const text = node.textContent;
+      if (startIdx === -1 && text === startMarkerText) {
+        startIdx = i;
+      } else if (startIdx !== -1 && text === endMarkerText) {
+        endIdx = i;
+        break;
+      }
     }
   }
 
-  const rootNodes: ChildNode[] = firstIdx === -1 ? allNodes : allNodes.slice(firstIdx, lastIdx + 1);
+  let rootStartMarker: Comment | undefined;
+  let rootEndMarker: Comment | undefined;
+  let rootNodes: ChildNode[];
+
+  if (startIdx !== -1 && endIdx !== -1) {
+    rootStartMarker = allNodes[startIdx] as Comment;
+    rootEndMarker = allNodes[endIdx] as Comment;
+    rootNodes = allNodes.slice(startIdx + 1, endIdx);
+  } else {
+    // Fallback for legacy/hand-authored HTML without ctxID root markers
+    let firstIdx = -1;
+    let lastIdx = -1;
+    for (let i = 0; i < allNodes.length; i++) {
+      const node = allNodes[i];
+      if (isMarkerComment(node)) {
+        if (firstIdx === -1) firstIdx = i;
+        lastIdx = i;
+      }
+    }
+    rootNodes = firstIdx === -1 ? allNodes : allNodes.slice(firstIdx, lastIdx + 1);
+  }
 
   // Reconstruct virtual tree from tuples AND sync with DOM in one pass
   const componentTree = reconstructComponentTree(rootNodes, components);
@@ -144,21 +172,26 @@ export function initHydrationContext(container: Element): HydrationContext {
   const cursors = new Map<string, number>();
   let currentComponentNode: ComponentTreeNode | null = null;
 
-  const getCompIdStr = (component: SeidrComponent) =>
-    process.env.NODE_ENV === "production"
-      ? encodeBase62(component.id)
-      : `${component.name}-${encodeBase62(component.id)}`;
-
   // Construct the hydration context object
   const ctx: HydrationContext = {
+    rootStartMarker,
+    rootEndMarker,
     pushComponent(component: SeidrComponent) {
-      const compIdStr = getCompIdStr(component);
+      const compIdStr = getMarkerText(component);
       let node = componentNodeMap.get(compIdStr);
 
       if (!node && treeStack.length === 0) {
         // Positional match for the root component
         node = fullComponentTree[0];
+        if (node?.id && compIdStr !== node.id) {
+          const markers = getMarkerRegistry().get(node.id);
+          if (markers) {
+            getMarkerRegistry().set(compIdStr, markers);
+          }
+        }
       }
+
+      const isMatchedInSSR = Boolean(node);
 
       // If component is not in SSR map, create a virtual mismatched node to keep stack balance
       if (!node) {
@@ -171,9 +204,15 @@ export function initHydrationContext(container: Element): HydrationContext {
         };
       }
 
-      // Increment parent's cursor before pushing child
-      if (currentComponentNode) {
-        this.next();
+      // Increment parent's cursor only when the pushed child actually exists in the SSR structure map
+      if (currentComponentNode && isMatchedInSSR) {
+        const parentId = currentComponentNode.id!;
+        const parentTuples = components[parentId];
+        if (node.creationIndex >= 0 && parentTuples?.[node.creationIndex]?.[0] === node.tag) {
+          cursors.set(parentId, node.creationIndex + 1);
+        } else {
+          this.next();
+        }
       }
 
       treeStack.push(node);
@@ -188,7 +227,7 @@ export function initHydrationContext(container: Element): HydrationContext {
       currentComponentNode = treeStack[treeStack.length - 1] ?? null;
     },
     removeComponent(component: SeidrComponent) {
-      const compIdStr = getCompIdStr(component);
+      const compIdStr = getMarkerText(component);
       componentNodeMap.delete(compIdStr);
 
       const walk = (nodeId: string) => {
@@ -220,12 +259,18 @@ export function initHydrationContext(container: Element): HydrationContext {
       }
 
       const componentId = currentComponentNode.id!;
-      const cursor = cursors.get(componentId) || 0;
+      const tuples = components[componentId] || [];
       const nodes = claimMap.get(componentId) || [];
+      let cursor = cursors.get(componentId) || 0;
+
+      while (cursor < tuples.length && tuples[cursor]?.[0]?.startsWith(TAG_COMPONENT_PREFIX)) {
+        cursor++;
+      }
+
       const node = nodes[cursor];
 
-      // Always advance cursor
-      this.next();
+      // Advance cursor past claimed slot
+      cursors.set(componentId, cursor + 1);
 
       if (!node) {
         console.error(`[Hydration] No node found at ${componentId}[${cursor}], expected: ${tag}`);

@@ -1,6 +1,6 @@
-import { encodeBase62 } from "@fimbul-works/futhark";
 import { isComponent, isMarkerComment } from "../../component/type-guards.js";
 import type { SeidrComponent } from "../../component/types.js";
+import { getMarkerText } from "../../component/util/get-marker-comments.js";
 import { TAG_COMMENT, TAG_COMPONENT_PREFIX, TAG_TEXT } from "../../constants.js";
 import { isCommentNode, isElementNode, isTextNode } from "../../dom/type-guards.js";
 import { SeidrError } from "../../types.js";
@@ -80,9 +80,7 @@ export function buildStructureMap(component: SeidrComponent): StructureMapTuple[
 
     // Construct tuples
     if (isComponent(child)) {
-      const compIdStr =
-        process.env.NODE_ENV === "production" ? encodeBase62(child.id) : `${child.name}-${encodeBase62(child.id)}`;
-      tuples.push([`${TAG_COMPONENT_PREFIX}${compIdStr}`]);
+      tuples.push([`${TAG_COMPONENT_PREFIX}${getMarkerText(child)}`]);
     } else if (isElementNode(child)) {
       const tuple: StructureMapTuple = [child.tagName.toLowerCase()];
       if (child.childNodes && child.childNodes.length > 0) {

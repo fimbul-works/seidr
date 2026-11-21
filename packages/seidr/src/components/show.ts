@@ -21,22 +21,24 @@ export const Show = (
   name: string = "Show",
 ): DerivedValue<SeidrChild | null> => {
   const scope = getComponentScope();
+  const slot = scope?.nextChildId;
   const trueFactory = wrapComponent(whenTrue, name);
   const falseFactory = whenFalse ? wrapComponent(whenFalse, `${name}Fallback`) : undefined;
 
-  const renderBranch = (factory?: SeidrComponentFactory): SeidrChild | null => {
+  const renderBranch = (factory: SeidrComponentFactory | undefined, branch: "true" | "false"): SeidrChild | null => {
     if (!factory) return null;
     const prevScope = getComponentScope();
     if (scope) {
       setComponentScope(scope);
     }
 
+    const branchId = slot !== undefined ? `${slot}:${branch}` : branch;
     try {
-      return untrack(() => factory());
+      return untrack(() => factory(undefined, branchId));
     } finally {
       setComponentScope(prevScope);
     }
   };
 
-  return condition.as((val) => (val ? renderBranch(trueFactory) : renderBranch(falseFactory)));
+  return condition.as((val) => (val ? renderBranch(trueFactory, "true") : renderBranch(falseFactory, "false")));
 };

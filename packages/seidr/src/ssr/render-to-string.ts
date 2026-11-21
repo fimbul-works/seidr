@@ -4,6 +4,7 @@ import { clearComponentRegistry } from "../component/component-registry.js";
 import { isComponent } from "../component/type-guards.js";
 import type { SeidrComponent, SeidrComponentFactoryOrFunction } from "../component/types.js";
 import { wrapComponent } from "../component/wrap-component.js";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX, SEIDR_ROOT_MARKER_PREFIX } from "../constants.js";
 import { appendChild } from "../dom/append-child.js";
 import { getDocument, setDocumentProvider } from "../dom/get-document.js";
 import { initSSRDocument } from "../dom/get-document.ssr.js";
@@ -46,9 +47,20 @@ export async function renderToString(
       try {
         const comp: SeidrComponent = isComponent(factory) ? factory : wrapComponent(factory, "Root")();
 
-        const container = getDocument().createElement("div");
-        getDocument().body.appendChild(container);
+        const doc = getDocument();
+        const container = doc.createElement("div");
+        doc.body.appendChild(container);
+
+        const startMarker = doc.createComment(
+          `${SEIDR_COMPONENT_START_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${appState.ctxID}`,
+        );
+        const endMarker = doc.createComment(
+          `${SEIDR_COMPONENT_END_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${appState.ctxID}`,
+        );
+
+        container.appendChild(startMarker);
         appendChild(container, comp);
+        container.appendChild(endMarker);
 
         // Await all promises registered during SSR
         await activeScope.waitForPromises();

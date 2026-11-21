@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { setAppStateProvider } from "../../app-state/get-app-state.js";
 import { createComponent } from "../../component/index.js";
+import { SEIDR_COMPONENT_END_PREFIX, SEIDR_COMPONENT_START_PREFIX, SEIDR_ROOT_MARKER_PREFIX } from "../../constants.js";
 import { mount } from "../../dom/mount.js";
 import { isCommentNode } from "../../dom/type-guards.js";
 import { $ } from "../../element/index.js";
@@ -171,10 +172,7 @@ describe("Hydration", () => {
   it("should restore observable values during hydration", async () => {
     const TestComponent = createComponent(() => {
       const count = createValue(0, { id: "test-count" });
-      return $div(
-        null,
-        count.as((n) => `Count: ${n}`),
-      );
+      return $div(count.as((n) => `Count: ${n}`));
     }, "TestComponent");
 
     const cleanupSSR = enableSSRMode();
@@ -245,13 +243,21 @@ describe("Hydration", () => {
     const childNodes = Array.from(container.childNodes);
     const comments = childNodes.filter((n) => isCommentNode(n));
 
-    // We should have exactly 2 markers for App
-    expect(comments.length).toBe(2);
-    expect(comments[0].textContent).toContain("$App");
-    expect(comments[1].textContent).toContain("/App");
+    // Outer ctxID root markers wrap the 2 inner App markers
+    expect(comments.length).toBe(4);
+    expect(comments[0].textContent).toBe(
+      `${SEIDR_COMPONENT_START_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${hydrationData.ctxID}`,
+    );
+    expect(comments[1].textContent).toContain("$App");
+    expect(comments[2].textContent).toContain("/App");
+    expect(comments[3].textContent).toBe(
+      `${SEIDR_COMPONENT_END_PREFIX}${SEIDR_ROOT_MARKER_PREFIX}${hydrationData.ctxID}`,
+    );
 
     expect(childNodes[0]).toBe(comments[0]);
-    expect(childNodes[childNodes.length - 1]).toBe(comments[1]);
+    expect(childNodes[1]).toBe(comments[1]);
+    expect(childNodes[childNodes.length - 2]).toBe(comments[2]);
+    expect(childNodes[childNodes.length - 1]).toBe(comments[3]);
 
     const nav = container.querySelector("nav");
     const main = container.querySelector("main");

@@ -2,6 +2,7 @@ import { encodeBase62 } from "@fimbul-works/futhark";
 import type { AppState } from "../app-state/class-app-state.js";
 import { getAppState } from "../app-state/get-app-state.js";
 import type { SeidrComponent } from "../component/types.js";
+import { getMarkerText } from "../component/util/get-marker-comments.js";
 import { DATA_KEY_SSR_SCOPE, SEIDR_COMPONENT_START_PREFIX } from "../constants.js";
 import { DATA_KEY_STATE } from "../observable/constants.js";
 import type { Value } from "../observable/types.js";
@@ -152,19 +153,16 @@ export class SSRScope {
 
     let index = 0;
     for (const comp of mountedComps) {
-      const compIdStr =
-        process.env.NODE_ENV === "production" ? encodeBase62(comp.id) : `${comp.name}-${encodeBase62(comp.id)}`;
+      const compIdStr = getMarkerText(comp);
       compIndices.set(compIdStr, index);
 
-      const parentIdStr = comp.parent
-        ? process.env.NODE_ENV === "production"
-          ? encodeBase62(comp.parent.id)
-          : `${comp.parent.name}-${encodeBase62(comp.parent.id)}`
-        : null;
+      const parentIdStr = comp.parent ? getMarkerText(comp.parent) : null;
+
       const prefix =
         !parentIdStr || !compIndices.has(parentIdStr)
           ? SEIDR_COMPONENT_START_PREFIX
           : encodeBase62(compIndices.get(parentIdStr)!);
+
       const key = `${prefix}:${compIdStr}`;
 
       const map = buildStructureMap(comp);

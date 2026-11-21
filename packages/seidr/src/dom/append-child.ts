@@ -7,7 +7,7 @@ import { onUnmounted } from "../hooks/on-unmounted.js";
 import { isValue } from "../observable/type-guards.js";
 import type { Value } from "../observable/types.js";
 import { unwrapValue } from "../observable/unwrap-value.js";
-import { isHydrating } from "../ssr/hydrate/storage.js";
+import { isClaiming, isHydrating } from "../ssr/hydrate/storage.js";
 import { $text } from "./node/text.js";
 import { isCommentNode, isDOMNode, isElementNode, isTextNode } from "./type-guards.js";
 
@@ -51,7 +51,7 @@ export const normalizeChildNodes = (val: any): ChildNode[] => {
  */
 export const createReactiveValueNodes = (
   value: Value,
-  onCleanupRegister?: (cleanup: () => void) => void,
+  onCleanupRegister: (cleanup: () => void) => void,
 ): ChildNode[] => {
   const [startMarker, endMarker] = getMarkerComments(value.id)!;
 
@@ -116,9 +116,36 @@ export const createReactiveValueNodes = (
     }
   };
 
-  onCleanupRegister?.(fullCleanup);
+  onCleanupRegister(fullCleanup);
 
   const initialNodes = normalizeChildNodes(unwrapValue(value));
+
+  if (!process.env.SEIDR_DISABLE_SSR && isClaiming()) {
+    const markerParent = startMarker.parentNode;
+    if (markerParent && endMarker.parentNode === markerParent) {
+      // Sweep stale SSR nodes between startMarker and endMarker (e.g. SSR Show=true -> Client Show=false)
+      const ownedNodes = new Set<ChildNode>(initialNodes);
+      let current = startMarker.nextSibling;
+      while (current && current !== endMarker) {
+        const next = current.nextSibling;
+        if (!ownedNodes.has(current)) {
+          current.remove();
+        }
+        current = next;
+      }
+
+      // Reconcile initial nodes in reverse order before endMarker (e.g. SSR Show=false -> Client Show=true)
+      let currentAnchor: ChildNode = endMarker;
+      for (let i = initialNodes.length - 1; i >= 0; i--) {
+        const node = initialNodes[i];
+        if (node !== currentAnchor && node !== currentAnchor.previousSibling) {
+          markerParent.insertBefore(node, currentAnchor);
+        }
+        currentAnchor = node;
+      }
+    }
+  }
+
   return [startMarker, ...initialNodes, endMarker];
 };
 
@@ -157,12 +184,17 @@ export const mountConnectedComponents = (node: Node) => {
 };
 
 /**
- * Appends a child node to a parent node.
+ * Appends or inserts a child node into a parent node.
  *
- * @param {ParentNode} parent - The parent node to append the child to
- * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to append
+ * @param {ParentNode} parent - The parent node to insert the child into
+ * @param {SeidrChild | SeidrChild[] | null | undefined} child - The child node to insert
+ * @param {ChildNode | null} [anchor=null] - Optional reference child node in `parent` to insert before
  */
-export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[] | null | undefined) => {
+export const appendChild = (
+  parent: ParentNode,
+  child: SeidrChild | SeidrChild[] | null | undefined,
+  anchor: ChildNode | null = null,
+) => {
   if (child === parent) {
     if (process.env.NODE_ENV !== "production")
       console.log(`Parent and child are the same, skipping append child. ${parent}`);
@@ -170,69 +202,59 @@ export const appendChild = (parent: ParentNode, child: SeidrChild | SeidrChild[]
   }
 
   // Skip empty children
-  if (isNullish(child)) {
+  if (isNullish(child) || (isStr(child) && !child.trim())) {
     return;
-  } else if (isStr(child) && !child.trim()) {
-    return; // Do not append pure whitespace nodes
   }
 
   // Append array of nodes
   if (isArr(child)) {
-    return child.forEach((c) => appendChild(parent, c));
+    return child.forEach((c) => appendChild(parent, c, anchor));
   }
 
   // Hydration guard: if the node/component is already in the target, do nothing
   if (!process.env.SEIDR_DISABLE_SSR && isHydrating()) {
-    if (isComponent(child)) {
-      if (child.isMounted) {
-        return;
-      }
-    } else if (isDOMNode(child) && child.parentNode === parent) {
+    if ((isComponent(child) && child.isMounted) || (isDOMNode(child) && child.parentNode === parent)) {
       return;
     }
   }
 
+  const refNode = anchor?.parentNode === parent ? anchor : null;
+  const shouldMount = parent.isConnected && (process.env.SEIDR_DISABLE_SSR || !isClaiming());
+
   // Append Seidr component
   if (isComponent(child)) {
     const [startMarker, endMarker] = getMarkerComments(child, false) || [];
+    const innerAnchor = endMarker?.parentNode === parent ? endMarker : refNode;
 
-    if (startMarker && !child.nodes.includes(startMarker) && startMarker.parentNode !== parent) {
-      appendChild(parent, startMarker);
+    if (startMarker && startMarker.parentNode !== parent && !child.nodes.includes(startMarker)) {
+      appendChild(parent, startMarker, innerAnchor);
     }
 
-    appendChild(parent, child.nodes);
+    appendChild(parent, child.nodes, innerAnchor);
 
-    if (endMarker && !child.nodes.includes(endMarker) && endMarker.parentNode !== parent) {
-      appendChild(parent, endMarker);
+    if (endMarker && endMarker.parentNode !== parent && !child.nodes.includes(endMarker)) {
+      appendChild(parent, endMarker, refNode);
     }
 
-    if (parent.isConnected) {
+    if (shouldMount) {
       child.mount();
     }
   } else if (isValue(child)) {
-    const nodes = createReactiveValueNodes(child, (cleanup) => {
-      if (process.env.VITEST) {
-        try {
-          onUnmounted(cleanup);
-        } catch (error) {
-          if (process.env.NODE_ENV !== "production") {
-            console.error(error);
-          }
-        }
-      } else {
-        onUnmounted(cleanup);
-      }
-    });
+    const nodes = createReactiveValueNodes(child, onUnmounted);
+    const endMarker = nodes[nodes.length - 1];
+    const valueAnchor = endMarker?.parentNode === parent ? endMarker : refNode;
 
-    nodes.forEach((node) => node.parentNode !== parent && parent.appendChild(node));
+    nodes.forEach(
+      (node) => node.parentNode !== parent && node !== valueAnchor && parent.insertBefore(node, valueAnchor),
+    );
   } else {
     const childNode = isDOMNode(child) ? child : $text(child);
 
-    // Avoid hierarchy request error if childNode is already a parent of target
-    if (!isElementNode(childNode) || !childNode.contains(parent)) {
-      parent.appendChild(childNode);
+    // Avoid hierarchy request error if childNode is already a parent of target, or inserting before itself
+    if (childNode !== refNode && (!isElementNode(childNode) || !childNode.contains(parent))) {
+      parent.insertBefore(childNode, refNode);
 
-      if (parent.isConnected) {
+      if (shouldMount) {
         mountConnectedComponents(childNode);
       }
     }

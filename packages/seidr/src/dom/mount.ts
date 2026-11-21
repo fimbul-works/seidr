@@ -20,19 +20,21 @@ import { appendChild } from "./append-child.js";
  *
  * @param {C} componentOrFactory - The component instance, or a factory function (raw or wrapped)
  * @param {HTMLElement} container - The DOM container element to mount into
+ * @param {ChildNode | null} [anchor=null] - Optional reference child node in `container` to insert before
  * @returns {CleanupFunction} A cleanup function that unmounts the component when called
  * @throws {SeidrError} If passed a null parent.
  */
 export const mount = <C extends SeidrComponentFactoryOrFunction<void>>(
   componentOrFactory: C,
   container: HTMLElement,
+  anchor: ChildNode | null = null,
 ): CleanupFunction => {
   if (process.env.NODE_ENV !== "production" && !container) {
     throw new SeidrError("Cannot mount to null parent");
   }
 
   const rootComponent = wrapComponent(componentOrFactory, "Root")();
-  appendChild(container, rootComponent);
+  appendChild(container, rootComponent, anchor);
 
   return () => rootComponent.unmount();
 };

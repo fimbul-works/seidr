@@ -71,5 +71,20 @@ describeDualMode("mount", () => {
       expect(container.innerHTML).toContain("Plain Element");
       expect(container.querySelector("span")).not.toBeNull();
     });
+
+    it("should mount component before an anchor child in container", () => {
+      const before = $("header", { id: "before" });
+      const script = $("script", { id: "app-script" });
+      container.appendChild(before);
+      container.appendChild(script);
+
+      const App = () => $("main", { id: "app-main", textContent: "Mounted" });
+      unmount = mount(App, container, script);
+
+      expect(Array.from(container.children).map((el) => el.id)).toEqual(["before", "app-main", "app-script"]);
+
+      unmount();
+      expect(Array.from(container.children).map((el) => el.id)).toEqual(["before", "app-script"]);
+    });
   });
 });

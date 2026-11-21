@@ -31,6 +31,16 @@ export interface HydrationTreeNode extends ComponentTreeNode {
  */
 export interface HydrationContext {
   /**
+   * Start boundary marker comment for the hydrated root (`<!--$seidr:<ctxID>-->`), if present in the container.
+   */
+  readonly rootStartMarker?: Comment;
+
+  /**
+   * End boundary marker comment for the hydrated root (`<!--/seidr:<ctxID>-->`), if present in the container.
+   */
+  readonly rootEndMarker?: Comment;
+
+  /**
    * Moves to the next node.
    */
   next(): void;

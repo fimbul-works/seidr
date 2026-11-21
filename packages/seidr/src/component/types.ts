@@ -53,6 +53,11 @@ export interface SeidrComponent {
    */
   readonly nextValueId: number;
   /**
+   * The next available child component index for this component.
+   * @internal
+   */
+  readonly nextChildId: number;
+  /**
    * Execution sequence array populated during Server-Side Rendering.
    * @internal
    */

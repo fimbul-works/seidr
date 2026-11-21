@@ -41,12 +41,13 @@ export function createComponent<P = void>(
     const parentComponent = getComponentScope();
     const registry = getComponentRegitry();
 
-    // Determine unique ID
+    // Determine unique ID scoped to parent component so extra/missing descendants don't drift sibling IDs
     const idSet = new Set(registry.values().map((c) => c.id));
-    let idCounter = idSet.size;
-    let id = fastHash(!isNullish(identifier) ? identifier : (parentComponent?.id ?? idCounter));
+    const seed = parentComponent ? parentComponent.id : 0;
+    let idCounter = isNullish(identifier) ? (parentComponent ? parentComponent.nextChildId : idSet.size) : 0;
+    let id = !isNullish(identifier) ? fastHash(identifier, seed) : fastHash(idCounter, seed);
     while (idSet.has(id)) {
-      id = fastMix(++idCounter, id);
+      id = fastMix(++idCounter, id) >>> 0;
     }
 
     // Component mounted status
@@ -59,8 +60,9 @@ export function createComponent<P = void>(
     const componentMountedFns: OnMountedFunction[] = [];
     const componentUnmountedFns: CleanupFunction[] = [];
 
-    // Running counter for Value IDs
+    // Running counters for Value and child component IDs
     let valueIdCounter = 1;
+    let childIdCounter = 0;
 
     // Create component instance
     const currentComponent = {
@@ -146,6 +148,9 @@ export function createComponent<P = void>(
       },
       get nextValueId() {
         return valueIdCounter++;
+      },
+      get nextChildId() {
+        return ++childIdCounter;
       },
     } as unknown as SeidrComponent;
 

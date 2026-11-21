@@ -376,4 +376,58 @@ describe("Portal SSR & Hydration", () => {
     portalTarget.remove();
     cleanupClient();
   });
+
+  it("should hydrate directly into document.body with Portal(document.body) and siblings before and after without remounting root", async () => {
+    const App = createComponent(() => {
+      const label = createValue("Body Portal Content", { id: "body-portal-label" });
+      return $("div", { className: "app-root" }, [
+        $("h1", { textContent: "Body App" }),
+        Portal(getDocument().body, () => $("div", { className: "modal-box", textContent: label })),
+      ]);
+    }, "BodyPortalApp");
+
+    const cleanupSSR = enableSSRMode();
+    const { html, hydrationData } = await renderToString(App);
+    cleanupSSR();
+
+    const cleanupClient = enableClientMode();
+    const doc = getDocument();
+    doc.body.innerHTML = [
+      '<header id="before-portal-host">Before</header>',
+      html,
+      '<footer id="after-portal-host">After</footer>',
+      '<script id="after-script"></script>',
+    ].join("");
+
+    const originalRoot = doc.body.querySelector(".app-root");
+    expect(originalRoot).not.toBeNull();
+
+    const unmount = hydrate(App, doc.body, hydrationData);
+
+    expect(doc.body.querySelectorAll(".app-root")).toHaveLength(1);
+    expect(doc.body.querySelector(".app-root")).toBe(originalRoot);
+    expect(doc.body.querySelector(".modal-box")?.textContent).toBe("Body Portal Content");
+
+    const childIdsOrClasses = Array.from(doc.body.children).map((el) => el.id || el.className);
+    expect(childIdsOrClasses).toEqual([
+      "before-portal-host",
+      "app-root",
+      "after-portal-host",
+      "after-script",
+      "modal-box",
+    ]);
+
+    unmount();
+
+    expect(doc.body.querySelector(".app-root")).toBeNull();
+    expect(doc.body.querySelector(".modal-box")).toBeNull();
+    expect(Array.from(doc.body.children).map((el) => el.id)).toEqual([
+      "before-portal-host",
+      "after-portal-host",
+      "after-script",
+    ]);
+
+    doc.body.innerHTML = "";
+    cleanupClient();
+  });
 });

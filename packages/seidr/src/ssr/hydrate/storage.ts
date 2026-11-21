@@ -1,6 +1,6 @@
 import { isArr } from "@fimbul-works/hvat";
 import { getAppState, setAppStateID } from "../../app-state/get-app-state.js";
-import { DATA_KEY_HYDRATION_DATA } from "../../constants.js";
+import { DATA_KEY_HYDRATION_CTX, DATA_KEY_HYDRATION_DATA } from "../../constants.js";
 import { DATA_KEY_STATE } from "../../observable/constants.js";
 import { setRegisterValueForSSR } from "../../observable/register-value-for-ssr.js";
 import type { Value } from "../../observable/types.js";
@@ -16,6 +16,13 @@ import type { HydrationDataRegistry } from "./types.js";
  * @returns {boolean} true if in hydration mode with data available
  */
 export const isHydrating = (): boolean => getAppState().hasData(DATA_KEY_HYDRATION_DATA);
+
+/**
+ * Checks if DOM-node claiming (`HydrationContext`) is currently active.
+ *
+ * @returns {boolean} true while inside the synchronous hydration claim pass
+ */
+export const isClaiming = (): boolean => getAppState().hasData(DATA_KEY_HYDRATION_CTX);
 
 /**
  * Gets the current hydration data.

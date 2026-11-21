@@ -1,5 +1,3 @@
-import { isStr } from "@fimbul-works/hvat";
-
 /** Node is an element. */
 export const TYPE_ELEMENT = 1;
 
@@ -27,8 +25,8 @@ export const SEIDR_COMPONENT_START_PREFIX = "$";
 /** Suffix used for marker comments. */
 export const SEIDR_COMPONENT_END_PREFIX = "/";
 
-/** Root element data attribute. */
-export const ROOT_ATTRIBUTE = "data-seidr-root";
+/** Prefix used inside root SSR boundary marker comments (e.g. `<!--$seidr:1-->` / `<!--/seidr:1-->`). */
+export const SEIDR_ROOT_MARKER_PREFIX = "seidr:";
 
 /** Comment tag. */
 export const TAG_COMMENT = "#comment";

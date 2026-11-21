@@ -7,6 +7,16 @@ import { getMarkerRegistry } from "../component-registry.js";
 import type { SeidrComponent } from "../types.js";
 
 /**
+ * Gets the marker text for a component.
+ * @param {SeidrComponent} component The component to get the marker text for.
+ * @returns {string} The marker text for the component.
+ */
+export const getMarkerText = (component: SeidrComponent) =>
+  process.env.NODE_ENV === "production"
+    ? encodeBase62(component.id)
+    : `${component.name}-${encodeBase62(component.id)}`;
+
+/**
  * Get or create boundary markers for a given component or component ID.
  * Uses AppState markers cache for hydration stability.
  *
@@ -18,16 +28,12 @@ export const getMarkerComments = (
   instanceOrId: SeidrComponent | string,
   create: boolean = true,
 ): [Comment, Comment] | undefined => {
-  const commentText = isStr(instanceOrId)
-    ? instanceOrId
-    : process.env.NODE_ENV === "production"
-      ? encodeBase62(instanceOrId.id)
-      : `${instanceOrId.name}-${encodeBase62(instanceOrId.id)}`;
+  const commentText = isStr(instanceOrId) ? instanceOrId : getMarkerText(instanceOrId);
 
   // Check for existing
   const state = getMarkerRegistry();
   const cached = state.get(commentText);
-  if (cached) {
+  if (cached?.length === 2) {
     return cached;
   }
 

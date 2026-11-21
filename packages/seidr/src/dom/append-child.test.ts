@@ -278,14 +278,92 @@ describeDualMode("appendChild", ({ getDocument }) => {
     });
   });
 
+  describe("Positional Insertion (anchor)", () => {
+    it("should insert element and text before anchor node", () => {
+      const parent = $("div");
+      const before = $("header", { textContent: "Before" });
+      const anchor = $("script");
+      parent.appendChild(before);
+      parent.appendChild(anchor);
+
+      const middle = $("main", { textContent: "Middle" });
+      appendChild(parent, middle, anchor);
+      appendChild(parent, "TailText", anchor);
+
+      expect(Array.from(parent.childNodes).map((n) => n.textContent)).toEqual(["Before", "Middle", "TailText", ""]);
+      expect(parent.firstChild).toBe(before);
+      expect(parent.lastChild).toBe(anchor);
+    });
+
+    it("should insert array of nodes before anchor in forward order", () => {
+      const parent = $("div");
+      const anchor = $("footer", { textContent: "Footer" });
+      parent.appendChild(anchor);
+
+      appendChild(parent, [$("p", { textContent: "One" }), $("p", { textContent: "Two" })], anchor);
+
+      expect(Array.from(parent.children).map((el) => el.textContent)).toEqual(["One", "Two", "Footer"]);
+    });
+
+    it("should insert multi-node component before anchor in forward order", () => {
+      const parent = $("div");
+      const before = $("span", { textContent: "Start" });
+      const anchor = $("span", { textContent: "End" });
+      parent.appendChild(before);
+      parent.appendChild(anchor);
+
+      const Comp = createComponent(() => [$("b", { textContent: "A" }), $("i", { textContent: "B" })], "AnchoredComp");
+      appendChild(parent, Comp(), anchor);
+
+      expect(Array.from(parent.children).map((el) => el.textContent)).toEqual(["Start", "A", "B", "End"]);
+      expect(parent.lastChild).toBe(anchor);
+    });
+
+    it("should insert reactive Value before anchor and keep updates before anchor", () => {
+      const parent = $("div");
+      const anchor = $("div", { id: "after" });
+      parent.appendChild(anchor);
+
+      const obs = createValue<string | HTMLElement>("Initial");
+      appendChild(parent, obs, anchor);
+
+      expect(parent.lastChild).toBe(anchor);
+      expect(parent.textContent).toBe("Initial");
+
+      obs($("span", { textContent: "Updated" }));
+      expect(parent.lastChild).toBe(anchor);
+      expect(Array.from(parent.children).map((el) => el.tagName)).toEqual(["SPAN", "DIV"]);
+    });
+
+    it("should fall back to appending at the end when anchor is detached or belongs to another parent", () => {
+      const parent = $("div");
+      const existing = $("span", { textContent: "First" });
+      parent.appendChild(existing);
+
+      const detachedAnchor = $("span");
+      const otherParent = $("div");
+      const foreignAnchor = $("span");
+      otherParent.appendChild(foreignAnchor);
+
+      const child1 = $("span", { textContent: "Second" });
+      const child2 = $("span", { textContent: "Third" });
+      appendChild(parent, child1, detachedAnchor);
+      appendChild(parent, child2, foreignAnchor);
+
+      expect(Array.from(parent.children)).toEqual([existing, child1, child2]);
+    });
+  });
+
   describe("Hydration & Safety", () => {
     it("should prevent hierarchy request error when appending parent to itself", () => {
       const parent = $("div");
       const appendSpy = vi.spyOn(parent, "appendChild");
+      const insertSpy = vi.spyOn(parent, "insertBefore");
 
       appendChild(parent, parent);
 
       expect(appendSpy).not.toHaveBeenCalled();
+      expect(insertSpy).not.toHaveBeenCalled();
     });
 
     it("should prevent hierarchy request error when appending ancestor to descendant", () => {
@@ -294,10 +372,12 @@ describeDualMode("appendChild", ({ getDocument }) => {
       ancestor.appendChild(descendant);
 
       const appendSpy = vi.spyOn(descendant, "appendChild");
+      const insertSpy = vi.spyOn(descendant, "insertBefore");
 
       appendChild(descendant, ancestor);
 
       expect(appendSpy).not.toHaveBeenCalled();
+      expect(insertSpy).not.toHaveBeenCalled();
     });
   });
 });
